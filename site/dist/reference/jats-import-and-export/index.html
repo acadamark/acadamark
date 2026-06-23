@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Try It!</title>
+<title>JATS Import and Export</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1310,9 +1310,9 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </head>
 <body>
 <div class="enscribe-site">
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="enscribe-site-layout">
-<nav class="enscribe-site-sidebar" aria-label="Site navigation"><ul><li><a href="../">Home</a></li><li><a href="../design/">Design</a></li><li><a href="../authoring-guide/">Authoring Guide</a></li><li><span class="enscribe-nav-label">Reference</span><ul><li><a href="../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a></li><li><a href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a></li><li><a href="../reference/jats-import-and-export/">JATS Import and Export</a></li></ul></li><li><a href="../try-it/">Try It!</a></li></ul></nav>
+<nav class="enscribe-site-sidebar" aria-label="Site navigation"><ul><li><a href="../../">Home</a></li><li><a href="../../design/">Design</a></li><li><a href="../../authoring-guide/">Authoring Guide</a></li><li><span class="enscribe-nav-label">Reference</span><ul><li><a href="../../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a></li><li><a href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a></li><li><a href="../../reference/jats-import-and-export/">JATS Import and Export</a></li></ul></li><li><a href="../../try-it/">Try It!</a></li></ul></nav>
 <main class="enscribe-site-main" data-enscribe-content>
 
 <style>.tippy-box[data-animation=fade][data-state=hidden]{opacity:0}[data-tippy-root]{max-width:calc(100vw - 10px)}.tippy-box{position:relative;background-color:#333;color:#fff;border-radius:4px;font-size:14px;line-height:1.4;white-space:normal;outline:0;transition-property:transform,visibility,opacity}.tippy-box[data-placement^=top]>.tippy-arrow{bottom:0}.tippy-box[data-placement^=top]>.tippy-arrow:before{bottom:-7px;left:0;border-width:8px 8px 0;border-top-color:initial;transform-origin:center top}.tippy-box[data-placement^=bottom]>.tippy-arrow{top:0}.tippy-box[data-placement^=bottom]>.tippy-arrow:before{top:-7px;left:0;border-width:0 8px 8px;border-bottom-color:initial;transform-origin:center bottom}.tippy-box[data-placement^=left]>.tippy-arrow{right:0}.tippy-box[data-placement^=left]>.tippy-arrow:before{border-width:8px 0 8px 8px;border-left-color:initial;right:-7px;transform-origin:center left}.tippy-box[data-placement^=right]>.tippy-arrow{left:0}.tippy-box[data-placement^=right]>.tippy-arrow:before{left:-7px;border-width:8px 8px 8px 0;border-right-color:initial;transform-origin:center right}.tippy-box[data-inertia][data-state=visible]{transition-timing-function:cubic-bezier(.54,1.5,.38,1.11)}.tippy-arrow{width:16px;height:16px;color:#333}.tippy-arrow:before{content:"";position:absolute;border-color:transparent;border-style:solid}.tippy-content{position:relative;padding:5px 9px;z-index:1}
@@ -1588,356 +1588,455 @@ note-list li {
     init();
   }
 })();
-</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
-<article>
-  <article-front>
-    <meta data-document-type="article">
-      <article-title>Getting Started with Enscribe</article-title>
-      <author>The Enscribe Project</author>
-    </meta>
-  </article-front>
-  <article-body>
-    <p>
-      You are reading an Enscribe document — not a description of one, but the actual
-      source rendered to HTML in your browser. If you are on the docs site, the panel
-      beside this text holds that source; change anything and the output re-renders as
-      you type. Everything below is at once an explanation of a feature and a use of
-      it. <b>The page teaches by being what it describes.</b> You already know HTML and
-      Markdown, so this guide skips what a heading is and spends its time on what
-      Enscribe adds: a compact, uniform way to write the <i>structure</i> — citations,
-      figures, cross-references, math — that Markdown never covered and raw HTML makes
-      painful. Ten minutes from now you will have seen every feature you need to write
-      a real article, exercised here in the writing of one.
-    </p>
-    <section>
-      <section-title>Your first document</section-title>
-      <p>
-        An Enscribe document opens with a metadata block. Here is the one at the top of
-        this page:
-      </p>
-      <pre><code>&#x3C;meta type=article>
-  &#x3C;title | Getting Started with Enscribe>
-  &#x3C;author | The Enscribe Project>
-&#x3C;/meta>
-</code></pre>
-      <p>
-        <code>&#x3C;meta></code> carries the document’s identity — title, authors, and optionally a
-        <code>&#x3C;date></code>, an <code>&#x3C;abstract></code>, affiliations, and the rest of the front matter a
-        scholarly article needs. It is pinned to the very top because it describes the
-        document rather than belonging to its body; Enscribe keeps such <i>apparatus</i> at
-        the document’s edges, where structural processing can find it. The <code>type=article</code>
-        attribute picks the article shape; <code>type=book</code> would instead expect chapters.
-        After the metadata you simply write. A blank line starts a new paragraph,
-        exactly as in Markdown. That part you know — so the rest of this guide is the
-        parts you don’t.
-      </p>
-    </section>
-    <section>
-      <section-title>Sections come in three forms</section-title>
-      <p>
-        A heading can be written three ways, and all three compile to the <i>same</i> thing —
-        a Layer 1 <code>&#x3C;section></code> wrapping a <code>&#x3C;section-title></code>:
-      </p>
-      <pre><code>&#x3C;# Methods #>           — sigil form: the fewest keystrokes
-&#x3C;section | Methods>     — canonical form: explicit; what the others become
-# Methods               — Markdown form: familiar, and it works
-</code></pre>
-      <p>
-        If you are in the playground, try it: change one of this guide’s <code>&#x3C;# ... #></code>
-        headings to <code># ...</code> and back. The rendered heading does not move — because all
-        three forms reduce to the same node before anything else in the pipeline sees
-        them.
-      </p>
-      <p>
-        Why three? Because Enscribe separates the <i>form you type</i> from the <i>form it
-becomes</i>. Underneath every document is one canonical representation — semantic
-        HTML — and the shorthand is just a faster way to reach it. The sigil <code>&#x3C;#></code> is the
-        day-to-day default: it is the lightest to type and still carries everything a
-        section needs. The named <code>&#x3C;section></code> is the explicit form, and it is exactly what
-        you would read if you converted the finished HTML back to shorthand. The Markdown
-        <code>#</code> is there so muscle memory works on day one. This guide writes its own
-        headings in the sigil form — the line just above this paragraph was
-        <code>&#x3C;# Sections come in three forms #></code>. Give a section an id when something will
-        point back to it, by adding <code>#name</code> before a pipe:
-        <code>&#x3C;# #sec:forms | Sections come in three forms #></code>. The three forms are not three
-        parsers racing each other.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> Their trade-offs are laid out in <a href="#tab:layers" class="ref">table 1</a>
-        below.
-      </p>
-      <sub-section>
-        <sub-section-title>Subsections add one sigil character</sub-section-title>
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
+<script>(function () {
+  function init() {
+    var nav = document.querySelector('nav.enscribe-toc');
+    if (!nav) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+
+    // Map each ToC link to its target section, in document order.
+    var linkById = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') return;
+      var id = decodeURIComponent(href.slice(1));
+      var el = document.getElementById(id);
+      if (el) { linkById[id] = a; targets.push(el); }
+    });
+    if (!targets.length) return;
+
+    function visible(el) { return el.offsetParent !== null; } // false for display:none (e.g. a chapter-nav-hidden chapter)
+
+    function directLink(li) {
+      for (var i = 0; i < li.children.length; i++) {
+        var c = li.children[i];
+        if (c.tagName && c.tagName.toLowerCase() === 'a') return c;
+      }
+      return null;
+    }
+
+    var currentId = null;
+    function setActive(id) {
+      if (id === currentId) return;
+      currentId = id;
+      links.forEach(function (a) {
+        a.removeAttribute('aria-current');
+        a.classList.remove('enscribe-toc-active', 'enscribe-toc-active-trail');
+      });
+      var a = linkById[id];
+      if (!a) return;
+      a.classList.add('enscribe-toc-active');
+      a.setAttribute('aria-current', 'location');
+      // Ancestor trail: walk up the nested <li>/<ul> structure, marking each
+      // ancestor entry's own <a> (the "you are here" path).
+      var li = a.parentNode;
+      while (li && li.tagName && li.tagName.toLowerCase() === 'li') {
+        var ul = li.parentNode;                     // enclosing <ul>
+        var parentLi = ul ? ul.parentNode : null;   // ancestor <li>, or the <details>
+        if (parentLi && parentLi.tagName && parentLi.tagName.toLowerCase() === 'li') {
+          var pa = directLink(parentLi);
+          if (pa) pa.classList.add('enscribe-toc-active-trail');
+          li = parentLi;
+        } else {
+          break;
+        }
+      }
+    }
+
+    function firstVisibleId() {
+      for (var i = 0; i < targets.length; i++) { if (visible(targets[i])) return targets[i].id; }
+      return targets[0].id;
+    }
+    function lastVisibleId() {
+      for (var i = targets.length - 1; i >= 0; i--) { if (visible(targets[i])) return targets[i].id; }
+      return null;
+    }
+
+    function update() {
+      var marker = window.innerHeight * 0.2; // the "top threshold" line
+      var activeId = null;
+      for (var i = 0; i < targets.length; i++) {
+        var el = targets[i];
+        if (!visible(el)) continue;
+        if (el.getBoundingClientRect().top <= marker) activeId = el.id; // last to cross the top wins
+      }
+      // Ends. Before the first heading crosses the line, the first section is
+      // current; at the very bottom of the page, keep the last section active
+      // even though its top sits below the line.
+      if (activeId === null) activeId = firstVisibleId();
+      var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+      if (atBottom) { var lastId = lastVisibleId(); if (lastId) activeId = lastId; }
+      if (activeId) setActive(activeId);
+    }
+
+    if ('IntersectionObserver' in window) {
+      // The observer is the efficient TRIGGER (no scroll-handler thrash); the
+      // top band it watches brackets the threshold line, and update() does the
+      // authoritative "last above the line" computation on each crossing.
+      var io = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+      targets.forEach(function (t) { io.observe(t); });
+    }
+    window.addEventListener('resize', update);
+    update();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();</script>
+<style>
+/* Body listing — an in-flow contents block, after the title block, shown in full. */
+.enscribe-contents {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+  margin: 0 0 var(--enscribe-space-8);
+  padding-bottom: var(--enscribe-space-6);
+  border-bottom: 1px solid var(--enscribe-border);
+}
+.enscribe-contents-heading {
+  margin: 0 0 var(--enscribe-space-2);
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-base);
+  font-weight: 700;
+  color: var(--enscribe-text-primary);
+}
+.enscribe-contents ul {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-4);
+}
+.enscribe-contents > ul { padding-left: 0; }
+.enscribe-contents li { margin: 0; }
+.enscribe-contents a {
+  color: var(--enscribe-text-secondary);
+  text-decoration: none;
+  padding: var(--enscribe-space-1) 0;
+}
+.enscribe-contents a:hover { color: var(--enscribe-link); }
+
+/* Right-sidebar variant: flip the two-column grid so the sticky listing sits on the right
+ * (the layout emits children [main, nav] in this order). Same total width as the left
+ * variant; only the column order differs. */
+@media (min-width: 900px) {
+  .enscribe-layout--toc-right {
+    grid-template-columns: minmax(0, var(--enscribe-content-width)) 14rem;
+  }
+}
+
+/* Collapsible sidebar (toc-expand): the per-parent nested <details> stay interactive on
+ * desktop — their summaries keep the native disclosure marker, unlike the always-open top
+ * summary (hidden on desktop). The initial open/closed state is baked at build time from
+ * toc-expand; the reader can toggle deeper levels. The summary holds the link (click the
+ * marker to expand, the link to navigate). */
+.enscribe-toc--collapsible .enscribe-toc-sub > summary.enscribe-toc-sub-summary {
+  cursor: pointer;
+  list-style-position: outside;
+}
+.enscribe-toc--collapsible .enscribe-toc-sub-summary a { display: inline; }
+</style>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--toc-right">
+  <main class="enscribe-body">
+    <article>
+      <article-front>
+        <meta data-document-type="article">
+          <article-title>Enscribe and JATS</article-title>
+          <author>The Enscribe Project</author>
+        </meta>
+      </article-front>
+      <article-body>
         <p>
-          <code>&#x3C;##></code> is a sub-section and <code>&#x3C;###></code> a sub-sub-section, as this heading shows. The
-          ladder stops at three levels on purpose. Three is what a journal article needs;
-          once a document wants to nest deeper, it usually wants to be a <i>book</i>, with
-          chapters and parts — a different top-level shape, not a fourth heading level. The
-          cap keeps the vocabulary small and the output predictable.
+          If you write for journals, the question that matters about any authoring tool is
+          narrow and concrete: <b>can I submit what I produce?</b> For a growing share of
+          scholarly publishing, “what I produce” has to become JATS XML at some point in
+          the pipeline. This article explains what JATS is, how Enscribe relates to it, and
+          exactly what Enscribe’s JATS export does today — confident about what works,
+          honest about what does not yet.
         </p>
-      </sub-section>
-    </section>
-    <section>
-      <section-title>Inline formatting, and math</section-title>
-      <p>
-        Inside a paragraph, <code>**bold**</code> is <b>bold</b>, <code>*italic*</code> is <i>italic</i>, and backticks
-        give <code>inline code</code> — all plain Markdown, unchanged. Enscribe does not reinvent
-        the things Markdown already does well; it delegates them and adds only what is
-        missing. The first addition you reach for in scholarly prose is mathematics.
-        Inline math uses LaTeX dollar signs: typing <code>$\varphi = (1 + \sqrt{5})/2$</code> sets
-        the golden ratio, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">φ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.1572em;vertical-align:-0.25em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9072em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord">5</span></span></span><span style="top:-2.8672em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice">
-                              <path d="M95,702
-c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
-c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
-c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
-s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
-c69,-144,104.5,-217.7,106.5,-221
-l0 -0
-c5.3,-9.3,12,-14,20,-14
-H400000v40H845.2724
-s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
-c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
-M834 80h400000v40h-400000z"></path>
-                            </svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1328em;"><span></span></span></span></span></span><span class="mclose">)</span><span class="mord">/2</span></span></span></span></inline-math>, right in the run of text.
-        Everything between the dollars is handed to KaTeX, the same engine many journals
-        use.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> Delegating the hard parts — math, syntax highlighting,
-        citation formatting — is a deliberate stance: Enscribe owns the vocabulary, not
-        the typesetting of every embedded language.
-      </p>
-    </section>
-    <section>
-      <section-title>Display math</section-title>
-      <p>
-        A result that deserves its own line gets the <i>display</i> form, written with the
-        doubled-dollar tag <code>&#x3C;$$ | ... $$></code>. Here is the Gaussian integral — the kind of
-        identity a methods section states once and then leans on:
-      </p>
-      <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.3846em;vertical-align:-0.9703em;"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.4445em;position:relative;top:-0.0011em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4143em;"><span style="top:-1.7881em;margin-left:-0.4445em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">∞</span></span></span></span><span style="top:-3.8129em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∞</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9703em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0369em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913em;"><span style="top:-2.931em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.04em;vertical-align:-0.1908em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8492em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord mathnormal" style="margin-right:0.0359em;">π</span></span></span><span style="top:-2.8092em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice">
-                              <path d="M95,702
-c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
-c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
-c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
-s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
-c69,-144,104.5,-217.7,106.5,-221
-l0 -0
-c5.3,-9.3,12,-14,20,-14
-H400000v40H845.2724
-s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
-c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
-M834 80h400000v40h-400000z"></path>
-                            </svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1908em;"><span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></display-math>
-      <p>
-        Display math is centered and set larger than inline math, and like a figure or a
-        table it can take an id (<code>&#x3C;$$ #eqn:gauss | ... $$></code>) so the prose can refer back
-        to it. In the playground, try changing the exponent — the equation re-typesets on
-        every keystroke.
-      </p>
-    </section>
-    <section>
-      <section-title>A nested list</section-title>
-      <p>
-        Lists carry their own marker. Each item starts with <code>&#x3C;li></code> (or the sigil <code>&#x3C;-></code>,
-        or a markdown <code>-</code>), and an item runs until the next marker — so nesting is just a
-        <code>&#x3C;list></code> inside an item, with no indentation to count:
-      </p>
-      <ul>
-        <li>
-          <p>Gather the data</p>
-        </li>
-        <li>
-          <p>Fit the model</p>
-          <ol>
-            <li>Choose the priors</li>
-            <li>Run the sampler</li>
-          </ol>
-        </li>
-        <li>
-          <p>Write it up</p>
-        </li>
-      </ul>
-      <p>
-        The inner list there is <code>&#x3C;list ordered></code>, so it numbers while the outer stays
-        bulleted. <code>marker=</code> (any CSS <code>list-style-type</code>), <code>start</code>, and <code>reversed</code> are there
-        when you need them.
-      </p>
-    </section>
-    <section>
-      <section-title>Data, as a table</section-title>
-      <p>
-        Tables are laborious in raw HTML and finicky in Markdown, and academic tables are
-        mostly <i>data</i>. Enscribe lets you write the rows as CSV and supplies the table
-        scaffolding — the element, the header row, the cells — for you. The source below
-        produced <a href="#tab:layers" class="ref">table 1</a>:
-      </p>
-      <pre><code>&#x3C;table #tab:layers csv caption="..." |
-Form,Keystrokes,Carries an id,Round-trips from Layer 1
-Canonical,most,yes,yes
-...
->
+        <section id="sec:what-jats-is-and-why-it-matters">
+          <section-title>What JATS is, and why it matters</section-title>
+          <p>JATS — the <b>Journal Article Tag Suite</b> — is a NISO standard (<a href="https://www.niso.org/standards-committees/jats">ANSI/NISO Z39.96</a>) that defines an XML vocabulary for scholarly articles: title and authors, affiliations, abstract, sections, figures, tables, math, references, and the rest of the apparatus a research article carries. It is the lingua franca of the publishing back end. PubMed Central <cite class="cite" data-keys="pmc">(U.S. National Library of Medicine, 2024)</cite> ingests and archives articles as JATS; publishers, aggregators, and institutional repositories exchange them as JATS; preservation systems store them as JATS. If your work ends up in any of those places, it ends up as JATS XML.</p>
+          <p>The crucial thing to understand is <i>what JATS is for</i>. It is an <b>archival and interchange</b> format, not an authoring one. A JATS document is not something a person writes by hand — it is verbose, attribute-heavy XML that a <i>machine</i> emits and another machine reads. It also has no native display: a JATS file needs a stylesheet or a viewer to become a readable page. JATS answers “how do we deposit, exchange, and preserve this article?” — never “how do I write it?”</p>
+          <p>JATS is also <i>vast</i>. Two decades of refinement have given it well over two hundred elements, many for cases a given article never touches, and it is built for completeness rather than for writing or display. Enscribe does not try to mirror all of it. Layer 1 — Enscribe’s canonical form — is a small, <i>displayable, authorable</i> HTML vocabulary, on the order of thirty elements covering what most articles actually use, chosen so that what is present <i>translates</i> cleanly outward. That is the trade that makes a direct export possible: a smaller, HTML-shaped vocabulary that maps cleanly to JATS at every point of contact, with the export carrying the translation.</p>
+          <p>That gap is the whole point of contact with Enscribe. Enscribe is an authoring layer; JATS is a deposit target. The interesting question is how cleanly the one reaches the other.</p>
+        </section>
+        <section id="sec:what-enscribe-s-jats-export-does">
+          <section-title>What Enscribe’s JATS export does</section-title>
+          <p>
+            Enscribe’s canonical form — Layer 1, the semantic-HTML representation every
+            Enscribe document compiles to — is deliberately shaped to be JATS-aligned (see
+            the <a href="design.html">Design article</a> for why). Because the vocabulary was
+            designed against the JATS tag set, the export is mostly a set of one-to-one
+            element renames rather than a lossy transformation. The exporter emits <b>JATS 1.3
+Archiving</b> XML, with the correct DOCTYPE and
+            <code>dtd-version="1.3"</code>. That correctness is checked, not assumed: the export’s test
+            fixtures are validated against the JATS (and BITS) DTD with <code>xmllint</code>, so the
+            exporter is held to <i>valid</i> JATS — measured against the schema, not merely
+            plausible to the eye.
+          </p>
+          <p>What maps cleanly — that is, structure-for-structure, no information lost:</p>
+          <table id="tab:map">
+            <caption><span class="table-label">Table 1.</span> How Enscribe’s Layer 1 elements map to JATS.</caption>
+            <thead>
+              <tr>
+                <th>Enscribe (Layer 1)</th>
+                <th>JATS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>sections / sub-sections</td>
+                <td>nested &#x3C;sec> with &#x3C;title></td>
+              </tr>
+              <tr>
+                <td>bold / italic / inline code</td>
+                <td>&#x3C;bold> / &#x3C;italic> / &#x3C;monospace></td>
+              </tr>
+              <tr>
+                <td>title / subtitle / authors</td>
+                <td>&#x3C;article-title> / &#x3C;subtitle> / &#x3C;contrib>&#x3C;string-name></td>
+              </tr>
+              <tr>
+                <td>figures</td>
+                <td>&#x3C;fig> with &#x3C;caption> and &#x3C;graphic></td>
+              </tr>
+              <tr>
+                <td>tables</td>
+                <td>&#x3C;table-wrap></td>
+              </tr>
+              <tr>
+                <td>inline and display math</td>
+                <td>&#x3C;inline-formula> / &#x3C;disp-formula> (TeX preserved)</td>
+              </tr>
+              <tr>
+                <td>footnotes</td>
+                <td>&#x3C;fn> in a &#x3C;fn-group></td>
+              </tr>
+              <tr>
+                <td>cross-references</td>
+                <td>&#x3C;xref> with the right ref-type</td>
+              </tr>
+              <tr>
+                <td>citations</td>
+                <td>&#x3C;xref ref-type=”bibr”> plus a &#x3C;ref-list> of &#x3C;element-citation></td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            The table is a sample, not the full scope: the export also carries links
+            (<code>&#x3C;a></code> → <code>&#x3C;ext-link></code>), inline <code>&#x3C;svg></code> (→ a self-contained <code>&#x3C;graphic></code>), and the
+            theorem family, the external-DSL blocks, and code listings.
+          </p>
+          <p>
+            The one place that maps <b>with a caveat</b> is embedded DSL blocks — Mermaid
+            diagrams, ABC music. JATS has no element for “a Mermaid diagram,” so Enscribe
+            preserves the <i>source</i> rather than inventing a rendering: a <code>&#x3C;mermaid></code> block
+            exports as a <code>&#x3C;fig></code> carrying a <code>&#x3C;preformat content-type="mermaid-source"></code> with
+            the verbatim diagram source and a <code>specific-use="enscribe-dsl-mermaid"</code> marker.
+            Nothing is lost — a downstream consumer that understands the marker can render
+            it — but the diagram travels as source, not as a finished image.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup>
+          </p>
+          <p>
+            Finally, Enscribe draws the same article-versus-book line the standard does. An
+            article exports to JATS 1.3; a <b>book</b> — <code>&#x3C;meta type=book></code>, with chapters and
+            parts — exports to <b>BITS 2.0</b> <cite class="cite" data-keys="bits2016">(U.S. National Library of Medicine, 2016)</cite>, the Book Interchange Tag Suite,
+            with <code>&#x3C;book></code>, <code>&#x3C;book-meta></code>, and <code>&#x3C;book-part></code> wrappers and the BITS DOCTYPE.
+            Same authoring surface, the correct deposit format for each shape.
+          </p>
+        </section>
+        <section id="sec:the-round-trip-vision">
+          <section-title>The round-trip vision</section-title>
+          <p>
+            Export is the half that lets an Enscribe document reach a journal. The other half
+            is the round trip — write in Enscribe, <b>export</b> to JATS for submission, and
+            <b>import</b> JATS from the published corpus back into Enscribe for re-use,
+            correction, or re-display. <b>Both directions now exist:</b> the <code>enscribe
+import-jats</code> command brings a JATS article into Enscribe — rendered HTML, or
+            canonical <code>.emd</code> source.
+          </p>
+          <p>
+            Import is deliberately the weaker direction: JATS’s vocabulary is far larger than
+            Layer 1’s, so it is acknowledged-lossy — a one-way conversion that applies
+            necessary simplifications, useful as an on-ramp from the existing literature, not
+            a faithful reconstruction. (The only lossless round trip in Enscribe is between
+            its shorthand and Layer 1, which are the same document in two notations.) The
+            importer maps what maps — structure, inline formatting, math, citations, figures,
+            tables, cross-references, footnotes, and the theorem family — preserves
+            reader-facing apparatus such as abstracts, keywords, and acknowledgments, and
+            drops pure publishing metadata, warning about anything it does not recognize.
+          </p>
+          <p>
+            Import lets a published article — otherwise locked in JATS at a publisher or an
+            archive — be pulled back into editable Enscribe source: to correct an erratum, to
+            re-display it on the open web without a JATS viewer, or to build on it. For a live
+            demonstration, see the <b><a href="demos.html">demo papers</a></b> — real published articles
+            from a spread of publishers, converted into Enscribe automatically by <code>enscribe
+import-jats</code>.
+          </p>
+        </section>
+        <section id="sec:a-worked-example">
+          <section-title>A worked example</section-title>
+          <p>Concrete beats abstract. Here is a short Enscribe fragment:</p>
+          <pre><code>&#x3C;meta type=article>
+  &#x3C;title | Calibrating Predicted Probabilities>
+  &#x3C;author | Dana Okonkwo>
+&#x3C;/meta>
+
+&#x3C;# #sec:method | Method #>
+
+We minimise the loss $\mathcal{L}(\theta)$ on a held-out
+split.&#x3C;note | The split is stratified by class.> The procedure
+is summarised in &#x3C;ref @fig:flow>.
+
+&#x3C;fig #fig:flow src="flow.svg" | The calibration workflow.>
 </code></pre>
-      <p>
-        The first line is the header; each line after it is a row. The <code>caption</code>
-        attribute is rendered below the table, and the table number is added for you.
-        Rendered, it is:
-      </p>
-      <table id="tab:layers">
-        <caption><span class="table-label">Table 1.</span> The three authoring forms compared. All three compile to identical Layer 1 HTML, so the choice between them is ergonomic, not semantic.</caption>
-        <thead>
-          <tr>
-            <th>Form</th>
-            <th>Keystrokes</th>
-            <th>Carries an id</th>
-            <th>Round-trips from Layer 1</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Canonical</td>
-            <td>most</td>
-            <td>yes</td>
-            <td>yes</td>
-          </tr>
-          <tr>
-            <td>Sigil</td>
-            <td>fewest</td>
-            <td>yes</td>
-            <td>yes</td>
-          </tr>
-          <tr>
-            <td>Markdown</td>
-            <td>few</td>
-            <td>no</td>
-            <td>no — lossy</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>
-        That table is the three-layer model made concrete: the same structure, three
-        notations, one meaning. Try adding a row in the playground; the table grows to
-        fit it.
-      </p>
-    </section>
-    <section>
-      <section-title>A figure</section-title>
-      <p>
-        A <code>&#x3C;figure></code> interrupts the text flow, carries an optional caption, and is
-        numbered automatically — you never type the number. Figures, tables, code blocks,
-        and the rest share this one <i>frameable</i> capability, so they all behave the same
-        way: caption below, number folded in, an optional border. The image source can be
-        a local path or a URL:
-      </p>
-      <figure id="fig:pipeline">
-        <img src="https://picsum.photos/seed/enscribe/720/360" alt="The Enscribe pipeline in one breath — shorthand is parsed, lifted to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)">
-        <figcaption><span class="figure-label">Figure 1.</span> The Enscribe pipeline in one breath — shorthand is parsed, <i>lifted</i> to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)</figcaption>
-      </figure>
-      <p>
-        Because the figure carries an id, prose elsewhere can point at it by name rather
-        than by a number you would otherwise have to keep correct by hand: see
-        <a href="#fig:pipeline" class="ref">figure 1</a>.
-      </p>
-    </section>
-    <section>
-      <section-title>Footnotes and citations</section-title>
-      <p>
-        You have already met footnotes — the two asides above are <code>&#x3C;note | ... ></code> tags,
-        written immediately after the word they attach to, with no space. On the docs
-        site they render as small markers you can <b>hover</b> to read in place, without
-        losing your spot; in print they fall to the foot of the page or the end of the
-        section. Same source, different surfaces.
-      </p>
-      <p>
-        Citations work against a bibliography you supply. The <code>&#x3C;data></code> block at the end
-        of this page holds a <code>&#x3C;library></code> of BibTeX entries — apparatus like <code>&#x3C;data></code> and
-        <code>&#x3C;config></code> goes at the document’s edges, by convention at the end. Nothing is
-        fetched from disk, so the whole document stays self-contained and editable in the
-        browser. You cite an entry by its key, and the formatting is not Enscribe’s job:
-        it is delegated to citation-js and the CSL styles the rest of scholarly
-        publishing uses, so switching from one journal’s style to another’s is a
-        configuration change, not a rewrite.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup>
-        Markdown <cite class="cite" data-keys="gruber2004">(Gruber, 2004)</cite> is the ancestor every lightweight markup language
-        descends from, and Enscribe keeps its ease for prose while refusing its ceiling.
-        HTML <cite class="cite" data-keys="whatwg2024">(WHATWG, 2024)</cite> is the rendering substrate underneath — already a
-        complete, universal document format. And JATS <cite class="cite" data-keys="jats2021">(National Information Standards Organization, 2021)</cite>, the archival XML
-        the scholarly-publishing world runs on, is Enscribe’s downstream export target.
-        Each marker is numbered as it appears, and the full, formatted list is gathered
-        at the foot of the page.
-      </p>
-    </section>
-    <section>
-      <section-title>Cross-references, by name</section-title>
-      <p>
-        You have seen two cross-references already: <a href="#tab:layers" class="ref">table 1</a> and
-        <a href="#fig:pipeline" class="ref">figure 1</a>. A <code>&#x3C;ref></code> names its target by a <i>typed</i> id — <code>tab:layers</code>,
-        <code>fig:pipeline</code>, <code>eqn:gauss</code> — where the prefix says what kind of thing is being
-        referenced. Enscribe resolves these in a pass after the whole document is parsed,
-        so a reference can point forward or backward freely, and the rendered number
-        (“Table 1”, “Figure 1”) is always the one the target actually received. Move the
-        table, renumber nothing — the references follow.
-      </p>
-    </section>
-    <section>
-      <section-title>Naming things: a definition</section-title>
-      <p>
-        The theorem family — <code>&#x3C;theorem></code>, <code>&#x3C;lemma></code>, <code>&#x3C;proof></code>, and friends — gives formal
-        statements their own numbered, styled blocks, each on its own counter. A
-        <code>&#x3C;definition></code> is the plainest member, and this guide has been leaning on one term
-        that earns it:
-      </p>
-      <definition id="def:layer1" data-name="Layer 1"><span class="definition-label">Definition 1 (Layer 1).</span> <i>Layer 1</i> is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as <code>&#x3C;section></code>, <code>&#x3C;fig></code>, and <code>&#x3C;cite></code> that record what each piece of content <i>is</i>, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.</definition>
-    </section>
-    <section>
-      <section-title>What you’ve built</section-title>
-      <p>
-        Scroll back up. In a few dozen lines of source you wrote a document with sections
-        in three notations, inline and display math, a captioned table and a captioned
-        figure, two cross-references that found their own targets, hover-preview
-        footnotes, three real citations with an automatically formatted bibliography, and
-        a numbered definition — and the rendered result is self-contained, semantic HTML
-        that a browser shows with no toolchain in the way. That is the whole pitch in one
-        page: the ease of Markdown, the reach of HTML, and the apparatus of scholarly
-        writing, in a single source file you can read, edit, and archive.
-      </p>
-    </section>
-    <section>
-      <section-title>Where to go next</section-title>
-      <p>
-        For the architecture behind the two-layer model — why Layer 1 is canonical, how
-        the shorthand lifts to it, and where JATS fits — read the
-        <a href="design.html">Design article</a>. The <b>Authoring Guide</b>, covering every element in
-        depth, and the <b>Layer 1 Reference</b>, cataloguing the output vocabulary, are the
-        next documents to land on this site. Until then, the best next step is the one
-        right beside this text: keep editing, and watch what changes.
-      </p>
-    </section>
-  </article-body>
-  <article-back>
-    <note-list class="endnotes">
-      <ol>
-        <li id="note-1">
-          <sup>1</sup> The Markdown heading is a <i>lossy</i> convenience:
-          it lifts into the canonical section but has nowhere to put an id, so converting
-          Layer 1 back to shorthand emits the canonical form, never the <code>#</code>. The sigil and
-          canonical forms are co-equal and round-trip without loss — a distinction this
-          guide’s own headings rely on. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
-        </li>
-        <li id="note-2">
-          <sup>2</sup> KaTeX renders math to HTML and CSS rather than to an image or to
-          MathML, so the result is selectable, searchable text that scales with the
-          surrounding type. The canonical tag form of inline math is <code>&#x3C;$ ... $></code>; the
-          <code>$...$</code> you just saw is the Markdown-style shorthand for it, and the two produce
-          identical output. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
-        </li>
-        <li id="note-3">
-          <sup>3</sup> This is the same delegation principle
-          as the math: Enscribe holds only the citation <i>keys</i> and the chosen <i>style name</i>,
-          and lets a dedicated engine do the formatting, ordering, and disambiguation. <a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
-        </li>
-      </ol>
-    </note-list>
-    <bibliography><h2>References</h2><div class="csl-bib-body">
-  <div id="ref-gruber2004" data-csl-entry-id="gruber2004" class="csl-entry">Gruber, J. (2004). <i>Markdown</i>. https://daringfireball.net/projects/markdown/</div>
+          <p>
+            And here is the JATS the exporter produces from it — the <code>&#x3C;front></code> generated from
+            <code>&#x3C;meta></code>, the body and back from the content:
+          </p>
+          <pre><code class="language-xml">&#x3C;article article-type="research-article" xml:lang="en" dtd-version="1.3">
+  &#x3C;front>
+    &#x3C;article-meta>
+      &#x3C;title-group>&#x3C;article-title>Calibrating Predicted Probabilities&#x3C;/article-title>&#x3C;/title-group>
+      &#x3C;contrib-group>
+        &#x3C;contrib contrib-type="author">&#x3C;string-name>Dana Okonkwo&#x3C;/string-name>&#x3C;/contrib>
+      &#x3C;/contrib-group>
+    &#x3C;/article-meta>
+  &#x3C;/front>
+  &#x3C;body>
+    &#x3C;sec>
+      &#x3C;title>Method&#x3C;/title>
+      &#x3C;p>We minimise the loss &#x3C;inline-formula>&#x3C;tex-math>&#x3C;![CDATA[\mathcal{L}(\theta)]]>&#x3C;/tex-math>&#x3C;/inline-formula>
+      on a held-out split.&#x3C;xref ref-type="fn" rid="note-1">1&#x3C;/xref> The procedure
+      is summarised in &#x3C;xref ref-type="fig" rid="fig:flow">figure 1&#x3C;/xref>.&#x3C;/p>
+      &#x3C;fig id="fig:flow">
+        &#x3C;label>1&#x3C;/label>
+        &#x3C;caption>&#x3C;p>The calibration workflow.&#x3C;/p>&#x3C;/caption>
+        &#x3C;graphic xlink:href="flow.svg"/>
+      &#x3C;/fig>
+    &#x3C;/sec>
+  &#x3C;/body>
+  &#x3C;back>
+    &#x3C;fn-group content-type="endnotes">
+      &#x3C;fn id="note-1">&#x3C;label>1&#x3C;/label>&#x3C;p>The split is stratified by class.&#x3C;/p>&#x3C;/fn>
+    &#x3C;/fn-group>
+  &#x3C;/back>
+&#x3C;/article>
+</code></pre>
+          <p>
+            Read the two side by side. <code>&#x3C;meta></code> became the <code>&#x3C;front></code>. The <code>&#x3C;#></code> section became
+            a <code>&#x3C;sec></code> with a <code>&#x3C;title></code>. The inline math became an <code>&#x3C;inline-formula></code> carrying
+            the TeX verbatim. The <code>&#x3C;note></code> split into two pieces the way JATS expects — an
+            <code>&#x3C;xref ref-type="fn"></code> marker where it was written, and the note body collected
+            into a <code>&#x3C;fn-group></code> in the <code>&#x3C;back></code>. The <code>&#x3C;ref></code> resolved to an <code>&#x3C;xref></code> that
+            points at the figure and renders as “figure 1”; the figure itself became a <code>&#x3C;fig></code>
+            with a <code>&#x3C;label></code>, a <code>&#x3C;caption></code>, and a <code>&#x3C;graphic></code>. Nothing in the source had to
+            know it would become JATS, and nothing in the JATS had to be written by hand.
+          </p>
+        </section>
+        <section id="sec:compared-to-other-jats-workflows">
+          <section-title>Compared to other JATS workflows</section-title>
+          <p>Most routes to JATS go <i>through a conversion you do not control</i>:</p>
+          <table id="tab:workflows">
+            <caption><span class="table-label">Table 2.</span> Three routes from authoring to JATS.</caption>
+            <thead>
+              <tr>
+                <th>Route</th>
+                <th>How JATS is reached</th>
+                <th>Who controls the mapping</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>LaTeX → JATS</td>
+                <td>A converter (Pandoc) or a publisher’s in-house pipeline</td>
+                <td>The tool / the publisher</td>
+              </tr>
+              <tr>
+                <td>Word → JATS</td>
+                <td>A publisher’s conversion service</td>
+                <td>The publisher</td>
+              </tr>
+              <tr>
+                <td>Enscribe → JATS</td>
+                <td>A direct export from the canonical form</td>
+                <td>You</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            With LaTeX, the structure JATS needs has to be <i>recovered</i> from typesetting
+            commands — a lossy inference, often finished by hand at the publisher. With Word,
+            the document is visually rich but structurally inert, so the conversion is
+            someone else’s interpretation of your formatting.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> Enscribe is
+            different in kind: the structure is <i>declared</i> in the source, the canonical form
+            already carries it, and the export is a deterministic rename you run yourself. You
+            see the JATS, you control the JATS, and it is the same every time. Because the
+            mapping is a small, inspectable rename rather than a heuristic, you can predict
+            the output before you run it, diff two exports to see exactly what a source edit
+            changed, and correct a mapping at its source rather than patching XML after the
+            fact. That predictability is the practical difference: an author-controlled
+            export you can reason about, instead of a conversion you submit to and hope for.
+          </p>
+        </section>
+        <section id="sec:so-can-i-submit">
+          <section-title>So, can I submit?</section-title>
+          <p>
+            Yes. If a venue accepts JATS 1.3 (or BITS 2.0 for books) — and the major archives
+            and a growing list of publishers do — an Enscribe document exports to a valid,
+            structure-faithful deposit, with the apparatus a real article needs intact. And
+            the reverse direction now works too: <code>enscribe import-jats</code> brings published JATS
+            back into Enscribe (lossily, as an on-ramp from the literature). Both halves of
+            the bridge — your work <i>into</i> the scholarly record, and the record back <i>into</i>
+            Enscribe — work today.
+          </p>
+          <p>
+            For how Layer 1 is shaped to make this possible, read the
+            <a href="design.html">Design article</a>; to write your first document, start with
+            the <a href="quickstart.html">Quickstart</a>.
+          </p>
+        </section>
+      </article-body>
+      <article-back>
+        <note-list class="endnotes">
+          <ol>
+            <li id="note-1">
+              <sup>1</sup> This is
+              the honest choice. The alternative, rasterising every diagram at export time,
+              would bake one rendering into the archival record and discard the source that
+              produced it; preserving the source keeps the document re-renderable. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
+            </li>
+            <li id="note-2">
+              <sup>2</sup> This is why “submit a
+              Word file and we will convert it” so often produces proofs that do not match what
+              the author intended: the structure was guessed, not declared. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
+            </li>
+          </ol>
+        </note-list>
+        <config></config>
+        <bibliography><h2>References</h2><div class="csl-bib-body">
   <div id="ref-jats2021" data-csl-entry-id="jats2021" class="csl-entry">National Information Standards Organization. (2021). <i>JATS: Journal Article Tag Suite, version 1.3</i> (Techreport ANSI/NISO Z39.96-2021). NISO. https://www.niso.org/standards-committees/jats</div>
-  <div id="ref-whatwg2024" data-csl-entry-id="whatwg2024" class="csl-entry">WHATWG. (2024). <i>HTML Living Standard</i>. https://html.spec.whatwg.org/</div>
+  <div id="ref-bits2016" data-csl-entry-id="bits2016" class="csl-entry">U.S. National Library of Medicine. (2016). <i>Book Interchange Tag Suite (BITS), version 2.0</i> [Techreport]. National Center for Biotechnology Information. https://jats.nlm.nih.gov/extensions/bits/</div>
+  <div id="ref-pmc" data-csl-entry-id="pmc" class="csl-entry">U.S. National Library of Medicine. (2024). <i>PubMed Central (PMC)</i>. https://www.ncbi.nlm.nih.gov/pmc/</div>
 </div></bibliography>
-  </article-back>
-</article>
+      </article-back>
+    </article>
+  </main>
+  <nav class="enscribe-toc enscribe-toc--collapsible" aria-label="Contents">
+    <details class="enscribe-toc-details" open>
+      <summary class="enscribe-toc-summary">Contents</summary>
+      <ul>
+        <li><a href="#sec:what-jats-is-and-why-it-matters">What JATS is, and why it matters</a></li>
+        <li><a href="#sec:what-enscribe-s-jats-export-does">What Enscribe’s JATS export does</a></li>
+        <li><a href="#sec:the-round-trip-vision">The round-trip vision</a></li>
+        <li><a href="#sec:a-worked-example">A worked example</a></li>
+        <li><a href="#sec:compared-to-other-jats-workflows">Compared to other JATS workflows</a></li>
+        <li><a href="#sec:so-can-i-submit">So, can I submit?</a></li>
+      </ul>
+    </details>
+  </nav>
+</div>
 
 </main>
 <aside class="enscribe-site-onthispage"></aside>

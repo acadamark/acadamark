@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Block-Level Content — The Enscribe Authoring Guide</title>
+<title>Storage hosts — The Layer 1 Vocabulary</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1218,7 +1218,7 @@ body:has(.enscribe-layout--toc) {
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
    <body>
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The
    website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
    fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
@@ -1312,294 +1312,98 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </style>
 </head>
 <body>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Authoring Guide</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html" class="enscribe-toc-active" aria-current="location">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:block-level-content" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Layer 1 Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="document-containers.html">Document containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-regions.html">Structural regions</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html" class="enscribe-toc-active" aria-current="location">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="document-metadata.html">Document metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:storage-hosts" book-part-type="chapter">
       <meta>
-        <book-part-title>Block-Level Content</book-part-title>
+        <book-part-title>Storage hosts</book-part-title>
       </meta>
-      <section id="sec:lists">
-        <section-title>Lists</section-title>
-        <sub-section id="sec:general-usage-2">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A list opens with <code>&#x3C;list></code> and closes with <code>&#x3C;/list></code>. Each item is marked, and its content runs after the marker until the next item, a nested list, or <code>&#x3C;/list></code> — no pipe, no closing bracket, the same way a section carries its body. An item mark comes in three registers:</p>
-          <p>
-            Canonical: <code>&#x3C;li></code>
-            Sigil: <code>&#x3C;-></code> or <code>&#x3C;*></code>
-            Markdown: <code>-</code> or <code>*</code>
-          </p><code id="code:list-basic">&#x3C;list>
-&#x3C;li> First item
-&#x3C;li> Second item, which can run
-across several lines and even hold
-more than one paragraph.
-&#x3C;/list></code>
-          <figure id="mp:list-basic" class="frameable-border">
-            <ul>
-              <li>
-                <p>First item</p>
-              </li>
-              <li>
-                <p>Second item, which can run</p>
-                <p>
-                  across several lines and even hold
-                  more than one paragraph.
-                </p>
-              </li>
-            </ul>
-            <figcaption><span class="minipage-label">Minipage 3.</span></figcaption>
-          </figure>
-          <p>A list is numbered with <code>&#x3C;list ordered></code>, and nests by putting a <code>&#x3C;list></code> inside an item:</p><code id="code:list-ordered">&#x3C;list ordered>
-&#x3C;li> Wash
-&#x3C;li> Rinse
-&#x3C;list>
-&#x3C;li> Warm water
-&#x3C;li> Cold water
-&#x3C;/list>
-&#x3C;li> Repeat
-&#x3C;/list></code>
-          <figure id="mp:list-ordered" class="frameable-border">
-            <ol>
-              <li>
-                <p>Wash</p>
-              </li>
-              <li>
-                <p>Rinse</p>
-                <ul>
-                  <li>Warm water</li>
-                  <li>Cold water</li>
-                </ul>
-              </li>
-              <li>
-                <p>Repeat</p>
-              </li>
-            </ol>
-            <figcaption><span class="minipage-label">Minipage 4.</span></figcaption>
-          </figure>
+      <section id="l1-data">
+        <section-title><code>&#x3C;data></code></section-title>
+        <sub-section id="sec:specification-67">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>storage-hosts</code> · Layer 1 <code>&#x3C;data></code> · JATS <code>&#x3C;no direct equivalent></code> · <code>content</code> <code>structured</code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;data></code>.</p>
         </sub-section>
-        <sub-section id="sec:arguments-2">
-          <sub-section-title>Arguments</sub-section-title>
+        <sub-section id="sec:examples-57">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-data-1">
+&#x3C;data>
+&#x3C;library format=bibtex>
+@article{goodall2024,
+author = {Goodall, Jane},
+title = {The Effect of Elephants on Climate},
+journal = {Nature},
+year = {2024}
+}
+&#x3C;/library>
+&#x3C;/data></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
+          <p><i>A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &#x3C;data> block itself produces no rendered output.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-library">
+        <section-title><code>&#x3C;library></code></section-title>
+        <sub-section id="sec:specification-68">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>storage-hosts</code> · Layer 1 <code>&#x3C;library></code> · JATS <code>&#x3C;no direct equivalent (entries lift into ref-list)></code> · <code>content</code> <code>opaque</code> → <code>&#x3C;parsed entries (registered in citation system)></code></p>
           <table>
             <thead>
               <tr>
-                <th>Ordered (render as a numbered list)</th>
-                <th>ordered</th>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>marker (the CSS list-style-type)</td>
-                <td>decimal | lower-roman | upper-alpha | disc | …</td>
+                <td><code>format</code></td>
+                <td>kwarg</td>
+                <td><code>bibtex</code> <code>csl-json</code> <code>ris</code> <code>endnote-xml</code> <code>other</code></td>
+                <td>Attribute-form equivalent of the format-word positional. When both the positional and the kwarg are omitted, the library-load plugin auto-detects the format via citation-js (works reliably for BibTeX and CSL-JSON). A named format is passed to citation-js as a forceType.</td>
               </tr>
               <tr>
-                <td>start (first number, ordered only)</td>
-                <td>start=3</td>
-              </tr>
-              <tr>
-                <td>reversed (count down, ordered only)</td>
-                <td>reversed</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#list:steps</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.compact</td>
+                <td><code>src</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>External source (#133): a filesystem path, an http(s) URL, or any reachable URL (e.g. a GitHub raw link). The reference data is loaded from there and parsed exactly as inline content (same formats; never injected as markup). With src= the node’s own (empty) body is ignored; inline and src libraries are both valid and multiple of either merge. A failed load (unreachable / 404 / CORS-blocked / parse-fail) renders a visible error and never aborts the document (always-renders). Filesystem paths apply on the CLI/build; in the browser a relative path resolves against the document base URL and is fetched (cross-origin URLs are CORS-limited). A URL source needs an async render (the CLI render command / the browser renderAsync); a synchronous render flags it.</td>
               </tr>
             </tbody>
           </table>
+          <p>Produced by: canonical <code>&#x3C;library></code>.</p>
         </sub-section>
-        <sub-section id="sec:notes-3">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Items take no pipe and no closing bracket — content simply follows the marker.</p>
-          <p>Markers are recognised only at the start of a line, so an inline <code>&#x3C;-</code> in prose (R’s <code>x &#x3C;- y</code>) is never mistaken for an item.</p>
-          <p><code>marker</code>, <code>start</code>, and <code>reversed</code> apply to ordered lists. The markdown <code>-</code>/<code>*</code> register is the lossy one and is switched off in strict mode.</p></section>
-        </sub-section>
-      </section>
-      <section id="sec:block-quotations">
-        <section-title>Block Quotations</section-title>
-        <sub-section id="sec:general-usage-3">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A block quotation sets a passage off from the surrounding text. Write it canonically with <code>&#x3C;quote></code>, or with a markdown <code>></code> at the start of each line:</p>
-          <p>
-            Canonical: <code>&#x3C;quote {args} | Quotation text></code>
-            Markdown: <code>> Quotation text</code>
-          </p><code id="code:quote-basic">&#x3C;quote cite=https://example.com/keynes |
-The difficulty lies not so much in developing
-new ideas as in escaping from old ones.
-></code>
-          <figure id="mp:quote-basic" class="frameable-border">
-            <blockquote cite="https://example.com/keynes">
-              The difficulty lies not so much in developing
-              new ideas as in escaping from old ones.
-            </blockquote>
-            <figcaption><span class="minipage-label">Minipage 5.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-3">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>cite (URL of the source)</th>
-                <th>cite=https://example.com/source</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Id</td>
-                <td>#quote:keynes</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.pullquote</td>
-              </tr>
-            </tbody>
-          </table></section>
+        <sub-section id="sec:examples-58">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-library-1">
+&#x3C;library format=bibtex>
+@article{goodall2024,
+author = {Goodall, Jane},
+title = {The Effect of Elephants on Climate},
+journal = {Nature},
+year = {2024}
+}
+@book{darwin1859,
+author = {Darwin, Charles},
+title = {On the Origin of Species},
+publisher = {John Murray},
+year = {1859}
+}
+&#x3C;/library></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
+          <p><i>A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries. The library block itself produces no rendered output.</i></p><code id="code:l1-library-2">&#x3C;library format=csl-json>
+[
+{
+"id": "goodall2024",
+"type": "article-journal",
+"author": [{"family": "Goodall", "given": "Jane"}],
+"title": "The Effect of Elephants on Climate",
+"container-title": "Nature",
+"issued": {"date-parts": [[2024]]}
+}
+]
+&#x3C;/library></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p></section>
         </sub-section>
       </section>
-      <section id="sec:definition-lists">
-        <section-title>Definition Lists</section-title>
-        <sub-section id="sec:general-usage-4">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A definition list pairs terms with their definitions. <code>&#x3C;dl></code> wraps the list; each pair is a <code>&#x3C;dt></code> term and a <code>&#x3C;dd></code> definition.</p><code id="code:dl-basic">&#x3C;dl>
-&#x3C;dt | Eigenvalue>
-&#x3C;dd | A scalar that stretches its eigenvector under a transformation.>
-&#x3C;dt | Eigenvector>
-&#x3C;dd | A non-zero vector whose direction the transformation preserves.>
-&#x3C;/dl></code>
-          <figure id="mp:dl-basic" class="frameable-border">
-            <dl>
-              <dt>Eigenvalue</dt>
-              <dd>A scalar that stretches its eigenvector under a transformation.</dd>
-              <dt>Eigenvector</dt>
-              <dd>A non-zero vector whose direction the transformation preserves.</dd>
-            </dl>
-            <figcaption><span class="minipage-label">Minipage 6.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-4">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>#dl:linear-algebra</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Class</td>
-                <td>.compact</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sec:callouts">
-        <section-title>Callouts</section-title>
-        <sub-section id="sec:general-usage-5">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A callout lifts a note out of the flow into a bordered box. Write <code>&#x3C;aside></code> and pick a flavour with <code>type</code>:</p><code id="code:aside-basic">&#x3C;aside type=warning |
-Back up your data before running this command —
-it cannot be undone.
-></code>
-          <figure id="mp:aside-basic" class="frameable-border">
-            <aside data-aside-type="warning" class="frameable-border">
-              Back up your data before running this command —
-              it cannot be undone.
-            </aside>
-            <figcaption><span class="minipage-label">Minipage 7.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-5">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>type (the callout flavour)</th>
-                <th>note | sidebar | callout | warning | tip | info | caution</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Numbered (count this aside in the float sequence)</td>
-                <td>+numbered</td>
-              </tr>
-              <tr>
-                <td>No border (drop the visual box)</td>
-                <td>-border</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#aside:backup</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.my-class</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-4">
-          <sub-section-title>Notes</sub-section-title>
-          <p>The emphasis flavours (callout, warning, tip, info, caution, note) draw a box around the content; <code>sidebar</code> instead pushes it into the margin.</p></section>
-        </sub-section>
-      </section>
-      <section id="sec:collapsible-details">
-        <section-title>Collapsible Details</section-title>
-        <sub-section id="sec:general-usage-6">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A disclosure widget hides its body until the reader opens it. Wrap the body in <code>&#x3C;details></code> … <code>&#x3C;/details></code> and label it with a <code>&#x3C;summary></code>:</p><code id="code:details-basic">&#x3C;details>
-&#x3C;summary | Show the proof>
-By induction on n. The base case holds since…
-and the inductive step follows directly.
-&#x3C;/details></code>
-          <figure id="mp:details-basic" class="frameable-border">
-            <details>
-              <summary>Show the proof</summary>
-              <p>
-                By induction on n. The base case holds since…
-                and the inductive step follows directly.
-              </p>
-            </details>
-            <figcaption><span class="minipage-label">Minipage 8.</span></figcaption>
-          </figure></section>
-        </sub-section>
-      </section>
-      <section id="sec:thematic-breaks">
-        <section-title>Thematic Breaks</section-title>
-        <sub-section id="sec:general-usage-7">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A thematic break is a scene-change rule between blocks. Write <code>---</code> on its own line, or the canonical self-closing <code>&#x3C;hr/></code>:</p>
-          <p>
-            Canonical: <code>&#x3C;hr/></code>
-            Markdown: <code>---</code>
-          </p><code id="code:hr-basic">The first movement closes here.
----
-A new movement begins.</code>
-          <figure id="mp:hr-basic" class="frameable-border">
-            <p>The first movement closes here.</p>
-            <hr>
-            <p>A new movement begins.</p>
-            <figcaption><span class="minipage-label">Minipage 9.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-6">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>type (a styling hint)</th>
-                <th>type=ornamental</th>
-              </tr>
-            </thead>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-5">
-          <sub-section-title>Notes</sub-section-title>
-          <p>With a <code>type</code>, use the self-closing form with a space before the slash: <code>&#x3C;hr type=ornamental /></code>.</p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="section-headings.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Section Headings</span></a><a class="enscribe-chapter-next" href="inline-formatting.html" rel="next"><span class="enscribe-toc-title">Inline Formatting</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:block-level-content"><ul><li><a href="#sec:lists">Lists</a><ul><li><a href="#sec:general-usage-2">General Usage</a></li><li><a href="#sec:arguments-2">Arguments</a></li><li><a href="#sec:notes-3">Notes</a></li></ul></li><li><a href="#sec:block-quotations">Block Quotations</a><ul><li><a href="#sec:general-usage-3">General Usage</a></li><li><a href="#sec:arguments-3">Arguments</a></li></ul></li><li><a href="#sec:definition-lists">Definition Lists</a><ul><li><a href="#sec:general-usage-4">General Usage</a></li><li><a href="#sec:arguments-4">Arguments</a></li></ul></li><li><a href="#sec:callouts">Callouts</a><ul><li><a href="#sec:general-usage-5">General Usage</a></li><li><a href="#sec:arguments-5">Arguments</a></li><li><a href="#sec:notes-4">Notes</a></li></ul></li><li><a href="#sec:collapsible-details">Collapsible Details</a><ul><li><a href="#sec:general-usage-6">General Usage</a></li></ul></li><li><a href="#sec:thematic-breaks">Thematic Breaks</a><ul><li><a href="#sec:general-usage-7">General Usage</a></li><li><a href="#sec:arguments-6">Arguments</a></li><li><a href="#sec:notes-5">Notes</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="structured-data-containers.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Structured-data containers</span></a><a class="enscribe-chapter-next" href="configuration.html" rel="next"><span class="enscribe-toc-title">Configuration</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:storage-hosts"><ul><li><a href="#l1-data">&#x3C;data></a><ul><li><a href="#sec:specification-67">Specification</a></li><li><a href="#sec:examples-57">Examples</a></li></ul></li><li><a href="#l1-library">&#x3C;library></a><ul><li><a href="#sec:specification-68">Specification</a></li><li><a href="#sec:examples-58">Examples</a></li></ul></li></ul></div></details></nav></div>
 <script>(function () {
   function init() {
     var nav = document.querySelector('nav.enscribe-toc');
