@@ -36,6 +36,12 @@ document type (#246). Modeled on a Quarto website / Jekyll docs theme.
 These are *defaults*, not a ceiling — a user can always style or script their own.
 The value is that the common cases need no design work.
 
+**Website chrome: left nav is books-only.** On a website, the left navigation appears on **book** pages
+only, where it is the chapter rail (consistent with the book default view). Article pages carry no left
+nav. The right side is the page-section nav as usual, and the site nav is the top bar, with grouped menu
+items presented as dropdowns. This removes the redundant second site-nav that articles previously
+carried on the left, and makes the top bar the single site-navigation surface.
+
 ## Table of contents by document class
 
 `<config toc>`'s meaning is **per document class**, because the three views relate
@@ -101,11 +107,28 @@ The live mode is **fetch-based**: it ships a folder and must be served over HTTP
 page into an editable view — an in-browser editor that re-renders the preview live. It is a switch on
 the live shell, not a distinct render mode; **saving** those edits is the forward feature noted below.
 
+**Diagrams (and all DSL content) are never pre-rendered.** DSL-backed content — mermaid, abc, and
+intended to include tables and any future DSL — keeps its source verbatim in the page
+(`<pre data-enscribe-dsl="…">`) and is rendered live in the browser from that source. It is never baked
+to a static SVG; the source stays the source of truth. The website therefore uses a **live** DSL mode
+(`live-link` — one shared runtime, loaded once per page — in preference to `live-inline`, which would
+bundle the runtime into every page), never `static`.
+
+**`show-source` reveals the DSL source, and should cover every DSL.** `<config show-source>` (default
+off) adds a "See source" disclosure exposing the verbatim DSL beneath the rendered output. It is wired
+for the diagram family (mermaid, abc) today; the intent is to extend the same shared disclosure helper
+to tables and any other DSL-rendered content. *(Diagram-only is the current state, not the end state.)*
+
 ### Asset delivery — where the scripts and styles come from
 - **Baked in** (self-contained file) or **linked from the web** (CDN). Two values, not three — there is no
   "link to your own server" option.
 - This choice governs the **static** output only. The live shell and editor always pull from the web; an
   offline live mode is not built.
+- **The static website links shared assets; it does not bake per page.** Where a standalone document may
+inline its CSS and runtime for self-containment, the multi-page website links one shared `default.css`
+and one shared DSL runtime instead of stamping a copy into each of its pages. Baking per page would
+multiply identical bytes across the whole site (tens of pages); linking shared assets is the website's
+default.
 
 ### Save — keeping edits
 - The **TiddlyWiki-style save** — edit `.emd` in the browser and write it back to a `.emd` or Layer 1 file,
@@ -148,3 +171,43 @@ site is not a scholarly document, so there is no JATS projection.
   pages aren't plain HTML for a search engine; the static projection backfills that if/when it matters.)
 - **Dogfood.** The docs site is the proof: it is rebuilt as a `<meta type=website>` site **before** #223
   reorganizes its content. The bespoke generated pages (gallery, catalogs) stay outside the type for now.
+
+**Flat source, nav owns structure.** Page sources are flat — one directory per page — and the master's
+`<nav>` is the single source of truth for site structure. Reorganizing the menu is an edit to `<nav>`,
+never a directory move. This keeps reorganization cheap and safe (editing one file, not relocating
+trees) and lets the same page appear anywhere in the menu without moving on disk.
+
+**Static URLs are path-style, from nav position.** The static build writes each page at its nav-path
+location and addresses it with a pretty trailing-slash URL mirroring the menu hierarchy
+(`/references/layer-1/export/`). This requires an HTTP server (the trailing slash resolves to
+`index.html` via the host's directory index; `file://` will not). The live SPA keeps its client-side
+`?page=slug` routing; the path-style form is the static projection. The cost — moving a page in the
+nav changes its public URL — is accepted in exchange for `<nav>` being the one structure authority; in-
+site links self-heal (see slug, below), only externally-held URLs break.
+
+**Page slug is identity; nav is position.** A page's stable identity is its *slug*, taken from the
+page's own `<meta>` — an explicit `<meta slug=…>`, else the slugified title — and unique site-wide. The
+nav supplies *where* a page sits; the page supplies *what* it is. Authors link with `<a {slug} | label>`,
+which the builder resolves to the target's path URL; reorganizing the menu re-resolves every such link
+untouched. A duplicate slug is a build error; a link to a derived (un-pinned) slug warns. Full model:
+`notes/specs/spec-internal-links.md`.
+
+**A website page is an article or book plus chrome — one render path.** The website is not a second
+renderer. Each page renders through the *same* single-document build that produces a standalone article
+or book; the website layer only orchestrates (nav walk, page placement) and wraps the result in chrome.
+There is deliberately no parallel website pipeline — anything that renders standalone (citations, math,
+diagrams) renders identically as a website page, by construction.
+
+**Build is committed during development, built in CI once served.** While the docs site is under active
+development, the built output is rebuilt and committed on each emitter change (so the tree never drifts
+stale). Once it is served via GitHub Pages, the committed build is dropped and `.gitignore`d, and CI
+rebuilds it on push — the standard pattern. *(Process as much as design; may instead belong in
+`notes/coding-conventions.md`.)*
+
+
+## Not a decision — recorded for accuracy
+
+**Citations are not website-broken.** Investigated this session: real citations (with a `<library>`)
+resolve in the website build identically to a standalone build. The `unknown tag <handler for cite>`
+warnings come from documentation pages that cite without a library, and warn the same way standalone —
+example-content noise (the #281 class), not a website bug. No action; noted so the trail is accurate.
