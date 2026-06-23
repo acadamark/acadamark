@@ -152,7 +152,7 @@ import { enscribeCiteResolution } from './plugins/cite-resolution.js';
 import { enscribeBibliography } from './plugins/bibliography.js';
 import { enscribeTagHandler, createEnscribeTagHandler, htmlNodeHandler } from './interpret-plugin.js';
 import { parseErrorHandler, tagErrorHandler } from './handlers/parser-errors.js';
-import { getDocumentFontsCss, patchKatexFontUrls, DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
+import { getDocumentFontsCss, patchKatexFontUrls, DOCUMENT_FONTS_CDN_URL, KATEX_CDN_URL } from './assets/font-loader.js';
 // Re-exported so consumers using documentFontsCss:'link' can reference the same
 // font CDN URL (symmetry with the KATEX_CDN_URL export below).
 export { DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
@@ -226,17 +226,12 @@ export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfig
 
 // ─── KaTeX CSS ────────────────────────────────────────────────────────────────
 
-// Pinned KaTeX version for the CDN URL — a literal, not an fs read, so this
-// module loads in a browser bundle (the build slice's browser-safety boundary;
-// see notes/specs/core.md). test/cdn-versions.test.js asserts it
-// equals the installed katex version, so a dependency bump fails loudly here.
-const _katexVersion = '0.16.45';
-
-/**
- * CDN URL for KaTeX CSS, pinned to the installed version.
- * Exported so consumers using 'link' mode can reference the same URL.
- */
-export const KATEX_CDN_URL = `https://cdn.jsdelivr.net/npm/katex@${_katexVersion}/dist/katex.min.css`;
+// The pinned-version CDN URL moved to assets/font-loader.js (co-located with
+// DOCUMENT_FONTS_CDN_URL — the two linked document-asset CDN URLs) so the static-website
+// universal head can link both without importing this barrel (a cycle). Re-exported here,
+// so the public API (and test/cdn-versions.test.js, which imports it from this module) is
+// unchanged. The inline KaTeX CSS reader (getKatexCss) stays here — it is the fs path.
+export { KATEX_CDN_URL } from './assets/font-loader.js';
 
 // Lazy-loaded CSS string — only reads the file when math is actually present.
 // Font URLs in the raw CSS are relative (e.g. url(fonts/KaTeX_Main-Regular.woff2))

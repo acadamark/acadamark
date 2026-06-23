@@ -73,6 +73,20 @@ const DOCUMENT_FONT_FACES = [
 export const DOCUMENT_FONTS_CDN_URL =
   'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap';
 
+// Pinned KaTeX version for the CDN URL — a literal, not an fs read, so this module loads in a
+// browser bundle (the build slice's browser-safety boundary; see notes/specs/core.md).
+// test/cdn-versions.test.js asserts KATEX_CDN_URL equals the installed katex version, so a
+// dependency bump fails loudly. Co-located here with DOCUMENT_FONTS_CDN_URL (the two linked
+// document-asset CDN URLs) and re-exported from index.js, so the static-website universal head
+// (master-document/website-shell.js) can link both without importing index.js (a cycle).
+const _katexVersion = '0.16.45';
+
+/**
+ * CDN URL for KaTeX CSS, pinned to the installed version.
+ * Exported so consumers using 'link' mode can reference the same URL.
+ */
+export const KATEX_CDN_URL = `https://cdn.jsdelivr.net/npm/katex@${_katexVersion}/dist/katex.min.css`;
+
 /**
  * Build @font-face CSS for document fonts (Inter, Source Code Pro).
  * Reads woff2 files from src/assets/fonts/ and base64-encodes them.

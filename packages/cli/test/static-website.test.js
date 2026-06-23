@@ -14,6 +14,7 @@ import { dirname, join, resolve } from 'node:path';
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { buildStaticWebsite, resolvePageSource } from '../src/static-website.js';
+import { KATEX_CDN_URL } from '@enscribejs/enscribe';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIX = resolve(__dirname, 'fixtures/website-mini');
@@ -98,6 +99,15 @@ export function run_tests() {
         '#295: the top bar element sits in the <body>, after </head> (the book top nav is visible)');
       assert.ok(guideHome.slice(0, headEnd).includes('.enscribe-book-home'),
         'the universal head folds in the book pageShell CSS (the #206 masthead) so a book page is styled');
+      // The universal head LINKS the KaTeX math CSS + the document fonts (Inter + Source Code Pro),
+      // reusing the render's exported CDN constants in 'link' mode — so book math/fonts/code are styled
+      // (the separate-pages pageShell never linked these). In the head, unconditional, so the head stays
+      // byte-identical across pages.
+      const bookHead = guideHome.slice(0, headEnd);
+      assert.ok(bookHead.includes(`<link rel="stylesheet" href="${KATEX_CDN_URL}">`),
+        'the universal head links the KaTeX CSS (KATEX_CDN_URL, the same versioned URL the render uses)');
+      assert.ok(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter/.test(bookHead),
+        'the universal head links the document fonts (Inter body + Source Code Pro code)');
     }
     assert.ok(guideHome.includes('<details class="enscribe-site-dropdown">'),
       'the book page carries the working CSS-only <details> dropdown markup (the shell reuses slice 1 chrome)');

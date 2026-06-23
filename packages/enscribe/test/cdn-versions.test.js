@@ -9,7 +9,7 @@
 //
 // When this fails: open the named source file and update the version literal to
 // the installed version printed in the failure message.
-//   katex   → src/index.js          (_katexVersion)
+//   katex   → src/interpreter/assets/font-loader.js  (_katexVersion)
 //   mermaid → src/dsl/registry.js    (_mermaidVersion)
 //   abcjs   → src/dsl/registry.js    (_abcjsVersion)
 
@@ -22,7 +22,7 @@ const require = createRequire(import.meta.url);
 
 export function run() {
   const cases = [
-    ['katex', KATEX_CDN_URL, 'src/index.js (_katexVersion)'],
+    ['katex', KATEX_CDN_URL, 'src/interpreter/assets/font-loader.js (_katexVersion)'],
     ['mermaid', MERMAID_CDN_URL, 'src/dsl/registry.js (_mermaidVersion)'],
     ['abcjs', ABCJS_CDN_URL, 'src/dsl/registry.js (_abcjsVersion)'],
   ];

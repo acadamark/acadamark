@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Theorem family — The Layer 1 Vocabulary</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1364,6 +1366,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   .enscribe-site .content .enscribe-onthispage {
     top: calc(var(--enscribe-site-nav-height, 3.25rem) + var(--enscribe-space-4));
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - var(--enscribe-space-8));
+  }
+  /* Cover↔chapter jump: the book COVER has no right rail (a 2-col grid), the chapters have one (a
+     3-col grid), so the centred grid recenters wider on a chapter and the chapter rail + reading
+     column shift sideways. Give the cover the chapter's 3-col template + max-width (an empty reserved
+     right column) so moving cover↔chapter does not move the layout. Website-only (scoped to
+     .enscribe-site .content) — the standalone separate-pages book's own pageShell is untouched. */
+  .enscribe-site .content .enscribe-layout--book:not(.enscribe-layout--book-3col) {
+    grid-template-columns: 14rem minmax(0, var(--enscribe-content-width)) 13rem;
+    max-width: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
   }
 }
 </style>
