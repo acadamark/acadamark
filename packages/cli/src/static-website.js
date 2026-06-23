@@ -26,7 +26,6 @@ import {
   flattenNavPages,
   extractDocumentTitle,
   buildWebsiteTopBar,
-  buildWebsiteSidebar,
   WEBSITE_NAV_CSS,
   slugifyPage,
 } from '@enscribejs/enscribe';
@@ -98,8 +97,12 @@ function pageDirAssets(pageDir, masterDir, destPrefix) {
 
 /** Wrap a rendered article fragment in the website chrome — a full standalone document with
  *  default.css + the nav chrome CSS inlined (self-contained, like publish-pages' pageShell).
- *  The article body (processSync's `<link …>` head assets + `<article>`) sits in the content slot. */
-function composeArticlePage({ body, title, topBar, sidebar, defaultCss }) {
+ *  The article body (processSync's `<link …>` head assets + `<article>`) sits in the content slot.
+ *  An article gets NO left site sidebar: on a website the left nav belongs to book pages (their
+ *  chapter rail). The article carries the top bar + its own right section nav (the body's
+ *  enscribe-toc); the .enscribe-site-layout grid reflows to a single content column when no
+ *  .enscribe-site-sidebar element is present (its existing :has rules — no CSS change needed). */
+function composeArticlePage({ body, title, topBar, defaultCss }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,7 +118,6 @@ ${WEBSITE_NAV_CSS}
 <div class="enscribe-site">
 ${topBar}
 <div class="enscribe-site-layout">
-${sidebar}
 <main class="enscribe-site-main" data-enscribe-content>
 ${body}
 </main>
@@ -246,9 +248,12 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     return out;
   };
 
-  // 4. Chrome built once (top bar + sidebar); its `?page=` links are relativized PER PAGE below.
+  // 4. The top bar (cross-site nav) is built once; its `?page=` links are relativized PER PAGE below.
+  //    No left site sidebar is built: on a website the left nav belongs to BOOK pages (their chapter
+  //    rail, via decorateBookPage/publishBookPages — untouched). Articles get the top bar + their own
+  //    right section nav. (buildWebsiteSidebar still serves the LIVE website's opt-in <config sidebar>
+  //    via browser.js; it is simply no longer used by the static article composition.)
   const topBar = buildWebsiteTopBar({ title: masterTitle, icon: null, firstSlug: homeSlug }, entries);
-  const sidebar = buildWebsiteSidebar(entries);
 
   const pageMap = new Map();
   const assets = [];
@@ -276,7 +281,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
       } else {
         // Article page — the shared article render (same processSync the CLI `render` uses).
         const body = renderArticleDocument(source, { assetsDir: resolved.pageDir });
-        const full = composeArticlePage({ body, title: page.title, topBar, sidebar, defaultCss });
+        const full = composeArticlePage({ body, title: page.title, topBar, defaultCss });
         const outPath = `${destPrefix}index.html`;
         pageMap.set(outPath, staticize(full, outPath, slug));
       }
