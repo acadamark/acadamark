@@ -72,7 +72,8 @@ shorthand_examples:
     layer1_html: '<a href="#section-2">jump to Section 2</a>'
     notes: |
       Internal links use fragment identifiers pointing at element ids.
-interpreter_strategy: schema
+interpreter_strategy: handler
+handler_module: ./handlers/a.js
 ---
 
 # `<a>`

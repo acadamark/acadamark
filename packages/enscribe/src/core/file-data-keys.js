@@ -16,6 +16,9 @@ export const ENSCRIBE_REGISTRY           = 'enscribeRegistry';
 // book-context detection read this instead of re-reading <meta type> ad-hoc; the
 // <book>/<article> wrapper they build is the derived artifact downstream keys off.
 export const ENSCRIBE_DOC_TYPE           = 'enscribeDocType';
+// #289: the page's explicit slug from <meta slug=…> (its stable public identity, independent of
+// title + nav position). null when absent — the website builder then derives slugifyPage(title).
+export const ENSCRIBE_PAGE_SLUG          = 'enscribePageSlug';
 // #36 strict mode: the resolved strictness mode ('off' | 'sigil' | 'canonical'),
 // set by resolveStrictMode before recursive-content so the sub-parse inner
 // processor (and the strict lint) can read it.

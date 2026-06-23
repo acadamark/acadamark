@@ -16,7 +16,8 @@
 
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { isEnscribeTag } from '../../core/tag.js';
-import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
+import { ENSCRIBE_DOC_TYPE, ENSCRIBE_PAGE_SLUG } from '../../core/file-data-keys.js';
+import { slugifyPage } from './website-structuring.js';
 
 // The declared document-class set + default, read from `meta.md`'s vocab (not hardcoded)
 // so the vocabulary stays the single source of truth. Today: article / book / book-part.
@@ -51,5 +52,13 @@ export function enscribeDocTypeResolve() {
       }
     }
     if (file?.data) file.data[ENSCRIBE_DOC_TYPE] = docType;
+    // #289: expose the page's explicit <meta slug=…> (its stable public identity), NORMALIZED through
+    // slugifyPage so the exposed value is the clean lowercase [a-z0-9-] identity the website builder and
+    // the <a> bare-slug detector both key on (an uppercase/punctuated raw slug would otherwise diverge).
+    // null when absent; the builder derives slugifyPage(title) in that case. Same meta node as type.
+    if (file?.data) {
+      const rawSlug = metaNode?.kwargs?.slug;
+      file.data[ENSCRIBE_PAGE_SLUG] = rawSlug ? slugifyPage(rawSlug) || null : null;
+    }
   };
 }

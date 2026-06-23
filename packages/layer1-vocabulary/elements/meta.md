@@ -61,6 +61,18 @@ enscribe_attributes:
         site icon, read by the website chrome (S2). Descriptive metadata, like the
         title; ignored by article/book documents. The brand NAME is <meta>'s title —
         there is no in-header <icon>/<title> tag.
+    slug:
+      maps_to: data-slug
+      notes: |
+        The page's stable public SLUG (#289) — its identity, independent of title
+        and of where it sits in a website's <nav>. A website builder uses it to form
+        the page's URL and to resolve <a {slug}> internal links; reorganizing the
+        menu moves only the URL, while authored links re-resolve untouched. Optional:
+        when absent the slug is derived from the <meta> title (slugifyPage). The value
+        is normalized to a lowercase [a-z0-9-] slug (slugifyPage), so `slug=Foo Bar`
+        becomes `foo-bar` — author the matching <a foo-bar> link in that normalized
+        form. Slugs are unique site-wide. Descriptive metadata, like icon; ignored by
+        article/book documents read on their own.
 content:
   type: structured
   shape:

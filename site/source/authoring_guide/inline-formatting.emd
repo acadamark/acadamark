@@ -94,12 +94,12 @@ A link is `<a destination | link text>`. The destination is a full URL for an ex
 
 <code #code:links-basic>
 Read <a https://enscribe.org | the Enscribe site> for more,
-or jump to <a vocabulary | the vocabulary page> in this document.
+or jump to <a enscribe-vocabulary | the vocabulary page> in this document.
 </code>
 
 <minipage #mp:links-basic>
 Read <a https://enscribe.org | the Enscribe site> for more,
-or jump to <a vocabulary | the vocabulary page> in this document.
+or jump to <a enscribe-vocabulary | the vocabulary page> in this document.
 </minipage>
 
 <sub-section | Arguments>

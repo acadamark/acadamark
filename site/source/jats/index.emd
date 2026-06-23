@@ -1,4 +1,4 @@
-<meta type=article>
+<meta type=article slug=jats>
   <title | Enscribe and JATS>
   <author | The Enscribe Project>
 </meta>
@@ -26,7 +26,7 @@ That gap is the whole point of contact with Enscribe. Enscribe is an authoring l
 
 Enscribe's canonical form — Layer 1, the semantic-HTML representation every
 Enscribe document compiles to — is deliberately shaped to be JATS-aligned (see
-the <a href="design.html" | Design article> for why). Because the vocabulary was
+the <a design | Design article> for why). Because the vocabulary was
 designed against the JATS tag set, the export is mostly a set of one-to-one
 element renames rather than a lossy transformation. The exporter emits **JATS 1.3
 Archiving** XML, with the correct DOCTYPE and
@@ -93,7 +93,7 @@ drops pure publishing metadata, warning about anything it does not recognize.
 Import lets a published article — otherwise locked in JATS at a publisher or an
 archive — be pulled back into editable Enscribe source: to correct an erratum, to
 re-display it on the open web without a JATS viewer, or to build on it. For a live
-demonstration, see the **<a demos.html | demo papers>** — real published articles
+demonstration, see the **demo papers** — real published articles
 from a spread of publishers, converted into Enscribe automatically by `enscribe
 import-jats`.
 
@@ -196,8 +196,8 @@ the bridge — your work *into* the scholarly record, and the record back *into*
 Enscribe — work today.
 
 For how Layer 1 is shaped to make this possible, read the
-<a href="design.html" | Design article>; to write your first document, start with
-the <a href="quickstart.html" | Quickstart>.
+<a design | Design article>; to write your first document, start with
+the <a try-it | Quickstart>.
 
 <data>
 <library |

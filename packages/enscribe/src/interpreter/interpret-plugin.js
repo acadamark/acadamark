@@ -55,6 +55,7 @@ import {
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler } from './handlers/cite.js';
 import { assetErrorHandler } from './handlers/asset.js';
+import { aHandler } from './handlers/a.js';
 import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
 // gate (interpreter/plugins/normalize-to-canonical.js) rewrites
@@ -98,6 +99,7 @@ const vocabulary = new Map(Object.entries(VOCABULARY));
 // actual handler functions. Each entry has a matching `handler_module`
 // declaration in `layer1-vocabulary/elements/<tag>.md`.
 const HANDLER_REGISTRY = new Map([
+  ['./handlers/a.js', aHandler],
   ['./handlers/figure.js', figureHandler],
   ['./handlers/math.js', mathHandler],
   ['./handlers/code.js', codeHandler],
@@ -168,7 +170,7 @@ export const enscribeTagHandler = createEnscribeTagHandler();
 
 // ─── Schema dispatch ─────────────────────────────────────────────────────────
 
-function schemaDispatch(state, node, vocab) {
+export function schemaDispatch(state, node, vocab) {
   const tagName = vocab.html_output?.element ?? node.tagname;
   const properties = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   // #33 part 2: apply the vocab entry's fixed default attributes. Only `class`

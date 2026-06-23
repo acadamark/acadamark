@@ -1,4 +1,4 @@
-<meta type=article>
+<meta type=article slug=home>
   <title | Enscribe>
   <author | The Enscribe Project>
 </meta>
@@ -72,7 +72,7 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 **enscribe v0.4.0 is released.** The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
-The implementation is built on the <a href="https://unifiedjs.com/" | unified> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for the capability checklist (what works today), <a href="design.html" | the Design article> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/tree/main/notes/specs" | `notes/specs/`> for the architecture.
+The implementation is built on the <a href="https://unifiedjs.com/" | unified> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for the capability checklist (what works today), <a design | the Design article> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/tree/main/notes/specs" | `notes/specs/`> for the architecture.
 
 # Reading order
 

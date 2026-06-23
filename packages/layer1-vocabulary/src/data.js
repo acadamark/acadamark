@@ -103,7 +103,8 @@ const _a = Object.freeze({
         "notes": "Internal links use fragment identifiers pointing at element ids.\n",
       },
     ],
-    "interpreter_strategy": "schema",
+    "interpreter_strategy": "handler",
+    "handler_module": "./handlers/a.js",
     "_sourceFile": "a.md",
   });
 
@@ -4232,6 +4233,12 @@ const _meta = Object.freeze({
             "html": "data-icon",
           },
           "notes": "Optional brand icon for a website's top bar (#246): the path or URL of the\nsite icon, read by the website chrome (S2). Descriptive metadata, like the\ntitle; ignored by article/book documents. The brand NAME is <meta>'s title —\nthere is no in-header <icon>/<title> tag.\n",
+        },
+        "slug": {
+          "maps_to": {
+            "html": "data-slug",
+          },
+          "notes": "The page's stable public SLUG (#289) — its identity, independent of title\nand of where it sits in a website's <nav>. A website builder uses it to form\nthe page's URL and to resolve <a {slug}> internal links; reorganizing the\nmenu moves only the URL, while authored links re-resolve untouched. Optional:\nwhen absent the slug is derived from the <meta> title (slugifyPage). The value\nis normalized to a lowercase [a-z0-9-] slug (slugifyPage), so `slug=Foo Bar`\nbecomes `foo-bar` — author the matching <a foo-bar> link in that normalized\nform. Slugs are unique site-wide. Descriptive metadata, like icon; ignored by\narticle/book documents read on their own.\n",
         },
       },
     },

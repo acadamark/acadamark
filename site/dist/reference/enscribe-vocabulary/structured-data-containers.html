@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Theorem family — The Enscribe Vocabulary</title>
+<title>Structured-data containers — The Enscribe Vocabulary</title>
 <style>
 /* Enscribe default theme — Nature-inspired academic journal style.
  *
@@ -1218,7 +1218,7 @@ body:has(.enscribe-layout--toc) {
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
    <body>
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The
    website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
    fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
@@ -1312,31 +1312,63 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </style>
 </head>
 <body>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html" class="enscribe-toc-active" aria-current="location">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:theorem-family" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html" class="enscribe-toc-active" aria-current="location">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:structured-data-containers" book-part-type="chapter">
       <meta>
-        <book-part-title>Theorem family</book-part-title>
+        <book-part-title>Structured-data containers</book-part-title>
       </meta>
-      <section id="sh-corollary">
-        <section-title><code>&#x3C;corollary></code></section-title>
-        <sub-section id="sec:general-usage-51">
+      <section id="sh-author">
+        <section-title><code>&#x3C;author></code></section-title>
+        <sub-section id="sec:general-usage-61">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>corollary</i>. Compiles to Layer 1 <code>&#x3C;corollary></code>.</p>
+          <p>Semantic role: <i>author</i>. Compiles to Layer 1 <code>&#x3C;author></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;corollary></code></li>
-          </ul><code id="code:sh-corollary-1">&#x3C;corollary | Every prime greater than 2 is odd.></code>
-          <figure id="mp:sh-corollary-1" class="frameable-border">
-            <corollary><span class="corollary-label">Corollary 1.</span> Every prime greater than 2 is odd.</corollary>
-            <figcaption><span class="minipage-label">Minipage 104.</span></figcaption>
-          </figure><code id="code:sh-corollary-2">&#x3C;corollary #cor:bounded>
-Any continuous function on a closed interval is bounded.
-&#x3C;/corollary></code>
-          <figure id="mp:sh-corollary-2" class="frameable-border">
-            <corollary id="mp-sh-corollary-2-cor:bounded"><span class="corollary-label">Corollary 1.</span> Any continuous function on a closed interval is bounded.</corollary>
-            <figcaption><span class="minipage-label">Minipage 105.</span></figcaption>
+            <li>Canonical: <code>&#x3C;author></code></li>
+          </ul><code id="code:sh-author-1">&#x3C;author | Jane Goodall></code>
+          <figure id="mp:sh-author-1" class="frameable-border">
+            <author>Jane Goodall</author>
+            <figcaption><span class="minipage-label">Minipage 120.</span></figcaption>
           </figure>
+          <p><i>Backward-compatible casual form (carried forward from before the structured-interface reconciliation). The pipe content sits as text content of &#x3C;author>; it is NOT lifted to a &#x3C;name> child — authors who want the structured shape use the kwarg form below or the child-tag form. JATS export reads the name string either way.</i></p><code id="code:sh-author-2">&#x3C;author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding /></code>
+          <figure id="mp:sh-author-2" class="frameable-border">
+            <author corresponding>
+              <name>Jane Goodall</name>
+              <orcid>0000-0001-2345-6789</orcid>
+              <affiliation>Cambridge University</affiliation>
+            </author>
+            <figcaption><span class="minipage-label">Minipage 121.</span></figcaption>
+          </figure>
+          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical Layer 1 &#x3C;author>.</i></p><code id="code:sh-author-3">&#x3C;author +corresponding>
+&#x3C;name | Jane Goodall>
+&#x3C;affiliation | Cambridge University>
+&#x3C;orcid | 0000-0001-2345-6789>
+&#x3C;email | jane@example.com>
+&#x3C;/author></code>
+          <figure id="mp:sh-author-3" class="frameable-border">
+            <author corresponding>
+              <name>Jane Goodall</name>
+              <affiliation>Cambridge University</affiliation>
+              <orcid>0000-0001-2345-6789</orcid>
+              <email><a href="mailto:jane@example.com">jane@example.com</a></email>
+            </author>
+            <figcaption><span class="minipage-label">Minipage 122.</span></figcaption>
+          </figure>
+          <p><i>Child-tag form. The canonical Layer 1 shape. Both this form and the equivalent kwarg form above produce the same Layer 1 output.</i></p><code id="code:sh-author-4">&#x3C;meta>
+&#x3C;author | Jane Goodall>
+&#x3C;author | David Attenborough>
+&#x3C;author +corresponding | Charles Darwin>
+&#x3C;/meta></code>
+          <figure id="mp:sh-author-4" class="frameable-border">
+            <meta>
+              <author>Jane Goodall</author>
+              <author>David Attenborough</author>
+              <author corresponding>Charles Darwin</author>
+            </meta>
+            <figcaption><span class="minipage-label">Minipage 123.</span></figcaption>
+          </figure>
+          <p><i>Multiple authors are sibling &#x3C;author> elements inside &#x3C;meta>. The third is the corresponding author. JATS export groups them as &#x3C;contrib-group>.</i></p>
         </sub-section>
-        <sub-section id="sec:arguments-27">
+        <sub-section id="sec:arguments-37">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1352,155 +1384,103 @@ Any continuous function on a closed interval is bounded.
                 <td><code>name</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional name suffix for the corollary’s label, parallel to 
-                  <theorem><span class="theorem-label">Theorem 1.</span> </theorem>‘s <code>name</code> kwarg.
+                <td>The author’s name. Authored as a kwarg, lifted at the normalize-to-canonical gate to a 
+                  <name></name>child tag. Equivalent to authoring 
+                  <name>…</name> inside the 
+                  <author></author>‘s child-tag form.
                 </td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this corollary participates in the propositional theorem-family shared counter. Default true.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-definition">
-        <section-title><code>&#x3C;definition></code></section-title>
-        <sub-section id="sec:general-usage-52">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>definition</i>. Compiles to Layer 1 <code>&#x3C;definition></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;definition></code></li>
-          </ul><code id="code:sh-definition-1">&#x3C;definition | A *group* is a set with an associative binary operation, identity, and inverses.></code>
-          <figure id="mp:sh-definition-1" class="frameable-border">
-            <definition><span class="definition-label">Definition 1.</span> A <i>group</i> is a set with an associative binary operation, identity, and inverses.</definition>
-            <figcaption><span class="minipage-label">Minipage 106.</span></figcaption>
-          </figure><code id="code:sh-definition-2">&#x3C;definition name="Group" #def:group>
-A *group* is a set $G$ together with a binary operation
-$\cdot$ satisfying associativity, identity, and inverses.
-&#x3C;/definition></code>
-          <figure id="mp:sh-definition-2" class="frameable-border">
-            <definition id="mp-sh-definition-2-def:group" data-name="Group">
-              <span class="definition-label">Definition 1 (Group).</span> A <i>group</i> is a set <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">G</span></span></span></span></inline-math> together with a binary operation
-              <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord">⋅</span></span></span></span></inline-math> satisfying associativity, identity, and inverses.
-            </definition>
-            <figcaption><span class="minipage-label">Minipage 107.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-28">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
+                <td><code>affiliation</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional name suffix for the definition’s label.</td>
-              </tr>
-              <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this definition participates in the definition counter. 
-                  <definition><span class="definition-label">Definition 1.</span> </definition>runs on its own counter (separate from the propositional theorem-family counter), matching amsthm’s conventional “definition” theorem-style family. Default true.
+                <td>Author’s institutional affiliation. Lifts to 
+                  <affiliation></affiliation>.
                 </td>
               </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-example">
-        <section-title><code>&#x3C;example></code></section-title>
-        <sub-section id="sec:general-usage-53">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>example</i>. Compiles to Layer 1 <code>&#x3C;example></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;example></code></li>
-          </ul><code id="code:sh-example-1">&#x3C;example | The integers under addition form a group.></code>
-          <figure id="mp:sh-example-1" class="frameable-border">
-            <example><span class="example-label">Example 1.</span> The integers under addition form a group.</example>
-            <figcaption><span class="minipage-label">Minipage 108.</span></figcaption>
-          </figure><code id="code:sh-example-2">&#x3C;example #ex:integers>
-The integers $\mathbb{Z}$ under addition form a group: the
-operation is associative, $0$ is the identity, and every
-integer has an additive inverse.
-&#x3C;/example></code>
-          <figure id="mp:sh-example-2" class="frameable-border">
-            <example id="mp-sh-example-2-ex:integers">
-              <span class="example-label">Example 1.</span> The integers <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6889em;"></span><span class="mord mathbb">Z</span></span></span></span></inline-math> under addition form a group: the
-              operation is associative, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> is the identity, and every
-              integer has an additive inverse.
-            </example>
-            <figcaption><span class="minipage-label">Minipage 109.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-29">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
               <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
+                <td><code>orcid</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional name suffix for the example’s label.</td>
+                <td>Author’s ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to 
+                  <orcid></orcid>.
+                </td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this example participates in the example counter. 
-                  <example><span class="example-label">Example 1.</span> </example>runs on its own counter (separate from theorem, lemma, definition counters), matching amsthm’s conventional “example” theorem-style family. Default true.
+                <td><code>email</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Author’s contact email address. Lifts to 
+                  <email></email>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>corresponding</code></td>
+                <td>kwarg</td>
+                <td><code>true</code> <code>false</code></td>
+                <td>Marks this author as the corresponding author (JATS contrib corresp=”yes”). A scalar marker — stays as a kwarg/ attribute on the canonical Layer 1 
+                  <author></author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a <code>corresponding="true"</code> attribute on the canonical Layer 1 node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer’s attribute mapping fires uniformly.
                 </td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-lemma">
-        <section-title><code>&#x3C;lemma></code></section-title>
-        <sub-section id="sec:general-usage-54">
+      <section id="sh-meta">
+        <section-title><code>&#x3C;meta></code></section-title>
+        <sub-section id="sec:general-usage-62">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>lemma</i>. Compiles to Layer 1 <code>&#x3C;lemma></code>.</p>
+          <p>Semantic role: <i>meta</i>. Compiles to Layer 1 <code>&#x3C;meta></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;lemma></code></li>
-          </ul><code id="code:sh-lemma-1">&#x3C;lemma | Every continuous function on a compact set attains its maximum.></code>
-          <figure id="mp:sh-lemma-1" class="frameable-border">
-            <lemma><span class="lemma-label">Lemma 1.</span> Every continuous function on a compact set attains its maximum.</lemma>
-            <figcaption><span class="minipage-label">Minipage 110.</span></figcaption>
-          </figure><code id="code:sh-lemma-2">&#x3C;lemma name="Zorn" #lem:zorn>
-Every non-empty partially-ordered set in which every chain has
-an upper bound contains a maximal element.
-&#x3C;/lemma></code>
-          <figure id="mp:sh-lemma-2" class="frameable-border">
-            <lemma id="mp-sh-lemma-2-lem:zorn" data-name="Zorn">
-              <span class="lemma-label">Lemma 1 (Zorn).</span> Every non-empty partially-ordered set in which every chain has
-              an upper bound contains a maximal element.
-            </lemma>
-            <figcaption><span class="minipage-label">Minipage 111.</span></figcaption>
+            <li>Canonical: <code>&#x3C;meta></code></li>
+          </ul><code id="code:sh-meta-1">&#x3C;meta type=article>
+&#x3C;title | The Effect of Elephants on Climate>
+&#x3C;author | Jane Goodall>
+&#x3C;date | 2024-03-15>
+&#x3C;/meta>
+&#x3C;section | Introduction>
+The paper begins.</code>
+          <figure id="mp:sh-meta-1" class="frameable-border">
+            <meta data-document-type="article">
+              <article-title>The Effect of Elephants on Climate</article-title>
+              <author>Jane Goodall</author>
+              <date>2024-03-15</date>
+            </meta>
+            <section>
+              <section-title>Introduction</section-title>
+              <p>The paper begins.</p>
+            </section>
+            <figcaption><span class="minipage-label">Minipage 124.</span></figcaption>
           </figure>
+          <p><i>Author writes &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin reads type=article and generates: - the &#x3C;article> container - &#x3C;article-front> wrapping the original &#x3C;meta> - &#x3C;article-body> wrapping the section content &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>. &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.</i></p><code id="code:sh-meta-2">&#x3C;meta type=book>
+&#x3C;title | A Natural History of Elephants>
+&#x3C;author | Jane Goodall>
+&#x3C;/meta>
+&#x3C;chapter | Origins>
+Content.</code>
+          <figure id="mp:sh-meta-2" class="frameable-border">
+            <book>
+              <book-front>
+                <meta data-document-type="book">
+                  <book-title>A Natural History of Elephants</book-title>
+                  <author>Jane Goodall</author>
+                </meta>
+              </book-front>
+              <book-body>
+                <book-part book-part-type="chapter">
+                  <meta>
+                    <book-part-title>Origins</book-part-title>
+                  </meta>
+                  <p>Content.</p>
+                </book-part>
+              </book-body>
+            </book>
+            <figcaption><span class="minipage-label">Minipage 125.</span></figcaption>
+          </figure>
+          <p><i>type=book generates the book-shaped wrapper instead. Changing the single kwarg switches the entire output structure. Each book-part contains its own &#x3C;meta> with &#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p>
         </sub-section>
-        <sub-section id="sec:arguments-30">
+        <sub-section id="sec:arguments-38">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1513,244 +1493,48 @@ an upper bound contains a maximal element.
             </thead>
             <tbody>
               <tr>
-                <td><code>name</code></td>
+                <td><code>type</code></td>
                 <td>kwarg</td>
-                <td></td>
-                <td>Optional name suffix for the lemma’s label, parallel to 
-                  <theorem><span class="theorem-label">Theorem 2.</span> </theorem>‘s <code>name</code> kwarg. Honored by the Phase-2 handler.
+                <td><code>article</code> <code>book</code> <code>book-part</code> <code>website</code></td>
+                <td>Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to “article” (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which Layer 1 wrapper to generate around the document: type=article →
+                  <article></article>with 
+                  <article-front></article-front>/
+                  <article-body></article-body>/
+                  <article-back></article-back>; type=book → 
+                  <book></book>with 
+                  <book-front></book-front>/
+                  <book-body></book-body>/
+                  <book-back></book-back>; type=book-part → 
+                  <book-part></book-part>containing 
+                  <meta>and body content directly (no nested front/body/back wrappers). type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master’s
+                  <nav></nav>(#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is “article” — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic.
                 </td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this lemma participates in the propositional theorem- family shared counter. Default true; -numbered suppresses.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-proof">
-        <section-title><code>&#x3C;proof></code></section-title>
-        <sub-section id="sec:general-usage-55">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>proof</i>. Compiles to Layer 1 <code>&#x3C;proof></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;proof></code></li>
-          </ul><code id="code:sh-proof-1">&#x3C;theorem | The sum of two even integers is even.>
-&#x3C;proof>
-Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
-even. $\square$
-&#x3C;/proof></code>
-          <figure id="mp:sh-proof-1" class="frameable-border">
-            <theorem><span class="theorem-label">Theorem 1.</span> The sum of two even integers is even.</theorem>
-            <proof>
-              <span class="proof-label">Proof.</span> Let <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">m</span></span></span></span></inline-math> and <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">n</span></span></span></span></inline-math>. Then <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></inline-math>, which is
-              even. <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.675em;"></span><span class="mord amsrm">□</span></span></span></span></inline-math>
-            </proof>
-            <figcaption><span class="minipage-label">Minipage 112.</span></figcaption>
-          </figure>
-          <p><i>The canonical pattern: &#x3C;theorem> followed by sibling &#x3C;proof>. The proof is NOT nested inside the theorem.</i></p><code id="code:sh-proof-2">&#x3C;proof name="of Theorem 1.2">
-The argument follows from the preceding lemma.
-&#x3C;/proof></code>
-          <figure id="mp:sh-proof-2" class="frameable-border">
-            <proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span> The argument follows from the preceding lemma.</proof>
-            <figcaption><span class="minipage-label">Minipage 113.</span></figcaption>
-          </figure>
-          <p><i>Optional <code>name</code> kwarg lets the proof identify what it proves (useful when the proof is separated from its theorem by intervening text).</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-31">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
+                <td><code>book-part-type</code></td>
                 <td>kwarg</td>
-                <td></td>
-                <td>Optional name suffix — e.g. “Proof (of Theorem 1.2)” or “Proof (sketch)”. Honored by the Phase-2 handler.</td>
-              </tr>
-              <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Whether this proof is numbered. Default false — proofs are conventionally unnumbered (a proof’s identity comes from the theorem it proves, not from a counter). An author who wants numbering can opt-in per instance with +numbered.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-proposition">
-        <section-title><code>&#x3C;proposition></code></section-title>
-        <sub-section id="sec:general-usage-56">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>proposition</i>. Compiles to Layer 1 <code>&#x3C;proposition></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;proposition></code></li>
-          </ul><code id="code:sh-proposition-1">&#x3C;proposition | The sum of two even integers is even.></code>
-          <figure id="mp:sh-proposition-1" class="frameable-border">
-            <proposition><span class="proposition-label">Proposition 1.</span> The sum of two even integers is even.</proposition>
-            <figcaption><span class="minipage-label">Minipage 114.</span></figcaption>
-          </figure><code id="code:sh-proposition-2">&#x3C;proposition name="Cauchy-Schwarz">
-For any vectors $u$, $v$ in an inner-product space,
-$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
-&#x3C;/proposition></code>
-          <figure id="mp:sh-proposition-2" class="frameable-border">
-            <proposition data-name="Cauchy-Schwarz">
-              <span class="proposition-label">Proposition 1 (Cauchy-Schwarz).</span> For any vectors <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span></span></span></span></inline-math> in an inner-product space,
-              <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mopen">⟨</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mclose">⟩</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∥</span><span class="mord mathnormal">u</span><span class="mord">∥</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">∥</span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mord">∥</span></span></span></span></inline-math>.
-            </proposition>
-            <figcaption><span class="minipage-label">Minipage 115.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-32">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional name suffix for the proposition’s label.</td>
-              </tr>
-              <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this proposition participates in the propositional theorem-family shared counter. Default true.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-remark">
-        <section-title><code>&#x3C;remark></code></section-title>
-        <sub-section id="sec:general-usage-57">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>remark</i>. Compiles to Layer 1 <code>&#x3C;remark></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;remark></code></li>
-          </ul><code id="code:sh-remark-1">&#x3C;remark | The converse does not hold in general.></code>
-          <figure id="mp:sh-remark-1" class="frameable-border">
-            <remark><span class="remark-label">Remark.</span> The converse does not hold in general.</remark>
-            <figcaption><span class="minipage-label">Minipage 116.</span></figcaption>
-          </figure><code id="code:sh-remark-2">&#x3C;remark>
-The hypothesis of compactness is essential here; without it
-the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
-&#x3C;/remark></code>
-          <figure id="mp:sh-remark-2" class="frameable-border">
-            <remark>
-              <span class="remark-label">Remark.</span> The hypothesis of compactness is essential here; without it
-              the conclusion fails (consider <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1/</span><span class="mord mathnormal">x</span></span></span></span></inline-math> on <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></inline-math>).
-            </remark>
-            <figcaption><span class="minipage-label">Minipage 117.</span></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-33">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional name suffix for the remark’s label. Honored by the Phase-2 handler even though 
-                  <remark><span class="remark-label">Remark.</span> </remark>is unnumbered (a named remark may render as “Remark (Name):” without a number).
+                <td><code>chapter</code> <code>part</code> <code>introduction</code> <code>conclusion</code> <code>other</code> <code>preface</code> <code>foreword</code> <code>dedication</code> <code>appendix</code> <code>glossary</code> <code>colophon</code> <code>afterword</code></td>
+                <td>For a single-file book-part (type=book-part) only: sets the book-part-type on the generated 
+                  <book-part></book-part>wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always “chapter”. Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive 
+                  <meta>field). Default “chapter” when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the 
+                  <book-part book-part-type="chapter"></book-part>/ 
+                  <book-part book-part-type="appendix"></book-part>/ … shorthand instead.
                 </td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Whether this remark is numbered. Default false — 
-                  <remark><span class="remark-label">Remark.</span> </remark>is conventionally unnumbered (the “remark” theorem-style family in amsthm is unnumbered). An author who wants numbering can opt-in per instance with +numbered, but most usage relies on the default.
+                <td><code>icon</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional brand icon for a website’s top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is 
+                  <meta>‘s title — there is no in-header &#x3C;icon>/
+                  <title></title> tag.
                 </td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-theorem">
-        <section-title><code>&#x3C;theorem></code></section-title>
-        <sub-section id="sec:general-usage-58">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>theorem</i>. Compiles to Layer 1 <code>&#x3C;theorem></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;theorem></code></li>
-          </ul><code id="code:sh-theorem-1">&#x3C;theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.></code>
-          <figure id="mp:sh-theorem-1" class="frameable-border">
-            <theorem><span class="theorem-label">Theorem 1.</span> If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> then the triangle is right-angled.</theorem>
-            <figcaption><span class="minipage-label">Minipage 118.</span></figcaption>
-          </figure>
-          <p><i>Short-form with pipe content. The body is parsed normally.</i></p><code id="code:sh-theorem-2">&#x3C;theorem name="Pythagoras" #thm:pyth>
-If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
-is right-angled.
-&#x3C;/theorem></code>
-          <figure id="mp:sh-theorem-2" class="frameable-border">
-            <theorem id="mp-sh-theorem-2-thm:pyth" data-name="Pythagoras">
-              <span class="theorem-label">Theorem 1 (Pythagoras).</span> If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math>, the triangle with sides <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></inline-math>
-              is right-angled.
-            </theorem>
-            <figcaption><span class="minipage-label">Minipage 119.</span></figcaption>
-          </figure>
-          <p><i>Long-form with the optional name kwarg. Cross-referenceable via id (the “thm:” colon-prefix convention is consistent with “fig:”, “eqn:”, “sec:” elsewhere in enscribe). The name kwarg lifts to <code>data-name</code>; the Phase-2 handler will render it as the “(Pythagoras)” suffix to the label “Theorem N”.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-34">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional name suffix for the theorem’s label (the “(Pythagoras)” half of “Theorem 1.2 (Pythagoras)”). Honored by the Phase-2 theorem handler at label-rendering time; until that handler lands, the kwarg flows through to the rendered HTML as <code>data-name="..."</code> via schema dispatch. LaTeX amsthm precedent: <code>\begin{theorem}[Pythagoras]</code>.</td>
-              </tr>
-              <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this theorem participates in the theorem-family shared counter (see “Numbering” below). Use +numbered (default) to number; -numbered to suppress. Can also be written as numbered=true / numbered=false.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="math.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Math</span></a><a class="enscribe-chapter-next" href="citations-references.html" rel="next"><span class="enscribe-toc-title">Citations &#x26; references</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:theorem-family"><ul><li><a href="#sh-corollary">&#x3C;corollary></a><ul><li><a href="#sec:general-usage-51">General Usage</a></li><li><a href="#sec:arguments-27">Arguments</a></li></ul></li><li><a href="#sh-definition">&#x3C;definition></a><ul><li><a href="#sec:general-usage-52">General Usage</a></li><li><a href="#sec:arguments-28">Arguments</a></li></ul></li><li><a href="#sh-example">&#x3C;example></a><ul><li><a href="#sec:general-usage-53">General Usage</a></li><li><a href="#sec:arguments-29">Arguments</a></li></ul></li><li><a href="#sh-lemma">&#x3C;lemma></a><ul><li><a href="#sec:general-usage-54">General Usage</a></li><li><a href="#sec:arguments-30">Arguments</a></li></ul></li><li><a href="#sh-proof">&#x3C;proof></a><ul><li><a href="#sec:general-usage-55">General Usage</a></li><li><a href="#sec:arguments-31">Arguments</a></li></ul></li><li><a href="#sh-proposition">&#x3C;proposition></a><ul><li><a href="#sec:general-usage-56">General Usage</a></li><li><a href="#sec:arguments-32">Arguments</a></li></ul></li><li><a href="#sh-remark">&#x3C;remark></a><ul><li><a href="#sec:general-usage-57">General Usage</a></li><li><a href="#sec:arguments-33">Arguments</a></li></ul></li><li><a href="#sh-theorem">&#x3C;theorem></a><ul><li><a href="#sec:general-usage-58">General Usage</a></li><li><a href="#sec:arguments-34">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="citations-references.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Citations &#x26; references</span></a><a class="enscribe-chapter-next" href="storage-hosts.html" rel="next"><span class="enscribe-toc-title">Storage hosts</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structured-data-containers"><ul><li><a href="#sh-author">&#x3C;author></a><ul><li><a href="#sec:general-usage-61">General Usage</a></li><li><a href="#sec:arguments-37">Arguments</a></li></ul></li><li><a href="#sh-meta">&#x3C;meta></a><ul><li><a href="#sec:general-usage-62">General Usage</a></li><li><a href="#sec:arguments-38">Arguments</a></li></ul></li></ul></div></details></nav></div>
 <script>(function () {
   function init() {
     var nav = document.querySelector('nav.enscribe-toc');
