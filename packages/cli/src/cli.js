@@ -17,9 +17,9 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
-import { VFile } from 'vfile';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, assembleMasterDocument, publishBookPages } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages } from '@enscribejs/enscribe';
+import { renderArticleDocument, assembleAndNumber } from './render-document.js';
 import { buildLiveFolder, copyShellAssets } from './build-live.js';
 import { buildStaticWebsite } from './static-website.js';
 import { enscribeToJats } from './jats-export/index.js';
@@ -325,7 +325,7 @@ function doRender(opts) {
   // stays synchronous (so the 33 existing sync test call sites are unaffected).
   const urlSrcs = collectLibrarySources(src).filter((s) => URL_SCHEME.test(s));
   const renderSync = (input) =>
-    withQuiet(opts.quiet, () => String(buildEnscribePipeline(pipeOpts).processSync(input)));
+    withQuiet(opts.quiet, () => renderArticleDocument(input, pipeOpts));
   if (urlSrcs.length === 0) return renderSync(src);
   return preloadSources(urlSrcs, fetchSourceText).then((loaded) =>
     renderSync({ value: src, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
@@ -412,23 +412,16 @@ function doBuild(opts) {
   const source = readInput(opts.input);
   const masterDir = dirname(resolve(opts.input));
   const embedResources = opts.embed ?? true;
-  const proc = buildEnscribePipeline({
-    embedResources,
-    assetsDir: masterDir,
-    dslMode: standaloneDslMode(opts, embedResources),
-  });
   return withQuiet(opts.quiet, () => {
-    // An explicit VFile so file.data.enscribeRegistry is reachable for the registry
-    // harvest the separate-pages publisher needs (the no-VFile path drops it).
-    const file = new VFile({ path: opts.input ?? 'input.emd' });
-    const tree = assembleMasterDocument({
+    // Assemble + number once via the shared render path. An explicit VFile (here, the master's path)
+    // keeps file.data.enscribeRegistry reachable for the separate-pages publisher's registry harvest.
+    const { numbered, file, proc } = assembleAndNumber({
       source,
-      readFile: (p) => readFileSync(p, 'utf8'),
-      resolve: (rel) => join(masterDir, rel),
-      parse: (s) => proc.parse(s),
+      sourcePath: opts.input ?? 'input.emd',
+      masterDir,
       warn: (m) => console.warn(m),
+      pipeOpts: { embedResources, assetsDir: masterDir, dslMode: standaloneDslMode(opts, embedResources) },
     });
-    const numbered = proc.runSync(tree, file);
     const isBook = file.data?.enscribeDocType === 'book';
     // #246/#278 — a website master builds to a DIR-PER-PAGE static site: walk the nav and render
     // each page independently (an article via processSync; a book-page via publishBookPages, nested

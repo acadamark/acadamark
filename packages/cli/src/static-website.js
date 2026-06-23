@@ -9,18 +9,19 @@
 // shape (the static counterpart of the live website) but, like build-live.js, owns the fs +
 // asset side of a build, so the enscribe package stays browser-safe.
 //
-// RENDER MODEL (#278): each page is rendered INDEPENDENTLY — processSync for an article,
-// assembleMasterDocument + publishBookPages for a book. (This is NOT the live website's one
-// synthetic-book global pass; that model can't emit a book-page's chapters as nested pages.
-// A consequence: a cross-page `<ref>` BETWEEN top-level pages does not resolve across the
-// independent renders — flagged in the slice report, not silently handled.)
+// RENDER MODEL (#278): each page is rendered INDEPENDENTLY, through the SHARED per-document render
+// path (render-document.js) that the CLI single-document build also uses — renderArticleDocument for
+// an article, assembleAndNumber + publishBookPages for a book — so there is one render path, not a
+// website-private reconstruction of the pipeline. (This is NOT the live website's one synthetic-book
+// global pass; that model can't emit a book-page's chapters as nested pages. A consequence: a
+// cross-page `<ref>` BETWEEN top-level pages does not resolve across the independent renders —
+// flagged in the slice report, not silently handled.) A website page passes only assetsDir, keeping
+// its embed/dsl at the library defaults (a multi-page site does not inline KaTeX CSS into every page).
 
 import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs';
 import { join, dirname, extname } from 'node:path';
 import { VFile } from 'vfile';
 import {
-  buildEnscribePipeline,
-  assembleMasterDocument,
   publishBookPages,
   flattenNavPages,
   extractDocumentTitle,
@@ -30,6 +31,7 @@ import {
   slugifyPage,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
+import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const escapeHtml = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
@@ -147,8 +149,9 @@ function decorateBookPage(html, topBar) {
 export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const warnings = [];
 
-  // 1. Parse the master → the S1 nav model on file.data.
-  const navProc = buildEnscribePipeline({ assetsDir: masterDir });
+  // 1. Parse the master → the S1 nav model on file.data. (Nav-model extraction, not a page render —
+  //    it just needs the structuring pass; it shares the one pipeline constructor all the same.)
+  const navProc = buildDocumentPipeline({ assetsDir: masterDir });
   const navFile = new VFile({ path: 'index.emd', value: masterSource });
   navProc.runSync(navProc.parse(masterSource), navFile);
   // Surface the nav-parse diagnostics — website-structuring raises real ones (a duplicate page slug,
@@ -255,25 +258,24 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     const destPrefix = navPath === '' ? '' : `${navPath}/`;
     try {
       if (isBook) {
-        // Per-chapter pages, nested under the book's nav-path dir — assemble, number once, publish.
-        const proc = buildEnscribePipeline({ assetsDir: resolved.pageDir });
-        const file = new VFile({ path: resolved.sourcePath });
-        const tree = assembleMasterDocument({
+        // Per-chapter pages, nested under the book's nav-path dir — assemble + number (the shared
+        // render path), then publish. The page passes only assetsDir; embed/dsl stay at the library
+        // defaults, exactly as before (a site does not self-inline ~260 KB of CSS into every page).
+        const { numbered, file, proc } = assembleAndNumber({
           source,
-          readFile: (p) => readFileSync(p, 'utf8'),
-          resolve: (rel) => join(resolved.pageDir, rel),
-          parse: (s) => proc.parse(s),
+          sourcePath: resolved.sourcePath,
+          masterDir: resolved.pageDir,
           warn: (m) => warnings.push(`page "${slug}": ${m}`),
+          pipeOpts: { assetsDir: resolved.pageDir },
         });
-        const numbered = proc.runSync(tree, file);
         const bookPages = publishBookPages({ numbered, file, proc, defaultCss });
         for (const [fname, html] of bookPages) {
           const outPath = `${destPrefix}${fname}`;
           pageMap.set(outPath, staticize(decorateBookPage(html, topBar), outPath, slug));
         }
       } else {
-        const proc = buildEnscribePipeline({ assetsDir: resolved.pageDir });
-        const body = String(proc.processSync(source));
+        // Article page — the shared article render (same processSync the CLI `render` uses).
+        const body = renderArticleDocument(source, { assetsDir: resolved.pageDir });
         const full = composeArticlePage({ body, title: page.title, topBar, sidebar, defaultCss });
         const outPath = `${destPrefix}index.html`;
         pageMap.set(outPath, staticize(full, outPath, slug));
