@@ -22,6 +22,19 @@ dist/
 # #223/#246: the live-folder dogfood output (`docs:build-live` → docs-site/dist-live/) — also
 # machine-built (it copies the ~3 MB engine bundle), reproducible via the script, never tracked.
 dist-live/
+# #278: the STATIC docs-site build output is the deliberate exception — it IS tracked, because it is
+# the deployed site (e.g. served by GitHub Pages). The broad `dist/` rule above would ignore it, so it
+# is exempted here. The SOURCE lives in site/source/; rebuild after editing any site/source/**.emd:
+#   node packages/cli/bin/enscribe.js build -o site/dist site/source/index.emd
+!site/dist/
+# ...but keep the regenerable engine assets copyShellAssets drops at the dist root OUT of git: the static
+# pages are self-contained (they inline default.css; no local <link>/<script>), so these are unused here,
+# and they are the same large machine-built bundles the `dist/` policy above keeps untracked everywhere
+# else (enscribe.browser.global.js is ~3 MB). A fresh build re-creates them locally; they stay ignored.
+site/dist/enscribe.browser.global.js
+site/dist/enscribe-shell.css
+site/dist/editor-codemirror.js
+site/dist/default.css
 
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo

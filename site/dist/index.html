@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<style>
+/* Enscribe default theme — Nature-inspired academic journal style.
+ *
+ * Design language: clean, editorial, high information density.
+ * Inspired by Nature journal: tight leading on headings, restrained serif body,
+ * generous white-space on structure, no decorative color.
+ *
+ * Does NOT override .tippy-box or .tippy-content (hover-preview.css owns those).
+ * Does NOT use @font-face, dark mode, print styles, or SCSS.
+ */
+
+/* ─── Design tokens ─────────────────────────────────────────────────────────── */
+
+:root {
+  /* Color */
+  --enscribe-text-primary:   #1a1a1a;
+  --enscribe-text-secondary: #555;
+  --enscribe-text-muted:     #888;
+  --enscribe-link:           #0052cc;
+  --enscribe-link-hover:     #003d99;
+  --enscribe-link-visited:   #0052cc;
+  --enscribe-bg:             #ffffff;
+  --enscribe-bg-subtle:      #f7f7f7;
+  --enscribe-bg-code:        #f5f5f5;
+  --enscribe-border:         #e1e1e1;
+  --enscribe-border-strong:  #ccc;
+  --enscribe-accent:         #444;
+
+  /* Book reading interface (Slice C) — the active chapter's tinted block + left
+   * accent in the chapter rail. Default to the existing palette so themes that set
+   * none still render; themes may retune these two without touching structure. */
+  --enscribe-toc-active-bg:     var(--enscribe-bg-subtle);
+  --enscribe-toc-active-accent: var(--enscribe-link);
+
+  /* Frameable border "looks" (#58, `border=<name>`) — the document names the
+   * look; these properties define how it renders. Themes may override them. */
+  --enscribe-border-accent:  var(--enscribe-accent);   /* accent look: border color */
+  --enscribe-border-thick:   3px;                       /* thick look: border width */
+  --enscribe-border-subtle:  #e6e6e6;                   /* subtle look: thin light-gray color */
+  --enscribe-error:          #c0392b;
+
+  /* Callout / admonition accents (#31 Phase B). Per-type accent + light
+   * background tint for <aside type=…> callouts; themes may override these.
+   * Each tint is light enough that the body text (--enscribe-text-primary on
+   * the tint) keeps WCAG AA contrast, and the accent is one of THREE cues
+   * (accent / icon / title) so a variant is never distinguished by color
+   * alone — it stays legible for color-blind readers and in monochrome print. */
+  --enscribe-callout-note-accent:    #0052cc;
+  --enscribe-callout-note-bg:        #eef4ff;
+  --enscribe-callout-info-accent:    #0b7285;
+  --enscribe-callout-info-bg:        #e7f6f8;
+  --enscribe-callout-tip-accent:     #1f7a4d;
+  --enscribe-callout-tip-bg:         #eafaf1;
+  --enscribe-callout-warning-accent: #8a6d1f;
+  --enscribe-callout-warning-bg:     #fff8e1;
+  --enscribe-callout-caution-accent: #c0392b;
+  --enscribe-callout-caution-bg:     #fdecea;
+
+  /* Typography — Inter (sans) and Source Code Pro (mono) are bundled as base64
+   * @font-face rules and injected before this CSS. System stacks serve as
+   * fallback for any consumer that includes default.css without the font loader. */
+  --enscribe-font-sans:  'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial, sans-serif;
+  --enscribe-font-mono:  'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco,
+                    Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Theming tokens (Phase 8 Slice 2). Defaults reproduce the current look — a
+   * serif body, a sans heading/label face, and bold headings — so adding these
+   * is output-neutral. A theme overrides them (and the tokens below) to change
+   * the appearance without touching any structural rule. */
+  --enscribe-font-body:      Georgia, "Times New Roman", serif;
+  --enscribe-font-heading:   var(--enscribe-font-sans);
+  --enscribe-weight-heading: 700;
+  --enscribe-text-base:  1rem;
+  --enscribe-text-sm:    0.875rem;
+  --enscribe-text-xs:    0.75rem;
+  --enscribe-text-code:  0.95rem;
+
+  /* Heading scale */
+  --enscribe-h1-size: 2.25rem;
+  --enscribe-h2-size: 1.5rem;
+  --enscribe-h3-size: 1.2rem;
+  --enscribe-h4-size: 1.05rem;
+
+  /* Spacing */
+  --enscribe-line-height:         1.65;
+  --enscribe-line-height-heading: 1.3;
+  --enscribe-line-height-tight:   1.4;
+  --enscribe-space-1:  0.25rem;
+  --enscribe-space-2:  0.5rem;
+  --enscribe-space-3:  0.75rem;
+  --enscribe-space-4:  1rem;
+  --enscribe-space-6:  1.5rem;
+  --enscribe-space-8:  2rem;
+  --enscribe-space-12: 3rem;
+
+  /* Layout */
+  --enscribe-content-width:   760px;
+  --enscribe-content-padding: 1.5rem;
+}
+
+/* ─── Reset / base ──────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--enscribe-font-body);
+  font-size: var(--enscribe-text-base);
+  line-height: var(--enscribe-line-height);
+  color: var(--enscribe-text-primary);
+  background: var(--enscribe-bg);
+  margin: var(--enscribe-space-12) auto;
+  padding: 0 var(--enscribe-content-padding);
+  max-width: var(--enscribe-content-width);
+}
+
+/* ─── Article structure ─────────────────────────────────────────────────────── */
+
+article {
+  display: block;
+}
+
+article-front {
+  display: block;
+  margin-bottom: var(--enscribe-space-8);
+  padding-bottom: var(--enscribe-space-6);
+  border-bottom: 2px solid var(--enscribe-border-strong);
+}
+
+article-body {
+  display: block;
+}
+
+article-back {
+  display: block;
+  margin-top: var(--enscribe-space-8);
+  padding-top: var(--enscribe-space-6);
+  border-top: 1px solid var(--enscribe-border);
+}
+
+/* Front-matter metadata container. display:contents lets children flow as
+ * direct descendants of article-front for styling purposes. */
+meta[data-document-type] {
+  display: contents;
+}
+
+article-title {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-h1-size);
+  font-weight: var(--enscribe-weight-heading);
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-2);
+}
+
+article-subtitle {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-h2-size);
+  font-weight: 400;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+/* Individual author element. Multiple <author> elements render as a run. */
+author {
+  display: inline;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+}
+
+author + author::before {
+  content: ", ";
+}
+
+/* Wrap all authors in a block display. Achieved by making article-front a
+ * flex column or by wrapping the author run with a display:block pseudo. */
+
+/* ─── Book structure ────────────────────────────────────────────────────────── */
+
+/*
+ * RQ-BOOK-S1. Book documents wrap their content in <book> with <book-front>,
+ * <book-body>, <book-back> regions, each holding <book-part> chapters/parts.
+ * Custom elements default to display:inline, so without these rules a whole
+ * book collapses into one inline run. These rules mirror the article-structure
+ * baseline: block regions, a prominent book-title, and a chapter-level
+ * book-part-title sized clearly between the book-title and section-title.
+ */
+book,
+book-front,
+book-body,
+book-back,
+book-part {
+  display: block;
+}
+
+book-front {
+  margin-bottom: var(--enscribe-space-8);
+  padding-bottom: var(--enscribe-space-6);
+  border-bottom: 2px solid var(--enscribe-border-strong);
+}
+
+book-back {
+  margin-top: var(--enscribe-space-8);
+  padding-top: var(--enscribe-space-6);
+  border-top: 1px solid var(--enscribe-border);
+}
+
+/* Each chapter/part is set off with generous top space. */
+book-part {
+  margin-top: var(--enscribe-space-12);
+}
+
+/* RQ-BOOK-S1: book-title is the most prominent heading on the page (block, at
+ * least --enscribe-h1-size). Reasonable default: 1.25× the article h1 token, so the
+ * book cover title sits clearly above every chapter and section heading while
+ * still scaling with the theme's heading token. */
+book-title {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-size: calc(var(--enscribe-h1-size) * 1.25);
+  font-weight: var(--enscribe-weight-heading);
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-2);
+}
+
+book-subtitle {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-h2-size);
+  font-weight: 400;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+/* RQ-BOOK-S1: book-part-title is a chapter-level heading — block, prominent,
+ * and clearly above section-title scale (--enscribe-h2-size). Uses --enscribe-h1-size so
+ * a chapter heading sits between the book-title and section headings. */
+book-part-title {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-h1-size);
+  font-weight: var(--enscribe-weight-heading);
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+book-part-subtitle {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-h3-size);
+  font-weight: 400;
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-4);
+}
+
+/* ─── Section hierarchy ─────────────────────────────────────────────────────── */
+
+section,
+sub-section,
+sub-sub-section {
+  display: block;
+  margin-top: var(--enscribe-space-8);
+}
+
+section-title,
+sub-section-title,
+sub-sub-section-title {
+  display: block;
+  font-family: var(--enscribe-font-heading);
+  font-weight: var(--enscribe-weight-heading);
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin-bottom: var(--enscribe-space-3);
+}
+
+section-title {
+  font-size: var(--enscribe-h2-size);
+  margin-top: 0;
+}
+
+sub-section-title {
+  font-size: var(--enscribe-h3-size);
+}
+
+sub-sub-section-title {
+  font-size: var(--enscribe-h4-size);
+}
+
+/* Section numbering (#57). The build-time number is emitted as a
+ * <span class="section-number"> at the start of the section title (and the
+ * book-part title of a numbered appendix) — real, copy/paste-able content. It
+ * inherits the heading's weight/size; the theme controls only the spacing /
+ * separator before the title text. The document carries the canonical dotted
+ * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
+.section-number {
+  margin-right: var(--enscribe-space-2);
+}
+
+/* Suppress top margin on section directly following article-body open. */
+article-body > section:first-child {
+  margin-top: 0;
+}
+
+/* ─── Prose ─────────────────────────────────────────────────────────────────── */
+
+p {
+  margin: 0 0 var(--enscribe-space-4);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+strong {
+  font-weight: 700;
+}
+
+em {
+  font-style: italic;
+}
+
+blockquote {
+  margin: var(--enscribe-space-6) 0;
+  padding: var(--enscribe-space-3) var(--enscribe-space-6);
+  border-left: 3px solid var(--enscribe-border-strong);
+  color: var(--enscribe-text-secondary);
+  font-style: italic;
+}
+
+blockquote p {
+  margin-bottom: var(--enscribe-space-2);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--enscribe-border);
+  margin: var(--enscribe-space-8) 0;
+}
+
+ul,
+ol {
+  margin: var(--enscribe-space-3) 0 var(--enscribe-space-4);
+  padding-left: var(--enscribe-space-6);
+}
+
+li {
+  margin-bottom: var(--enscribe-space-1);
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Links and cross-references ────────────────────────────────────────────── */
+
+a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--enscribe-link-hover);
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--enscribe-link-visited);
+}
+
+/* Resolved cross-reference: styled as a link. */
+a.ref {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-style: normal;
+}
+
+a.ref:hover {
+  text-decoration: underline;
+}
+
+/* Unresolved cross-reference: error color, wavy underline. */
+a.ref-error {
+  color: var(--enscribe-error);
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  cursor: help;
+}
+
+/* ─── Citations ─────────────────────────────────────────────────────────────── */
+
+cite.cite {
+  font-style: normal;
+  cursor: pointer;
+}
+
+cite.cite-error {
+  font-style: normal;
+  color: var(--enscribe-error);
+  cursor: help;
+}
+
+/* ─── Math ──────────────────────────────────────────────────────────────────── */
+
+/*
+ * Flex layout for display-math: equation centered, number flush right.
+ *
+ * HTML structure emitted by the interpreter:
+ *   <display-math>
+ *     <span class="katex-display">...</span>   ← KaTeX in display mode
+ *     <span class="equation-number">(N)</span>  ← only when numbered
+ *   </display-math>
+ *
+ * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
+ * When display-math becomes a flex container, .katex-display becomes a flex item
+ * (flex: 1) while retaining text-align: center for its content.
+ *
+ * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * the full width and the equation is centered by KaTeX's text-align: center.
+ *
+ * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
+ * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
+ * .katex-display child) and may carry a single .equation-number, so grouping
+ * them with display-math makes them render as display blocks with vertical
+ * margin and presents any equation number flush-right, consistently with the
+ * display-math case. (Per-line align numbering is out of spec — a single
+ * number for the whole block is the documented baseline.)
+ */
+display-math,
+math,
+align,
+cases,
+matrix,
+eqnarray {
+  display: flex;
+  align-items: center;
+  margin: var(--enscribe-space-6) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* KaTeX display block: grows to fill available space; equation centered within. */
+display-math > .katex-display,
+math > .katex-display,
+align > .katex-display,
+cases > .katex-display,
+matrix > .katex-display,
+eqnarray > .katex-display {
+  flex: 1;
+  margin: 0;            /* override KaTeX's default 1em top/bottom margin */
+  overflow-x: auto;
+  overflow-y: hidden;   /* mirror the wrapper (#217): an `auto` x-axis computes a `visible` y to `auto` */
+}
+
+/* Equation number: does not grow; sits flush right at same vertical centre. */
+display-math > .equation-number,
+math > .equation-number,
+align > .equation-number,
+cases > .equation-number,
+matrix > .equation-number,
+eqnarray > .equation-number {
+  flex: 0 0 auto;
+  min-width: 3em;
+  text-align: right;
+  padding-left: var(--enscribe-space-4);
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  white-space: nowrap;
+}
+
+inline-math {
+  display: inline;
+}
+
+/* ─── Theorem family ────────────────────────────────────────────────────────── */
+
+/*
+ * RQ-THM-S1: each theorem-family element renders display:block with vertical
+ * margin. Custom elements default to display:inline, so without this the
+ * theorem statement collapses into the surrounding paragraph. The vertical
+ * margin matches the display-math block rhythm (--enscribe-space-6).
+ */
+theorem,
+lemma,
+corollary,
+proposition,
+definition,
+example,
+remark,
+proof {
+  display: block;
+  margin: var(--enscribe-space-6) 0;
+}
+
+/*
+ * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * "Proof.") renders with prominence (font-weight: 700). Matches the
+ * weight-only convention of .figure-label / .table-label; the label already
+ * carries a trailing space from the handler, so no extra margin is needed.
+ * Italicised statement bodies (an amsthm convention) are out of spec for S2
+ * and left to a later theme.
+ */
+.theorem-label,
+.lemma-label,
+.corollary-label,
+.proposition-label,
+.definition-label,
+.example-label,
+.remark-label,
+.proof-label {
+  font-weight: 700;
+}
+
+/* ─── Code ──────────────────────────────────────────────────────────────────── */
+
+code {
+  font-family: var(--enscribe-font-mono);
+  font-size: var(--enscribe-text-code);
+  background: var(--enscribe-bg-code);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+pre {
+  background: var(--enscribe-bg-code);
+  border: 1px solid var(--enscribe-border);
+  border-radius: 4px;
+  padding: var(--enscribe-space-4);
+  overflow-x: auto;
+  margin: var(--enscribe-space-4) 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+}
+
+/* code-block is the custom element wrapper for sigil ``` blocks. */
+code-block {
+  display: block;
+  margin: var(--enscribe-space-4) 0;
+}
+
+code-block pre {
+  margin: 0;
+}
+
+/* ─── Figures and tables ─────────────────────────────────────────────────────── */
+
+figure {
+  display: block;
+  margin: var(--enscribe-space-8) 0;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+figcaption {
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  margin-top: var(--enscribe-space-2);
+  text-align: left;
+  line-height: var(--enscribe-line-height-tight);
+}
+
+.figure-label {
+  font-weight: 700;
+  margin-right: var(--enscribe-space-1);
+}
+
+/* RQ-FRM-S5 (#70): the frameable TITLE — <figcaption class="title"> (figure
+ * family), <caption class="title"> (table family), or <p class="title"> (boxed
+ * prose / aside) — is rendered ABOVE the body and must read as a prominent
+ * title, visually distinct from the bottom caption (which is small + secondary).
+ * Without this rule a title <figcaption class="title"> would inherit the plain
+ * figcaption look and be indistinguishable from the caption. This shared `.title`
+ * hook styles all three element forms uniformly across the frameable families. */
+.title {
+  font-size: var(--enscribe-text-base);
+  font-weight: 700;
+  color: var(--enscribe-text-primary);
+  text-align: left;
+  line-height: var(--enscribe-line-height-tight);
+  margin: 0 0 var(--enscribe-space-2) 0;
+}
+
+/* RQ-FRM-S6 (#70): the boxed-prose bottom CAPTION is a <p class="caption">. The
+ * figure/table families style their bare <figcaption>/<caption> by element
+ * selector; a <p> would otherwise read as body text, so `.caption` gives it the
+ * same small/secondary caption look (the counterpart hook to `.title`). */
+.caption {
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  text-align: left;
+  line-height: var(--enscribe-line-height-tight);
+  margin: var(--enscribe-space-2) 0 0 0;
+}
+
+/* RQ-FRM-S4: a frame renders <figure class="frameable-border">. The border
+ * class draws a visible outline box around the frameable, setting the bordered
+ * callout off from the body text. Reasonable baseline: a 1px solid rule in the
+ * theme's strong border color, a subtle 4px radius (matching <pre>), and
+ * padding so content does not touch the rule. */
+.frameable-border {
+  border: 1px solid var(--enscribe-border-strong);
+  border-radius: 4px;
+  padding: var(--enscribe-space-4);
+}
+
+/* Frameable border looks (#58). `border=<name>` adds a `frameable-border-<name>`
+ * modifier class alongside the base `.frameable-border`; each look overrides one
+ * facet of the base rule. The default theme ships this starter menu (accent /
+ * thick / dashed / subtle); the mechanism is open — a theme can override the
+ * `--enscribe-border-*` properties above, or add its own `.frameable-border-<name>`
+ * rules (the document just names the look). */
+.frameable-border-accent { border-color: var(--enscribe-border-accent); }
+.frameable-border-thick  { border-width: var(--enscribe-border-thick); }
+.frameable-border-dashed { border-style: dashed; }
+.frameable-border-subtle { border-color: var(--enscribe-border-subtle); }
+
+/* Callouts / admonitions (#31 Phase B). An <aside type=…> is a frameable
+ * boxed-prose element — it already carries .frameable-border (the box) and an
+ * optional <p class="title"> / <p class="caption">. These rules add the
+ * per-type treatment for the admonition types the vocabulary defines
+ * (note / info / tip / warning / caution); the plain `sidebar` / `callout`
+ * types keep the unadorned box. The icon comes through ::before (CSS only — no
+ * markup injected, so the HTML stays a clean semantic tree and the fixtures are
+ * unchanged; the pseudo-element is decorative, outside the accessibility tree).
+ * Each variant is signalled by THREE cues — accent, icon, and the title text —
+ * so color is never the only distinguisher (legible color-blind / in mono). */
+aside[data-aside-type="note"],
+aside[data-aside-type="info"],
+aside[data-aside-type="tip"],
+aside[data-aside-type="warning"],
+aside[data-aside-type="caution"] {
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+
+aside[data-aside-type="note"]::before,
+aside[data-aside-type="info"]::before,
+aside[data-aside-type="tip"]::before,
+aside[data-aside-type="warning"]::before,
+aside[data-aside-type="caution"]::before {
+  margin-right: var(--enscribe-space-2);
+  font-weight: 700;
+}
+
+aside[data-aside-type="note"] {
+  border-left-color: var(--enscribe-callout-note-accent);
+  background: var(--enscribe-callout-note-bg);
+}
+aside[data-aside-type="note"]::before { content: "\270E"; color: var(--enscribe-callout-note-accent); }
+
+aside[data-aside-type="info"] {
+  border-left-color: var(--enscribe-callout-info-accent);
+  background: var(--enscribe-callout-info-bg);
+}
+aside[data-aside-type="info"]::before { content: "\2139\FE0E"; color: var(--enscribe-callout-info-accent); }
+
+aside[data-aside-type="tip"] {
+  border-left-color: var(--enscribe-callout-tip-accent);
+  background: var(--enscribe-callout-tip-bg);
+}
+aside[data-aside-type="tip"]::before { content: "\1F4A1"; color: var(--enscribe-callout-tip-accent); }
+
+aside[data-aside-type="warning"] {
+  border-left-color: var(--enscribe-callout-warning-accent);
+  background: var(--enscribe-callout-warning-bg);
+}
+aside[data-aside-type="warning"]::before { content: "\26A0\FE0E"; color: var(--enscribe-callout-warning-accent); }
+
+aside[data-aside-type="caution"] {
+  border-left-color: var(--enscribe-callout-caution-accent);
+  background: var(--enscribe-callout-caution-bg);
+}
+aside[data-aside-type="caution"]::before { content: "\26D4"; color: var(--enscribe-callout-caution-accent); }
+
+/* "See source" disclosure (#19). A rendered-from-DSL block (mermaid / abc) with
+ * the `show-source` <config> switch on emits the authored source in a native
+ * <details class="enscribe-source"><summary>See source</summary><pre>…</pre>.
+ * The default theme gives the <summary> an intentional, button-like control
+ * look — drawn from the EXISTING palette (the same label idiom as the ToC
+ * summary, the same border / radius as the frameable box and <pre>; no new
+ * tokens). Document says *what* (source is available); theme says *how*. The
+ * inner <pre> inherits the base code-block styling above; only its margin is
+ * reset so it sits flush under the control. */
+.enscribe-source {
+  margin: var(--enscribe-space-4) 0 var(--enscribe-space-6);
+}
+
+.enscribe-source > summary {
+  display: inline-block;
+  cursor: pointer;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  background: var(--enscribe-bg-subtle);
+  border: 1px solid var(--enscribe-border);
+  border-radius: 4px;
+  padding: var(--enscribe-space-1) var(--enscribe-space-3);
+  user-select: none;
+}
+
+.enscribe-source > summary:hover {
+  color: var(--enscribe-text-secondary);
+  border-color: var(--enscribe-border-strong);
+}
+
+.enscribe-source[open] > summary {
+  margin-bottom: var(--enscribe-space-2);
+}
+
+.enscribe-source > pre {
+  margin: 0;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--enscribe-space-6) 0;
+  font-size: var(--enscribe-text-sm);
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  margin-bottom: var(--enscribe-space-2);
+  font-weight: normal;
+}
+
+.table-label {
+  font-weight: 700;
+  margin-right: var(--enscribe-space-1);
+}
+
+th,
+td {
+  border: 1px solid var(--enscribe-border-strong);
+  padding: var(--enscribe-space-2) var(--enscribe-space-3);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--enscribe-bg-subtle);
+  font-weight: 700;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--enscribe-accent);
+}
+
+thead th {
+  border-bottom: 2px solid var(--enscribe-border-strong);
+}
+
+/* ─── Notes ─────────────────────────────────────────────────────────────────── */
+
+note-list {
+  display: block;
+  font-size: var(--enscribe-text-sm);
+  color: var(--enscribe-text-secondary);
+  margin-top: var(--enscribe-space-8);
+  padding-top: var(--enscribe-space-4);
+  border-top: 1px solid var(--enscribe-border);
+}
+
+/* "Notes" heading supplied by ::before; no heading element is emitted. */
+note-list::before {
+  content: "Notes";
+  display: block;
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  margin-bottom: var(--enscribe-space-3);
+}
+
+/* Override hover-preview.css which also sets these to 0. Both agree here. */
+note-list ol {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+note-list li {
+  margin-bottom: var(--enscribe-space-2);
+  padding-left: var(--enscribe-space-6);
+  text-indent: calc(-1 * var(--enscribe-space-6));
+}
+
+.note-backref {
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-text-muted);
+  text-decoration: none;
+  margin-left: var(--enscribe-space-1);
+}
+
+.note-backref:hover {
+  color: var(--enscribe-link);
+}
+
+/* Sidenote fallback: inline sidenotes collected to end (deferred feature). */
+.sidenote-fallback {
+  font-style: italic;
+}
+
+/* Inline note marker superscript. */
+sup[data-note-id] {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-xs);
+  color: var(--enscribe-link);
+  cursor: pointer;
+}
+
+/* ─── Bibliography ───────────────────────────────────────────────────────────── */
+
+bibliography {
+  display: block;
+  margin-top: var(--enscribe-space-6);
+}
+
+bibliography h2 {
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-h3-size);
+  font-weight: var(--enscribe-weight-heading);
+  line-height: var(--enscribe-line-height-heading);
+  color: var(--enscribe-text-primary);
+  margin: 0 0 var(--enscribe-space-4);
+}
+
+.csl-bib-body {
+  font-size: var(--enscribe-text-sm);
+}
+
+.csl-entry {
+  margin-bottom: var(--enscribe-space-3);
+  padding-left: var(--enscribe-space-6);
+  text-indent: calc(-1 * var(--enscribe-space-6));
+  line-height: var(--enscribe-line-height-tight);
+  color: var(--enscribe-text-primary);
+}
+
+/* ─── Table of contents (Phase 8 Slice 1) ───────────────────────────────────── */
+
+/*
+ * Opt-in sidebar. Every rule here is scoped to `.enscribe-layout--toc`, which the
+ * renderer emits ONLY when the `toc` option is on — so a document without a ToC
+ * is completely unaffected by this block. The body's single-column cap is relaxed
+ * via :has() only when a ToC layout is present, letting the sidebar + body grid be
+ * wider; non-ToC bodies keep the centered --enscribe-content-width column.
+ */
+body:has(.enscribe-layout--toc) {
+  max-width: none;
+  padding: 0;
+}
+
+.enscribe-layout--toc {
+  margin: 0 auto;
+  padding: 0 var(--enscribe-content-padding);
+  max-width: var(--enscribe-content-width);
+}
+
+/* Let wide content (tables, code, math) shrink instead of blowing out the grid. */
+.enscribe-body {
+  min-width: 0;
+}
+
+.enscribe-toc {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+}
+
+.enscribe-toc-summary {
+  font-size: var(--enscribe-text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  cursor: pointer;
+  margin-bottom: var(--enscribe-space-3);
+}
+
+.enscribe-toc ul {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-4);
+}
+
+.enscribe-toc-details > ul {
+  padding-left: 0;
+}
+
+.enscribe-toc li {
+  margin: 0;
+}
+
+.enscribe-toc a {
+  display: block;
+  color: var(--enscribe-text-secondary);
+  text-decoration: none;
+  padding: var(--enscribe-space-1) 0;
+}
+
+.enscribe-toc a:hover {
+  color: var(--enscribe-link);
+}
+
+/* Scroll-spy active state (#20). The scroll-spy script (injected with the ToC
+ * sidebar) sets aria-current + .enscribe-toc-active on the entry for the section
+ * at the top of the viewport, and .enscribe-toc-active-trail on its ancestor
+ * entries (the "you are here" path). Styled from the existing palette; document
+ * says *what* (which entry is current), theme says *how* it's shown. JS off →
+ * none of these are set, so the ToC renders exactly as before (the script is a
+ * pure progressive enhancement). */
+.enscribe-toc a.enscribe-toc-active,
+.enscribe-toc a[aria-current] {
+  color: var(--enscribe-link);
+  font-weight: 700;
+}
+
+.enscribe-toc a.enscribe-toc-active-trail {
+  color: var(--enscribe-text-primary);
+}
+
+/* Desktop: a two-column grid with the ToC as a sticky left sidebar; the
+ * disclosure is forced open (its <summary> toggle hidden). */
+@media (min-width: 900px) {
+  .enscribe-layout--toc {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, var(--enscribe-content-width));
+    column-gap: var(--enscribe-space-12);
+    max-width: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
+  }
+
+  .enscribe-toc {
+    position: sticky;
+    top: var(--enscribe-space-8);
+    align-self: start;
+    max-height: calc(100vh - 2 * var(--enscribe-space-8));
+    overflow-y: auto;
+  }
+
+  .enscribe-toc-summary {
+    display: none;
+  }
+}
+
+/* ─── Chapter prev/next + opt-in paging (Phase 8 Slice 3; Slice C) ───────────── */
+
+/*
+ * `.enscribe-chapter-nav` (prev/next at each chapter foot) is STATIC markup in the
+ * one-scroll reading interface (built in lib/toc.js — see the book section below).
+ * `.chapter-hidden` / `.enscribe-chapter-showall` are inert hooks used only by the
+ * OPT-IN paging script (`chapterNav: true`); without it (the book default) and for
+ * any article, nothing here paginates. Progressive enhancement throughout.
+ */
+.chapter-hidden {
+  display: none;
+}
+
+/* Prev / next chapter links at the foot of each chapter (static in the one-scroll
+ * book; the opt-in paging script reuses the same bar). */
+.enscribe-chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--enscribe-space-4);
+  margin-top: var(--enscribe-space-12);
+  padding-top: var(--enscribe-space-4);
+  border-top: 1px solid var(--enscribe-border);
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-text-sm);
+}
+
+.enscribe-chapter-prev {
+  margin-right: auto;
+}
+
+.enscribe-chapter-next {
+  margin-left: auto;
+  text-align: right;
+}
+
+.enscribe-chapter-prev,
+.enscribe-chapter-next {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--enscribe-space-2);
+  color: var(--enscribe-link);
+  text-decoration: none;
+}
+
+.enscribe-chapter-prev:hover,
+.enscribe-chapter-next:hover {
+  color: var(--enscribe-link-hover);
+}
+
+.enscribe-chapter-arrow {
+  color: var(--enscribe-text-muted);
+}
+
+/* "Show whole book" toggle, appended to the ToC by the opt-in paging script. */
+.enscribe-chapter-showall {
+  display: block;
+  width: 100%;
+  margin-top: var(--enscribe-space-4);
+  padding-top: var(--enscribe-space-3);
+  border: none;
+  border-top: 1px solid var(--enscribe-border);
+  background: none;
+  text-align: left;
+  font-family: var(--enscribe-font-heading);
+  font-size: var(--enscribe-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--enscribe-text-muted);
+  cursor: pointer;
+}
+
+.enscribe-chapter-showall:hover {
+  color: var(--enscribe-link);
+}
+
+/* ─── Book reading interface (Slice C) ──────────────────────────────────────────
+ *
+ * A book + ToC renders as ONE scrolling document with chapter-navigation chrome:
+ * a left chapter rail (`nav.enscribe-toc.enscribe-chapter-rail`), the reading
+ * column, and a right "on this page" rail (`nav.enscribe-onthispage`). Every rule
+ * here is gated on `.enscribe-layout--book`, which lib/toc.js emits ONLY for a book
+ * — so an ARTICLE ToC (`.enscribe-layout--toc` without `--book`) is visually
+ * untouched. Highlight hooks (`.enscribe-toc-active`) are set at runtime by
+ * scroll-spy (left) and the on-this-page script (right); JS off → no highlight.
+ */
+
+/* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
+ * / "A" all start the title at the same x). These spans are emitted by the BOOK
+ * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
+ * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+.enscribe-toc-num {
+  display: inline-block;
+  min-width: 1.6em;
+  color: var(--enscribe-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+  content: "·";
+  margin-left: var(--enscribe-space-2);
+  color: var(--enscribe-border-strong);
+}
+
+/* The active chapter in the left rail: a tinted block with a left accent (the
+ * scroll-spy hook drives it). The transparent reserved border keeps the inactive
+ * entries aligned so activating one never shifts the text. */
+.enscribe-layout--book .enscribe-toc a {
+  padding-left: var(--enscribe-space-3);
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--enscribe-radius-sm, 2px) var(--enscribe-radius-sm, 2px) 0;
+}
+
+.enscribe-layout--book .enscribe-toc a.enscribe-toc-active {
+  background: var(--enscribe-toc-active-bg);
+  border-left-color: var(--enscribe-toc-active-accent);
+  color: var(--enscribe-text-primary);
+}
+
+/* Front/body/back grouping in the chapter rail: a hairline above the body and back
+ * groups separates the registers (front-matter / chapters / appendices). */
+.enscribe-chapter-rail .enscribe-rail-item--body + .enscribe-rail-item--back,
+.enscribe-chapter-rail .enscribe-rail-item--front + .enscribe-rail-item--body {
+  border-top: 1px solid var(--enscribe-border);
+  margin-top: var(--enscribe-space-2);
+  padding-top: var(--enscribe-space-2);
+}
+
+/* The right "on this page" rail. Static markup lists EVERY chapter's sections; the
+ * on-this-page script adds `--spied` and reveals only the current chapter's group. */
+.enscribe-onthispage {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+}
+
+.enscribe-onthispage a {
+  display: block;
+  color: var(--enscribe-text-secondary);
+  text-decoration: none;
+  padding: var(--enscribe-space-1) 0;
+}
+
+.enscribe-onthispage a:hover {
+  color: var(--enscribe-link);
+}
+
+.enscribe-onthispage a.enscribe-toc-active,
+.enscribe-onthispage a[aria-current] {
+  color: var(--enscribe-link);
+  font-weight: 700;
+}
+
+.enscribe-onthispage ul {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-4);
+}
+
+.enscribe-onthispage-chapter > ul {
+  padding-left: 0;
+}
+
+/* JS mode: show only the current chapter's section group. With JS off the rail
+ * shows all groups (a full on-this-page) — progressive enhancement. */
+.enscribe-onthispage--spied .enscribe-onthispage-chapter {
+  display: none;
+}
+
+.enscribe-onthispage--spied .enscribe-onthispage-chapter--current {
+  display: block;
+}
+
+/* Desktop: the book becomes a THREE-column grid (chapter rail | reading column |
+ * on-this-page rail) when the right rail is present; both rails are sticky. A book
+ * with no sections (no right rail) keeps the article two-column grid. */
+@media (min-width: 900px) {
+  .enscribe-layout--book.enscribe-layout--book-3col {
+    grid-template-columns: 14rem minmax(0, var(--enscribe-content-width)) 13rem;
+    max-width: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+  }
+
+  .enscribe-onthispage {
+    position: sticky;
+    top: var(--enscribe-space-8);
+    align-self: start;
+    max-height: calc(100vh - 2 * var(--enscribe-space-8));
+    overflow-y: auto;
+  }
+
+  .enscribe-onthispage .enscribe-toc-summary {
+    display: none;
+  }
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  body {
+    margin: var(--enscribe-space-6) auto;
+    padding: 0 var(--enscribe-space-4);
+    font-size: 0.95rem;
+  }
+
+  article-title {
+    font-size: 1.75rem;
+  }
+
+  article-subtitle {
+    font-size: 1.2rem;
+  }
+
+  section-title {
+    font-size: 1.25rem;
+  }
+
+  table {
+    font-size: var(--enscribe-text-xs);
+  }
+}
+
+
+.enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
+/* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
+   <body>. default.css sizes <body> for a single reading column (a centred content-width column with
+   side padding), which traps the whole site at article width — the content collapses to a sliver. The
+   website resets the body it lives in. Scoped to a <body> that CONTAINS a mounted site, so it only
+   fires for the website: book/article never inject this stylesheet, so their <body> is byte-identical. */
+body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
+.enscribe-site-header {
+  display: flex; align-items: center; gap: var(--enscribe-space-6, 1.5rem); flex-wrap: wrap;
+  padding: var(--enscribe-space-3, 0.6rem) var(--enscribe-space-5, 1.25rem);
+  border-bottom: 1px solid var(--enscribe-border, #d8dee4);
+  position: sticky; top: 0; z-index: 100; background: var(--enscribe-bg, #fff);
+}
+.enscribe-site-brand {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em;
+  color: var(--enscribe-text-primary, #1f2328); text-decoration: none;
+}
+.enscribe-site-brand-icon { height: 1.4rem; width: auto; display: block; }
+.enscribe-site-nav { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+.enscribe-site-nav-link, .enscribe-site-dropdown-toggle {
+  font-size: 0.9rem; color: var(--enscribe-text-muted, #57606a);
+  text-decoration: none; background: none; border: none; padding: 0; cursor: pointer; font: inherit;
+}
+.enscribe-site-nav-link:hover, .enscribe-site-dropdown-toggle:hover { color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-nav-link[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
+/* The dropdown (a <nav-group> in the top bar) — the one new top-bar interaction. */
+.enscribe-site-dropdown { position: relative; }
+.enscribe-site-dropdown-toggle[aria-expanded="true"] { color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-dropdown-panel {
+  position: absolute; top: 100%; left: 0; min-width: 12rem; margin-top: 0.4rem; padding: 0.3rem 0;
+  border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 6px;
+  background: var(--enscribe-bg, #fff); box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 110;
+}
+.enscribe-site-dropdown-item {
+  display: block; padding: 0.35rem 0.9rem; font-size: 0.9rem;
+  color: var(--enscribe-text-muted, #57606a); text-decoration: none; white-space: nowrap;
+}
+.enscribe-site-dropdown-item:hover { background: var(--enscribe-bg-subtle, #f6f8fa); color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-dropdown-item[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
+/* The layout: a left sidebar + the content + an on-this-page rail (3 columns on desktop). */
+.enscribe-site-layout { display: block; max-width: 84rem; margin: 0 auto; }
+.enscribe-site-main { padding: 1.5rem 1.75rem 0; min-width: 0; }
+.enscribe-site-sidebar { padding: 1.5rem 1rem; }
+.enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
+.enscribe-site-sidebar > ul { padding-left: 0; }
+.enscribe-site-sidebar a, .enscribe-site-sidebar .enscribe-nav-label {
+  display: block; padding: 0.2rem 0; font-size: 0.9rem;
+  color: var(--enscribe-text-muted, #57606a); text-decoration: none;
+}
+.enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
+.enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
+.enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-onthispage { padding: 1.5rem 1rem; }
+.enscribe-site-onthispage ul { list-style: none; margin: 0; padding: 0; }
+.enscribe-site-onthispage a { font-size: 0.82rem; color: var(--enscribe-text-muted, #57606a); text-decoration: none; }
+.enscribe-site-onthispage a:hover, .enscribe-site-onthispage a.active { color: var(--enscribe-link, #0969da); }
+/* An empty on-this-page rail (a page with <2 headings → innerHTML '') drops out of the flow entirely,
+   so its grid column can be reclaimed (the :has rules below) instead of leaving a blank padded box. */
+.enscribe-site-onthispage:empty { display: none; }
+.enscribe-site-footer {
+  max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
+  border-top: 1px solid var(--enscribe-border, #d8dee4);
+  font-size: 0.85rem; color: var(--enscribe-text-muted, #57606a);
+}
+@media (min-width: 900px) {
+  /* The grid reflows to whatever columns are actually present (#246 S1.5). The sidebar is a master
+     opt-in (<config sidebar>), so it may be absent from the DOM; the on-this-page rail may be empty
+     (hidden above) on a short page. Four states, resolved by :has in source order (the most specific
+     last so it wins when several match). */
+  .enscribe-site-layout {
+    display: grid; gap: var(--enscribe-space-8, 2rem);
+    align-items: start; justify-content: center;
+    /* default: sidebar OFF, on-this-page present → content + the right rail. */
+    grid-template-columns: minmax(0, 46rem) 13rem;
+  }
+  /* sidebar ON → the full three columns. */
+  .enscribe-site-layout:has(.enscribe-site-sidebar) {
+    grid-template-columns: 14rem minmax(0, 46rem) 13rem;
+  }
+  /* no on-this-page rail → drop its column (a centred single content column when the sidebar is off too). */
+  .enscribe-site-layout:has(.enscribe-site-onthispage:empty) {
+    grid-template-columns: minmax(0, 46rem);
+  }
+  /* sidebar ON but no rail → sidebar + content. (Last, so it wins over the two single-condition rules.) */
+  .enscribe-site-layout:has(.enscribe-site-sidebar):has(.enscribe-site-onthispage:empty) {
+    grid-template-columns: 14rem minmax(0, 46rem);
+  }
+  .enscribe-site-sidebar, .enscribe-site-onthispage {
+    position: sticky; top: calc(var(--enscribe-site-nav-height, 3.25rem) + 0.5rem);
+    max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - 1rem); overflow: auto;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="enscribe-site">
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="/">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="/">Home</a><a class="enscribe-site-nav-link" href="/design/">Design</a><a class="enscribe-site-nav-link" href="/authoring-guide/">Authoring Guide</a><div class="enscribe-site-dropdown"><button type="button" class="enscribe-site-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Reference</button><div class="enscribe-site-dropdown-panel" hidden><a class="enscribe-site-dropdown-item" href="/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="/jats-import-and-export/">JATS Import and Export</a></div></div><a class="enscribe-site-nav-link" href="/try-it/">Try It!</a></nav></header>
+<div class="enscribe-site-layout">
+<nav class="enscribe-site-sidebar" aria-label="Site navigation"><ul><li><a href="/">Home</a></li><li><a href="/design/">Design</a></li><li><a href="/authoring-guide/">Authoring Guide</a></li><li><span class="enscribe-nav-label">Reference</span><ul><li><a href="/enscribe-shorthand-vocabulary/">Enscribe Shorthand Vocabulary</a></li><li><a href="/layer-1-vocabulary/">Layer 1 Vocabulary</a></li><li><a href="/jats-import-and-export/">JATS Import and Export</a></li></ul></li><li><a href="/try-it/">Try It!</a></li></ul></nav>
+<main class="enscribe-site-main" data-enscribe-content>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
+<script>(function () {
+  function init() {
+    var nav = document.querySelector('nav.enscribe-toc');
+    if (!nav) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+
+    // Map each ToC link to its target section, in document order.
+    var linkById = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') return;
+      var id = decodeURIComponent(href.slice(1));
+      var el = document.getElementById(id);
+      if (el) { linkById[id] = a; targets.push(el); }
+    });
+    if (!targets.length) return;
+
+    function visible(el) { return el.offsetParent !== null; } // false for display:none (e.g. a chapter-nav-hidden chapter)
+
+    function directLink(li) {
+      for (var i = 0; i < li.children.length; i++) {
+        var c = li.children[i];
+        if (c.tagName && c.tagName.toLowerCase() === 'a') return c;
+      }
+      return null;
+    }
+
+    var currentId = null;
+    function setActive(id) {
+      if (id === currentId) return;
+      currentId = id;
+      links.forEach(function (a) {
+        a.removeAttribute('aria-current');
+        a.classList.remove('enscribe-toc-active', 'enscribe-toc-active-trail');
+      });
+      var a = linkById[id];
+      if (!a) return;
+      a.classList.add('enscribe-toc-active');
+      a.setAttribute('aria-current', 'location');
+      // Ancestor trail: walk up the nested <li>/<ul> structure, marking each
+      // ancestor entry's own <a> (the "you are here" path).
+      var li = a.parentNode;
+      while (li && li.tagName && li.tagName.toLowerCase() === 'li') {
+        var ul = li.parentNode;                     // enclosing <ul>
+        var parentLi = ul ? ul.parentNode : null;   // ancestor <li>, or the <details>
+        if (parentLi && parentLi.tagName && parentLi.tagName.toLowerCase() === 'li') {
+          var pa = directLink(parentLi);
+          if (pa) pa.classList.add('enscribe-toc-active-trail');
+          li = parentLi;
+        } else {
+          break;
+        }
+      }
+    }
+
+    function firstVisibleId() {
+      for (var i = 0; i < targets.length; i++) { if (visible(targets[i])) return targets[i].id; }
+      return targets[0].id;
+    }
+    function lastVisibleId() {
+      for (var i = targets.length - 1; i >= 0; i--) { if (visible(targets[i])) return targets[i].id; }
+      return null;
+    }
+
+    function update() {
+      var marker = window.innerHeight * 0.2; // the "top threshold" line
+      var activeId = null;
+      for (var i = 0; i < targets.length; i++) {
+        var el = targets[i];
+        if (!visible(el)) continue;
+        if (el.getBoundingClientRect().top <= marker) activeId = el.id; // last to cross the top wins
+      }
+      // Ends. Before the first heading crosses the line, the first section is
+      // current; at the very bottom of the page, keep the last section active
+      // even though its top sits below the line.
+      if (activeId === null) activeId = firstVisibleId();
+      var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+      if (atBottom) { var lastId = lastVisibleId(); if (lastId) activeId = lastId; }
+      if (activeId) setActive(activeId);
+    }
+
+    if ('IntersectionObserver' in window) {
+      // The observer is the efficient TRIGGER (no scroll-handler thrash); the
+      // top band it watches brackets the threshold line, and update() does the
+      // authoritative "last above the line" computation on each crossing.
+      var io = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+      targets.forEach(function (t) { io.observe(t); });
+    }
+    window.addEventListener('resize', update);
+    update();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();</script>
+<style>
+/* Body listing — an in-flow contents block, after the title block, shown in full. */
+.enscribe-contents {
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-sm);
+  line-height: var(--enscribe-line-height-tight);
+  margin: 0 0 var(--enscribe-space-8);
+  padding-bottom: var(--enscribe-space-6);
+  border-bottom: 1px solid var(--enscribe-border);
+}
+.enscribe-contents-heading {
+  margin: 0 0 var(--enscribe-space-2);
+  font-family: var(--enscribe-font-sans);
+  font-size: var(--enscribe-text-base);
+  font-weight: 700;
+  color: var(--enscribe-text-primary);
+}
+.enscribe-contents ul {
+  list-style: none;
+  margin: 0;
+  padding-left: var(--enscribe-space-4);
+}
+.enscribe-contents > ul { padding-left: 0; }
+.enscribe-contents li { margin: 0; }
+.enscribe-contents a {
+  color: var(--enscribe-text-secondary);
+  text-decoration: none;
+  padding: var(--enscribe-space-1) 0;
+}
+.enscribe-contents a:hover { color: var(--enscribe-link); }
+
+/* Right-sidebar variant: flip the two-column grid so the sticky listing sits on the right
+ * (the layout emits children [main, nav] in this order). Same total width as the left
+ * variant; only the column order differs. */
+@media (min-width: 900px) {
+  .enscribe-layout--toc-right {
+    grid-template-columns: minmax(0, var(--enscribe-content-width)) 14rem;
+  }
+}
+
+/* Collapsible sidebar (toc-expand): the per-parent nested <details> stay interactive on
+ * desktop — their summaries keep the native disclosure marker, unlike the always-open top
+ * summary (hidden on desktop). The initial open/closed state is baked at build time from
+ * toc-expand; the reader can toggle deeper levels. The summary holds the link (click the
+ * marker to expand, the link to navigate). */
+.enscribe-toc--collapsible .enscribe-toc-sub > summary.enscribe-toc-sub-summary {
+  cursor: pointer;
+  list-style-position: outside;
+}
+.enscribe-toc--collapsible .enscribe-toc-sub-summary a { display: inline; }
+</style>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--toc-right">
+  <main class="enscribe-body">
+    <article>
+      <article-front>
+        <meta data-document-type="article">
+          <article-title>Enscribe</article-title>
+          <author>The Enscribe Project</author>
+        </meta>
+      </article-front>
+      <article-body>
+        <p>An academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top — combining the simplicity of markdown with the expressiveness needed for scholarly work.</p>
+        <section id="sec:motto">
+          <section-title>Motto</section-title>
+          <blockquote>
+            <p>Not re-inventing the wheel. Re-discovering the wheel.</p>
+          </blockquote>
+          <p>In this case, HTML is the wheel.</p>
+        </section>
+        <section id="sec:if-you-write-academic-documents">
+          <section-title>If you write academic documents</section-title>
+          <p>You already have a tool for this, and you already know its cost.</p>
+          <p>If you write in <b>LaTeX</b>, you have power and precision — and a compile step that fails on a stray brace, an error message that points three lines from the real problem, and a syntax that a co-author who doesn’t already know it cannot touch.</p>
+          <p>If you write in <b>Quarto, RMarkdown, or Bookdown</b>, you started with markdown’s ease — and then needed citations, cross-references, numbered figures, callouts, and watched the clean syntax accrete curly-brace attributes and fenced-div directives, each flavor incompatible with the next, each its own toolchain.</p>
+          <p>If you write in <b>Word</b>, everything is visible and nothing is structured — equation editors fight you, numbering renumbers itself wrong, and the document has no clean path into the scholarly publishing pipeline at all.</p>
+          <p>All three share one assumption: the rich, finished document is something you <i>compile to</i> or <i>export to</i>. But the renderer for rich, structured documents already exists, runs on every device, and needs nothing installed — the web browser. HTML is a mature, semantic document format. What’s missing isn’t the renderer. It’s a way to <i>write</i> HTML that doesn’t make you quit. That’s what enscribe is.</p>
+        </section>
+        <section id="sec:the-idea-in-one-paragraph">
+          <section-title>The idea in one paragraph</section-title>
+          <p>Markdown’s success comes from a simple bargain: a small set of typing conventions that map cleanly onto HTML. For academic writing, that bargain breaks down — citations, cross-references, figure numbering, theorems, and structured sections all require extensions, and every project that has tried to add them (RMarkdown, Bookdown, Quarto, Pandoc filters) has invented its own incompatible flavor. Meanwhile, HTML+CSS+JS is already a complete, universally supported typesetting system. Enscribe proposes that the right move isn’t another markdown extension — it’s a rigorous set of HTML conventions for academic content, plus a uniform shorthand for authoring them that’s easier on the fingers than raw HTML.</p>
+        </section>
+        <section id="sec:why-html">
+          <section-title>Why HTML?</section-title>
+          <p>HTML+CSS+JS already does most of what academic typesetting needs. It’s universally rendered (every browser, every platform). It’s exportable to nearly anything via existing tools (Pandoc going <i>outward</i> from HTML is mature and reliable). It composes — every JS library, every CSS framework, every web component slots in. The only things HTML lacks are (1) a standard vocabulary for academic semantics like citations and cross-references, and (2) an authoring syntax that doesn’t make humans want to quit. Enscribe adds both.</p>
+        </section>
+        <section id="sec:why-no-compiler">
+          <section-title>Why no compiler?</section-title>
+          <p>Every other document system ships a compiler you run at a command line or inside special software. Enscribe doesn’t. The browser is the only document substrate that’s a renderer, a compute environment, an interactive runtime, and already on every machine — all at once. LaTeX, Quarto, RMarkdown, and Typst each bolt a compiler plus a viewer onto a format; Enscribe declines to build either and rides the one everyone already has.</p>
+        </section>
+        <section id="sec:what-enscribe-is-in-two-layers">
+          <section-title>What enscribe is, in two layers</section-title>
+          <p><b>Layer 1 — Semantic HTML for academic publishing.</b> A defined set of HTML elements, custom elements, and <code>data-*</code> attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is <code>&#x3C;ul></code>/<code>&#x3C;ol></code>/<code>&#x3C;li></code>); a class plus <code>data-*</code> carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.</p>
+          <p><b>Layer 2 — Authoring shorthand.</b> A compact syntax that translates losslessly into Layer 1 HTML. It comes in two registers:</p>
+          <ul>
+            <li>
+              <p><i>Markdown-like shorthand</i> for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.</p>
+            </li>
+            <li>
+              <p><i>Tag shorthand</i> for anything that needs attributes, identifiers, or academic semantics. The form is <code>&#x3C;tag #id .class attr=value | content></code> — attributes first, then a pipe, then content — read as “tag with these attributes containing this content.” Tags don’t require explicit closing — like LaTeX’s <code>\section{}</code>, a new peer-level tag implicitly ends the previous one.</p>
+            </li>
+          </ul>
+          <p>Both registers compile to the same Layer 1 HTML.</p>
+        </section>
+        <section id="sec:a-taste">
+          <section-title>A taste</section-title>
+          <pre><code>## Introduction
+
+This claim is supported by recent work &#x3C;cite smith2023, jones2024>.
+
+&#x3C;figure #fig:elephant .wrap align=right src=elephant.jpg |
+  An adult African elephant, photographed in Tanzania.>
+
+See &#x3C;ref #fig:elephant> for context.
+
+## Methods
+
+We followed the protocol described in &#x3C;cite jones2024>.
+</code></pre>
+          <p>Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, and a cross-reference to that figure. Referenceable elements take a typed colon-id (<code>#fig:elephant</code>), so a reference names both the kind of target and the target itself. The whole example compiles to standard, semantic HTML that any browser can render and any converter can process.</p>
+        </section>
+        <section id="sec:status">
+          <section-title>Status</section-title>
+          <p><b>enscribe v0.4.0 is released.</b> The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external <code>&#x3C;library src></code> sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export <i>and</i> import), a client-side browser library, and the <code>enscribe</code> command-line tool.</p>
+          <p>The implementation is built on the <a href="https://unifiedjs.com/">unified</a> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md"><code>STATUS.md</code></a> for the capability checklist (what works today), <a href="design.html">the Design article</a> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/tree/main/notes/specs"><code>notes/specs/</code></a> for the architecture.</p>
+        </section>
+        <section id="sec:reading-order">
+          <section-title>Reading order</section-title>
+          <p>The project has accumulated enough documentation that knowing where to start matters. See the <a href="https://github.com/enscribejs/enscribe/blob/main/CONTRIBUTING.md#reading-order-for-newcomers">Reading order section in <code>CONTRIBUTING.md</code></a> for a guided path through the spec and implementation docs.</p>
+        </section>
+        <section id="sec:project-goals">
+          <section-title>Project goals</section-title>
+          <p>Enscribe’s purpose, in four parts:</p>
+          <ol>
+            <li><b>Specify</b> a complete vocabulary of HTML conventions for academic publishing (Layer 1).</li>
+            <li><b>Author</b> that vocabulary efficiently via a uniform shorthand (Layer 2).</li>
+            <li><b>Build</b> the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.</li>
+            <li><b>Demonstrate</b> that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from enscribe source through HTML to PDF and other formats using only off-the-shelf tools downstream.</li>
+          </ol>
+          <p>Goals 1 through 3 are achieved; goal 4 is demonstrated for HTML output and for bidirectional JATS conversion, with Pandoc handling other downstream targets. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md"><code>STATUS.md</code></a> for detail.</p>
+        </section>
+        <section id="sec:non-goals">
+          <section-title>Non-goals</section-title>
+          <ul>
+            <li>Replacing markdown for the things markdown already does well.</li>
+            <li>Replacing LaTeX for math typesetting (we delegate to KaTeX/MathJax).</li>
+            <li>Building a parser from scratch (we delegate to the unified ecosystem).</li>
+            <li>Inventing yet another markdown flavor with its own bespoke extensions.</li>
+          </ul>
+        </section>
+        <section id="sec:license">
+          <section-title>License</section-title>
+          <p>MIT License. See <a href="https://github.com/enscribejs/enscribe/blob/main/LICENSE"><code>LICENSE</code></a> for details.</p>
+        </section>
+      </article-body>
+      <article-back>
+        <config></config>
+      </article-back>
+    </article>
+  </main>
+  <nav class="enscribe-toc enscribe-toc--collapsible" aria-label="Contents">
+    <details class="enscribe-toc-details" open>
+      <summary class="enscribe-toc-summary">Contents</summary>
+      <ul>
+        <li><a href="#sec:motto">Motto</a></li>
+        <li><a href="#sec:if-you-write-academic-documents">If you write academic documents</a></li>
+        <li><a href="#sec:the-idea-in-one-paragraph">The idea in one paragraph</a></li>
+        <li><a href="#sec:why-html">Why HTML?</a></li>
+        <li><a href="#sec:why-no-compiler">Why no compiler?</a></li>
+        <li><a href="#sec:what-enscribe-is-in-two-layers">What enscribe is, in two layers</a></li>
+        <li><a href="#sec:a-taste">A taste</a></li>
+        <li><a href="#sec:status">Status</a></li>
+        <li><a href="#sec:reading-order">Reading order</a></li>
+        <li><a href="#sec:project-goals">Project goals</a></li>
+        <li><a href="#sec:non-goals">Non-goals</a></li>
+        <li><a href="#sec:license">License</a></li>
+      </ul>
+    </details>
+  </nav>
+</div>
+
+</main>
+<aside class="enscribe-site-onthispage"></aside>
+</div>
+</div>
+</body>
+</html>
