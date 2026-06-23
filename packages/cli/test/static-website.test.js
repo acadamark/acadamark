@@ -57,13 +57,14 @@ export function run_tests() {
   {
     const home = pages.get('index.html');
     assert.ok(home.includes('enscribe-site-header'), 'the home page carries the website top bar');
-    // The article left site sidebar was removed — on a website the left nav is BOOKS-only (their chapter
-    // rail). An ARTICLE has NO `<nav class="enscribe-site-sidebar">` ELEMENT, but keeps the top bar and
-    // its right section-nav region (the on-this-page aside). Match the element's class attribute, not the
+    // #295: ONE shell frames every page — the page's content fragment is hosted in `<div class="content">`
+    // below the sticky top nav. An ARTICLE has NO left site sidebar (the left nav is BOOKS-only — their
+    // chapter rail) and NO separate on-this-page aside (its section nav, if any, rides inside its own
+    // `<article>` fragment); it keeps the top bar. Match the element's class attribute, not the
     // `.enscribe-site-sidebar` CSS rule (which stays in the inlined stylesheet on every page).
     assert.ok(!/class="enscribe-site-sidebar"/.test(home), 'an article page has NO left site sidebar element');
-    assert.ok(/class="enscribe-site-onthispage"/.test(home), 'an article keeps its right section-nav region (on-this-page aside)');
-    assert.ok(home.includes('Welcome'), 'the home article body is rendered into the content slot');
+    assert.ok(home.includes('<div class="content">'), 'the article fragment is hosted in the shell content region');
+    assert.ok(home.includes('Welcome'), 'the home article body is rendered into the content region');
     assert.ok(!home.includes('?page='), 'no ?page= SPA-router links (a static site has no router)');
     assert.ok(!/href="[^"]*\/index\.html"/.test(home), 'no <navPath>/index.html link targets — pretty trailing-slash URLs');
     assert.ok(!/href="\/(?!\/)/.test(home), 'no absolute-path chrome links (href="/…")');
@@ -83,10 +84,27 @@ export function run_tests() {
     // a book chapter page also carries the top bar, relativized for ITS depth (guide/ = depth 1)
     const guideHome = pages.get('guide/index.html');
     assert.ok(guideHome.includes('enscribe-site-header'), 'a book page also carries the website top bar');
+    // #295 (the direct assertion): the top bar is the OUTER frame in the BODY, NOT stapled into the
+    // <head>. The old decorateBookPage did `replace(/<body…>/, …topBar…)`, but WEBSITE_NAV_CSS carries the
+    // literal `<body>` inside a CSS comment, so the bar was spliced into the stylesheet in <head> as dead
+    // text and the book top nav never rendered. The shell wraps the book BODY FRAGMENT, so the header
+    // element sits AFTER </head>, in the body — visible by construction.
+    {
+      const headEnd = guideHome.indexOf('</head>');
+      assert.ok(headEnd > 0, 'the book page has a <head>');
+      assert.ok(!/<header class="enscribe-site-header"/.test(guideHome.slice(0, headEnd)),
+        '#295: the top bar element is NOT spliced into the <head> (no <header> before </head>)');
+      assert.ok(/<header class="enscribe-site-header"/.test(guideHome.slice(headEnd)),
+        '#295: the top bar element sits in the <body>, after </head> (the book top nav is visible)');
+      assert.ok(guideHome.slice(0, headEnd).includes('.enscribe-book-home'),
+        'the universal head folds in the book pageShell CSS (the #206 masthead) so a book page is styled');
+    }
+    assert.ok(guideHome.includes('<details class="enscribe-site-dropdown">'),
+      'the book page carries the working CSS-only <details> dropdown markup (the shell reuses slice 1 chrome)');
     assert.ok(!/class="enscribe-site-sidebar"/.test(guideHome), 'a book page has no SITE sidebar element either — its left nav is its OWN chapter rail');
     assert.ok(guideHome.includes('href="../"'), 'a depth-1 book page links home as `../`');
     assert.ok(!guideHome.includes('?page='), 'a book page has no un-staticized ?page= links');
-    console.log('PASS: static-website — pretty trailing-slash URLs, relative to depth (home from every depth), no /index.html / absolute / ?page=');
+    console.log('PASS: static-website — shell frames book/article (top nav in body, #295 gone), pretty depth-relative URLs, no /index.html / absolute / ?page=');
   }
 
   // ── <a {slug}> internal links (#289): resolve to the target's depth-relative path + auto-label ──

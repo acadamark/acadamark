@@ -159,11 +159,14 @@ function bookBodyHtml(rail, content, prevNext, onThisPage, bookNav) {
 // the return-to-cover masthead href (#206), so they can never drift apart.
 const INDEX_PAGE = 'index.html';
 
-/** Render one chapter page: renderChapter content (cross-page refs rewritten) inside
- *  the three-column chrome (chapter rail → page URLs with the current chapter marked
- *  active; on-this-page → this chapter's sub-sections in-page; prev/next → page URLs). */
-function renderPage(part, parts, idx, registry, idToUrl, opts) {
-  const { proc, file, defaultCss, bookTitle, bookNav, homeHref } = opts;
+/** Render one chapter page's BODY FRAGMENT: renderChapter content (cross-page refs
+ *  rewritten) inside the three-column chrome (chapter rail → page URLs with the current
+ *  chapter marked active; on-this-page → this chapter's sub-sections in-page; prev/next →
+ *  page URLs). Returned WITHOUT the page shell — the static-website build (#295) hosts this
+ *  fragment inside its own universal shell, while publishBookPages wraps it with pageShell
+ *  for the standalone artifact. Returns `{ body, title }` (the `<title>` a host shell needs). */
+function renderPageBody(part, parts, idx, registry, idToUrl, opts) {
+  const { proc, file, bookTitle, bookNav, homeHref } = opts;
   const chapterHref = (p) => p.slug;
 
   let content = renderChapter(part.node, registry, { proc, file });
@@ -181,16 +184,23 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
 
   const body = bookBodyHtml(rail, content, prevNext, onThisPage, bookNav);
-  const pageTitle = part.number ? `${part.number} · ${part.clean} — ${bookTitle}` : `${part.clean} — ${bookTitle}`;
-  return pageShell(body, pageTitle, defaultCss, bookNav);
+  const title = part.number ? `${part.number} · ${part.clean} — ${bookTitle}` : `${part.clean} — ${bookTitle}`;
+  return { body, title };
+}
+
+/** Render one chapter page: its body fragment wrapped in the standalone page shell
+ *  (the byte-stable separate-pages artifact). */
+function renderPage(part, parts, idx, registry, idToUrl, opts) {
+  const { body, title } = renderPageBody(part, parts, idx, registry, idToUrl, opts);
+  return pageShell(body, title, opts.defaultCss, opts.bookNav);
 }
 
 /** The landing/index page: the book title + the chapter rail linking to every chapter
  *  PAGE (a stable index.html entry point that does not privilege one chapter). The rail
  *  carries the same return-to-cover masthead as the chapter pages (here a self-link to
  *  the cover) so the chrome is uniform across every page. */
-function renderIndex(parts, idToUrl, opts) {
-  const { defaultCss, bookTitle, bookNav, file } = opts;
+function renderIndexBody(parts, idToUrl, opts) {
+  const { bookTitle, bookNav, file } = opts;
   // `current: true` — on the cover the masthead is a self-link (index.html → itself), so
   // mark it aria-current="page" rather than presenting a 'home' link to the page you are
   // already on. Chapter pages omit it (their masthead points elsewhere).
@@ -214,7 +224,13 @@ function renderIndex(parts, idToUrl, opts) {
       }))
     : '';
   const body = bookBodyHtml(rail, coverBodyHtml(bookTitle, contentsHtml), '', '', bookNav);
-  return pageShell(body, bookTitle, defaultCss, bookNav);
+  return { body, title: bookTitle };
+}
+
+/** The landing/index page wrapped in the standalone page shell. */
+function renderIndex(parts, idToUrl, opts) {
+  const { body, title } = renderIndexBody(parts, idToUrl, opts);
+  return pageShell(body, title, opts.defaultCss, opts.bookNav);
 }
 
 /**
@@ -227,7 +243,7 @@ function renderIndex(parts, idToUrl, opts) {
  * @param {string} opts.defaultCss - default.css text, inlined into each page's shell
  * @returns {Map<string, string>} filename ('counting-elephants.html', 'index.html', …) → HTML
  */
-export function publishBookPages({ numbered, file, proc, defaultCss }) {
+function prepareBook(numbered, file) {
   const bookEl = findBook(numbered);
   if (!bookEl) throw new Error('publishBookPages: no <book> element — separate-pages is a book-only build');
 
@@ -244,6 +260,11 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
   // cover on → the masthead 'home' is the cover (index.html); cover off → the book lands
   // on the first chapter, so 'home' points there and index.html redirects to it (#221).
   const homeHref = bookNav.cover ? INDEX_PAGE : parts[0].slug;
+  return { parts, bookNav, bookTitle, registry, idToUrl, homeHref };
+}
+
+export function publishBookPages({ numbered, file, proc, defaultCss }) {
+  const { parts, bookNav, bookTitle, registry, idToUrl, homeHref } = prepareBook(numbered, file);
   const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref };
   const pages = new Map();
   parts.forEach((part, idx) => {
@@ -252,5 +273,31 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
   pages.set(INDEX_PAGE, bookNav.cover
     ? renderIndex(parts, idToUrl, opts)
     : redirectPage(parts[0].slug, bookTitle));
+  return pages;
+}
+
+/**
+ * Publish a numbered book tree as per-chapter BODY FRAGMENTS — the content half of each
+ * separate page, WITHOUT the standalone HTML shell. The static-website build (#295) hosts
+ * each fragment inside its OWN universal website shell (top nav + universal head), so it
+ * does not staple chrome onto a finished book page. The standalone full-page artifact stays
+ * with publishBookPages (above) — this is purely additive; neither path changes the other.
+ *
+ * @param {object} opts - { numbered, file, proc } (no defaultCss — fragments carry no shell).
+ * @returns {Map<string, object>} filename → a chapter/cover entry `{ body, title }` (the
+ *   composeBookBody fragment + the page `<title>`), or, for a cover-OFF book's index, a
+ *   `{ page }` entry carrying the full standalone redirect document (hosted as-is; a
+ *   meta-refresh has no body fragment to wrap).
+ */
+export function publishBookPageBodies({ numbered, file, proc }) {
+  const { parts, bookNav, bookTitle, registry, idToUrl, homeHref } = prepareBook(numbered, file);
+  const opts = { proc, file, bookTitle, bookNav, homeHref };
+  const pages = new Map();
+  parts.forEach((part, idx) => {
+    pages.set(part.slug, renderPageBody(part, parts, idx, registry, idToUrl, opts));
+  });
+  pages.set(INDEX_PAGE, bookNav.cover
+    ? renderIndexBody(parts, idToUrl, opts)
+    : { page: redirectPage(parts[0].slug, bookTitle) });
   return pages;
 }

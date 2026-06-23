@@ -11,8 +11,10 @@
 //
 // RENDER MODEL (#278): each page is rendered INDEPENDENTLY, through the SHARED per-document render
 // path (render-document.js) that the CLI single-document build also uses — renderArticleDocument for
-// an article, assembleAndNumber + publishBookPages for a book — so there is one render path, not a
-// website-private reconstruction of the pipeline. (This is NOT the live website's one synthetic-book
+// an article, assembleAndNumber + publishBookPageBodies for a book — so there is one render path, not
+// a website-private reconstruction of the pipeline. Both page types are then framed by the ONE static
+// website shell (composeWebsiteShellPage, #295): a universal head + the sticky top nav + the page's
+// content fragment. (This is NOT the live website's one synthetic-book
 // global pass; that model can't emit a book-page's chapters as nested pages. A consequence: a
 // cross-page `<ref>` BETWEEN top-level pages does not resolve across the independent renders —
 // flagged in the slice report, not silently handled.) A website page passes only assetsDir, keeping
@@ -22,11 +24,11 @@ import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs';
 import { join, dirname, extname } from 'node:path';
 import { VFile } from 'vfile';
 import {
-  publishBookPages,
+  publishBookPageBodies,
   flattenNavPages,
   extractDocumentTitle,
   buildWebsiteTopBar,
-  WEBSITE_NAV_CSS,
+  composeWebsiteShellPage,
   slugifyPage,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
@@ -95,48 +97,10 @@ function pageDirAssets(pageDir, masterDir, destPrefix) {
   return out;
 }
 
-/** Wrap a rendered article fragment in the website chrome — a full standalone document with
- *  default.css + the nav chrome CSS inlined (self-contained, like publish-pages' pageShell).
- *  The article body (processSync's `<link …>` head assets + `<article>`) sits in the content slot.
- *  An article gets NO left site sidebar: on a website the left nav belongs to book pages (their
- *  chapter rail). The article carries the top bar + its own right section nav (the body's
- *  enscribe-toc); the .enscribe-site-layout grid reflows to a single content column when no
- *  .enscribe-site-sidebar element is present (its existing :has rules — no CSS change needed). */
-function composeArticlePage({ body, title, topBar, defaultCss }) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(title || 'Enscribe')}</title>
-<style>
-${defaultCss}
-${WEBSITE_NAV_CSS}
-</style>
-</head>
-<body>
-<div class="enscribe-site">
-${topBar}
-<div class="enscribe-site-layout">
-<main class="enscribe-site-main" data-enscribe-content>
-${body}
-</main>
-<aside class="enscribe-site-onthispage"></aside>
-</div>
-</div>
-</body>
-</html>
-`;
-}
-
-/** Add the website top bar (cross-site nav) + the nav chrome CSS to a publish-pages book page
- *  (already a full standalone document with its own chapter chrome). The book's intra-book nav
- *  (chapter rail, prev/next) is untouched; the top bar rides above it for site-level navigation. */
-function decorateBookPage(html, topBar) {
-  let out = String(html).replace('</head>', `<style>${WEBSITE_NAV_CSS}</style>\n</head>`);
-  out = out.replace(/<body([^>]*)>/, `<body$1>\n${topBar}`);
-  return out;
-}
+// #295: the per-page-type composition (composeArticlePage / decorateBookPage) is retired. ONE
+// shell (composeWebsiteShellPage) now frames every page — the universal head + the sticky top
+// nav (the outer frame) + the page's content fragment in `.content`. The book top nav is visible
+// by construction (no `replace(/<body…>/, …)` to mis-splice the bar into a CSS comment in <head>).
 
 /**
  * Build the whole static site from a website master.
@@ -250,7 +214,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
 
   // 4. The top bar (cross-site nav) is built once; its `?page=` links are relativized PER PAGE below.
   //    No left site sidebar is built: on a website the left nav belongs to BOOK pages (their chapter
-  //    rail, via decorateBookPage/publishBookPages — untouched). Articles get the top bar + their own
+  //    rail, carried inside the book body fragment — untouched). Articles get the top bar + their own
   //    right section nav. (buildWebsiteSidebar still serves the LIVE website's opt-in <config sidebar>
   //    via browser.js; it is simply no longer used by the static article composition.)
   const topBar = buildWebsiteTopBar({ title: masterTitle, icon: null, firstSlug: homeSlug }, entries);
@@ -264,8 +228,9 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     try {
       if (isBook) {
         // Per-chapter pages, nested under the book's nav-path dir — assemble + number (the shared
-        // render path), then publish. The page passes only assetsDir; embed/dsl stay at the library
-        // defaults, exactly as before (a site does not self-inline ~260 KB of CSS into every page).
+        // render path), then publish each chapter's BODY FRAGMENT and host it in the universal shell.
+        // The page passes only assetsDir; embed/dsl stay at the library defaults, exactly as before
+        // (a site does not self-inline ~260 KB of CSS into every page).
         const { numbered, file, proc } = assembleAndNumber({
           source,
           sourcePath: resolved.sourcePath,
@@ -273,15 +238,21 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
           warn: (m) => warnings.push(`page "${slug}": ${m}`),
           pipeOpts: { assetsDir: resolved.pageDir },
         });
-        const bookPages = publishBookPages({ numbered, file, proc, defaultCss });
-        for (const [fname, html] of bookPages) {
+        const bookBodies = publishBookPageBodies({ numbered, file, proc });
+        for (const [fname, entry] of bookBodies) {
           const outPath = `${destPrefix}${fname}`;
-          pageMap.set(outPath, staticize(decorateBookPage(html, topBar), outPath, slug));
+          // A cover-OFF book's index is a full standalone redirect (a meta-refresh has no fragment) —
+          // host it as-is; every other page is a body fragment wrapped in the universal shell.
+          const html = entry.page != null
+            ? entry.page
+            : composeWebsiteShellPage({ defaultCss, title: entry.title, topBar, content: entry.body });
+          pageMap.set(outPath, staticize(html, outPath, slug));
         }
       } else {
-        // Article page — the shared article render (same processSync the CLI `render` uses).
-        const body = renderArticleDocument(source, { assetsDir: resolved.pageDir });
-        const full = composeArticlePage({ body, title: page.title, topBar, defaultCss });
+        // Article page — the shared article render (same processSync the CLI `render` uses); the
+        // `<article>` fragment is hosted in the universal shell's content region.
+        const content = renderArticleDocument(source, { assetsDir: resolved.pageDir });
+        const full = composeWebsiteShellPage({ defaultCss, title: page.title, topBar, content });
         const outPath = `${destPrefix}index.html`;
         pageMap.set(outPath, staticize(full, outPath, slug));
       }
