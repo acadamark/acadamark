@@ -1193,7 +1193,10 @@ export { buildWebsiteTopBar, buildWebsiteSidebar, WEBSITE_NAV_CSS } from './asse
 // sticky top nav (the outer frame) + the page's content fragment in `.content`. Replaces the old
 // per-page-type composition (decorateBookPage / composeArticlePage) so the book top nav is visible
 // by construction. composeWebsiteShellPage is the full-document builder the static build calls.
-export { composeWebsiteShellPage, WEBSITE_SHELL_CSS } from '../master-document/website-shell.js';
+export { composeWebsiteShellPage, WEBSITE_SHELL_CSS, collectDslNames, buildWebsiteDslHead } from '../master-document/website-shell.js';
+// The pinned external-DSL CDN URLs — re-exported (symmetry with KATEX_CDN_URL above) so the static-website
+// universal head's runtime-script assertions can reference the same versioned URLs the head emits (#298).
+export { MERMAID_CDN_URL, ABCJS_CDN_URL } from './dsl/registry.js';
 // slugifyPage (#278 slice 1): the title → slug helper website-structuring uses for page slugs, reused
 // by the static build to slugify nav-GROUP titles into output-path segments (one slugifier, no drift).
 export { slugifyPage } from './plugins/website-structuring.js';

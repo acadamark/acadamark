@@ -1378,6 +1378,21 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   }
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+<script src="https://cdn.jsdelivr.net/npm/abcjs@6.6.3/dist/abcjs-basic-min.js"></script>
+<script>(function () {
+  function renderAll() {
+    document.querySelectorAll('[data-enscribe-dsl="abc"]').forEach(function (el) {
+      ABCJS.renderAbc(el, el.textContent);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderAll);
+  } else {
+    renderAll();
+  }
+})();</script>
 </head>
 <body>
 <div class="enscribe-site">

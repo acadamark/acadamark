@@ -29,6 +29,8 @@ import {
   extractDocumentTitle,
   buildWebsiteTopBar,
   composeWebsiteShellPage,
+  collectDslNames,
+  buildWebsiteDslHead,
   slugifyPage,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
@@ -222,6 +224,17 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const pageMap = new Map();
   const assets = [];
 
+  // PASS 1 — render every page's content fragment, accumulating the site-wide set of external-DSL
+  // markers (data-enscribe-dsl) as we go. The live diagram runtime is delivered ONCE through the
+  // universal head (#298), the same single-source location as the KaTeX/fonts links — NOT per fragment:
+  // a BOOK chapter's body-injected runtime is sliced off by extractBookPart, and an ARTICLE fragment's
+  // would duplicate within the page. The runtime therefore can't be composed until the whole site's DSL
+  // set is known, so we collect now and compose in pass 2. (Per-page render options stay at the library
+  // default dslMode 'skip': the <pre data-enscribe-dsl> contract markup the runtime scans is mode-
+  // independent, so the bodies already carry the renderable diagrams; only the runtime needs adding.)
+  const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
+  const siteDslNames = new Set();
+
   for (const { page, resolved, source, slug, isBook } of pageData) {
     const navPath = navPathOf.get(slug) ?? slug;          // group segments + meta-slug; home → ''
     const destPrefix = navPath === '' ? '' : `${navPath}/`;
@@ -242,25 +255,41 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
         for (const [fname, entry] of bookBodies) {
           const outPath = `${destPrefix}${fname}`;
           // A cover-OFF book's index is a full standalone redirect (a meta-refresh has no fragment) —
-          // host it as-is; every other page is a body fragment wrapped in the universal shell.
-          const html = entry.page != null
-            ? entry.page
-            : composeWebsiteShellPage({ defaultCss, title: entry.title, topBar, content: entry.body });
-          pageMap.set(outPath, staticize(html, outPath, slug));
+          // host it as-is; every other page is a body fragment wrapped in the universal shell (pass 2).
+          if (entry.page != null) {
+            rendered.push({ outPath, slug, page: entry.page });
+          } else {
+            collectDslNames(entry.body, siteDslNames);
+            rendered.push({ outPath, slug, title: entry.title, content: entry.body });
+          }
         }
       } else {
         // Article page — the shared article render (same processSync the CLI `render` uses); the
         // `<article>` fragment is hosted in the universal shell's content region.
         const content = renderArticleDocument(source, { assetsDir: resolved.pageDir });
-        const full = composeWebsiteShellPage({ defaultCss, title: page.title, topBar, content });
-        const outPath = `${destPrefix}index.html`;
-        pageMap.set(outPath, staticize(full, outPath, slug));
+        collectDslNames(content, siteDslNames);
+        rendered.push({ outPath: `${destPrefix}index.html`, slug, title: page.title, content });
       }
     } catch (err) {
       warnings.push(`page "${slug}" failed to render: ${err.message}`);
       continue;
     }
     assets.push(...pageDirAssets(resolved.pageDir, masterDir, destPrefix));
+  }
+
+  // The live-diagram runtime block for the universal head — the pinned-CDN <script src> + init for each
+  // external DSL the site uses (empty for a diagram-free site, so its head is unchanged). Built ONCE and
+  // passed to every page, so the universal head stays byte-identical across pages (each page renders its
+  // own diagrams; a DSL's init is a no-op where its markers are absent). #298.
+  const dslHead = buildWebsiteDslHead(siteDslNames);
+
+  // PASS 2 — frame each rendered fragment in the universal shell (now carrying the site's diagram
+  // runtime in its head), then staticize its cross-page links for the page's depth.
+  for (const { outPath, slug, title, content, page } of rendered) {
+    const html = page != null
+      ? page
+      : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead });
+    pageMap.set(outPath, staticize(html, outPath, slug));
   }
 
   // A broken `<a {slug}>` is a real authoring error — fail the build (after listing every one).

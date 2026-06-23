@@ -537,9 +537,14 @@ live mode, matching the CDN-default / embed posture the math CSS already uses
 is inlined (`live-inline`, self-contained); external → a `<script src>` to the
 pinned CDN (`live-link`, lean).** Concretely: the `enscribe render` CLI defaults
 `dslMode` to `embed ? 'live-inline' : 'live-link'` (the CLI is self-contained by
-default, so a diagram ships rendered); the docs-site builds `live-link`; and the
-fixture generator renders DSL fixtures `live-link` so the committed `.html` matches
-what users get. This is the same render-JS injection story as scroll-spy (#20) —
+default, so a diagram ships rendered); the docs-site builds `live-link`; the
+**static website** (`enscribe build` of a `<meta type=website>` master) loads each
+used DSL's runtime once from its pinned CDN in the shared universal head — the
+per-page fragments stay at the `skip` default, since the `<pre data-enscribe-dsl>`
+contract they carry is mode-independent and a per-fragment runtime would be stripped
+from a book chapter (the body the shell hosts is sliced out below the asset prepend)
+or duplicated in an article (#298); and the fixture generator renders DSL fixtures
+`live-link` so the committed `.html` matches what users get. This is the same render-JS injection story as scroll-spy (#20) —
 the difference is only first-party-inline (scroll-spy) vs the third-party DSL
 *runtime* shipped here, CDN-linked by default. **Math needs no runtime**: formulas
 are pre-rendered to KaTeX HTML at build time; only the KaTeX CSS is injected (same

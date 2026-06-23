@@ -27,6 +27,7 @@ import {
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 import { KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../interpreter/assets/font-loader.js';
+import { getRegisteredDsls } from '../interpreter/dsl/registry.js';
 import { BOOK_HOME_CSS } from './publish-pages.js';
 import { escapeHtml } from './book-scaffold.js';
 
@@ -114,6 +115,62 @@ const SHELL_BODY_SCRIPTS =
   `<script>${ON_THIS_PAGE_JS}</script>\n` +
   `<script>${BACK_TO_TOP_JS}</script>`;
 
+// The external-DSL contract marker the diagram handler emits on every diagram's `<pre>` container,
+// regardless of render mode (the value is the DSL's registry name). collectDslNames reads it back
+// from rendered fragments to learn which DSLs a site uses; the value space is the lowercase
+// [a-z0-9-] of a registry name.
+const DSL_MARKER_RE = /data-enscribe-dsl="([a-z0-9-]+)"/gi;
+
+/**
+ * Collect the `data-enscribe-dsl` marker names present in a rendered content fragment into `into`,
+ * the accumulator the static-website build grows across every page to learn the site-wide DSL set
+ * (#298). The marker is mode-independent contract markup — it is present whether or not the live
+ * runtime is loaded — so scanning the rendered body is the canonical "does this page use mermaid/abc"
+ * signal, independent of which delivery the runtime takes.
+ *
+ * @param {string} contentHtml - a page's rendered content fragment.
+ * @param {Set<string>} into   - the site-wide accumulator (returned for convenience).
+ * @returns {Set<string>}
+ */
+export function collectDslNames(contentHtml, into = new Set()) {
+  for (const m of String(contentHtml ?? '').matchAll(DSL_MARKER_RE)) into.add(m[1].toLowerCase());
+  return into;
+}
+
+/**
+ * Build the universal head's live-diagram runtime block (#298): for each REGISTERED external DSL the
+ * site uses, the DSL's pinned-CDN `<script src>` (the library — browser-cached across pages, NEVER
+ * inlined) followed by its init `<script>`, in registry order. Returns '' when the site uses no DSL,
+ * so a diagram-free site's head is byte-unchanged.
+ *
+ * This is the live-link delivery (CDN `<script src>`), relocated from the per-document body — where
+ * `injectDslAssets` prepends it — to the ONE universal head: a book chapter's body-injected runtime is
+ * sliced off by extractBookPart, and an article fragment's would duplicate within the page, so for a
+ * website the runtime belongs in the shared head (the same single-source location as the KaTeX/fonts
+ * links). The CDN URL + init script are REUSED from each DSL's `liveAssets` (the same pinned versions
+ * the standalone live-link render emits — cdn-versions.test.js guards them), never hardcoded here. The
+ * inits are head-safe: mermaid uses `startOnLoad` (its own DOMContentLoaded scan) and abc's init guards
+ * on `document.readyState`, so both defer to after the body parses even though they run in the head.
+ *
+ * Passed UNCHANGED to every page so the universal head stays byte-identical across pages: each page
+ * runs its own diagrams, and a DSL's init is a no-op on a page whose body has none of its markers.
+ *
+ * @param {Iterable<string>} dslNames - the site-wide `data-enscribe-dsl` names (collectDslNames output).
+ * @returns {string} the head's diagram-runtime HTML, or '' if the site uses no registered DSL.
+ */
+export function buildWebsiteDslHead(dslNames) {
+  const present = new Set(dslNames);
+  const blocks = [];
+  for (const dsl of getRegisteredDsls()) {
+    if (!present.has(dsl.name)) continue;
+    const { cdnUrl, initScript } = dsl.liveAssets;
+    blocks.push(
+      `<script src="${escapeHtml(cdnUrl)}"></script>\n<script>${initScript}</script>`,
+    );
+  }
+  return blocks.join('\n');
+}
+
 /**
  * Compose a full static website page: the universal head, the sticky top nav (the outer frame),
  * and the page's content fragment in `<div class="content">`.
@@ -123,9 +180,11 @@ const SHELL_BODY_SCRIPTS =
  * @param {string} o.title      - the page `<title>`.
  * @param {string} o.topBar     - the website top bar (buildWebsiteTopBar output).
  * @param {string} o.content    - the page's content fragment (article or book body).
+ * @param {string} [o.dslHead]  - the live-diagram runtime block for the universal head
+ *        (buildWebsiteDslHead output); '' (the default) leaves the head byte-unchanged. #298.
  * @returns {string} a standalone `<html>` document.
  */
-export function composeWebsiteShellPage({ defaultCss, title, topBar, content }) {
+export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '' }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,7 +194,7 @@ export function composeWebsiteShellPage({ defaultCss, title, topBar, content }) 
 ${HEAD_ASSET_LINKS}
 <style>
 ${universalHeadStyle(defaultCss)}
-</style>
+</style>${dslHead ? `\n${dslHead}` : ''}
 </head>
 <body>
 <div class="enscribe-site">

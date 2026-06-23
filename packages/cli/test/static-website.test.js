@@ -14,7 +14,7 @@ import { dirname, join, resolve } from 'node:path';
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { buildStaticWebsite, resolvePageSource } from '../src/static-website.js';
-import { KATEX_CDN_URL } from '@enscribejs/enscribe';
+import { KATEX_CDN_URL, MERMAID_CDN_URL, ABCJS_CDN_URL } from '@enscribejs/enscribe';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIX = resolve(__dirname, 'fixtures/website-mini');
@@ -115,6 +115,53 @@ export function run_tests() {
     assert.ok(guideHome.includes('href="../"'), 'a depth-1 book page links home as `../`');
     assert.ok(!guideHome.includes('?page='), 'a book page has no un-staticized ?page= links');
     console.log('PASS: static-website — shell frames book/article (top nav in body, #295 gone), pretty depth-relative URLs, no /index.html / absolute / ?page=');
+  }
+
+  // ── #298: a site that uses external-DSL diagrams loads each used DSL's LIVE runtime from its pinned CDN
+  //    in the UNIVERSAL head (once per page), keeps the diagram SOURCE verbatim, and NEVER inlines the
+  //    library. The mermaid diagram lives in a BOOK chapter (whose body-injected runtime extractBookPart
+  //    slices off) and the abc tune in an ARTICLE — so the shared-head delivery is what makes either
+  //    render; a per-fragment script could not. A diagram-FREE page (home) carries the same runtime,
+  //    because the head is driven off the WHOLE site's DSL set, not one page's.
+  {
+    const headOf = (html) => html.slice(0, html.indexOf('</head>'));
+    const bodyOf = (html) => html.slice(html.indexOf('</head>'));
+    const countOf = (html, needle) => html.split(needle).length - 1;
+
+    const chapterKey = [...pages.keys()].find(
+      (k) => k.startsWith('guide/') && k !== 'guide/index.html' && pages.get(k).includes('data-enscribe-dsl="mermaid"'),
+    );
+    assert.ok(chapterKey, 'the book chapter carrying the mermaid diagram was emitted');
+    const chapter = pages.get(chapterKey);
+    const about = pages.get('about/index.html');
+    const home = pages.get('index.html');                 // a DIAGRAM-FREE page
+
+    // The diagram SOURCE survives verbatim in the body — its mode-independent <pre data-enscribe-dsl>
+    // container, which the runtime scans and which the <config show-source> disclosure (#19) reveals.
+    assert.ok(/<pre[^>]*data-enscribe-dsl="mermaid"[^>]*>[\s\S]*graph TD[\s\S]*<\/pre>/.test(bodyOf(chapter)),
+      'the mermaid diagram source is preserved verbatim in the chapter body (data-enscribe-dsl="mermaid")');
+    assert.ok(/<pre[^>]*data-enscribe-dsl="abc"[^>]*>[\s\S]*K:C[\s\S]*<\/pre>/.test(bodyOf(about)),
+      'the abc tune source is preserved verbatim in the article body (data-enscribe-dsl="abc")');
+
+    // Each USED DSL's runtime is loaded from its pinned CDN, in the universal HEAD, on EVERY page
+    // (including the diagram-free home) — once per page, never repeated and never also in the body.
+    const RUNTIME_M = `<script src="${MERMAID_CDN_URL}"></script>`;
+    const RUNTIME_A = `<script src="${ABCJS_CDN_URL}"></script>`;
+    for (const [name, html] of [['chapter', chapter], ['about', about], ['home', home]]) {
+      assert.ok(headOf(html).includes(RUNTIME_M), `${name}: universal head loads the mermaid runtime from its pinned CDN`);
+      assert.ok(headOf(html).includes(RUNTIME_A), `${name}: universal head loads the abc runtime from its pinned CDN`);
+      assert.equal(countOf(html, RUNTIME_M), 1, `${name}: the mermaid runtime appears exactly once on the page (not duplicated)`);
+      assert.equal(countOf(html, RUNTIME_A), 1, `${name}: the abc runtime appears exactly once on the page (not duplicated)`);
+    }
+
+    // NOT inlined: the page LINKS the library (src=…) and carries no inline copy. The largest inline
+    // <script> is a small init/chrome script (KBs); a bundled mermaid/abcjs blob would be ~MBs.
+    const biggestInline = (chapter.match(/<script>([\s\S]*?)<\/script>/g) || [])
+      .reduce((n, s) => Math.max(n, s.length), 0);
+    assert.ok(biggestInline < 50000,
+      `the DSL library is NOT inlined (largest inline <script> is ${biggestInline} chars, far below a bundled library)`);
+
+    console.log('PASS: static-website (#298) — used DSLs load their live runtime from the pinned CDN in the universal head, once per page; diagram source kept verbatim; library not inlined');
   }
 
   // ── <a {slug}> internal links (#289): resolve to the target's depth-relative path + auto-label ──
