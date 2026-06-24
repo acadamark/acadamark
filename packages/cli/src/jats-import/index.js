@@ -63,7 +63,7 @@ import { SaxesParser } from 'saxes';
 import { MathMLToLaTeX } from 'mathml-to-latex';
 import { makeTag, makeOpaqueTag } from '@enscribejs/enscribe/core/tag';
 import { SECTION_TAGNAMES } from '@enscribejs/enscribe/interpreter/lib/section-kinds';
-import { escapeXmlAttr } from '../lib/xml-escape.js';
+import { escapeXmlAttr, escapeXmlText } from '../lib/xml-escape.js';
 // #105: serialize converted table-cell content (math / cite / note / formatting)
 // to Enscribe inline source, which the cell goes on to carry so #21's cell-parse
 // plugin re-parses it on render and round-trip.
@@ -642,7 +642,6 @@ function serializeXml(node) {
   const inner = (node.children ?? []).map(serializeXml).join('');
   return `<${node.name}${attrs}>${inner}</${node.name}>`;
 }
-const escapeXmlText = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /**
  * Extract LaTeX from an `<inline-formula>` / `<disp-formula>` (or an

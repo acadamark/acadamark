@@ -46,7 +46,7 @@ import { parseCsv, parseTsv, formatScopedNumber } from '@enscribejs/enscribe';
 // (book-regions.js), the same set book-structuring.js routes by — so the JATS exporter
 // can't disagree with the renderer on which parts are front matter.
 import { BOOK_PART_FRONT_TYPES as BOOK_FRONT_PART_TYPES } from '@enscribejs/enscribe/interpreter/lib/book-regions';
-import { escapeXmlAttr } from '../lib/xml-escape.js';
+import { escapeXmlAttr, escapeXmlText } from '../lib/xml-escape.js';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
 const JATS_ARTICLE_DOCTYPE_DECL =
@@ -189,7 +189,7 @@ function emitArticleMetaChildren(metaNode, indent) {
     out += `${pad}<contrib-group>\n`;
     for (const author of authorNodes) {
       out += `${pad}  <contrib contrib-type="author">\n`;
-      out += `${pad}    <string-name>${escapeXml(extractText(author.content))}</string-name>\n`;
+      out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
       out += `${pad}  </contrib>\n`;
     }
     out += `${pad}</contrib-group>\n`;
@@ -212,7 +212,7 @@ function emitArticleMetaChildren(metaNode, indent) {
     const jatsEl = vocab?.jats_counterpart?.element;
     if (jatsEl) {
       const text = extractText(child.content);
-      out += `${pad}<${jatsEl}>${escapeXml(text)}</${jatsEl}>\n`;
+      out += `${pad}<${jatsEl}>${escapeXmlText(text)}</${jatsEl}>\n`;
     }
   }
   return out;
@@ -236,7 +236,7 @@ function emitPubDate(dateNode, indent) {
     if (month) inner += `<month>${month}</month>`;
     if (day) inner += `<day>${day}</day>`;
   } else {
-    inner = `<string-date>${escapeXml(text)}</string-date>`;
+    inner = `<string-date>${escapeXmlText(text)}</string-date>`;
   }
   return `${pad}<pub-date>${inner}</pub-date>\n`;
 }
@@ -304,7 +304,7 @@ function emitApp(appendixPart, indent) {
 
   let out = `${pad}<app${id}>\n`;
   if (titleNode && titleNode.computedSectionNumber != null) {
-    out += `${pad}  <label>${escapeXml(String(titleNode.computedSectionNumber))}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(String(titleNode.computedSectionNumber))}</label>\n`;
   }
   if (titleNode) {
     out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
@@ -595,7 +595,7 @@ function emitBookMetaChildren(metaNode, indent) {
     out += `${pad}<contrib-group>\n`;
     for (const author of authorNodes) {
       out += `${pad}  <contrib contrib-type="author">\n`;
-      out += `${pad}    <string-name>${escapeXml(extractText(author.content))}</string-name>\n`;
+      out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
       out += `${pad}  </contrib>\n`;
     }
     out += `${pad}</contrib-group>\n`;
@@ -608,7 +608,7 @@ function emitBookMetaChildren(metaNode, indent) {
     const jatsEl = vocab?.jats_counterpart?.element;
     if (jatsEl) {
       const text = extractText(child.content);
-      out += `${pad}<${jatsEl}>${escapeXml(text)}</${jatsEl}>\n`;
+      out += `${pad}<${jatsEl}>${escapeXmlText(text)}</${jatsEl}>\n`;
     }
   }
   return out;
@@ -642,7 +642,7 @@ function emitBookPartMetaChildren(metaNode, indent) {
     // (BITS title-group content model: label?, title?, ...). Guarded → byte-
     // identical for unnumbered book-parts.
     if (titleNode && titleNode.computedSectionNumber != null) {
-      out += `${pad}  <label>${escapeXml(String(titleNode.computedSectionNumber))}</label>\n`;
+      out += `${pad}  <label>${escapeXmlText(String(titleNode.computedSectionNumber))}</label>\n`;
     }
     if (titleNode) {
       out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
@@ -656,7 +656,7 @@ function emitBookPartMetaChildren(metaNode, indent) {
     out += `${pad}<contrib-group>\n`;
     for (const author of authorNodes) {
       out += `${pad}  <contrib contrib-type="author">\n`;
-      out += `${pad}    <string-name>${escapeXml(extractText(author.content))}</string-name>\n`;
+      out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
       out += `${pad}  </contrib>\n`;
     }
     out += `${pad}</contrib-group>\n`;
@@ -836,7 +836,7 @@ function emitBlock(node, indent) {
       // Unknown / out-of-scope-for-5b block — emit as <p> with the
       // node's text so the document still renders something.
       const text = extractText(node.content);
-      if (text) return `${pad}<p>${escapeXml(text)}</p>\n`;
+      if (text) return `${pad}<p>${escapeXmlText(text)}</p>\n`;
       return '';
     }
   }
@@ -926,7 +926,7 @@ function emitFigureJats(node, indent) {
   let out = `${pad}<fig${id}>\n`;
   if (number != null) {
     // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
-    out += `${pad}  <label>${escapeXml(formatScopedNumber(number, node._scope))}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(formatScopedNumber(number, node._scope))}</label>\n`;
   }
   if (caption || title) {
     out += `${pad}  <caption>\n`;
@@ -998,7 +998,7 @@ function emitDslFigureJats(node, indent) {
   let out = `${pad}<fig${id} specific-use="enscribe-dsl-${dslType}">\n`;
   if (number != null) {
     // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
-    out += `${pad}  <label>${escapeXml(formatScopedNumber(number, node._scope))}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(formatScopedNumber(number, node._scope))}</label>\n`;
   }
   if (caption || title) {
     out += `${pad}  <caption>\n`;
@@ -1012,7 +1012,7 @@ function emitDslFigureJats(node, indent) {
   }
   // JATS-conventional alt-text — short accessibility prose, not the
   // source itself. The source goes into <preformat> below.
-  out += `${pad}  <alt-text>${escapeXml(`${dslType[0].toUpperCase()}${dslType.slice(1)} diagram source preserved as preformatted text.`)}</alt-text>\n`;
+  out += `${pad}  <alt-text>${escapeXmlText(`${dslType[0].toUpperCase()}${dslType.slice(1)} diagram source preserved as preformatted text.`)}</alt-text>\n`;
   // <preformat> carries the verbatim DSL source. The `preformat-type`
   // attribute identifies the DSL so downstream tooling can find and
   // render these blocks (matching `data-enscribe-dsl="mermaid"`
@@ -1020,7 +1020,7 @@ function emitDslFigureJats(node, indent) {
   // `content-type`: the JATS/BITS <preformat> ATTLIST declares
   // preformat-type (CDATA) but not content-type (#4: doc43/44).
   if (source) {
-    out += `${pad}  <preformat preformat-type="${dslType}-source">${escapeXml(source)}</preformat>\n`;
+    out += `${pad}  <preformat preformat-type="${dslType}-source">${escapeXmlText(source)}</preformat>\n`;
   }
   out += `${pad}</fig>\n`;
   return out;
@@ -1040,7 +1040,7 @@ function emitTableWrapJats(node, indent) {
   let out = `${pad}<table-wrap${id}>\n`;
   if (number != null) {
     // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
-    out += `${pad}  <label>${escapeXml(formatScopedNumber(number, node._scope))}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(formatScopedNumber(number, node._scope))}</label>\n`;
   }
   if (caption || title) {
     out += `${pad}  <caption>\n`;
@@ -1120,14 +1120,14 @@ function emitTableInner(node, indent) {
   const parserFn = parsers[format];
   if (!parserFn) {
     // json / yaml / md not yet handled in JATS path; emit placeholder.
-    return `${pad}<table>\n${pad}  <!-- unsupported table format for JATS export: ${escapeXml(format)} -->\n${pad}</table>\n`;
+    return `${pad}<table>\n${pad}  <!-- unsupported table format for JATS export: ${escapeXmlText(format)} -->\n${pad}</table>\n`;
   }
 
   let parsed;
   try {
     parsed = parserFn(rawData, { hasHeaders });
   } catch (err) {
-    return `${pad}<table>\n${pad}  <!-- table parse error: ${escapeXml(err.message)} -->\n${pad}</table>\n`;
+    return `${pad}<table>\n${pad}  <!-- table parse error: ${escapeXmlText(err.message)} -->\n${pad}</table>\n`;
   }
 
   let out = `${pad}<table>\n`;
@@ -1135,7 +1135,7 @@ function emitTableInner(node, indent) {
     out += `${pad}  <thead>\n`;
     out += `${pad}    <tr>\n`;
     for (const cell of parsed.headers) {
-      out += `${pad}      <th>${escapeXml(String(cell))}</th>\n`;
+      out += `${pad}      <th>${escapeXmlText(String(cell))}</th>\n`;
     }
     out += `${pad}    </tr>\n`;
     out += `${pad}  </thead>\n`;
@@ -1145,7 +1145,7 @@ function emitTableInner(node, indent) {
     for (const row of parsed.rows) {
       out += `${pad}    <tr>\n`;
       for (const cell of row) {
-        out += `${pad}      <td>${escapeXml(String(cell))}</td>\n`;
+        out += `${pad}      <td>${escapeXmlText(String(cell))}</td>\n`;
       }
       out += `${pad}    </tr>\n`;
     }
@@ -1158,7 +1158,7 @@ function emitTableInner(node, indent) {
 /**
  * #21: emit the inner `<table>` from the table-cell-parse plugin's
  * `_parsedCells` stamp. Header cells and literal body cells are escaped text
- * (byte-identical to the literal path's `<td>${escapeXml(cell)}</td>`); parsed
+ * (byte-identical to the literal path's `<td>${escapeXmlText(cell)}</td>`); parsed
  * body cells (`{ inline }`) emit inline JATS via the shared `emitInlines`, so a
  * link is an `<ext-link>`, a resolved cross-ref an `<xref>`, inline math an
  * `<inline-formula>`, etc. — the same semantic content the HTML channel renders.
@@ -1169,7 +1169,7 @@ function emitParsedCellsTable(parsedCells, indent) {
   if (parsedCells.headers) {
     out += `${pad}  <thead>\n${pad}    <tr>\n`;
     for (const cell of parsedCells.headers) {
-      out += `${pad}      <th>${escapeXml(String(cell))}</th>\n`;
+      out += `${pad}      <th>${escapeXmlText(String(cell))}</th>\n`;
     }
     out += `${pad}    </tr>\n${pad}  </thead>\n`;
   }
@@ -1180,7 +1180,7 @@ function emitParsedCellsTable(parsedCells, indent) {
       for (const cell of row) {
         const content = Array.isArray(cell?.inline)
           ? emitInlines(cell.inline)
-          : escapeXml(String(cell?.text ?? ''));
+          : escapeXmlText(String(cell?.text ?? ''));
         out += `${pad}      <td>${content}</td>\n`;
       }
       out += `${pad}    </tr>\n`;
@@ -1210,7 +1210,7 @@ function emitHtmlTableGrid(grid, indent) {
     if (cell.align) attrs += ` align="${escapeXmlAttr(String(cell.align))}"`;
     const content = Array.isArray(cell.inline)
       ? emitInlines(cell.inline)
-      : escapeXml(String(cell?.text ?? ''));
+      : escapeXmlText(String(cell?.text ?? ''));
     return `${pad}      <${tag}${attrs}>${content}</${tag}>\n`;
   };
 
@@ -1376,7 +1376,7 @@ function emitDispFormulaJats(node, indent) {
   let out = `${pad}<disp-formula${id}>\n`;
   if (number != null) {
     // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
-    out += `${pad}  <label>(${escapeXml(formatScopedNumber(number, node._scope))})</label>\n`;
+    out += `${pad}  <label>(${escapeXmlText(formatScopedNumber(number, node._scope))})</label>\n`;
   }
   // Use <![CDATA[...]]> wrapping for the TeX source so LaTeX
   // backslash escapes don't need XML-escaping. CDATA can't contain
@@ -1439,12 +1439,12 @@ function emitStatementJats(node, indent) {
   // formatLabel primitive produces.
   if (number != null) {
     // chapter-prefixed in books (RQ-BOOK-M4), bare in articles.
-    out += `${pad}  <label>${escapeXml(`${labelPrefix} ${formatScopedNumber(number, node._scope)}.`)}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(`${labelPrefix} ${formatScopedNumber(number, node._scope)}.`)}</label>\n`;
   } else if (contentType === 'remark' || contentType === 'proof') {
-    out += `${pad}  <label>${escapeXml(`${labelPrefix}.`)}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(`${labelPrefix}.`)}</label>\n`;
   }
   if (name) {
-    out += `${pad}  <title>${escapeXml(String(name))}</title>\n`;
+    out += `${pad}  <title>${escapeXmlText(String(name))}</title>\n`;
   }
   // Body — uses emitBodyChildren for paragraph-aware emission.
   const body = Array.isArray(node.content) ? node.content : [];
@@ -1479,7 +1479,7 @@ function emitAsideJats(node, indent) {
   // A numbered aside carries its "Box N" label (the box series); boxed-text
   // permits <label> before <caption>. Unnumbered asides omit it.
   if (number != null) {
-    out += `${pad}  <label>${escapeXml(`Box ${formatScopedNumber(number, node._scope)}.`)}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(`Box ${formatScopedNumber(number, node._scope)}.`)}</label>\n`;
   }
   // Title → the boxed-text <caption><title>…</title></caption> slot.
   if (title) {
@@ -1559,7 +1559,7 @@ function emitFnJats(node, indent) {
   const specific = sidenote ? ` specific-use="sidenote"` : '';
   let out = `${pad}<fn${id}${specific}>\n`;
   if (number != null) {
-    out += `${pad}  <label>${escapeXml(String(number))}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(String(number))}</label>\n`;
   }
   out += emitBodyChildren(node.content, indent + 2);
   out += `${pad}</fn>\n`;
@@ -1599,7 +1599,7 @@ function emitSection(secNode, indent) {
   // it as <label> before <title> (JATS <sec> content model: sec-meta?, label?,
   // title?, ...). Guarded by the stamp → unnumbered sections are byte-identical.
   if (secNode.computedSectionNumber != null) {
-    out += `${pad}  <label>${escapeXml(String(secNode.computedSectionNumber))}</label>\n`;
+    out += `${pad}  <label>${escapeXmlText(String(secNode.computedSectionNumber))}</label>\n`;
   }
   if (titleNode) {
     out += `${pad}  <title>${emitInlines(titleNode.content)}</title>\n`;
@@ -1627,12 +1627,12 @@ const INLINE_MAP = {
 
 function emitInlines(children) {
   if (!children) return '';
-  if (typeof children === 'string') return escapeXml(children);
+  if (typeof children === 'string') return escapeXmlText(children);
   let out = '';
   for (const child of children) {
     if (child == null) continue;
     if (child.type === 'text') {
-      out += escapeXml(child.value ?? '');
+      out += escapeXmlText(child.value ?? '');
     } else if (isEnscribeTagNode(child)) {
       // Phase 5 slice 5b: inline-math gets its own JATS shape.
       if (child.tagname === 'inline-math') {
@@ -1649,7 +1649,7 @@ function emitInlines(children) {
         // construct so we emit the same ??ref: ...?? marker the HTML
         // side uses.
         const id = child.kwargs?.targetId ?? '(none)';
-        out += `<italic specific-use="ref-error">??ref: ${escapeXml(id)}??</italic>`;
+        out += `<italic specific-use="ref-error">??ref: ${escapeXmlText(id)}??</italic>`;
         continue;
       }
       if (child.tagname === '__cite-marker') {
@@ -1658,7 +1658,7 @@ function emitInlines(children) {
       }
       if (child.tagname === '__cite-error') {
         const keys = child.kwargs?.keys ?? '(none)';
-        out += `<italic specific-use="cite-error">??cite: ${escapeXml(keys)}??</italic>`;
+        out += `<italic specific-use="cite-error">??cite: ${escapeXmlText(keys)}??</italic>`;
         continue;
       }
       // Phase 5 slice 5c: inline footnote marker. JATS convention:
@@ -1671,7 +1671,7 @@ function emitInlines(children) {
         const number = child.kwargs?.number ?? '';
         const refId  = child.kwargs?.refId  ?? '';
         out += `<xref ref-type="fn" id="${escapeXmlAttr(refId)}" ` +
-               `rid="${escapeXmlAttr(noteId)}">${escapeXml(String(number))}</xref>`;
+               `rid="${escapeXmlAttr(noteId)}">${escapeXmlText(String(number))}</xref>`;
         continue;
       }
       // #33 part 2: <marginnote> — an unnumbered margin aside, authored inline.
@@ -1819,31 +1819,31 @@ function emitRefJats(entry, indent) {
   //   - For everything else → <article-title>.
   if (entry.title) {
     if (entry.type === 'book' && !entry['container-title']) {
-      out += `${pad}    <source>${escapeXml(String(entry.title))}</source>\n`;
+      out += `${pad}    <source>${escapeXmlText(String(entry.title))}</source>\n`;
     } else if (entry.type === 'chapter') {
-      out += `${pad}    <chapter-title>${escapeXml(String(entry.title))}</chapter-title>\n`;
+      out += `${pad}    <chapter-title>${escapeXmlText(String(entry.title))}</chapter-title>\n`;
     } else {
-      out += `${pad}    <article-title>${escapeXml(String(entry.title))}</article-title>\n`;
+      out += `${pad}    <article-title>${escapeXmlText(String(entry.title))}</article-title>\n`;
     }
   }
 
   // <source> from container-title (skip if already emitted as <source> above).
   if (entry['container-title'] && !(entry.type === 'book' && !entry['container-title'])) {
-    out += `${pad}    <source>${escapeXml(String(entry['container-title']))}</source>\n`;
+    out += `${pad}    <source>${escapeXmlText(String(entry['container-title']))}</source>\n`;
   }
 
   // Date — from issued.date-parts[0]; emit only the parts present.
   const dateParts = entry.issued?.['date-parts']?.[0];
   if (Array.isArray(dateParts) && dateParts.length > 0) {
     const [year, month, day] = dateParts;
-    if (year != null)  out += `${pad}    <year>${escapeXml(String(year))}</year>\n`;
-    if (month != null) out += `${pad}    <month>${escapeXml(String(month).padStart(2, '0'))}</month>\n`;
-    if (day != null)   out += `${pad}    <day>${escapeXml(String(day).padStart(2, '0'))}</day>\n`;
+    if (year != null)  out += `${pad}    <year>${escapeXmlText(String(year))}</year>\n`;
+    if (month != null) out += `${pad}    <month>${escapeXmlText(String(month).padStart(2, '0'))}</month>\n`;
+    if (day != null)   out += `${pad}    <day>${escapeXmlText(String(day).padStart(2, '0'))}</day>\n`;
   }
 
   // Volume / issue.
-  if (entry.volume != null) out += `${pad}    <volume>${escapeXml(String(entry.volume))}</volume>\n`;
-  if (entry.issue  != null) out += `${pad}    <issue>${escapeXml(String(entry.issue))}</issue>\n`;
+  if (entry.volume != null) out += `${pad}    <volume>${escapeXmlText(String(entry.volume))}</volume>\n`;
+  if (entry.issue  != null) out += `${pad}    <issue>${escapeXmlText(String(entry.issue))}</issue>\n`;
 
   // Pages — split "first-last" into <fpage>/<lpage>; single page → <fpage> only.
   if (entry.page != null) {
@@ -1852,10 +1852,10 @@ function emitRefJats(entry, indent) {
     // (or en-dash if present).
     const m = pageStr.match(/^(\S+?)\s*[-–]\s*(\S+)$/);
     if (m) {
-      out += `${pad}    <fpage>${escapeXml(m[1])}</fpage>\n`;
-      out += `${pad}    <lpage>${escapeXml(m[2])}</lpage>\n`;
+      out += `${pad}    <fpage>${escapeXmlText(m[1])}</fpage>\n`;
+      out += `${pad}    <lpage>${escapeXmlText(m[2])}</lpage>\n`;
     } else {
-      out += `${pad}    <fpage>${escapeXml(pageStr)}</fpage>\n`;
+      out += `${pad}    <fpage>${escapeXmlText(pageStr)}</fpage>\n`;
     }
   }
 
@@ -1863,21 +1863,21 @@ function emitRefJats(entry, indent) {
   // (no wrapper required); the element-citation content model accepts
   // either order.
   if (entry.publisher != null) {
-    out += `${pad}    <publisher-name>${escapeXml(String(entry.publisher))}</publisher-name>\n`;
+    out += `${pad}    <publisher-name>${escapeXmlText(String(entry.publisher))}</publisher-name>\n`;
   }
   if (entry['publisher-place'] != null) {
-    out += `${pad}    <publisher-loc>${escapeXml(String(entry['publisher-place']))}</publisher-loc>\n`;
+    out += `${pad}    <publisher-loc>${escapeXmlText(String(entry['publisher-place']))}</publisher-loc>\n`;
   }
 
   // DOI.
   if (entry.DOI != null) {
-    out += `${pad}    <pub-id pub-id-type="doi">${escapeXml(String(entry.DOI))}</pub-id>\n`;
+    out += `${pad}    <pub-id pub-id-type="doi">${escapeXmlText(String(entry.DOI))}</pub-id>\n`;
   }
 
   // URL (when no DOI; if both present, DOI is the canonical id and URL is supplementary).
   if (entry.URL != null) {
     const u = escapeXmlAttr(String(entry.URL));
-    out += `${pad}    <ext-link ext-link-type="uri" xlink:href="${u}">${escapeXml(String(entry.URL))}</ext-link>\n`;
+    out += `${pad}    <ext-link ext-link-type="uri" xlink:href="${u}">${escapeXmlText(String(entry.URL))}</ext-link>\n`;
   }
 
   out += `${pad}  </element-citation>\n`;
@@ -1898,19 +1898,19 @@ function emitPersonGroupJats(persons, groupType, indent) {
   for (const p of persons) {
     if (p == null) continue;
     if (typeof p === 'string') {
-      out += `${pad}  <string-name>${escapeXml(p)}</string-name>\n`;
+      out += `${pad}  <string-name>${escapeXmlText(p)}</string-name>\n`;
       continue;
     }
     if (p.literal) {
-      out += `${pad}  <string-name>${escapeXml(String(p.literal))}</string-name>\n`;
+      out += `${pad}  <string-name>${escapeXmlText(String(p.literal))}</string-name>\n`;
       continue;
     }
     const family = p.family != null ? String(p.family) : null;
     const given  = p.given  != null ? String(p.given)  : null;
     if (family || given) {
       out += `${pad}  <name>\n`;
-      if (family) out += `${pad}    <surname>${escapeXml(family)}</surname>\n`;
-      if (given)  out += `${pad}    <given-names>${escapeXml(given)}</given-names>\n`;
+      if (family) out += `${pad}    <surname>${escapeXmlText(family)}</surname>\n`;
+      if (given)  out += `${pad}    <given-names>${escapeXmlText(given)}</given-names>\n`;
       out += `${pad}  </name>\n`;
     }
   }
@@ -1968,7 +1968,7 @@ function emitXrefMarker(node) {
   const parsed = parseColonId(targetId);
   const refType = parsed ? REF_TYPE_BY_PREFIX[parsed.prefix] ?? null : null;
   const rt = refType ? ` ref-type="${refType}"` : '';
-  return `<xref${rt} rid="${escapeXmlAttr(targetId)}">${escapeXml(text)}</xref>`;
+  return `<xref${rt} rid="${escapeXmlAttr(targetId)}">${escapeXmlText(text)}</xref>`;
 }
 
 /**
@@ -1994,7 +1994,7 @@ function emitCiteMarker(node) {
   const keys = keysStr.split(',').map(k => k.trim()).filter(Boolean);
   if (keys.length === 0) return '';
   const xrefs = keys.map(k =>
-    `<xref ref-type="bibr" rid="ref-${escapeXmlAttr(k)}">${escapeXml(k)}</xref>`,
+    `<xref ref-type="bibr" rid="ref-${escapeXmlAttr(k)}">${escapeXmlText(k)}</xref>`,
   );
   return xrefs.join('; ');
 }
@@ -2035,11 +2035,4 @@ function extractText(content) {
     else if (Array.isArray(child.content))  text += extractText(child.content);
   }
   return text;
-}
-
-function escapeXml(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
 }
