@@ -98,7 +98,12 @@ atref           ::= "@" identifier
                        accumulated: <cite @a @b> → atRefs: ['a', 'b'] *)
 class           ::= "." tag_name
 keyword         ::= tag_name "=" value
-value           ::= identifier | quoted_string
+value           ::= quoted_string | unquoted_value
+unquoted_value  ::= (identifier_start | "#" | ".") identifier_cont*
+                    (* #291: a keyword value may begin with "#" or "." —
+                       href=#anchor, href=.foo — matching the quoted form.
+                       Scoped to value position: id and positional still use
+                       identifier and may not start with "#" or "." *)
 
 quoted_string   ::= '"' [^"]* '"' | "'" [^']* "'"
 
@@ -150,6 +155,8 @@ Attributes can appear in any order. Multiple positional, multiple flags, multipl
 ### Identifiers
 
 Identifiers are the values of `#id` attributes, `@ref` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `@`, `=`). Mid-identifier, prefix characters including `=` are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, `v1.2.3`, and `https://example.com?q=value` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.
+
+The one exception is the **unquoted value in keyword position** (after `=`): it follows the identifier rule but may *additionally* begin with `#` or `.`, so `<a href=#section-2>` and `<a href=.foo>` parse as `href="#section-2"` / `href=".foo"` without quoting — matching the quoted form. This relaxation is scoped to value position; a bare `#id` or `.class` (no `=`) is still an id/class declaration, never a value (#291).
 
 ### Quoted strings
 
@@ -893,7 +900,7 @@ These were open questions that were settled during implementation.
 
 - **Multi-word positionals: comma or space separated.** Multiple naked tokens in the attribute section each become separate entries in the `positional` array. Both spaces and commas (with optional surrounding whitespace) are valid separators. `<cite jones2001 smith2022>`, `<cite jones2001,smith2022>`, and `<cite jones2001, smith2022>` all produce `positional: ["jones2001", "smith2022"]`. Commas are never part of identifier values; they act purely as separators. The comma separator applies universally between all attribute types, not just positionals — `<fig #id, caption="...">` also works.
 
-- **Positional tokens and id/keyword values use the permissive `identifier` rule.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`). The same character class applies to id values (after `#`) and unquoted keyword values (after `=`). This allows file paths (`puppy.jpg`), URLs with query strings (`https://example.com?q=value`), hyphenated identifiers (`my-file.jpg`), colon-prefixed ids (`fig:body-cross-section`), and numbers without quoting. The asymmetric `=` rule — excluded from `identifier_start`, allowed in `identifier_cont` — keeps keyword syntax (`key=value`) unambiguous while letting `=` appear freely inside identifier tokens. `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`; `https://example.com?q=value` correctly parses as a single positional identifier.
+- **Positional tokens and id/keyword values use the permissive `identifier` rule.** Once a positional is detected (i.e., the token does not start with `#`, `.`, `+`, `-`, or `[`, and is not followed by `=`), reading continues until a structural delimiter (whitespace, `|`, `>`, `<`, `[`, `]`, `,`, `"`, `'`). The same character class applies to id values (after `#`) and unquoted keyword values (after `=`), except that an unquoted keyword value may *additionally* begin with `#` or `.` (e.g. `href=#section-2`, `href=.foo`) to match the quoted form, whereas id values and positionals may not (#291). This allows file paths (`puppy.jpg`), URLs with query strings (`https://example.com?q=value`), hyphenated identifiers (`my-file.jpg`), colon-prefixed ids (`fig:body-cross-section`), and numbers without quoting. The asymmetric `=` rule — excluded from `identifier_start`, allowed in `identifier_cont` — keeps keyword syntax (`key=value`) unambiguous while letting `=` appear freely inside identifier tokens. `src=my-photo.jpg` correctly parses as keyword `src` with value `my-photo.jpg`; `https://example.com?q=value` correctly parses as a single positional identifier.
 
 - **`>` in content: rule B (tag-looking openers only).** The content scanner increments depth when it encounters `<` only if the immediately following character is an ASCII letter, a registered sigil character, or `/` (for `</closing>` tags). A `<` followed by anything else — space, digit, punctuation — is treated as literal and does **not** affect depth. This means `<figure | a < b>` works correctly (the `< ` does not increment depth, so the `>` closes the figure with content `a < b`). Bare `>` without a preceding tag-like `<` still closes the construct early — `<figure | 1 > 0>` gives content `1 ` — authors must use `&gt;` for literal `>` in prose.
 

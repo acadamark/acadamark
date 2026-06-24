@@ -52,8 +52,8 @@
   "scripts": {
     "build:grammar": "node build/compile-grammar.js",
     "pretest": "node build/compile-grammar.js",
-    "test": "node test/colon-id.test.js && node test/tagname-sigil-map.test.js && node test/test-grammar.js && node test/test.js && node test/test-recursive.js && node test/run.js",
-    "verify": "node test/colon-id.test.js && node test/tagname-sigil-map.test.js && node test/test-grammar.js && node test/test.js && node test/test-recursive.js && node test/run.js && node test/render-fixtures.js",
+    "test": "node test/colon-id.test.js && node test/tagname-sigil-map.test.js && node test/unquoted-value.test.js && node test/test-grammar.js && node test/test.js && node test/test-recursive.js && node test/run.js",
+    "verify": "node test/colon-id.test.js && node test/tagname-sigil-map.test.js && node test/unquoted-value.test.js && node test/test-grammar.js && node test/test.js && node test/test-recursive.js && node test/run.js && node test/render-fixtures.js",
     "build:lib": "tsup",
     "build:lib:watch": "tsup --watch",
     "demo": "node test/demo.js"
