@@ -20,8 +20,10 @@ enscribe_attributes:
       handled_by: handler
       notes: |
         The id of the element being referenced. The canonical form uses the
-        #id prefix: <ref #eqn:model>. A kwarg form is also accepted as
-        legacy: <ref target=eqn:model>.
+        @id prefix (@ is the reference sigil): <ref @eqn:model>. A #id prefix
+        on a <ref> declares an id ON THE <ref> ELEMENT ITSELF (not a target),
+        so <ref #eqn:model> is a broken reference. A kwarg form is also
+        accepted as legacy: <ref target=eqn:model>.
         IMPORTANT (current implementation): only colon-ids (ids containing
         a colon, e.g., eqn:model, fig:scatter) are in the label index and
         can be resolved. Non-colon ids produce an unresolved error marker.
@@ -87,19 +89,20 @@ jats_counterpart:
     (fig, table, sec, equation, fn, etc.). Enscribe's <ref> maps
     to <xref> with the appropriate ref-type derived from the target.
 shorthand_examples:
-  - source: 'See <ref #fig:scatter> for details.'
+  - source: 'See <ref @fig:scatter> for details.'
     html_output: '<p>See <a href="#fig:scatter" class="ref">figure 1</a> for details.</p>'
     notes: |
-      Canonical form: #id prefix. The ref-resolution plugin replaces the
+      Canonical form: @id prefix (@ references; # would declare an id on the
+      <ref> itself). The ref-resolution plugin replaces the
       <ref> node with a __ref-marker before hast conversion. The handler
       then renders an <a> element with computed text. Prefix word is
       lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.
-  - source: 'As shown in <ref #eqn:model>.'
+  - source: 'As shown in <ref @eqn:model>.'
     html_output: '<p>As shown in <a href="#eqn:model" class="ref">equation 1</a>.</p>'
     notes: |
       Equation references use the "equation" prefix word by default.
       Config override: <config ref-prefix-eqn="Eq."> changes this to "Eq.".
-  - source: '<ref #eqn:missing>'
+  - source: '<ref @eqn:missing>'
     html_output: '<a href="#eqn:missing" class="ref-error">??ref: eqn:missing??</a>'
     notes: |
       Unresolved target renders a visible error anchor.
@@ -139,22 +142,34 @@ This is distinct from `<a href="#id">` (a plain HTML link). `<ref>` carries sema
 
 ## Authoring
 
-The canonical form uses the `#id` positional argument with a colon-id:
+The canonical form uses the `@id` reference sigil with a colon-id:
 
 ```
-See <ref #fig:scatter>.
+See <ref @fig:scatter>.
 ```
+
+`@` is the reference sigil — it points the `<ref>` at a target. `#` is the id-declaration sigil (the syntax spec's universal rule, with no per-tag exception), so `<ref #fig:scatter>` declares an id *on the `<ref>` element itself* and references nothing — a broken cross-reference. Always reference with `@`.
 
 The id must be a colon-id (e.g., `fig:scatter`, `eqn:newton`, `note:galton`). Only colon-ids are indexed by the registry and can be resolved. Non-colon ids produce an error marker regardless of whether an element with that id exists in the document. A kwarg form is also accepted: `<ref target=eqn:newton>`.
+
+**Giving a `<ref>` its own id (rare).**
+
+The two sigils are independent and ride the attribute position: `#` declares an id on the element, `@` references a target. To give a `<ref>` an id *and* point it at a target, write both as attributes — `#` for the ref's own id, `@` for the target:
+
+```
+<ref #ref:see-fig @fig:elephant>
+```
+
+(The `@` must be an attribute, not pipe content: `<ref #ref:see-fig | @fig:elephant>` puts `@fig:elephant` in the ref's *content*, which references nothing — a broken ref.) This is rarely needed; most refs have no id of their own. Note: the ref resolver does not currently surface a `<ref>`'s own `#id` on the rendered anchor, so a self-id has no visible effect today — but `#` still *declares* (it never references), which is why `<ref #fig:scatter>` is a broken cross-reference.
 
 **Numbered labeled element.**
 
 For a labeled element that is numbered, the rendered text is the prefix word followed by the number:
 
 ```
-<ref #eqn:newton>   →  equation 1
-<ref #fig:scatter>  →  figure 1
-<ref #note:galton>  →  note 1
+<ref @eqn:newton>   →  equation 1
+<ref @fig:scatter>  →  figure 1
+<ref @note:galton>  →  note 1
 ```
 
 The prefix word comes from the built-in prefix dictionary keyed by the id prefix (see [Cross-reference types](#cross-reference-types)). Override per-document with `<config ref-prefix-eqn="Eq.">` to render "Eq. 1" instead of "equation 1".
@@ -166,7 +181,7 @@ If the target is labeled but authored with `-numbered`, it has no number in the 
 ```
 <$$ #eqn:energy -numbered | H = T + V $$>
 
-See <ref #eqn:energy>.  →  energy
+See <ref @eqn:energy>.  →  energy
 ```
 
 **Unresolved target.**
@@ -174,24 +189,24 @@ See <ref #eqn:energy>.  →  energy
 If the target id is not in the registry, the reference renders as a visible error anchor rather than failing silently:
 
 ```
-<ref #eqn:missing>  →  ??ref: eqn:missing??  (rendered as <a class="ref-error">)
+<ref @eqn:missing>  →  ??ref: eqn:missing??  (rendered as <a class="ref-error">)
 ```
 
 Same principle as unresolved citations: the document renders even when there are errors.
 
 **`type` kwarg.**
 
-`<ref #fig:scatter type=figure>` flows the kwarg to a `data-ref-type="figure"` attribute on the rendered anchor (available for CSS/JS to use). The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.
+`<ref @fig:scatter type=figure>` flows the kwarg to a `data-ref-type="figure"` attribute on the rendered anchor (available for CSS/JS to use). The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.
 
 **`format` kwarg.**
 
-`<ref #eqn:newton format=number>` flows the kwarg to a `data-ref-format="number"` attribute on the rendered anchor. The resolver-generated display text is still the prefix-dictionary default; future enhancements may use this attribute to vary the rendered text.
+`<ref @eqn:newton format=number>` flows the kwarg to a `data-ref-format="number"` attribute on the rendered anchor. The resolver-generated display text is still the prefix-dictionary default; future enhancements may use this attribute to vary the rendered text.
 
 **Boolean flags `+link` / `-link`, `+preview` / `-preview`.**
 
 Both default to on. `-link` produces a `<span class="ref">` instead of `<a>`; `-preview` adds `data-no-preview="true"` so the hover-preview attacher skips this ref.
 
-**Pipe content (`<ref #id | custom text>`).**
+**Pipe content (`<ref @id | custom text>`).**
 
 Still deferred to a future slice — the resolver-generated text is always used as the link text. Pipe content on `<ref>` is not surfaced in the rendered output.
 
@@ -200,7 +215,7 @@ Still deferred to a future slice — the resolver-generated text is always used 
 The element's content is optional. When present, it is intended to override the automatically-generated cross-reference text:
 
 ```
-<ref #fig:scatter | the scatter plot>
+<ref @fig:scatter | the scatter plot>
 ```
 
 This is rarely needed. The resolver-generated text is usually preferred because it stays consistent with the document's numbering and updates automatically when figures get renumbered. Note: pipe content override is currently deferred — the resolver-generated text is always used regardless of any pipe content.
@@ -245,11 +260,11 @@ JATS export maps `<ref>` to `<xref>` as follows:
 
 | enscribe | JATS |
 |-----------|------|
-| `<ref #fig:scatter>` | `<xref ref-type="fig" rid="fig:scatter">figure 1</xref>` |
-| `<ref #tab:results>` | `<xref ref-type="table" rid="tab:results">table 1</xref>` |
-| `<ref #eqn:newton>` | `<xref ref-type="disp-formula" rid="eqn:newton">equation 1</xref>` |
-| `<ref #sec:methods>` | `<xref ref-type="sec" rid="sec:methods">section 1</xref>` |
-| `<ref #note:galton>` | `<xref ref-type="fn" rid="note:galton">note 1</xref>` |
+| `<ref @fig:scatter>` | `<xref ref-type="fig" rid="fig:scatter">figure 1</xref>` |
+| `<ref @tab:results>` | `<xref ref-type="table" rid="tab:results">table 1</xref>` |
+| `<ref @eqn:newton>` | `<xref ref-type="disp-formula" rid="eqn:newton">equation 1</xref>` |
+| `<ref @sec:methods>` | `<xref ref-type="sec" rid="sec:methods">section 1</xref>` |
+| `<ref @note:galton>` | `<xref ref-type="fn" rid="note:galton">note 1</xref>` |
 
 The `ref-type` is derived from the id prefix via a prefix-to-JATS-ref-type map (defined at export time, not in the interpreter).
 
@@ -262,7 +277,7 @@ In render mode, `<ref>` lowers to `<a href="#id" class="ref">text</a>` for click
 **Reference to an equation.**
 
 ```
-As shown in <ref #eqn:newton>, force equals mass times acceleration.
+As shown in <ref @eqn:newton>, force equals mass times acceleration.
 ```
 
 Use `<config ref-prefix-eqn="Eq.">` at the document top to render "Eq. 1" instead of "equation 1".
@@ -270,7 +285,7 @@ Use `<config ref-prefix-eqn="Eq.">` at the document top to render "Eq. 1" instea
 **Reference to a figure.**
 
 ```
-The data are summarized in <ref #fig:scatter>.
+The data are summarized in <ref @fig:scatter>.
 ```
 
 **Reference to a note.**
@@ -279,20 +294,20 @@ Notes must be authored with a colon-id to be referenceable:
 
 ```
 <note #note:galton placement=foot | ...>
-See <ref #note:galton> for background.
+See <ref @note:galton> for background.
 ```
 
 **Customizing the prefix display word.**
 
 ```
 <config ref-prefix-eqn="Eq.">
-See <ref #eqn:newton> for the definition.   →  "Eq. 1"
+See <ref @eqn:newton> for the definition.   →  "Eq. 1"
 ```
 
 **Multiple references.**
 
 ```
-Figures <ref #fig:scatter>, <ref #fig:histogram>, and <ref #fig:residuals> show the trends.
+Figures <ref @fig:scatter>, <ref @fig:histogram>, and <ref @fig:residuals> show the trends.
 ```
 
 Each reference resolves independently. The author handles the joining text.

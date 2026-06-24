@@ -1549,7 +1549,7 @@ Auto-generated ids take the form `${type}-${sequence}` (e.g., `note-1`,
 ### 8.4 Cross-reference resolution
 
 `refResolution` calls `findByLabel(targetId)`. This returns the entry for any
-colon-id regardless of type. This is why `<ref #eqn:newton>` works even though
+colon-id regardless of type. This is why `<ref @eqn:newton>` works even though
 ref-resolution does not know the target is an equation — the label index is
 type-agnostic.
 
