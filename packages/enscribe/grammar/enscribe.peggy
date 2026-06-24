@@ -493,7 +493,16 @@ EscapedListItemChar
   = "\\" c:[,]  { return c }
   / [^,\[\]]    { return text() }
 
-Value = QuotedStringValue / Identifier
+Value = QuotedStringValue / UnquotedValue
+
+// UnquotedValue is the unquoted value in keyword position (after `=`). It is
+// identical to Identifier EXCEPT the first character may also be `#` or `.`, so
+// `href=#section-2` and `href=.foo` parse as values without quoting — matching
+// the quoted form (`href="#section-2"`). The relaxation is scoped to value
+// position only: Identifier (unchanged) still governs ids, classes, atrefs, and
+// positionals, so a bare `#id` / `.class` remains an id/class declaration and is
+// never reinterpreted as a value (#291).
+UnquotedValue = $((IdentifierStart / [#.]) IdentifierCont*)
 
 // ─── Shared terminals ──────────────────────────────────────────────────────
 
