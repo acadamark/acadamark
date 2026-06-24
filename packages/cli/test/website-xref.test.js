@@ -73,6 +73,7 @@ export function run_tests() {
     '<item src="a" | Page A>',
     '<item src="b" | Page B>',
     '<item src="guide" | Guide>',
+    '<item src="atlas" | Atlas>',
     '</nav>',
   ].join('\n'));
   w('home.emd', '<meta type=article>\n<title | Home>\n</meta>\n\nWelcome.');
@@ -81,9 +82,15 @@ export function run_tests() {
   w('b.emd', '<meta type=article>\n<title | Page B>\n</meta>\n\n<figure #fig:b src="x.svg" | A figure on page B>');
   // A two-chapter book WITH numbering on, so its figure gets a chapter-prefixed number ("2.1") — distinct
   // from the page-scope "1" a flattened build would assign.
-  w('guide/index.emd', '<meta type=book>\n<title | Guide>\n</meta>\n\n<config number-sections />\n\n<chapter src="ch1.emd" | First Chapter>\n<chapter src="ch2.emd" | Second Chapter>');
+  w('guide/index.emd', '<meta type=book>\n<title | Guide>\n</meta>\n\n<config number-sections />\n\n<chapter src="ch1.emd" | First Chapter>\n<chapter src="ch2.emd" | Second Chapter>\n<chapter src="ch3.emd" | Cross Refs>');
   w('guide/ch1.emd', '<section | Intro>\n\nThe first chapter.');
   w('guide/ch2.emd', '<section | Field Data>\n\n<figure #fig:eleph src="e.svg" | An adult African elephant>');
+  // ch3 originates BOTH book-outbound directions: a ref to an article anchor (book→article) and a ref to
+  // a figure in a DIFFERENT book-page's chapter (book→book).
+  w('guide/ch3.emd', '<section | Cross Refs>\n\nArticle: <ref @fig:b>. Other book: <ref @fig:atlas>.');
+  // A SECOND book, also chapter-numbered, so its figure has a chapter-prefixed native number ("1.1").
+  w('atlas/index.emd', '<meta type=book>\n<title | Atlas>\n</meta>\n\n<config number-sections />\n\n<chapter src="m1.emd" | Maps>');
+  w('atlas/m1.emd', '<section | World>\n\n<figure #fig:atlas src="w.svg" | A world map>');
 
   const { pages, warnings } = buildStaticWebsite({ masterSource: readFileSync(join(dir, 'index.emd'), 'utf8'), masterDir: dir, defaultCss: '' });
   const live = liveRender(readFileSync(join(dir, 'index.emd'), 'utf8'), dir);
@@ -115,5 +122,30 @@ export function run_tests() {
     assert.equal(normHref(sRef.href).owner, 'second-chapter',
       `the article→book ref links to the book CHAPTER-PAGE (got "${sRef.href}")`);
     console.log(`PASS: website-xref (b) article→book — STATIC shows the book native "${sRef.text}" (not page-scope) + links to the chapter-page (flattening is gone)`);
+  }
+
+  // ── (c) book→article — a book chapter's ref to an ARTICLE anchor resolves to the article's number + page ──
+  {
+    const ch = pages.get('guide/cross-refs.html');
+    assert.ok(ch, 'the guide ch3 (cross-refs) page emitted');
+    const ref = refAnchor(ch, 'fig:b');
+    assert.ok(ref, 'book→article: the guide chapter resolves its <ref @fig:b> (a cross-page article anchor)');
+    assert.equal(ref.text, 'figure 1', `book→article shows the ARTICLE's number "figure 1" (got "${ref.text}")`);
+    assert.equal(normHref(ref.href).owner, 'page-b', `book→article links to the article page (got "${ref.href}")`);
+    console.log(`PASS: website-xref (c) book→article — book chapter ref shows the article number "${ref.text}" + links to page-b`);
+  }
+
+  // ── (d) book→book — a book chapter's ref to a figure in ANOTHER book-page's chapter ───────────────────
+  {
+    const ch = pages.get('guide/cross-refs.html');
+    const ref = refAnchor(ch, 'fig:atlas');
+    assert.ok(ref, 'book→book: the guide chapter resolves its <ref @fig:atlas> (a figure in the atlas book)');
+    // the atlas figure's OWN native number on its chapter-page (book scope → "1.1"), the byte-identity target.
+    const am = pages.get('atlas/maps.html');
+    const atlasNative = (am.match(/figure-label[^>]*>\s*Figure\s*([0-9]+(?:\.[0-9]+)*)/i) || [])[1];
+    assert.equal(atlasNative, '1.1', `the atlas figure's NATIVE label is chapter-scoped "1.1" (got "${atlasNative}")`);
+    assert.equal(ref.text, `figure ${atlasNative}`, `book→book shows the OTHER book's native number "${atlasNative}" byte-identically (got "${ref.text}")`);
+    assert.equal(normHref(ref.href).owner, 'maps', `book→book links to the OTHER book's chapter-page (got "${ref.href}")`);
+    console.log(`PASS: website-xref (d) book→book — guide chapter ref shows the atlas native "${ref.text}" + links to the atlas chapter-page`);
   }
 }
