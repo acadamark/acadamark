@@ -134,4 +134,47 @@ export function run_tests() {
       rmSync(out, { recursive: true, force: true });
     }
   }
+
+  // ── #286: a WEBSITE nav item that resolves to a PAGE-DIRECTORY (src="home" → home/index.emd) ──────
+  {
+    // Before #286, build --live copyFileSync'd the nav src directly; a page-directory src (home/, the
+    // #278 page-body model the static build already supports) threw EISDIR ("illegal operation on a
+    // directory"). The fix routes website page srcs through the SAME resolvePageSource the static path
+    // uses, mapping the dir to its index.emd entry; the body is emitted at the path the live shell
+    // fetches (the raw src). Mixed fixture: one page-directory item + one flat-file item.
+    const siteDir = mkdtempSync(join(tmpdir(), 'enscribe-live-pagedir-'));
+    const out = mkdtempSync(join(tmpdir(), 'enscribe-live-pagedir-out-'));
+    try {
+      writeFileSync(join(siteDir, 'site.emd'), [
+        '<meta type=website>', '<title | Pagedir Site>', '</meta>', '',
+        '<nav>', '<item src="home" | Home>', '<item src="flat.emd" | Flat>', '</nav>',
+      ].join('\n'));
+      mkdirSync(join(siteDir, 'home'));
+      writeFileSync(join(siteDir, 'home', 'index.emd'), '<section | Home Page>\n\nHome body.');
+      writeFileSync(join(siteDir, 'flat.emd'), '<section | Flat Page>\n\nFlat body.');
+
+      // The crash repro: this call previously threw EISDIR on the page-directory nav item.
+      let res;
+      assert.doesNotThrow(
+        () => { res = buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out }); },
+        'build --live no longer throws EISDIR on a page-directory nav item (#286)',
+      );
+
+      // The page-directory item is discovered by its raw src, alongside the flat page.
+      assert.deepStrictEqual([...res.children].sort(), ['flat.emd', 'home'],
+        'the page-directory nav item is discovered by its raw src alongside the flat page');
+      // Its BODY (home/index.emd) is emitted at the path the live shell fetches (the raw src "home"),
+      // as a FILE — not the directory that caused the crash.
+      assert.ok(existsSync(join(out, 'home')), 'the page-directory body is emitted at its fetch path (out/home)');
+      assert.strictEqual(readFileSync(join(out, 'home'), 'utf8'), '<section | Home Page>\n\nHome body.',
+        'out/home holds the resolved home/index.emd body (the file, not the directory)');
+      assert.ok(existsSync(join(out, 'flat.emd')) && existsSync(join(out, 'index.html')),
+        'the flat page and the shell are also emitted');
+
+      console.log('PASS: #286 cli — build --live resolves page-directory nav items (no EISDIR; body emitted at its fetch path)');
+    } finally {
+      rmSync(siteDir, { recursive: true, force: true });
+      rmSync(out, { recursive: true, force: true });
+    }
+  }
 }
