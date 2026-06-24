@@ -1385,7 +1385,14 @@ string); `positional[0]` = format word.
 3. Parse the data with the format-specific parser. Returns `{ headers, rows }`.
    `csv` and `tsv` share one RFC-4180-aware parser (quoted fields may contain
    the delimiter and doubled `""` quotes), parameterized by delimiter (`,` for
-   csv, a tab for tsv); they do not parse differently.
+   csv, a tab for tsv); they do not parse differently. The `md` parser splits a
+   row into cells on the column-separator `|`, but a `|` that is escaped (`\|`)
+   OR that sits INSIDE an enscribe tag span (`<note | footnote>`, `<i | em>`,
+   `<# title #>`) is NOT a separator (#283): an enscribe tag carries its own pipe,
+   so a pipe-form tag survives in an opted-in (`+parse-text`) cell without the
+   author hand-escaping it. Tag spans are tracked row-locally (`<` followed by a
+   tag-name char or sigil opens, the matching `>` closes); a bare `<` that is not
+   a tag (`a < b`) does not open a span, so a real column `|` still splits.
 4. `hasHeaders` determined by `readBoolKwarg(node, 'headers', null, null, true)`
    (default: first row is headers).
 5. Build `<table>` with optional `<caption>` (from `kwargs.caption` and/or
