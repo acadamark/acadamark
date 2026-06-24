@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, extractDocumentTitle } from '@enscribejs/enscribe';
+import { resolvePageSource } from './static-website.js';
 
 const require = createRequire(import.meta.url);
 
@@ -133,10 +134,25 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   //    article masters keep the assembler child set — byte-identical.
   const masterSource = readFileSync(masterPath, 'utf8');
   copyInto(masterPath, masterName);
-  const children = isWebsiteMaster(masterSource)
+  const isWebsite = isWebsiteMaster(masterSource);
+  const children = isWebsite
     ? discoverWebsitePages(masterSource)
     : discoverMasterSrcChildren(masterSource);
-  for (const src of children) copyInto(join(masterDir, src), src);
+  for (const src of children) {
+    // #286: a website nav `<item src>` may resolve to a PAGE-DIRECTORY (src="home" → its body
+    // home/index.emd, the #278 page-body model). Map it to its entry FILE via the SAME resolver the
+    // static build uses (resolvePageSource — one shared resolver, not a fork) so copyFileSync gets a
+    // file, not a directory (the EISDIR crash, #286). The dest stays `src`: the live shell fetches each
+    // page by its raw src (fetchSourceText(p.src) — no /index.emd fallback), so the body must be served
+    // at exactly that path. Book/article children are always flat `.emd` files, so they skip the resolver
+    // and copy as before (byte-identical). An unresolvable website page is skipped (warn), not a crash.
+    const resolved = isWebsite ? resolvePageSource(masterDir, src) : null;
+    if (isWebsite && !resolved) {
+      console.warn(`enscribe build (--live): nav item src "${src}" did not resolve to a .emd or page-directory — skipped`);
+      continue;
+    }
+    copyInto(resolved ? resolved.sourcePath : join(masterDir, src), src);
+  }
 
   // 2. the shell assets + engine bundle, copied flat into the folder (assetBase './').
   copyShellAssets(out);
