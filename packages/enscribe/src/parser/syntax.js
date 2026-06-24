@@ -41,6 +41,18 @@ const BACKSLASH = 92    // \
 // arrows) safe. See notes/specs/lists.md §"Recognition".
 const SIGIL_CHARS = new Set([35, 36, 96]) // #, $, `
 
+// Void elements (#275): a void tag renders to a NATIVE HTML void element (no closing-tag form) —
+// `<hr>` today. Its bare form (`<hr>`, `<hr type=scene-break>`) must self-close, NOT be read as a
+// long-form opener awaiting a `</hr>` that never comes (which would greedily swallow the rest of the
+// document and error). The long-form tokenizer rejects a void tag name so the named-tag tokenizer
+// claims the short form (bare / slash / kwargs), exactly as it already does for the `<hr />` slash
+// form. NOTE this is NARROWER than the vocab's `content: none` set: `<config>` is also content:none
+// but is a NON-native apparatus element that IS authored in long-form (`<config attrs>…</config>`),
+// so it must stay long-form-eligible — only native HTML voids (is_html_native + an HTML void element)
+// belong here. Hardcoded (the boundary finder stays registry-free); `test/void-elements.test.js`
+// guards it against the vocab so a newly-added native-HTML-void element fails loudly until listed.
+export const VOID_ELEMENTS = new Set(['hr'])
+
 // Open list-item marker chars for the flow-only `<li>` / `<->` / `<*>` tokenizer.
 const DASH = 45  // -
 const STAR = 42  // *
@@ -755,6 +767,13 @@ function makeLongFormTokenizer({ multiLine }) {
         tagNameCodes.length === 4 &&
         tagNameCodes[0] === LI_L && tagNameCodes[1] === LI_I &&
         tagNameCodes[2] === LI_S && tagNameCodes[3] === LI_T // l i s t
+      // #275: a VOID element has no body content, so it is never a long-form opener — reject so
+      // the named-tag tokenizer claims its short form (bare `<hr>`, `<config toc>`, the `/>` slash
+      // form, kwargs). Done here, at name completion, BEFORE attr scanning, so a bare void tag does
+      // not greedily scan to EOF for a closer that cannot exist. Tag names are ASCII; lowercase to
+      // match the canonical (lowercase) vocabulary names.
+      const tagName = String.fromCharCode(...tagNameCodes).toLowerCase()
+      if (VOID_ELEMENTS.has(tagName)) return nok(code)
       return scanOpenAttrs(code)
     }
 

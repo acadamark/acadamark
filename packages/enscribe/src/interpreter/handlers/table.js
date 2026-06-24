@@ -185,16 +185,47 @@ function parseMd(text, { hasHeaders }) {
   const dataLines = lines.filter(l => !isSeparatorLine(l));
 
   const allRows = dataLines.map(line => {
-    // Remove leading and trailing `|`, then split on unescaped `|`.
-    // GFM pipe tables use `\|` to include a literal pipe in a cell.
-    // Split on `|` NOT preceded by `\`, then replace `\|` → `|` in each cell.
+    // Remove leading and trailing `|`, then split into cells on the column-
+    // separator `|`. GFM pipe tables use `\|` for a literal pipe in a cell.
     const inner = line.replace(/^\|/, '').replace(/(?<!\\)\|$/, '');
-    return inner
-      .split(/(?<!\\)\|/)
-      .map(cell => cell.trim().replace(/\\\|/g, '|'));
+    return splitMdRow(inner);
   });
 
   return splitHeadersRows(allRows, hasHeaders);
+}
+
+/**
+ * Split a Markdown table row's inner text into trimmed cells on the column-
+ * separator `|`. A `|` is a separator UNLESS it is escaped (`\|` → a literal
+ * pipe) OR it sits INSIDE an enscribe tag span (#283): an enscribe tag carries
+ * its own pipe (`<note | footnote>`, `<i | em>`, `<# title #>`), and that pipe
+ * must NOT be eaten as a column boundary — otherwise a `+parse-text` cell with a
+ * pipe-form tag is split mid-tag and the tag is lost (escaped to `&#x3C;note`).
+ * Authors no longer have to hand-escape the pipe of a tag inside a cell.
+ *
+ * Tag nesting is tracked locally: `<` opens a tag span when it begins a tag (it
+ * is followed by a tag-name char or a sigil), and the matching `>` closes it; a
+ * `|` only separates cells at depth 0. This is a row-local heuristic, not a full
+ * parse — a bare `<` that is NOT a tag (`a < b`) is followed by whitespace, so it
+ * does not open a span and the column pipe still splits.
+ *
+ * @param {string} inner - the row text with leading/trailing `|` already removed
+ * @returns {string[]} trimmed cell strings (with `\|` unescaped to `|`)
+ */
+function splitMdRow(inner) {
+  const cells = [];
+  let cur = '';
+  let depth = 0;
+  for (let i = 0; i < inner.length; i++) {
+    const ch = inner[i];
+    if (ch === '\\' && inner[i + 1] === '|') { cur += '|'; i++; continue; } // \| → literal pipe
+    if (ch === '<' && /[A-Za-z#$`/]/.test(inner[i + 1] ?? '')) { depth++; cur += ch; continue; } // tag opens
+    if (ch === '>' && depth > 0) { depth--; cur += ch; continue; }          // tag closes
+    if (ch === '|' && depth === 0) { cells.push(cur.trim()); cur = ''; continue; } // column separator
+    cur += ch;
+  }
+  cells.push(cur.trim());
+  return cells;
 }
 
 // ─── CSV helpers ─────────────────────────────────────────────────────────────

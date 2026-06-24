@@ -89,5 +89,19 @@ export async function run() {
     console.log('PASS: #219 — bare boolean forms parse identically under static AND live render');
   }
 
+  // ── #270: a boolean-VALUED kwarg (<details>'s `open`) maps for +open / bare / =true ───────────
+  {
+    const D = '\n<summary | More>\nBody.\n</details>';
+    const hasOpen = (form) => /<details[^>]*\bopen/.test(R(`<details ${form}>${D}`));
+    assert.ok(hasOpen('+open'), '<details +open> renders the open attribute');
+    assert.ok(hasOpen('open'), 'bare <details open> renders open (a boolean-valued kwarg promotes like a vocab boolean)');
+    assert.ok(hasOpen('open=true'), '<details open=true> renders the open attribute (kwarg form still works)');
+    assert.ok(!/<details[^>]*\bopen/.test(R(`<details -open>${D}`)), '<details -open> is collapsed (open absent)');
+    assert.ok(!/<details[^>]*\bopen/.test(R(`<details>${D}`)), 'plain <details> is collapsed (open absent)');
+    // bare ≡ +open at the parse level (#219 promotion now recognizes boolean-valued kwargs).
+    eq(`<details open>${D}`, `<details +open>${D}`, 'bare <details open> ≡ <details +open>');
+    console.log('PASS: #270 — <details> open (a boolean-valued kwarg) maps for +open / bare / =true');
+  }
+
   console.log('All bare-boolean authoring-form (#219) checks passed.');
 }

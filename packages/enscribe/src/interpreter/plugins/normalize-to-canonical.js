@@ -1075,9 +1075,15 @@ function booleanHome(tagname) {
 
 /** Is `name` a known boolean ON `tagname`? Config: a boolean config kwarg; else: a vocab boolean. */
 function isKnownBoolean(tagname, name) {
-  return booleanHome(tagname) === 'config'
-    ? isBooleanConfigKwarg(name)
-    : !!VOCABULARY?.[tagname]?.enscribe_attributes?.booleans?.[name];
+  if (booleanHome(tagname) === 'config') return isBooleanConfigKwarg(name);
+  const attrs = VOCABULARY?.[tagname]?.enscribe_attributes;
+  if (attrs?.booleans?.[name]) return true;
+  // #270: a boolean-VALUED kwarg — `values: ['true','false']`, e.g. <details>'s `open` — is also a
+  // known boolean. Its bare form (`<details open>`) promotes to node.booleans like a `booleans:` entry,
+  // so it renders identically to `+open` / `open=true` (mapAttributes maps a boolean-valued kwarg too).
+  const kw = attrs?.kwargs?.[name];
+  return !!kw && Array.isArray(kw.values) && kw.values.length === 2
+    && kw.values.includes('true') && kw.values.includes('false');
 }
 
 /** Promote a single node's bare known-boolean positionals (see header). */

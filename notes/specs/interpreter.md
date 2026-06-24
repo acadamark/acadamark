@@ -1285,14 +1285,19 @@ target it maps:
    - Kwargs marked `handled_by: 'handler'` are for handler-strategy elements
      only; schema dispatch ignores them.
 4. For each boolean in `node.booleans` (the `+flag` / `-flag` surface), apply
-   the same rule as kwargs: look up `vocab.enscribe_attributes.booleans[key]`,
-   skip those marked `handled_by: 'handler'` (handler-strategy flags such as
-   `+numbered` and `+link`), and require a `maps_to`. A true boolean emits its
-   mapped attribute; a false boolean is omitted (HTML boolean-attribute
+   the same rule as kwargs: look up its declaration — either
+   `vocab.enscribe_attributes.booleans[key]` OR a **boolean-valued kwarg**
+   (`vocab.enscribe_attributes.kwargs[key]` with `values: ['true', 'false']`,
+   e.g. `<details>`'s `open`, which also accepts the `open=true` kwarg form via
+   step 3). Skip those marked `handled_by: 'handler'` (handler-strategy flags
+   such as `+numbered` and `+link`), and require a `maps_to`. A true boolean
+   emits its mapped attribute; a false boolean is omitted (HTML boolean-attribute
    semantics) unless the vocab declares a false mapping (not yet a supported
-   shape). Today every declared boolean is `handled_by: 'handler'`, so this
-   branch maps nothing yet — it completes the kwargs/booleans symmetry so a
-   future schema-element boolean with a `maps_to` renders correctly.
+   shape). `<details>`'s `open` is the first real consumer of this branch (#270):
+   `+open`, the bare `open` (promoted to `node.booleans` at parse time by the
+   #219 bare-known-boolean promotion, which also recognizes boolean-valued
+   kwargs), and `open=true` all render `<details open>`; `-open` / absence render
+   it collapsed.
 
 ### 6.2 Content conversion (`convertContent`)
 
@@ -1380,7 +1385,14 @@ string); `positional[0]` = format word.
 3. Parse the data with the format-specific parser. Returns `{ headers, rows }`.
    `csv` and `tsv` share one RFC-4180-aware parser (quoted fields may contain
    the delimiter and doubled `""` quotes), parameterized by delimiter (`,` for
-   csv, a tab for tsv); they do not parse differently.
+   csv, a tab for tsv); they do not parse differently. The `md` parser splits a
+   row into cells on the column-separator `|`, but a `|` that is escaped (`\|`)
+   OR that sits INSIDE an enscribe tag span (`<note | footnote>`, `<i | em>`,
+   `<# title #>`) is NOT a separator (#283): an enscribe tag carries its own pipe,
+   so a pipe-form tag survives in an opted-in (`+parse-text`) cell without the
+   author hand-escaping it. Tag spans are tracked row-locally (`<` followed by a
+   tag-name char or sigil opens, the matching `>` closes); a bare `<` that is not
+   a tag (`a < b`) does not open a span, so a real column `|` still splits.
 4. `hasHeaders` determined by `readBoolKwarg(node, 'headers', null, null, true)`
    (default: first row is headers).
 5. Build `<table>` with optional `<caption>` (from `kwargs.caption` and/or

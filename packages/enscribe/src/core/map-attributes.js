@@ -96,11 +96,23 @@ export function mapAttributes(node, vocab, target, emit) {
   // are not double-mapped. A boolean with a target maps_to emits its attribute
   // when true; a false boolean is omitted (HTML boolean-attribute semantics)
   // unless a false mapping is declared (not yet a supported vocab shape).
+  //
+  // #270: a boolean attribute may be declared either under enscribe_attributes.
+  // booleans (the common shape) OR as a boolean-VALUED kwarg — `values:
+  // ['true','false']`, e.g. <details>'s `open`, which also accepts the `open=true`
+  // kwarg form (mapped by the kwargs loop above). `boolDefOf` resolves a key to its
+  // declaration from either home, so the `+key` / `-key` form maps for both shapes
+  // without special-casing any tag.
   const booleanDefs = vocab?.enscribe_attributes?.booleans ?? {};
+  const isBoolValuedKwarg = (d) =>
+    !!d && Array.isArray(d.values) && d.values.length === 2 &&
+    d.values.includes('true') && d.values.includes('false');
+  const boolDefOf = (key) =>
+    booleanDefs[key] ?? (isBoolValuedKwarg(kwargDefs[key]) ? kwargDefs[key] : undefined);
+
   for (const [key, value] of Object.entries(node.booleans ?? {})) {
-    const def = booleanDefs[key];
-    if (!def) continue;
-    if (def.handled_by === 'handler') continue;
+    const def = boolDefOf(key);
+    if (!def || def.handled_by === 'handler') continue;
     const name = def.maps_to?.[target];
     if (!name) continue;
     if (value === true) {
