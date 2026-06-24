@@ -108,6 +108,8 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'Document-wide default for whether DATA-format table cells (<table csv|json|…>) parse as Enscribe inline markup. Per-table attributes override it.' },
   { key: 'strict-mode', family: 'Display / DSL / strict', type: 'valued', values: 'off | sigil | canonical', default: 'off', scope: 'all',
     description: 'The strictness register switch. off = all registers interpret; sigil = the markdown register is off; canonical = markdown AND sigils are off (only canonical tags).' },
+  { key: 'quiet', family: 'Display / DSL / strict', type: 'boolean', values: null, default: 'off', scope: 'all',
+    description: 'Suppress THIS document’s authoring warnings (raw-HTML passthrough, mis-placed apparatus, …) from build/console output. Page-scoped — a quiet page hushes while other pages still warn. Gates emission only; rendering and the inline error markers are unchanged. The supported way to quiet teaching/demo pages that deliberately show warnings-worthy markup.' },
 ].filter((e) => !e.skip);
 
 /** The wildcard <config> kwarg prefix, documented once as a pattern (it is not a fixed key —
