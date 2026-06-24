@@ -40,12 +40,16 @@ The string has been parsed; markdown idioms, nested enscribe constructs, and pla
 
 ## Which tags get recursively parsed
 
-The discriminator is the `contentHandler` field. Tags whose content handler is `"default"` get recursively parsed. Tags with named DSL handlers (`"math"`, `"csv"`, `"mermaid"`, etc.) do not — their content is opaque source for an embedded language and stays as a string.
+The discriminator is the `contentHandler` field. A tag whose handler is `"default"` gets recursively parsed **by this plugin** — its whole body string is re-fed through the pipeline into structured child nodes. A tag with a **named handler** is skipped here; the named handler owns the body. But "named" is not a single behavior, and it is **not** uniformly "opaque source that stays a string":
+
+- **Embedded-language DSLs** (`"math"`, `"mermaid"`, `"abc"`, code) keep the body as a **verbatim source string** for an external renderer (KaTeX, mermaid, syntax highlighting); nothing inside is parsed into the document tree.
+- The **table family** (the named `"table"` handler, plus the data-format spellings `<csv>` / `<tsv>` / `<json>` / `<yaml>` / `<md>`, which lower to `<table>`) parses the body into tabular structure (headers / rows). Its **cells are text-bearing**: an opted-in cell carries **parsed inline enscribe markup** (#21, via `table-cell-parse.js`). So a table's cell content *is* recursively parsed — by the table handler's own path, not by this plugin.
 
 This means:
 
-- `<aside>`, `<theorem>`, `<note>`, `<table>` (and any other tag with `contentHandler: "default"`): content is recursively parsed.
-- `<math>`, `<csv>`, `<mermaid>` (DSL tags): content is preserved verbatim.
+- `<aside>`, `<theorem>`, `<note>` (and any other tag with `contentHandler: "default"`): content is recursively parsed by this plugin.
+- `<math>`, `<mermaid>` (embedded-language DSLs): content is preserved verbatim as renderer source.
+- `<table>` — the named `'table'` handler — and the data-format spellings `<csv>` / `<tsv>` / `<json>` / `<yaml>` / `<md>` that lower to it: `contentHandler` is `'table'` / `'csv'` / … (NOT `'default'`) and `isOpaqueContent` is `true`, so this plugin skips the body — but the table handler parses it into headers / rows whose text-bearing cells can carry parsed inline enscribe markup (#21). A **third category**: neither the generic recursive-content path of a `"default"` tag nor the stays-a-string verbatim of an embedded-language DSL.
 - Sigil tags: hash sigils (`<#...#>`) are recursively parsed; math and code sigils are opaque.
 - `<aside | text>` short-form: content is recursively parsed (named-tag content always is, when the handler is default).
 

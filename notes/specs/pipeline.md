@@ -158,8 +158,14 @@ For sigil tags (`<$ ... $>`, `<$$ ... $$>`, `` <``` ... ``` > ```, `` <` ... `> 
 handler name. The content string is the raw body (LaTeX source, code text,
 table data).
 
-For named tags with pipe content, `contentHandler` is `'default'` and
-`isOpaqueContent` is `false`. The content is a raw string to be re-parsed.
+For a named tag with pipe content whose handler is the **default** (prose tags
+like `<aside>` / `<note>`), `contentHandler` is `'default'` and `isOpaqueContent`
+is `false` — the content is a raw string to be re-parsed. A named tag with a
+**DSL / table handler** (`<math | …>`, `<csv | …>`, `<table … | …>`) instead
+carries that handler (`'math'` / `'csv'` / `'table'`) with `isOpaqueContent: true`:
+its pipe body is opaque source / data owned by the handler, not generic prose. (A
+table's cells are still text-bearing and can carry parsed inline markup — see
+`recursive-content-spec.md`.)
 
 **What Stage 1 does not do:** Named-tag content is left as a raw string in
 this stage. Stage 2 re-parses it into a structured mdast subtree.
