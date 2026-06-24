@@ -48,7 +48,7 @@ It can contain multiple paragraphs and other content like
 |---|---|---|---|
 | `type` | kwarg | `note` `sidebar` `callout` `warning` `tip` `info` `caution` | Optional classification of the aside's role. Affects rendering (callouts get visual emphasis; sidebars get layout treatment). Maps to JATS via boxed-text content-type at export. |
 | `title` | kwarg |  | Optional title rendered at the top of the aside (the frameable title-top convention, #31). Lifts to a <title> child tag at the normalize-to-canonical gate; the child form is equivalent. |
-| `caption` | kwarg |  | Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the "Box N." label folded in when numbered. Lifts to a <caption> child tag at the gate. |
+| `caption` | kwarg |  | Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the "Box N." label folded in when numbered. Lifts to a `<caption>` child tag at the gate. |
 | `+numbered` | boolean | default `false` | Whether this aside is numbered. **Off by default** (boxed prose is usually a one-off callout). When +numbered, the aside counts in its OWN "Box N" series (the `box` counter / ref-prefix `box`), not the figure counter. |
 | `+border` | boolean | default `true` | Frameable surface (#31). **On by default for boxed prose** — the visual box is the point of a callout / sidebar. Use -border to suppress the outline. |
 
