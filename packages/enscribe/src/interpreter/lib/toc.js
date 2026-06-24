@@ -525,28 +525,32 @@ function pruneForToc(entries, depth, level = 1) {
   return out;
 }
 
-/** The BODY listing: a heading (toc-title) + the full nested list, shown in full (no
- *  collapse). A distinct class — not `enscribe-toc` — so the sidebar layout/CSS never
- *  applies; this is an in-flow block, not a sticky rail. */
-function buildContentsBlock(entries, title) {
+/** The shared `<nav class="enscribe-contents">` builder: a heading (title) + the full nested
+ *  list shown in full (no collapse), each link's href from `hrefFor` (default the in-page `#id`
+ *  anchor — the article body listing). A distinct class — not `enscribe-toc` — so the sidebar
+ *  layout/CSS never applies; this is an in-flow block, not a sticky rail. The ONE nav shape both
+ *  the article body listing (applyConfigToc, in-page anchors) and the book/website contents
+ *  overview (buildContentsListing, cross-page / page-tree hrefs) render through — #266 folded the
+ *  article path's former buildContentsBlock onto this builder. */
+function contentsNav(entries, title, hrefFor = (e) => `#${e.id}`) {
   return el('nav', { className: ['enscribe-contents'], ariaLabel: title }, [
     el('p', { className: ['enscribe-contents-heading'] }, [text(title)]),
-    buildList(entries, bookLink),
+    buildList(entries, bookLink, hrefFor),
   ]);
 }
 
 /**
  * Build a whole-book contents OVERVIEW `<nav class="enscribe-contents">` from a book's
- * `parts` (the scaffold-level chapter/section tree from collectBookParts). Emits the SAME
- * markup as the article body listing (buildContentsBlock above), so the existing
- * `enscribe-contents` CSS applies — no new CSS. Chapters are the top level; their sections
- * nest beneath, included while their depth ≤ `depth` (chapters are level 1, sections 2+).
+ * `parts` (the scaffold-level chapter/section tree from collectBookParts). Emits through the
+ * shared `contentsNav` builder (the same `<nav class="enscribe-contents">` the article body
+ * listing renders), so the existing `enscribe-contents` CSS applies — no new CSS. Chapters are
+ * the top level; their sections nest beneath, included while their depth ≤ `depth` (chapters are
+ * level 1, sections 2+).
  *
  * Generic over the link resolvers, so each book render shape passes its own hrefs — static
  * `slug#id`, live `#stem`/`#id` — and #226's two shapes (and #246's page tree, later) reuse
- * one builder. #226. NOTE (follow-up): this duplicates buildContentsBlock's nav shape;
- * folding the article path onto this builder is deferred (it would touch the byte-identical
- * single-page path).
+ * one builder. #226. (#266: the article body listing now shares `contentsNav` too — its former
+ * buildContentsBlock is gone, so there is one nav-shape builder, not two.)
  *
  * @param {object[]} parts  collectBookParts output: { id, clean, number, sections }
  * @param {{chapterHref:(p:object)=>string, sectionHref:(p:object,s:object)=>string,
@@ -568,10 +572,7 @@ export function buildContentsListing(parts, { chapterHref, sectionHref, title = 
     hrefById.set(p.id, chapterHref(p));
     return { id: p.id, clean: p.clean, number: p.number, children: sectionEntries(p, p.sections, 2) };
   });
-  return el('nav', { className: ['enscribe-contents'], ariaLabel: title }, [
-    el('p', { className: ['enscribe-contents-heading'] }, [text(title)]),
-    buildList(entries, bookLink, (e) => hrefById.get(e.id) ?? `#${e.id}`),
-  ]);
+  return contentsNav(entries, title, (e) => hrefById.get(e.id) ?? `#${e.id}`);
 }
 
 /** A collapsible nested list for a SIDEBAR listing: a parent entry wraps its children in
@@ -641,7 +642,7 @@ export function applyConfigToc(hast, cfg) {
   assignIds(entries, collectIds(docEl, new Set()), (e) => e.clean);
 
   if (cfg.location === 'body') {
-    insertBodyListing(docEl, buildContentsBlock(entries, cfg.title));
+    insertBodyListing(docEl, contentsNav(entries, cfg.title));
     return 'body';
   }
 
