@@ -581,3 +581,63 @@ The sections above describe enscribe's design as it was conceived. Building the 
 - A PDF generator. Use Pandoc, Paged.js, or Prince downstream.
 
 JATS export is *in* scope (see "JATS as reference and export target" above). Render mode — the lossy lowering of Layer 1 to plain HTML headings — is also *in* scope: it is the third rung of the display ladder, not a discarded alternative to it. The project's contribution is the specification (Layer 1, the canonical semantic form), the shorthand (Layer 2), the glue plugins that connect them to the existing ecosystem, the display targets that render Layer 1 for different consumers, and the bridge to scholarly publishing via JATS.
+
+## Positioning among rich-document systems
+
+This section situates Enscribe in the landscape of established authoring systems that handle the same territory: structured documents with first-class footnotes, citations, math, cross-references, theorem-family content, and figures. It is positioning analysis, not a roadmap commitment — it records why Enscribe exists alongside these systems, what it intends to interoperate with, and where it deliberately defers to a better-suited tool.
+
+### The matrix
+
+For each system, a column marks whether the format has *first-class* support for the listed element. "First-class" means dedicated semantic representation, not just visual styling: a `<theorem>` tag is first-class; `**Theorem 1.**` styled in bold is not.
+
+| System | Footnotes | Citations (structured) | Cross-references | Math | Theorem-family | Figures | Tables | DSL blocks (preserved source) | First-class HTML rendering | Authoring shorthand | Standardization |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **Enscribe** | ✓ | ✓ (CSL) | ✓ (scoped) | ✓ (KaTeX) | ✓ | ✓ | ✓ | ✓ | ✓ (Layer 1) | ✓ (sigils) | — (in development) |
+| **JATS** | ✓ | ✓ (structured) | ✓ | ✓ (MathML) | ✓ (`<statement>`) | ✓ | ✓ | ◐ (preserves but as opaque) | ✗ (XML, not rendering format) | ✗ | ✓ (NISO standard) |
+| **TEI** | ✓ | ✓ (rich) | ✓ | ◐ (MathML) | ◐ (encodable but informal) | ✓ | ✓ | ✗ | ✗ (XML, not rendering format) | ✗ | ✓ (community standard) |
+| **DocBook** | ✓ | ✓ (structured) | ✓ | ◐ (MathML) | ◐ (admonitions; not formal) | ✓ | ✓ | ✗ | ✗ (XML, not rendering format) | ✗ | ✓ (OASIS standard) |
+| **LaTeX** | ✓ | ✓ (BibTeX/biblatex) | ✓ | ✓✓ (native) | ✓ (amsthm) | ✓ | ✓ | ◐ (via packages) | ✗ (PDF target) | ◐ (macros) | — (de facto) |
+| **DOCX (OOXML)** | ✓ | ◐ (Word-specific) | ✓ | ✓ (OMML) | ✗ (styled paragraphs) | ✓ | ✓ | ✗ | ✗ (Word target) | ✗ | ✓ (ISO/IEC 29500) |
+| **ODT** | ✓ | ◐ (citation entries) | ✓ | ✓ (MathML) | ✗ (styled paragraphs) | ✓ | ✓ | ✗ | ✗ (LibreOffice target) | ✗ | ✓ (OASIS standard) |
+| **RST (reStructuredText)** | ✓ | ✓ | ✓ | ◐ (via roles) | ✗ (directive convention) | ✓ | ✓ | ✗ | ◐ (Sphinx) | ◐ | — (de facto) |
+| **AsciiDoc** | ✓ | ✓ | ✓ | ◐ (via STEM) | ◐ (admonitions) | ✓ | ✓ | ✗ | ◐ (Asciidoctor) | ◐ | — (community spec) |
+| **Quarto** | ✓ | ✓ (CSL) | ✓ | ✓ (LaTeX-in-Markdown) | ◐ (custom divs) | ✓ | ✓ | ✓ (executable code) | ◐ (via Pandoc) | ◐ (Markdown-based) | — (single-vendor) |
+| **CommonMark + GFM** | ◐ (extension) | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ (spec) |
+
+Legend: ✓ first-class; ✓✓ best-in-class; ◐ partial / via convention or extension; ✗ not supported or significantly worse than first-class.
+
+### What distinguishes Enscribe
+
+The matrix isolates a combination no other system holds at once: **first-class rich-element semantics + HTML as the primary rendered target + a JavaScript-native (unified/remark/rehype) pipeline + an authoring shorthand that lifts to the canonical structure.** Each existing system has at least one of these in some form; none has all four. The decisive one is first-class HTML rendering as the *primary* artifact — JATS, TEI, and DocBook are XML archival/exchange formats that need a separate stylesheet or pipeline to render; LaTeX targets PDF; DOCX targets Word; and Quarto's HTML is a Pandoc-derived output, not the format's own primary artifact. An Enscribe document, by contrast, *is* HTML and ships as the rendered article — email the `.html`, open it in any browser, no build pipeline at view time. CommonMark earns partial credit (it has authoring shorthand and renders to HTML) but lacks the rich-element coverage; Quarto and RST/AsciiDoc carry some shorthand for rich elements but fall back to directive-style syntax that does not lift to a canonical structure.
+
+The mechanics behind each of the four are developed earlier in this document — first-class HTML in the Summary and "The browser is the engine"; the lifting shorthand in the Layer 2 sections and "Why this is not just another markdown extension"; the pipeline base in "Why the unified ecosystem." The point here is only that the *combination* is what the landscape lacks, and that the matrix makes it visible. The closest neighbour is Quarto, and the distinction is architectural: Quarto is Pandoc-anchored and multi-vendor (Posit); Enscribe is unified-anchored and HTML-primary. The two can coexist, serving slightly different tooling preferences within one broad audience.
+
+### What Enscribe doesn't claim
+
+Honest about what Enscribe is *not* trying to be:
+
+- **Not a journal archive format.** JATS is the right tool for that role. Enscribe targets JATS for lossless export, so content authored in Enscribe can deposit into JATS-based archival workflows (PubMed Central, publisher submission, institutional repositories).
+- **Not a humanities scholarship platform.** TEI is richer for manuscript encoding, philological work, and humanities-specific apparatus. Enscribe's vocabulary leans toward STEM-style scholarly articles; TEI serves humanities-style scholarship better. (A future TEI export could broaden this — see below — but is not currently planned.)
+- **Not a typesetting system.** LaTeX produces print-quality PDF that Enscribe's HTML rendering does not match for print contexts. Users who need print-quality PDF either accept what HTML-to-PDF tools produce (Prince, WeasyPrint, browser print) or use a LaTeX export pipeline when print fidelity matters.
+- **Not a Word replacement.** DOCX is what reviewers and collaborators use. Enscribe accepts that DOCX export is necessary for collaboration and intends to support it (via the Pandoc bridge), but does not claim to replace Word for users who collaborate heavily with Word users.
+- **Not a one-vendor ecosystem.** Quarto is a single-vendor project (Posit). Enscribe is intended to be community-developable; the Layer 1 vocabulary is a stable target that multiple implementations could share.
+
+### Why a new system rather than extending an existing one
+
+The natural question is "why not just extend LaTeX, add features to Quarto, or contribute to Pandoc?" Each existing system has architectural commitments that constrain it: LaTeX is procedural and macro-based, so adding declarative-semantic features means fighting the architecture; Pandoc's AST is an opinionated lingua franca whose extension requires consensus across many format maintainers; Quarto inherits Pandoc's architecture and layers single-vendor decisions on top; JATS is a destination format, not an authoring format; TEI is a community-governed XML standard with a far larger vocabulary than Enscribe needs. Enscribe's specific combination — rich-element first-class semantics + HTML as primary target + JavaScript-native pipeline + lifting shorthand — is the novelty no single one of them holds, and first-class HTML rendering is the decisive differentiator (it is what enables distributable documents, live-editable demo sites, browser playgrounds, and JavaScript-native composability). This is the broader, per-system form of the argument "Why this is not just another markdown extension" makes against the markdown-extension flavors specifically.
+
+### Interaction strategy
+
+Enscribe is not isolationist. Its strategy for interoperating with the rest of the landscape:
+
+- **JATS** — Lossless export (done). Import (planned). Round-trip JATS → Enscribe → JATS should preserve content faithfully, modulo some DSL handling. JATS is the archival/exchange hub.
+- **LaTeX** — First-class export and import planned (post-v0.1.0), targeting the academic audience that currently writes in LaTeX. Math fidelity is the strongest mapping; theorem-family content also maps cleanly.
+- **Pandoc** — Bidirectional bridge planned (post-v0.1.0): a Pandoc reader for Enscribe (export to anything Pandoc supports) and a Pandoc-AST consumer that emits Enscribe (import from anything Pandoc reads). This gives breadth coverage for formats that don't warrant first-class effort.
+- **DOCX** — The Pandoc bridge handles the basic case. First-class DOCX export/import is a future consideration if the collaboration-with-Word audience needs higher fidelity.
+- **TEI** — Not currently planned; a future consideration if Enscribe broadens into humanities scholarship. The mapping is asymmetric (TEI is richer), but a useful subset could be exported.
+- **Quarto** — Adjacent rather than interoperating. Quarto and Enscribe serve similar audiences with different architectural commitments; users choose between them on tooling preference (Pandoc-based vs. unified-based; multi-format-target vs. HTML-primary).
+- **DocBook, RST, AsciiDoc** — Reachable through the Pandoc bridge; probably not worth first-class effort given audience sizes.
+
+### Future TEI consideration
+
+If Enscribe broadens scope beyond STEM-leaning scholarship into humanities authoring, first-class TEI export becomes relevant. The mapping considerations: TEI's structural vocabulary (front/body/back, multi-level divs) maps cleanly to Enscribe's book and article structures; its footnote/cross-reference apparatus maps cleanly; its `<bibl>` / `<biblStruct>` map to Enscribe's structured citations; its `<div type="theorem">` convention is a natural target for the theorem family. TEI's rich manuscript-encoding features (variants, witness lists, named entities, etymological data) have no counterparts in Enscribe and would simply not be generated by an Enscribe-to-TEI export. A TEI import would face the same asymmetry: humanities-specific markup would be dropped or stored as opaque content. This is a later-phase consideration if pursued, not a near-term commitment.
