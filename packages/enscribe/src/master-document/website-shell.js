@@ -93,9 +93,9 @@ function universalHeadStyle(defaultCss) {
 // single source HEAD_ASSET_LINKS in font-loader.js — the SAME set the separate-pages page shell links and
 // the consolidated injector emits as hast for the full single-page render. Emitted UNCONDITIONALLY (like
 // the rest of the head) so the head stays byte-identical across pages: a page without math just carries an
-// unused KaTeX stylesheet, harmless. (Article fragments still carry their own KaTeX/fonts links too → an
-// article page links them twice, head + fragment; the browser dedups the fetch. Making the head the single
-// asset source + stripping per-fragment assets is the externalisation follow-up, not this slice.)
+// unused KaTeX stylesheet, harmless. This head is now the SOLE linker of these assets on a website page:
+// #296 stripped the article fragment's own KaTeX/fonts links (the static builder renders article fragments
+// with documentFontsCss/katexCss:'skip'), so each asset is linked exactly once, here.
 
 // The book reading-interface scripts, appended once at body-end on EVERY page. Each guards on its
 // target element (`nav.enscribe-toc` / `nav.enscribe-onthispage` / `[data-enscribe-back-to-top]`)

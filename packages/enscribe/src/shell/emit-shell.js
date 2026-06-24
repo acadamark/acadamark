@@ -19,11 +19,14 @@
 // engine, not here.
 
 import { escapeHtml } from '../core/escape-html.js';
+import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';
 
-// Document-display CDN assets (pinned; the KaTeX CSS matches the engine's KATEX_CDN_URL). These are
-// the #117-deferred asset-mode concern, not the shell chrome `assetBase` covers — left as CDN links.
-const KATEX_CDN_CSS = 'https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css';
-const FONTS_CDN_CSS = 'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap';
+// Document-display CDN assets (fonts + KaTeX, 'link' form) come from the SINGLE SOURCE HEAD_ASSET_LINKS in
+// font-loader.js — the same set the static-website head and the separate-pages page shell link, guarded
+// there by a load-time equality assertion against the CDN-URL constants. The live shell used to hardcode
+// its OWN copy (#296: a fork cdn-versions.test.js did not guard, so the next KaTeX bump would silently
+// drift it); routing it through HEAD_ASSET_LINKS closes the last head-asset copy. (These stay CDN links —
+// the #117-deferred asset-mode concern — distinct from the shell chrome `assetBase` covers.)
 
 // The flat deployed layout: the four assets copied next to the shell, referenced `{base}<filename>`.
 const FLAT_FILENAMES = {
@@ -92,8 +95,7 @@ export function emitLiveShell({ master, title, edit = false, assetBase = './', a
 -->
 <link rel="stylesheet" href="${a.defaultCss}">
 <link rel="stylesheet" href="${a.shellCss}">
-<link rel="stylesheet" href="${KATEX_CDN_CSS}">
-<link rel="stylesheet" href="${FONTS_CDN_CSS}">
+${HEAD_ASSET_LINKS}
 </head>
 <body>
 <!-- ${edit ? 'Defaults to the editor (data-enscribe-edit); remove it to read.' : 'Read by default; add `data-enscribe-edit` to default to the editor, or use `?edit`.'} -->

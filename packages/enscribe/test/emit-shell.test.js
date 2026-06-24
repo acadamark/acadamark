@@ -12,6 +12,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { emitLiveShell, resolveShellAssets } from '../src/interpreter/index.js';
+import { HEAD_ASSET_LINKS } from '../src/interpreter/assets/font-loader.js';
 import { MASTER_BOOK_SHELL_PARAMS } from './fixtures/master-book/shell-params.mjs';
 
 const PKG = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -95,6 +96,26 @@ export async function run() {
     assert.strictEqual(committed, generated,
       'master-book/index.html is byte-identical to emitLiveShell(MASTER_BOOK_SHELL_PARAMS) — the shell is generated, not hand-written (regenerate via render-fixtures.js if the emitter changes)');
     console.log('PASS: #215 — the committed master-book shell is byte-identical to the emitter output (fidelity)');
+  }
+
+  // ── #296 §3 single-source guard (coding-conventions §3 sanctions "fails loud at load OR TEST"):
+  //    the live shell head routes its document assets through the single source HEAD_ASSET_LINKS —
+  //    verbatim, exactly once, with NO independently-hardcoded KaTeX/fonts CDN URL. This closes the last
+  //    head-asset fork (#296): the live shell used to hardcode its own copy, which cdn-versions.test.js
+  //    (guarding the CONSTANT, not this copy) could not catch on a KaTeX bump. A future re-hardcode fails
+  //    here. This is the "equality assertion covering emit-shell's emitted set" in its proper home — over
+  //    the ACTUAL emitted shell, not a literal copy in the font-loader module-load block (which would
+  //    reintroduce the very fork §3 exists to prevent).
+  {
+    const shell = emitLiveShell(MASTER_BOOK_SHELL_PARAMS);
+    assert.strictEqual(shell.split(HEAD_ASSET_LINKS).length - 1, 1,
+      '#296: the live shell head carries HEAD_ASSET_LINKS verbatim, exactly once (the single source)');
+    const outsideSource = shell.split(HEAD_ASSET_LINKS).join('');
+    assert.ok(!/cdn\.jsdelivr\.net\/npm\/katex@/.test(outsideSource),
+      '#296: no KaTeX CDN URL appears outside HEAD_ASSET_LINKS (no independent hardcoded copy)');
+    assert.ok(!/fonts\.googleapis\.com/.test(outsideSource),
+      '#296: no document-fonts CDN URL appears outside HEAD_ASSET_LINKS (no independent hardcoded copy)');
+    console.log('PASS: #296 — the live shell head links its document assets only via HEAD_ASSET_LINKS (last fork closed)');
   }
 
   console.log('All live-shell emitter (#215) checks passed.');
