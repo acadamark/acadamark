@@ -1215,7 +1215,11 @@ export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapte
 // chapters" — these pure fns assemble external `<item src>` pages as `<book-part>`s, build the
 // model + the `?page=` resolver, and render a page (renderChapter + a cross-page href rewrite).
 // The browser entry (browser.js mountLiveWebsite) wraps them with the fetch + DOM + History router.
-export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, resolvePageParam, flattenNavPages, rewriteCrossPageHrefs } from '../master-document/live-website.js';
+export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, resolvePageParam, flattenNavPages } from '../master-document/live-website.js';
+// The cross-page LINK LAYER — one home for both resolvers: the href-only cross-page <ref> rewriter
+// (rewriteCrossPageHrefs, shared by the live SPA, the separate-pages book publish, and the static
+// website) and the structural <a {slug}> page-link resolver (resolvePageSlugLinks). See cross-page-links.js.
+export { rewriteCrossPageHrefs, resolvePageSlugLinks } from '../master-document/cross-page-links.js';
 // Website nav CHROME (#246 S2b) — the sticky top bar, the left sidebar, and the chrome CSS.
 // Exported so the STATIC website build (cli/src/static-website.js, #278) can inject the same chrome
 // the live shell mounts. The live shell's interactive helpers (injectWebsiteNavStyles needs a DOM;

@@ -268,15 +268,43 @@ export function run_tests() {
         'the duplicate pinned <meta slug> warns; it is NOT renamed');
     }
 
-    // a `<a {slug}>` to a non-existent page → the build ERRORS (a real broken internal link; this is
-    // <a> resolution, untouched by slice 1 — slice 3's concern).
+    // a `<a {slug}>` to a non-existent page → ALWAYS-RENDERS (2-C / #289 → the always-render decision):
+    // the build COMPLETES (no throw), the link DEGRADES to an inert `ref-error` marker (label kept, no
+    // live href), and a warning names the broken slug. (Was a hard `throw` before this slice.)
     {
       const d = mkdtempSync(join(tmpdir(), 'enscribe-bad-'));
       writeFileSync(join(d, 'index.emd'), master('<item src="a" +homepage | Home>'));
       writeFileSync(join(d, 'a.emd'), '<meta type=article>\n<title|Home>\n</meta>\n\nGo to <a nonesuch | nowhere>.');
-      assert.throws(() => build(d), /broken internal link|no page has slug "nonesuch"/, 'an <a> to an unknown slug errors the build');
+      let result;
+      assert.doesNotThrow(() => { result = build(d); }, 'a broken <a {slug}> does NOT throw (always-renders)');
+      const home = result.pages.get('index.html');
+      assert.match(home, /<a class="ref-error">nowhere<\/a>/,
+        'the broken link degrades to an inert ref-error marker that keeps its authored label');
+      assert.ok(!/data-page-slug/.test(home) && !/href="[^"]*nonesuch/.test(home),
+        'the degraded link has no live href and leaves no data-page-slug marker');
+      assert.ok(result.warnings.some((m) => /no page has slug "nonesuch"/.test(m)),
+        'a warning names the broken slug (surfaces on the CLI)');
     }
-    console.log('PASS: static-website (#300) — three-tier slug (meta slug > meta title > nav title); always-render collisions (derived uniquify, pinned not-renamed); broken <a> still errors');
+
+    // nested-label <a {slug}> (1-G): a link whose label contains a nested element — or another link —
+    // resolves the OUTER href and preserves the label STRUCTURALLY (the case the old
+    // `<a …>([\s\S]*?)</a>` label-capturing regex mishandled, stopping at the inner `</a>`).
+    {
+      const d = mkdtempSync(join(tmpdir(), 'enscribe-nested-'));
+      writeFileSync(join(d, 'index.emd'), master('<item src="a" +homepage | Home>\n<item src="b" | Target>'));
+      writeFileSync(join(d, 'a.emd'),
+        '<meta type=article>\n<title|Home>\n</meta>\n\nSee <a target | the *bold* target>, and <a target | a <a target | nested> link>.');
+      writeFileSync(join(d, 'b.emd'), art('Target', ' slug=target')); // pinned slug "target"
+      let result;
+      assert.doesNotThrow(() => { result = build(d); });
+      const home = result.pages.get('index.html');
+      assert.match(home, /<a href="target\/">the <i>bold<\/i> target<\/a>/,
+        'a nested-element label resolves the href and preserves the label (structural, not regex-captured)');
+      assert.ok(!home.includes('data-page-slug'),
+        'a label that itself contains a page link leaves NO unresolved marker (the old regex stopped at the inner </a>)');
+      console.log('PASS: static-website (1-G) — <a {slug}> with a nested-element / nested-link label resolves structurally');
+    }
+    console.log('PASS: static-website (#300) — three-tier slug; always-render collisions; broken <a {slug}> degrades (no throw), build completes');
   }
 
   // ── every emitted chrome link resolves to an emitted page (the "no broken link" gate) ──────────

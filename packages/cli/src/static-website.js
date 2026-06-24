@@ -43,12 +43,10 @@ import {
   harvestCrossRefRegistry,
   makeReadThroughRegistry,
   rewriteCrossPageHrefs,
+  resolvePageSlugLinks,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY } from '@enscribejs/enscribe/core/file-data-keys';
 import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
-
-const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-const escapeHtml = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
 
 /**
  * Walk the nav tree and map each page slug → its OUTPUT nav-path: the slugified titles of the groups
@@ -195,22 +193,33 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const masterTitle = extractDocumentTitle(masterSource) || 'Enscribe';
   const navPathOf = buildNavPaths(entries, homeSlug);
 
-  // Links are PRETTY trailing-slash path URLs, RELATIVE to the current page's depth. Two link sources:
-  //   - the chrome's `?page=slug` (live-SPA router form) → the target's `<navPath>/`;
-  //   - an authored `<a {slug}>` internal link, recorded by the <a> handler as `<a data-page-slug="X">`
-  //     → the target's `<navPath>/`, auto-labelled with the target's TITLE when the link has no text.
-  // A slug with no page is a broken internal link (collected → the build errors); a link to a DERIVED
-  // (un-pinned) slug warns. No `<navPath>/index.html`, no absolute `/…`, no `?page=` survive.
-  const linkErrors = [];
-  const staticize = (html, outPath, currentSlug) => {
-    const up = '../'.repeat((outPath.match(/\//g) || []).length); // from this page's dir up to the dist root
-    const relTo = (slug) => { const np = navPathOf.get(slug); return np === '' ? (up || './') : `${up}${np}/`; };
-    let out = String(html).replace(/\?page=([^"#&]+)/g, (_m, slug) =>
-      navPathOf.has(slug) ? relTo(slug) : _m);
-    out = out.replace(/<a\b([^>]*?)\sdata-page-slug="([^"]+)"([^>]*)>([\s\S]*?)<\/a>/g, (whole, pre, slug, post, label) => {
+  // Links are PRETTY trailing-slash path URLs, RELATIVE to the current page's depth. Two link layers:
+  //   - the chrome's `?page=slug` (live-SPA router form) → the target's `<navPath>/` (staticize, PASS 2);
+  //   - an authored `<a {slug}>` internal link, the <a> handler's `<a data-page-slug="X">` marker
+  //     → the target's `<navPath>/`, auto-labelled with the target's TITLE when the link has no text
+  //     (resolveSlugLinks, per page in PHASE 2 — STRUCTURAL via the shared resolvePageSlugLinks, so a
+  //     label that contains a nested element or link is parsed, not regex-captured: 1-G).
+  // ALWAYS-RENDERS (1-G / 2-C, the always-render decision): a `<a {slug}>` to a missing page DEGRADES —
+  // the label text stays, the live href is dropped, and the `ref-error` marker class flags it — and the
+  // build COMPLETES with a warning, never a thrown build. A link to a DERIVED (un-pinned) slug warns.
+
+  // The depth-relative path from a page at `outPath` up to a target slug's pretty URL. Shared by the
+  // `?page=` chrome rewrite (staticize) and the `<a {slug}>` resolver, so the dist-root walk has one home.
+  const relToFor = (outPath) => {
+    const up = '../'.repeat((outPath.match(/\//g) || []).length);
+    return (slug) => { const np = navPathOf.get(slug); return np === '' ? (up || './') : `${up}${np}/`; };
+  };
+
+  // Resolve a rendered page fragment's authored `<a {slug}>` internal links STRUCTURALLY (#289). A
+  // resolvable slug → its depth-relative URL (+ the target's title when the authored label is empty); a
+  // missing slug → DEGRADE (the shared resolver drops the href + flags `ref-error`, the label stays); a
+  // derived (un-pinned) slug → warn. Replaces staticize's old label-capturing regex.
+  const resolveSlugLinks = (html, outPath, currentSlug) => {
+    const relTo = relToFor(outPath);
+    return resolvePageSlugLinks(html, (slug, { empty }) => {
       if (!navPathOf.has(slug)) {
-        linkErrors.push(`"${currentSlug}": <a ${slug}> → no page has slug "${slug}"`);
-        return whole;                  // leave the marker visible; the build errors after listing all
+        warnings.push(`"${currentSlug}": <a ${slug}> → no page has slug "${slug}" — link rendered inert (always-renders)`);
+        return { broken: true, label: empty ? slug : undefined };
       }
       const info = pageInfo.get(slug);
       if (info?.isDerived) {
@@ -219,10 +228,15 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
           `<meta slug="${slug}"> there so a title rename does not silently break the link`,
         );
       }
-      const text = label.trim() ? label : escapeHtml(info?.title ?? slug);
-      return `<a${pre} href="${relTo(slug)}"${post}>${text}</a>`;
+      return { href: relTo(slug), label: empty ? (info?.title ?? slug) : undefined };
     });
-    return out;
+  };
+
+  // The chrome's `?page=slug` router links → depth-relative pretty URLs (PASS 2, on the composed page).
+  const staticize = (html, outPath) => {
+    const relTo = relToFor(outPath);
+    return String(html).replace(/\?page=([^"#&]+)/g, (m, slug) =>
+      navPathOf.has(slug) ? relTo(slug) : m);
   };
 
   // 4. The top bar (cross-site nav) is built once; its `?page=` links are relativized PER PAGE below.
@@ -334,7 +348,10 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
             // WITHIN-book cross-chapter hrefs are already `chapter.html#id` (publishBookPageBodies), so only
             // OUTBOUND cross-page refs (still bare `#anchor`) rewrite; pass this chapter-page's own owner key
             // so its OWN anchors stay intra-page.
-            const body = rewriteCrossPageHrefs(entry.body, bookFnameOwner.get(outPath), idToOwner, crossPageHref(outPath));
+            const refsResolved = rewriteCrossPageHrefs(entry.body, bookFnameOwner.get(outPath), {
+              ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
+            });
+            const body = resolveSlugLinks(refsResolved, outPath, slug); // authored <a {slug}> links (#289)
             collectDslNames(body, siteDslNames);
             rendered.push({ outPath, slug, title: entry.title, content: body });
           }
@@ -352,7 +369,10 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
           { value: source, data: seedRegistry() },
           { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' },
         );
-        const content = rewriteCrossPageHrefs(raw, slug, idToOwner, crossPageHref(outPath));
+        const refsResolved = rewriteCrossPageHrefs(raw, slug, {
+          ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
+        });
+        const content = resolveSlugLinks(refsResolved, outPath, slug); // authored <a {slug}> links (#289)
         collectDslNames(content, siteDslNames);
         rendered.push({ outPath, slug, title: page.title, content });
       }
@@ -370,18 +390,17 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const dslHead = buildWebsiteDslHead(siteDslNames);
 
   // PASS 2 — frame each rendered fragment in the universal shell (now carrying the site's diagram
-  // runtime in its head), then staticize its cross-page links for the page's depth.
-  for (const { outPath, slug, title, content, page } of rendered) {
+  // runtime in its head), then staticize its `?page=` chrome links for the page's depth. (The authored
+  // `<a {slug}>` content links were already resolved per fragment in PHASE 2.)
+  for (const { outPath, title, content, page } of rendered) {
     const html = page != null
       ? page
       : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead });
-    pageMap.set(outPath, staticize(html, outPath, slug));
+    pageMap.set(outPath, staticize(html, outPath));
   }
 
-  // A broken `<a {slug}>` is a real authoring error — fail the build (after listing every one).
-  if (linkErrors.length) {
-    throw new Error(`#289: ${linkErrors.length} broken internal link(s):\n  ${linkErrors.join('\n  ')}`);
-  }
-
+  // A broken `<a {slug}>` does NOT fail the build (always-renders, #289 → the always-render decision):
+  // PHASE 2's resolveSlugLinks already degraded each one to an inert `ref-error` marker and pushed a
+  // warning. The build completes; the warnings surface on the CLI (cli.js prints the returned `warnings`).
   return { pages: pageMap, assets, warnings };
 }

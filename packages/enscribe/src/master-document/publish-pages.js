@@ -32,6 +32,7 @@ import {
   chapterNavBar,
 } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
+import { rewriteCrossPageHrefs } from './cross-page-links.js';
 import { renderChapter } from './render-chapter.js';
 import {
   collectBookParts,
@@ -66,16 +67,20 @@ function computeSlugs(parts) {
   for (const p of parts) p.slug = `${p.stem}.html`;
 }
 
-/** Rewrite cross-CHAPTER ref hrefs in a rendered chapter fragment to cross-PAGE links.
- *  `<a href="#X" class="ref"` becomes `<a href="ownerUrl#X" class="ref"` when anchor X
- *  is owned by a DIFFERENT chapter; in-chapter refs and `class="ref-error"` are left
- *  alone (the `class="ref"` + closing-quote anchor never matches `ref-error`). */
+/** Rewrite cross-CHAPTER ref hrefs in a rendered chapter fragment to cross-PAGE links — the
+ *  separate-pages book case of the ONE shared cross-page resolver (cross-page-links.js). Only a
+ *  `<ref>` anchor (`… class="ref"`, via `refsOnly`) is a candidate, so a chapter's footnote/section
+ *  anchors stay in-page; the owning chapter comes from the cross-ref registry and maps to its
+ *  `<stem>.html` (null when it has no page URL → left in-page). The website composition + the live
+ *  SPA call the SAME resolver with their own owner/href injection — no second rewriter. */
 function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl) {
-  return html.replace(/<a href="#([^"]+)" class="ref"/g, (whole, anchor) => {
-    const entry = registry.get(anchor);
-    if (!entry || entry.chapter == null || entry.chapter === currentChapterId) return whole;
-    const url = idToUrl.get(entry.chapter);
-    return url ? `<a href="${url}#${anchor}" class="ref"` : whole;
+  return rewriteCrossPageHrefs(html, currentChapterId, {
+    refsOnly: true,
+    ownerOf: (anchor) => registry.get(anchor)?.chapter ?? null,
+    hrefFor: (chapter, anchor) => {
+      const url = idToUrl.get(chapter);
+      return url ? `${url}#${anchor}` : null;
+    },
   });
 }
 
