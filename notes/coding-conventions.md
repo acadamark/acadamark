@@ -22,7 +22,7 @@ Adding a parallel copy of any of these is a regression, not a feature:
 - the config-vs-element decision → `booleanHome()`
 - caption / cross-reference numbers → `formatScopedNumber`
 - asset injection → the single consolidated injector (#229)
-- document head asset links (fonts + KaTeX, `'link'` form) → `font-loader.js` `HEAD_ASSET_LINKS` (#297 — the string-form shells, the static-website head and the separate-pages page shell, link EXACTLY this; bound to the CDN-URL constants by a load-time equality assertion)
+- document head asset links (fonts + KaTeX, `'link'` form) → `font-loader.js` `HEAD_ASSET_LINKS` (#297/#296 — EVERY string-form shell links EXACTLY this: the static-website head, the separate-pages page shell, and the live `?edit` shell; bound to the CDN-URL constants by a load-time equality assertion. A website article fragment no longer re-links them either — #296 renders it with `documentFontsCss/katexCss:'skip'`, the head being the sole linker)
 - parser char codes → the central char-code registry
 
 ## 3 · Guard new single-sources

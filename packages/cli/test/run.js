@@ -13,6 +13,7 @@ import { run_tests as runEmbeddedAssetTests } from './embedded-asset.test.js';
 import { run_tests as runBuildLiveTests } from './build-live.test.js';
 import { run_tests as runStaticWebsiteTests } from './static-website.test.js';
 import { run_tests as runWebsiteXrefTests } from './website-xref.test.js';
+import { run_tests as runWebsiteAssetLinksTests } from './website-asset-links.test.js';
 
 try {
   runCliTests();
@@ -25,6 +26,7 @@ try {
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
   runWebsiteXrefTests(); // #300 slice 2: cross-page <ref> resolves via the merged site registry (composition)
+  runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);
 } catch (err) {

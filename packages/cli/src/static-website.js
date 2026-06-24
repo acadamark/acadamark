@@ -343,7 +343,15 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
         const outPath = `${destPrefix}index.html`;
         // Pass the read-through via the {value,data} VFile-like source (#133 form) so article numbering +
         // ref-resolution see the merged site registry for cross-page targets.
-        const raw = renderArticleDocument({ value: source, data: seedRegistry() }, { assetsDir: resolved.pageDir });
+        // #296: this fragment is hosted in the universal shell, whose head already links the document
+        // fonts + KaTeX (HEAD_ASSET_LINKS via composeWebsiteShellPage, PASS 2 below — the single source).
+        // Skip the fragment's own font/KaTeX injection so each asset is linked ONCE, in the head. (The
+        // STANDALONE single-article build is a separate call site (cli.js) and is unaffected — it keeps
+        // embed:true → inline self-contained assets.)
+        const raw = renderArticleDocument(
+          { value: source, data: seedRegistry() },
+          { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' },
+        );
         const content = rewriteCrossPageHrefs(raw, slug, idToOwner, crossPageHref(outPath));
         collectDslNames(content, siteDslNames);
         rendered.push({ outPath, slug, title: page.title, content });
