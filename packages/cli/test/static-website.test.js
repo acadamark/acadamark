@@ -190,7 +190,8 @@ export function run_tests() {
     console.log('PASS: static-website — <a {slug}> resolves to depth-relative path + auto-label; derived-slug warns, explicit does not');
   }
 
-  // ── explicit <meta slug> wins over the title; duplicate slug → hard error; bad slug → build error ──
+  // ── the unified three-tier slug (#300/#299 slice 1): <meta slug> > <meta title> > nav title;
+  //    collisions are ALWAYS-RENDER (derived uniquify+warn; pinned not-renamed+warn) ──────────────
   {
     const master = (nav) => `<meta type=website>\n<title|S>\n</meta>\n\n<nav>\n${nav}\n</nav>\n`;
     const art = (title, extra = '') => `<meta type=article${extra}>\n<title|${title}>\n</meta>\n\nbody`;
@@ -225,23 +226,57 @@ export function run_tests() {
         '<a foo-bar> from home resolves to the normalized identity');
     }
 
-    // duplicate slug → HARD build error.
+    // tier 2 (#300): no <meta slug>, but a <meta title> DIFFERING from the menu label → the slug comes
+    // from the <meta title>, not the nav title. (Static already read <meta title>; this pins it as the
+    // unified resolver's tier 2.)
     {
-      const d = mkdtempSync(join(tmpdir(), 'enscribe-dup-'));
-      writeFileSync(join(d, 'index.emd'), master('<item src="a" +homepage | Home>\n<item src="b" | B>'));
-      writeFileSync(join(d, 'a.emd'), art('Home', ' slug=dup'));
-      writeFileSync(join(d, 'b.emd'), art('B', ' slug=dup'));
-      assert.throws(() => build(d), /duplicate page slug "dup"/, 'two pages with the same slug → hard build error');
+      const d = mkdtempSync(join(tmpdir(), 'enscribe-tier2-'));
+      writeFileSync(join(d, 'index.emd'), master('<item src="a" +homepage | Home>\n<item src="b" | Menu Label>'));
+      writeFileSync(join(d, 'a.emd'), art('Home'));
+      writeFileSync(join(d, 'b.emd'), art('Doc Title')); // <meta title="Doc Title">; nav label "Menu Label"
+      const { pages: p } = build(d);
+      assert.ok(p.has('doc-title/index.html'), 'tier 2: the slug is the <meta title> ("doc-title"), not the menu label');
+      assert.ok(!p.has('menu-label/index.html'), 'the nav menu label is NOT the slug when a <meta title> exists');
     }
 
-    // a `<a {slug}>` to a non-existent page → the build ERRORS (a real broken internal link).
+    // derived (tier 2/3) collision → uniquify + warn (#300 always-render): two pages whose titles
+    // slugify the same get distinct slugs (same-title, same-title-2) and a warning; the build completes.
+    {
+      const d = mkdtempSync(join(tmpdir(), 'enscribe-derivdup-'));
+      writeFileSync(join(d, 'index.emd'), master('<item src="a" +homepage | Home>\n<item src="b" | B>\n<item src="c" | C>'));
+      writeFileSync(join(d, 'a.emd'), art('Home'));
+      writeFileSync(join(d, 'b.emd'), art('Same Title'));
+      writeFileSync(join(d, 'c.emd'), art('Same Title'));
+      const { pages: p, warnings: w } = build(d);
+      assert.ok(p.has('same-title/index.html') && p.has('same-title-2/index.html'),
+        'a derived collision uniquifies (same-title, same-title-2)');
+      assert.ok(w.some((m) => /duplicate page slug "same-title"/.test(m)), 'the derived collision warns');
+    }
+
+    // duplicate PINNED slug → ALWAYS-RENDER (#300), no build error: the duplicate is not renamed, the
+    // build completes, and it warns (the per-link non-resolution is #299 slice 3, not this slice).
+    {
+      const d = mkdtempSync(join(tmpdir(), 'enscribe-dup-'));
+      writeFileSync(join(d, 'index.emd'), master('<item src="h" +homepage | Home>\n<item src="a" | A>\n<item src="b" | B>'));
+      writeFileSync(join(d, 'h.emd'), art('Home'));
+      writeFileSync(join(d, 'a.emd'), art('A', ' slug=dup'));
+      writeFileSync(join(d, 'b.emd'), art('B', ' slug=dup'));
+      let result;
+      assert.doesNotThrow(() => { result = build(d); }, 'a duplicate pinned slug does NOT hard-error (always-render)');
+      assert.ok(result.pages.size >= 2, 'the build still completes and emits pages');
+      assert.ok(result.warnings.some((m) => /duplicate pinned slug "dup"/.test(m)),
+        'the duplicate pinned <meta slug> warns; it is NOT renamed');
+    }
+
+    // a `<a {slug}>` to a non-existent page → the build ERRORS (a real broken internal link; this is
+    // <a> resolution, untouched by slice 1 — slice 3's concern).
     {
       const d = mkdtempSync(join(tmpdir(), 'enscribe-bad-'));
       writeFileSync(join(d, 'index.emd'), master('<item src="a" +homepage | Home>'));
       writeFileSync(join(d, 'a.emd'), '<meta type=article>\n<title|Home>\n</meta>\n\nGo to <a nonesuch | nowhere>.');
       assert.throws(() => build(d), /broken internal link|no page has slug "nonesuch"/, 'an <a> to an unknown slug errors the build');
     }
-    console.log('PASS: static-website — explicit slug wins; duplicate slug hard-errors; unresolvable <a {slug}> errors the build');
+    console.log('PASS: static-website (#300) — three-tier slug (meta slug > meta title > nav title); always-render collisions (derived uniquify, pinned not-renamed); broken <a> still errors');
   }
 
   // ── every emitted chrome link resolves to an emitted page (the "no broken link" gate) ──────────

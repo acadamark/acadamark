@@ -1199,7 +1199,9 @@ export { composeWebsiteShellPage, WEBSITE_SHELL_CSS, collectDslNames, buildWebsi
 export { MERMAID_CDN_URL, ABCJS_CDN_URL } from './dsl/registry.js';
 // slugifyPage (#278 slice 1): the title → slug helper website-structuring uses for page slugs, reused
 // by the static build to slugify nav-GROUP titles into output-path segments (one slugifier, no drift).
-export { slugifyPage } from './plugins/website-structuring.js';
+// resolvePageSlug / allocatePageSlug (#300/#299 slice 1): the ONE three-tier slug resolver + the
+// always-render collision allocator, reused by the static build so both builders compute the same slug.
+export { slugifyPage, resolvePageSlug, allocatePageSlug } from './plugins/website-structuring.js';
 // The single-document (article) live render (#216): an article is the simple case — one unit, no
 // rail/cover/routing — so its edit view is just the SHARED Write/Preview pane (buildEditMain) in a
 // chrome-free layout. browser.js mountLiveArticle wires the fetch + DOM + the single-source edit loop.

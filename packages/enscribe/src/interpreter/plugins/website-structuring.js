@@ -25,13 +25,19 @@
 //     children are already parser-nested in its content. It carries a `title` kwarg and
 //     no src/body of its own. Recurse into its content (a group may, later, nest groups).
 //
-// SLUG (the page's public `?page=` id): sourced from the menu title (the pipe label /
-// group title), slugified; for an external page with no pipe title, falls back to the
-// `src` filename stem. Collisions are DISAMBIGUATED (so the model stays usable) AND
-// surfaced with a visible diagnostic — never a silent `-2`.
+// SLUG (the page's public `?page=` id): the unified three-tier rule (decisions.md "Page slug
+// is identity", spec-internal-links.md; #300/#299 slice 1) via resolvePageSlug + the one
+// slugifyPage — (1) `<meta slug>`, else (2) `<meta title>`, else (3) the menu title (pipe label
+// / group title), with the `src` filename stem as a last resort. Tiers 1–2 read the page's own
+// source, which only the caller that loads it (the static build) has; this nav-model pass has no
+// external sources, so it resolves at tier 3 (full live parity is #299 slice 3). Collisions are
+// ALWAYS-RENDER (never a build error): a derived (tier 2/3) slug uniquifies + warns; a pinned
+// `<meta slug>` duplicate is NOT renamed — it warns and the dependent link won't resolve, but the
+// build completes.
 
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { uniqueId } from '../lib/toc.js';
+import { extractDocumentTitle } from '../index.js';
 import { ENSCRIBE_DOC_TYPE, ENSCRIBE_NAV_MODEL } from '../../core/file-data-keys.js';
 
 /** A page slug from a human title: lowercase, non-alphanumerics → `-`, trimmed. Distinct
@@ -46,6 +52,68 @@ export function slugifyPage(s) {
 function srcStem(src) {
   if (!src) return '';
   return (src.split('/').pop() ?? '').replace(/\.[^.]+$/, '');
+}
+
+// The single reader of a page's `<meta slug=…>` (retiring static-website.js's private copy, #300).
+// Captures the FULL raw value (up to whitespace/quote/`>`) so it is normalized through slugifyPage
+// rather than a permissive [a-z0-9-] capture that would silently TRUNCATE `slug=Foo_Bar` to "Foo".
+const META_SLUG_RE = /<meta\b[^>]*?\bslug\s*=\s*["']?([^\s"'>]+)/i;
+
+/**
+ * The ONE page-slug resolver — the three-tier rule (decisions.md "Page slug is identity",
+ * spec-internal-links.md; #300/#299). The slug is the first that yields a non-empty slugifyPage:
+ *   (1) `<meta slug>`  → PINNED identity;  (2) `<meta title>`;  (3) the menu/nav title;
+ * with the `src` filename stem and then `"page"` as last resorts. Tiers 1–2 read the page's own
+ * loaded `source`; pass `source: null` (the live nav-model pass, which has no external sources) to
+ * resolve at tier 3. Returns the display `title` too (tier 2 else tier 3), so a caller that needs
+ * the page title does not re-parse.
+ *
+ * @param {object} o
+ * @param {string|null} [o.source]   the page's loaded `.emd` source (null when unavailable)
+ * @param {string}      [o.navTitle] the menu/nav title (pipe label / group title)
+ * @param {string|null} [o.src]      the page's `src` (for the filename-stem last resort)
+ * @returns {{ slug: string, pinned: boolean, title: string, rawMetaSlug: string|null }}
+ *   `rawMetaSlug` is the verbatim `<meta slug>` value (pre-slugify), so a caller can warn the author
+ *   when their slug was normalized (`Foo_Bar` → `foo-bar`); null when there is no `<meta slug>`.
+ */
+export function resolvePageSlug({ source = null, navTitle = '', src = null } = {}) {
+  const metaSlug = source ? (source.match(META_SLUG_RE)?.[1] ?? null) : null;
+  const metaTitle = source ? extractDocumentTitle(source) : '';
+  let slug = '';
+  let pinned = false;
+  if (metaSlug) {
+    const s = slugifyPage(metaSlug);
+    if (s) { slug = s; pinned = true; } // tier 1 — the pinned, permanent identity
+  }
+  if (!slug && metaTitle) slug = slugifyPage(metaTitle);       // tier 2
+  if (!slug && navTitle) slug = slugifyPage(navTitle);         // tier 3
+  if (!slug && src) slug = slugifyPage(srcStem(src));          // last resort: filename stem
+  if (!slug) slug = 'page';
+  return { slug, pinned, title: metaTitle || navTitle || '', rawMetaSlug: metaSlug };
+}
+
+/**
+ * Allocate a unique site-wide slug under the ALWAYS-RENDER collision policy (decisions.md
+ * always-render; #300). `used` is the per-build set of taken slugs. On a collision: a PINNED
+ * (`<meta slug>`) duplicate is NEVER renamed — it is recorded as the collision it is and returned
+ * as-is (the dependent link/ref/menu-item won't resolve, but the build completes); a DERIVED
+ * (tier 2/3) duplicate is uniquified (`-2`, `-3`, …). `onCollision(kind, slug)` (kind: 'pinned' |
+ * 'derived') is the caller's diagnostic sink — the one policy, two diagnostic shapes.
+ *
+ * @param {string} slug
+ * @param {boolean} pinned
+ * @param {Set<string>} used
+ * @param {(kind: 'pinned'|'derived', slug: string) => void} [onCollision]
+ * @returns {string} the allocated slug
+ */
+export function allocatePageSlug(slug, pinned, used, onCollision) {
+  if (used.has(slug)) {
+    if (pinned) { onCollision?.('pinned', slug); return slug; } // tier-1 dup: not renamed
+    onCollision?.('derived', slug);
+    return uniqueId(slug, used);                                 // tier 2/3 dup: uniquify
+  }
+  used.add(slug);
+  return slug;
 }
 
 /** Pull the plain-text label out of a node's (recursively-parsed) pipe content. The pipe
@@ -138,19 +206,27 @@ export function enscribeWebsiteStructuring() {
     const nav = children.find((c) => isEnscribeTag(c, 'nav'));
 
     const used = new Set();
-    const assignSlug = (title, src) => {
-      let base = slugifyPage(title);
-      if (!base && src) base = slugifyPage(srcStem(src));
-      if (!base) base = 'page';
-      if (used.has(base) && file?.message) {
+    // The live nav-model pass has no external page sources, so resolvePageSlug resolves at tier 3
+    // (the menu/nav title) here — full meta-slug/title parity is #299 slice 3. Every slug on this
+    // path is therefore DERIVED, so the slug value and the dedup diagnostic are byte-identical to
+    // before; the pinned branch only fires once the static build (which has sources) reuses the
+    // same allocator.
+    const assignSlug = (navTitle, src) => {
+      const { slug, pinned } = resolvePageSlug({ source: null, navTitle, src });
+      return allocatePageSlug(slug, pinned, used, (kind, s) => {
+        if (!file?.message) return;
         file.message(
-          `website: duplicate page slug "${base}" — disambiguated, but two pages share a ?page= id; ` +
-            `set distinct titles (or a slug) so the public URLs are stable`,
+          kind === 'pinned'
+            ? `website: duplicate pinned slug "${s}" (<meta slug>) — not renamed; links to it ` +
+                `won't resolve, but the build completes`
+            : `website: duplicate page slug "${s}" — disambiguated, but two pages share a ?page= id; ` +
+                `set distinct titles (or a slug) so the public URLs are stable`,
           undefined,
-          'website-structuring:slug-collision',
+          kind === 'pinned'
+            ? 'website-structuring:slug-collision-pinned'
+            : 'website-structuring:slug-collision',
         );
-      }
-      return uniqueId(base, used); // dedups (suffix -2, -3, …) and records the slug
+      });
     };
 
     if (!nav && file?.message) {
