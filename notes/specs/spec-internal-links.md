@@ -103,8 +103,12 @@ location *and* in the console / CLI log — and **none halts the build**:
   *derived* collision is **uniquified** with a **warning**; a *pinned* duplicate (the same explicit
   `<meta slug>` on two pages) leaves the dependent link / ref / menu-item **unresolved with a warning**,
   the pages themselves still rendering.
-- `<a {slug}>` with no matching page → a visible **broken-link marker** (surfaced, unlike today's silent
-  passthrough of a bad `href`); the page still renders.
+- `<a {slug}>` with no matching page → the link **degrades, text-preserving**: the authored label stays
+  (so the sentence still reads as prose), the live `href` is dropped, and the link carries the
+  unresolved-link styling — the `ref-error` marker class, shared with an unresolved `<ref>` — so it is
+  visibly flagged. A **warning** names the broken slug on the console / CLI; the **build completes**.
+  (The static builder previously hard-`throw`ed on a broken `<a {slug}>`; the always-render decision says
+  it must not — a broken authored link is surfaced and degraded, never a failed build.)
 - `<a {slug}>` resolving to a *derived* (not declared) slug → **warning** (pin it before a rename bites).
 
 ## Scope note

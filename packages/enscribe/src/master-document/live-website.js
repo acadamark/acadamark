@@ -32,6 +32,7 @@
 import { makeTag, isEnscribeTag } from '../core/tag.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
+import { rewriteCrossPageHrefs } from './cross-page-links.js';
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
@@ -108,22 +109,11 @@ export function buildLiveWebsite({ numbered, file, pages }) {
   return { pages: orderedPages, slugToPart, idToSlug, registry, firstSlug: orderedPages[0]?.slug ?? null };
 }
 
-/** Rewrite a rendered page fragment's CROSS-page ref hrefs (`#anchor` whose owner is another
- *  page) into a cross-page link; intra-page refs keep a bare `#anchor` (the current page is
- *  mounted/served, so the browser scrolls within it). `hrefFor(owner, anchor)` builds the href —
- *  the LIVE SPA default is `?page=owner#anchor`; the static build (#300 slice 2) passes a resolver
- *  that maps the owner (page slug OR book chapter-page id) to a depth-relative path URL, so a
- *  cross-page ref to a book chapter points at that chapter's file. */
-export function rewriteCrossPageHrefs(html, currentSlug, idToSlug, hrefFor = (owner, anchor) => `?page=${owner}#${anchor}`) {
-  return String(html).replace(/href="#([^"]+)"/g, (whole, anchor) => {
-    const owner = idToSlug.get(anchor);
-    return owner && owner !== currentSlug ? `href="${hrefFor(owner, anchor)}"` : whole;
-  });
-}
-
 /**
  * Render one page's CONTENT — `renderChapter` (the validated per-unit projection) over the
- * page's `<book-part>` node, with cross-page ref hrefs rewritten to `?page=owner#anchor`.
+ * page's `<book-part>` node, with cross-page ref hrefs rewritten to `?page=owner#anchor` (the
+ * shared cross-page resolver's live-SPA default scheme; the owner of an anchor is the page that
+ * owns it, from the global pass's registry).
  *
  * @param {object} model - buildLiveWebsite result
  * @param {string} slug - the page slug
@@ -133,7 +123,9 @@ export function rewriteCrossPageHrefs(html, currentSlug, idToSlug, hrefFor = (ow
 export function renderLiveWebsitePage(model, slug, ctx) {
   const part = model.slugToPart.get(slug);
   if (!part) return '';
-  return rewriteCrossPageHrefs(renderChapter(part, model.registry, ctx), slug, model.idToSlug);
+  return rewriteCrossPageHrefs(renderChapter(part, model.registry, ctx), slug, {
+    ownerOf: (anchor) => model.idToSlug.get(anchor),
+  });
 }
 
 /** The not-found view for an unknown `?page=` slug — a visible message + a link to the first

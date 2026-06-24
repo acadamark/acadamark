@@ -62,6 +62,7 @@ import { run as runSmartTypography } from './smart-typography.test.js';
 import { run as runBrowserMemo } from './browser-memo.test.js';
 import { run as runMasterDocumentBrowser } from './master-document-browser.test.js';
 import { run as runRenderParity } from './render-parity.test.js';
+import { run as runCrossPageLinks } from './cross-page-links.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
 import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
 import { run as runLiveBookParity } from './live-book-parity.test.js';
@@ -145,6 +146,7 @@ const suites = [
   ['browser-memo',                 runBrowserMemo],
   ['master-document-browser',      runMasterDocumentBrowser],
   ['render-parity',                runRenderParity],
+  ['cross-page-links',             runCrossPageLinks],
   ['render-chapter-parity',        runRenderChapterParity],
   ['separate-pages-parity',        runSeparatePagesParity],
   ['live-book-parity',             runLiveBookParity],
