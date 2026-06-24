@@ -1144,8 +1144,8 @@ const _blockquote = Object.freeze({
         "layer1_html": "<blockquote data-blockquote-type=\"epigraph\">\n  All happy families are alike; each unhappy family is unhappy in its own way.\n</blockquote>\n",
       },
       {
-        "source": "<blockquote | Same as <quote> but using the explicit Layer 1 name.>",
-        "layer1_html": "<blockquote>Same as <quote> but using the explicit Layer 1 name.</blockquote>",
+        "source": "<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>",
+        "layer1_html": "<blockquote>Same as <code>&#x3C;quote></code> but using the explicit Layer 1 name.</blockquote>",
         "notes": "Authors can also write <blockquote> directly. Both forms produce\nthe same Layer 1 output.\n",
       },
     ],
