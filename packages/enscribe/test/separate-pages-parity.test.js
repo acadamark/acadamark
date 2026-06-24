@@ -21,6 +21,8 @@ import {
   publishBookPages,
   publishBookPageBodies,
 } from '../src/interpreter/index.js';
+import { HEAD_ASSET_LINKS, KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../src/interpreter/assets/font-loader.js';
+import { escapeHtml } from '../src/core/escape-html.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -85,6 +87,24 @@ export async function run() {
       assert.ok(/<nav class="enscribe-toc enscribe-chapter-rail"/.test(html), `${name} carries the chapter-rail chrome`);
     }
     console.log(`PASS: P1 — ${parts.length} standalone chapter pages + index.html, deterministic slugs`);
+  }
+
+  // ── #297: every separate-pages head LINKS the shared display assets (KaTeX + fonts) ─────────
+  // The master-book fixture has math (KaTeX) and code blocks; before #297 the page shell linked
+  // NEITHER, so book math rendered as bare KaTeX HTML and code lost its Source Code Pro font. The
+  // page shell now links the SAME HEAD_ASSET_LINKS set as the website + single-article shells.
+  {
+    const head = (html) => html.slice(0, html.indexOf('</head>'));
+    for (const [name, html] of pages) {
+      const h = head(html);
+      assert.ok(h.includes(`href="${KATEX_CDN_URL}"`), `${name} <head> links the KaTeX CSS (#297)`);
+      // the fonts URL carries '&' → '&amp;' once escaped in the head; compare the escaped form.
+      assert.ok(h.includes(`href="${escapeHtml(DOCUMENT_FONTS_CDN_URL)}"`),
+        `${name} <head> links the document fonts — Inter body + Source Code Pro code, which styles code (#297)`);
+      // the WHOLE shared set, verbatim and once — the page shell links exactly what the other shells do.
+      assert.strictEqual(h.split(HEAD_ASSET_LINKS).length - 1, 1, `${name} carries HEAD_ASSET_LINKS verbatim, exactly once`);
+    }
+    console.log(`PASS: #297 — all ${pages.size} separate-pages heads link the shared KaTeX + fonts assets (HEAD_ASSET_LINKS)`);
   }
 
   // ── PARITY: page chapter content == L1 renderChapter (only diff is the href rewrite) ─

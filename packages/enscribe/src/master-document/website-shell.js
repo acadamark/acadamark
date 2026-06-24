@@ -26,7 +26,7 @@ import {
 } from '../interpreter/assets/book-nav-asset.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
-import { KATEX_CDN_URL, DOCUMENT_FONTS_CDN_URL } from '../interpreter/assets/font-loader.js';
+import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';
 import { getRegisteredDsls } from '../interpreter/dsl/registry.js';
 import { BOOK_HOME_CSS } from './publish-pages.js';
 import { escapeHtml } from './book-scaffold.js';
@@ -89,22 +89,13 @@ function universalHeadStyle(defaultCss) {
   ].join('\n');
 }
 
-// The universal head's LINKED assets — the document fonts (Inter body + Source Code Pro code) and
-// the KaTeX math CSS, in `'link'` form (the website is multi-page + linked-not-baked). These are the
-// SAME assets/versions the full single-page render and the article fragments use — reused via the
-// exported constants, never a hardcoded URL. Emitted UNCONDITIONALLY (like the rest of the head) so
-// the head stays byte-identical across pages: a page without math just carries an unused KaTeX
-// stylesheet, harmless. This is the fix for book pages rendering math, fonts (and so code) UNSTYLED —
-// the separate-pages pageShell only inlines default.css + the book CSS and never linked these, so
-// book math fell back to bare KaTeX HTML and code to a system mono font. (Article fragments still
-// carry their own KaTeX/fonts links too → article pages now link KaTeX twice, head + fragment; the
-// browser dedups the fetch. Making the head the single asset source + stripping per-fragment assets
-// is the externalisation follow-up, not this slice.) NB: there is no separate syntax-highlight
-// stylesheet — enscribe emits plain `<pre><code class="language-X">` (no token spans); code styling
-// is default.css's `pre`/`code` rules (already in the head) + the Source Code Pro web font here.
-const HEAD_ASSET_LINKS =
-  `<link rel="stylesheet" href="${escapeHtml(DOCUMENT_FONTS_CDN_URL)}">\n` +
-  `<link rel="stylesheet" href="${escapeHtml(KATEX_CDN_URL)}">`;
+// The universal head's LINKED assets (document fonts + KaTeX math CSS, in `'link'` form) come from the
+// single source HEAD_ASSET_LINKS in font-loader.js — the SAME set the separate-pages page shell links and
+// the consolidated injector emits as hast for the full single-page render. Emitted UNCONDITIONALLY (like
+// the rest of the head) so the head stays byte-identical across pages: a page without math just carries an
+// unused KaTeX stylesheet, harmless. (Article fragments still carry their own KaTeX/fonts links too → an
+// article page links them twice, head + fragment; the browser dedups the fetch. Making the head the single
+// asset source + stripping per-fragment assets is the externalisation follow-up, not this slice.)
 
 // The book reading-interface scripts, appended once at body-end on EVERY page. Each guards on its
 // target element (`nav.enscribe-toc` / `nav.enscribe-onthispage` / `[data-enscribe-back-to-top]`)
