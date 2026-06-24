@@ -65,8 +65,8 @@ shorthand_examples:
       <blockquote data-blockquote-type="epigraph">
         All happy families are alike; each unhappy family is unhappy in its own way.
       </blockquote>
-  - source: '<blockquote | Same as <quote> but using the explicit Layer 1 name.>'
-    layer1_html: '<blockquote>Same as <quote> but using the explicit Layer 1 name.</blockquote>'
+  - source: '<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>'
+    layer1_html: '<blockquote>Same as <code>&#x3C;quote></code> but using the explicit Layer 1 name.</blockquote>'
     notes: |
       Authors can also write <blockquote> directly. Both forms produce
       the same Layer 1 output.
