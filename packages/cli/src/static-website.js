@@ -32,6 +32,8 @@ import {
   collectDslNames,
   buildWebsiteDslHead,
   slugifyPage,
+  resolvePageSlug,
+  allocatePageSlug,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
@@ -133,21 +135,18 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const pages = flattenNavPages(entries);
   if (pages.length === 0) throw new Error('website master has a <meta type=website> but no nav pages');
 
-  // 2. PRE-PASS (#289): a page's SLUG is its stable identity, harvested from its own `<meta>` — the
-  //    explicit `<meta slug=…>` if present, else slugifyPage(its `<meta>` title). This supersedes the
-  //    nav-title slug (slice 1): the nav `<item>` keeps src + menu label, but no longer defines the
-  //    slug. We harvest every page up front (so an `<a {slug}>` can target ANY page), REMAP the nav
-  //    model's page.slug to the meta-slug (so buildNavPaths + the chrome + every link key on it
-  //    uniformly), and build slug → {title, isDerived, src}. A DUPLICATE slug is a HARD build error
-  //    (the identity + the link resolver depend on site-wide uniqueness).
+  // 2. PRE-PASS (#300/#299 slice 1): a page's SLUG is its stable identity, via the ONE three-tier
+  //    resolver (resolvePageSlug — the single home in website-structuring.js, retiring this file's
+  //    private META_SLUG_RE + inline title fallback): (1) `<meta slug>`, else (2) `<meta title>`,
+  //    else (3) the nav menu title, through the one slugifyPage. We harvest every page up front (so
+  //    an `<a {slug}>` can target ANY page), REMAP the nav model's page.slug to it (so buildNavPaths
+  //    + the chrome + every link key use it uniformly), and build slug → {title, isDerived, src}.
+  //    Collisions are ALWAYS-RENDER (allocatePageSlug; never a build error): a derived (tier 2/3)
+  //    duplicate uniquifies + warns; a pinned `<meta slug>` duplicate is NOT renamed — it warns and
+  //    its links are ambiguous (the per-link non-resolution is #299 slice 3), but the build completes.
   const pageData = [];                 // [{ page, resolved, source, slug, isBook }] in nav order
   const pageInfo = new Map();          // slug → { title, isDerived, src }
-  // Capture the FULL raw slug value (everything up to whitespace/quote/`>`), then normalize it through
-  // slugifyPage so a page's identity is ALWAYS a clean lowercase [a-z0-9-] slug — the same shape the
-  // <a> handler's bare-slug detector (PAGE_SLUG_RE) recognizes (#289). A permissive [a-z0-9-] capture
-  // here would silently TRUNCATE `slug=Foo_Bar` to "Foo" and admit uppercase the detector can never
-  // match, leaving the page unreachable by any authored <a {slug}> link (and minting false collisions).
-  const META_SLUG_RE = /<meta\b[^>]*?\bslug\s*=\s*["']?([^\s"'>]+)/i;
+  const usedSlugs = new Set();         // site-wide slug allocation (the resolver + always-render dedup)
   const META_TYPE_RE = /<meta\s+type\s*=\s*["']?([A-Za-z-]+)/; // the page's OWN type (first meta, not an example)
   for (const page of pages) {
     const resolved = resolvePageSource(masterDir, page.src);
@@ -156,24 +155,27 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
       continue;
     }
     const source = readFileSync(resolved.sourcePath, 'utf8');
-    const rawSlug = (source.match(META_SLUG_RE) || [])[1] || null;
-    const explicitSlug = rawSlug ? slugifyPage(rawSlug) || null : null; // normalize → clean identity
-    if (rawSlug && explicitSlug && explicitSlug !== rawSlug) {
+    const { slug: baseSlug, pinned, title, rawMetaSlug } = resolvePageSlug({
+      source, navTitle: page.title || page.slug, src: page.src,
+    });
+    const pageTitle = title || page.slug;  // display title for <a> auto-labels (resolver's title else slug)
+    if (pinned && rawMetaSlug && baseSlug !== rawMetaSlug) {
       warnings.push(
-        `page "${page.src}": <meta slug="${rawSlug}"> was normalized to "${explicitSlug}" — ` +
-        `author internal links to it as <a ${explicitSlug}> (slugs are lowercase letters, digits, hyphens).`,
+        `page "${page.src}": <meta slug="${rawMetaSlug}"> was normalized to "${baseSlug}" — ` +
+        `author internal links to it as <a ${baseSlug}> (slugs are lowercase letters, digits, hyphens).`,
       );
     }
-    const pageTitle = extractDocumentTitle(source) || page.title || page.slug;
-    const slug = explicitSlug || slugifyPage(pageTitle) || page.slug;
-    if (pageInfo.has(slug)) {
-      throw new Error(
-        `#289: duplicate page slug "${slug}" — "${pageInfo.get(slug).src}" and "${page.src}" resolve to the ` +
-        `same identity. Give one a distinct <meta slug=…> (or a distinct title).`,
+    const slug = allocatePageSlug(baseSlug, pinned, usedSlugs, (kind, s) => {
+      warnings.push(
+        kind === 'pinned'
+          ? `#300: duplicate pinned slug "${s}" (<meta slug>) on "${page.src}" — not renamed; links to it are ` +
+            `ambiguous and won't resolve, but the build completes`
+          : `#300: duplicate page slug "${s}" — "${page.src}" disambiguated; give it a distinct ` +
+            `<meta slug=…> or title so the public URL is stable`,
       );
-    }
-    pageInfo.set(slug, { title: pageTitle, isDerived: !explicitSlug, src: page.src });
-    page.slug = slug;                  // remap the nav model → the page's meta-slug is its identity
+    });
+    pageInfo.set(slug, { title: pageTitle, isDerived: !pinned, src: page.src });
+    page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
     pageData.push({ page, resolved, source, slug, isBook: (source.match(META_TYPE_RE) || [])[1]?.toLowerCase() === 'book' });
   }
   if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
