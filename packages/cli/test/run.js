@@ -12,6 +12,7 @@ import { run_tests as runMasterDocumentTests } from './master-document.test.js';
 import { run_tests as runEmbeddedAssetTests } from './embedded-asset.test.js';
 import { run_tests as runBuildLiveTests } from './build-live.test.js';
 import { run_tests as runStaticWebsiteTests } from './static-website.test.js';
+import { run_tests as runWebsiteXrefTests } from './website-xref.test.js';
 
 try {
   runCliTests();
@@ -23,6 +24,7 @@ try {
   runEmbeddedAssetTests(); // #190: <data> embedded-png asset → numbered figure via src="@id"
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
+  runWebsiteXrefTests(); // #300 slice 2: cross-page <ref> resolves via the merged site registry (composition)
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);
 } catch (err) {

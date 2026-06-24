@@ -243,7 +243,10 @@ function renderIndex(parts, idToUrl, opts) {
  * @param {string} opts.defaultCss - default.css text, inlined into each page's shell
  * @returns {Map<string, string>} filename ('counting-elephants.html', 'index.html', …) → HTML
  */
-function prepareBook(numbered, file) {
+// Exported (#300 slice 2): the static website composition builder calls this in its Phase-1 site-registry
+// pass to get a book-page's `idToUrl` (chapter `<book-part>` id → `<stem>.html`) + cross-ref `registry`
+// WITHOUT rendering, so it can tag each book anchor with the CHAPTER-PAGE it renders on. PURE (tree-only).
+export function prepareBook(numbered, file) {
   const bookEl = findBook(numbered);
   if (!bookEl) throw new Error('publishBookPages: no <book> element — separate-pages is a book-only build');
 

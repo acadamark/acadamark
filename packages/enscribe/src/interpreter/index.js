@@ -1187,14 +1187,18 @@ export { assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC, MASTER_SRC_TA
 // live lazy path, L2, drives).
 export { harvestCrossRefRegistry } from './lib/cross-ref-registry.js';
 export { renderChapter, extractBookPart } from '../master-document/render-chapter.js';
-export { ENSCRIBE_CROSSREF_REGISTRY } from '../core/file-data-keys.js';
+export { ENSCRIBE_CROSSREF_REGISTRY, ENSCRIBE_REGISTRY } from '../core/file-data-keys.js';
+// #300 slice 2: the static website composition builder pre-seeds each page's numbering registry with
+// a read-through over the merged SITE registry, so a cross-page <ref> resolves to its target's NATIVE
+// number (the page numbered itself) — the minipage outbound-ref mechanism, reused site-wide.
+export { makeReadThroughRegistry, ensureRegistry } from '../core/registry.js';
 // Publishing, P1 (#205): the static separate-pages book build — one standalone HTML
 // page per chapter at per-chapter URLs, cross-chapter refs resolving to cross-page
 // links. The first consumer of L1 (renderChapter + registry) and C (the chrome).
 // publishBookPageBodies (#295) is the sibling that returns each chapter's BODY FRAGMENT
 // (no page shell), so the static-website build can host a book inside its own universal
 // shell instead of stapling chrome onto a finished book page.
-export { publishBookPages, publishBookPageBodies } from '../master-document/publish-pages.js';
+export { publishBookPages, publishBookPageBodies, prepareBook } from '../master-document/publish-pages.js';
 // Live app-shell book render, L2 (#208): the live counterpart of P1 — render the CURRENT
 // chapter live from .emd source, hash-routed and lazy. buildLiveBook is the pure model
 // (scaffold + router maps + harvested registry); renderLiveChapterView the per-chapter
