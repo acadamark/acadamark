@@ -143,6 +143,34 @@ though they sit outside render/serve/edit/save.
 
 ---
 
+## Always renders — never block the build on an error
+
+**Enscribe never blocks the build on an error. Every document *always renders*.** A problem surfaces in two
+places — **inline**, as an error or warning node at the spot in the rendered output where it occurred (so you
+see *where*), and on the **console / CLI** (so you have the log) — but it **never halts rendering or fails the
+build**. There is no "compilation failed, no output" state.
+
+**Why this is a deliberate stance.** It is the break from the compile-to-PDF toolchains — LaTeX, and the
+markdown-extension stacks — where a single bad construct can block the whole document and you get a log
+instead of a paper. Enscribe follows the **scripting-language model** instead: run what you can, report the
+problems, never stop the world. You never lose a finished document to one malformed tag.
+
+**It is load-bearing across subsystems** — each one bends to it rather than the reverse:
+
+- a malformed or unknown tag renders as an **inline tag-error** marker, the surrounding content untouched;
+- ambiguous shorthand under a strict-mode rung is **flagged inline**, never hard-failed (`<config
+  strict-mode=…>` always renders, never errors);
+- an unterminated construct yields an **inline error node spanning to EOF** rather than aborting the parse —
+  the error renders at its opener and the conspicuously missing downstream content is itself the signal;
+- a website slug collision **warns** and degrades only the dependent link / ref / menu-item, never the build
+  (see *Page slug is identity* below).
+
+Subsystem specs hold the *mechanics* of each and defer up to this entry for the *why*. The fullest mechanical
+statement — the error-node types, localized recovery, and gap-tracking — already lives in
+`notes/specs/principles.md` ("the always-renders principle"), which this product decision sits above.
+
+---
+
 ## The website — the third document class
 
 A **website** (`<meta type=website>`) is the third document class, alongside article and book: a set of
