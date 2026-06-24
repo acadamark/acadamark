@@ -29,6 +29,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createLazyAsset } from '../lib/lazy-asset.js';
+import { escapeHtml } from '../../core/escape-html.js';
 
 // Directory resolution is deferred into accessors (not computed at module load)
 // so this module imports cleanly in a browser bundle; the fs reads themselves
@@ -86,6 +87,38 @@ const _katexVersion = '0.16.45';
  * Exported so consumers using 'link' mode can reference the same URL.
  */
 export const KATEX_CDN_URL = `https://cdn.jsdelivr.net/npm/katex@${_katexVersion}/dist/katex.min.css`;
+
+// The document head's LINKED display assets — the document fonts (Inter body + Source Code Pro code) and
+// the KaTeX math CSS — as ONE authored `<link>` set: the SINGLE SOURCE every STRING-form shell links. Both
+// the static-website universal head (master-document/website-shell.js) and the separate-pages page shell
+// (master-document/publish-pages.js) link EXACTLY this. Routing both here is the fix for #297 — the page
+// shell linked NEITHER, so a standalone separate-pages book rendered math as bare KaTeX HTML and code in a
+// system mono font. Emitted UNCONDITIONALLY (a math-free page just carries an unused KaTeX sheet, harmless)
+// so a multi-page head stays byte-identical across pages. The full-document rehype render injects the SAME
+// two assets as hast nodes via the consolidated injector (index.js: makeLinkElement of these constants),
+// math-gated there to keep single-document output lean. (There is NO separate syntax-highlight stylesheet:
+// code is plain `<pre><code class="language-X">`, styled by default.css's pre/code rules + the Source Code
+// Pro web font carried in the FONTS link — so linking the fonts is what re-styles code.)
+export const HEAD_ASSET_LINKS =
+  `<link rel="stylesheet" href="${escapeHtml(DOCUMENT_FONTS_CDN_URL)}">\n` +
+  `<link rel="stylesheet" href="${escapeHtml(KATEX_CDN_URL)}">`;
+
+// §3 single-source guard (the section-kinds.js pattern): tie the authored link set back to its CDN-URL
+// source so a future shell can't fork a divergent copy (hardcode a URL, drop or add a link). The hrefs
+// parsed out of HEAD_ASSET_LINKS must equal, in order, the two document-asset constants the consolidated
+// injector also uses. Fails loud at module load.
+{
+  const linkedHrefs = [...HEAD_ASSET_LINKS.matchAll(/href="([^"]*)"/g)].map((m) => m[1]);
+  const sourceHrefs = [escapeHtml(DOCUMENT_FONTS_CDN_URL), escapeHtml(KATEX_CDN_URL)];
+  const equal =
+    linkedHrefs.length === sourceHrefs.length && linkedHrefs.every((h, i) => h === sourceHrefs[i]);
+  if (!equal) {
+    throw new Error(
+      `font-loader: HEAD_ASSET_LINKS drifted from its CDN-URL source — linked [${linkedHrefs.join(', ')}] ` +
+        `must be exactly [${sourceHrefs.join(', ')}]. Edit DOCUMENT_FONTS_CDN_URL / KATEX_CDN_URL, not a copy.`,
+    );
+  }
+}
 
 /**
  * Build @font-face CSS for document fonts (Inter, Source Code Pro).

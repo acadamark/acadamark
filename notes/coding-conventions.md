@@ -22,6 +22,7 @@ Adding a parallel copy of any of these is a regression, not a feature:
 - the config-vs-element decision → `booleanHome()`
 - caption / cross-reference numbers → `formatScopedNumber`
 - asset injection → the single consolidated injector (#229)
+- document head asset links (fonts + KaTeX, `'link'` form) → `font-loader.js` `HEAD_ASSET_LINKS` (#297 — the string-form shells, the static-website head and the separate-pages page shell, link EXACTLY this; bound to the CDN-URL constants by a load-time equality assertion)
 - parser char codes → the central char-code registry
 
 ## 3 · Guard new single-sources

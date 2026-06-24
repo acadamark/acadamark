@@ -46,6 +46,7 @@ import {
 } from './book-scaffold.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
+import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';
 import {
   composeBookBody,
   BOOK_NAV_NOLEFT_CSS,
@@ -97,10 +98,11 @@ function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl) {
 export const BOOK_HOME_CSS = `.enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
 .enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }`;
 
-/** Wrap a body in a standalone HTML document with default.css (+ the separate-pages
- *  masthead CSS) inlined and the two C reading-interface scripts (scroll-spy drives the
- *  left rail — a no-op when its links are page URLs; on-this-page drives the right
- *  rail's in-page highlight). */
+/** Wrap a body in a standalone HTML document: default.css (+ the separate-pages masthead
+ *  CSS) inlined, the LINKED document assets (fonts + KaTeX, via the shared HEAD_ASSET_LINKS
+ *  — #297, so book math/code render styled like the website + single-article shells), and
+ *  the two C reading-interface scripts (scroll-spy drives the left rail — a no-op when its
+ *  links are page URLs; on-this-page drives the right rail's in-page highlight). */
 function pageShell(body, title, defaultCss, bookNav) {
   // Conditional book-nav assets (#221), appended AFTER default.css so a DEFAULT book
   // (chapter-nav on, depth 1, back-to-top off) appends nothing and stays byte-identical.
@@ -116,6 +118,7 @@ function pageShell(body, title, defaultCss, bookNav) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
+${HEAD_ASSET_LINKS}
 <style>
 ${defaultCss}
 ${BOOK_HOME_CSS}${css}
