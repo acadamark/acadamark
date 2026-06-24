@@ -476,9 +476,16 @@ styling), and the external DSLs (§9, which share the figure counter).
 
 - **`RQ-FRM-S1`** — `.figure-label` and `.table-label` render `font-weight: 700`
   (the number/label is prominent within the caption).
-- **`RQ-FRM-S2`** — `figure` renders `display: block`, centred, with vertical
-  margin; `figcaption` and `caption` render at small size, secondary colour,
-  left-aligned (caption text reads as caption, not body).
+- **`RQ-FRM-S2`** — `figure` renders `display: block` with vertical margin. Its
+  text content (prose, lists, code, tables — common in a `<frame>` / `<minipage>`,
+  which also lower to `<figure>`) flows **left-aligned** like ordinary HTML — the
+  lean-on-conventions default (none of HTML / markdown / Quarto / LaTeX / bookdown
+  centre lists / code / prose / tables; #274). Only the figure MEDIA is centred —
+  `figure img` and a figure's direct-child `figure > svg` centre via `margin: 0 auto`
+  (the academic convention for a figure's image); display equations centre via
+  KaTeX's own `.katex-display`, independent of the `figure` rule. `figcaption` and
+  `caption` render at small size, secondary colour, left-aligned (caption text reads
+  as caption, not body).
 - **`RQ-FRM-S3`** — `table` renders `border-collapse`, full content width;
   `th`/`td` are bordered; `th` is header-styled (subtle background, sans,
   uppercase, accent colour); `thead th` carries a heavier bottom border.
