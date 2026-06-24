@@ -58,7 +58,7 @@ Class, .centered
 
 <sub-section | Notes>
 
-The body is opaque — arrows like `-->` and other engine syntax pass through untouched. A captioned diagram joins the figure sequence as "Figure N.".
+The body is opaque — arrows like `-->` and other engine syntax pass through untouched. A captioned diagram joins the figure sequence as "Figure N.". Always write a diagram in the block form shown above (`<diagram engine>…</diagram>`): the inline pipe form `<diagram engine | … >` closes at the first `>`, so a body containing `-->` or a bare `>` would be cut off; the block form's `</diagram>` closer has no such ambiguity.
 </section>
 
 <section #sec:svg | Inline SVG>
