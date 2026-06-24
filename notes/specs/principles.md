@@ -4,6 +4,8 @@ This document records the core working principles that govern design decisions i
 
 ## The always-renders principle
 
+The product-shape decision behind this principle — *why* Enscribe never blocks the build — is recorded in `notes/decisions.md` ("Always renders — never block the build on an error"); this section holds the mechanics.
+
 **The parser always produces a tree. The document always renders to something. Every error is reported visibly at the location in the rendered output where it occurred. The author never sees a "compilation failed, no output" state with raw error messages, and the author never has to hunt for where an error happened.**
 
 This is the hard requirement, and it is one requirement with two inseparable halves: the document renders, *and* the rendered output is where the author finds out about errors. Errors are represented as `enscribeTagError` or `enscribeParseError` nodes inline in the AST. These nodes render visibly — as error markers in the document at their source location, in the same house style the interpreter uses for the other "the author wrote a reference the system couldn't resolve" cases (`??ref: id??` for an unresolved cross-reference, `??cite: key??` for an unresolved citation, an inline table-parse-error marker for a malformed table body). Surrounding content continues to render normally; the error marker localizes the problem to where it occurred.
