@@ -229,10 +229,12 @@ pinned identity, so instead whatever **depends** on that slug (an `<a {slug}>` l
 item) **warns and doesn't resolve**, while the page itself **still renders and the build completes**. (A link
 to a derived, un-pinned slug also warns — the cue to pin it before a title rename breaks the link.) All
 warnings are logged to the console / CLI but never halt rendering. Full model:
-`notes/specs/spec-internal-links.md`. *Caveat (status): this is implemented on the **static** build only; the
-live website still keys identity on the nav-title slug and does not yet resolve `<a {slug}>` (the markers are
-inert there) — tracked by #299, with the static side's regression to the one-render-path model tracked by
-#300 (the same cluster). The decision stands; the live path is the work that catches up to it.*
+`notes/specs/spec-internal-links.md`. *Caveat (status): `<a {slug}>` resolution is implemented on the
+**static** build only; the live website still keys identity on the nav-title slug and does not yet resolve
+`<a {slug}>` (the markers are inert there) — tracked by #299. (The static build's earlier cross-page
+**`<ref>`** regression — the per-page-isolated render that could not resolve a reference across pages — was
+#300; it is **fixed** by the composition builder above, and the served `site/dist` is rebuilt on it.) The
+decision stands; the live path is the work that catches up to it.*
 
 **A website page is an article or book plus chrome — one render path, composed over a merged site
 cross-ref registry (#300 slice 2).** The website is not a second renderer, and it is not a flattening
