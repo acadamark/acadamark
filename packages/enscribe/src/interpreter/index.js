@@ -798,6 +798,35 @@ export function enscribeInterpreter(options = {}) {
   // 12. Bibliography: render the bibliography and inject into article-back.
   this.use(enscribeBibliography);
 
+  // 13 (#281). Page-scoped warning suppression. A document carrying <config quiet />
+  //     suppresses ITS OWN authoring warnings — the vfile `file.messages` stream
+  //     (raw-HTML passthrough, mis-placed apparatus, unknown-meta-kwarg, minipage
+  //     depth, …) — from build/console output. This gates EMISSION only: every
+  //     `file.message(...)` already ran during the transforms above (the tree, and
+  //     so the rendered HTML, are byte-identical), and the inline error markers the
+  //     always-renders guarantee depends on (`enscribeTagError` / `__*-error` nodes)
+  //     are TREE content, not vfile messages — so they are never touched. Runs LAST,
+  //     after config-discovery (step 2-4, so `quiet` is on file.data) and after every
+  //     message producer (so the whole stream is present to clear). Per-document: each
+  //     page's own <config quiet> clears only its own file.messages (a quiet page in a
+  //     multi-page build does not silence its siblings).
+  //
+  //     No severity levels (#281): the document's whole message stream is cleared.
+  //     vfile's `fatal` field is the future hook if a hard-error tier is ever wanted —
+  //     narrow this to `!m.fatal` then. Today the pipeline emits no fatal messages
+  //     (errors render as inline nodes, never `file.fail`), so clearing all == clearing
+  //     warnings. NOTE: the `--quiet` CLI flag (a console.warn swap) is the orthogonal
+  //     GLOBAL operator; this is the per-document one. They compose — one "quiet" notion,
+  //     two scopes — and neither forks a new mechanism.
+  this.use(function enscribeQuietSuppression() {
+    return (tree, file) => {
+      if (!file || !Array.isArray(file.messages) || file.messages.length === 0) return;
+      if (readConfigBool(file.data?.[ENSCRIBE_CONFIG], 'quiet', false)) {
+        file.messages.length = 0;
+      }
+    };
+  });
+
   // ── Post-compile injection helpers (R3 / F10) ─────────────────────────────────
   // compileToHtml builds the hast, then runs these in a FIXED sequence. Every helper
   // injects via hast.children.unshift (PREPEND), so the call order in compileToHtml is

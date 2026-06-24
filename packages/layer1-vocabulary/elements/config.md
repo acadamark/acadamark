@@ -34,6 +34,7 @@ enscribe_attributes:
         - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)
         - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)
         - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)
+        - quiet                   (live; boolean; consumed by interpreter/index.js enscribeQuietSuppression — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)
         - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)
         - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)
         - display-style           (reserved; future)

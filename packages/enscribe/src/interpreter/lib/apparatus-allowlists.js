@@ -99,6 +99,12 @@ export const CONFIG_KWARGS = new Map([
   // plugin, which reads it through readBoolKwarg's config layer.
   ['parse-data-tables',       boolean()],   // plugins/table-cell-parse.js
 
+  // #281: page-scoped warning suppression. A document carrying <config quiet /> suppresses
+  // ITS OWN authoring warnings (the vfile file.messages stream — raw-HTML passthrough,
+  // mis-placed apparatus, …) from build/console output. Gates EMISSION only; rendering and
+  // the inline error markers are untouched. The supported way to quiet a teaching/demo page.
+  ['quiet',                   boolean()],   // interpreter/index.js enscribeQuietSuppression (#281)
+
   // #221: book navigation chrome — the chapter rail, prev/next, cover, back-to-top,
   // and pagination unit. Book-only (<meta type=book>), default ON for books (declaring
   // a book opts into book conventions) EXCEPT back-to-top. Read in the shared book model
