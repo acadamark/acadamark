@@ -5109,7 +5109,7 @@ const _ref = Object.freeze({
       "kwargs": {
         "target": {
           "handled_by": "handler",
-          "notes": "The id of the element being referenced. The canonical form uses the\n#id prefix: <ref #eqn:model>. A kwarg form is also accepted as\nlegacy: <ref target=eqn:model>.\nIMPORTANT (current implementation): only colon-ids (ids containing\na colon, e.g., eqn:model, fig:scatter) are in the label index and\ncan be resolved. Non-colon ids produce an unresolved error marker.\nThis restriction may be relaxed in a future slice.\n",
+          "notes": "The id of the element being referenced. The canonical form uses the\n@id prefix (@ is the reference sigil): <ref @eqn:model>. A #id prefix\non a <ref> declares an id ON THE <ref> ELEMENT ITSELF (not a target),\nso <ref #eqn:model> is a broken reference. A kwarg form is also\naccepted as legacy: <ref target=eqn:model>.\nIMPORTANT (current implementation): only colon-ids (ids containing\na colon, e.g., eqn:model, fig:scatter) are in the label index and\ncan be resolved. Non-colon ids produce an unresolved error marker.\nThis restriction may be relaxed in a future slice.\n",
         },
         "type": {
           "maps_to": {
@@ -5175,17 +5175,17 @@ const _ref = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "See <ref #fig:scatter> for details.",
+        "source": "See <ref @fig:scatter> for details.",
         "html_output": "<p>See <a href=\"#fig:scatter\" class=\"ref\">figure 1</a> for details.</p>",
-        "notes": "Canonical form: #id prefix. The ref-resolution plugin replaces the\n<ref> node with a __ref-marker before hast conversion. The handler\nthen renders an <a> element with computed text. Prefix word is\nlowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.\n",
+        "notes": "Canonical form: @id prefix (@ references; # would declare an id on the\n<ref> itself). The ref-resolution plugin replaces the\n<ref> node with a __ref-marker before hast conversion. The handler\nthen renders an <a> element with computed text. Prefix word is\nlowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.\n",
       },
       {
-        "source": "As shown in <ref #eqn:model>.",
+        "source": "As shown in <ref @eqn:model>.",
         "html_output": "<p>As shown in <a href=\"#eqn:model\" class=\"ref\">equation 1</a>.</p>",
         "notes": "Equation references use the \"equation\" prefix word by default.\nConfig override: <config ref-prefix-eqn=\"Eq.\"> changes this to \"Eq.\".\n",
       },
       {
-        "source": "<ref #eqn:missing>",
+        "source": "<ref @eqn:missing>",
         "html_output": "<a href=\"#eqn:missing\" class=\"ref-error\">??ref: eqn:missing??</a>",
         "notes": "Unresolved target renders a visible error anchor.\n",
       },

@@ -59,7 +59,7 @@ This claim is supported by recent work <cite smith2023, jones2024>.
 <figure #fig:elephant .wrap align=right src=elephant.jpg |
   An adult African elephant, photographed in Tanzania.>
 
-See <ref #fig:elephant> for context.
+See <ref @fig:elephant> for context.
 
 ## Methods
 
