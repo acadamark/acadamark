@@ -195,6 +195,8 @@ The construct ends at the first `>` that is not inside a nested `<...>` pair. Th
                                                        ↑ this > closes figure
 ```
 
+**Opaque content with a bare `>` must use the long form.** Because the short form ends at the first depth-0 `>` (above), it cannot carry an *opaque-content* tag — a DSL/host tag whose body is preserved verbatim (`<diagram>`, `<math>`, `<mermaid>`, `<csv>`, …) — when that body contains an unbalanced (bare) `>`: a mermaid arrow `-->`, a math comparison `a > b`. In `<diagram mermaid | graph TD; A-->B>` the `>` in `-->` sits at depth 0 (no preceding tag-like `<` opened a pair), so it closes the construct early and the body truncates to `graph TD; A--`. Such content uses the **long form** `<diagram mermaid>…</diagram>` instead — its `</tagname>` closer is a distinct token that cannot be mistaken for a content `>`. The **sigil forms** (`<$ … $>` and `` <` … `> ``) are unambiguous for the same reason: their mirrored closer is a distinct sequence, not a bare `>`. This is a permanent boundary of the short form — an opaque body cannot distinguish a content `>` from the closer, and redefining the closer would only trade one breakage for another (#269).
+
 ### Sigil tags (mirrored closers)
 
 Sigil tags close with the sigil sequence repeated immediately before `>`.
