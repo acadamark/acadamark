@@ -123,7 +123,7 @@ Content.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `chapter` `part` `appendix` `preface` `foreword` `introduction` `conclusion` `glossary` `dedication` `afterword` `colophon` `other` | The kind of book-part. Authored as `type` (the prefix is redundant inside a <book-part>); renders to the HTML/BITS attribute `book-part-type` (maps_to). Distinct from <meta type>, which is the document class. Always present in Layer 1; the shorthand layer typically supplies it via a shorthand element name (e.g., <chapter> sets it to "chapter"). |
+| `type` | kwarg | `chapter` `part` `appendix` `preface` `foreword` `introduction` `conclusion` `glossary` `dedication` `afterword` `colophon` `other` | The kind of book-part. Authored as `type` (the prefix is redundant inside a `<book-part>`); renders to the HTML/BITS attribute `book-part-type` (maps_to). Distinct from `<meta type>`, which is the document class. Always present in Layer 1; the shorthand layer typically supplies it via a shorthand element name (e.g., `<chapter>` sets it to "chapter"). |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
 | `note-position` | kwarg | `bottom` `margin` | Document-level note render mode (#33): "bottom" / "margin". Collection (the per-note `placement` kwarg and `note-scope`) is a separate axis — see <note>. |
 | `+unlisted` | boolean | default `false` | Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g. a preface or an index chapter that should not appear in the contents. Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted. |

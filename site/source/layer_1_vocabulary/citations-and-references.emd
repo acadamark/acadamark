@@ -42,7 +42,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 | `section` | kwarg |  | Section reference within the cited work. |
 | `prefix` | kwarg |  | Text to appear before the citation. E.g., "see also" in "(see also Smith 2020)". |
 | `suffix` | kwarg |  | Text to appear after the citation. |
-| `style` | kwarg | `author-year` `numbered` `footnote` `endnote` `inline-author-year` `default` | Override the document-level citation style for this citation. "default" uses the document-level <citation-style> from <config>. |
+| `style` | kwarg | `author-year` `numbered` `footnote` `endnote` `inline-author-year` `default` | Override the document-level citation style for this citation. "default" uses the document-level `<citation-style>` from `<config>`. |
 
 Produced by: canonical `<cite>`.
 
