@@ -581,14 +581,31 @@ code-block pre {
 figure {
   display: block;
   margin: var(--enscribe-space-8) 0;
-  text-align: center;
 }
 
+/* #274: a figure's text content (prose, lists, code, tables — common in a <frame> /
+ * <minipage>, which also lower to <figure>) flows LEFT-aligned like ordinary HTML.
+ * Per the lean-on-conventions principle, none of HTML / markdown / Quarto / LaTeX /
+ * bookdown centre lists / code / prose / tables; left is the universal default. The
+ * blanket `figure { text-align: center }` that used to centre everything is gone.
+ * Only the figure MEDIA stays centred (the academic convention for a figure's image):
+ *   - <img> — centred by margin auto below (independent of text-align);
+ *   - a figure's own <svg> — centred here (it is inline, so it relied on the blanket
+ *     text-align). Scoped to a DIRECT child (`figure > svg`) so it never matches a
+ *     nested KaTeX glyph <svg> inside math, which must keep its own layout;
+ *   - display equations — centred by KaTeX's own `.katex-display { text-align: center }`
+ *     and the math-environment rules above, independent of this rule. */
 figure img {
   max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+figure > svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 figcaption {
@@ -1538,11 +1555,7 @@ Content.</code>
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>chapter</code> <code>part</code> <code>appendix</code> <code>preface</code> <code>foreword</code> <code>introduction</code> <code>conclusion</code> <code>glossary</code> <code>dedication</code> <code>afterword</code> <code>colophon</code> <code>other</code></td>
-                <td>The kind of book-part. Authored as <code>type</code> (the prefix is redundant inside a 
-                  <book-part></book-part>); renders to the HTML/BITS attribute <code>book-part-type</code> (maps_to). Distinct from 
-                  <meta>, which is the document class. Always present in Layer 1; the shorthand layer typically supplies it via a shorthand element name (e.g., 
-                  <book-part book-part-type="chapter"></book-part>sets it to “chapter”).
-                </td>
+                <td>The kind of book-part. Authored as <code>type</code> (the prefix is redundant inside a <code>&#x3C;book-part></code>); renders to the HTML/BITS attribute <code>book-part-type</code> (maps_to). Distinct from <code>&#x3C;meta type></code>, which is the document class. Always present in Layer 1; the shorthand layer typically supplies it via a shorthand element name (e.g., <code>&#x3C;chapter></code> sets it to “chapter”).</td>
               </tr>
               <tr>
                 <td><code>numbering-style</code></td>

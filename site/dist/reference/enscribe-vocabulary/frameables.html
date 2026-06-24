@@ -581,14 +581,31 @@ code-block pre {
 figure {
   display: block;
   margin: var(--enscribe-space-8) 0;
-  text-align: center;
 }
 
+/* #274: a figure's text content (prose, lists, code, tables — common in a <frame> /
+ * <minipage>, which also lower to <figure>) flows LEFT-aligned like ordinary HTML.
+ * Per the lean-on-conventions principle, none of HTML / markdown / Quarto / LaTeX /
+ * bookdown centre lists / code / prose / tables; left is the universal default. The
+ * blanket `figure { text-align: center }` that used to centre everything is gone.
+ * Only the figure MEDIA stays centred (the academic convention for a figure's image):
+ *   - <img> — centred by margin auto below (independent of text-align);
+ *   - a figure's own <svg> — centred here (it is inline, so it relied on the blanket
+ *     text-align). Scoped to a DIRECT child (`figure > svg`) so it never matches a
+ *     nested KaTeX glyph <svg> inside math, which must keep its own layout;
+ *   - display equations — centred by KaTeX's own `.katex-display { text-align: center }`
+ *     and the math-environment rules above, independent of this rule. */
 figure img {
   max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+figure > svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 figcaption {
@@ -1550,13 +1567,13 @@ Quarterly revenue for fiscal year 2024.
                 <td><code>src</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>URL of an image to embed. The handler generates an &#x3C;img> child element from this kwarg. When src is present, the figure renders as an image with a caption. Asset reference (#190): when src is <code>@id</code> it pulls in an asset declared inside <code>&#x3C;data></code>, either embedded — <code>&#x3C;fig #id png>base64&#x3C;/fig></code> (the format flag is one of png, jpg, jpeg, svg, gif, webp) — or external — <code>&#x3C;fig #id src="path" /></code>. An embedded reference resolves to a <code>data:&#x3C;mime>;base64,…</code> URI; an external one resolves to the declared path (rebased master-relative for a cross-file child) as a plain <code>&#x3C;img src="path"></code>. The placed figure adopts the id, so it numbers and cross-references (<code>&#x3C;ref @id></code>) as that id; the <code>&#x3C;data></code> declaration itself renders nothing. Re-placing one asset is legitimate — each <code>&#x3C;fig src="@id" /></code> renders and numbers, but only the first adopts the id (the cross-reference anchor); give a later placement its own <code>#id</code> to reference it. An unresolved <code>@id</code>, or an embedded format outside the list above, renders a visible asset-error rather than a broken image. Assets merge project-wide across an assembled document; the same id declared in two <code>&#x3C;data></code> blocks is last-wins with a visible collision flag. (JATS <code>&#x3C;graphic></code> export of assets is the remaining slice.)</td>
+                <td>URL of an image to embed. The handler generates an <code>&#x3C;img></code> child element from this kwarg. When src is present, the figure renders as an image with a caption. Asset reference (#190): when src is <code>@id</code> it pulls in an asset declared inside <code>&#x3C;data></code>, either embedded — <code>&#x3C;fig #id png>base64&#x3C;/fig></code> (the format flag is one of png, jpg, jpeg, svg, gif, webp) — or external — <code>&#x3C;fig #id src="path" /></code>. An embedded reference resolves to a <code>data:&#x3C;mime>;base64,…</code> URI; an external one resolves to the declared path (rebased master-relative for a cross-file child) as a plain <code>&#x3C;img src="path"></code>. The placed figure adopts the id, so it numbers and cross-references (<code>&#x3C;ref @id></code>) as that id; the <code>&#x3C;data></code> declaration itself renders nothing. Re-placing one asset is legitimate — each <code>&#x3C;fig src="@id" /></code> renders and numbers, but only the first adopts the id (the cross-reference anchor); give a later placement its own <code>#id</code> to reference it. An unresolved <code>@id</code>, or an embedded format outside the list above, renders a visible asset-error rather than a broken image. Assets merge project-wide across an assembled document; the same id declared in two <code>&#x3C;data></code> blocks is last-wins with a visible collision flag. (JATS <code>&#x3C;graphic></code> export of assets is the remaining slice.)</td>
               </tr>
               <tr>
                 <td><code>alt</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Alt text for the generated &#x3C;img> when src is present. Recommended for accessibility but not required: when alt is not specified, the handler falls back to the figcaption text. Ignored when src is absent.</td>
+                <td>Alt text for the generated <code>&#x3C;img></code> when src is present. Recommended for accessibility but not required: when alt is not specified, the handler falls back to the figcaption text. Ignored when src is absent.</td>
               </tr>
               <tr>
                 <td><code>align</code></td>
@@ -1669,7 +1686,7 @@ Make sure to read this carefully.
                 <td><code>caption</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional caption text rendered at the bottom of the frame (the frameable caption-bottom convention). The caption= kwarg lifts to a &#x3C;caption> child tag at the gate.</td>
+                <td>Optional caption text rendered at the bottom of the frame (the frameable caption-bottom convention). The caption= kwarg lifts to a <code>&#x3C;caption></code> child tag at the gate.</td>
               </tr>
               <tr>
                 <td><code>type</code></td>
@@ -1892,7 +1909,7 @@ A figure here counts privately.
                 <td><code>caption</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional caption text rendered in a sibling &#x3C;figcaption>. The caption= kwarg lifts to a &#x3C;caption> child tag at the normalize-to-canonical gate, matching the frameable convention.</td>
+                <td>Optional caption text rendered in a sibling <code>&#x3C;figcaption></code>. The caption= kwarg lifts to a <code>&#x3C;caption></code> child tag at the normalize-to-canonical gate, matching the frameable convention.</td>
               </tr>
               <tr>
                 <td><code>+numbered</code></td>
@@ -2037,7 +2054,7 @@ bar,2
                 <td><code>caption</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Short-form caption as a kwarg string. Renders as &#x3C;caption> inside the table element. When numbered, a “Table N.” label span is prepended. Long-form caption (&#x3C;caption \ | …> nested tag) is deferred.</td>
+                <td>Short-form caption as a kwarg string. Renders as <code>&#x3C;caption></code> inside the table element. When numbered, a “Table N.” label span is prepended. Long-form caption (<code>&#x3C;caption | ...></code> nested tag) is deferred.</td>
               </tr>
               <tr>
                 <td><code>src</code></td>

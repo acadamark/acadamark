@@ -50,10 +50,13 @@ export function renderArticleDocument(source, pipeOpts = {}) {
  * @param {string}   o.masterDir  - directory the children's `src` paths resolve against.
  * @param {Function} o.warn       - (message) => void, for assembler diagnostics.
  * @param {object}   [o.pipeOpts] - pipeline options, passed through to buildDocumentPipeline.
+ * @param {object}   [o.fileData] - seed values for the VFile's `data` BEFORE the run (#300 slice 2: the
+ *   static website seeds `enscribeRegistry` with a read-through over the merged SITE registry so a book
+ *   chapter's outbound cross-page `<ref>` resolves to the target page's native number). Default: none.
  */
-export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpts = {} }) {
+export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpts = {}, fileData }) {
   const proc = buildDocumentPipeline(pipeOpts);
-  const file = new VFile({ path: sourcePath });
+  const file = new VFile({ path: sourcePath, ...(fileData ? { data: fileData } : {}) });
   const tree = assembleMasterDocument({
     source,
     readFile: (p) => readFileSync(p, 'utf8'),

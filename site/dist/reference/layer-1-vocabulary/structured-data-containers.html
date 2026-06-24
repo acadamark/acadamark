@@ -581,14 +581,31 @@ code-block pre {
 figure {
   display: block;
   margin: var(--enscribe-space-8) 0;
-  text-align: center;
 }
 
+/* #274: a figure's text content (prose, lists, code, tables — common in a <frame> /
+ * <minipage>, which also lower to <figure>) flows LEFT-aligned like ordinary HTML.
+ * Per the lean-on-conventions principle, none of HTML / markdown / Quarto / LaTeX /
+ * bookdown centre lists / code / prose / tables; left is the universal default. The
+ * blanket `figure { text-align: center }` that used to centre everything is gone.
+ * Only the figure MEDIA stays centred (the academic convention for a figure's image):
+ *   - <img> — centred by margin auto below (independent of text-align);
+ *   - a figure's own <svg> — centred here (it is inline, so it relied on the blanket
+ *     text-align). Scoped to a DIRECT child (`figure > svg`) so it never matches a
+ *     nested KaTeX glyph <svg> inside math, which must keep its own layout;
+ *   - display equations — centred by KaTeX's own `.katex-display { text-align: center }`
+ *     and the math-environment rules above, independent of this rule. */
 figure img {
   max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+figure > svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 figcaption {
@@ -1547,21 +1564,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <td><code>book-part-type</code></td>
                 <td>kwarg</td>
                 <td><code>chapter</code> <code>part</code> <code>introduction</code> <code>conclusion</code> <code>other</code> <code>preface</code> <code>foreword</code> <code>dedication</code> <code>appendix</code> <code>glossary</code> <code>colophon</code> <code>afterword</code></td>
-                <td>For a single-file book-part (type=book-part) only: sets the book-part-type on the generated 
-                  <book-part></book-part>wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always “chapter”. Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive 
-                  <meta>field). Default “chapter” when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the 
-                  <book-part book-part-type="chapter"></book-part>/ 
-                  <book-part book-part-type="appendix"></book-part>/ … shorthand instead.
-                </td>
+                <td>For a single-file book-part (type=book-part) only: sets the book-part-type on the generated <code>&#x3C;book-part></code> wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always “chapter”. Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive <code>&#x3C;meta></code> field). Default “chapter” when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the <code>&#x3C;chapter></code> / <code>&#x3C;appendix></code> / … shorthand instead.</td>
               </tr>
               <tr>
                 <td><code>icon</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional brand icon for a website’s top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is 
-                  <meta>‘s title — there is no in-header &#x3C;icon>/
-                  <title></title> tag.
-                </td>
+                <td>Optional brand icon for a website’s top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is <code>&#x3C;meta></code>’s title — there is no in-header <code>&#x3C;icon></code>/<code>&#x3C;title></code> tag.</td>
               </tr>
             </tbody>
           </table>

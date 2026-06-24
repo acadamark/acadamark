@@ -109,12 +109,15 @@ export function buildLiveWebsite({ numbered, file, pages }) {
 }
 
 /** Rewrite a rendered page fragment's CROSS-page ref hrefs (`#anchor` whose owner is another
- *  page) to `?page=owner#anchor`; intra-page refs keep a bare `#anchor` (the current page is
- *  mounted, so the browser scrolls within it). */
-export function rewriteCrossPageHrefs(html, currentSlug, idToSlug) {
+ *  page) into a cross-page link; intra-page refs keep a bare `#anchor` (the current page is
+ *  mounted/served, so the browser scrolls within it). `hrefFor(owner, anchor)` builds the href —
+ *  the LIVE SPA default is `?page=owner#anchor`; the static build (#300 slice 2) passes a resolver
+ *  that maps the owner (page slug OR book chapter-page id) to a depth-relative path URL, so a
+ *  cross-page ref to a book chapter points at that chapter's file. */
+export function rewriteCrossPageHrefs(html, currentSlug, idToSlug, hrefFor = (owner, anchor) => `?page=${owner}#${anchor}`) {
   return String(html).replace(/href="#([^"]+)"/g, (whole, anchor) => {
     const owner = idToSlug.get(anchor);
-    return owner && owner !== currentSlug ? `href="?page=${owner}#${anchor}"` : whole;
+    return owner && owner !== currentSlug ? `href="${hrefFor(owner, anchor)}"` : whole;
   });
 }
 

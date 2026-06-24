@@ -9,15 +9,20 @@
 // shape (the static counterpart of the live website) but, like build-live.js, owns the fs +
 // asset side of a build, so the enscribe package stays browser-safe.
 //
-// RENDER MODEL (#278): each page is rendered INDEPENDENTLY, through the SHARED per-document render
-// path (render-document.js) that the CLI single-document build also uses — renderArticleDocument for
-// an article, assembleAndNumber + publishBookPageBodies for a book — so there is one render path, not
-// a website-private reconstruction of the pipeline. Both page types are then framed by the ONE static
-// website shell (composeWebsiteShellPage, #295): a universal head + the sticky top nav + the page's
-// content fragment. (This is NOT the live website's one synthetic-book
-// global pass; that model can't emit a book-page's chapters as nested pages. A consequence: a
-// cross-page `<ref>` BETWEEN top-level pages does not resolve across the independent renders —
-// flagged in the slice report, not silently handled.) A website page passes only assetsDir, keeping
+// RENDER MODEL (#300 slice 2 — COMPOSITION, replacing the #278 per-page-isolated model): the site is built
+// by COMPOSITION over a merged site cross-ref registry — NOT by flattening every page to one page-scope
+// assembly (the live SPA's buildWebsiteTree — a separate surface, flagged not fixed here), and NOT by the
+// per-page-ISOLATED render that bypassed the site registry (the #300 regression: a cross-page `<ref>` could
+// not resolve, since each page was a separate pass). Two phases. PHASE 1 numbers each page in its OWN native
+// scope — an article as an article, a book as a book (assembleAndNumber/prepareBook) — and harvests its
+// cross-ref registry, MERGING every anchor into ONE site registry (anchor → its NATIVE number + the
+// page/chapter-page that owns it). PHASE 2 renders each page NATIVELY through the SAME shared per-document
+// path the CLI single-document build uses (renderArticleDocument for an article, assembleAndNumber +
+// publishBookPageBodies for a book), with the page's numbering registry pre-seeded to a read-through over the
+// site registry — so a cross-page `<ref>` resolves to its target's native number — then rewrites the outbound
+// ref href to the owning page's file. Each page is framed by the ONE static website shell
+// (composeWebsiteShellPage, #295). Nothing is flattened: books keep book numbering, articles keep article
+// numbering, and cross-page refs resolve in every direction. A website page passes only assetsDir, keeping
 // its embed/dsl at the library defaults (a multi-page site does not inline KaTeX CSS into every page).
 
 import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs';
@@ -25,6 +30,7 @@ import { join, dirname, extname } from 'node:path';
 import { VFile } from 'vfile';
 import {
   publishBookPageBodies,
+  prepareBook,
   flattenNavPages,
   extractDocumentTitle,
   buildWebsiteTopBar,
@@ -34,8 +40,11 @@ import {
   slugifyPage,
   resolvePageSlug,
   allocatePageSlug,
+  harvestCrossRefRegistry,
+  makeReadThroughRegistry,
+  rewriteCrossPageHrefs,
 } from '@enscribejs/enscribe';
-import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
+import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY } from '@enscribejs/enscribe/core/file-data-keys';
 import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
@@ -226,51 +235,118 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const pageMap = new Map();
   const assets = [];
 
-  // PASS 1 — render every page's content fragment, accumulating the site-wide set of external-DSL
-  // markers (data-enscribe-dsl) as we go. The live diagram runtime is delivered ONCE through the
-  // universal head (#298), the same single-source location as the KaTeX/fonts links — NOT per fragment:
-  // a BOOK chapter's body-injected runtime is sliced off by extractBookPart, and an ARTICLE fragment's
-  // would duplicate within the page. The runtime therefore can't be composed until the whole site's DSL
-  // set is known, so we collect now and compose in pass 2. (Per-page render options stay at the library
-  // default dslMode 'skip': the <pre data-enscribe-dsl> contract markup the runtime scans is mode-
-  // independent, so the bodies already carry the renderable diagrams; only the runtime needs adding.)
-  const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
-  const siteDslNames = new Set();
+  // ── #300 slice 2: COMPOSITION model. Number each page in its OWN native scope, harvest its cross-ref
+  //    registry, MERGE into one SITE registry, then render each page natively and resolve cross-page refs
+  //    against the merge. NOTHING is flattened: a book keeps book numbering (a figure is "3.2"), an article
+  //    keeps article numbering; an <ref @id> across pages reads the target's NATIVE number + links to the
+  //    page (or book chapter-page) it renders on. (Replaces the per-page-ISOLATED render that bypassed the
+  //    site registry — the #300 regression — and never touches the live SPA's page-scope buildWebsiteTree.)
+  const destPrefixOf = (slug) => { const np = navPathOf.get(slug) ?? slug; return np === '' ? '' : `${np}/`; };
 
-  for (const { page, resolved, source, slug, isBook } of pageData) {
-    const navPath = navPathOf.get(slug) ?? slug;          // group segments + meta-slug; home → ''
-    const destPrefix = navPath === '' ? '' : `${navPath}/`;
+  // PHASE 1 — number every page in its OWN scope + harvest; merge into the site cross-ref registry.
+  //   siteHarvest: anchor → { number(native), title, type }  (backs the read-through, for the ref TEXT)
+  //   idToOwner:   anchor → ownerKey                         (the page/chapter-page that OWNS it, for the href)
+  //   ownerToUrl:  ownerKey → site-relative URL              (so a cross-page href resolves to a real file)
+  //   bookFnameOwner: a chapter-page's outPath → its ownerKey (the per-fragment "current owner" in Phase 2)
+  const siteHarvest = new Map();
+  const idToOwner = new Map();
+  const ownerToUrl = new Map();
+  const bookFnameOwner = new Map();
+  for (const { resolved, source, slug, isBook } of pageData) {
+    const destPrefix = destPrefixOf(slug);
     try {
       if (isBook) {
-        // Per-chapter pages, nested under the book's nav-path dir — assemble + number (the shared
-        // render path), then publish each chapter's BODY FRAGMENT and host it in the universal shell.
-        // The page passes only assetsDir; embed/dsl stay at the library defaults, exactly as before
-        // (a site does not self-inline ~260 KB of CSS into every page).
+        const { numbered, file } = assembleAndNumber({
+          source, sourcePath: resolved.sourcePath, masterDir: resolved.pageDir,
+          warn: (m) => warnings.push(`page "${slug}": ${m}`), pipeOpts: { assetsDir: resolved.pageDir },
+        });
+        // prepareBook assigns the chapter <book-part> ids + harvests + maps chapter-id → its `<stem>.html`,
+        // all WITHOUT rendering. Tag every anchor with the CHAPTER-PAGE it renders on, not one book slug.
+        const { registry: harvest, idToUrl } = prepareBook(numbered, file);
+        for (const [anchor, e] of harvest) {
+          siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });
+          const fname = e.chapter != null ? idToUrl.get(e.chapter) : null;
+          const owner = `${slug}::${fname ?? 'index.html'}`;
+          idToOwner.set(anchor, owner);
+          ownerToUrl.set(owner, `${destPrefix}${fname ?? 'index.html'}`);
+          if (fname) bookFnameOwner.set(`${destPrefix}${fname}`, owner);
+        }
+      } else {
+        const proc = buildDocumentPipeline({ assetsDir: resolved.pageDir });
+        const file = new VFile({ path: resolved.sourcePath });
+        const numbered = proc.runSync(proc.parse(source), file);   // number only — no render
+        ownerToUrl.set(slug, destPrefix);                          // the article's pretty URL ('' = root)
+        for (const [anchor, e] of harvestCrossRefRegistry(numbered, file)) {
+          siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });
+          idToOwner.set(anchor, slug);
+        }
+      }
+    } catch (err) {
+      warnings.push(`page "${slug}" failed to number for the site registry: ${err.message}`);
+    }
+  }
+
+  // The read-through PARENT — a page's own numbering shadows; a CROSS-page anchor reads through to here for
+  // its target's NATIVE number. findByLabel returns the entry computeRefText reads: `number` is the harvested
+  // native-number string and `scope: undefined` makes formatScopedNumber return it verbatim; `title` is the
+  // unnumbered-target fallback. (findByLabel is the only method a read-through calls on its parent.)
+  const siteParent = {
+    findByLabel: (id) => {
+      const e = siteHarvest.get(id);
+      return e ? { number: e.number, type: e.type, data: { title: e.title, scope: undefined } } : null;
+    },
+  };
+  // Seed values for a page's VFile.data: a FRESH read-through per render, so the page's own numbering writes
+  // locally and only cross-page lookups fall through to the merged site registry.
+  const seedRegistry = () => ({ [ENSCRIBE_REGISTRY]: makeReadThroughRegistry(siteParent) });
+
+  // Static cross-page href resolver: ownerKey → its file, RELATIVE to the page being rendered. (LIVE keeps
+  // `?page=owner#anchor` via rewriteCrossPageHrefs's default — the scheme differs by design; see hrefFor.)
+  const crossPageHref = (currentOutPath) => (owner, anchor) => {
+    const target = ownerToUrl.get(owner);
+    if (target == null) return `#${anchor}`;                       // unknown owner → leave intra-page (defensive)
+    const up = '../'.repeat((currentOutPath.match(/\//g) || []).length);
+    return `${up}${target}#${anchor}`;
+  };
+
+  // PHASE 2 — render each page NATIVELY (book/article scope intact) with the read-through pre-seeded, then
+  // rewrite OUTBOUND cross-page ref hrefs to the owning page's file. Collect the site-wide DSL set as we go.
+  // (Per-page render options stay at the library default dslMode 'skip'; the universal head delivers the
+  // diagram runtime once — #298 — so it can't be composed until the whole site's DSL set is known.)
+  const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
+  const siteDslNames = new Set();
+  for (const { page, resolved, source, slug, isBook } of pageData) {
+    const destPrefix = destPrefixOf(slug);
+    try {
+      if (isBook) {
+        // Re-number with the read-through seeded so the book's OUTBOUND cross-page refs resolve to native
+        // numbers (the assembler warnings were already collected in Phase 1, so suppress them here).
         const { numbered, file, proc } = assembleAndNumber({
-          source,
-          sourcePath: resolved.sourcePath,
-          masterDir: resolved.pageDir,
-          warn: (m) => warnings.push(`page "${slug}": ${m}`),
-          pipeOpts: { assetsDir: resolved.pageDir },
+          source, sourcePath: resolved.sourcePath, masterDir: resolved.pageDir,
+          warn: () => {}, pipeOpts: { assetsDir: resolved.pageDir }, fileData: seedRegistry(),
         });
         const bookBodies = publishBookPageBodies({ numbered, file, proc });
         for (const [fname, entry] of bookBodies) {
           const outPath = `${destPrefix}${fname}`;
-          // A cover-OFF book's index is a full standalone redirect (a meta-refresh has no fragment) —
-          // host it as-is; every other page is a body fragment wrapped in the universal shell (pass 2).
           if (entry.page != null) {
-            rendered.push({ outPath, slug, page: entry.page });
+            rendered.push({ outPath, slug, page: entry.page });   // cover-OFF redirect — hosted as-is
           } else {
-            collectDslNames(entry.body, siteDslNames);
-            rendered.push({ outPath, slug, title: entry.title, content: entry.body });
+            // WITHIN-book cross-chapter hrefs are already `chapter.html#id` (publishBookPageBodies), so only
+            // OUTBOUND cross-page refs (still bare `#anchor`) rewrite; pass this chapter-page's own owner key
+            // so its OWN anchors stay intra-page.
+            const body = rewriteCrossPageHrefs(entry.body, bookFnameOwner.get(outPath), idToOwner, crossPageHref(outPath));
+            collectDslNames(body, siteDslNames);
+            rendered.push({ outPath, slug, title: entry.title, content: body });
           }
         }
       } else {
-        // Article page — the shared article render (same processSync the CLI `render` uses); the
-        // `<article>` fragment is hosted in the universal shell's content region.
-        const content = renderArticleDocument(source, { assetsDir: resolved.pageDir });
+        const outPath = `${destPrefix}index.html`;
+        // Pass the read-through via the {value,data} VFile-like source (#133 form) so article numbering +
+        // ref-resolution see the merged site registry for cross-page targets.
+        const raw = renderArticleDocument({ value: source, data: seedRegistry() }, { assetsDir: resolved.pageDir });
+        const content = rewriteCrossPageHrefs(raw, slug, idToOwner, crossPageHref(outPath));
         collectDslNames(content, siteDslNames);
-        rendered.push({ outPath: `${destPrefix}index.html`, slug, title: page.title, content });
+        rendered.push({ outPath, slug, title: page.title, content });
       }
     } catch (err) {
       warnings.push(`page "${slug}" failed to render: ${err.message}`);

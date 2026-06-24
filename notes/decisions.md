@@ -229,16 +229,29 @@ pinned identity, so instead whatever **depends** on that slug (an `<a {slug}>` l
 item) **warns and doesn't resolve**, while the page itself **still renders and the build completes**. (A link
 to a derived, un-pinned slug also warns — the cue to pin it before a title rename breaks the link.) All
 warnings are logged to the console / CLI but never halt rendering. Full model:
-`notes/specs/spec-internal-links.md`. *Caveat (status): this is implemented on the **static** build only; the
-live website still keys identity on the nav-title slug and does not yet resolve `<a {slug}>` (the markers are
-inert there) — tracked by #299, with the static side's regression to the one-render-path model tracked by
-#300 (the same cluster). The decision stands; the live path is the work that catches up to it.*
+`notes/specs/spec-internal-links.md`. *Caveat (status): `<a {slug}>` resolution is implemented on the
+**static** build only; the live website still keys identity on the nav-title slug and does not yet resolve
+`<a {slug}>` (the markers are inert there) — tracked by #299. (The static build's earlier cross-page
+**`<ref>`** regression — the per-page-isolated render that could not resolve a reference across pages — was
+#300; it is **fixed** by the composition builder above, and the served `site/dist` is rebuilt on it.) The
+decision stands; the live path is the work that catches up to it.*
 
-**A website page is an article or book plus chrome — one render path.** The website is not a second
-renderer. Each page renders through the *same* single-document build that produces a standalone article
-or book; the website layer only orchestrates (nav walk, page placement) and wraps the result in chrome.
-There is deliberately no parallel website pipeline — anything that renders standalone (citations, math,
-diagrams) renders identically as a website page, by construction.
+**A website page is an article or book plus chrome — one render path, composed over a merged site
+cross-ref registry (#300 slice 2).** The website is not a second renderer, and it is not a flattening
+assembly. Each page renders through the *same* single-document build that produces a standalone article or
+book — an article in **article** scope, a book in **book** scope (a book figure stays "2.1", a section
+keeps its chapter prefix); nothing is collapsed to a page scope. The website layer orchestrates in two
+phases. **Phase 1** numbers every page in its OWN native scope and harvests each page's cross-ref registry,
+**merging** them into ONE site registry: `anchor → { native number, the page/chapter-page that owns it }`.
+**Phase 2** renders each page natively with its numbering registry pre-seeded to a *read-through* over that
+site registry, so a cross-page `<ref>` resolves to its target's **native** number and links to the page (or
+book chapter-page) it renders on; the result is then wrapped in chrome. There is deliberately no parallel
+website pipeline: anything that renders standalone (citations, math, diagrams, numbering) renders
+identically as a website page, by construction, and cross-page references resolve in **every** direction
+(article↔article, article↔book). This **replaces** the earlier per-page-**isolated** static render, under
+which each page was a separate pass and a cross-page `<ref>` could not resolve — the #300 regression. *(The
+live SPA still uses its page-scope `buildWebsiteTree` assembly, which flattens a book to page scope — a
+separate surface, tracked by #299 / #300's live side; the static builder no longer shares it.)*
 
 **Build is committed during development, built in CI once served.** While the docs site is under active
 development, the built output is rebuilt and committed on each emitter change (so the tree never drifts
