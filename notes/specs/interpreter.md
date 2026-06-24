@@ -1285,14 +1285,19 @@ target it maps:
    - Kwargs marked `handled_by: 'handler'` are for handler-strategy elements
      only; schema dispatch ignores them.
 4. For each boolean in `node.booleans` (the `+flag` / `-flag` surface), apply
-   the same rule as kwargs: look up `vocab.enscribe_attributes.booleans[key]`,
-   skip those marked `handled_by: 'handler'` (handler-strategy flags such as
-   `+numbered` and `+link`), and require a `maps_to`. A true boolean emits its
-   mapped attribute; a false boolean is omitted (HTML boolean-attribute
+   the same rule as kwargs: look up its declaration — either
+   `vocab.enscribe_attributes.booleans[key]` OR a **boolean-valued kwarg**
+   (`vocab.enscribe_attributes.kwargs[key]` with `values: ['true', 'false']`,
+   e.g. `<details>`'s `open`, which also accepts the `open=true` kwarg form via
+   step 3). Skip those marked `handled_by: 'handler'` (handler-strategy flags
+   such as `+numbered` and `+link`), and require a `maps_to`. A true boolean
+   emits its mapped attribute; a false boolean is omitted (HTML boolean-attribute
    semantics) unless the vocab declares a false mapping (not yet a supported
-   shape). Today every declared boolean is `handled_by: 'handler'`, so this
-   branch maps nothing yet — it completes the kwargs/booleans symmetry so a
-   future schema-element boolean with a `maps_to` renders correctly.
+   shape). `<details>`'s `open` is the first real consumer of this branch (#270):
+   `+open`, the bare `open` (promoted to `node.booleans` at parse time by the
+   #219 bare-known-boolean promotion, which also recognizes boolean-valued
+   kwargs), and `open=true` all render `<details open>`; `-open` / absence render
+   it collapsed.
 
 ### 6.2 Content conversion (`convertContent`)
 
