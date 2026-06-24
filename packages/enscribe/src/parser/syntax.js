@@ -53,13 +53,21 @@ const SIGIL_CHARS = new Set([35, 36, 96]) // #, $, `
 // guards it against the vocab so a newly-added native-HTML-void element fails loudly until listed.
 export const VOID_ELEMENTS = new Set(['hr'])
 
+// Long-form containers whose SAME-NAME nesting is depth-counted by the boundary finder: a nested
+// `<tag>…</tag>` balances so the inner `</tag>` binds to the inner open, not the outer (#292). Every
+// other long-form tag keeps first-close-closes-outer (`<b>a<b>b</b>c</b>` → the first `</b>` closes the
+// outer). One source of truth for the gate; the depth-count machinery downstream is generic over the
+// opener's tag name. TRAJECTORY (coding-conventions §1/§3): two members is the right size for an explicit,
+// commented set; if it grows beyond {list, nav-group}, derive it from a vocab property (e.g.
+// `self_nestable`) with a load-time equality guard rather than hand-encode a larger literal — flagged here,
+// not built, for two members.
+export const SELF_NESTABLE_CONTAINERS = new Set(['list', 'nav-group'])
+
 // Open list-item marker chars for the flow-only `<li>` / `<->` / `<*>` tokenizer.
 const DASH = 45  // -
 const STAR = 42  // *
 const LI_L = 108 // l
 const LI_I = 105 // i
-const LI_S = 115 // s
-const LI_T = 116 // t
 
 /** @param {Code} code */
 function isAsciiAlphaCode(code) {
@@ -704,11 +712,11 @@ function makeLongFormTokenizer({ multiLine }) {
     // be greedily claimed as a long-form opener with no matching close.
     let prevWasSlash = false
 
-    // Same-name nesting IS depth-counted for the `<list>` container, so a nested
-    // `<list>…</list>` inside an item balances rather than the inner `</list>`
-    // closing the outer list. `nestable` is set once the tag name is known; `depth`
-    // counts the nested `<list>` we are currently inside. Every other long-form tag
-    // keeps the un-counted behavior (the first same-name `</tag>` closes it).
+    // Same-name nesting IS depth-counted for the SELF_NESTABLE_CONTAINERS (`<list>`, `<nav-group>`),
+    // so a nested `<tag>…</tag>` balances rather than the inner `</tag>` closing the outer (#292).
+    // `nestable` is set once the tag name is known; `depth` counts the nested same-name opener we are
+    // currently inside. Every other long-form tag keeps the un-counted behavior (the first same-name
+    // `</tag>` closes it).
     let nestable = false
     let depth = 0
 
@@ -761,12 +769,6 @@ function makeLongFormTokenizer({ multiLine }) {
       // A tag with neither `|` nor `/` before `>` is unambiguously a
       // long-form opener. See DESIGN.md for the durable spec.
       //
-      // `<list>` is the only same-name-nestable container today: its nested
-      // `<list>…</list>` is depth-counted below so the outer list balances.
-      nestable =
-        tagNameCodes.length === 4 &&
-        tagNameCodes[0] === LI_L && tagNameCodes[1] === LI_I &&
-        tagNameCodes[2] === LI_S && tagNameCodes[3] === LI_T // l i s t
       // #275: a VOID element has no body content, so it is never a long-form opener — reject so
       // the named-tag tokenizer claims its short form (bare `<hr>`, `<config toc>`, the `/>` slash
       // form, kwargs). Done here, at name completion, BEFORE attr scanning, so a bare void tag does
@@ -774,6 +776,11 @@ function makeLongFormTokenizer({ multiLine }) {
       // match the canonical (lowercase) vocabulary names.
       const tagName = String.fromCharCode(...tagNameCodes).toLowerCase()
       if (VOID_ELEMENTS.has(tagName)) return nok(code)
+      // Same-name nesting is depth-counted only for the SELF_NESTABLE_CONTAINERS (`<list>`,
+      // `<nav-group>`): a nested `<tag>…</tag>` balances below so the inner `</tag>` binds to the
+      // inner open, not the outer (#292). Every other long-form tag keeps the un-counted
+      // first-close-closes-outer behavior.
+      nestable = SELF_NESTABLE_CONTAINERS.has(tagName)
       return scanOpenAttrs(code)
     }
 
@@ -835,13 +842,28 @@ function makeLongFormTokenizer({ multiLine }) {
         // tokenizer claims it. Without this guard the inline long-form would
         // scan across line endings and swallow the rest of the document.
         if (!multiLine) return nok(code)
-        // Multi-line path (unchanged): opener `>` immediately followed by a
-        // line ending. Close detection happens at each subsequent line start.
+        // Multi-line path: opener `>` immediately followed by a line ending. Close
+        // detection happens at each subsequent line start.
         effects.exit('enscribeLongFormOpen')
-        return effects.attempt(
+        if (!nestable) {
+          return effects.attempt(
+            { tokenize: tokenizeClose, partial: true },
+            afterClose,
+            notClose,
+          )(code)
+        }
+        // A SELF_NESTABLE_CONTAINER must depth-count from its FIRST content line, not only
+        // from the second onward. A nested opener that immediately follows the outer opener —
+        // `<nav-group>` directly inside `<nav-group>` with no item between, the group-in-group
+        // case the `references > layer-1` path (#292) needs — is otherwise consumed as content
+        // un-counted, so the first inner `</tag>` wrongly closes the outer. Route the first line
+        // through the same close/nested-open peek `content` uses below, so depth starts counting
+        // at line one. (Identical to the per-line branch in `content`; the non-nestable path above
+        // is byte-unchanged.)
+        return effects.check(
           { tokenize: tokenizeClose, partial: true },
-          afterClose,
-          notClose,
+          onCloseLine,
+          onNotCloseLine,
         )(code)
       }
       if (code === null) return nok(code)
@@ -1039,11 +1061,11 @@ function makeLongFormTokenizer({ multiLine }) {
 
       /**
        * #276: skip leading indentation before a nested opener, symmetric with the close
-       * tokenizer's `beforeLt`. This MUST match: the nestable `<list>` depth-counts inner
-       * `<list>` openers and `</list>` closers to find its balanced close. Now that an indented
-       * `</list>` is recognized as a (depth-decrementing) close, an indented `<list>` opener must
-       * likewise be recognized as a (depth-incrementing) opener — otherwise the count unbalances
-       * and the outer list closes prematurely. `markdownSpace` matches the virtual-space codes a
+       * tokenizer's `beforeLt`. This MUST match: a self-nestable container (`<list>`, `<nav-group>`)
+       * depth-counts inner same-name openers and closers to find its balanced close. Now that an
+       * indented `</tag>` is recognized as a (depth-decrementing) close, an indented same-name opener
+       * must likewise be recognized as a (depth-incrementing) opener — otherwise the count unbalances
+       * and the outer container closes prematurely. `markdownSpace` matches the virtual-space codes a
        * leading tab is preprocessed into (and a literal space) — the same tab handling as `beforeLt`.
        * @param {Code} code
        */
