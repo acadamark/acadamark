@@ -19,10 +19,13 @@ emits the URL. Reorganizing the menu moves only the emitted URL; every authored 
 re-resolves untouched. This is why the slug must **not** come from the nav — if position
 supplied identity, a menu move would change the slug and break every link.
 
-> Change from today: the slug is currently derived from the nav menu title
-> (`website-structuring.js`, `assignSlug(title, src)`). It moves to the page's own `<meta>`.
-> The nav `<item>` keeps `src` (which page) and the menu label (display text), but no longer
-> defines the slug.
+> Change from today: the **static** build has made this move — it sources the slug from the
+> page's own `<meta>` (explicit `<meta slug=…>`, else the slugified `<meta>` title;
+> `static-website.js`). The **live** path has not: it still derives the slug from the nav menu
+> title (`website-structuring.js`, `assignSlug(title, src)`), so live page identity diverges
+> from static until it adopts the `<meta>` slug — tracked by #299. In the end state, in both
+> paths, the nav `<item>` keeps `src` (which page) and the menu label (display text) but no
+> longer defines the slug.
 
 ## Slug — the page's identity
 Sourced from the page's own `<meta>`:
@@ -69,8 +72,13 @@ The builder, which already loads each page to render it:
 4. **Writes** each page's `index.html` at its path location.
 
 Because every URL is a real file at its path, a plain static host serves it directly — **no
-router**. The live SPA resolves the same `<a {slug}>` form through its existing router; static
-and live share the authoring form and the slug map, differing only in how the URL is produced.
+router**. *Today this resolution is the **static** build's alone:* it harvests the `<meta>` slug
+map and resolves every `<a {slug}>`. The live SPA does **not** yet — an authored `<a {slug}>` is
+currently inert there (an unresolved `data-page-slug` marker), and the live router keys on the
+nav-title slug rather than the `<meta>` slug (tracked by #299). The intended end state — the
+target that work reaches — is that the live SPA resolves the same `<a {slug}>` form through its
+existing router, so static and live share the authoring form and the slug map, differing only in
+how the URL is produced.
 
 ## Errors and warnings
 - Duplicate slug → **hard error** (uniqueness is load-bearing).

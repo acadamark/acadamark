@@ -190,7 +190,10 @@ page's own `<meta>` — an explicit `<meta slug=…>`, else the slugified title 
 nav supplies *where* a page sits; the page supplies *what* it is. Authors link with `<a {slug} | label>`,
 which the builder resolves to the target's path URL; reorganizing the menu re-resolves every such link
 untouched. A duplicate slug is a build error; a link to a derived (un-pinned) slug warns. Full model:
-`notes/specs/spec-internal-links.md`.
+`notes/specs/spec-internal-links.md`. *Caveat (status): this is implemented on the **static** build
+only; the live website still keys identity on the nav-title slug and does not yet resolve `<a {slug}>`
+(the markers are inert there) — tracked by #299. The decision stands; the live path is the work that
+catches up to it.*
 
 **A website page is an article or book plus chrome — one render path.** The website is not a second
 renderer. Each page renders through the *same* single-document build that produces a standalone article
