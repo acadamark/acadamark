@@ -143,6 +143,34 @@ though they sit outside render/serve/edit/save.
 
 ---
 
+## Always renders — never block the build on an error
+
+**Enscribe never blocks the build on an error. Every document *always renders*.** A problem surfaces in two
+places — **inline**, as an error or warning node at the spot in the rendered output where it occurred (so you
+see *where*), and on the **console / CLI** (so you have the log) — but it **never halts rendering or fails the
+build**. There is no "compilation failed, no output" state.
+
+**Why this is a deliberate stance.** It is the break from the compile-to-PDF toolchains — LaTeX, and the
+markdown-extension stacks — where a single bad construct can block the whole document and you get a log
+instead of a paper. Enscribe follows the **scripting-language model** instead: run what you can, report the
+problems, never stop the world. You never lose a finished document to one malformed tag.
+
+**It is load-bearing across subsystems** — each one bends to it rather than the reverse:
+
+- a malformed or unknown tag renders as an **inline tag-error** marker, the surrounding content untouched;
+- ambiguous shorthand under a strict-mode rung is **flagged inline**, never hard-failed (`<config
+  strict-mode=…>` always renders, never errors);
+- an unterminated construct yields an **inline error node spanning to EOF** rather than aborting the parse —
+  the error renders at its opener and the conspicuously missing downstream content is itself the signal;
+- a website slug collision **warns** and degrades only the dependent link / ref / menu-item, never the build
+  (see *Page slug is identity* below).
+
+Subsystem specs hold the *mechanics* of each and defer up to this entry for the *why*. The fullest mechanical
+statement — the error-node types, localized recovery, and gap-tracking — already lives in
+`notes/specs/principles.md` ("the always-renders principle"), which this product decision sits above.
+
+---
+
 ## The website — the third document class
 
 A **website** (`<meta type=website>`) is the third document class, alongside article and book: a set of
@@ -185,15 +213,26 @@ location and addresses it with a pretty trailing-slash URL mirroring the menu hi
 nav changes its public URL — is accepted in exchange for `<nav>` being the one structure authority; in-
 site links self-heal (see slug, below), only externally-held URLs break.
 
-**Page slug is identity; nav is position.** A page's stable identity is its *slug*, taken from the
-page's own `<meta>` — an explicit `<meta slug=…>`, else the slugified title — and unique site-wide. The
-nav supplies *where* a page sits; the page supplies *what* it is. Authors link with `<a {slug} | label>`,
-which the builder resolves to the target's path URL; reorganizing the menu re-resolves every such link
-untouched. A duplicate slug is a build error; a link to a derived (un-pinned) slug warns. Full model:
-`notes/specs/spec-internal-links.md`. *Caveat (status): this is implemented on the **static** build
-only; the live website still keys identity on the nav-title slug and does not yet resolve `<a {slug}>`
-(the markers are inert there) — tracked by #299. The decision stands; the live path is the work that
-catches up to it.*
+**Page slug is identity; nav is position.** A page's stable identity is its *slug*, unique site-wide,
+taken from the **first of these that exists**: (1) an explicit **`<meta slug=…>`** in the page source —
+the pinned identity; (2) else the page's **`<meta title>`**, slugified; (3) else, last resort, the title
+in the nav item (`<item src | Title>`), slugified. Every page should carry a `<meta title>`, so tier 3 is
+a rare fallback, not a normal path. The nav supplies *where* a page sits; the page supplies *what* it is.
+Authors link with `<a {slug} | label>`, which the builder resolves to the target's path URL; reorganizing
+the menu re-resolves every such link untouched.
+
+A slug collision is governed by **Always renders** (above), not by a build failure. Two slugs **derived**
+from a title (tier 2 or 3) that collide are **uniquified** (a suffix is appended) so both pages still get
+working URLs, with a **warning**. A **hard duplicate** the engine can't cleanly resolve — two pages
+**pinned** to the same explicit `<meta slug>` — is **not** a build error: the engine never silently renames a
+pinned identity, so instead whatever **depends** on that slug (an `<a {slug}>` link, a cross-ref, a menu
+item) **warns and doesn't resolve**, while the page itself **still renders and the build completes**. (A link
+to a derived, un-pinned slug also warns — the cue to pin it before a title rename breaks the link.) All
+warnings are logged to the console / CLI but never halt rendering. Full model:
+`notes/specs/spec-internal-links.md`. *Caveat (status): this is implemented on the **static** build only; the
+live website still keys identity on the nav-title slug and does not yet resolve `<a {slug}>` (the markers are
+inert there) — tracked by #299, with the static side's regression to the one-render-path model tracked by
+#300 (the same cluster). The decision stands; the live path is the work that catches up to it.*
 
 **A website page is an article or book plus chrome — one render path.** The website is not a second
 renderer. Each page renders through the *same* single-document build that produces a standalone article

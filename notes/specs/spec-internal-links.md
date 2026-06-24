@@ -20,23 +20,42 @@ re-resolves untouched. This is why the slug must **not** come from the nav — i
 supplied identity, a menu move would change the slug and break every link.
 
 > Change from today: the **static** build has made this move — it sources the slug from the
-> page's own `<meta>` (explicit `<meta slug=…>`, else the slugified `<meta>` title;
-> `static-website.js`). The **live** path has not: it still derives the slug from the nav menu
+> page's own `<meta>` (explicit `<meta slug=…>`, else the slugified `<meta>` title — full three-tier
+> order below; `static-website.js`). The **live** path has not: it still derives the slug from the nav menu
 > title (`website-structuring.js`, `assignSlug(title, src)`), so live page identity diverges
 > from static until it adopts the `<meta>` slug — tracked by #299. In the end state, in both
 > paths, the nav `<item>` keeps `src` (which page) and the menu label (display text) but no
 > longer defines the slug.
 
 ## Slug — the page's identity
-Sourced from the page's own `<meta>`:
-1. **Explicit** — `<meta slug=…>` if present. A deliberate, permanent handle, independent of
-   title and position.
-2. **Derived** — otherwise, slugify the page's `<meta>` title.
+Taken from the **first of these that exists**:
+1. **Explicit** — `<meta slug=…>` in the page source, if present. A deliberate, permanent handle,
+   independent of title and position — the pinned identity.
+2. **Derived from the page title** — else slugify the page's `<meta>` title.
+3. **Derived from the nav title** — else, last resort, slugify the title in the page's nav item
+   (`<item src | Title>`).
 
-Slugs are **unique site-wide**; a collision is a hard build error (the resolver depends on
-uniqueness). When an `<a {slug}>` resolves to a page whose slug was *derived* (not declared),
-the build warns: a derived slug is title-coupled, so a title rename would silently break the
-link, and the warning is the cue to pin it with `<meta slug=…>`.
+Every page should carry a `<meta>` title, so tier 3 is a rare fallback, not a normal path.
+
+Slugs are **unique site-wide**, but a collision **never blocks the build** — the always-render rule
+governs here (the decision in `notes/decisions.md`, "Always renders — never block the build on an
+error"; the mechanics in `notes/specs/principles.md`), exactly as it governs tag-errors and unresolved
+refs:
+- Two slugs **derived** from a title (tier 2 or 3) that collide are **uniquified** — a suffix is
+  appended so both pages still get working URLs — with a **warning**.
+- A **hard duplicate** the engine can't cleanly resolve — two pages **pinned** to the same explicit
+  `<meta slug>` — is **not** a build error. The engine does not silently rename a pinned identity;
+  instead whatever **depends** on that slug (an `<a {slug}>` link, a cross-ref, a menu item) **warns and
+  does not resolve** (a visible `??…??`-style marker, like an unresolved `<ref>` / `<cite>`), while the
+  **page itself still renders and the build completes**.
+
+All warnings are logged to the console / CLI but never halt rendering. (Recorded here is the rule and
+the policy — not an algorithm: the uniquification suffix and any pinned-collision tiebreak are the #300
+implementation's to reconcile.)
+
+When an `<a {slug}>` resolves to a page whose slug was *derived* (not declared), the build also warns: a
+derived slug is title-coupled, so a title rename would silently break the link, and the warning is the
+cue to pin it with `<meta slug=…>`.
 
 ## Authoring form
 - `<a {slug} | {label}>` — a link to the page with that slug; the pipe is the visible text.
@@ -59,8 +78,10 @@ menu to avoid it; this couples them on purpose.
 
 ## Resolution — no router
 The builder, which already loads each page to render it:
-1. **Harvests** each nav page's slug from its `<meta>` (explicit or derived) → a slug → page
-   map; hard-errors on a duplicate.
+1. **Harvests** each nav page's slug (explicit `<meta slug>`, else the page title, else — last
+   resort — the nav title) → a slug → page map; on a collision it applies the always-render policy
+   (uniquify a derived collision with a warning; a pinned duplicate leaves the dependent links
+   unresolved with a warning), never a build failure.
 2. **Walks** the nav tree to compute each page's path (group slugs + page slug).
 3. **Resolves** every `<a {slug}>` to the target's path, made relative to the current page's
    depth (`../…`).
@@ -76,11 +97,15 @@ existing router, so static and live share the authoring form and the slug map, d
 how the URL is produced.
 
 ## Errors and warnings
-- Duplicate slug → **hard error** (uniqueness is load-bearing).
-- `<a {slug}>` with no matching page → **error** (a real broken link, unlike today's silent
-  passthrough of a bad `href`).
-- `<a {slug}>` resolving to a *derived* (not declared) slug → **warning** (pin it before a
-  rename bites).
+Per **Always renders** (`notes/decisions.md`), every item below surfaces visibly — inline at its
+location *and* in the console / CLI log — and **none halts the build**:
+- Duplicate slug → **never a build error**. The resolver still wants a unique slug → page map, so a
+  *derived* collision is **uniquified** with a **warning**; a *pinned* duplicate (the same explicit
+  `<meta slug>` on two pages) leaves the dependent link / ref / menu-item **unresolved with a warning**,
+  the pages themselves still rendering.
+- `<a {slug}>` with no matching page → a visible **broken-link marker** (surfaced, unlike today's silent
+  passthrough of a bad `href`); the page still renders.
+- `<a {slug}>` resolving to a *derived* (not declared) slug → **warning** (pin it before a rename bites).
 
 ## Scope note
 This rides on the static website emitter (#246 / #278). It is engine + builder work: the engine
