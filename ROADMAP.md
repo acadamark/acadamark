@@ -23,8 +23,10 @@ The spine, in order — each step unblocks the next:
    cross-file citations/bibliography merge, placement markers, the book type
    (assembly + separate-pages publish + live app-shell render), and the website type
    (composition over a merged site registry, static + live; #246) all shipped, and the
-   browser renders the same assembly live. The spine is complete; its remaining tails
-   (live `<a {slug}>` #318, live book-pages-as-books #314) ride the consolidation passes.*
+   browser renders the same assembly live. The spine is complete — its live-website tails
+   landed too: a book page now renders as a book (#314), `<a {slug}>` links resolve at render
+   time (#318), and live/static parity is proven both ways (#320), so the live SPA composes
+   exactly like the static build (the live #300 epic, #324, is done).*
 2. **Dogfood** — build Enscribe's own website and book in the multi-file system.
    The centerpiece demo, not housekeeping: the tool authoring its own docs is the
    proof.
@@ -79,8 +81,11 @@ The bodies of work feeding the releases, with where each stands:
   live-loading (#197), placement markers (toc/endnotes/bibliography), the book
   type (assembly + separate-pages publish #205 + live app-shell render #216 + book
   navigation #221), and the **website** page model (#246) — composition over a
-  merged site registry, static + live (`notes/specs/website.md`). Remaining tails:
-  live `<a {slug}>` resolution (#318) and live book-pages-as-books (#314).
+  merged site registry, static + live (`notes/specs/website.md`). The live SPA now composes
+  exactly like the static build — a book page renders as a book (#314), `<a {slug}>` links
+  resolve at render time on both surfaces (#318), and parity is proven both ways with the dead
+  flatten deleted (#320): the live #300 epic (#324) is complete. Next for the live website is
+  the zero-build shell (#288).
 - **Data model** — *needs Phase-0.* Settle the taxonomy (#166) and the meta-data
   block (#168) before the slices delegate.
 - **Interchange** — *needs Phase-0.* Settle import coverage (IX-Q1) — the launch
