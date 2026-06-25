@@ -53,6 +53,18 @@ export async function run() {
     console.log('PASS: #36 — sigil turns markdown off (flagged); canonical + sigils stay live');
   }
 
+  // ── #317/2-F: a markdown IMAGE ![…](…) is flagged too (sugar for <fig>/<img>) ─
+  {
+    const h = html(cfg('sigil') + 'A plain ! mark, a [text](http://l) link, and an ![alt](http://i) image.');
+    // markdown register OFF — neither the image nor the link renders; both are flagged would-be-markdown.
+    assert.ok(!h.includes('<img'), 'sigil: the markdown image is NOT rendered (markdown register off)');
+    assert.ok(/class="enscribe-md-flag"[^>]*>!\[alt\]\(/.test(h),
+      'sigil: the image ![…](…) is wrapped in a flag span (2-F: the new pattern)');
+    assert.ok(/class="enscribe-md-flag"[^>]*>\[text\]\(/.test(h),
+      'sigil: a plain link […](…) is still flagged (the optional ! did not break the link form)');
+    console.log('PASS: #317/2-F — strict mode flags the markdown image ![…](…), not just links');
+  }
+
   // ── sigil reaches INTO tag pipe bodies (the nested-gap test) ─────────────────
   {
     const h = html(cfg('sigil') + '<aside | *bar* and # nope>');

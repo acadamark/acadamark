@@ -1752,6 +1752,15 @@ Some plugins use `file.message()` to attach diagnostics to the unified VFile:
 These messages appear in the `file.messages` array after `process()` resolves.
 They do not appear in the HTML output.
 
+**`<config quiet>` clears the stream (per document).** A document carrying
+`<config quiet />` (or `quiet=true`) has its own `file.messages` cleared by the final
+`enscribeQuietSuppression` transform (#281), which runs **last** — after every producer
+above has attached its diagnostics. The scope is the single document: a quiet page does
+not silence a sibling's messages. The clear is **emission-gating only** — the rendered
+tree and HTML are byte-identical with or without it — and it removes the *vfile*
+diagnostic stream, **not** the inline always-renders markers (`__ref-error`,
+`__asset-error`, the tag-error node, …), which are tree content and still render.
+
 ### 11.4 Recovery behavior
 
 - Handler throws → fall through to `schemaDispatch` as best-effort recovery.

@@ -1259,7 +1259,9 @@ body:has(.enscribe-layout--toc) {
       </p>
       <p>
         A literal <span class="enscribe-md-flag" title="looks like markdown or a sigil — use a canonical tag">*asterisk pair*</span> is not emphasis here, and a sigil <span class="enscribe-md-flag" title="looks like markdown or a sigil — use a canonical tag">&#x3C;# like this #></span> is not
-        a heading; both are flagged. A leading marker on its own line is flagged too:
+        a heading; both are flagged. A markdown link <span class="enscribe-md-flag" title="looks like markdown or a sigil — use a canonical tag">[text](https://example.com)</span> and an
+        image <span class="enscribe-md-flag" title="looks like markdown or a sigil — use a canonical tag">![alt](image.png)</span> are flagged too — each has a canonical form (an anchor and
+        a figure). A leading marker on its own line is flagged too:
       </p>
       <p><span class="enscribe-md-flag" title="looks like markdown or a sigil — use a canonical tag"># </span>This is not a heading in canonical mode</p>
       <p>

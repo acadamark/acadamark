@@ -144,8 +144,11 @@ export function resolveStrictMode({ sigilProcessor, canonicalProcessor, option }
 // start of a line (a block start, since the registers-off parse left `# `, `> `,
 // `- ` and `<# … #>` etc. as literal leading text).
 
-// emphasis `*…*`, inline code `` `…` ``, link `[…](…)`.
-const INLINE_MD_SRC = '\\*[^*\\n]+\\*|`[^`\\n]+`|\\[[^\\]\\n]+\\]\\([^)\\n]+\\)';
+// emphasis `*…*`, inline code `` `…` ``, link `[…](…)` and image `![…](…)`. The optional leading
+// `!` flags the image form too (#317/2-F): it is markdown sugar with a canonical equivalent
+// (`<fig>` / `<img>`), so it belongs in the would-be-markdown flag set exactly like a link. The `!`
+// is only consumed when immediately followed by a `[…](…)`, so a bare `!` in prose is never flagged.
+const INLINE_MD_SRC = '\\*[^*\\n]+\\*|`[^`\\n]+`|!?\\[[^\\]\\n]+\\]\\([^)\\n]+\\)';
 // sigil tags `<# … #>` / `<$ … $>` / `` <` … `> `` and the `<->` / `<*>` item
 // markers — flagged only in canonical mode (where the sigil register is off too).
 // `<li>` is canonical and never matched here.
