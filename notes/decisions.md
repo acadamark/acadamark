@@ -231,12 +231,15 @@ pinned identity, so instead whatever **depends** on that slug (an `<a {slug}>` l
 item) **warns and doesn't resolve**, while the page itself **still renders and the build completes**. (A link
 to a derived, un-pinned slug also warns — the cue to pin it before a title rename breaks the link.) All
 warnings are logged to the console / CLI but never halt rendering. Full model:
-`notes/specs/spec-internal-links.md`. *Caveat (status): `<a {slug}>` resolution is implemented on the
-**static** build only; the live website still keys identity on the nav-title slug and does not yet resolve
-`<a {slug}>` (the markers are inert there) — tracked by #299. (The static build's earlier cross-page
+`notes/specs/spec-internal-links.md`. *Caveat (status): `<a {slug}>` **link** resolution is implemented on the
+**static** build only — the live SPA's `data-page-slug` markers are still inert there (bundle-safe live
+resolution needs a render-time `<a>`-handler resolver, its own slice — [#318](https://github.com/enscribejs/enscribe/issues/318)).
+Live page **identity** has since converged (the live #300, step 2): the live path now loads each page's source and
+keys on the pinned/derived slug (tiers 1–2), no longer the nav-title slug; and cross-page `<ref>`s resolve live in
+every direction. (The static build's earlier cross-page
 **`<ref>`** regression — the per-page-isolated render that could not resolve a reference across pages — was
 #300; it is **fixed** by the composition builder above, and the served `site/dist` is rebuilt on it.) The
-decision stands; the live path is the work that catches up to it.*
+decision stands; the live path has caught up to it (composition + identity), bar the `<a {slug}>` link slice.*
 
 **A website page is an article or book plus chrome — one render path, composed over a merged site
 cross-ref registry (#300 slice 2).** The website is not a second renderer, and it is not a flattening
@@ -251,9 +254,24 @@ book chapter-page) it renders on; the result is then wrapped in chrome. There is
 website pipeline: anything that renders standalone (citations, math, diagrams, numbering) renders
 identically as a website page, by construction, and cross-page references resolve in **every** direction
 (article↔article, article↔book). This **replaces** the earlier per-page-**isolated** static render, under
-which each page was a separate pass and a cross-page `<ref>` could not resolve — the #300 regression. *(The
-live SPA still uses its page-scope `buildWebsiteTree` assembly, which flattens a book to page scope — a
-separate surface, tracked by [#314](https://github.com/enscribejs/enscribe/issues/314); the static builder no longer shares it.)*
+which each page was a separate pass and a cross-page `<ref>` could not resolve — the #300 regression. *(This
+composition is now shared by **both** render surfaces — see the next paragraph.)*
+
+**One engine, browser-pure, two adapters (the live #300 — [#314](https://github.com/enscribejs/enscribe/issues/314)
+/ [#324](https://github.com/enscribejs/enscribe/issues/324)).** The composition above is a single, **browser-pure**
+engine — `composeSiteRegistry` — now called by **both** the static build (a filesystem reader + a `.html`-path URL
+scheme) and the live SPA (a `fetch` reader + a `?page=` route scheme). The I/O reader and the URL scheme are the
+**only two** injected differences; everything else — numbering each page natively, harvesting, merging the one site
+registry, the read-through seed — is the shared engine, so the live path stopped flattening books to page scope
+(#314 closed) and a book page now keeps **book** numbering. *"Browser-pure" here means the core **loads cleanly in
+the browser bundle**, NOT "zero `node:` imports in its transitive graph":* some engine leaves under
+`interpreter/assets/` (e.g. `font-loader.js`) statically import `node:fs`/`url`/`path`, but tsup aliases those
+`node:` forms to a throwing stub and the reads sit behind lazy accessors, so they are dead code in the browser. The
+browser-purity guard (`packages/enscribe/test/compose-site-browser-pure.test.js`) encodes exactly this distinction —
+it permits a `node:` import **only** in those tsup-aliased `interpreter/assets/` leaves and fails it anywhere in
+`master-document/`, `core/`, or `interpreter/lib/` — so a future edit can't silently re-Node-ify the core and break
+the live path. (Two narrow live lags remain — `<a {slug}>` link resolution and book-page edit mode — see
+`notes/specs/website.md` §"Relationships and the live deviation".)
 
 **Build is committed during development, built in CI once served.** While the docs site is under active
 development, the built output is rebuilt and committed on each emitter change (so the tree never drifts

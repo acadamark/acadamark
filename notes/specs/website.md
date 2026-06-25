@@ -58,6 +58,17 @@ harvested number with no scope re-prefixing, so a book target keeps `2.1` and an
 Books keep book numbering, articles keep article numbering, and a reference reads its target's number
 regardless of which page it sits on.
 
+> **Invariant — a fresh tree per phase (number-twice + in-place mutation).** A page is numbered
+> **twice** — in Phase 1 (native, to harvest its native numbers) and again in Phase 2 (over the
+> read-through seed, so its *outbound* cross-page refs resolve) — and the engine's `runSync`
+> **mutates the tree in place**. So each phase MUST assemble a **fresh** tree from the page's (cached)
+> children; the two phases must never share one tree. Sharing it bakes Phase 1's results — including
+> its *unresolved* cross-page refs (Phase 1 runs with no seed) — into Phase 2, so a cross-page `<ref>`
+> renders as an unresolved marker even though the seed would have resolved it. A re-implementation must
+> not "optimize away" the double assembly. The static build gets this for free (it re-reads each page
+> from disk per phase); the live path must re-assemble each book page from its cached chapter sources
+> per phase (a real bug, hit and fixed in the live #300, step 2 — #314/#324).
+
 ## Why composition, not flattening
 
 The decisive design choice is **not** to assemble every page into one page-scope tree. Two reasons,
@@ -88,8 +99,9 @@ page supplies *what* it is. The slug is the first of these that yields a non-emp
 3. **nav** — else the nav menu/group title, slugified;
 
 with two last resorts when none of the above applies: the `src` filename stem, then the literal
-`page`. (Tiers 1–2 require the page's loaded source; a pass without the page sources resolves at the
-nav tier — this is the seam at which the live and static surfaces currently differ; see *Relationships*.)
+`page`. (Tiers 1–2 require the page's loaded source; the *nav-model* pass — which has no page sources —
+resolves at the nav tier, but **both build surfaces now load each page's source** and resolve at tiers
+1–2, so the live/static identity seam is closed; see *Relationships*.)
 
 Slug **collisions are governed by always-render, never a build error**:
 
@@ -117,6 +129,12 @@ cross-page href resolver:
   pretty trailing-slash path URL relative to the current page's depth (`../references/export/`); the
   home page (empty nav-path) is the dist root (`index.html`).
 - **live** — the single-page app keeps client-side `?page=slug` routing.
+
+> **One engine, two adapters, two scheme hooks (the realized form, #324).** Both surfaces run the
+> *same* composition engine — `composeSiteRegistry` (Phase 1 above) — and differ in exactly **two**
+> injected ways: the **I/O reader** (static reads each page from disk; the live SPA `fetch`es it) and
+> the **URL scheme** (the hook here: a `.html` path vs a `?page=` route). The static build and the live
+> SPA are two callers of one engine; see *Relationships and the live deviation*.
 
 A cross-page reference's href is realized to the **owner page's** scheme (a reference into a book page
 points at the owning chapter-page's file/route, with the anchor preserved). An intra-page reference
@@ -172,15 +190,23 @@ and never halt rendering. The one boundary is structural rather than content: a 
   one project-wide registry pass); `website.md` owns the **website-specific composition** above.
 - `spec-internal-links.md` owns **page-slug identity and the `<a {slug}>` link layer**;
   `render-parity.md` owns the **live/static parity contract**.
-- **The live SPA path currently deviates from this model in two tracked ways**, *not* part of the
-  blueprint — the spec describes the composition target the live path is being brought to, and the
-  parity contract above is the bar that convergence is measured against:
-  - it **still flattens** — the browser website render assembles every page under one synthetic
-    page-scope container (an `isWebsiteAssembly`-marked tree), which numbers books in page scope rather
-    than native scope, the very flattening the static composition replaced (**#314**);
-  - it **does not yet resolve `<a {slug}>` links**, and keys page identity on the nav-tier slug rather
-    than the pinned/derived slug (the live nav pass has no page sources, so it resolves at the nav tier
-    only) — the markers are inert there (**#318**).
+- **The composition fork is now CLOSED.** The live SPA composes through the *same* engine as the static
+  build — `composeSiteRegistry` (the live #300, step 2 — #314/#324): it fetches each page's source (and
+  a book page's chapter children), numbers every page in its **native** scope, and resolves cross-page
+  `<ref>`s off the one merged registry. Nothing flattens; a book page keeps **book** numbering
+  (`figure 2.1`), the composition's observable signature. Page **identity** converged too — the live
+  path now loads page sources, so it resolves the pinned/derived slug (tiers 1–2), not just the nav-tier
+  slug. The old page-scope `buildWebsiteTree` / `isWebsiteAssembly` assembly is retired from the live
+  render (production-dead; it survives only behind the `website-xref.test.js` parity mirror, retired by
+  **#320**, which then removes the dead flatten + the `numbering.js` `'page'`-scope branch).
+- **Two live lags remain** — narrow, named, and *not* composition:
+  - **`<a {slug}>` LINK resolution** is not yet done live: the `<a>` handler's `data-page-slug` markers
+    are still inert in the SPA. Doing it bundle-safely needs a render-time `<a>`-handler resolver (the
+    static path's `resolvePageSlugLinks` uses an HTML re-parser deliberately kept out of the browser
+    bundle, #25), so it is its own slice (**#318**, deferred). Cross-page `<ref>`s — a *different*,
+    string-only resolver (`rewriteCrossPageHrefs`) — already resolve live, in every direction.
+  - **Edit mode for a book page** renders the master source standalone (without its chapter children),
+    so a book page's live *edit* preview is degraded; **read** mode renders it as a full book. A follow-on.
 
 ## Cross-references
 
@@ -191,10 +217,15 @@ and never halt rendering. The one boundary is structural rather than content: a 
 - `notes/specs/render-parity.md` — the one-engine live/static invariant and the website parity seam
   (display number + scheme-normalized owner).
 - `notes/decisions.md` — "The website — the third document class" (the product-shape decision this
-  blueprint serves) and "Always renders — never block the build on an error."
+  blueprint serves), its "One engine, browser-pure, two adapters" note (the realized #300 architecture +
+  what *browser-pure* means for the engine — the cross-cutting fact), and "Always renders — never block
+  the build on an error."
 - `notes/specs/toc-and-numbering.md` / `notes/specs/book-navigation.md` — the per-class contents and
   navigation chrome a website page inherits from its native article/book render.
 
-*Implemented by `packages/cli/src/static-website.js` (the static composition build) and
-`packages/enscribe/src/master-document/live-website.js` (the live path, the #314 deviation). These are
-non-normative pointers; the model above is the blueprint.*
+*Implemented by the one browser-pure composition core
+`packages/enscribe/src/master-document/compose-site.js` (`composeSiteRegistry`), called by **both**
+`packages/cli/src/static-website.js` (the static build, fs reader) and
+`packages/enscribe/src/interpreter/browser.js` `mountLiveWebsite` (the live SPA, fetch reader).
+`master-document/live-website.js`'s `buildWebsiteTree` flatten is retired (production-dead; the #320
+parity mirror only). These are non-normative pointers; the model above is the blueprint.*
