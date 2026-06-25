@@ -141,7 +141,14 @@ function emitArticle(article, articleType, lang) {
   const back  = findInArticleContent(article, 'article-back');
 
   let out = `<article${attrs}>\n`;
-  if (front) out += emitFront(front);
+  // #136: <front> is REQUIRED by the JATS article content model
+  // (article-full-model: `processing-meta?, front, body?, back?, …` — `front`
+  // carries no `?`). A meta-less document has no `article-front` node, so the
+  // old `if (front)` guard emitted no <front> at all and the output failed DTD
+  // validation. Emit the front unconditionally; emitFront synthesizes a minimal
+  // valid <article-meta> (with the UNTITLED_TITLE placeholder) when there's no
+  // meta to draw from.
+  out += emitFront(front);
   if (body)  out += emitBody(body);
   if (back)  out += emitBack(back);
   out += `</article>\n`;
@@ -151,8 +158,15 @@ function emitArticle(article, articleType, lang) {
 function emitFront(frontNode) {
   // JATS <front> contains <article-meta>. The enscribe <article-front>
   // contains <meta>; we emit the <meta>'s content as <article-meta>.
-  const meta = findInContent(frontNode, 'meta');
-  if (!meta) return `  <front><article-meta/></front>\n`;
+  //
+  // #136: always emit a full <front><article-meta><title-group> shell, even when
+  // there is no <article-front> node (frontNode == null) or it carries no <meta>.
+  // emitArticleMetaChildren tolerates a null meta and fills <article-title> with
+  // UNTITLED_TITLE, so the result is always DTD-valid. This replaces the old
+  // `if (!meta)` branch that emitted a bare `<front><article-meta/></front>`
+  // (title-less — DTD-valid in the Archiving DTD since title-group is optional
+  // there, but a degenerate shape; converged onto the same minimal-valid front).
+  const meta = frontNode ? findInContent(frontNode, 'meta') : null;
   return `  <front>\n    <article-meta>\n${emitArticleMetaChildren(meta, 6)}    </article-meta>\n  </front>\n`;
 }
 
@@ -161,7 +175,11 @@ function emitArticleMetaChildren(metaNode, indent) {
   // <contrib-group>; abstract directly; other lifted children as their
   // JATS counterparts via vocab lookup.
   const pad = ' '.repeat(indent);
-  const content = Array.isArray(metaNode.content) ? metaNode.content : [];
+  // #136: metaNode may be null (a meta-less document — emitFront still emits a
+  // minimal valid front). Guard the same way emitBookPartMetaChildren does so a
+  // missing meta degrades to "no lifted children" rather than throwing; the
+  // always-emitted title-group below then carries UNTITLED_TITLE.
+  const content = (metaNode && Array.isArray(metaNode.content)) ? metaNode.content : [];
 
   const titleNode    = content.find(c => isEnscribeTag(c, 'article-title'));
   const subtitleNode = content.find(c => isEnscribeTag(c, 'article-subtitle'));

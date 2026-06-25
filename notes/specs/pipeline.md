@@ -99,6 +99,16 @@ placeholder lives in one place — `UNTITLED_TITLE` in
 `packages/cli/src/jats-export/index.js`. Other required values (`xml:lang`,
 `dtd-version`, the `article-type` default) are supplied the same way.
 
+The same principle reaches the enclosing shell: the article content model makes
+`<front>` (and the `<article-meta>` inside it) *required*, so a document with no
+`<meta>` at all — which has no front region to draw from — still gets a minimal
+valid `<front><article-meta><title-group><article-title>Untitled` synthesized on
+export, rather than an `<article>` that opens straight onto `<body>` and fails
+DTD validation (#136). The book (BITS) branch needs no equivalent: BITS makes
+`<book-meta>` *optional*, and a book is only ever a book because it carries a
+`<meta type=book>`, so its metadata region is never absent the way an article's
+can be.
+
 The pipeline is wired by the `enscribeInterpreter` unified plugin, which
 registers all stages (2–6) on a single unified processor. The consumer provides
 stage 1 (`remarkParse` + `remarkEnscribe`):

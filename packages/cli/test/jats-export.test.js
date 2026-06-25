@@ -898,6 +898,38 @@ ${dateXml}
   validateWithXmllint('no-title-untitled', jats);
 }
 
+// ─── #136: a meta-LESS article still emits a valid <front> ──────────────────
+// JATS `article-full-model` is `(processing-meta?, front, body?, …)` — `front`
+// is REQUIRED (no `?`). A document with no <meta> at all has no `article-front`
+// node, so the export used to emit no <front> and produced DTD-INVALID output
+// (an <article> opening straight onto <body>). The fix emits a minimal valid
+// front unconditionally: <front><article-meta><title-group><article-title> with
+// the UNTITLED_TITLE placeholder. (The title-less-but-meta-PRESENT case is the
+// "no-title" block above; this is the stronger no-meta-at-all case.)
+{
+  const src = [
+    '# A Section',
+    '',
+    'Body text with no <meta> at all.',
+    '',
+  ].join('\n');
+
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
+
+  check('no-meta: <front> emitted (it is required by article-full-model)',
+    /<front>/.test(jats));
+  check('no-meta: <front> precedes <body> (DTD order)',
+    jats.indexOf('<front>') >= 0 && jats.indexOf('<front>') < jats.indexOf('<body>'));
+  check('no-meta: <article-meta> with a real <title-group>, not a bare <article-meta/>',
+    jats.includes('<title-group>') && !jats.includes('<article-meta/>'));
+  check('no-meta: <article-title> filled with the Untitled placeholder',
+    jats.includes('<article-title>Untitled</article-title>'));
+  check('no-meta: the heading is a <sec> <title>, not the article title',
+    jats.includes('<title>A Section</title>'));
+  validateWithXmllint('no-meta-front', jats);
+}
+
 // ─── #137: <list> construct → JATS <list> ─────────────────────────────────
 //
 // Built through buildEnscribePipeline (the canonical assembly the real CLI export
