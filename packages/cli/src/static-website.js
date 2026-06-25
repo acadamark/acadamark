@@ -11,9 +11,10 @@
 //
 // RENDER MODEL (#300 slice 2 — COMPOSITION, replacing the #278 per-page-isolated model): the site is built
 // by COMPOSITION over a merged site cross-ref registry — NOT by flattening every page to one page-scope
-// assembly (the live SPA's buildWebsiteTree — a separate surface, flagged not fixed here), and NOT by the
-// per-page-ISOLATED render that bypassed the site registry (the #300 regression: a cross-page `<ref>` could
-// not resolve, since each page was a separate pass). Two numbering/render phases, then a framing pass.
+// assembly (the synthetic-`<book>` flatten the live SPA once used; removed in #320 — both surfaces now
+// compose), and NOT by the per-page-ISOLATED render that bypassed the site registry (the #300 regression:
+// a cross-page `<ref>` could not resolve, since each page was a separate pass). Two numbering/render phases,
+// then a framing pass.
 // PHASE 1 numbers each page in its OWN native
 // scope — an article as an article, a book as a book (assembleAndNumber/prepareBook) — and harvests its
 // cross-ref registry, MERGING every anchor into ONE site registry (anchor → its NATIVE number + the
@@ -258,7 +259,8 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   //    against the merge. NOTHING is flattened: a book keeps book numbering (a figure is "3.2"), an article
   //    keeps article numbering; an <ref @id> across pages reads the target's NATIVE number + links to the
   //    page (or book chapter-page) it renders on. (Replaces the per-page-ISOLATED render that bypassed the
-  //    site registry — the #300 regression — and never touches the live SPA's page-scope buildWebsiteTree.)
+  //    site registry — the #300 regression. The live SPA's old page-scope flatten is gone too — #320 — so
+  //    both surfaces share this one composition core.)
   const destPrefixOf = (slug) => { const np = navPathOf.get(slug) ?? slug; return np === '' ? '' : `${np}/`; };
 
   // PHASE 1 (website.md) — number every page natively, harvest, MERGE into one site cross-ref registry, and

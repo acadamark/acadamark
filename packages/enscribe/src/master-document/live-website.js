@@ -1,38 +1,20 @@
-// Live app-shell WEBSITE render (live track — #246 S2a).
+// Live website nav helpers (live track — #246 S2a; the composition lift — #324 / #320).
 //
-// The website counterpart of the live book (live-book.js). A website is "the book with
-// pages instead of chapters": it reuses the book's assemble → ONE global numbering/
-// cross-ref pass → lazy per-view render machinery. Only the ROUTER differs — `?page=slug`
-// (History back/forward) instead of `#hash` — and, later, the chrome (S2b).
+// What remains here after the live #300 step-2 lift: the small browser-pure helpers the live
+// website shell still needs — the nav-model flattener and the `?page=` not-found view (plus a
+// caller-less page-param resolver, see resolvePageParam below). The ACTUAL live website
+// composition — number each page in its OWN native scope, harvest, merge ONE cross-ref registry,
+// render per page — moved to the shared browser-pure core (master-document/compose-site.js) that
+// BOTH surfaces (static build + live SPA) now call; browser.js's mountLiveWebsite drives it with
+// the fetch + DOM + `?page=` History router.
 //
-// PURE BY DESIGN (like live-book.js): no fetch, no DOM. The browser entry
-// (browser.js mountLiveWebsite) does the fetch + assemble + DOM mount + the `?page=`
-// router; this module is the pure model + per-page render + the router's resolver.
-//
-// THE ASSEMBLY (S2a, external pages only — Option A). The master's `<item src>` pages are
-// fetched fresh and assembled as `<book-part #slug>` (one per page) under a synthetic
-// `<book>` — so ONE proc.runSync numbers every page and resolves every cross-page `<ref>`
-// in one registry, exactly as a book resolves cross-chapter refs (confirmed by probe).
-// The page render is `renderChapter` verbatim (the validated per-unit projection). A
-// cross-page ref keeps a bare `#anchor` from the global pass; renderLiveWebsitePage
-// rewrites those whose owner is ANOTHER page to `?page=owner#anchor` (the website analog
-// of P1's cross-page href rewrite), leaving intra-page refs bare.
-//
-// INLINE pages (`<item | Title>` + body) are a documented fast-follow — they need fresh
-// (un-numbered) content in the single global pass, which the external-fetch path provides
-// for free but the master-resident inline bodies do not (re-running them double-processes).
-// mountLiveWebsite skips them this slice.
-//
-// NUMBERING is per-page ARTICLE numbering (#246): each page numbers exactly as its `.emd` would if
-// opened on its own — top-level sections restart at 1 per page (no chapter prefix), the page carries no
-// number, and float counters reset per page. The synthetic <book> is marked `isWebsiteAssembly` so
-// numbering.js routes it to the 'page' scope, NOT the book/chaptered path. Cross-page refs still resolve
-// globally (one registry over the assembly) — numbering and ref-resolution are separate concerns.
+// REMOVED with that lift (#320): the synthetic-`<book>` FLATTEN this file used to host —
+// `buildWebsiteTree` (assembled every page as a `<book-part>` under one `isWebsiteAssembly` book),
+// `buildLiveWebsite`, and `renderLiveWebsitePage` — and, with it, numbering.js's `'page'` counter
+// scope. That flatten numbered a whole site as one page-scoped assembly, which collapsed a book
+// page's native numbering ("figure 2.1" → a flat "figure 1"); composition replaced it, so a book
+// page now keeps BOOK numbering on both surfaces. There is now ONE composition path, no flatten.
 
-import { makeTag, isEnscribeTag } from '../core/tag.js';
-import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
-import { renderChapter } from './render-chapter.js';
-import { rewriteCrossPageHrefs } from './cross-page-links.js';
 import { escapeHtmlAttr } from '../core/escape-html.js';
 
 // The shared 4-entity attribute escaper (#316/1-A), wrapped to keep the inline copy's null-safe
@@ -54,85 +36,9 @@ export function flattenNavPages(entries) {
   return out;
 }
 
-/**
- * Assemble external pages into a synthetic `<book>` of `<book-part #slug>` (one per page)
- * — the single tree the global pass numbers + resolves over. PURE: takes already-parsed
- * page content (the browser entry does the fetch + parse).
- *
- * @param {Array<{slug:string, title?:string}>} pages - external pages, in nav order
- * @param {Array<Array>} contents - parsed mdast children per page (same order/length)
- * @returns {{type:'root', children:Array}} the assembled pre-runSync tree
- */
-export function buildWebsiteTree(pages, contents) {
-  const parts = pages.map((p, i) =>
-    makeTag(
-      'book-part',
-      [makeTag('book-part-title', [{ type: 'text', value: p.title ?? p.slug }]), ...(contents[i] ?? [])],
-      { id: p.slug },
-    ),
-  );
-  const book = makeTag('book', [makeTag('book-body', parts)]);
-  // The synthetic book exists ONLY to resolve cross-page refs in one registry. It is NOT a statement
-  // that the document is a book — numbering must NOT treat it as chaptered. This marker routes numbering
-  // to the 'page' scope: each book-part (page) numbers as a standalone article (sections restart at 1, no
-  // chapter prefix, no page number; float counters reset per page).
-  book.isWebsiteAssembly = true;
-  return { type: 'root', children: [book] };
-}
-
-/**
- * Build the live website model from a numbered tree (the global pass output).
- * Mirrors buildLiveBook: harvest the registry, then build the router maps.
- *
- *   - `slugToPart`  page slug → its `<book-part>` node in the numbered tree (the render unit)
- *   - `idToSlug`    any anchor → the slug of the page that OWNS it (registry.chapter, which is
- *                   the owning book-part id = the page slug) — drives the cross-page href rewrite
- *
- * @param {object} opts
- * @param {object} opts.numbered - the numbered mdast tree (proc.runSync over buildWebsiteTree)
- * @param {object} opts.file - the VFile-shaped carrier holding file.data[ENSCRIBE_REGISTRY]
- * @param {Array} opts.pages - the external page list (slug/title), in nav order
- * @returns {{pages:Array, slugToPart:Map, idToSlug:Map, registry:Map, firstSlug:string|null}}
- */
-export function buildLiveWebsite({ numbered, file, pages }) {
-  const registry = harvestCrossRefRegistry(numbered, file);
-
-  const slugToPart = new Map();
-  const findParts = (node) => {
-    if (isEnscribeTag(node, 'book-part') && node.id) slugToPart.set(node.id, node);
-    const kids = Array.isArray(node?.content) ? node.content : Array.isArray(node?.children) ? node.children : [];
-    for (const c of kids) if (c && typeof c === 'object') findParts(c);
-  };
-  findParts(numbered);
-
-  const idToSlug = new Map();
-  for (const [anchor, entry] of registry) if (entry.chapter != null) idToSlug.set(anchor, entry.chapter);
-
-  const orderedPages = (pages ?? []).filter((p) => slugToPart.has(p.slug));
-  return { pages: orderedPages, slugToPart, idToSlug, registry, firstSlug: orderedPages[0]?.slug ?? null };
-}
-
-/**
- * Render one page's CONTENT — `renderChapter` (the validated per-unit projection) over the
- * page's `<book-part>` node, with cross-page ref hrefs rewritten to `?page=owner#anchor` (the
- * shared cross-page resolver's live-SPA default scheme; the owner of an anchor is the page that
- * owns it, from the global pass's registry).
- *
- * @param {object} model - buildLiveWebsite result
- * @param {string} slug - the page slug
- * @param {object} ctx - { proc, file } (the same pipeline + VFile the global pass used)
- * @returns {string} the page's HTML fragment ('' if the slug has no page)
- */
-export function renderLiveWebsitePage(model, slug, ctx) {
-  const part = model.slugToPart.get(slug);
-  if (!part) return '';
-  return rewriteCrossPageHrefs(renderChapter(part, model.registry, ctx), slug, {
-    ownerOf: (anchor) => model.idToSlug.get(anchor),
-  });
-}
-
 /** The not-found view for an unknown `?page=` slug — a visible message + a link to the first
- *  page (NOT a silent redirect, NOT a blank shell). Minimal in S2a; S2b wraps it in chrome. */
+ *  page (NOT a silent redirect, NOT a blank shell). browser.js's router renders it (with a
+ *  `{ firstSlug }` model) when `?page=` names no known page. */
 export function renderNotFoundView(slug, model) {
   const first = model.firstSlug;
   return (
@@ -146,8 +52,13 @@ export function renderNotFoundView(slug, model) {
  * The `?page=` router's pure resolver. Empty `?page=` → the first page; a known slug → that
  * page; an unknown slug → a not-found result (the caller renders renderNotFoundView).
  *
+ * NOTE (#320, verify-first): this currently has NO callers — browser.js's mountLiveWebsite inlines
+ * its own `resolvePage` over its `pageBySlug` map. Kept this slice (it is out of the flatten-
+ * deletion scope), but it and its barrel re-export are a candidate for a follow-up removal.
+ *
  * @param {string} search - location.search (with or without the leading '?')
- * @param {object} model - buildLiveWebsite result (slugToPart + firstSlug)
+ * @param {{ slugToPart: Map, firstSlug: string|null }} model - any object exposing the page set
+ *        (`slugToPart.has`) and the default `firstSlug`.
  * @returns {{slug: string|null, notFound: boolean}}
  */
 export function resolvePageParam(search, model) {

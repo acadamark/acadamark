@@ -206,24 +206,9 @@ const SCOPED_COUNTER_TYPES = new Set([
  * @param {Map|null} config
  * @returns {string} 'none' | 'chapter' | 'section'
  */
-// #246: a website's synthetic <book> (live-website.js buildWebsiteTree) is marked `isWebsiteAssembly`.
-// It is assembled ONLY to resolve cross-page refs in one registry; numbering must treat each book-part
-// (page) as a standalone article, NOT as a chapter. This predicate is the single gate every numbering
-// site checks before diverging — book/article trees never carry the marker, so they are untouched.
-function isWebsiteAssembly(treeChildren) {
-  for (const c of treeChildren ?? []) if (isEnscribeTag(c, 'book') && c.isWebsiteAssembly) return true;
-  return false;
-}
-
 // counter-reset-scope: none|chapter|section; default chapter for books, none otherwise.
 // The shared resolveConfigEnum (F8) does the read + book-default; the allowed set + the
 // two defaults are the only per-setting difference from note-scope.
-//
-// #246: a website forces the internal 'page' scope (NOT user-settable — not in COUNTER_RESET_SCOPES):
-// float counters reset at each book-part (page) like 'chapter', but render UNprefixed (article labels —
-// "Figure 1", not "1.1"). It is the per-page analogue of the book's 'chapter' scope, by design fixed for
-// the website (its numbering model is per-page, the way a book's is chaptered), so a config override is
-// not consulted here.
 //
 // #246/core: chaptered float scope ('chapter') only makes sense when chapters are NUMBERED — the float
 // prefix IS the chapter number. With heading numbering off (the default since the numbering-default
@@ -232,7 +217,6 @@ function isWebsiteAssembly(treeChildren) {
 // still wins (an author can force chaptered floats); only the DEFAULT follows the heading scheme.
 const COUNTER_RESET_SCOPES = new Set(['none', 'chapter', 'section']);
 function resolveCounterResetScope(treeChildren, config) {
-  if (isWebsiteAssembly(treeChildren)) return 'page';
   const bookDefault = resolveNumberSections(treeChildren, config) ? 'chapter' : 'none';
   return resolveConfigEnum(treeChildren, config, 'counter-reset-scope', COUNTER_RESET_SCOPES, bookDefault, 'none');
 }
@@ -383,9 +367,7 @@ function walkWithScope(nodes, visitors, scope) {
       // pushed to `pending`. We can't easily reach into pending here, but
       // we can stash a scope marker on the node itself; the post-pass
       // copies node._scope to entry.data.scope.
-      // #246 'page' scope (websites): reset per book-part like 'chapter' (the chapterIndex grouping
-      // below), but `flat` tells formatScopedNumber to render the number UNprefixed (article labels).
-      node._scope = { chapter: chapterIndex, section: sectionIndex, flat: scope === 'page' };
+      node._scope = { chapter: chapterIndex, section: sectionIndex };
     });
   }
 
@@ -498,9 +480,7 @@ export function fillNumbering(file) {
     const type = p.entry.type;
     if (!SCOPED_COUNTER_TYPES.has(type)) continue;
     const sc = p.entry.data?.scope ?? { chapter: 0, section: 0 };
-    // 'page' (websites) resets per book-part exactly like 'chapter' — both key the reset group on the
-    // chapter (page) index; only the label FORMAT differs (flat, handled in formatScopedNumber).
-    const scopeKey = (scope === 'chapter' || scope === 'page')
+    const scopeKey = scope === 'chapter'
       ? `${type}|${sc.chapter}`
       : `${type}|${sc.chapter}|${sc.section}`;
     if (!groups.has(scopeKey)) groups.set(scopeKey, []);
@@ -589,15 +569,16 @@ function structuralTitleText(node) {
 
 /**
  * Resolve whether section/heading numbering is on. **Default OFF for every document type**
- * (#246/core) — an author opts IN with `<config number-sections>` (or `=true`). Previously books (and
- * the website's synthetic `<book>`) defaulted ON via a `<book>` heuristic; that heuristic is removed, so
- * a book/website now renders headings unnumbered unless the document asks for numbers. Float numbering
- * (figures / tables / equations) is independent and stays ON. When a heading is unnumbered, a `<ref>` to
- * it falls back to the heading's TITLE (see computeRefText), so section/book-part registry entries carry
- * their title text for that purpose.
+ * (#246/core) — an author opts IN with `<config number-sections>` (or `=true`). Previously books
+ * defaulted ON via a `<book>` heuristic; that heuristic is removed, so a book now renders headings
+ * unnumbered unless the document asks for numbers. Float numbering (figures / tables / equations) is
+ * independent and stays ON. When a heading is unnumbered, a `<ref>` to it falls back to the heading's
+ * TITLE (see computeRefText), so section/book-part registry entries carry their title text for that purpose.
  *
- * (Website opt-in still waits on master `<config>` threading into the page pass — the tracked follow-on;
- * until then a website is unnumbered, with the per-page numbering machinery dormant but intact.)
+ * (A website composes one page at a time — each page numbers NATIVELY through this same resolver, an
+ * article as an article and a book page as a book; #320. Website-wide heading opt-in still waits on
+ * master `<config>` threading into the page pass — the tracked follow-on — so a website's pages are
+ * unnumbered until each page asks for numbers.)
  */
 function resolveNumberSections(treeChildren, config) {
   const cv = config?.get?.('number-sections');
@@ -686,21 +667,6 @@ export function numberSections(tree, file) {
     (c) => isEnscribeTag(c, 'article') || isEnscribeTag(c, 'book'),
   );
   if (!docRoot) return;
-
-  // #246: a website's synthetic book numbers each book-part (page) as a STANDALONE ARTICLE — its
-  // top-level sections restart at 1 with no chapter prefix (prefix '' at level 1, a fresh counter per
-  // part), and the page itself is NOT stamped (no `numberBookPart` → no page-level number; the page
-  // title is a title, not a numbered chapter). Returns before the book's chaptered path below.
-  if (docRoot.isWebsiteAssembly) {
-    const wbody = findRegionChild(docRoot, 'book-body');
-    if (wbody) {
-      for (const part of structuralChildren(wbody)) {
-        if (!isEnscribeTag(part, 'book-part')) continue;
-        numberSectionLevel(structuralChildren(part), '', registry, maxDepth, 1);
-      }
-    }
-    return;
-  }
 
   // A top book-part heading (chapter / appendix / article-appendix) is level 1, its sections level 2.
   // #218: skip a `+unnumbered` part (no label, the counter does NOT advance — caller `continue`s

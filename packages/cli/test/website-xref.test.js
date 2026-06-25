@@ -1,151 +1,172 @@
-// #300 slice 2 — cross-page reference resolution in the COMPOSITION static website build.
+// #320 — REAL website parity corpus: static build ≡ live SPA, both surfaces composed the SAME way.
 //
-// The static builder numbers each page in its OWN native scope, harvests every page's cross-ref
-// registry, merges into one SITE registry, then renders each page natively and resolves cross-page
-// <ref>s against the merge. This proves the regression is gone WITHOUT flattening:
-//   (a) article→article — a ref across two article-pages shows the target's number and links to it;
-//       proven BOTH WAYS (static vs the live website render): the display NUMBER is byte-identical,
-//       and the href OWNER matches once the scheme is normalized (static emits a `.html` path, live
-//       keeps `?page=owner#anchor` — different schemes by design; #300 slice 2 hrefFor hook).
-//   (b) article→book — an article ref to a BOOK chapter's figure shows the figure's BOOK NATIVE number
-//       (e.g. "2.1"), byte-identical to that figure's own label on its chapter-page, and links to the
-//       chapter-PAGE. This is the proof flattening is gone: a page-scope (flattened) build would show
-//       "1" here. It is asserted STATIC-only because the live SPA still flattens books (page scope) —
-//       a separate, flagged-not-fixed surface — so live would show the page-scope number here.
+// The live #300 (step 2, #324) routed the live path through the shared composition core
+// (composeSiteRegistry) — the SAME core the static build calls — so a website now composes ONE way on
+// both surfaces: number each page in its OWN native scope, merge one site cross-ref registry, render per
+// page. NOTHING is flattened. This test proves the PARITY directly: it drives the REAL static build
+// (buildStaticWebsite) AND the REAL live SPA (mountLiveWebsite in jsdom — the same browser entry
+// master-website-live.test.js drives) over one multi-page corpus, and asserts they AGREE.
+//
+// It replaces the old `liveRender`/`buildWebsiteTree` MIRROR: that hand-rolled the live render through the
+// page-scope flatten (buildWebsiteTree/buildLiveWebsite/renderLiveWebsitePage), so it was article-only by
+// design (a book page flattened to page scope) and could never test the book direction. Those flatten
+// functions are deleted in this slice (#320); the real composition path covers the book direction here.
+//
+// THE CONTRACT (notes/specs/render-parity.md "The website path"): static ≡ live on the DISPLAY NUMBER and
+// the SCHEME-NORMALIZED owner — never the raw href. The display number must be byte-identical (a book
+// target reads its BOOK-native "figure 2.1", not a flattened "figure 1"). The owner is the OWNING nav-PAGE,
+// once each surface's URL scheme is normalized away: static emits depth-relative `.html` paths (a book page
+// is many chapter-files under the page dir; the home page collapses to the dist root), live keeps the SPA's
+// `?page=owner` route (a book page is ONE route, its chapters in-page `#hash`). Both name the same page.
+//
+// The corpus is the shared p314 fixture (packages/enscribe/test/fixtures/master-website/p314-*): an article
+// page (artp, the home page) + a book page (bookp, two chapters, numbering on) + a second book (atlasp),
+// with cross-page <ref>s in ALL FOUR directions (article→book, book→article, book→book, within-book).
 
 import assert from 'node:assert';
-import { dirname, join, resolve } from 'node:path';
-import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { VFile } from 'vfile';
+import { JSDOM, VirtualConsole } from 'jsdom';
 import { buildStaticWebsite } from '../src/static-website.js';
-import {
-  buildEnscribePipeline, flattenNavPages, buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage,
-} from '@enscribejs/enscribe';
-import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
+// The live browser entry. browser.js is enscribe's tsup browser entry — the package export map exposes it
+// only as a BUILT bundle (`@enscribejs/enscribe/browser` → dist), so the test drives the SOURCE directly,
+// the same way enscribe's own master-website-live.test.js imports it. jsdom + the source are both reachable
+// from this package (jsdom hoists to the workspace root; the source is a sibling-package relative path).
+import { mountLiveWebsite } from '../../enscribe/src/interpreter/browser.js';
 
-// The live website render, reduced to its pure core (mirrors browser.js mountLiveWebsite sans DOM):
-// parse each external page → its children, assemble the synthetic <book>, ONE global pass, then render
-// each page through renderLiveWebsitePage. Article-only here (the live path flattens books by design).
-function liveRender(masterSource, masterDir) {
-  const proc = buildEnscribePipeline({});
-  const navFile = new VFile({ value: masterSource });
-  proc.runSync(proc.parse(masterSource), navFile);
-  const srcOf = (src) => { const flat = resolve(masterDir, `${src}.emd`); return existsSync(flat) ? flat : resolve(masterDir, src, 'index.emd'); };
-  // Article-only: the live SPA flattens books (page scope) — out of scope here — and a book master's
-  // `<chapter src>` children aren't sub-assembled in this minimal driver. Cross-page article refs suffice.
-  const pages = flattenNavPages(navFile.data[ENSCRIBE_NAV_MODEL].entries)
-    .filter((p) => p.src != null && !/type\s*=\s*book/.test(readFileSync(srcOf(p.src), 'utf8')));
-  const contents = pages.map((p) => proc.parse(readFileSync(srcOf(p.src), 'utf8')).children ?? []);
-  const file = new VFile({});
-  const numbered = proc.runSync(buildWebsiteTree(pages, contents), file);
-  const model = buildLiveWebsite({ numbered, file, pages });
-  const ctx = { proc, file };
-  return Object.fromEntries(pages.map((p) => [p.slug, renderLiveWebsitePage(model, p.slug, ctx)]));
+// ── the shared p314 corpus ──────────────────────────────────────────────────────────────────────────
+const FX = join(import.meta.dirname, '..', '..', 'enscribe', 'test', 'fixtures', 'master-website');
+const P314 = ['p314-master', 'p314-artp', 'p314-bookp', 'p314-bch1', 'p314-bch2', 'p314-atlasp', 'p314-am1'];
+const FILES = Object.fromEntries(P314.map((n) => [`${n}.emd`, readFileSync(join(FX, `${n}.emd`), 'utf8')]));
+const MASTER = FILES['p314-master.emd'];
+
+// The nav pages (their `<meta slug>`s) and the home page (the first nav item). Used to normalize a static
+// href back to its owning nav-PAGE slug (see staticOwner): the URL scheme is the only allowed difference.
+const PAGE_SLUGS = new Set(['artp', 'bookp', 'atlasp']);
+const HOME_SLUG = 'artp';
+
+// ── scheme normalizers: a cross-page href → the OWNING nav-page slug, on each surface ─────────────────
+// Static: depth-relative `.html` path. The owner is the first path segment that is a known page slug
+// (`bookp/two.html` → bookp; `../atlasp/maps.html` → atlasp). No page segment means either the dist root
+// (`../` → the home page) or a sibling chapter file of the CURRENT book (`two.html` → the current page).
+function staticOwner(href, currentSlug) {
+  const segs = String(href).replace(/#.*$/, '').split('/').filter((s) => s && s !== '..' && s !== '.');
+  for (const s of segs) { const slug = s.replace(/\.html$/, ''); if (PAGE_SLUGS.has(slug)) return slug; }
+  return segs.length === 0 ? HOME_SLUG : currentSlug;
+}
+// Live: the SPA route `?page=owner#anchor` → owner; a bare `#anchor` (intra-page / same-book) → the current page.
+function liveOwner(href, currentSlug) {
+  const m = String(href).match(/[?&]page=([^#&]+)/);
+  return m ? m[1] : currentSlug;
 }
 
-// The rendered <ref> anchor for a target colon-id: { href, text }.
+// The rendered <ref> anchor for a target colon-id: { href, text } (text stripped of inner markup).
 function refAnchor(html, targetId) {
-  const re = new RegExp(`<a ([^>]*?)href="([^"]*?#${targetId.replace(/[:]/g, '\\:')})"([^>]*?)>([\\s\\S]*?)</a>`);
-  const m = String(html).match(re);
+  const m = String(html).match(new RegExp(`<a ([^>]*?)href="([^"]*?#${targetId.replace(/:/g, '\\:')})"([^>]*?)>([\\s\\S]*?)</a>`));
   return m ? { href: m[2], text: m[4].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() } : null;
 }
-
-// Scheme-normalize a cross-page href → (owner, anchor). Static: `../page-b/#fig:b` → (page-b, fig:b),
-// `../guide/second-chapter.html#fig:x` → (second-chapter, fig:x). Live: `?page=page-b#fig:b` → (page-b, fig:b).
-function normHref(href) {
-  const anchor = (href.match(/#(.+)$/) || [])[1] ?? '';
-  const live = href.match(/[?&]page=([^#&]+)/);
-  if (live) return { owner: live[1], anchor };
-  const path = href.replace(/#.*$/, '').replace(/\/+$/, '');
-  const seg = path.split('/').filter((s) => s && s !== '..').pop() || '';
-  return { owner: seg.replace(/\.html$/, ''), anchor };
+// The NATIVE "Figure N[.M]" label a figure carries on its own page (the byte-identity target for refs to it).
+function figureLabel(html) {
+  return (String(html).match(/figure-label[^>]*>\s*Figure\s*([0-9]+(?:\.[0-9]+)*)/i) || [])[1];
 }
 
-export function run_tests() {
-  const dir = mkdtempSync(join(tmpdir(), 'enscribe-xref-'));
-  const w = (rel, body) => { const p = join(dir, rel); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, body); };
+// ── live SPA harness (jsdom), mirroring master-website-live.test.js ───────────────────────────────────
+function installDom(url = 'https://example.com/site/') {
+  const vc = new VirtualConsole();
+  vc.on('jsdomError', (err) => { if (!/Not implemented/.test(err && err.message)) throw err; });
+  const dom = new JSDOM('<!DOCTYPE html><html><body><div id="root"></div></body></html>', { url, virtualConsole: vc });
+  const orig = { window: global.window, document: global.document, location: global.location, history: global.history, fetch: global.fetch };
+  global.window = dom.window;
+  global.document = dom.window.document;
+  Object.defineProperty(global, 'location', { value: dom.window.location, configurable: true, writable: true });
+  Object.defineProperty(global, 'history', { value: dom.window.history, configurable: true, writable: true });
+  global.fetch = async (u) => {
+    const name = String(u).split('/').pop().split('?')[0];
+    return Object.prototype.hasOwnProperty.call(FILES, name)
+      ? { ok: true, status: 200, statusText: 'OK', text: async () => FILES[name] }
+      : { ok: false, status: 404, statusText: 'Not Found', text: async () => '' };
+  };
+  return { dom, orig };
+}
+function restoreDom(orig) {
+  global.window = orig.window;
+  global.document = orig.document;
+  Object.defineProperty(global, 'location', { value: orig.location, configurable: true, writable: true });
+  Object.defineProperty(global, 'history', { value: orig.history, configurable: true, writable: true });
+  global.fetch = orig.fetch;
+}
+const pop = (dom, search) => { dom.window.history.pushState(null, '', search); dom.window.dispatchEvent(new dom.window.Event('popstate')); };
+const hashTo = (dom, hash) => { dom.window.location.hash = hash; dom.window.dispatchEvent(new dom.window.Event('hashchange')); };
 
-  w('index.emd', [
-    '<meta type=website>', '<title | XSite>', '</meta>', '',
-    '<nav>',
-    '<item src="home" +homepage | Home>',
-    '<item src="a" | Page A>',
-    '<item src="b" | Page B>',
-    '<item src="guide" | Guide>',
-    '<item src="atlas" | Atlas>',
-    '</nav>',
-  ].join('\n'));
-  w('home.emd', '<meta type=article>\n<title | Home>\n</meta>\n\nWelcome.');
-  // Page A references a figure on page B (article→article) AND a figure in the guide book (article→book).
-  w('a.emd', '<meta type=article>\n<title | Page A>\n</meta>\n\nSee <ref @fig:b> on B, and <ref @fig:eleph> in the guide.');
-  w('b.emd', '<meta type=article>\n<title | Page B>\n</meta>\n\n<figure #fig:b src="x.svg" | A figure on page B>');
-  // A two-chapter book WITH numbering on, so its figure gets a chapter-prefixed number ("2.1") — distinct
-  // from the page-scope "1" a flattened build would assign.
-  w('guide/index.emd', '<meta type=book>\n<title | Guide>\n</meta>\n\n<config number-sections />\n\n<chapter src="ch1.emd" | First Chapter>\n<chapter src="ch2.emd" | Second Chapter>\n<chapter src="ch3.emd" | Cross Refs>');
-  w('guide/ch1.emd', '<section | Intro>\n\nThe first chapter.');
-  w('guide/ch2.emd', '<section | Field Data>\n\n<figure #fig:eleph src="e.svg" | An adult African elephant>');
-  // ch3 originates BOTH book-outbound directions: a ref to an article anchor (book→article) and a ref to
-  // a figure in a DIFFERENT book-page's chapter (book→book).
-  w('guide/ch3.emd', '<section | Cross Refs>\n\nArticle: <ref @fig:b>. Other book: <ref @fig:atlas>.');
-  // A SECOND book, also chapter-numbered, so its figure has a chapter-prefixed native number ("1.1").
-  w('atlas/index.emd', '<meta type=book>\n<title | Atlas>\n</meta>\n\n<config number-sections />\n\n<chapter src="m1.emd" | Maps>');
-  w('atlas/m1.emd', '<section | World>\n\n<figure #fig:atlas src="w.svg" | A world map>');
+export async function run_tests() {
+  // ── STATIC: build the whole site from the p314 master on disk. ──
+  const dir = mkdtempSync(join(tmpdir(), 'enscribe-parity-'));
+  for (const [name, body] of Object.entries(FILES)) writeFileSync(join(dir, name), body);
+  const { pages: S, warnings } = buildStaticWebsite({ masterSource: MASTER, masterDir: dir, defaultCss: '' });
+  assert.ok(!warnings.some((m) => /not found|failed/i.test(m)), `static: no cross-page resolution failures (warnings: ${warnings.join(' | ')})`);
 
-  const { pages, warnings } = buildStaticWebsite({ masterSource: readFileSync(join(dir, 'index.emd'), 'utf8'), masterDir: dir, defaultCss: '' });
-  const live = liveRender(readFileSync(join(dir, 'index.emd'), 'utf8'), dir);
-  assert.ok(!warnings.some((m) => /not found|failed/i.test(m)), `no cross-page resolution failures (warnings: ${warnings.join(' | ')})`);
-
-  // ── (a) article→article — both ways: number byte-identical, href owner scheme-normalized ──────────
-  {
-    const sRef = refAnchor(pages.get('page-a/index.html'), 'fig:b');
-    const lRef = refAnchor(live['page-a'], 'fig:b');
-    assert.ok(sRef, 'static: page A resolves its <ref @fig:b> (cross-page, not a dangling/error ref)');
-    assert.ok(lRef, 'live: page A resolves its <ref @fig:b>');
-    assert.equal(sRef.text, lRef.text, `display number byte-identical static≡live (static "${sRef.text}" / live "${lRef.text}")`);
-    assert.deepEqual(normHref(sRef.href), normHref(lRef.href),
-      `href owner matches once the scheme is normalized (static "${sRef.href}" / live "${lRef.href}")`);
-    assert.equal(normHref(sRef.href).owner, 'page-b', 'the cross-page ref links to page B');
-    console.log(`PASS: website-xref (a) article→article — both ways: number "${sRef.text}" byte-identical, owner page-b (scheme-normalized)`);
+  // ── LIVE: mount the SPA in jsdom and capture each page's rendered HTML (article + book chapter views). ──
+  const { dom, orig } = installDom();
+  let L;   // { artp, bookpOne, bookpTwo, atlaspMaps } — rendered innerHTML per view
+  try {
+    const root = await mountLiveWebsite('#root', MASTER);
+    const content = () => root.querySelector('[data-enscribe-content]').innerHTML;
+    const artp = content();                       // first render is the home page (artp)
+    pop(dom, '?page=bookp'); hashTo(dom, '#one'); const bookpOne = content();
+    hashTo(dom, '#two'); const bookpTwo = content();
+    // atlasp is a single-chapter book; a bare ?page=atlasp shows its cover, so route to the chapter (#maps)
+    // — the same chapter the static build emits as atlasp/maps.html — to see the figure's native label.
+    pop(dom, '?page=atlasp'); hashTo(dom, '#maps'); const atlaspMaps = content();
+    L = { artp, bookpOne, bookpTwo, atlaspMaps };
+  } finally {
+    restoreDom(orig);
   }
 
-  // ── (b) article→book — STATIC: the BOOK native number (proof flattening is gone) + chapter-page href ──
+  // ── the book pages render AS books on BOTH surfaces — book-native numbering (the flattening-gone proof) ──
+  // A flattened page-scope build would label this figure "Figure 1"; composition keeps the chapter-scoped
+  // "Figure 2.1" (bookp ch2) / "Figure 1.1" (atlasp). Byte-identical static≡live.
   {
-    const sRef = refAnchor(pages.get('page-a/index.html'), 'fig:eleph');
-    assert.ok(sRef, 'static: page A resolves its <ref @fig:eleph> into the book (cross-page)');
-    // the figure's OWN native number on its chapter-page (book scope → "2.1"), the byte-identity target.
-    const ch = pages.get('guide/second-chapter.html');
-    const nativeLabel = (ch.match(/figure-label[^>]*>\s*Figure\s*([0-9]+(?:\.[0-9]+)*)/i) || [])[1];
-    assert.equal(nativeLabel, '2.1', `the book figure's NATIVE label is chapter-scoped "2.1" (got "${nativeLabel}")`);
-    assert.equal(sRef.text, `figure ${nativeLabel}`,
-      `the article→book ref shows the figure's BOOK native number "${nativeLabel}" byte-identically (got "${sRef.text}") — a flattened page-scope build would show "figure 1"`);
-    assert.equal(normHref(sRef.href).owner, 'second-chapter',
-      `the article→book ref links to the book CHAPTER-PAGE (got "${sRef.href}")`);
-    console.log(`PASS: website-xref (b) article→book — STATIC shows the book native "${sRef.text}" (not page-scope) + links to the chapter-page (flattening is gone)`);
+    const sBook = figureLabel(S.get('bookp/two.html'));
+    const lBook = figureLabel(L.bookpTwo);
+    assert.equal(sBook, '2.1', `static: the book figure's NATIVE label is chapter-scoped "2.1" (got "${sBook}")`);
+    assert.equal(lBook, '2.1', `live: the book figure's NATIVE label is chapter-scoped "2.1" (got "${lBook}") — NOT a flattened "1"`);
+    const sAtlas = figureLabel(S.get('atlasp/maps.html'));
+    const lAtlas = figureLabel(L.atlaspMaps);
+    assert.equal(sAtlas, '1.1', `static: the atlas figure's NATIVE label is "1.1" (got "${sAtlas}")`);
+    assert.equal(lAtlas, '1.1', `live: the atlas figure's NATIVE label is "1.1" (got "${lAtlas}")`);
+    console.log('PASS: #320 — book pages render AS books on BOTH surfaces (native "Figure 2.1" / "1.1", not a flattened "1")');
   }
 
-  // ── (c) book→article — a book chapter's ref to an ARTICLE anchor resolves to the article's number + page ──
-  {
-    const ch = pages.get('guide/cross-refs.html');
-    assert.ok(ch, 'the guide ch3 (cross-refs) page emitted');
-    const ref = refAnchor(ch, 'fig:b');
-    assert.ok(ref, 'book→article: the guide chapter resolves its <ref @fig:b> (a cross-page article anchor)');
-    assert.equal(ref.text, 'figure 1', `book→article shows the ARTICLE's number "figure 1" (got "${ref.text}")`);
-    assert.equal(normHref(ref.href).owner, 'page-b', `book→article links to the article page (got "${ref.href}")`);
-    console.log(`PASS: website-xref (c) book→article — book chapter ref shows the article number "${ref.text}" + links to page-b`);
-  }
+  // ── the four directions: static ≡ live on display NUMBER + scheme-normalized OWNER ────────────────────
+  // Each direction reads the SAME logical <ref> off each surface and asserts: (1) the display text (the
+  // number) is byte-identical, and (2) the owner — once `.html`/`?page=` are normalized away — is the same
+  // nav-page, and is the expected one. `currentSlug` is the page the ref is RENDERED on (for the home→root
+  // and within-book sibling-file normalizations).
+  const direction = (label, targetId, expectedText, expectedOwner, staticHtml, liveHtml, currentSlug) => {
+    const s = refAnchor(staticHtml, targetId);
+    const l = refAnchor(liveHtml, targetId);
+    assert.ok(s, `static: ${label} resolves its <ref @${targetId}> (cross-page, not dangling)`);
+    assert.ok(l, `live: ${label} resolves its <ref @${targetId}>`);
+    assert.equal(s.text, expectedText, `static: ${label} shows "${expectedText}" (got "${s.text}")`);
+    assert.equal(s.text, l.text, `${label}: display number byte-identical static≡live (static "${s.text}" / live "${l.text}")`);
+    const sOwner = staticOwner(s.href, currentSlug);
+    const lOwner = liveOwner(l.href, currentSlug);
+    assert.equal(sOwner, expectedOwner, `static: ${label} links to page "${expectedOwner}" (got "${sOwner}" from "${s.href}")`);
+    assert.equal(sOwner, lOwner, `${label}: owner matches once the scheme is normalized (static "${s.href}"→${sOwner} / live "${l.href}"→${lOwner})`);
+    console.log(`PASS: #320 — ${label}: "${s.text}" + owner ${sOwner} (static "${s.href}" ≡ live "${l.href}")`);
+  };
 
-  // ── (d) book→book — a book chapter's ref to a figure in ANOTHER book-page's chapter ───────────────────
-  {
-    const ch = pages.get('guide/cross-refs.html');
-    const ref = refAnchor(ch, 'fig:atlas');
-    assert.ok(ref, 'book→book: the guide chapter resolves its <ref @fig:atlas> (a figure in the atlas book)');
-    // the atlas figure's OWN native number on its chapter-page (book scope → "1.1"), the byte-identity target.
-    const am = pages.get('atlas/maps.html');
-    const atlasNative = (am.match(/figure-label[^>]*>\s*Figure\s*([0-9]+(?:\.[0-9]+)*)/i) || [])[1];
-    assert.equal(atlasNative, '1.1', `the atlas figure's NATIVE label is chapter-scoped "1.1" (got "${atlasNative}")`);
-    assert.equal(ref.text, `figure ${atlasNative}`, `book→book shows the OTHER book's native number "${atlasNative}" byte-identically (got "${ref.text}")`);
-    assert.equal(normHref(ref.href).owner, 'maps', `book→book links to the OTHER book's chapter-page (got "${ref.href}")`);
-    console.log(`PASS: website-xref (d) book→book — guide chapter ref shows the atlas native "${ref.text}" + links to the atlas chapter-page`);
-  }
+  // (1) article→book: the home article's ref to the BOOK figure → book-native "figure 2.1", owner bookp.
+  direction('article→book', 'fig:bookp', 'figure 2.1', 'bookp', S.get('index.html'), L.artp, 'artp');
+  // (2) book→article: a book chapter's ref to the ARTICLE figure → article "figure 1", owner artp (the
+  //     home page — static collapses it to the dist root `../`, live keeps `?page=artp`; both normalize to artp).
+  direction('book→article', 'fig:artp', 'figure 1', 'artp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
+  // (3) book→book: a book chapter's ref to the OTHER book's figure → its native "figure 1.1", owner atlasp.
+  direction('book→book', 'fig:atlasp', 'figure 1.1', 'atlasp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
+  // (4) within-book: a book chapter's ref to a figure in the SAME book → "figure 2.1", owner the book page
+  //     itself (static a sibling `two.html`, live a bare `#fig:bookp` — both stay within the bookp page).
+  direction('within-book', 'fig:bookp', 'figure 2.1', 'bookp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
+
+  console.log('All #320 website parity (static ≡ live, all four directions, book direction now covered) checks passed.');
 }
