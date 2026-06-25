@@ -359,14 +359,17 @@ The rule is enforced today as a warning, not a hard error: a misplaced apparatus
 
 Apparatus tags also have a coupled interface principle. Each apparatus tag can be authored two equivalent ways: with **kwargs** for scalar values (`<meta title="X" author="Y">`) or with **child tags** for structured values (`<meta><title>X</title><author>Y</author></meta>`). The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag spec — but only for the true structured-data containers (`<meta>` / `<author>`, via `STRUCTURED_ELEMENTS`); unknown kwargs are dropped with informative diagnostics. `<config>` is the exception in this group: it has **no** child-tag form, so its allowlist (`CONFIG_KWARGS`) only *validates* kwargs and config stays kwargs-only — its structured form, when built, is a fenced data block, not child tags (see the "Configuration and metadata are data" direction below). A kwarg on the wrong apparatus tag — e.g. `<config title=…>` — additionally gets a "did you mean `<meta>`?" misuse hint, and symmetrically for `<meta citation-style=…>`. Both forms are valid authoring; both reduce to the same canonical shape; the lift is the same single-gate normalization the architecture uses for every other authored form.
 
-## Document structure: articles vs. books
+## Document structure: articles, books, and websites
 
-Enscribe supports two top-level document shapes, distinguished by
+Enscribe supports two single-document shapes, distinguished by
 `<meta type=...>`: **articles** (the default; `type=article` or
 absent) and **books** (`type=book`, with chapters / parts / appendices
-as recursive `<book-part>` children). The two share most of the
-authoring surface — sections, paragraphs, frameables, math, citations,
-notes, references — but their structural wrappers differ.
+as recursive `<book-part>` children) — plus a third class, **websites**
+(`type=website`), which composes many such documents into a multi-page
+site (see *The website document class*, below). The article and book
+shapes share most of the authoring surface — sections, paragraphs,
+frameables, math, citations, notes, references — but their structural
+wrappers differ.
 
 The distinction matters because the scholarly-publishing ecosystem
 draws it: JATS has two parallel DTDs (the **article DTD** for
@@ -383,7 +386,7 @@ of them transforms the tree:
 
 - **The document class is resolved once first.** `enscribeDocTypeResolve`
   reads `<meta type>` before structuring, validates it against the
-  declared set (`article` / `book` / `book-part`), stores it on
+  declared set (`article` / `book` / `book-part` / `website`), stores it on
   `file.data`, and reports an explicitly-set unknown type with a
   non-fatal diagnostic (falling back to `article`). The structuring
   plugins read that resolved class rather than re-reading `<meta type>`.
@@ -419,6 +422,29 @@ The two shapes share everything below the structural wrapper. The
 frameable handlers, the theorem family, math, citations, and notes
 all work identically inside an article or a book. The shape divides
 the *outer container*; the *body authoring surface* is one enscribe.
+
+### The website document class
+
+A **website** (`type=website`) is the third document class, at a
+different level from article and book: it is not a single document with
+a structural wrapper but a **multi-page site**, whose master declares a
+navigation tree of pages — and **each page is itself natively an article
+or a book**. Output is HTML only (a site is not a scholarly document, so
+there is no JATS/BITS projection).
+
+The site is built by **composition, not flattening** — the decision a
+re-implementation must preserve. Each page is numbered in its *own native
+scope* (an article as an article, a book as a book, so a book figure stays
+"2.1" rather than a flattened "1"); every page's cross-reference anchors
+merge into one *site registry*; and each page is rendered natively over a
+*read-through* of that registry, so a cross-page reference resolves to its
+target's native number and links to the page that owns it, in every
+direction. Flattening every page into one page-scope assembly was rejected
+because it destroys native numbering and a page-isolated render cannot see
+the site registry (the cause of the #300 regression). This is the
+conceptual placement; the full model — the two-phase number-then-render,
+page identity, the static/live URL schemes, and the always-render
+invariants — is specified in `notes/specs/website.md`.
 
 ## Structured-data-container tags
 

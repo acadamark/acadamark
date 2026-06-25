@@ -55,7 +55,8 @@ to a contents listing differently:
   book sidebar — the chapter rail already fills that role — so on a book those
   locations emit a located diagnostic rather than a competing sidebar.
 - **Website** — the persistent page-tree nav is the table of contents;
-  `<config toc>` is the landing / section index. (Forward, with #246.)
+  `<config toc>` is the landing / section index. (The website type shipped (#246);
+  the website `<config toc>` landing/section-index is a follow-on.)
 
 The mechanics live in `notes/specs/toc-and-numbering.md` (the listing) and
 `notes/specs/book-navigation.md` (the rail); this entry is the cross-class shape
@@ -193,10 +194,11 @@ site is not a scholarly document, so there is no JATS projection.
   project, the website can lean on it.
 - **Render mode is orthogonal.** The master is a *composition* model — it assembles inline-or-external pages
   into the site — independent of how the site is rendered. A website follows the same static/live grid as
-  article and book. Because the live render is already built and type-agnostic, the **first build cut targets
-  the live path** (and inherits the `?edit` toggle); a static pre-rendered projection (real per-page HTML
-  files) and `enscribe serve` (live-server) are later modes. (Tradeoff for the live path: browser-rendered
-  pages aren't plain HTML for a search engine; the static projection backfills that if/when it matters.)
+  article and book. The live render was built first (type-agnostic, inheriting the `?edit` toggle); the
+  **static pre-rendered projection** (real per-page HTML files) then shipped too ([#278](https://github.com/enscribejs/enscribe/issues/278)
+  / [#300](https://github.com/enscribejs/enscribe/issues/300)), so a website builds both ways; `enscribe serve`
+  (live-server) remains a later mode. (Tradeoff for the live path: browser-rendered pages aren't plain HTML
+  for a search engine; the static projection now backfills that.)
 - **Dogfood.** The docs site is the proof: it is rebuilt as a `<meta type=website>` site **before** #223
   reorganizes its content. The bespoke generated pages (gallery, catalogs) stay outside the type for now.
 
@@ -251,7 +253,7 @@ identically as a website page, by construction, and cross-page references resolv
 (article↔article, article↔book). This **replaces** the earlier per-page-**isolated** static render, under
 which each page was a separate pass and a cross-page `<ref>` could not resolve — the #300 regression. *(The
 live SPA still uses its page-scope `buildWebsiteTree` assembly, which flattens a book to page scope — a
-separate surface, tracked by #299 / #300's live side; the static builder no longer shares it.)*
+separate surface, tracked by [#314](https://github.com/enscribejs/enscribe/issues/314); the static builder no longer shares it.)*
 
 **Build is committed during development, built in CI once served.** While the docs site is under active
 development, the built output is rebuilt and committed on each emitter change (so the tree never drifts

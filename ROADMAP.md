@@ -18,11 +18,13 @@ file is what needs updating.
 The spine, in order — each step unblocks the next:
 
 1. **Multi-file / master-document system** — the long pole. A real document spans
-   many files; nothing downstream works without it. *Article- and book-level
-   assembly landed — cross-file numbering and cross-references resolve across files,
-   cross-file citations/bibliography merge, placement markers, and the book type
-   (assembly + separate-pages publish + live app-shell render) all shipped, and the
-   browser renders the same assembly live; the **website** type is what remains.*
+   many files; nothing downstream works without it. *Article-, book-, and website-level
+   assembly all landed — cross-file numbering and cross-references resolve across files,
+   cross-file citations/bibliography merge, placement markers, the book type
+   (assembly + separate-pages publish + live app-shell render), and the website type
+   (composition over a merged site registry, static + live; #246) all shipped, and the
+   browser renders the same assembly live. The spine is complete; its remaining tails
+   (live `<a {slug}>` #318, live book-pages-as-books #314) ride the consolidation passes.*
 2. **Dogfood** — build Enscribe's own website and book in the multi-file system.
    The centerpiece demo, not housekeeping: the tool authoring its own docs is the
    proof.
@@ -69,14 +71,16 @@ The bodies of work feeding the releases, with where each stands:
   frame/diagram, code, cross-refs (output-neutral reconciliations); then the
   genuinely output-changing groups (theorem, math, front-matter). **Sections are
   blocked** on the #40 heading-level decision (see below).
-- **Multi-file / master-document** — *in progress, foreground.* Assembles
+- **Multi-file / master-document** — *the spine is complete.* Assembles
   `<section src>` children into an article and book-part `src` children into a book,
   with cross-file continuous numbering and cross-references resolved across files,
   and the same assembly rendered live in the browser (`renderMasterAsync`, #194).
-  Shipped since: the cross-file citation registry, master-level `<library src>`
-  live-loading (#197), placement markers (toc/endnotes/bibliography), and the book
+  Shipped: the cross-file citation registry, master-level `<library src>`
+  live-loading (#197), placement markers (toc/endnotes/bibliography), the book
   type (assembly + separate-pages publish #205 + live app-shell render #216 + book
-  navigation #221). Next: the **website** page model (#246).
+  navigation #221), and the **website** page model (#246) — composition over a
+  merged site registry, static + live (`notes/specs/website.md`). Remaining tails:
+  live `<a {slug}>` resolution (#318) and live book-pages-as-books (#314).
 - **Data model** — *needs Phase-0.* Settle the taxonomy (#166) and the meta-data
   block (#168) before the slices delegate.
 - **Interchange** — *needs Phase-0.* Settle import coverage (IX-Q1) — the launch

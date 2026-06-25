@@ -171,25 +171,53 @@ and asserted byte-identical on matched options — now landed as
   on landing (holds by construction; a standing regression guard for the per-chapter
   render the live lazy path is built on).
 
-## The website path — TODO (#319)
+## The website path
 
-The static website composition and the live website are a **third render-producing surface**, added
-after this spec's two-entry-point model was written. Their parity is **not** raw-href byte-identity —
-the static dir-per-page `.html` and the live `?page=slug` schemes differ by design — it is checked on
-the **display number** and a **scheme-normalized owner** (two references agree when they show the same
-number and resolve to the same owner page once the scheme is normalized away). The model is specified
-in `notes/specs/website.md`.
+The static website composition (the CLI build) and the live website (the browser SPA) are a **third
+render-producing surface**, beyond this spec's two single-document entry points. Both render each page
+through the *same* per-document path — an article natively as an article, a book natively as a book —
+over one merged site cross-reference registry (the model is specified in `notes/specs/website.md`).
+Their parity is stated differently from the single-document byte-identity above, because the two
+surfaces address pages through **deliberately different URL schemes**: the static build writes a
+dir-per-page tree of relative `.html` paths; the live SPA routes client-side via `?page=slug`. Raw
+hrefs therefore differ by design, and comparing them would always diverge.
 
-> **TODO (#319):** write the substantive website-path parity section here — the both-ways corpus and
-> the scheme-normalized-owner predicate — to the standard of the sections above. The live book-flatten
-> (`isWebsiteAssembly`, #314) is the scoped-out divergence until the live path converges on the
-> composition model. (This stub is the seam `website.md` references; the full section is the follow-on
-> slice.)
+> On the same site with matched options, a cross-page reference renders the **same display number** on
+> both surfaces and resolves to the **same owner page once the scheme is normalized** — never compared
+> as a raw href.
+
+The two load-bearing terms:
+
+- **display number** — the reference's target number is the page's *native* number (a book figure
+  "2.1", an article figure "1"), identical on both surfaces because both number each page in its own
+  native scope (composition, not flattening — see `website.md`).
+- **scheme-normalized owner** — the target is reduced to *which page (or book chapter-page) owns it*,
+  with the surface's URL scheme stripped away (`.html` path vs `?page=` route). Two references agree
+  when they show the same number and resolve to the same owner.
+
+### Scoped out: the live book-flatten (#314)
+
+The live SPA currently assembles all pages under one synthetic page-scope container
+(`isWebsiteAssembly`), which renumbers a book page in page scope rather than its native book scope — so
+a book page's display numbers diverge from the static native numbers until the live path converges on
+the composition model. This is a **tracked deviation ([#314](https://github.com/enscribejs/enscribe/issues/314))**,
+scoped out of the website-parity claim for book pages exactly as the packaging differences are scoped
+out above; `website.md` describes the composition target the live path is being brought to.
+
+### Audit
+
+`packages/cli/test/website-xref.test.js` exercises the website cross-reference effect in all four
+directions (article↔article, article↔book, book↔article, book↔book). The **article→article** direction
+is asserted **both ways** — the display number is byte-identical static≡live and the owner matches once
+the scheme is normalized — and the book-involving directions are asserted on the static surface (the
+live side flattens books, #314). Extending the corpus to exercise the website entry point both-ways
+under the standing parity harness is tracked separately
+([#320](https://github.com/enscribejs/enscribe/issues/320)).
 
 ## Cross-references
 
 - `notes/specs/website.md` — the website composition model and the live/static website parity seam
-  (display number + scheme-normalized owner); the substantive parity section above is pending (#319).
+  (display number + scheme-normalized owner), specified by the website-path section above.
 - `DESIGN.md` — "Live and static rendering are one engine, not two." (the
   rationale; the substrate premise that the browser *is* the renderer).
 - `notes/specs/pipeline.md` §14 (Client-side rendering) — the browser entries and
