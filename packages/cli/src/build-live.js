@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, extractDocumentTitle } from '@enscribejs/enscribe';
+import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { resolvePageSource } from './static-website.js';
 
 const require = createRequire(import.meta.url);
@@ -56,16 +57,35 @@ export function copyShellAssets(destDir) {
  * @param {string} masterSource - the master document's `.emd` source text.
  * @returns {string[]} the child `src` filenames, deduped.
  */
-export function discoverMasterSrcChildren(masterSource) {
-  const tree = buildEnscribePipeline({}).parse(masterSource);
+/** The assembler `<… src>` children of an ALREADY-PARSED master tree, deduped, document order. The
+ *  per-parsed-tree core (#316/1-E) so buildLiveFolder can reuse its single pass; discoverMasterSrcChildren
+ *  wraps it with a parse for external callers. */
+function srcChildrenOf(tree) {
   return [...new Set((tree.children ?? []).filter(isMasterSrcEntry).map((n) => n.kwargs.src))];
 }
 
-/** A bare `<meta type=website>` read (parse only) — buildLiveFolder branches page discovery on it. */
-function isWebsiteMaster(masterSource) {
-  const meta = (buildEnscribePipeline({}).parse(masterSource).children ?? [])
-    .find((n) => n && n.type === 'enscribeTag' && n.tagname === 'meta');
-  return meta?.kwargs?.type === 'website';
+export function discoverMasterSrcChildren(masterSource) {
+  return srcChildrenOf(buildEnscribePipeline({}).parse(masterSource));
+}
+
+/** The `<meta type>` of an already-parsed master tree (the first `<meta>` node), or undefined. */
+function metaTypeOf(tree) {
+  const meta = (tree.children ?? []).find((n) => n?.type === 'enscribeTag' && n.tagname === 'meta');
+  return meta?.kwargs?.type;
+}
+
+/** The external page `src`s of a website nav model (descending `<nav-group>`s), deduped, document order.
+ *  The per-nav-model core (#316/1-E), reused by buildLiveFolder's single pass. */
+function collectWebsitePageSrcs(navModel) {
+  const srcs = [];
+  const walk = (entries) => {
+    for (const e of entries ?? []) {
+      if (e.kind === 'group') walk(e.children);
+      else if (e.kind === 'page' && e.src) srcs.push(e.src);
+    }
+  };
+  walk((navModel ?? { entries: [] }).entries);
+  return [...new Set(srcs)];
 }
 
 /**
@@ -83,17 +103,7 @@ export function discoverWebsitePages(masterSource) {
   const proc = buildEnscribePipeline({});
   const file = { data: {} };
   proc.runSync(proc.parse(masterSource), file);
-  // ENSCRIBE_NAV_MODEL (= 'enscribeNavModel'); the key constant is not a package export, so read the literal.
-  const navModel = file.data.enscribeNavModel ?? { entries: [] };
-  const srcs = [];
-  const walk = (entries) => {
-    for (const e of entries ?? []) {
-      if (e.kind === 'group') walk(e.children);
-      else if (e.kind === 'page' && e.src) srcs.push(e.src);
-    }
-  };
-  walk(navModel.entries);
-  return [...new Set(srcs)];
+  return collectWebsitePageSrcs(file.data[ENSCRIBE_NAV_MODEL]);
 }
 
 /**
@@ -132,12 +142,24 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   //    pages are NOT assembler children (`<item>` is excluded from MASTER_SRC_TAGS); discover them from
   //    the nav model instead (#223/#246), so the folder ships every page the shell will fetch. Book and
   //    article masters keep the assembler child set — byte-identical.
+  //
+  //    ONE structuring pass (#316/1-E): parse the master ONCE and derive BOTH the website decision and
+  //    the page/child set from it (the discovery helpers each re-parse, for external callers). A website
+  //    needs the structuring runSync (its pages live in the nav model on file.data); a book/article needs
+  //    only the parse (its children are `<… src>` nodes in the parsed tree).
   const masterSource = readFileSync(masterPath, 'utf8');
   copyInto(masterPath, masterName);
-  const isWebsite = isWebsiteMaster(masterSource);
-  const children = isWebsite
-    ? discoverWebsitePages(masterSource)
-    : discoverMasterSrcChildren(masterSource);
+  const proc = buildEnscribePipeline({});
+  const tree = proc.parse(masterSource);
+  const isWebsite = metaTypeOf(tree) === 'website';
+  let children;
+  if (isWebsite) {
+    const file = { data: {} };
+    proc.runSync(tree, file);
+    children = collectWebsitePageSrcs(file.data[ENSCRIBE_NAV_MODEL]);
+  } else {
+    children = srcChildrenOf(tree);
+  }
   for (const src of children) {
     // #286: a website nav `<item src>` may resolve to a PAGE-DIRECTORY (src="home" → its body
     // home/index.emd, the #278 page-body model). Map it to its entry FILE via the SAME resolver the

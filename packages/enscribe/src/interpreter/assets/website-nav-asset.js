@@ -11,9 +11,11 @@
 
 import { toHtml } from 'hast-util-to-html';
 import { buildList } from '../lib/toc.js';
+import { escapeHtmlAttr } from '../../core/escape-html.js';
 
-const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
+// The shared 4-entity attribute escaper (#316/1-A), wrapped to keep the inline copy's null-safe
+// guard (escapeHtmlAttr coerces null→"null"; here an absent value — e.g. a missing brand icon — → "").
+const esc = (s) => escapeHtmlAttr(s ?? '');
 
 // The website chrome CSS. Modeled on docs-site/site.css, retoken'd to --enscribe-*.
 export const WEBSITE_NAV_CSS = `

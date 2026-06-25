@@ -39,6 +39,7 @@ import { resolve } from 'node:path';
 import Cite from 'citation-js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_CITATIONS, ENSCRIBE_LOADED_SOURCES } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
+import { makeErrorNode, injectBodyErrors } from '../lib/error-injection.js';
 
 // #133: a src string is "remote" (async-only) when it has a URL scheme. Anything
 // else is a filesystem path (sync-readable on the CLI; in the browser it is
@@ -51,7 +52,7 @@ const URL_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
  * naming the source, never a silent drop.
  */
 function libraryError(src, message) {
-  return { type: 'enscribeTag', tagname: '__library-error', kwargs: { src: src ?? '', message }, content: null };
+  return makeErrorNode('__library-error', 'src', src, message);
 }
 
 /** Recursively collect every `<library>` node sitting inside a `<config>`/`<meta>`. */
@@ -65,30 +66,6 @@ function collectMisplacedLibraries(nodes, inApparatus = false, out = []) {
   return out;
 }
 
-/**
- * Inject visible error nodes at the top of the document's rendered body so a load
- * failure can never be silently dropped. Targets the first `<article-body>` /
- * `<book-body>`; falls back to the tree root for a bare document.
- */
-function injectLibraryErrors(tree, errors) {
-  if (errors.length === 0) return;
-  let target = null;
-  (function find(nodes) {
-    for (const n of nodes ?? []) {
-      if (target) return;
-      if (isEnscribeTag(n, 'article-body') || isEnscribeTag(n, 'book-body')) { target = n; return; }
-      if (isEnscribeTag(n) && Array.isArray(n.content)) find(n.content);
-      if (Array.isArray(n.children)) find(n.children);
-    }
-  })(tree.children ?? []);
-  if (target) {
-    target.content = Array.isArray(target.content) ? target.content : [];
-    target.content.unshift(...errors);
-  } else {
-    tree.children = tree.children ?? [];
-    tree.children.unshift(...errors);
-  }
-}
 
 // #22 slice 3: the `<library>` storage host's format word → the citation-js
 // input type it forces. A named format the map doesn't cover (or none) falls
@@ -264,7 +241,7 @@ export function buildCitationIndex(tree, file, options = {}) {
   }
 
   // always-renders: inject any visible load/collision/misplacement errors.
-  injectLibraryErrors(tree, errors);
+  injectBodyErrors(tree, errors);
 }
 
 /**

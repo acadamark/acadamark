@@ -146,8 +146,11 @@ export function createRegistry() {
 }
 
 /**
- * Build a ONE-WAY read-through registry over a parent registry (#115, minipage
- * outbound refs). It wraps a FRESH child registry: every WRITE (assign / number /
+ * Build a ONE-WAY read-through registry over a parent registry. Two consumers: #115,
+ * minipage outbound refs (the parent is the enclosing document's registry); and #300,
+ * the static-website composition's per-page numbering, where the parent is a hand-rolled
+ * findByLabel-only stub over the merged SITE registry (so a cross-page `<ref>` reads its
+ * target's native number). It wraps a FRESH child registry: every WRITE (assign / number /
  * reset) and every enumeration (entries / lookup) is child-local, so the child's
  * labels and counters never touch the parent — the seal (private numbering,
  * inbound-forbidden) is preserved. Only `findByLabel` reads through: the child's
@@ -162,7 +165,9 @@ export function createRegistry() {
  * without ever writing to it (registry.js findByLabel is the single method
  * ref-resolution calls).
  *
- * @param {object} parent - the parent registry (its findByLabel is read on miss)
+ * @param {object} parent - the parent. `findByLabel` is the ONLY method called on it (read on a
+ *   child miss), so the parent may be a full registry OR a duck-typed `{ findByLabel }` stub (the
+ *   #300 site-registry parent is the latter). It is never written to.
  * @returns {object} a registry with the same method surface, child-private writes
  */
 export function makeReadThroughRegistry(parent) {

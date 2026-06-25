@@ -25,6 +25,7 @@ import { run as runAstHelpers } from './lib/ast-helpers.test.js';
 import { run as runNotes } from './plugins/notes.test.js';
 import { run as runNotePlacement } from './plugins/note-placement.test.js';
 import { run as runLibraryLoad } from './plugins/library-load.test.js';
+import { run as runAssetLoad } from './plugins/asset-load.test.js';
 import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
 import { run as runBibliography } from './plugins/bibliography.test.js';
 import { run as runCiteHandler } from './handlers/cite.test.js';
@@ -112,6 +113,7 @@ const suites = [
   ['plugins/notes',                runNotes],
   ['plugins/note-placement',        runNotePlacement],
   ['plugins/library-load',         runLibraryLoad],
+  ['plugins/asset-load',           runAssetLoad],
   ['plugins/cite-resolution',      runCiteResolution],
   ['plugins/bibliography',         runBibliography],
   ['handlers/cite',                runCiteHandler],
