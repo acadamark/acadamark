@@ -23,7 +23,7 @@
         "--",
         "bash",
         "-lc",
-        "cd ~/enscribe/docs-site/dist && exec python3 -m http.server 8768"
+        "cd ~/enscribe/site && exec python3 -m http.server 8768"
       ],
       "port": 8768
     }

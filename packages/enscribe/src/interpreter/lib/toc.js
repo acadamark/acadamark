@@ -466,7 +466,7 @@ export function applyToc(hast, toc, onThisPage = true) {
 //
 // The NEW, config-driven table of contents — read from `<config toc …>` in the SHARED
 // compiler, so the static build and the live render honor it identically (the property
-// the docs-site live-ToC parity fix depends on, #207). It is a contents LISTING (book
+// the docs site's live-ToC parity fix depends on, #207). It is a contents LISTING (book
 // navigation — chapter rail, prev/next — is the legacy applyToc above and a sibling
 // spec); for a book the listing reflects the assembled whole-book structure (book-parts
 // + their sections). Default OFF: with no `<config toc>` this is never invoked, so a

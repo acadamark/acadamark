@@ -1,7 +1,7 @@
 // Config-driven table of contents (#218; notes/specs/toc-and-numbering.md).
 //
 // The contents LISTING is config-driven (`<config toc …>`), read in the SHARED compiler so
-// the static build and the live render honor it identically — the property the docs-site
+// the static build and the live render honor it identically — the property the docs site's
 // live-ToC parity fix (#207) depends on. This gate covers: body placement + toc-depth,
 // the right sticky sidebar + toc-expand, the +unlisted per-heading override, default-off
 // additivity, and the load-bearing static≡live parity from the same `<config>`.

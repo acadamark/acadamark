@@ -4,8 +4,8 @@
 // STRUCTURED facts — which keys exist, and each key's `type` (boolean | valued) and `status`
 // (live | reserved). The HUMAN facts a reader needs — a description, the accepted values, the
 // default, and the scope — lived only in that Map's code comments (fine for a maintainer,
-// useless as a generator source). This module is that human layer, structured so the docs-site
-// Rendering-guide grid generates from it (it can't drift) and a guard test (config-options-doc.test.js)
+// useless as a generator source). This module is that human layer, structured so a docs
+// Rendering-guide grid can generate from it (it can't drift) and a guard test (config-options-doc.test.js)
 // holds it in lockstep with CONFIG_KWARGS: every key documented, no orphans, every `type` matching.
 //
 // Every fact below was VERIFIED against the consuming plugin named in the Map comment — not

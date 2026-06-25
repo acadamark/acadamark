@@ -3,11 +3,11 @@
 // The website counterpart of book-nav-asset.js: the live website shell builds its chrome ONCE
 // (top bar + sidebar + footer) and swaps only `[data-enscribe-content]`, so the chrome CSS lives
 // here and is injected once into the document head (innerHTML-swapped views can't carry head CSS).
-// The LOOK is modeled on the docs-site reference (docs-site/site.css) — sticky header, brand, nav
-// + aria-current active state, footer, the sticky-nav scroll-offset — but uses the package theme's
-// --enscribe-* tokens (NOT the docs-local --border/--fg) and adds the two genuinely-new pieces the
-// docs nav lacks: the top-bar dropdown (a <nav-group>) and the left sidebar. The book/article chrome
-// (book-nav-asset.js, default.css) is untouched.
+// The LOOK was modeled on the original docs-site reference (its site.css, now archived at
+// notes/archive/old-docs-site/site.css) — sticky header, brand, nav + aria-current active state,
+// footer, the sticky-nav scroll-offset — but uses the package theme's --enscribe-* tokens (NOT the
+// docs-local --border/--fg) and adds the two pieces that reference nav lacked: the top-bar dropdown
+// (a <nav-group>) and the left sidebar. The book/article chrome (book-nav-asset.js, default.css) is untouched.
 
 import { toHtml } from 'hast-util-to-html';
 import { buildList } from '../lib/toc.js';
@@ -17,7 +17,7 @@ import { escapeHtmlAttr } from '../../core/escape-html.js';
 // guard (escapeHtmlAttr coerces null→"null"; here an absent value — e.g. a missing brand icon — → "").
 const esc = (s) => escapeHtmlAttr(s ?? '');
 
-// The website chrome CSS. Modeled on docs-site/site.css, retoken'd to --enscribe-*.
+// The website chrome CSS. Modeled on the original docs-site site.css (now in notes/archive/old-docs-site/), retoken'd to --enscribe-*.
 export const WEBSITE_NAV_CSS = `
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
