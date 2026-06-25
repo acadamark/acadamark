@@ -31,6 +31,16 @@ const FILES = {
   'numbering-site.emd': read('numbering-site.emd'),
   'num-alpha.emd': read('num-alpha.emd'),
   'num-beta.emd': read('num-beta.emd'),
+  // #314/#318: a website with a BOOK page (bookp, 2 chapters) + 2nd book (atlasp) + an article (artp), with
+  // cross-page <ref>s in all four directions — the parity-effect proof that the live path now composes like
+  // the static build (book-pages render AS books; cross-page refs read the target's NATIVE number).
+  'p314-master.emd': read('p314-master.emd'),
+  'p314-artp.emd': read('p314-artp.emd'),
+  'p314-bookp.emd': read('p314-bookp.emd'),
+  'p314-bch1.emd': read('p314-bch1.emd'),
+  'p314-bch2.emd': read('p314-bch2.emd'),
+  'p314-atlasp.emd': read('p314-atlasp.emd'),
+  'p314-am1.emd': read('p314-am1.emd'),
 };
 
 function installDom(url = 'https://example.com/site/') {
@@ -94,6 +104,18 @@ function makeEditorStub() {
   };
 }
 const tick = (ms = 5) => new Promise((r) => setTimeout(r, ms));
+// A hash change inside a page (the book sub-view's in-page chapter routing fires on hashchange).
+function hashTo(dom, hash) {
+  dom.window.location.hash = hash;
+  dom.window.dispatchEvent(new dom.window.Event('hashchange'));
+}
+// The rendered <ref> anchor for a target colon-id: { href, text } (text stripped of inner markup).
+function refAnchor(html, targetId) {
+  const m = String(html).match(new RegExp(`<a ([^>]*?)href="([^"]*?#${targetId.replace(/:/g, '\\:')})"([^>]*?)>([\\s\\S]*?)</a>`));
+  return m ? { href: m[2], text: m[4].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() } : null;
+}
+// Scheme-normalize a cross-page href → its owner page slug (live keeps `?page=owner#anchor`).
+const ownerOfHref = (href) => (String(href).match(/[?&]page=([^#&]+)/) || [])[1] ?? null;
 
 export async function run() {
   // ── #223/#246: buildOnThisPage excludes headings inside a <frame>/<aside> (demo render boxes) ──
@@ -383,5 +405,55 @@ export async function run() {
     } finally { restoreDom(orig); }
   }
 
-  console.log('All live website render (#246 S2a engine + S2b chrome) browser-entry checks passed.');
+  // ── #314 / #318 — THE PARITY EFFECT: a book page renders AS a book + cross-page refs in all 4 directions ──
+  // The live #300, step 2 (#324): mountLiveWebsite now composes through composeSiteRegistry (the SAME core the
+  // static build calls), so a BOOK page keeps BOOK numbering ("figure 2.1", NOT a flattened "figure 1") and a
+  // cross-page <ref> reads its target's NATIVE number off ONE merged registry — resolved at render time, never
+  // by re-reading finished HTML. Assert the display NUMBER + the scheme-normalized OWNER, never the raw href.
+  {
+    const { dom, orig } = installDom();
+    try {
+      const root = await mountLiveWebsite('#root', FILES['p314-master.emd']);
+      const content = () => root.querySelector('[data-enscribe-content]');
+
+      // (1) article→book: the article's ref to the BOOK figure shows the book NATIVE number "figure 2.1" (the
+      // composition signature — a flattened page-scope build would show "figure 1") + links to the book page.
+      const aToB = refAnchor(content().innerHTML, 'fig:bookp');
+      assert.ok(aToB, 'article page resolves its <ref @fig:bookp> (cross-page into the book)');
+      assert.strictEqual(aToB.text, 'figure 2.1', `article→book shows the BOOK native "figure 2.1" (got "${aToB && aToB.text}") — NOT a flattened "figure 1"`);
+      assert.strictEqual(ownerOfHref(aToB.href), 'bookp', 'article→book links to ?page=bookp');
+      console.log(`PASS: #314 — article→book ref shows the book NATIVE "${aToB.text}" (composition, not flattened) → ?page=bookp`);
+
+      // (2) the book PAGE renders AS a native book — chapter routes (#one, #two), not one collapsed book-part.
+      popTo(dom, '?page=bookp');
+      const hrefs = [...content().querySelectorAll('a')].map((a) => a.getAttribute('href'));
+      assert.ok(hrefs.includes('#one') && hrefs.includes('#two'),
+        'the book page renders AS a book — its chapter routes (#one, #two) are present (not flattened to one part)');
+      console.log('PASS: #314 — the book PAGE renders as a native book (its chapters #one/#two are navigable)');
+
+      // (3) inside chapter one: the three OUTBOUND ref directions resolve to native numbers + the right scheme.
+      hashTo(dom, '#one');
+      const ch1 = content().innerHTML;
+      const bToA = refAnchor(ch1, 'fig:artp');      // book→article: the article's native "figure 1"
+      const bToB = refAnchor(ch1, 'fig:atlasp');    // book→book: the OTHER book's native "figure 1.1"
+      const within = refAnchor(ch1, 'fig:bookp');   // within-book: a bare #anchor (the book router scrolls)
+      assert.ok(bToA && bToA.text === 'figure 1' && ownerOfHref(bToA.href) === 'artp',
+        `book→article shows the article native "figure 1" → ?page=artp (got ${JSON.stringify(bToA)})`);
+      assert.ok(bToB && bToB.text === 'figure 1.1' && ownerOfHref(bToB.href) === 'atlasp',
+        `book→book shows the OTHER book's native "figure 1.1" → ?page=atlasp (got ${JSON.stringify(bToB)})`);
+      assert.ok(within && within.text === 'figure 2.1' && within.href === '#fig:bookp',
+        `within-book ref shows "figure 2.1" + a bare #anchor (intra-page; the book sub-view's router scrolls) (got ${JSON.stringify(within)})`);
+      console.log('PASS: #314 — book→article "figure 1"→?page=artp · book→book "figure 1.1"→?page=atlasp · within-book "figure 2.1"→#anchor');
+
+      // (4) navigating within the book to chapter two: the figure carries its BOOK native label "Figure 2.1".
+      hashTo(dom, '#two');
+      assert.ok(/Figure\s*2\.1\b/.test(content().textContent),
+        'the book figure carries its BOOK native label "Figure 2.1" (chapter-scoped), not a page-scope "Figure 1"');
+      console.log('PASS: #314 — the book figure is "Figure 2.1" (book numbering) on its chapter view');
+    } finally {
+      restoreDom(orig);
+    }
+  }
+
+  console.log('All live website render (#246 S2a engine + S2b chrome + #314 composition) browser-entry checks passed.');
 }
