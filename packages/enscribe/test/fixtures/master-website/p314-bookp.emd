@@ -1,0 +1,8 @@
+<meta type=book slug=bookp>
+<title | Book Page>
+</meta>
+
+<config number-sections />
+
+<chapter src="p314-bch1.emd" | One>
+<chapter src="p314-bch2.emd" | Two>

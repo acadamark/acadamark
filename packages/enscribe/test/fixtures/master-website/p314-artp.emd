@@ -1,0 +1,9 @@
+<meta type=article slug=artp>
+<title | Art>
+</meta>
+
+<section | Art Section>
+
+<figure #fig:artp src="a.svg" | An article figure>
+
+See <ref @fig:bookp> over in the book.

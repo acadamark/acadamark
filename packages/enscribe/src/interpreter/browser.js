@@ -33,11 +33,11 @@ import {
   renderLiveArticleEditView,
   createIncrementalRebuilder,
   resolveHash,
-  buildWebsiteTree,
-  buildLiveWebsite,
-  renderLiveWebsitePage,
+  composeSiteRegistry,
+  rewriteCrossPageHrefs,
+  resolvePageSlug,
+  allocatePageSlug,
   renderNotFoundView,
-  resolvePageParam,
   flattenNavPages,
   extractDocumentTitle,
 } from './index.js';
@@ -843,17 +843,82 @@ export async function mountLiveWebsite(target, source, options = {}) {
     console.info(`enscribe: ${inlinePages.length} inline website page(s) render in a follow-on slice; skipped this slice.`);
   }
 
-  // Fetch each external page FRESH and base-relative (like child srcs — NOT fetchMasterSource,
-  // which is master-URL-relative), then assemble as `<book-part #slug>` and run ONE global pass.
+  // EAGER PRE-FETCH (the live #300, step 2 — #324). The composition core is SYNCHRONOUS but browser I/O is
+  // async, so all fetching happens HERE, up front: every external page source, and for a BOOK page its
+  // `<chapter src>` children too (loadAndAssembleMaster — the new fetch level, the #314 substance). For a
+  // large site this is the eager-fetch cost: a later progressive/lazy-fill follow-up (noted, not solved here).
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
-  const pageSources = await Promise.all(externalPages.map((p) => fetchSourceText(p.src, baseUrl)));
-  const contents = pageSources.map((s) => proc.parse(s).children ?? []);
-  // slug → the page's source TEXT (already fetched) — the editor's `value` in edit mode (no re-fetch).
-  const sourceBySlug = new Map(externalPages.map((p, i) => [p.slug, pageSources[i]]));
-  const file = { data: {} };
-  const numbered = proc.runSync(buildWebsiteTree(externalPages, contents), file);
-  const model = buildLiveWebsite({ numbered, file, pages: externalPages });
-  const ctx = { proc, file };
+  const fetched = await Promise.all(externalPages.map(async (p) => {
+    const src = await fetchSourceText(p.src, baseUrl);
+    const isBook = classifyDocType(proc.parse(src)).type === 'book';
+    // A book page's chapter children are fetched up front; we cache the LOADED child sources (not an
+    // assembled tree) and re-assemble a FRESH tree per use — runSync mutates the tree in place, and the
+    // book is numbered TWICE (Phase 1 native, then Phase 2 over the seed), so a shared tree would bake
+    // Phase 1's results (incl. unresolved cross-page refs) into Phase 2. Same as the static build, which
+    // re-reads + re-assembles per phase.
+    const loaded = isBook && HAS_MASTER_SRC.test(src)
+      ? (await loadAndAssembleMaster(proc, src, discoverChildSrcs(proc, src))).loadedFile.data[ENSCRIBE_LOADED_SOURCES]
+      : null;
+    return { p, src, isBook, loaded };
+  }));
+  // Assemble a book master to a FRESH pre-runSync tree from its cached (pre-fetched) children — re-parse
+  // only, no re-fetch. resolve is identity (the loaded map is keyed by the raw child src).
+  const assembleBookTree = (src, loaded) => assembleMasterDocument({
+    source: src, parse: (s) => proc.parse(s), resolve: (rel) => rel,
+    readFile: (s) => readPreloadedChild(loaded, s), warn: () => {},
+  });
+
+  // SLUG IDENTITY (#318): the live path now holds each page's source, so resolvePageSlug reads its
+  // `<meta slug>` / `<meta title>` (tiers 1-2), not just the nav title (tier 3) the nav-model pass saw.
+  // Remap the nav model's page.slug to the resolved identity (so the chrome links AND the router key on the
+  // same slug), exactly as the static build does; collisions always-render (allocatePageSlug).
+  const dirOfSrc = (s) => { const i = String(s).lastIndexOf('/'); return i < 0 ? '' : String(s).slice(0, i); };
+  const sourceBySlug = new Map();              // slug → source TEXT (the editor's value in edit mode; no re-fetch)
+  const loadedBySrc = new Map();               // a book page's src → its cached (pre-fetched) child sources
+  const usedSlugs = new Set();
+  const pageData = fetched.map(({ p, src, isBook, loaded }) => {
+    const { slug: baseSlug, pinned } = resolvePageSlug({ source: src, navTitle: p.title || p.slug, src: p.src });
+    const slug = allocatePageSlug(baseSlug, pinned, usedSlugs);
+    p.slug = slug;                             // remap the nav model entry → the chrome's ?page= links use it
+    sourceBySlug.set(slug, src);
+    if (loaded) loadedBySrc.set(p.src, loaded);
+    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, slug, isBook };
+  });
+
+  // PHASE 1 — number each page NATIVELY (article as an article; a book as a book, chapters intact), harvest,
+  // and MERGE one site cross-ref registry + the read-through seed: the SAME browser-pure composition core the
+  // static build calls (master-document/compose-site.js, #324 step 1). The book branch's assembleAndNumber
+  // re-assembles a fresh tree from the cached children (the fetch-based reader where the static caller fs-reads).
+  const { idToOwner, seedRegistry } = composeSiteRegistry({
+    pages: pageData,
+    destPrefixOf: () => '',                    // the live owner→URL is the owner KEY (?page=slug), not a path prefix
+    buildPipeline: (opts) => getPipeline({ ...pipelineOptions, ...opts }),
+    assembleAndNumber: ({ source, sourcePath, pipeOpts }) => {
+      const loaded = loadedBySrc.get(sourcePath);
+      const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } };       // carry the book's loaded library/table sources
+      return { numbered: getPipeline({ ...pipelineOptions, ...pipeOpts }).runSync(assembleBookTree(source, loaded), f), file: f };
+    },
+    warn: (m) => { if (typeof console !== 'undefined' && console.warn) console.warn(`enscribe website: ${m}`); },
+  });
+  const firstSlug = pageData[0]?.slug ?? null;
+  const pageBySlug = new Map(pageData.map((pd) => [pd.slug, pd]));
+
+  // The live cross-page REF resolver (#318 refs; slug-LINKS are a follow-on slice). A `<ref>`'s owner key →
+  // its PAGE slug (a book chapter owner `slug::fname` → `slug`): a ref whose owner is ANOTHER page becomes
+  // `?page=slug#anchor`; an intra-page / same-book ref stays a bare `#anchor` (the page — or its book
+  // sub-view's router — scrolls to it). Reuses rewriteCrossPageHrefs (the SAME browser-safe string rewriter
+  // the static build uses, NO parse5), the `?page=` scheme being the only output difference (website.md).
+  const pageSlugOfOwner = (owner) => String(owner).split('::')[0];
+  const resolveRefs = (html, thisSlug) => rewriteCrossPageHrefs(html, null, {
+    ownerOf: (anchor) => { const o = idToOwner.get(anchor); return o != null && pageSlugOfOwner(o) !== thisSlug ? o : null; },
+    hrefFor: (owner, anchor) => `?page=${pageSlugOfOwner(owner)}#${anchor}`,
+  });
+  // Resolve `?page=` → a page (empty → the first page; unknown → not-found).
+  const resolvePage = (search) => {
+    const requested = new URLSearchParams(search || '').get('page');
+    if (!requested) return { slug: firstSlug, notFound: false };
+    return pageBySlug.has(requested) ? { slug: requested, notFound: false } : { slug: requested, notFound: true };
+  };
 
   // The site-wide <footer src>: fetched ONCE (base-relative), rendered OUTSIDE the content region
   // so it survives a page swap. Rendered minimally (its inner article-shell is a later cosmetic
@@ -870,7 +935,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // <nav-group> → a dropdown), the sidebar (the full tree via buildList), and the footer.
   // route() swaps ONLY `[data-enscribe-content]`, so the chrome survives every page swap.
   injectWebsiteNavStyles();
-  const brand = { title: extractDocumentTitle(source) || '', icon: brandIcon, firstSlug: model.firstSlug };
+  const brand = { title: extractDocumentTitle(source) || '', icon: brandIcon, firstSlug };
   root.innerHTML = composeWebsiteShell({
     topBar: buildWebsiteTopBar(brand, navModel.entries),
     sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
@@ -881,13 +946,60 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const contentRegion = root.querySelector('[data-enscribe-content]');
   const onThisPageRegion = root.querySelector('[data-enscribe-onthispage]');
 
-  // Lazy per-page render cache; executeAssets runs on a slug's FIRST build only (a cached
-  // re-show re-injects the same HTML and must not re-init interactive page assets).
-  const viewCache = new Map();
+  // Per-page render (website.md Phase 2, lazy). An ARTICLE page renders its source over a FRESH read-through
+  // seed (its own numbering shadows; a cross-page anchor reads the merged registry's NATIVE number), cached
+  // (hash-independent). A BOOK page renders as a native book SUB-VIEW (#314): re-number the pre-assembled
+  // book over the seed → buildLiveBook → render the chapter/cover the in-page #hash selects (resolveHash),
+  // each chapter cached. executeAssets runs on every FIRST build (innerHTML does not run <script>).
+  const articleCache = new Map();              // slug → rendered article HTML (hash-independent)
   const executed = new Set();
-  const viewFor = (slug) => {
-    if (!viewCache.has(slug)) viewCache.set(slug, renderLiveWebsitePage(model, slug, ctx));
-    return viewCache.get(slug);
+  let currentBook = null;                      // { pd, model, ctx, chapterCache, currentKey } when the active page is a book
+
+  const renderArticleInto = (pd) => {
+    if (!articleCache.has(pd.slug)) {
+      const f = { data: seedRegistry() };
+      articleCache.set(pd.slug, resolveRefs(String(proc.stringify(proc.runSync(proc.parse(pd.source), f), f)), pd.slug));
+    }
+    contentRegion.innerHTML = articleCache.get(pd.slug);
+    if (!executed.has(pd.slug)) { executeAssets(contentRegion); executed.add(pd.slug); }
+    if (onThisPageRegion) onThisPageRegion.innerHTML = buildOnThisPage(contentRegion);
+  };
+
+  // Render the chapter/cover the CURRENT #hash selects for the active book page. A new chapter swaps the
+  // content + executes its assets; an in-chapter anchor scrolls once mounted. The book carries its OWN
+  // on-this-page rail (inside its reading chrome), so the website's rail region is cleared for a book page.
+  const renderBookChapter = () => {
+    const b = currentBook;
+    const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', b.model);
+    const key = dest == null || dest.cover ? 'cover' : dest.index;
+    if (key !== b.currentKey) {
+      if (!b.chapterCache.has(key)) {
+        const view = key === 'cover' ? renderLiveCoverView(b.model) : renderLiveChapterView(b.model, key, b.ctx);
+        b.chapterCache.set(key, resolveRefs(view, b.pd.slug));
+      }
+      contentRegion.innerHTML = b.chapterCache.get(key);
+      b.currentKey = key;
+      executeAssets(contentRegion);
+      if (onThisPageRegion) onThisPageRegion.innerHTML = '';
+    }
+    if (dest && !dest.cover && dest.anchor && typeof document !== 'undefined') {
+      const el = document.getElementById(dest.anchor);
+      if (el && typeof el.scrollIntoView === 'function') el.scrollIntoView();
+    }
+  };
+
+  const renderPageInto = (pd) => {
+    if (pd.isBook) {
+      const loaded = loadedBySrc.get(pd.resolved.sourcePath);
+      // Re-assemble + re-number the book over the read-through SEED (so its OUTBOUND cross-page `<ref>`s
+      // resolve to the target's native number) on a FRESH tree (not Phase 1's). loaded sources + the seed.
+      const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded, ...seedRegistry() } };
+      currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(assembleBookTree(pd.source, loaded), f), file: f }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
+      renderBookChapter();
+    } else {
+      currentBook = null;
+      renderArticleInto(pd);
+    }
   };
 
   // EDIT mode (#246 S2c): render the current page's source into a Write/Preview pane (the SAME
@@ -918,7 +1030,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   };
   const showEditPage = (slug, notFound) => {
     teardownEdit();                                              // every entry tears down the prior page first
-    if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, model) : ''; return; }
+    if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, { firstSlug }) : ''; return; }
     let currentSource = sourceBySlug.get(slug) ?? '';
     contentRegion.innerHTML = renderLiveArticleEditView(renderPageStandalone(currentSource));
     wireEditTabs(contentRegion);
@@ -945,31 +1057,44 @@ export async function mountLiveWebsite(target, source, options = {}) {
 
   let currentSlug = null;
   const route = () => {
-    const dest = resolvePageParam((typeof location !== 'undefined' && location.search) || '', model);
+    const dest = resolvePage((typeof location !== 'undefined' && location.search) || '');
     const { slug } = dest;
     if (slug !== currentSlug) {
+      currentBook = null;                                          // leaving any prior page (book or article)
       if (editor) {
         // EDIT mode: the current page's Write/Preview pane. A nav re-renders the pane and re-mounts
-        // the editor with the NEW page's source; the chrome + the editor adapter persist.
+        // the editor with the NEW page's source; the chrome + the editor adapter persist. (A book page
+        // edits its master source standalone — full book-page editing is a follow-on; read mode renders
+        // it as a book.)
         showEditPage(slug, dest.notFound);
+      } else if (dest.notFound) {
+        contentRegion.innerHTML = renderNotFoundView(slug, { firstSlug });
+        if (onThisPageRegion) onThisPageRegion.innerHTML = '';
+      } else if (slug == null) {
+        contentRegion.innerHTML = '';
+        if (onThisPageRegion) onThisPageRegion.innerHTML = '';
       } else {
-        contentRegion.innerHTML = dest.notFound ? renderNotFoundView(slug, model) : (slug == null ? '' : viewFor(slug));
-        // innerHTML does not run <script>; activate a page's assets ONCE, on first build.
-        if (slug != null && !dest.notFound && !executed.has(slug)) { executeAssets(contentRegion); executed.add(slug); }
-        // rebuild the per-page "on this page" rail from the current page's headings.
-        if (onThisPageRegion) onThisPageRegion.innerHTML = dest.notFound ? '' : buildOnThisPage(contentRegion);
+        // Render the page NATIVELY — an article as an article, a book as a book sub-view (#314). The
+        // render helpers own executeAssets + the on-this-page rail (a book carries its own).
+        renderPageInto(pageBySlug.get(slug));
       }
       currentSlug = slug;
       // move aria-current to the active page in the (persistent) chrome — no rebuild (both modes).
       setActivePage(root, dest.notFound ? null : slug);
+    } else if (currentBook && !editor) {
+      // SAME book page, only the in-page #hash changed → switch chapter (the book sub-view's own routing).
+      renderBookChapter();
     }
-    // Resolve a `?page=…#anchor` deep-link AFTER the page is mounted (native hash-scroll fires
-    // before the body exists), and on each swap.
-    scrollToHash();
+    // An ARTICLE `?page=…#anchor` deep-link scrolls here (after mount); a BOOK page scrolls to its anchor
+    // inside renderBookChapter (the owning chapter must mount first).
+    if (!currentBook) scrollToHash();
   };
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
     window.addEventListener('popstate', route);   // back/forward — pushState does NOT fire popstate
+    // hashchange drives the book sub-view's in-page chapter routing (a `#stem`/`#anchor` link inside a
+    // book page) AND an article's `#anchor` deep-link scroll; route() is a no-op when neither applies.
+    window.addEventListener('hashchange', route);
     // Delegated internal nav: any `?page=` link (incl. cross-page ref hrefs) → pushState + route,
     // PRESERVING other query params (e.g. &edit) — never a bare `?page=slug` that wipes the query.
     root.addEventListener('click', (ev) => {
@@ -979,7 +1104,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
       const here = (typeof location !== 'undefined' && location.href) || 'http://localhost/';
       const link = new URL(a.getAttribute('href'), here);
       const next = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
-      next.set('page', link.searchParams.get('page') || model.firstSlug || '');
+      next.set('page', link.searchParams.get('page') || firstSlug || '');
       if (typeof history !== 'undefined' && typeof history.pushState === 'function') {
         history.pushState(null, '', `?${next}${link.hash}`);
       }
@@ -989,7 +1114,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
 
   // Initial deep-link: normalize the URL with replaceState (no duplicate history entry), then render.
   if (typeof history !== 'undefined' && typeof history.replaceState === 'function') {
-    const init = resolvePageParam((typeof location !== 'undefined' && location.search) || '', model);
+    const init = resolvePage((typeof location !== 'undefined' && location.search) || '');
     const params = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
     if (init.slug != null) {
       params.set('page', init.slug);
