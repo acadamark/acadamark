@@ -1,6 +1,6 @@
 // Slice A: resolve the document class ONCE, before the structuring plugins.
 //
-// `<meta type>` declares the document class (article / book / book-part). It used to be
+// `<meta type>` declares the document class (article / book / book-part / website). It used to be
 // read ad-hoc at three sites as `metaNode?.kwargs?.type ?? 'article'` with no validation
 // — an *explicitly-set* unknown type (`slides`, a typo) silently rendered as an article,
 // no diagnostic. This plugin resolves it once: find `<meta>`, read `type`, validate it
@@ -19,7 +19,7 @@ import { isEnscribeTag } from '../../core/tag.js';
 import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 
 // The declared document-class set + default, read from `meta.md`'s vocab (not hardcoded)
-// so the vocabulary stays the single source of truth. Today: article / book / book-part.
+// so the vocabulary stays the single source of truth. Today: article / book / book-part / website.
 const META_TYPE = VOCABULARY?.meta?.enscribe_attributes?.kwargs?.type ?? {};
 const DECLARED_TYPES = new Set(META_TYPE.values ?? ['article']);
 const DEFAULT_TYPE = META_TYPE.default ?? 'article';
