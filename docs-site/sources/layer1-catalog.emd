@@ -1653,11 +1653,11 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 </frame>
 
 <code>
-<blockquote | Same as <quote> but using the explicit Layer 1 name.>
+<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>
 </code>
 
 <frame -numbered>
-<blockquote | Same as <quote> but using the explicit Layer 1 name.>
+<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>
 </frame>
 
 *Authors can also write <blockquote> directly. Both forms produce the same Layer 1 output.*
@@ -3135,7 +3135,7 @@ Quarterly revenue for fiscal year 2024.
 | `title` | kwarg |  | Optional title rendered at the top of the frame (the frameable title-top convention), as a title= kwarg or a <title> child tag. |
 | `caption` | kwarg |  | Optional caption text rendered at the bottom of the frame (the frameable caption-bottom convention). The caption= kwarg lifts to a <caption> child tag at the gate. |
 | `type` | kwarg |  | Optional classification of what the frame contains (note, warning, tip, theorem-block, etc.), preserved as the data-frame-type attribute. Since <frame> renders as <figure class="frameable-border"> (not a custom <frame> element), authors target it with the rendered figure — figure[data-frame-type="note"] { … } — not a ".frame" selector. |
-| `+numbered` | boolean | default `false` | Whether this frame participates in the document-wide figure sequence. **Off by default for frame** (unlike <fig>/<svg>/etc.) because a generic frame is typically a sidebar / callout / annotation, not a numbered float. Use +numbered to opt in. |
+| `+numbered` | boolean | default `true` | Whether this frame participates in the document-wide figure sequence. **On by default** (#272: captioned floats and frames are numbered by default, consistent with <fig>/<table>/<svg>). Use -numbered to opt out for a one-off sidebar / callout / annotation. |
 | `+border` | boolean | default `true` | The frameable surface. **On by default for frame** (unlike <fig>/<svg>/etc.) because the whole point of the generic <frame> element is the visual frame. Use -border to suppress the outline and just use the frame as a semantic grouping wrapper. border=<name> selects a named look (accent / thick / dashed / subtle) and implies the border on; the look renders as a frameable-border-<name> modifier class (document names it, theme defines it — #58; see frameable.md). |
 
 A generic frameable container — an outline-box wrapper around arbitrary content with optional title and caption. The catch-all member of the frameable class.
@@ -3146,10 +3146,10 @@ A generic frameable container — an outline-box wrapper around arbitrary conten
 
 ## Frameable membership
 
-`<frame>` is the generic member of the frameable class. Unlike `<fig>`/`<svg>` (which default to numbered+borderless), `<frame>` defaults the opposite way: **borderless by default → no, +border is default-true; numbered by default → no, default-false**. The reasoning:
+`<frame>` is the generic member of the frameable class. It is **bordered and numbered by default** — border default-true (the box is the point), and numbered default-true (#272: floats are numbered by default, consistent with `<fig>`/`<table>`/`<svg>`). The reasoning:
 
 - A generic `<frame>` is most often used as a visual callout where the frame IS the point — so border defaults on.
-- A generic `<frame>` is not always a numbered float — it's often a one-off annotation that doesn't need cross-referencing. So numbering defaults off; authors opt in via `+numbered` when they want it.
+- #272: rather than split frames from the other captioned floats, everything is numbered by default. An author who wants a one-off annotation that doesn't need cross-referencing opts out per-frame with `-numbered` (or document-wide via `<config>`).
 
 ## Authoring patterns
 
@@ -3174,12 +3174,12 @@ The title renders at the top of the frame; the `type` is preserved as a data att
 **Numbered frame (callable from elsewhere).**
 
 ```
-<frame #fig:setup +numbered caption="Experimental setup" |
+<frame #fig:setup caption="Experimental setup" |
 …description…
 >
 ```
 
-Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure N".
+Frames are numbered by default and share the figure counter; `<ref @fig:setup>` resolves to "Figure N". Add `-numbered` for an unnumbered callout.
 
 ## Attributes
 
@@ -3188,7 +3188,7 @@ Numbered frames share the figure counter; `<ref @fig:setup>` resolves to "Figure
 - `type` — classification (note / warning / tip / methodology / etc.). Renders as `data-frame-type` for CSS targeting.
 - `+border` / `-border` — the frameable surface. **Default: on.**
 - `border=<name>` — select a named border look — `accent`, `thick`, `dashed`, or `subtle` (the default theme's starter menu); implies the border on. The document names the look; the theme defines how it renders (#58). Emitted as a `frameable-border-<name>` modifier class. See `frameable.md`.
-- `+numbered` / `-numbered` — the frameable surface. **Default: off.**
+- `+numbered` / `-numbered` — the frameable surface. **Default: on** (#272). Use `-numbered` for an unnumbered callout.
 
 ## JATS mapping
 
@@ -3231,7 +3231,7 @@ Make sure to read this carefully.
 *With a title rendered at the top.*
 
 <code>
-<frame #fig:method-box +numbered caption="Workflow steps" |
+<frame #fig:method-box caption="Workflow steps" |
 1. Collect data.
 2. Clean.
 3. Model.
@@ -3239,14 +3239,14 @@ Make sure to read this carefully.
 </code>
 
 <frame -numbered>
-<frame +numbered caption="Workflow steps" |
+<frame -numbered caption="Workflow steps" |
 1. Collect data.
 2. Clean.
 3. Model.
 >
 </frame>
 
-*Numbered frame, opted in via +numbered. Shares the figure counter with <fig>/<svg>/<mermaid>/<abc>.*
+*Numbered by default (#272). Shares the figure counter with <fig>/<svg>/<mermaid>/<abc>; use -numbered for an unnumbered frame.*
 
 <section #l1-minipage | `<minipage>`>
 
@@ -3256,10 +3256,10 @@ Make sure to read this carefully.
 |---|---|---|---|
 | `title` | kwarg |  | Optional title rendered at the top of the minipage (the frameable title-top convention). Authored as a title= kwarg. Because the body is opaque (a sealed sub-document), the kwarg stays a kwarg — it is not lifted to a <title> child tag the way it is for prose frameables; a <title> written inside the pipe would be part of the sealed body, not the box's outward title. Same opaque-frameable convention as <svg>/<table>/<csv>. |
 | `caption` | kwarg |  | Optional caption rendered at the bottom of the minipage (the frameable caption-bottom convention), with the "Minipage N." label folded in when numbered. Authored as a caption= kwarg (kwarg-only, for the same opaque-body reason as title). |
-| `+numbered` | boolean | default `false` | Whether this minipage is numbered. **Off by default** (most minipages are layout boxes, not cross-referenced floats). When +numbered, the minipage counts in its OWN "Minipage N" series (the `minipage` counter, config key number-minipages, ref-prefix `mp`) — NOT the figure counter. A sealed sub-document is distinct from a figure, and its private body numbering must not touch the document's figure sequence (#115). |
+| `+numbered` | boolean | default `true` | Whether this minipage is numbered. **On by default** (#272: floats are numbered by default; use -numbered for a layout-only box). A numbered minipage counts in its OWN "Minipage N" series (the `minipage` counter, config key number-minipages, ref-prefix `mp`) — NOT the figure counter. A sealed sub-document is distinct from a figure, and its private body numbering must not touch the document's figure sequence (#115). |
 | `+border` | boolean | default `true` | The frameable surface. **On by default for minipage** — the visual box is the point (a minipage sets its sealed content apart, like <frame>). Use -border to suppress the outline and keep only the seal. border=<name> selects a named look (accent / thick / dashed / subtle) and implies the border on (#58; see frameable.md). |
 
-A sealed, self-contained box holding recursively-processed content — enscribe's analogue of LaTeX's `minipage`. Outwardly it is an ordinary **frameable** (id, title, caption, opt-in numbering, optional border, the `<figure>` wrapper), so it is itself cross-referenceable like any float. Inwardly its content is a **sealed sub-document**: processed in its own pipeline run with its own registry.
+A sealed, self-contained box holding recursively-processed content — enscribe's analogue of LaTeX's `minipage`. Outwardly it is an ordinary **frameable** (id, title, caption, numbering, optional border, the `<figure>` wrapper), so it is itself cross-referenceable like any float. Inwardly its content is a **sealed sub-document**: processed in its own pipeline run with its own registry.
 
 ## Semantic intent
 
@@ -3276,9 +3276,9 @@ Everything a minipage does follows from "process the body as its own sealed sub-
 
 ## Frameable membership
 
-`<minipage>` is a frameable member. Unlike `<fig>`/`<svg>` (numbered + borderless by default), it defaults the opposite way, like `<frame>`/`<aside>`: **border default-true** (the box is the point) and **numbered default-false** (most minipages are layout boxes, not cross-referenced floats; opt in with `+numbered`).
+`<minipage>` is a frameable member. Like `<fig>`/`<svg>` it is **numbered by default** (#272), and like `<frame>`/`<aside>` it is **bordered by default**: **border default-true** (the box is the point) and **numbered default-true** (a layout-only box opts out with `-numbered`).
 
-A numbered minipage counts in its OWN "Minipage N" series — the `minipage` counter and the `mp` ref-prefix — not the figure counter (a sealed sub-document is distinct from a figure, and must not consume document figure numbers). `<minipage #mp:setup +numbered>` makes `<ref @mp:setup>` resolve to "minipage N".
+A numbered minipage counts in its OWN "Minipage N" series — the `minipage` counter and the `mp` ref-prefix — not the figure counter (a sealed sub-document is distinct from a figure, and must not consume document figure numbers). `<minipage #mp:setup>` makes `<ref @mp:setup>` resolve to "minipage N"; add `-numbered` for an unnumbered layout box.
 
 ## No external files
 
@@ -3290,7 +3290,7 @@ The body is sealed inline content with no outward pulls. `@src` / `<data>` (the 
 - `caption` — optional caption at the bottom (with "Minipage N." prefix when numbered).
 - `+border` / `-border` — the frameable surface. **Default: on.**
 - `border=<name>` — a named border look (`accent` / `thick` / `dashed` / `subtle`); implies the border on (#58).
-- `+numbered` / `-numbered` — the frameable surface. **Default: off.**
+- `+numbered` / `-numbered` — the frameable surface. **Default: on** (#272). Use `-numbered` for a layout-only box.
 
 ## JATS mapping
 
@@ -3318,7 +3318,7 @@ The body is sealed inline content with no outward pulls. `@src` / `<data>` (the 
 *The simplest case. The handler emits a <figure> wrapper (the vocab html_output.element `minipage` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for <minipage>, so the class appears automatically. The body renders as sealed Layer 1.*
 
 <code>
-<minipage #mp:compare +numbered caption="Side-by-side comparison" |
+<minipage #mp:compare caption="Side-by-side comparison" |
 A figure here counts privately.
 
 <fig #fig:left src="left.png" | Left panel.>
@@ -3327,7 +3327,7 @@ A figure here counts privately.
 </code>
 
 <frame -numbered>
-<minipage +numbered caption="Side-by-side comparison" |
+<minipage caption="Side-by-side comparison" |
 A figure here counts privately.
 
 <fig -numbered src="left.png" | Left panel.>
@@ -3335,7 +3335,7 @@ A figure here counts privately.
 >
 </frame>
 
-*Numbered minipage, opted in via +numbered. It counts in its own "Minipage N" series — `<ref @mp:compare>` resolves to "minipage 1". The two inner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT the document's: a document <fig> elsewhere is unaffected, and an outside `<ref @fig:left>` is a normal not-found ref-error (the seal forbids inbound references to the body).*
+*Numbered by default (#272). It counts in its own "Minipage N" series — `<ref @mp:compare>` resolves to "minipage 1". The two inner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT the document's: a document <fig> elsewhere is unaffected, and an outside `<ref @fig:left>` is a normal not-found ref-error (the seal forbids inbound references to the body).*
 
 <section #l1-svg | `<svg>`>
 
@@ -6178,7 +6178,7 @@ A specific work <cite goodall2024 style=footnote>.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `target` | kwarg |  | The id of the element being referenced. The canonical form uses the #id prefix: <ref #eqn:model>. A kwarg form is also accepted as legacy: <ref target=eqn:model>. IMPORTANT (current implementation): only colon-ids (ids containing a colon, e.g., eqn:model, fig:scatter) are in the label index and can be resolved. Non-colon ids produce an unresolved error marker. This restriction may be relaxed in a future slice. |
+| `target` | kwarg |  | The id of the element being referenced. The canonical form uses the @id prefix (@ is the reference sigil): <ref @eqn:model>. A #id prefix on a <ref> declares an id ON THE <ref> ELEMENT ITSELF (not a target), so <ref #eqn:model> is a broken reference. A kwarg form is also accepted as legacy: <ref target=eqn:model>. IMPORTANT (current implementation): only colon-ids (ids containing a colon, e.g., eqn:model, fig:scatter) are in the label index and can be resolved. Non-colon ids produce an unresolved error marker. This restriction may be relaxed in a future slice. |
 | `type` | kwarg | `auto` `figure` `table` `equation` `section` `sub-section` `note` `listing` `theorem` `other` | Author-supplied hint about the intended kind of target. Flows through to a data-ref-type attribute on the rendered anchor, available for CSS/JS to use. The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text. |
 | `format` | kwarg | `number` `name` `full` `label-only` `default` | Author-supplied formatting hint. Flows through to a data-ref-format attribute on the rendered anchor, available for CSS/JS. The resolver-generated display text is still computed from the prefix dictionary; future enhancements may use this attribute to vary the rendered text. |
 | `+link` | boolean | default `true` | Controls whether the rendered ref is a navigable hyperlink. Default is +link, producing <a href="#targetId" class="ref">...</a>. The -link form produces <span class="ref">...</span> instead — useful when the author wants the ref's display text without making it a navigable anchor (e.g. inside a passage that itself describes the cross-reference rather than invoking it). |
@@ -6197,22 +6197,34 @@ This is distinct from `<a href="#id">` (a plain HTML link). `<ref>` carries sema
 
 ## Authoring
 
-The canonical form uses the `#id` positional argument with a colon-id:
+The canonical form uses the `@id` reference sigil with a colon-id:
 
 ```
-See <ref #fig:scatter>.
+See <ref @fig:scatter>.
 ```
+
+`@` is the reference sigil — it points the `<ref>` at a target. `#` is the id-declaration sigil (the syntax spec's universal rule, with no per-tag exception), so `<ref #fig:scatter>` declares an id *on the `<ref>` element itself* and references nothing — a broken cross-reference. Always reference with `@`.
 
 The id must be a colon-id (e.g., `fig:scatter`, `eqn:newton`, `note:galton`). Only colon-ids are indexed by the registry and can be resolved. Non-colon ids produce an error marker regardless of whether an element with that id exists in the document. A kwarg form is also accepted: `<ref target=eqn:newton>`.
+
+**Giving a `<ref>` its own id (rare).**
+
+The two sigils are independent and ride the attribute position: `#` declares an id on the element, `@` references a target. To give a `<ref>` an id *and* point it at a target, write both as attributes — `#` for the ref's own id, `@` for the target:
+
+```
+<ref #ref:see-fig @fig:elephant>
+```
+
+(The `@` must be an attribute, not pipe content: `<ref #ref:see-fig | @fig:elephant>` puts `@fig:elephant` in the ref's *content*, which references nothing — a broken ref.) This is rarely needed; most refs have no id of their own. Note: the ref resolver does not currently surface a `<ref>`'s own `#id` on the rendered anchor, so a self-id has no visible effect today — but `#` still *declares* (it never references), which is why `<ref #fig:scatter>` is a broken cross-reference.
 
 **Numbered labeled element.**
 
 For a labeled element that is numbered, the rendered text is the prefix word followed by the number:
 
 ```
-<ref #eqn:newton>   →  equation 1
-<ref #fig:scatter>  →  figure 1
-<ref #note:galton>  →  note 1
+<ref @eqn:newton>   →  equation 1
+<ref @fig:scatter>  →  figure 1
+<ref @note:galton>  →  note 1
 ```
 
 The prefix word comes from the built-in prefix dictionary keyed by the id prefix (see <a href="#cross-reference-types" | Cross-reference types>). Override per-document with `<config ref-prefix-eqn="Eq.">` to render "Eq. 1" instead of "equation 1".
@@ -6224,7 +6236,7 @@ If the target is labeled but authored with `-numbered`, it has no number in the 
 ```
 <$$ #eqn:energy -numbered | H = T + V $$>
 
-See <ref #eqn:energy>.  →  energy
+See <ref @eqn:energy>.  →  energy
 ```
 
 **Unresolved target.**
@@ -6232,24 +6244,24 @@ See <ref #eqn:energy>.  →  energy
 If the target id is not in the registry, the reference renders as a visible error anchor rather than failing silently:
 
 ```
-<ref #eqn:missing>  →  ??ref: eqn:missing??  (rendered as <a class="ref-error">)
+<ref @eqn:missing>  →  ??ref: eqn:missing??  (rendered as <a class="ref-error">)
 ```
 
 Same principle as unresolved citations: the document renders even when there are errors.
 
 **`type` kwarg.**
 
-`<ref #fig:scatter type=figure>` flows the kwarg to a `data-ref-type="figure"` attribute on the rendered anchor (available for CSS/JS to use). The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.
+`<ref @fig:scatter type=figure>` flows the kwarg to a `data-ref-type="figure"` attribute on the rendered anchor (available for CSS/JS to use). The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.
 
 **`format` kwarg.**
 
-`<ref #eqn:newton format=number>` flows the kwarg to a `data-ref-format="number"` attribute on the rendered anchor. The resolver-generated display text is still the prefix-dictionary default; future enhancements may use this attribute to vary the rendered text.
+`<ref @eqn:newton format=number>` flows the kwarg to a `data-ref-format="number"` attribute on the rendered anchor. The resolver-generated display text is still the prefix-dictionary default; future enhancements may use this attribute to vary the rendered text.
 
 **Boolean flags `+link` / `-link`, `+preview` / `-preview`.**
 
 Both default to on. `-link` produces a `<span class="ref">` instead of `<a>`; `-preview` adds `data-no-preview="true"` so the hover-preview attacher skips this ref.
 
-**Pipe content (`<ref #id | custom text>`).**
+**Pipe content (`<ref @id | custom text>`).**
 
 Still deferred to a future slice — the resolver-generated text is always used as the link text. Pipe content on `<ref>` is not surfaced in the rendered output.
 
@@ -6258,7 +6270,7 @@ Still deferred to a future slice — the resolver-generated text is always used 
 The element's content is optional. When present, it is intended to override the automatically-generated cross-reference text:
 
 ```
-<ref #fig:scatter | the scatter plot>
+<ref @fig:scatter | the scatter plot>
 ```
 
 This is rarely needed. The resolver-generated text is usually preferred because it stays consistent with the document's numbering and updates automatically when figures get renumbered. Note: pipe content override is currently deferred — the resolver-generated text is always used regardless of any pipe content.
@@ -6303,11 +6315,11 @@ JATS export maps `<ref>` to `<xref>` as follows:
 
 | enscribe | JATS |
 |-----------|------|
-| `<ref #fig:scatter>` | `<xref ref-type="fig" rid="fig:scatter">figure 1</xref>` |
-| `<ref #tab:results>` | `<xref ref-type="table" rid="tab:results">table 1</xref>` |
-| `<ref #eqn:newton>` | `<xref ref-type="disp-formula" rid="eqn:newton">equation 1</xref>` |
-| `<ref #sec:methods>` | `<xref ref-type="sec" rid="sec:methods">section 1</xref>` |
-| `<ref #note:galton>` | `<xref ref-type="fn" rid="note:galton">note 1</xref>` |
+| `<ref @fig:scatter>` | `<xref ref-type="fig" rid="fig:scatter">figure 1</xref>` |
+| `<ref @tab:results>` | `<xref ref-type="table" rid="tab:results">table 1</xref>` |
+| `<ref @eqn:newton>` | `<xref ref-type="disp-formula" rid="eqn:newton">equation 1</xref>` |
+| `<ref @sec:methods>` | `<xref ref-type="sec" rid="sec:methods">section 1</xref>` |
+| `<ref @note:galton>` | `<xref ref-type="fn" rid="note:galton">note 1</xref>` |
 
 The `ref-type` is derived from the id prefix via a prefix-to-JATS-ref-type map (defined at export time, not in the interpreter).
 
@@ -6320,7 +6332,7 @@ In render mode, `<ref>` lowers to `<a href="#id" class="ref">text</a>` for click
 **Reference to an equation.**
 
 ```
-As shown in <ref #eqn:newton>, force equals mass times acceleration.
+As shown in <ref @eqn:newton>, force equals mass times acceleration.
 ```
 
 Use `<config ref-prefix-eqn="Eq.">` at the document top to render "Eq. 1" instead of "equation 1".
@@ -6328,7 +6340,7 @@ Use `<config ref-prefix-eqn="Eq.">` at the document top to render "Eq. 1" instea
 **Reference to a figure.**
 
 ```
-The data are summarized in <ref #fig:scatter>.
+The data are summarized in <ref @fig:scatter>.
 ```
 
 **Reference to a note.**
@@ -6337,20 +6349,20 @@ Notes must be authored with a colon-id to be referenceable:
 
 ```
 <note #note:galton placement=foot | ...>
-See <ref #note:galton> for background.
+See <ref @note:galton> for background.
 ```
 
 **Customizing the prefix display word.**
 
 ```
 <config ref-prefix-eqn="Eq.">
-See <ref #eqn:newton> for the definition.   →  "Eq. 1"
+See <ref @eqn:newton> for the definition.   →  "Eq. 1"
 ```
 
 **Multiple references.**
 
 ```
-Figures <ref #fig:scatter>, <ref #fig:histogram>, and <ref #fig:residuals> show the trends.
+Figures <ref @fig:scatter>, <ref @fig:histogram>, and <ref @fig:residuals> show the trends.
 ```
 
 Each reference resolves independently. The author handles the joining text.
@@ -6364,31 +6376,31 @@ Each reference resolves independently. The author handles the joining text.
 <sub-section #l1-ref-examples | Examples>
 
 <code>
-See <ref #fig:scatter> for details.
+See <ref @fig:scatter> for details.
 </code>
 
 <frame -numbered>
-See <ref> for details.
+See <ref @fig:scatter> for details.
 </frame>
 
-*Canonical form: #id prefix. The ref-resolution plugin replaces the <ref> node with a __ref-marker before hast conversion. The handler then renders an <a> element with computed text. Prefix word is lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.*
+*Canonical form: @id prefix (@ references; # would declare an id on the <ref> itself). The ref-resolution plugin replaces the <ref> node with a __ref-marker before hast conversion. The handler then renders an <a> element with computed text. Prefix word is lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.*
 
 <code>
-As shown in <ref #eqn:model>.
+As shown in <ref @eqn:model>.
 </code>
 
 <frame -numbered>
-As shown in <ref>.
+As shown in <ref @eqn:model>.
 </frame>
 
 *Equation references use the "equation" prefix word by default. Config override: <config ref-prefix-eqn="Eq."> changes this to "Eq.".*
 
 <code>
-<ref #eqn:missing>
+<ref @eqn:missing>
 </code>
 
 <frame -numbered>
-<ref>
+<ref @eqn:missing>
 </frame>
 
 *Unresolved target renders a visible error anchor.*
@@ -6597,6 +6609,7 @@ In render mode, `<author>` lowers to a `<span class="author">` or similar. The v
 | `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which Layer 1 wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
 | `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` | For a single-file book-part (type=book-part) only: sets the book-part-type on the generated <book-part> wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always "chapter". Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive <meta> field). Default "chapter" when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the <chapter> / <appendix> / … shorthand instead. |
 | `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is <meta>'s title — there is no in-header <icon>/<title> tag. |
+| `slug` | kwarg |  | The page's stable public SLUG (#289) — its identity, independent of title and of where it sits in a website's <nav>. A website builder uses it to form the page's URL and to resolve <a {slug}> internal links; reorganizing the menu moves only the URL, while authored links re-resolve untouched. Optional: when absent the slug is derived from the <meta> title (slugifyPage). The value is normalized to a lowercase [a-z0-9-] slug (slugifyPage), so `slug=Foo Bar` becomes `foo-bar` — author the matching <a foo-bar> link in that normalized form. Slugs are unique site-wide. Descriptive metadata, like icon; ignored by article/book documents read on their own. |
 
 Document-level descriptive metadata. Holds title, author, date, abstract — content *about* the document. Tells the reader what the document is.
 
