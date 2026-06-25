@@ -36,14 +36,12 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <corollary | Every prime greater than 2 is odd.>
-    layer1_html: |
-      <corollary>Every prime greater than 2 is odd.</corollary>
+    layer1_html: '<corollary><span class="corollary-label">Corollary 1.</span> Every prime greater than 2 is odd.</corollary>'
   - source: |
       <corollary #cor:bounded>
       Any continuous function on a closed interval is bounded.
       </corollary>
-    layer1_html: |
-      <corollary id="cor:bounded">Any continuous function on a closed interval is bounded.</corollary>
+    layer1_html: '<corollary id="cor:bounded"><span class="corollary-label">Corollary 1.</span> Any continuous function on a closed interval is bounded.</corollary>'
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js
 ---

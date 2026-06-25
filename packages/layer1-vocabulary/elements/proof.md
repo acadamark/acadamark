@@ -59,8 +59,7 @@ shorthand_examples:
       <proof name="of Theorem 1.2">
       The argument follows from the preceding lemma.
       </proof>
-    layer1_html: |
-      <proof data-name="of Theorem 1.2">The argument follows from the preceding lemma.</proof>
+    layer1_html: '<proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span> The argument follows from the preceding lemma.</proof>'
     notes: |
       Optional `name` kwarg lets the proof identify what it proves
       (useful when the proof is separated from its theorem by

@@ -40,15 +40,13 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <lemma | Every continuous function on a compact set attains its maximum.>
-    layer1_html: |
-      <lemma>Every continuous function on a compact set attains its maximum.</lemma>
+    layer1_html: '<lemma><span class="lemma-label">Lemma 1.</span> Every continuous function on a compact set attains its maximum.</lemma>'
   - source: |
       <lemma name="Zorn" #lem:zorn>
       Every non-empty partially-ordered set in which every chain has
       an upper bound contains a maximal element.
       </lemma>
-    layer1_html: |
-      <lemma id="lem:zorn" data-name="Zorn">Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</lemma>
+    layer1_html: '<lemma data-name="Zorn" id="lem:zorn"><span class="lemma-label">Lemma 1 (Zorn).</span> Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</lemma>'
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js
 ---

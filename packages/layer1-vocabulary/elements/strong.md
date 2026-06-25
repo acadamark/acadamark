@@ -20,7 +20,7 @@ jats_counterpart:
     toggle: 'yes'
 shorthand_examples:
   - source: 'This is **strongly emphasized** content.'
-    layer1_html: '<p>This is <strong>strongly emphasized</strong> content.</p>'
+    layer1_html: '<p>This is <b>strongly emphasized</b> content.</p>'
     notes: |
       Plain markdown with double asterisks (or double underscores) produces
       <strong> elements.
