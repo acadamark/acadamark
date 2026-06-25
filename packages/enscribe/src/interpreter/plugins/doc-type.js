@@ -14,43 +14,34 @@
 // runs BEFORE enscribeNormalizeToCanonical (which reads the class to gate book-part
 // shorthand expansion), so the resolved value is on `file.data` for every later reader.
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
-import { isEnscribeTag } from '../../core/tag.js';
+import { classifyDocType, DOC_TYPES, DEFAULT_DOC_TYPE } from '../lib/classify-doc-type.js';
 import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 
-// The declared document-class set + default, read from `meta.md`'s vocab (not hardcoded)
-// so the vocabulary stays the single source of truth. Today: article / book / book-part / website.
-const META_TYPE = VOCABULARY?.meta?.enscribe_attributes?.kwargs?.type ?? {};
-const DECLARED_TYPES = new Set(META_TYPE.values ?? ['article']);
-const DEFAULT_TYPE = META_TYPE.default ?? 'article';
+// The classification RULE (find `<meta>`, read `type`, validate against the vocab-declared set, fall
+// back to the default) + the declared set / default now live in the ONE shared home,
+// classify-doc-type.js (1-C from #316), which every other site uses too. This plugin keeps the two
+// things that are plugin-specific: the explicit-unknown DIAGNOSTIC and the `file.data` write.
 
 /**
  * Resolve the document class from `<meta type>` exactly once, onto
- * `file.data[ENSCRIBE_DOC_TYPE]`.
+ * `file.data[ENSCRIBE_DOC_TYPE]`. Delegates the rule to the shared classifier; owns the warning.
  *
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
 export function enscribeDocTypeResolve() {
   return function docTypeResolve(tree, file) {
-    const metaNode = (tree.children ?? []).find((n) => isEnscribeTag(n, 'meta'));
-    const raw = metaNode?.kwargs?.type;
-    let docType = DEFAULT_TYPE;
-    if (raw != null) {
-      if (DECLARED_TYPES.has(raw)) {
-        docType = raw;
-      } else {
-        // An explicit, undeclared type (`slides`, `dashboard`, a typo): warn and fall
-        // back to the default. Mirrors the book-part-type validator's diagnostic.
-        file?.message?.(
-          `<meta type="${raw}">: unknown document type — expected one of: ` +
-            `${[...DECLARED_TYPES].join(', ')}. Rendering as ${DEFAULT_TYPE}.`,
-          metaNode,
-          'doc-type-resolve:unknown-type',
-        );
-        docType = DEFAULT_TYPE;
-      }
+    const { type, raw, known, metaNode } = classifyDocType(tree);
+    if (raw != null && !known) {
+      // An explicit, undeclared type (`slides`, `dashboard`, a typo): warn and fall back to the
+      // default (the classifier already did the fallback). Mirrors the book-part-type validator.
+      file?.message?.(
+        `<meta type="${raw}">: unknown document type — expected one of: ` +
+          `${[...DOC_TYPES].join(', ')}. Rendering as ${DEFAULT_DOC_TYPE}.`,
+        metaNode,
+        'doc-type-resolve:unknown-type',
+      );
     }
-    if (file?.data) file.data[ENSCRIBE_DOC_TYPE] = docType;
+    if (file?.data) file.data[ENSCRIBE_DOC_TYPE] = type;
     // (#300/#299 slice 1) The page-slug is no longer exposed here: the dead `ENSCRIBE_PAGE_SLUG`
     // derivation (set, read by nobody) was retired in favour of the ONE three-tier resolver
     // (resolvePageSlug in website-structuring.js), which the static build reads directly.

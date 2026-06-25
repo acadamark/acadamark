@@ -45,6 +45,7 @@ import { preloadSources } from './lib/preload-library-sources.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
 import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL, ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
 import { readConfigBool } from './lib/config-helpers.js';
+import { classifyDocType } from './lib/classify-doc-type.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
@@ -744,22 +745,18 @@ function editAttrOn(el) {
 
 /**
  * Read a master's document class from its `<meta type>` — the cheap pre-structuring read the shell
- * dispatch needs. `book` → the book live path; EVERYTHING else (an article, an absent type, an
- * unknown type) → the article path. That matches the structuring fallback exactly: only a
- * `<meta type=book>` produces a `<book>` (which the book live path needs), and an unknown type falls
- * back to `article` (enscribeDocTypeResolve). A bare kwarg read is enough — no full pipeline run.
+ * dispatch needs. Delegates the rule to the shared classifier (1-C from #316); the book/website/
+ * article DISPATCH (mountLiveShell, below) stays local — that is a routing concern, not classification.
+ * Absent/unknown falls to `article` (the classifier's validated fallback) and a `book-part` master
+ * routes via the dispatch's `else` (the article path), both as before — only an explicit `type=book`
+ * / `type=website` routes to the book / website mount. Parses the source only (no pipeline run).
  *
  * @param {import('unified').Processor} proc - a configured pipeline (its `.parse`)
  * @param {string} source - the master document's enscribe source
- * @returns {boolean} true iff the master declares `<meta type=book>`
+ * @returns {string} the document class: 'article' | 'book' | 'book-part' | 'website'
  */
 function masterType(proc, source) {
-  const meta = (proc.parse(source).children ?? []).find((n) => isEnscribeTag(n, 'meta'));
-  const t = meta?.kwargs?.type;
-  // The bare <meta type> read (no pipeline run) the live dispatch routes on. Absent/unknown
-  // falls to 'article', matching enscribeDocTypeResolve's fallback — so only an explicit
-  // type=book / type=website routes to the book / website mount (book-part → article path, as before).
-  return t === 'book' ? 'book' : t === 'website' ? 'website' : 'article';
+  return classifyDocType(proc.parse(source)).type;
 }
 
 /**

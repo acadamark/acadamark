@@ -47,6 +47,7 @@ import {
   resolvePageSlugLinks,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY } from '@enscribejs/enscribe/core/file-data-keys';
+import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
 
 /**
@@ -155,7 +156,11 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   const pageData = [];                 // [{ page, resolved, source, slug, isBook }] in nav order
   const pageInfo = new Map();          // slug → { title, isDerived, src }
   const usedSlugs = new Set();         // site-wide slug allocation (the resolver + always-render dedup)
-  const META_TYPE_RE = /<meta\s+type\s*=\s*["']?([A-Za-z-]+)/; // the page's OWN type (first meta, not an example)
+  // The page's OWN document class — the shared classifier (1-C from #316) over a PARSED tree, so a
+  // `<meta>` inside a code EXAMPLE is correctly skipped (it is a code node, not an enscribeTag). This
+  // replaces a raw-source regex that matched the first literal `type=` and could mis-read an example.
+  // One parse-only proc, reused across pages (parse ignores assetsDir).
+  const classifyProc = buildDocumentPipeline({});
   for (const page of pages) {
     const resolved = resolvePageSource(masterDir, page.src);
     if (!resolved) {
@@ -184,7 +189,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     });
     pageInfo.set(slug, { title: pageTitle, isDerived: !pinned, src: page.src });
     page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
-    pageData.push({ page, resolved, source, slug, isBook: (source.match(META_TYPE_RE) || [])[1]?.toLowerCase() === 'book' });
+    pageData.push({ page, resolved, source, slug, isBook: classifyDocTypeFromSource(source, classifyProc).type === 'book' });
   }
   if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
 
