@@ -31,7 +31,7 @@ import { join, dirname, extname } from 'node:path';
 import { VFile } from 'vfile';
 import {
   publishBookPageBodies,
-  prepareBook,
+  composeSiteRegistry,
   flattenNavPages,
   extractDocumentTitle,
   buildWebsiteTopBar,
@@ -41,8 +41,6 @@ import {
   slugifyPage,
   resolvePageSlug,
   allocatePageSlug,
-  harvestCrossRefRegistry,
-  makeReadThroughRegistry,
   rewriteCrossPageHrefs,
   resolvePageSlugLinks,
 } from '@enscribejs/enscribe';
@@ -263,62 +261,20 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   //    site registry — the #300 regression — and never touches the live SPA's page-scope buildWebsiteTree.)
   const destPrefixOf = (slug) => { const np = navPathOf.get(slug) ?? slug; return np === '' ? '' : `${np}/`; };
 
-  // PHASE 1 — number every page in its OWN scope + harvest; merge into the site cross-ref registry.
-  //   siteHarvest: anchor → { number(native), title, type }  (backs the read-through, for the ref TEXT)
-  //   idToOwner:   anchor → ownerKey                         (the page/chapter-page that OWNS it, for the href)
-  //   ownerToUrl:  ownerKey → site-relative URL              (so a cross-page href resolves to a real file)
-  //   bookFnameOwner: a chapter-page's outPath → its ownerKey (the per-fragment "current owner" in Phase 2)
-  const siteHarvest = new Map();
-  const idToOwner = new Map();
-  const ownerToUrl = new Map();
-  const bookFnameOwner = new Map();
-  for (const { resolved, source, slug, isBook } of pageData) {
-    const destPrefix = destPrefixOf(slug);
-    try {
-      if (isBook) {
-        const { numbered, file } = assembleAndNumber({
-          source, sourcePath: resolved.sourcePath, masterDir: resolved.pageDir,
-          warn: (m) => warnings.push(`page "${slug}": ${m}`), pipeOpts: { assetsDir: resolved.pageDir },
-        });
-        // prepareBook assigns the chapter <book-part> ids + harvests + maps chapter-id → its `<stem>.html`,
-        // all WITHOUT rendering. Tag every anchor with the CHAPTER-PAGE it renders on, not one book slug.
-        const { registry: harvest, idToUrl } = prepareBook(numbered, file);
-        for (const [anchor, e] of harvest) {
-          siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });
-          const fname = e.chapter != null ? idToUrl.get(e.chapter) : null;
-          const owner = `${slug}::${fname ?? 'index.html'}`;
-          idToOwner.set(anchor, owner);
-          ownerToUrl.set(owner, `${destPrefix}${fname ?? 'index.html'}`);
-          if (fname) bookFnameOwner.set(`${destPrefix}${fname}`, owner);
-        }
-      } else {
-        const proc = buildDocumentPipeline({ assetsDir: resolved.pageDir });
-        const file = new VFile({ path: resolved.sourcePath });
-        const numbered = proc.runSync(proc.parse(source), file);   // number only — no render
-        ownerToUrl.set(slug, destPrefix);                          // the article's pretty URL ('' = root)
-        for (const [anchor, e] of harvestCrossRefRegistry(numbered, file)) {
-          siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });
-          idToOwner.set(anchor, slug);
-        }
-      }
-    } catch (err) {
-      warnings.push(`page "${slug}" failed to number for the site registry: ${err.message}`);
-    }
-  }
-
-  // The read-through PARENT — a page's own numbering shadows; a CROSS-page anchor reads through to here for
-  // its target's NATIVE number. findByLabel returns the entry computeRefText reads: `number` is the harvested
-  // native-number string and `scope: undefined` makes formatScopedNumber return it verbatim; `title` is the
-  // unnumbered-target fallback. (findByLabel is the only method a read-through calls on its parent.)
-  const siteParent = {
-    findByLabel: (id) => {
-      const e = siteHarvest.get(id);
-      return e ? { number: e.number, type: e.type, data: { title: e.title, scope: undefined } } : null;
-    },
-  };
-  // Seed values for a page's VFile.data: a FRESH read-through per render, so the page's own numbering writes
-  // locally and only cross-page lookups fall through to the merged site registry.
-  const seedRegistry = () => ({ [ENSCRIBE_REGISTRY]: makeReadThroughRegistry(siteParent) });
+  // PHASE 1 (website.md) — number every page natively, harvest, MERGE into one site cross-ref registry, and
+  // build the read-through SEED Phase 2 consumes. The composition is the BROWSER-PURE core
+  // (master-document/compose-site.js, the live #300 step 1, #324) — this static build is now just one caller
+  // of it; a later live caller is the other. The static side injects its readFileSync-based assembleAndNumber
+  // + document pipeline (the live side will inject fetch-based ones) and keeps the static URL scheme via
+  // destPrefixOf. Returned maps: idToOwner + ownerToUrl resolve a cross-page href; bookFnameOwner is the
+  // per-chapter-page "current owner" in Phase 2; seedRegistry() seeds each render's read-through over the merge.
+  const { idToOwner, ownerToUrl, bookFnameOwner, seedRegistry } = composeSiteRegistry({
+    pages: pageData,
+    destPrefixOf,
+    buildPipeline: buildDocumentPipeline,
+    assembleAndNumber,
+    warn: (m) => warnings.push(m),
+  });
 
   // Static cross-page href resolver: ownerKey → its file, RELATIVE to the page being rendered. (LIVE keeps
   // `?page=owner#anchor` via rewriteCrossPageHrefs's default — the scheme differs by design; see hrefFor.)
