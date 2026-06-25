@@ -12,6 +12,7 @@ import { dirname, basename, join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, extractDocumentTitle } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
+import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { resolvePageSource } from './static-website.js';
 
 const require = createRequire(import.meta.url);
@@ -66,12 +67,6 @@ function srcChildrenOf(tree) {
 
 export function discoverMasterSrcChildren(masterSource) {
   return srcChildrenOf(buildEnscribePipeline({}).parse(masterSource));
-}
-
-/** The `<meta type>` of an already-parsed master tree (the first `<meta>` node), or undefined. */
-function metaTypeOf(tree) {
-  const meta = (tree.children ?? []).find((n) => n?.type === 'enscribeTag' && n.tagname === 'meta');
-  return meta?.kwargs?.type;
 }
 
 /** The external page `src`s of a website nav model (descending `<nav-group>`s), deduped, document order.
@@ -151,7 +146,7 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   copyInto(masterPath, masterName);
   const proc = buildEnscribePipeline({});
   const tree = proc.parse(masterSource);
-  const isWebsite = metaTypeOf(tree) === 'website';
+  const isWebsite = classifyDocType(tree).type === 'website';
   let children;
   if (isWebsite) {
     const file = { data: {} };

@@ -46,6 +46,7 @@ import { parseCsv, parseTsv, formatScopedNumber } from '@enscribejs/enscribe';
 // (book-regions.js), the same set book-structuring.js routes by — so the JATS exporter
 // can't disagree with the renderer on which parts are front matter.
 import { BOOK_PART_FRONT_TYPES as BOOK_FRONT_PART_TYPES } from '@enscribejs/enscribe/interpreter/lib/book-regions';
+import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { escapeXmlAttr, escapeXmlText } from '../lib/xml-escape.js';
 import { jatsEmit, aggregateJatsAttrs } from './lib/jats-emit.js';
 
@@ -103,9 +104,10 @@ export function enscribeToJats(tree, opts = {}) {
   // #246: a website (<meta type=website>) has NO JATS/BITS projection — a site isn't a scholarly
   // document. Refuse here so the rule holds for EVERY caller (not just the CLI's doExportJats
   // guard); otherwise a website tree falls through to the defensive no-wrapper branch below and
-  // silently mis-emits an empty <article>.
-  const metaNode = findTagInChildren(tree.children, 'meta');
-  if (metaNode?.kwargs?.type === 'website') {
+  // silently mis-emits an empty <article>. The shared classifier (1-C from #316) reads the first
+  // top-level <meta> — post-structuring only a website keeps one there (article/book wrap theirs),
+  // which is exactly the signal this guard needs.
+  if (classifyDocType(tree).type === 'website') {
     throw new Error('enscribeToJats: a website (<meta type=website>) has no JATS/BITS projection (HTML render only)');
   }
 

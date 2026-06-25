@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSyn
 import { dirname, resolve, join } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages } from '@enscribejs/enscribe';
+import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { renderArticleDocument, assembleAndNumber } from './render-document.js';
 import { buildLiveFolder, copyShellAssets } from './build-live.js';
 import { buildStaticWebsite } from './static-website.js';
@@ -461,10 +462,9 @@ function doExportJats(opts) {
     const proc = buildEnscribePipeline({ assetsDir: dirname(resolve(opts.input)) });
     const tree = proc.parse(src);
     // #246: a website is HTML-only ("no JATS/BITS — a site isn't a scholarly document"). Refuse the
-    // export (a bare <meta type> read on the parsed master — no VFile/assembler needed) rather than
-    // let it fall through and mis-emit an empty article JATS. Read BEFORE runSync mutates the tree.
-    const metaNode = (tree.children ?? []).find((n) => n && n.type === 'enscribeTag' && n.tagname === 'meta');
-    if (metaNode?.kwargs?.type === 'website') {
+    // export (the shared classifier over the parsed master — no VFile/assembler needed) rather than
+    // let it fall through and mis-emit an empty article JATS. Classify BEFORE runSync mutates the tree.
+    if (classifyDocType(tree).type === 'website') {
       throw new CliError('export-jats: websites have no JATS/BITS projection (HTML render only)');
     }
     return enscribeToJats(proc.runSync(tree));
