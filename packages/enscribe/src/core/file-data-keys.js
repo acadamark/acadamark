@@ -65,3 +65,11 @@ export const ENSCRIBE_NAV_MODEL          = 'enscribeNavModel';
 // loop-guard role).
 export const ENSCRIBE_MINIPAGE_SUBRUN    = 'enscribeMinipageSubrun';
 export const ENSCRIBE_MINIPAGE_DEPTH     = 'enscribeMinipageDepth';
+// #318: the render-time `<a {slug}>` internal-link resolver. The website BUILDER (static or live)
+// injects a `(slug, { empty }) => { href, label } | { broken, label }` function here BEFORE a page
+// renders; the compiler runs it over the in-memory hast `<a data-page-slug>` markers just before
+// serialization (resolvePageSlugLinksInTree), so the SAME mechanism serves both surfaces and no HTML
+// is re-parsed (the scheme — `.html` path vs `?page=` route — lives in the injected resolver, the one
+// output difference per website.md). Absent → the marker is left for a (non-website) caller, byte-
+// identical to a document with no website resolver.
+export const ENSCRIBE_PAGE_LINK_RESOLVER = 'enscribePageLinkResolver';

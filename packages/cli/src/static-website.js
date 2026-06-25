@@ -43,9 +43,8 @@ import {
   resolvePageSlug,
   allocatePageSlug,
   rewriteCrossPageHrefs,
-  resolvePageSlugLinks,
 } from '@enscribejs/enscribe';
-import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY } from '@enscribejs/enscribe/core/file-data-keys';
+import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
 
@@ -202,8 +201,9 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   //   - the chrome's `?page=slug` (live-SPA router form) → the target's `<navPath>/` (staticize, PASS 2);
   //   - an authored `<a {slug}>` internal link, the <a> handler's `<a data-page-slug="X">` marker
   //     → the target's `<navPath>/`, auto-labelled with the target's TITLE when the link has no text
-  //     (resolveSlugLinks, per page in PHASE 2 — STRUCTURAL via the shared resolvePageSlugLinks, so a
-  //     label that contains a nested element or link is parsed, not regex-captured: 1-G).
+  //     (makePageLinkResolver, injected on file.data per page in PHASE 2 — the engine resolves the marker
+  //     IN-TREE at render time via resolvePageSlugLinksInTree, so a nested-element/link label is walked
+  //     structurally, never regex-captured, and no HTML is re-parsed: 1-G / #318).
   // ALWAYS-RENDERS (1-G / 2-C, the always-render decision): a `<a {slug}>` to a missing page DEGRADES —
   // the label text stays, the live href is dropped, and the `ref-error` marker class flags it — and the
   // build COMPLETES with a warning, never a thrown build. A link to a DERIVED (un-pinned) slug warns.
@@ -215,13 +215,14 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     return (slug) => { const np = navPathOf.get(slug); return np === '' ? (up || './') : `${up}${np}/`; };
   };
 
-  // Resolve a rendered page fragment's authored `<a {slug}>` internal links STRUCTURALLY (#289). A
-  // resolvable slug → its depth-relative URL (+ the target's title when the authored label is empty); a
-  // missing slug → DEGRADE (the shared resolver drops the href + flags `ref-error`, the label stays); a
-  // derived (un-pinned) slug → warn. Replaces staticize's old label-capturing regex.
-  const resolveSlugLinks = (html, outPath, currentSlug) => {
+  // Build the authored `<a {slug}>` internal-link resolver for a page rendered at `outPath` (#318). It is
+  // INJECTED on the page's file.data (ENSCRIBE_PAGE_LINK_RESOLVER) and the engine runs it over the in-memory
+  // hast `<a data-page-slug>` markers at render time — no post-serialize re-parse. A resolvable slug → its
+  // depth-relative URL (+ the target's title when the authored label is empty); a missing slug → DEGRADE
+  // (the engine drops the href + flags `ref-error`, the label stays); a derived (un-pinned) slug → warn.
+  const makePageLinkResolver = (outPath, currentSlug) => {
     const relTo = relToFor(outPath);
-    return resolvePageSlugLinks(html, (slug, { empty }) => {
+    return (slug, { empty }) => {
       if (!navPathOf.has(slug)) {
         warnings.push(`"${currentSlug}": <a ${slug}> → no page has slug "${slug}" — link rendered inert (always-renders)`);
         return { broken: true, label: empty ? slug : undefined };
@@ -234,7 +235,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
         );
       }
       return { href: relTo(slug), label: empty ? (info?.title ?? slug) : undefined };
-    });
+    };
   };
 
   // The chrome's `?page=slug` router links → depth-relative pretty URLs (PASS 2, on the composed page).
@@ -298,10 +299,15 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     try {
       if (isBook) {
         // Re-number with the read-through seeded so the book's OUTBOUND cross-page refs resolve to native
-        // numbers (the assembler warnings were already collected in Phase 1, so suppress them here).
+        // numbers (the assembler warnings were already collected in Phase 1, so suppress them here). The
+        // authored `<a {slug}>` resolver (#318) rides the SAME file.data: the engine resolves the markers
+        // in-tree as publishBookPageBodies stringifies each chapter. Every chapter page sits at the book's
+        // `${destPrefix}…` depth (a flat filename, no sub-dir), so ONE resolver — built at that depth —
+        // serves them all; the within-book scheme + warnings match the per-page form this replaced.
         const { numbered, file, proc } = assembleAndNumber({
           source, sourcePath: resolved.sourcePath, masterDir: resolved.pageDir,
-          warn: () => {}, pipeOpts: { assetsDir: resolved.pageDir }, fileData: seedRegistry(),
+          warn: () => {}, pipeOpts: { assetsDir: resolved.pageDir },
+          fileData: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(`${destPrefix}index.html`, slug) },
         });
         const bookBodies = publishBookPageBodies({ numbered, file, proc });
         for (const [fname, entry] of bookBodies) {
@@ -311,11 +317,11 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
           } else {
             // WITHIN-book cross-chapter hrefs are already `chapter.html#id` (publishBookPageBodies), so only
             // OUTBOUND cross-page refs (still bare `#anchor`) rewrite; pass this chapter-page's own owner key
-            // so its OWN anchors stay intra-page.
-            const refsResolved = rewriteCrossPageHrefs(entry.body, bookFnameOwner.get(outPath), {
+            // so its OWN anchors stay intra-page. (Authored `<a {slug}>` links were already resolved in-tree
+            // during the stringify above — #318.)
+            const body = rewriteCrossPageHrefs(entry.body, bookFnameOwner.get(outPath), {
               ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
             });
-            const body = resolveSlugLinks(refsResolved, outPath, slug); // authored <a {slug}> links (#289)
             collectDslNames(body, siteDslNames);
             rendered.push({ outPath, slug, title: entry.title, content: body });
           }
@@ -329,14 +335,16 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
         // Skip the fragment's own font/KaTeX injection so each asset is linked ONCE, in the head. (The
         // STANDALONE single-article build is a separate call site (cli.js) and is unaffected — it keeps
         // embed:true → inline self-contained assets.)
+        // Authored `<a {slug}>` links resolve in-tree during this render — the resolver rides file.data
+        // alongside the read-through seed (#318); the bare-`#anchor` cross-page refs rewrite after (a
+        // disjoint href set — slug links carry a path URL, never `href="#…"` — so the order is immaterial).
         const raw = renderArticleDocument(
-          { value: source, data: seedRegistry() },
+          { value: source, data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) } },
           { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' },
         );
-        const refsResolved = rewriteCrossPageHrefs(raw, slug, {
+        const content = rewriteCrossPageHrefs(raw, slug, {
           ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
         });
-        const content = resolveSlugLinks(refsResolved, outPath, slug); // authored <a {slug}> links (#289)
         collectDslNames(content, siteDslNames);
         rendered.push({ outPath, slug, title: page.title, content });
       }

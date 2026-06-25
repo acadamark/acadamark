@@ -7,3 +7,5 @@
 <figure #fig:artp src="a.svg" | An article figure>
 
 See <ref @fig:bookp> over in the book.
+
+Internal links (#318): <a bookp | the book page>, auto <a atlasp | >, broken <a no-such-page | a dead link>, and nested <a bookp | go to <a atlasp | the atlas> here>.

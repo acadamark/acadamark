@@ -167,7 +167,11 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry, makeReadThroughRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH, ENSCRIBE_REGISTRY } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '../core/file-data-keys.js';
+// #318: the render-time `<a {slug}>` page-link resolver — a hast tree-pass run in the compiler (just
+// before serialization) when the website builder has injected a resolver on file.data. Imported for USE
+// here; also re-exported at the barrel below (one home, cross-page-links.js).
+import { resolvePageSlugLinksInTree } from '../master-document/cross-page-links.js';
 // Phase 5 slice 5c (2026-05-28): re-export the table-format parsers so
 // @enscribejs/cli can replicate the HTML pipeline's
 // thead/tbody/tr/th/td emission inside <table-wrap>. Same re-export
@@ -1071,6 +1075,14 @@ export function enscribeInterpreter(options = {}) {
       replaceDslContractsWithSvg(hast, dsl);
     }
 
+    // #318: resolve authored `<a {slug}>` internal page links — but ONLY when a website builder injected a
+    // resolver on file.data (a standalone document has none, so its `<a data-page-slug>` marker is left
+    // untouched, byte-identical to before). LAST hast mutation before serialization, so every other pass
+    // (smartTypography, asset injection, formatHtml) saw the unmodified markers exactly as before; the one
+    // mechanism the static build and the live SPA both call, the URL scheme being the resolver's (no parse5).
+    const pageLinkResolver = file?.data?.[ENSCRIBE_PAGE_LINK_RESOLVER];
+    if (pageLinkResolver) resolvePageSlugLinksInTree(hast, pageLinkResolver);
+
     return toHtml(hast, { allowDangerousHtml: true });
   };
 }
@@ -1223,8 +1235,10 @@ export { renderNotFoundView, resolvePageParam, flattenNavPages } from '../master
 export { composeSiteRegistry } from '../master-document/compose-site.js';
 // The cross-page LINK LAYER — one home for both resolvers: the href-only cross-page <ref> rewriter
 // (rewriteCrossPageHrefs, shared by the live SPA, the separate-pages book publish, and the static
-// website) and the structural <a {slug}> page-link resolver (resolvePageSlugLinks). See cross-page-links.js.
-export { rewriteCrossPageHrefs, resolvePageSlugLinks } from '../master-document/cross-page-links.js';
+// website) and the structural <a {slug}> page-link resolver (resolvePageSlugLinksInTree — #318, a
+// render-time hast tree-pass; the compiler above runs it, both surfaces inject the resolver on
+// file.data). See cross-page-links.js.
+export { rewriteCrossPageHrefs, resolvePageSlugLinksInTree } from '../master-document/cross-page-links.js';
 // Website nav CHROME (#246 S2b) — the sticky top bar, the left sidebar, and the chrome CSS.
 // Exported so the STATIC website build (cli/src/static-website.js, #278) can inject the same chrome
 // the live shell mounts. The live shell's interactive helpers (injectWebsiteNavStyles needs a DOM;

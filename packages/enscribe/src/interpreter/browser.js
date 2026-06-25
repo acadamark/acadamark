@@ -43,7 +43,7 @@ import {
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
-import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL, ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
+import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL, ENSCRIBE_CONFIG, ENSCRIBE_PAGE_LINK_RESOLVER } from '../core/file-data-keys.js';
 import { readConfigBool } from './lib/config-helpers.js';
 import { classifyDocType } from './lib/classify-doc-type.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
@@ -877,12 +877,14 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const loadedBySrc = new Map();               // a book page's src → its cached (pre-fetched) child sources
   const usedSlugs = new Set();
   const pageData = fetched.map(({ p, src, isBook, loaded }) => {
-    const { slug: baseSlug, pinned } = resolvePageSlug({ source: src, navTitle: p.title || p.slug, src: p.src });
+    const { slug: baseSlug, pinned, title } = resolvePageSlug({ source: src, navTitle: p.title || p.slug, src: p.src });
     const slug = allocatePageSlug(baseSlug, pinned, usedSlugs);
     p.slug = slug;                             // remap the nav model entry → the chrome's ?page= links use it
     sourceBySlug.set(slug, src);
     if (loaded) loadedBySrc.set(p.src, loaded);
-    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, slug, isBook };
+    // title + isDerived back the authored `<a {slug}>` auto-label + derived-slug warning (#318), computed the
+    // SAME way the static build does (resolvePageSlug's title, else the nav title; un-pinned ⇒ derived).
+    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, slug, isBook, title: title || p.title || slug, isDerived: !pinned };
   });
 
   // PHASE 1 — number each page NATIVELY (article as an article; a book as a book, chapters intact), harvest,
@@ -913,6 +915,22 @@ export async function mountLiveWebsite(target, source, options = {}) {
     ownerOf: (anchor) => { const o = idToOwner.get(anchor); return o != null && pageSlugOfOwner(o) !== thisSlug ? o : null; },
     hrefFor: (owner, anchor) => `?page=${pageSlugOfOwner(owner)}#${anchor}`,
   });
+  // The authored `<a {slug}>` LINK resolver (#318) — injected on each page's file.data so the engine resolves
+  // the `<a data-page-slug>` markers IN-TREE at render time (resolvePageSlugLinksInTree), the SAME mechanism
+  // the static build uses. Only the URL scheme differs (the `?page=` route vs the static `.html` path,
+  // website.md): a resolvable slug → `?page=slug` (+ the target's title when the authored label is empty); a
+  // missing slug → DEGRADE (the engine drops the href + flags `ref-error`, the label stays) with a console
+  // warning; a derived (un-pinned) slug → warn. NO parse5 — the same browser-safety the ref rewriter keeps.
+  const warnLink = (m) => { if (typeof console !== 'undefined' && console.warn) console.warn(`enscribe website: ${m}`); };
+  const makePageLinkResolver = (currentSlug) => (slug, { empty }) => {
+    const pd = pageBySlug.get(slug);
+    if (!pd) {
+      warnLink(`"${currentSlug}": <a ${slug}> → no page has slug "${slug}" — link rendered inert (always-renders)`);
+      return { broken: true, label: empty ? slug : undefined };
+    }
+    if (pd.isDerived) warnLink(`"${currentSlug}": <a ${slug}> resolves to a DERIVED slug — pin <meta slug="${slug}"> so a title rename does not silently break the link`);
+    return { href: `?page=${slug}`, label: empty ? pd.title : undefined };
+  };
   // Resolve `?page=` → a page (empty → the first page; unknown → not-found).
   const resolvePage = (search) => {
     const requested = new URLSearchParams(search || '').get('page');
@@ -957,7 +975,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
 
   const renderArticleInto = (pd) => {
     if (!articleCache.has(pd.slug)) {
-      const f = { data: seedRegistry() };
+      const f = { data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(pd.slug) } };
       articleCache.set(pd.slug, resolveRefs(String(proc.stringify(proc.runSync(proc.parse(pd.source), f), f)), pd.slug));
     }
     contentRegion.innerHTML = articleCache.get(pd.slug);
@@ -992,8 +1010,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
     if (pd.isBook) {
       const loaded = loadedBySrc.get(pd.resolved.sourcePath);
       // Re-assemble + re-number the book over the read-through SEED (so its OUTBOUND cross-page `<ref>`s
-      // resolve to the target's native number) on a FRESH tree (not Phase 1's). loaded sources + the seed.
-      const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded, ...seedRegistry() } };
+      // resolve to the target's native number) on a FRESH tree (not Phase 1's). loaded sources + the seed +
+      // the authored `<a {slug}>` resolver (#318), which the per-chapter stringify resolves in-tree.
+      const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded, ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(pd.slug) } };
       currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(assembleBookTree(pd.source, loaded), f), file: f }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
       renderBookChapter();
     } else {
