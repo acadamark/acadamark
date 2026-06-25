@@ -190,6 +190,11 @@ and never halt rendering. The one boundary is structural rather than content: a 
   one project-wide registry pass); `website.md` owns the **website-specific composition** above.
 - `spec-internal-links.md` owns **page-slug identity and the `<a {slug}>` link layer**;
   `render-parity.md` owns the **live/static parity contract**.
+- `notes/specs/delivery-modes.md` owns the **delivery-mode model** — how a document is *packaged* and
+  reaches a reader (Static / Live / single-file; the shell, the runtime fetch, the asset seam). The
+  live website is the **multi-page profile of the Live delivery mode**: `website.md` owns *composition*,
+  `delivery-modes.md` owns *packaging/delivery*. Orthogonal — same engine and composition, different
+  wrapper.
 - **The composition fork is now CLOSED.** The live SPA composes through the *same* engine as the static
   build — `composeSiteRegistry` (the live #300, step 2 — #314/#324): it fetches each page's source (and
   a book page's chapter children), numbers every page in its **native** scope, and resolves cross-page
@@ -219,6 +224,8 @@ and never halt rendering. The one boundary is structural rather than content: a 
   internal-link form + degrade marker.
 - `notes/specs/render-parity.md` — the one-engine live/static invariant and the website parity seam
   (display number + scheme-normalized owner).
+- `notes/specs/delivery-modes.md` — the delivery-mode model (Static / Live / single-file packaging);
+  the live website is the multi-page profile of the Live mode.
 - `notes/decisions.md` — "The website — the third document class" (the product-shape decision this
   blueprint serves), its "One engine, browser-pure, two adapters" note (the realized #300 architecture +
   what *browser-pure* means for the engine — the cross-cutting fact), and "Always renders — never block

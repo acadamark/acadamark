@@ -221,6 +221,8 @@ observable signature that the flatten is gone ([#320](https://github.com/enscrib
 
 - `notes/specs/website.md` — the website composition model and the live/static website parity seam
   (display number + scheme-normalized owner), specified by the website-path section above.
+- `notes/specs/delivery-modes.md` — the delivery-mode model (Static / Live / single-file). This parity
+  contract spans those modes: static ≡ live on matched options, and it extends to single-file when built.
 - `DESIGN.md` — "Live and static rendering are one engine, not two." (the
   rationale; the substrate premise that the browser *is* the renderer).
 - `notes/specs/pipeline.md` §14 (Client-side rendering) — the browser entries and
