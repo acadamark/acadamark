@@ -22,6 +22,20 @@ dist/
 # #223/#246: the live-folder dogfood output (`docs:build-live` → docs-site/dist-live/) — also
 # machine-built (it copies the ~3 MB engine bundle), reproducible via the script, never tracked.
 dist-live/
+# #323: the five generated `.emd` that `docs:gen` (gen-catalogs.js) writes into docs-site/sources/.
+# These are build product — regenerated from packages/layer1-vocabulary/elements/*.md on every build
+# path (`docs:build` / `docs:build-live` both run `docs:gen` first; nothing consumes them un-regenerated)
+# — so committing them only created a drift source (they would silently go stale; cf. the manual
+# `40510c8 "docs rebuild"`). Untracked, the staleness class is gone: there is no committed artifact to lag.
+# Listed explicitly (not a glob) so the AUTHORED `.template.emd` siblings — enscribe-shorthand.template.emd,
+# layer1.template.emd, rendering-guide.template.emd — stay tracked; those are hand-edited prose.
+#   • Fully generated (no authored source):
+docs-site/sources/layer1-catalog.emd
+docs-site/sources/shorthand-catalog.emd
+#   • Authored .template.emd + a docs:gen-injected block (the .template.emd stays tracked, the rendered .emd does not):
+docs-site/sources/enscribe-shorthand.emd
+docs-site/sources/layer1.emd
+docs-site/sources/rendering-guide.emd
 # #278: the STATIC docs-site build output is the deliberate exception — it IS tracked, because it is
 # the deployed site (e.g. served by GitHub Pages). The broad `dist/` rule above would ignore it, so it
 # is exempted here. The SOURCE lives in site/source/; rebuild after editing any site/source/**.emd:
