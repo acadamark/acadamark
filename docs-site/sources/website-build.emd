@@ -1,0 +1,109 @@
+<meta type=article>
+  <title | Building a Website>
+  <author | The Enscribe Project>
+</meta>
+
+<config toc toc-location=right />
+
+A **website** is enscribe's third document class, alongside the article and the
+book. Where an article is one document and a book is one document read a chapter
+at a time, a website is a *set* of documents — many pages, navigated as a site.
+Each page is itself an ordinary enscribe document — an article or a book — and the
+site is assembled from them by one master document. This page covers writing a
+website master and building it to a static site you can deploy anywhere that serves
+HTML.
+
+<# The master document #>
+
+A website's entry point is a master with `<meta type=website>` and a `<nav>` that
+lists its pages:
+
+```
+<meta type=website>
+  <title | My Project>
+  <icon | logo.svg>
+</meta>
+
+<nav>
+  <item home | Home>
+  <item guide | Guide>
+  <nav-group | Reference>
+    <item reference/api | API>
+    <item reference/cli | CLI>
+  </nav-group>
+</nav>
+
+<footer src="footer.emd" />
+```
+
+The `<nav>` is the **single source of truth for site structure**. An `<item src |
+Label>` is a page: `src` points at the page's source (a flat `page.emd`, or a
+`page/` directory whose body is `page/index.emd`), and the label is its menu text.
+A `<nav-group title="…"> … </nav-group>` groups pages — a dropdown in the top bar,
+an expandable node in the sidebar. The brand name and icon in the top bar come from
+the master's `<meta>` title and `<icon>`; a site-wide `<footer src>` is set once
+here.
+
+Reorganizing the menu is an edit to `<nav>`, never a file move — the same page can
+appear anywhere in the menu without moving on disk.
+
+<# Each page is an article or a book #>
+
+A page's source is a normal enscribe document. A page that is `<meta type=article>`
+renders as an article; a page that is `<meta type=book>` renders as a book, with
+its own chapters and chapter rail. **Nothing is flattened**: a book page keeps book
+numbering (a figure stays "2.1"), an article page keeps article numbering ("Figure
+1"). The site does not impose a numbering scheme on its pages — each numbers as it
+would if you opened it on its own.
+
+<# The build command #>
+
+Point `enscribe build` at the website master and give it an **output directory**:
+
+```
+enscribe build site.emd -o site/
+```
+
+This writes a **dir-per-page static site**: the first page in the nav is the home
+page and lands at the site root (`site/index.html`); every other page is written at
+its menu location (`site/guide/index.html`, `site/reference/api/index.html`), so the
+URLs mirror the menu (`/guide/`, `/reference/api/`). A page that is itself a book is
+published as its own set of per-chapter pages, nested under the page's directory.
+
+Because a site is many files, `-o` must be a **directory**. The pretty
+trailing-slash URLs need an HTTP server (the trailing slash resolves to `index.html`
+via the host's directory index); a website is not meant to be opened off `file://`.
+
+<# Linking between pages #>
+
+Within the site, link to another page by its **slug** with `<a {slug} | label>`:
+
+```
+See <a guide | the guide> to get started.
+```
+
+The builder resolves the slug to the target page's URL, relative to the current
+page's depth — so a link keeps working when you reorganize the menu. A page's slug
+is its stable identity, taken from the first of: an explicit `<meta slug="…">` in
+the page, else its `<meta title>`, else its nav label. (Pin a `<meta slug>` on a
+page you link to, so renaming its title can't break inbound links.) A link to a
+slug no page has does not stop the build — it renders the link text in place,
+flagged, with a warning on the console.
+
+**Cross-references reach across pages too.** A `<ref @id>` to a figure, table, or
+section on another page resolves to that target's own number and links to the page
+it lives on — in every direction, including a reference from an article page into a
+book page's chapter (which shows the book-native "Figure 2.1").
+
+<# Reading it live #>
+
+The same master also builds a **live** site — a portable folder whose pages render
+in the browser, navigated by a client-side `?page=slug` router:
+
+```
+enscribe build site.emd --live -o site/
+```
+
+Serve that folder over HTTP and the site renders client-side, with the back/forward
+buttons working. The static build (above) is the deployable, search-engine-friendly
+projection of the same site.
