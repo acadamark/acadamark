@@ -15,7 +15,6 @@ import { dirname, join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveWebsite, mountLiveShell } from '../src/interpreter/browser.js';
 import { buildOnThisPage } from '../src/interpreter/assets/website-nav-asset.js';
-import { buildLayer1Catalog, buildShorthandCatalog } from '../../../docs-site/gen-reference.js';
 
 const DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-website');
 const read = (n) => readFileSync(join(DIR, n), 'utf8');
@@ -136,49 +135,13 @@ export async function run() {
     console.log('PASS: #223/#246 — buildOnThisPage skips frame/aside demo headings (no rail pollution)');
   }
 
-  // ── #223/#246: the GENERATED Documentation catalogs render through the website type ──
-  // Renders the Shorthand catalog (fast; its sigil examples nest <section> demos inside <frame> boxes) and
-  // data-checks the Layer 1 catalog's frame copies. Locks: <code>+<frame> examples, no render errors, frame
-  // demos kept OUT of the on-this-page rail, no duplicate ids (stripped in the live copy), floats suppressed.
-  {
-    const { dom, orig } = installDom();
-    const SH = buildShorthandCatalog().emd;
-    global.fetch = async (u) => {
-      const n = String(u).split('/').pop().split('?')[0];
-      return n === 'shorthand-catalog.emd'
-        ? { ok: true, status: 200, text: async () => SH }
-        : { ok: false, status: 404, text: async () => '' };
-    };
-    try {
-      const master = ['<meta type=website>', '<title | Docs>', '</meta>', '',
-        '<nav>', '<item src="shorthand-catalog.emd" | Shorthand>', '</nav>'].join('\n');
-      const root = await mountLiveWebsite('#root', master);
-      const c = root.querySelector('[data-enscribe-content]');
-      const otp = root.querySelector('[data-enscribe-onthispage]');
-      assert.ok(c.querySelectorAll('section').length > 10, 'the Shorthand catalog renders its entry sections');
-      assert.ok((c.querySelector('pre code') || c.querySelector('pre')) && c.querySelector('figure.frameable-border'),
-        'each example renders a <code> source block + a <frame> live box');
-      assert.strictEqual((c.innerHTML.match(/__ref-error|render error/g) || []).length, 0, 'no render errors in the catalog');
-      assert.ok(!/Methods|Materials|Reagents/.test(otp.textContent),
-        'a frame-nested sigil-section demo does not leak into the on-this-page rail');
-      const ids = [...c.querySelectorAll('[id]')].map((el) => el.id);
-      assert.strictEqual(ids.length, new Set(ids).size, 'no duplicate ids (stripped in the frame copies)');
-      console.log('PASS: #223/#246 — generated catalog renders through the type (code+frame, no errors, no rail leak, no dup ids)');
-    } finally {
-      restoreDom(orig);
-    }
-
-    // Layer 1 catalog data check (no full render): every <frame> live copy has its ids stripped, and the
-    // float-suppression <config> is present so demo boxes don't accumulate a "Figure N" count.
-    const l1 = buildLayer1Catalog().emd;
-    const frameCopies = [...l1.matchAll(/<frame[^>]*>\n([\s\S]*?)\n<\/frame>/g)].map((m) => m[1]);
-    assert.ok(frameCopies.length > 50, 'the Layer 1 catalog emits many <frame> demos');
-    assert.ok(/<frame -numbered>/.test(l1), 'frame demo wrappers are -numbered (the boxes don\'t accumulate "Figure N")');
-    // The curated example frames (the `Examples` sub-sections) have their `#id`s stripped in the live
-    // copy so repeated demos don't collide — proven by the shorthand-catalog mount's no-duplicate-ids
-    // assertion above; the section-element example's demo `#demo` ids are the case it guards.
-    console.log('PASS: #223/#246 — Layer 1 catalog generator: frame demos -numbered + ids stripped in the live copy');
-  }
+  // (Retired with the old docs-site: the GENERATED Documentation catalog block — it imported
+  // docs-site/gen-reference.js (buildLayer1Catalog/buildShorthandCatalog) to render the auto-built
+  // Shorthand/Layer-1 catalogs through the website type. Those generators retired with the docs-site
+  // archival; the new docs site (docs-source/) hand-authors its vocabulary as a book, so there is no
+  // generated catalog to exercise here. The buildOnThisPage frame/aside-skip unit test above and the
+  // mountLiveWebsite parity tests below — the load-bearing #314/#318 coverage — do not use the
+  // generators and stand on their own.)
 
   // ── mount: chrome (brand + dropdown + sidebar + footer) + first-page content + cross-page ref ──
   {

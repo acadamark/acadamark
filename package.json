@@ -24,9 +24,9 @@
   "scripts": {
     "test": "npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",
-    "docs:gen": "node docs-site/gen-catalogs.js",
-    "docs:build": "npm run docs:gen && node docs-site/build.js",
-    "docs:build-live": "npm run docs:gen && npm run build:lib -w @enscribejs/enscribe && node packages/cli/bin/enscribe.js build docs-site/site.emd --live -o docs-site/dist-live"
+    "build:site": "rm -rf site && node packages/cli/bin/enscribe.js build docs-source/index.emd -o site",
+    "build:site-live": "npm run build:lib -w @enscribejs/enscribe && node packages/cli/bin/enscribe.js build docs-source/index.emd --live -o site/live",
+    "build:site-all": "npm run build:site && npm run build:site-live"
   },
   "dependencies": {
     "jats-xml": "^1.1.5"

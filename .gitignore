@@ -17,38 +17,32 @@ node_modules/
 # two generated files deliberately committed (see bottom), it is NOT tracked: it
 # is large, machine-built, and rebuilt on demand. The `dist/` pattern (no
 # leading slash) matches the per-package dist directory at any depth — and does
-# not match either committed `src/` file below.
+# not match either committed `src/` file below, nor anything under `site/` (the
+# built site writes to the `-o` ROOT, not a `dist/` subdir).
 dist/
-# #223/#246: the live-folder dogfood output (`docs:build-live` → docs-site/dist-live/) — also
-# machine-built (it copies the ~3 MB engine bundle), reproducible via the script, never tracked.
-dist-live/
-# #323: the five generated `.emd` that `docs:gen` (gen-catalogs.js) writes into docs-site/sources/.
-# These are build product — regenerated from packages/layer1-vocabulary/elements/*.md on every build
-# path (`docs:build` / `docs:build-live` both run `docs:gen` first; nothing consumes them un-regenerated)
-# — so committing them only created a drift source (they would silently go stale; cf. the manual
-# `40510c8 "docs rebuild"`). Untracked, the staleness class is gone: there is no committed artifact to lag.
-# Listed explicitly (not a glob) so the AUTHORED `.template.emd` siblings — enscribe-shorthand.template.emd,
-# layer1.template.emd, rendering-guide.template.emd — stay tracked; those are hand-edited prose.
-#   • Fully generated (no authored source):
-docs-site/sources/layer1-catalog.emd
-docs-site/sources/shorthand-catalog.emd
-#   • Authored .template.emd + a docs:gen-injected block (the .template.emd stays tracked, the rendered .emd does not):
-docs-site/sources/enscribe-shorthand.emd
-docs-site/sources/layer1.emd
-docs-site/sources/rendering-guide.emd
-# #278: the STATIC docs-site build output is the deliberate exception — it IS tracked, because it is
-# the deployed site (e.g. served by GitHub Pages). The broad `dist/` rule above would ignore it, so it
-# is exempted here. The SOURCE lives in site/source/; rebuild after editing any site/source/**.emd:
-#   node packages/cli/bin/enscribe.js build -o site/dist site/source/index.emd
-!site/dist/
-# ...but keep the regenerable engine assets copyShellAssets drops at the dist root OUT of git: the static
-# pages are self-contained (they inline default.css; no local <link>/<script>), so these are unused here,
-# and they are the same large machine-built bundles the `dist/` policy above keeps untracked everywhere
-# else (enscribe.browser.global.js is ~3 MB). A fresh build re-creates them locally; they stay ignored.
-site/dist/enscribe.browser.global.js
-site/dist/enscribe-shell.css
-site/dist/editor-codemirror.js
-site/dist/default.css
+
+# ─── THIS site's build output (docs-source/ → site/) ────────────────────────
+# `site/` is the built docs site (enscribe.org). It is a deploy fact of THIS repo
+# only: the STATIC build writes to `site/` (home at the root), the portable LIVE
+# folder to `site/live/`. The engine's output is purely `-o`-driven and knows
+# nothing of these paths. The built tree is deliberately COMMITTED so GitHub Pages
+# serves it with no build step; rebuild with `npm run build:site-all` (which does
+# `rm -rf site` first — a clean rebuild, never additive staleness). Committed build
+# output is an accepted tradeoff: the tree can lag `docs-source/` until the next
+# rebuild + commit (or until CI automates it).
+#
+# The ONE exception (the same rationale the retired `site/dist/` rules carried,
+# repointed to the new layout): the STATIC pages are self-contained — they inline
+# their CSS, with no local <link>/<script> — so the large machine-built engine
+# assets copyShellAssets drops at the static root are UNUSED there, the same ~3 MB
+# bundles the `dist/` policy keeps untracked everywhere else. They are ignored at
+# the static root ONLY. The LIVE folder's copies (site/live/*) ARE referenced by
+# the live shell and stay tracked; the leading-slash paths below anchor to the
+# static root, so they never match site/live/.
+/site/enscribe.browser.global.js
+/site/enscribe-shell.css
+/site/editor-codemirror.js
+/site/default.css
 
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo

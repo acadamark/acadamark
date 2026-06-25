@@ -1,5 +1,5 @@
 // Guard (#241): the curated FEATURED_SHORTHAND / FEATURED_LAYER1 lists stay in
-// lockstep with the vocabulary. The docs-site Vocabulary intros render each featured
+// lockstep with the vocabulary. The docs site's Vocabulary intros render each featured
 // tagname's example FROM the vocab source, so a list entry that names a removed,
 // renamed, aliased, or example-less element would ship a broken/empty intro cell.
 // This test fails — naming the offending tag — on any of those.
@@ -25,7 +25,7 @@ function checkList(name, list, { requireLayer1Html }) {
       canonicalName(spec), tag,
       `${name}: featured tag '${tag}' is an alias of '${canonicalName(spec)}' — feature the canonical tagname.`,
     );
-    // (3) Carries a usable shorthand example (docs:gen emits shorthand_examples[0].source as the intro's .emd).
+    // (3) Carries a usable shorthand example (the intro renders shorthand_examples[0].source).
     const ex = Array.isArray(spec.shorthand_examples) ? spec.shorthand_examples[0] : undefined;
     assert.ok(
       ex && typeof ex.source === 'string' && ex.source.trim(),

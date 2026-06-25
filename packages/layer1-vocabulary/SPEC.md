@@ -28,8 +28,8 @@ in the roadmap).
 
 Each element entry declares a `category` in its frontmatter — the
 machine-readable form of the role grouping the tables below express in
-prose. It exists so consumers can group the vocabulary mechanically (the
-docs-site coverage gallery walks the entries and groups by `category`,
+prose. It exists so consumers can group the vocabulary mechanically (a
+coverage gallery can walk the entries and group by `category`,
 so completeness is structural rather than hand-maintained). The canonical
 category values are:
 

@@ -1,0 +1,24 @@
+<meta type=book slug=enscribe-vocabulary>
+<title | The Enscribe Vocabulary>
+<subtitle | Every author-facing construct — registers, arguments, and live examples>
+<author>
+<name | Generated from the Enscribe vocabulary source>
+</author>
+</meta>
+
+<config number-tables=false />
+
+<chapter src="sections.emd" | Sections>
+<chapter src="block-prose.emd" | Block prose>
+<chapter src="inline-formatting.emd" | Inline formatting>
+<chapter src="code.emd" | Code>
+<chapter src="frameables.emd" | Frameables>
+<chapter src="math.emd" | Math>
+<chapter src="theorem-family.emd" | Theorem family>
+<chapter src="citations-and-references.emd" | Citations & references>
+<chapter src="structured-data-containers.emd" | Structured-data containers>
+<chapter src="storage-hosts.emd" | Storage hosts>
+<chapter src="configuration.emd" | Configuration>
+<chapter src="navigation.emd" | Navigation>
+<chapter src="showcase.emd" | Showcase>
+

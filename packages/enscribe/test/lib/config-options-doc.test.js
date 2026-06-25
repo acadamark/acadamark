@@ -1,5 +1,5 @@
 // Guard (#239): CONFIG_OPTIONS_DOC (the human doc layer) stays in lockstep with CONFIG_KWARGS
-// (the structured authority). The docs-site Rendering-guide grid generates from the doc layer,
+// (the structured authority). The docs site's Rendering-guide grid generates from the doc layer,
 // so a key added to the Map without a doc entry — or a doc entry that drifts in type / status —
 // would ship a wrong or incomplete grid. This test fails on any of those.
 
