@@ -25,11 +25,7 @@ shorthand_examples:
         <title | The Effect of Elephants on Climate>
         <subtitle | A Multi-Year Field Study in Tanzania>
       </meta>
-    layer1_html: |
-      <article-front>
-        <article-title>The Effect of Elephants on Climate</article-title>
-        <article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle>
-      </article-front>
+    layer1_html: '<article><article-front><meta><article-title>The Effect of Elephants on Climate</article-title><article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle></meta></article-front></article>'
 interpreter_strategy: schema
 ---
 

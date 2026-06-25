@@ -70,8 +70,7 @@ jats_counterpart:
     export.
 shorthand_examples:
   - source: '<frame | A short callout.>'
-    layer1_html: |
-      <figure class="frameable-border">A short callout.</figure>
+    layer1_html: '<figure class="frameable-border">A short callout. <figcaption><span class="figure-label">Figure 1.</span></figcaption></figure>'
     notes: |
       The simplest case. The handler emits a <figure> wrapper (the vocab
       html_output.element `frame` is only the lookup key for handler-strategy
@@ -81,11 +80,7 @@ shorthand_examples:
       <frame type=note title="Important" |
       Make sure to read this carefully.
       >
-    layer1_html: |
-      <figure class="frameable-border" data-frame-type="note">
-        <figcaption class="title">Important</figcaption>
-        Make sure to read this carefully.
-      </figure>
+    layer1_html: '<figure class="frameable-border" data-frame-type="note"><figcaption class="title">Important</figcaption>Make sure to read this carefully. <figcaption><span class="figure-label">Figure 1.</span></figcaption></figure>'
     notes: |
       With a title rendered at the top.
   - source: |
@@ -94,13 +89,7 @@ shorthand_examples:
       2. Clean.
       3. Model.
       >
-    layer1_html: |
-      <figure class="frameable-border" id="fig:method-box">
-        1. Collect data.
-        2. Clean.
-        3. Model.
-        <figcaption>Figure 1. Workflow steps</figcaption>
-      </figure>
+    layer1_html: '<figure class="frameable-border" id="fig:method-box"><ol><li>Collect data.</li><li>Clean.</li><li>Model.</li></ol><figcaption><span class="figure-label">Figure 1.</span> Workflow steps</figcaption></figure>'
     notes: |
       Numbered by default (#272). Shares the figure counter with
       <fig>/<svg>/<mermaid>/<abc>; use -numbered for an unnumbered frame.

@@ -58,13 +58,7 @@ shorthand_examples:
 
       **Conclusion:** Conservation efforts are essential.
       >
-    layer1_html: |
-      <abstract data-abstract-type="structured">
-        <p><strong>Background:</strong> Elephant populations have declined significantly.</p>
-        <p><strong>Methods:</strong> We surveyed 50 forest sites over 10 years.</p>
-        <p><strong>Results:</strong> Decline correlates with vegetation loss.</p>
-        <p><strong>Conclusion:</strong> Conservation efforts are essential.</p>
-      </abstract>
+    layer1_html: '<abstract data-abstract-type="structured"><p><b>Background:</b> Elephant populations have declined significantly.</p><p><b>Methods:</b> We surveyed 50 forest sites over 10 years.</p><p><b>Results:</b> Decline correlates with vegetation loss.</p><p><b>Conclusion:</b> Conservation efforts are essential.</p></abstract>'
     notes: |
       Structured abstract using markdown bold for section headings.
       Common in medical and scientific journals. The structure is

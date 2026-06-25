@@ -24,7 +24,7 @@ jats_counterpart:
     text (inheritance behavior).
 shorthand_examples:
   - source: 'This has *emphasized* content.'
-    layer1_html: '<p>This has <em>emphasized</em> content.</p>'
+    layer1_html: '<p>This has <i>emphasized</i> content.</p>'
     notes: |
       Plain markdown emphasis with single asterisks (or single underscores)
       produces <em> elements. This is the most common authoring path.

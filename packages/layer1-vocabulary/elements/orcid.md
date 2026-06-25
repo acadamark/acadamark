@@ -45,11 +45,7 @@ shorthand_examples:
         <name | Jane Goodall>
         <orcid | https://orcid.org/0000-0002-1825-0097>
       </author>
-    layer1_html: |
-      <author>
-        <name>Jane Goodall</name>
-        <orcid>https://orcid.org/0000-0002-1825-0097</orcid>
-      </author>
+    layer1_html: '<author><name>Jane Goodall</name><orcid><a href="https://orcid.org/0000-0002-1825-0097">https://orcid.org/0000-0002-1825-0097</a></orcid></author>'
     notes: |
       URL form is accepted but bare form is preferred.
 interpreter_strategy: schema

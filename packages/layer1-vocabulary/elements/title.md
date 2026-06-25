@@ -36,10 +36,7 @@ shorthand_examples:
       <meta>
         <title | The Effect of Elephants on Climate>
       </meta>
-    layer1_html: |
-      <article-front>
-        <article-title>The Effect of Elephants on Climate</article-title>
-      </article-front>
+    layer1_html: '<article><article-front><meta><article-title>The Effect of Elephants on Climate</article-title></meta></article-front></article>'
     notes: |
       Inside <article>, <title> in <meta> becomes <article-title>.
   - source: |
@@ -48,20 +45,14 @@ shorthand_examples:
           <title | A Comprehensive Guide>
         </meta>
       </book>
-    layer1_html: |
-      <book-front>
-        <book-title>A Comprehensive Guide</book-title>
-      </book-front>
+    layer1_html: '<book><meta><title>A Comprehensive Guide</title></meta></book>'
     notes: |
       Inside <book>, <title> in <meta> becomes <book-title>.
   - source: |
       <meta>
         <title | The role of <i type=taxonomic | Loxodonta africana> in ecosystem dynamics>
       </meta>
-    layer1_html: |
-      <article-front>
-        <article-title>The role of <i data-italic-type="taxonomic">Loxodonta africana</i> in ecosystem dynamics</article-title>
-      </article-front>
+    layer1_html: '<article><article-front><meta><article-title>The role of <i data-italic-type="taxonomic">Loxodonta africana</i> in ecosystem dynamics</article-title></meta></article-front></article>'
     notes: |
       Titles can contain inline elements. The recursive content parsing
       handles nested constructs.

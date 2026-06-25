@@ -37,8 +37,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <definition | A *group* is a set with an associative binary operation, identity, and inverses.>
-    layer1_html: |
-      <definition>A <em>group</em> is a set with an associative binary operation, identity, and inverses.</definition>
+    layer1_html: '<definition><span class="definition-label">Definition 1.</span> A <i>group</i> is a set with an associative binary operation, identity, and inverses.</definition>'
   - source: |
       <definition name="Group" #def:group>
       A *group* is a set $G$ together with a binary operation

@@ -36,7 +36,7 @@ shorthand_examples:
       Plain markdown backticks produce inline <code>. The most common
       authoring path.
   - source: 'Use `<`code`>` for inline code.'
-    layer1_html: '<p>Use <code>code</code> for inline code.</p>'
+    layer1_html: '<p>Use <code>&#x3C;</code>code<code>></code> for inline code.</p>'
     notes: |
       The enscribe sigil form. Equivalent to plain markdown backticks
       but supports attributes.

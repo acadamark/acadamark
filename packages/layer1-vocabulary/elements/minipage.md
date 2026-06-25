@@ -72,8 +72,7 @@ jats_counterpart:
     export. The sealed body's resolved Layer 1 is the boxed-text content.
 shorthand_examples:
   - source: '<minipage | Two panels side by side.>'
-    layer1_html: |
-      <figure class="frameable-border">Two panels side by side.</figure>
+    layer1_html: '<figure class="frameable-border"><p>Two panels side by side.</p><figcaption><span class="minipage-label">Minipage 1.</span></figcaption></figure>'
     notes: |
       The simplest case. The handler emits a <figure> wrapper (the vocab
       html_output.element `minipage` is only the lookup key for handler-strategy
@@ -87,13 +86,7 @@ shorthand_examples:
       <fig #fig:left src="left.png" | Left panel.>
       <fig #fig:right src="right.png" | Right panel.>
       >
-    layer1_html: |
-      <figure class="frameable-border" id="mp:compare">
-        <p>A figure here counts privately.</p>
-        <figure id="fig:left"><img src="left.png"><figcaption>Figure 1. Left panel.</figcaption></figure>
-        <figure id="fig:right"><img src="right.png"><figcaption>Figure 2. Right panel.</figcaption></figure>
-        <figcaption>Minipage 1. Side-by-side comparison</figcaption>
-      </figure>
+    layer1_html: '<figure class="frameable-border" id="mp:compare"><p>A figure here counts privately.</p><figure id="mp-compare-fig:left"><img alt="Left panel." src="left.png"><figcaption><span class="figure-label">Figure 1.</span> Left panel.</figcaption></figure><figure id="mp-compare-fig:right"><img alt="Right panel." src="right.png"><figcaption><span class="figure-label">Figure 2.</span> Right panel.</figcaption></figure><figcaption><span class="minipage-label">Minipage 1.</span> Side-by-side comparison</figcaption></figure>'
     notes: |
       Numbered by default (#272). It counts in its own
       "Minipage N" series — `<ref @mp:compare>` resolves to "minipage 1". The two
