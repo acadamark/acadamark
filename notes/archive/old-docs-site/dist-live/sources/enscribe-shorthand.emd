@@ -1,0 +1,129 @@
+<meta type=article>
+  <title | Enscribe Shorthand>
+  <author | The Enscribe Project>
+</meta>
+
+<config toc toc-location=right toc-depth=2 />
+
+Enscribe Shorthand is the register you write by hand — an ergonomic authoring syntax that keeps the
+source close to what you mean. It is one of enscribe's two registers, and everything you write in it
+**expands to Layer 1**, the semantic-HTML representation introduced in the
+<a href="layer1.html" | Layer 1 intro>. This page introduces the idea and shows a few constructs live;
+the comprehensive set lives in the <a href="shorthand-catalog.html" | Shorthand catalog>.
+
+<# #sec:three-forms | One construct, up to three forms #>
+
+Most constructs can be written up to three ways, and all of them compile to the same Layer 1 HTML:
+
+- a **canonical** named tag — `<section | Introduction>`
+- a **sigil** shorthand — `<# Introduction #>`
+- a **markdown** idiom — `# Introduction`
+
+So a section heading can be authored any of these three ways:
+
+```
+<section | Introduction>      (canonical named tag)
+<# Introduction #>            (sigil shorthand)
+# Introduction                (markdown idiom)
+```
+
+Where three forms exist they are interchangeable; where a construct has only one form, the
+<a href="shorthand-catalog.html" | Shorthand catalog> says so. Enscribe also delegates to existing
+parsers wherever it can — pipe tables, fenced code blocks, emphasis, and other markdown idioms are
+accepted as shortcuts — so familiar markup just works.
+
+<# #sec:examples | A few constructs #>
+
+Each example below is pulled live from the vocabulary source — the same source the
+<a href="shorthand-catalog.html" | Shorthand catalog> is generated from — so it cannot drift from what
+the engine actually accepts. Each shows the authored shorthand, then its rendered result.
+
+<sub-section #featured-section | `<section>`>
+
+<code>
+<section | Introduction>
+The paper begins here.
+</code>
+
+<frame -numbered>
+<section | Introduction>
+The paper begins here.
+</frame>
+
+<sub-section #featured-sub-section | `<sub-section>`>
+
+<code>
+<sub-section | Quantitative analysis>
+Sub-section content.
+</code>
+
+<frame -numbered>
+<sub-section | Quantitative analysis>
+Sub-section content.
+</frame>
+
+<sub-section #featured-fig | `<fig>`>
+
+<code>
+<fig src=elephant.jpg | An adult African elephant.>
+</code>
+
+<frame -numbered>
+<fig -numbered src=elephant.jpg | An adult African elephant.>
+</frame>
+
+<sub-section #featured-note | `<note>`>
+
+<code>
+Some text<note | A substantive note about the text.>.
+</code>
+
+<frame -numbered>
+Some text<note | A substantive note about the text.>.
+</frame>
+
+<sub-section #featured-inline-math | `<inline-math>`>
+
+<code>
+The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+</code>
+
+<frame -numbered>
+The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+</frame>
+
+<sub-section #featured-abbr | `<abbr>`>
+
+<code>
+The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
+</code>
+
+<frame -numbered>
+The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
+</frame>
+
+<sub-section #featured-term | `<term>`>
+
+<code>
+An <term | eigenvector> is a non-zero vector that scales under a linear transformation.
+</code>
+
+<frame -numbered>
+An <term | eigenvector> is a non-zero vector that scales under a linear transformation.
+</frame>
+
+<sub-section #featured-theorem | `<theorem>`>
+
+<code>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</code>
+
+<frame -numbered>
+<theorem -numbered | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</frame>
+
+
+<# #sec:more | The full set #>
+
+This is a curated taste. For every shorthand — the sigil cipher and each tag alias, with its Layer 1
+expansion — see the comprehensive <a href="shorthand-catalog.html" | Shorthand catalog>.

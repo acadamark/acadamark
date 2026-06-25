@@ -1,0 +1,539 @@
+<meta type=article>
+  <title | Enscribe Design>
+  <author | The Enscribe Project>
+</meta>
+
+<config toc toc-location=right />
+
+This document captures the design decisions behind enscribe and the reasoning that led to them. It's intended for contributors, for future maintainers, and for the author returning after time away.
+
+# Summary
+
+Academic writing today means LaTeX, a markdown-extension flavor (Quarto, RMarkdown, Bookdown), or Word. The first two treat the finished rich document as something you *compile to* or *render to*, never something you work in directly; Word lets you work in it directly but leaves it structurally inert, with no clean path into the scholarly pipeline. Yet the rich-document renderer already exists, runs on every device, and needs nothing installed: the web browser. HTML is a mature, semantic document format, and the browser displays it natively. What has never been built is the *authoring* layer that would make HTML practical to write — which is the gap that sends academic writing back to those conversion pipelines.
+
+HTML is not hard because its model is wrong. It is hard because it is verbose to type and noisy to read: every element a matched pair of tags, every attribute a quoted pair, every nesting opened and closed by hand. Markdown solved exactly that — the typing — but only for a small set of constructs, and it solved it by abandoning HTML's richness rather than compressing it. The moment a document needs a captioned and numbered figure, a citation, a sidenote, a cross-reference, markdown falls back to raw embedded HTML or to an external processor.
+
+Enscribe is the missing authoring layer. It is a uniform shorthand for a manageable vocabulary of semantic HTML — markdown-like in ease of typing, but without markdown's ceiling and without inventing a new adornment for every feature. An enscribe document *is* HTML: the browser renders it directly, with no compile step in the path.
+
+The project separates two things:
+
+- **Layer 1** — the canonical semantic HTML: a defined vocabulary of custom elements and attributes for academic content. This is the archival, lossless, source-of-truth form.
+- **Layer 2** — the authoring shorthand: a uniform `<tag attrs | content>` syntax that is the practical way a human types Layer 1.
+
+The shape of the system:
+
+<mermaid -numbered>
+graph TD
+  L2["Layer 2 — authoring shorthand (.emd)"]
+  L1["Layer 1 — canonical semantic HTML (the source of truth)"]
+  D["display targets: Layer 1 + CSS · + CSS + JS · render mode (lowered)"]
+  J["JATS XML (scholarly interchange)"]
+  L2 <-->|"lossless round-trip"| L1
+  L1 -->|"display"| D
+  L1 -->|"export"| J
+  J -.->|"import (lossy, with simplifications)"| L1
+</mermaid>
+
+Source files carry the `.emd` extension — the canonical short form — with `.enscribe` accepted as a long-form alias. The extension is a labelling convention only: the parser operates on source text and never dispatches on a file extension, so an enscribe document is recognized by its content, not its filename.
+
+Two relationships matter, and they are not the same. Layer 2 and Layer 1 are a **lossless round-trip**: they are one document in two notations — the shorthand is simply a faster way to type the canonical form, and any Layer 1 document can be written back as shorthand. JATS, by contrast, sits outside that loop: Layer 1 **exports** to JATS as a first-class, clean operation (this is enscribe's bridge to professional scholarly publishing), while JATS **import** into Layer 1 is supported but acknowledged-lossy — a one-way conversion that applies necessary simplifications, not a faithful reconstruction.
+
+Everything below is the *how*. The working principles in `notes/specs/principles.md`, the delegation rules in `notes/specs/idioms.md`, and the Layer 1 vocabulary specs are implementations of what this summary states; when a design decision is in question, it should trace back to here.
+
+# The problem
+
+The barrier enscribe addresses is an authoring barrier. The rendering substrate — HTML+CSS+JS, running in every browser — is already capable of academic typesetting. What is missing is a layer between "rich enough to express scholarly content" and "simple enough to author and display": a manageable vocabulary of HTML conventions for academic semantics, and an ergonomic authoring syntax on top of it.
+
+Academic typesetting today splits roughly three ways, and each leaves that authoring layer unbuilt:
+
+- **LaTeX** is powerful and self-consistent, but fragile (compile-time failures), arcane to read, and outside the dominant web ecosystem.
+
+- **Markdown extensions** (RMarkdown, Bookdown, Quarto, Pandoc filters) add academic features at the cost of fragmenting the markdown ecosystem. Each invents its own syntax for citations, cross-references, figure attributes, and so on. None compose with each other. Each requires its own parser, often outside the JavaScript ecosystem where the rendering ultimately happens. Extensions also accrete idioms — trailing curly-brace attributes, fenced div blocks, double-colon directives — that erode the visual simplicity that made markdown attractive in the first place.
+
+- **Raw HTML** can express anything but is laborious to author by hand and lacks standard conventions for academic semantics. This is the verbosity problem the summary describes: HTML's model is sound, but typing and reading it by hand is the barrier.
+
+There is also a gap on the receiving end. JATS (Journal Article Tag Suite) has become the widely accepted interchange format for scholarly articles, but JATS is an XML vocabulary with no standard display target — a JATS document is not directly readable; it needs a stylesheet or a viewer. And JATS is vast: it is built for completeness, not for authoring or for display.
+
+# Core insight
+
+Treat HTML as the ground truth, not the export target.
+
+Most markdown-extension projects start from "markdown plus features" and the features are shaped by what the parser happened to make easy. Enscribe inverts this: first define the HTML conventions that express academic semantics, then design the shortest authoring path to that HTML.
+
+This produces two layers, independently valuable:
+
+- **Layer 1 (semantic HTML)** is a target anyone can write to. A different authoring tool, a converter from another format, or a hand-author can all produce enscribe-conformant HTML. The downstream ecosystem (rendering, export, accessibility tooling) treats it as ordinary HTML.
+
+- **Layer 2 (shorthand)** is one possible authoring surface for Layer 1. Decoupling them means the shorthand can evolve, be replaced, or coexist with alternatives without disturbing the semantic foundation.
+
+Two terms are used throughout this document and the project. *Rich text* is text embellished with the things ordinary documents have — bold, italic, links, tables, images. *Rich documents* are text documents that additionally carry the apparatus of scholarly writing — figures, captioned and numbered, citations, notes, cross-references, theorems, embedded math and diagrams. Layer 1 is, in essence, a vocabulary for rich documents: a set of custom HTML elements that lets a browser display the things a rich document needs and JATS already names.
+
+# Layer 1: Semantic HTML conventions
+
+The Layer 1 specification (see `notes/`) defines:
+
+- **Structural elements.** Standard HTML5 (`article`, `section`, `figure`, `aside`, `nav`) wherever it suffices. Custom elements (`<sub-section>`, `<theorem>`, `<proof>`, etc.) where HTML5 is insufficient, using the native custom-elements mechanism. (Figures use HTML5's native `<figure>`; `<fig>` is retained as its JATS export name and an authoring alias — see "Frameable elements" below.)
+
+- **Semantic attributes.** A defined vocabulary of `data-*` attributes for academic metadata: `data-cite-key`, `data-figure-number`, `data-ref-target`, `data-numbering-style`, etc. Standard `id` and `class` retain their normal meanings.
+
+- **Embedded DSLs.** A convention for embedding domain-specific text (LaTeX math, ABC music notation, Mermaid diagrams, CSV tables) using fenced code blocks tagged with a language identifier, dispatched to appropriate renderers.
+
+- **Citation and reference semantics.** Citation keys and reference lists expressed as HTML elements with defined attributes, allowing any CSL-compliant processor to format them.
+
+- **Numbering and cross-reference semantics.** Numbered elements declare their numbering domain; references resolve against those domains in a post-parse pass.
+
+The specification is the deliverable for Layer 1. Anyone can produce conformant HTML by any means.
+
+Layer 1 has one further property that the rest of this document leans on heavily: it is *canonical*. It is the archival representation — custom-element-rich, semantically explicit, lossless. It is the form the JATS export reads. And it is the input to every way of displaying an enscribe document. The "Layer 1 is canonical; display is a downstream ladder" section below states this precisely and explains why it has to be so.
+
+# JATS as reference and export target
+
+JATS is the established XML schema for academic articles, developed by NIH/NLM and used throughout scholarly publishing. JATS has spent two decades refining a vocabulary for academic content — author lists, affiliations, abstracts, structured references, glossaries, funding statements, and much more. Enscribe does not duplicate this work.
+
+Two principles govern enscribe's relationship to JATS:
+
+**JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Enscribe adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and enscribe is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/specs/layer1-naming.md` for the binding rule.)
+
+**JATS as first-class export target.** Enscribe Layer 1 HTML compiles to JATS XML via the `rehype-enscribe-to-jats` plugin. This makes enscribe documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
+
+JATS import is the weaker, deliberately lossy direction. A JATS document can be converted *into* Layer 1, but the conversion applies necessary simplifications — JATS's vocabulary is far larger than Layer 1's, and constructs with no Layer 1 equivalent are reduced rather than faithfully preserved. Import is a useful on-ramp from the existing scholarly corpus; it is not a round-trip guarantee. The only lossless round-trip in the system is between Layer 2 shorthand and Layer 1, because those two are the same document in two notations.
+
+The relationship is instructive, and its *direction* matters. JATS is the vocabulary enscribe *consults* when growing Layer 1, and the format enscribe *exports* to — but it does not *shape* Layer 1. **Layer 1 is HTML-shaped, not JATS-shaped.** An enscribe document is HTML internally; its HTML render is a (near-)identity projection rather than a translation, and JATS export is the translation — a first-class feature, not the mission. Where JATS has 200-plus XML elements and no display target, Layer 1 is a manageable set of HTML elements that render directly in a browser and translate cleanly to JATS on export. This is the *decided direction*, migrating element-group by element-group under the tracking epic (<a href="https://github.com/enscribejs/enscribe/issues/147" | issue #147>); lists are the inaugural case and figures are the second migrated group, and the rest of the vocabulary — everything after lists and figures — is still custom-element-shaped today.
+
+What enscribe does *not* do, and where it differs from JATS:
+
+- JATS is XML; enscribe is HTML. JATS documents require a stylesheet or viewer to be readable. Enscribe documents are directly browser-renderable.
+- JATS has no authoring syntax. Enscribe's shorthand is what humans actually type.
+- JATS rewards completeness; enscribe rewards getting started. Required JATS metadata can be filled with defaults or generated at export time.
+
+Enscribe stays a small subset of JATS in vocabulary terms — but a subset that compiles cleanly into JATS for downstream use.
+
+# The vocabulary-boundary principle
+
+The Layer 1 vocabulary holds *document ideas* — HTML-shaped, semantic, archival. It does **not** hold web-presentation artifacts. The test for whether something belongs in the vocabulary is one question: *is it a property of the document, or of how some channel happens to display the document?* If it is a property of the document, it is a Layer 1 candidate. If it is a property of a display channel — a thumbnail for social-media sharing, a favicon, an Open Graph image, a per-platform render hint — it does not belong in Layer 1 even if a renderer would find it useful.
+
+The principle keeps Layer 1 small and HTML-shaped. The vocabulary's job is to be the archival representation of the document; presentation artifacts that decorate one delivery channel are correctly held elsewhere (build configuration, theme assets, per-target metadata files), not in the source-of-truth vocabulary.
+
+What "HTML-shaped" means concretely: **use the real HTML element where one exists; a `<span>` or `<div>` carrying a class and `data-*` attributes where it doesn't.** HTML is rich for structure (a list is `<ul>` / `<ol>` / `<li>`, a section a `<section>`) and thin for scholarly semantics (a citation has no native element, so it is a classed element with `data-*` metadata) — and that class and `data-*` are exactly what the JATS export reads back to translate across the gap.
+
+**Worked example:** `<thumbnail>` was considered during the deferred-vocabulary scoping and ruled out under this principle. A thumbnail image used for social-media link previews is a property of how one channel (a social platform's link unfurler) displays a pointer *to* the document; it is not a property of the document itself. The same author considering "what would my document need?" does not name a thumbnail; only the consideration "what does Twitter need to make this link pretty?" produces one. That distinction is the principle in action.
+
+The principle does not prevent presentation concerns from being addressed by enscribe — they are addressed by the display ladder (next section), by theme CSS, and by per-target export configuration. It only governs the *vocabulary*: what gets a Layer 1 entry, and what does not.
+
+# Layer 1 is canonical; display is a downstream ladder
+
+A question surfaces naturally once the two-layer model is in place: when an enscribe document is processed, is the output standard HTML+CSS that any browser renders with no help — or is it custom HTML that needs a little JavaScript to come fully to life?
+
+The question is real, but it conflates two things that should be kept apart. One is *what canonical artifact does processing produce*. The other is *how does that artifact get displayed*. Standard HTML+CSS seems to answer both at once, because it is both a representation and something a browser renders natively. But that is what makes it a trap. The two questions have different answers, and separating them dissolves the apparent fork.
+
+**The canonical artifact is Layer 1 — semantic HTML with custom elements.** This is not a fresh decision; it is the spine of everything above. Container-role naming, the named depth ladder, the JATS-as-reference rule, the entire vocabulary — all of it exists to make Layer 1 a *semantically explicit* representation. Layer 1 is the archival form, the JATS export source, and the input to every display strategy.
+
+**Display is a separate, downstream concern, and it has three targets that form a ladder** from richest to plainest:
+
+1. **Layer 1 + CSS, no JavaScript.** The default, and it reaches further than people expect. Browsers render unknown custom elements as generic boxes; CSS styles them without complaint. A `<section-title>` given block display and heading-sized type *is* a heading, visually. The structure of a rich document — sections, figures, captions, typography — needs no JavaScript at all.
+
+2. **Layer 1 + CSS + conditionally-injected JavaScript.** For the things CSS genuinely cannot do: hover previews for citations, cross-reference popovers, other interactive affordances. The interpreter already works this way — it injects the hover-preview bundle only when a document actually contains notes, refs, or citations. The JavaScript is opt-in per document, by content.
+
+3. **Render mode — a lossy lowering to plain HTML headings.** For consumers that cannot accept custom elements at all: a plain feed, an email, a context where custom-element CSS will not be loaded. Render mode lowers `<section-title>` to `<h1>`, `<sub-section-title>` to `<h2>`, and so on.
+
+The decisive fact is the asymmetry between these. Lowering only runs one way. Layer 1 can always be projected down to plain HTML+CSS. Plain HTML+CSS can never be raised back to Layer 1, because the semantic information has been discarded — once `<section-title>` has become `<h1>`, nothing in the output records that it was ever the title of a section rather than, say, the title of the article. This is why render mode is described as *lossy*, and why it cannot be the canonical form. If the lowered HTML were canonical, the JATS export would be trying to reconstruct article-title-versus-section-title from h1-versus-h1 — exactly the distinction the lowering threw away. The JATS bridge works *because* the canonical form is the semantic one.
+
+So "compiles to HTML" means compiles to Layer 1. How Layer 1 reaches a screen is a display-target choice, made per consumer, not per document. The answer to the original question is "both" — but the targets are not peers. One is the source; the others are projections of it.
+
+One honest caveat belongs here. Custom elements styled with CSS carry no built-in semantics: to a screen reader, a `<section-title>` is not a heading, it is an unknown element. This is a genuine accessibility gap, and it is the strongest reason render mode is a first-class display target rather than an afterthought — lowering to real `<h1>`/`<h2>` elements restores heading semantics for assistive technology and for tools that read document outlines. But notice the gap argues for *having* a good lowering, not for making lowered HTML canonical. The fix is to ship render mode well, not to discard the semantics at the source.
+
+# Embedded DSLs: processor delegation
+
+Some content cannot be rendered by HTML alone — LaTeX math, ABC music notation, Mermaid diagrams, CSV tables, executable code. Enscribe handles this through a uniform mechanism: tag content the browser cannot render natively is routed, by a tag-to-processor registry, to a specialized processor that returns something the browser *can* render — HTML, SVG, or a rendered code block. The processor delegates the lexer (and the rendering); enscribe owns the tag identity and the routing.
+
+The model is in production. Math content inside `<$ … $>` or `<$$ … $$>` is handed to KaTeX, which returns HTML. Fenced code inside `` <` … `> `` and `` <``` … ``` > `` is handed to a syntax highlighter. The tag-to-processor mapping is the DSL registry; a new processor (Mermaid, ABC, executable code) is added by extending the registry — the parser and interpreter do not need to know about the new content type. Each tag's content stays as a verbatim string through the recursive-content pass (its content handler is not `default`), so the processor receives the source exactly as the author wrote it.
+
+Each processor has its own attribute vocabulary. CSV uses `align`, `header`; Mermaid uses `theme`, `layout`; executable Python uses `+eval`, `+echo`, `+output`. There is no global "valid processor attribute" list — what each tag accepts is what its processor accepts. A small set of attributes converges by convention because they describe the *output* rather than the engine: `caption`, `id`, `class`, `align`, `width`, `height`. Engines free-pass options they do not apply.
+
+A tag like `<csv>` names two independent things at once — a source language (the bytes are CSV) and a display host (render them as a table); `<mermaid>` likewise fuses "the source is Mermaid" with "show it as a diagram." The current model names those two axes — host and language — explicitly, with the fused standalone tags kept as shorthands for the bound `(host, language)` form. On top of that two-axes model, letting one source drive multiple displays — `<csv #data>` feeding both a table and a `<chart source=#data type=bar>` — is a further reuse *along the language axis*, a natural extension when the need surfaces, not a redesign.
+
+The processor-delegation model is the structural counterpart of the lexer-delegation principle in `notes/specs/idioms.md`. There, remark provides the lexer for markdown constructs and enscribe owns the node identity; here, a specialized processor provides the rendering for non-native content and enscribe owns the tag identity and the routing. The two principles are the same shape — observed, not invented as a meta-principle: delegate the specialized work, own the vocabulary.
+
+## DSL handlers: included vs external
+
+Enscribe's DSL handlers fall into two categories, distinguished by who owns the rendering — enscribe itself, or an external library:
+
+- **Included DSLs.** The rendering primitive lives in enscribe's own vocabulary and pipeline: the handler renders source to final output using machinery enscribe owns and always bundles, and that output is included in enscribe's HTML. Examples: `<math>` and the math-environment tags (KaTeX); `<csv>`/`<tsv>` (Layer-1 tables); `<code>` and the code sigils. The output works without client JavaScript and enscribe owns the rendering end-to-end.
+
+- **External DSLs.** enscribe does not own the rendering and never parses the DSL's semantics into the core; it delegates to an external library. The handler always emits the pass-through markup contract (a wrapper carrying `class` and `data-enscribe-dsl`). Each external DSL's registry entry additionally declares how enscribe can render it on the publisher's behalf, and the publisher chooses per DSL among three modes: **skip** (default) — emit only the contract, the publisher wires rendering; **live** — also emit the external library (inlined or CDN-linked) so the browser renders the contract markup at view time; **static** — invoke the external library at build time (an optional, opt-in dependency) and inline the resulting SVG. Examples: `<mermaid>` (live only) and `<abc>` (live or static). In every mode the semantics stay external; only *when* rendering happens and *who* triggers it differ.
+
+The distinction reflects an architectural reality: some rendering libraries are designed for the browser (DOM-dependent, layout-aware, SVG-generating) and are awkward to run in Node. External DSLs honestly delegate to those libraries in their native environment rather than dragging heavyweight browser-shaped dependencies into the enscribe build. The libraries that back live and static mode are optional dependencies declared per DSL in the registry; the default build (skip mode) pulls none of them, so the engine stays lean unless the publisher asks enscribe to do the rendering. Not every DSL offers every mode — Mermaid's only browserless path needs a headless browser, so enscribe registers it live-only; abc registers both.
+
+Both categories use `interpreter_strategy: handler` in their vocab entries; the category is a property of what the handler does (resolve to final output vs. wrap source in marked markup), not a separate schema field. External-DSL handlers emit a wrapper element with a `data-enscribe-dsl="<name>"` attribute — the contract for downstream build-time tooling that wants to find external-DSL blocks unambiguously, independent of CDN-specific class conventions. The wrapper's class also matches the upstream library's CDN scanning convention where one exists (e.g. `class="mermaid"` for Mermaid) so a consumer who drops in `<script src="cdn/mermaid">` gets working in-browser rendering with no extra wiring.
+
+## Citation formatting is delegated to citation-js / CSL
+
+A specific application of the delegation pattern: **citation formatting, ordering, and style questions are delegated to citation-js / CSL — enscribe does not reimplement or override them.** Bibliography rendering, cluster ordering, author-name disambiguation, "ibid" suppression, locale-specific punctuation, and every other citation-presentation concern is the CSL style's job; enscribe hands the citation keys and the chosen style to citation-js and accepts the result. This is what makes "any CSL-compliant processor" interchangeable with citation-js in principle: enscribe holds only the citation keys and the user-chosen style name, both standard CSL inputs.
+
+The practical consequence: an authoring-side request that would *override* a CSL convention is not an enscribe concern. The canonical example is within-cluster citation ordering — CSL styles sort cluster items by their own internal rules (typically alphabetical-by-author); preserving author input order against that sort would require either overriding the CSL style's XML or patching citation-js. Both are out of scope by this principle. The author who needs a non-CSL ordering chooses a CSL style that produces it, or hand-formats the cluster as prose rather than as a `<cite>`. Enscribe stays on the CSL side of that boundary.
+
+# Layer 2: Authoring shorthand
+
+Two registers, both compiling to Layer 1.
+
+## Register A: Markdown-like
+
+Standard CommonMark works for paragraphs, emphasis, links, lists, fenced code, and headings. Where markdown is sufficient, enscribe uses markdown unmodified.
+
+## Register B: Tag shorthand
+
+For anything requiring attributes or academic semantics, enscribe uses a uniform tag form:
+
+```
+<tagname #id .class1 .class2 attribute=value +flag -flag | content>
+```
+
+Conventions:
+
+- `#text` becomes `id="text"`.
+- `.text` becomes a class (multiple permitted).
+- `attribute=value` is self-explanatory.
+- `+flag` and `-flag` set boolean attributes (`flag="true"`, `flag="false"`).
+- `@key` is a reference: `<ref @fig:elephant>`, `<cite @smith2023>`. The `@` always means "refers to an id"; `#` always means "assigns an id."
+- Everything after `|` is the element's content, which may contain nested shorthand.
+
+## Tag forms
+
+Enscribe tags appear in three syntactic forms:
+
+1. **Pipe form** — `<tag attrs | content>` — short-form with body content. The pipe marks the start of body content; the closing `>` terminates the tag.
+2. **Slash form** — `<tag attrs />` — short-form with no body content. Covers void tags (`<hr />`, `<br />`) and attribute-only tags (`<cite @ref />`, `<ref @key />`). The `/` before `>` marks the tag as self-closing.
+3. **Long form** — `<tag attrs>content</tag>` — content bounded by an explicit closing tag.
+
+The parser disambiguates short-form from long-form by the presence of `|` or `/` before the closing `>`. No registry consultation, no vocabulary lookup, no lookahead. A tag with neither `|` nor `/` is unambiguously a long-form opener.
+
+All three forms work for every tag where they make sense. Void tags (`<hr />`, `<br />`) are typically authored in slash form only — long form has no useful content to put inside. Attribute-only tags like `<cite>` and `<ref>` are typically slash form when no body content is needed. Container tags like `<aside>`, `<theorem>`, `<dl>` are typically long form when their body is multiple paragraphs or nested children, and pipe form when the body is short inline content. The choice is the author's; the parser accepts all three for any tag.
+
+## Implicit closing
+
+Block-level tags don't require explicit closing. A new peer-level tag implicitly ends the previous one, mirroring LaTeX's `\section{}`. This is the single largest authoring affordance over raw HTML and the main reason the shorthand exists.
+
+For example:
+
+```
+<# #intro | Introduction #>
+Some text.
+
+<# #methods | Methods #>
+More text.
+```
+
+becomes (in semantic mode):
+
+```html
+<section id="intro">
+  <section-title>Introduction</section-title>
+  <p>Some text.</p>
+</section>
+<section id="methods">
+  <section-title>Methods</section-title>
+  <p>More text.</p>
+</section>
+```
+
+Inline tags (citations, references, inline math) are typically authored in pipe form (`<cite | @smith2023>`) or slash form (`<cite @smith2023 />`) when used at flow position; the three-form grammar is locally unambiguous regardless of the tag, so the author's choice depends on readability rather than parser constraint.
+
+## Two-register coexistence
+
+The two registers mix freely. Use markdown for prose, drop into tag shorthand when you need attributes or academic constructs:
+
+```
+# Introduction
+
+Standard markdown paragraph with *emphasis* and a [link](url).
+
+<fig #fig:elephant align=right source=elephant.jpg | An adult elephant.>
+
+More markdown prose, with a citation <cite @smith2023>.
+```
+
+The translation rule is strict: any enscribe document maps to exactly one Layer 1 HTML document. There is no ambiguity. And because the mapping is exact, it runs both ways — Layer 1 can be expressed back as shorthand without loss. This is the lossless round-trip the summary describes.
+
+# Layered model and terminology
+
+The layered model has more names than the two-layer summary suggests, because the shorthand register itself splits into a strict subset and a convenience-extended superset. The terms below are the names used consistently across the spec set and the backlog.
+
+- **Layer 1 (custom-HTML, or semantic HTML).** The canonical, archival representation of a document: the JATS-aligned vocabulary of elements (`<article>`, `<section>`, `<fig>`, `<cite>`, `<ref>`, `<note>`, etc.) catalogued in `packages/layer1-vocabulary/elements/`. A Layer 1 document is the source of truth; every other authoring form reduces to one. Two documents that reduce to the same Layer 1 are equivalent.
+
+- **Canonical enscribe.** The lossless shorthand register — the tag form `<tag #id .class attr=value | content>` and the small set of sigil shorthands defined as canonical (`<#>` / `<##>` / `<###>` for sections; `<$>` / `<$$>` for math; the code-fence sigils). Every canonical-enscribe construct round-trips to and from Layer 1 without loss. The translation is bidirectional; either direction recovers the other.
+
+- **Markdown idioms (lossy convenience shortcuts).** The CommonMark constructs that enscribe also accepts — markdown headings (`#`, `##`, `###`), markdown emphasis (`*`, `_`), markdown lists, markdown tables (via remark-gfm), inline-code backticks, math via `$…$`. These reduce *into* Layer 1 but do not round-trip back from it: Layer 1 → enscribe renders the canonical surface, not the markdown idiom. The relationship is one-way reduction; the markdown surface is a convenience for authoring.
+
+- **Strict mode (shipped, #36).** The `<config strict-mode=…>` switch (with a matching `strictMode` render option) that turns the looser registers off, from the top down, making the stricter rungs round-trip-lossless. Three values, each naming the *loosest* register still interpreted: `off` (everything — the default, today's behaviour), `sigil` (no markdown; canonical tags and sigils interpret), `canonical` (no markdown, no sigils; only canonical named tags, plus the `<li>` marker and the `^{}`/`_{}` shortcuts). A non-`off` rung *flags* would-be-shorthand text rather than erroring — it always renders, never fails. The intended use is round-trip-critical pipelines: when an author needs the guarantee that what they wrote comes back unchanged from a Layer 1 → enscribe conversion, the stricter rungs are how they ask for it.
+
+The ladder is: *markdown idiom* → reduces to → *canonical enscribe* → bidirectionally equivalent to → *Layer 1*. The middle step is what makes the round-trip work. The lossy step (markdown idiom → canonical) is acceptable because it goes in the direction of *more* information, not less — naming what was implicit.
+
+## The section-form reduction ladder
+
+The same ladder is the substrate for an explicit decision about section heading forms, recorded here because it has been settled and is referenced from the backlog. Three surfaces all denote a section:
+
+- `<section>…<section-title>…</section-title>…</section>` — the named Layer 1 element form.
+- `<#>…<# #>…</#>` (and the `<# | title #>` shorthand) — the sigil-tag form: canonical enscribe.
+- `# Title` — the bare markdown heading.
+
+The decision: the named form and the sigil form are **co-equal canonical** surfaces — both round-trip to Layer 1 losslessly, and a Layer 1 → enscribe conversion may emit either. The bare markdown heading is a **lossy reduction** to the canonical surface — it produces a section but is not what the round-trip emits. The id-bearing variant `<# #sec:intro | … #>` carries its id through the ladder; the bare-markdown form has no surface for an id and is therefore strictly less expressive than the canonical surfaces.
+
+The implementation check that all three forms actually converge to the identical Layer 1 `<section>` node is satisfied as of the normalize-to-canonical gate landing (the `document-16-section-form-convergence.emd` integration fixture is the convergence proof; the three forms produce structurally identical Layer 1 `<section>` nodes, modulo id presence on the two forms that author one).
+
+# Lift and lower: two mechanisms, not one
+
+Converting between syntax levels uses two distinct mechanisms with different contracts — keeping them apart is what lets each one be simple.
+
+**The tagname↔sigil map (a cipher).** Converts between Layer 1's two canonical-enscribe spellings (named tag ↔ sigil). Pure, **bidirectional**, **lossless**, **data**: a literal source-of-truth list of name↔sigil pairs (`section`↔`#`, `sub-section`↔`##`, `sub-sub-section`↔`###`, `inline-math`↔`$`, `display-math`↔`$$`, `inline-code`↔`` ` ``, `code-block`↔` ``` `). The two sides of a pair are structurally identical and differ only in the tagname token — a substitution, not a transform. The map lives at `packages/enscribe/src/core/tagname-sigil-map.js`; both directions are derived from one literal so they cannot drift. The lift direction (`SIGIL_TO_TAGNAME`) is consumed today by the gate (see below); the lower direction (`TAGNAME_TO_SIGIL`) drives the lowering pass, consumed by `enscribe lower` (canonical source → shorthand sigils, or markdown idioms).
+
+**The lossy lift.** Converts Layer 2 markdown idioms *up* to Layer 1 canonical. **Lift-only** (one-way; Layer 1 lowers to canonical-named-form, not to bare markdown), **lossy** (a markdown idiom may have multiple canonical representations, and one is chosen), a small set of transforms. Each rule is a per-construct rewrite — an mdast `heading` and a canonical section node are different shapes, not the same shape with a different tagname.
+
+# The single gate
+
+All lifting to canonical happens at one early pipeline stage — the **normalize-to-canonical gate** at `packages/enscribe/src/interpreter/plugins/normalize-to-canonical.js`. The gate runs after both parsers (the enscribe Peggy parser and the remark markdown lexer, including remark-math and remark-gfm) have produced nodes, and before any structural plugin runs. Every stage after the gate sees only canonical Layer 1 nodes; no downstream stage handles, sniffs for, or branches on a non-canonical authored form.
+
+The gate's job at a glance:
+
+| Authored form | What the gate emits |
+|---|---|
+| Named `<section>` / `<sub-section>` / etc. | itself (already canonical) |
+| Sigil `<#>` / `<##>` / `<###>` (sections), `<$>` / `<$$>` (math), `` <` `` / ` ``` ` (code) | the canonical Layer 1 name (`section` / `inline-math` / etc.) via the tagname↔sigil map |
+| Bare markdown `#` / `##` / `###` (depths 1-3) | a canonical `<section>` / `<sub-section>` / `<sub-sub-section>` enscribeTag |
+| Bare markdown emphasis (`*foo*`) | `<i>` |
+| Bare markdown strong (`**foo**`) | `<b>` |
+| Bare GFM strikethrough (`~~foo~~`) | `<s>` |
+| Bare inline code (`` `foo` ``) | the canonical `<inline-code>` |
+| Bare markdown link (`[text](url)`) | **literal text** — `[text](url)` is no longer an authoring idiom; the `<a>` tag (`<a URL \| text>`) is the only link form. An *autolinked* bare URL or email (remark-gfm) still lifts to `<a>`, since its text is its target. |
+| Bare markdown image (`![alt](url)`) | **literal text** — no longer an idiom; images are `<fig>` / `<figure>`. |
+| Bare `$x$` / `$$x$$` math | a canonical math enscribeTag (`inline-math` / `display-math`) |
+| GFM pipe table | a canonical `<table md>` enscribeTag |
+
+**A new authored form is a new rule at the gate — never a new sniff in a downstream plugin.** This rule is the architecture's payoff: one shape downstream means one set of behaviors, no per-form forking, and a new authored convention has an obvious and structurally enforced place to live.
+
+## The `<h4>`–`<h6>` exception
+
+Layer 1's section ladder caps at three levels (`section` / `sub-section` / `sub-sub-section`). Markdown allows heading depths 1–6. The gate normalizes depths 1–3 to the canonical section ladder; depths 4–6 are **passed through as literal `<h4>` / `<h5>` / `<h6>` HTML elements**, with an informative diagnostic per occurrence ("heading depth N exceeds Layer 1's three section levels; passed through as `<hN>`"). This is a deliberate, narrow, named exception to Layer 1's otherwise-closed custom-element vocabulary — recorded explicitly so a future reader does not assume the vocabulary is perfectly closed.
+
+The exception is one-directional: lifted into the rendered output, not part of the round-trip cipher. How `enscribe lower` should treat an `<h4>` it encounters in the input remains a narrow open policy question — the only still-open piece of the lowering pass, which otherwise ships.
+
+## Deferred: section model in JATS export
+
+Layer 1's three named section elements (`section` / `sub-section` / `sub-sub-section`, LaTeX-shaped, depth capped at three) are a deliberate choice. The alternative — a single nesting-depth-typed `<section>` — is reconsidered in the JATS export arc, where JATS's own section model interacts with this choice. The decision is recorded there, not here.
+
+# Apparatus-tag positioning
+
+A small set of enscribe tags carry information *about* the document rather than the document's body content: `<meta>` (descriptive metadata — title, author, etc.), `<config>` (processing and display settings), `<data>` (referenced resources), `<library>` (bibliography source). These are the **document-apparatus tags**.
+
+The positioning rule: apparatus tags belong at the **document edges**, not in the middle of body flow. The convention is `<meta>` at the start; `<config>` / `<data>` / `<library>` at the end. The structural plugins assume this — they route apparatus tags from the root level into their appropriate regions (`<article-front>`, `<article-back>`, or to root-level siblings). An apparatus tag found mid-body (inside another tag's content array) cannot be routed coherently; the structural plugin emits an informative diagnostic and leaves the misplaced tag where it is. The document still renders (per the always-renders pattern).
+
+`<library>` is a special case: it is legitimately nested inside `<data>` (the typical authoring pattern is `<data><library src="refs.bib" /></data>`). The position check treats `<data>` as transparent — a `<library>` inside `<data>` is correctly placed; a `<library>` anywhere else triggers the warning.
+
+The rule is enforced today as a warning, not a hard error: a misplaced apparatus tag does not fail rendering. Hardening to error-level enforcement is a separate later decision.
+
+Apparatus tags also have a coupled interface principle. Each apparatus tag can be authored two equivalent ways: with **kwargs** for scalar values (`<meta title="X" author="Y">`) or with **child tags** for structured values (`<meta><title>X</title><author>Y</author></meta>`). The Layer 1 canonical shape is the child-tag form. The normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag spec — but only for the true structured-data containers (`<meta>` / `<author>`, via `STRUCTURED_ELEMENTS`); unknown kwargs are dropped with informative diagnostics. `<config>` is the exception in this group: it has **no** child-tag form, so its allowlist (`CONFIG_KWARGS`) only *validates* kwargs and config stays kwargs-only — its structured form, when built, is a fenced data block, not child tags (see the "Configuration and metadata are data" direction below). A kwarg on the wrong apparatus tag — e.g. `<config title=…>` — additionally gets a "did you mean `<meta>`?" misuse hint, and symmetrically for `<meta citation-style=…>`. Both forms are valid authoring; both reduce to the same canonical shape; the lift is the same single-gate normalization the architecture uses for every other authored form.
+
+# Document structure: articles vs. books
+
+Enscribe supports two top-level document shapes, distinguished by
+`<meta type=...>`: **articles** (the default; `type=article` or
+absent) and **books** (`type=book`, with chapters / parts / appendices
+as recursive `<book-part>` children). The two share most of the
+authoring surface — sections, paragraphs, frameables, math, citations,
+notes, references — but their structural wrappers differ.
+
+The distinction matters because the scholarly-publishing ecosystem
+draws it: JATS has two parallel DTDs (the **article DTD** for
+journal articles; **BITS**, the Book Interchange Tag Suite, for
+books). LaTeX has the same split (the `article` document class
+vs. the `book` class). Enscribe inherits the distinction so the
+Layer 1 output maps cleanly to either DTD without per-document
+restructuring.
+
+The pipeline expression of the distinction: two structural plugins —
+`enscribeArticleStructuring` and `enscribeBookStructuring` — sit
+side-by-side as Stage 3 (post-gate). For each document, exactly one
+of them transforms the tree:
+
+- **`enscribeBookStructuring` runs first.** If `<meta type=book>` or
+  `<meta type=book-part>` is at root, it wraps the children into
+  `<book>` with `<book-front>` / `<book-body>` / `<book-back>`
+  regions, routing each `<book-part>` to its appropriate region by
+  `book-part-type` (chapter / part / introduction → body; preface /
+  foreword / dedication → front; appendix / glossary / colophon →
+  back). Otherwise it's a no-op.
+- **`enscribeArticleStructuring` runs next.** If the tree is already
+  book-wrapped, it skips silently. Otherwise it does its article
+  shape (`<article>` containing `<article-front>` / `<article-body>`
+  / `<article-back>`).
+
+Downstream plugins (numbering, note-placement, cross-reference
+resolution) are aware of both shapes: they detect the document type
+by walking the post-structuring tree's root and dispatch
+accordingly. Per-document configuration knobs surface the
+article-vs-book defaults that diverge:
+
+- **`<config counter-reset-scope>`** — `none` (article default;
+  global counters) / `chapter` (book default; per-`<book-part>`
+  resets) / `section` (deeper resets, per-outermost-`<section>`).
+  Cross-reference rendering follows the scope: chapter scope
+  produces "Figure 1.3"; section scope produces "Figure 1.2.3";
+  none produces "Figure 3" (current article behavior).
+- **`<config note-scope>`** — `document` (single back-matter list)
+  / `chapter` (book default; per-`<book-part>` collection at
+  chapter end) / `section` (article default; outermost-section
+  collection, per the slice 7001aaa PG-1 behavior).
+
+The two shapes share everything below the structural wrapper. The
+frameable handlers, the theorem family, math, citations, and notes
+all work identically inside an article or a book. The shape divides
+the *outer container*; the *body authoring surface* is one enscribe.
+
+# Structured-data-container tags
+
+The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which `<meta>` was the first member and `<author>` is the second. (`<config>` is *not* a structured-data container: its body is processing options, not a record of named document-descriptive fields, and the authoring surface today is kwargs-only.) `<data>` / `<library>` are not structured-data containers either: their body is a foreign-format payload (BibTeX, CSL-JSON, …) read by an external parser, so they are **storage hosts** on the language axis, registered on the DSL/language side rather than in `STRUCTURED_ELEMENTS` — and issue #24, which asked whether they should additionally gain a structured-field interface, resolved **no**.
+
+A structured-data-container tag is one whose body is *structured enscribe data* (a set of named fields, scalar or composite), not free authored prose with embedded tags. It is distinct from a DSL tag — a DSL interprets a foreign language inside enscribe (LaTeX math inside `<$>`, Mermaid source inside `<mermaid>`); a structured-data container holds enscribe's own structured fields. Both kinds carry "non-prose" content, but the kind of non-prose is different.
+
+The interface for every structured-data container is uniform: the tag accepts kwargs for scalar fields *and* child tags for the same fields in their structured form; the normalize-to-canonical gate lifts the kwarg form to the canonical child-tag form per a per-tag spec; the canonical Layer 1 shape carries child tags (plus any boolean-marker kwargs). This is the same single-gate normalization the architecture uses for every other authored form.
+
+## Infrastructure
+
+The structured-data-container registry is **`STRUCTURED_ELEMENTS`** in `packages/enscribe/src/core/structured-elements.js`. Each entry is a per-tag spec recording its accepted kwargs, the subset that lifts to child tags, boolean-marker kwargs, the child allowlist, an opt-in child-tag-validation flag, and an optional misuse-feedback partner pointer. The registry is **separate from `DSL_REGISTRY`** by design — `DSL_REGISTRY` is the handler-dispatch list for DSLs (foreign-language tags like `<math>` / `<mermaid>` / `<csv>` interpreted by an external processor); `STRUCTURED_ELEMENTS` is the kwarg/child-tag interface registry. Neither registry gates parser-time long-form admission — every named tag is long-form-eligible (see §"Tag forms" above) — so the two registries are independent and serve unrelated downstream concerns.
+
+The lift gate consumes the spec generically in `normalize-to-canonical.js`'s `liftStructuredKwargs(node, file)`. Adding a new structured-data container is a registry-entry edit plus (when the tag is new) a vocabulary entry — no gate-code change.
+
+## `<author>`
+
+`<author>` is a structured-data-container, parallel to `<meta>`. Its allowlisted child elements: `<name>`, `<affiliation>`, `<orcid>`, `<email>`. Its boolean kwarg: `+corresponding` (a scalar marker; stays a kwarg on the canonical Layer 1 node, never lifted to a child tag).
+
+Authored kwarg form (self-closing — see *Kwarg-form authoring* below):
+
+```
+<author name="Jane Goodall" affiliation="Cambridge University" orcid=0000-0001-2345-6789 +corresponding />
+```
+
+Authored child-tag form (equivalent after lift):
+
+```
+<author>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+</author>
+```
+
+Both reduce to the same canonical Layer 1 shape. Multiple authors are sibling `<author>` elements inside `<meta>`. The `+corresponding` and `corresponding=true` surface forms both normalize to a `corresponding="true"` attribute on the canonical Layer 1 node — the gate promotes the `+`-form from the parser's `node.booleans` surface into `node.kwargs` so the schema renderer's attribute mapping fires uniformly.
+
+(`<author>` is not itself document-apparatus in the apparatus-positioning sense — it lives as a child of `<meta>`, not at the document edges — so it is not subject to the apparatus-positioning rule. It shares the interface principle, not the positioning principle.)
+
+## Kwarg-form authoring: the self-close requirement
+
+A structured-data container is long-form-eligible (its child-tag form is `<tag>…</tag>`). A consequence: a kwarg-only authoring (no pipe content, no `/`) is otherwise indistinguishable from a long-form opener, and the parser claims it as long-form and scans forward for `</tag>`. The kwarg form therefore **must self-close** — `<author name="…" />` — or use explicit long-form-with-empty-body — `<author name="…"></author>`. This is the same constraint `<table />` follows for the same reason. (`<meta>`'s existing fixtures all use the explicit-close form, so the constraint is not new; it becomes visible with `<author>` because the kwarg-only form is more natural for short author records.)
+
+# Frameable elements: a shared capability
+
+A small group of Layer 1 elements share a common capability: they interrupt the text flow, may carry an optional outline box, an optional title (rendered at the top), and an optional caption (rendered below). Numbering — "Fig. 3", "Table 2" — is folded into the caption-and-title rendering; it is *not* a separate authored field or attribute. We call this capability **frameable**.
+
+Frameable is a **capability shared by several distinct elements**, not an umbrella element that wraps them. Every frameable element carries the *identical* attribute set and the *identical* behavior — title, caption, border, numbering — because the capability is shared. Authoring a frameable construct does not nest an inner content element inside an outer wrapper; the frameable element *is* the construct.
+
+## Members
+
+The frameable elements include `<figure>`, `<table>`, `<code>`, `<svg>`, `<mermaid>`, and the other DSL-registry block elements — each a first-class member that simply *also* possesses the frameable capability. There is also a generic `<frame>`: a sibling general-purpose captioned container for content that has no specific frameable element of its own. `<frame>`'s content is deliberately unrestricted — an author may place anything inside; enscribe does not police it (the same posture enscribe takes elsewhere, e.g. not policing a `<title>` placed inside a `<footnote>`). The class also includes the boxed-prose member `<aside>` (tangential content; callouts and admonitions via its `type`). The authoritative membership list — and what is deliberately excluded (`<blockquote>`, math, the theorem family) — is in `notes/specs/frameable.md`.
+
+## `<figure>` is the sole graphical element
+
+Every image in Layer 1 is a `<figure>`. There is **no** separate `<img>` or `<picture>` as a distinct Layer 1 element. `<figure>` carries `source`, `title`, `caption`, `border`, and `alt-text`, with its caption rendered as `<figcaption>`. A caption on a `<figure>` is optional; there is no separate "unwrapped image" element for the uncaptioned case — an uncaptioned image is a `<figure>` with no caption.
+
+The canonical Layer 1 element is HTML-native `<figure>` / `<figcaption>`: figures are the second migrated element group under the HTML-shaped direction (<a href="https://github.com/enscribejs/enscribe/issues/147" | #147>), and the figure handler already emits it. `<fig>` is retained as the JATS export name (the JATS-aligned spelling, which keeps the export close to pass-through) and as an **authoring alias**, normalized to canonical `<figure>` at the lift gate. The alias is allowed because `fig` is the one frameable member with a genuine, universal abbreviation — the `fig`↔`figure` pair is a real and bounded alias case, not arbitrary; allowing it does not open a general aliasing precedent for other tags.
+
+## What this supersedes
+
+This design **replaces** the prior `<figure>`-as-umbrella model, in which `<figure>` was a single element that wrapped an inner content element (an `<img>` generated from a `src` kwarg, or an author-placed `<table>` / `<code>` / `<equation>`) plus a `<figcaption>`. Under the new design there is no umbrella: `<figure>` is its own first-class element for graphical content; `<table>`/`<code>`/`<svg>`/`<mermaid>` are their own first-class elements for their own content; the frameable capability is shared across all of them at the same level. A consequence: removing the umbrella also removes the layer of tag nesting the umbrella enforced (`<figure type=table | <table>…</table>>` collapses to a frameable `<table>` directly).
+
+This supersession shipped in the v0.1.0 frameable build — the `<fig>`/`<svg>`/`<frame>` vocabulary, the figure-handler refactor, the bare-markdown-image lift to `<fig>`, and caption-as-content. The later redesign — promoting `<aside>` into the class and folding callouts/admonitions into it — is defined in `notes/specs/frameable.md` and tracked in GitHub issue #31.
+
+## Membership and remaining questions
+
+The membership list — and the formerly-open questions (the generic `<frame>`, the `figure`/`fig`/`img`/`picture` decision, and the later aside-vs-blockquote and callout-folding questions) — are resolved in `notes/specs/frameable.md`. Any still-undecided points are tracked there (under that spec's "Open sub-questions") and in issue #31.
+
+The two earlier-open questions inside this design — the existence of a generic `<frame>` and the `figure`/`fig`/`img`/`picture` question — are **resolved** by this design (recorded above as decided). They are not re-filed as open.
+
+# Multi-paragraph tag content; unclosed tags terminate at EOF
+
+A blank line inside an open tag is a **paragraph break, not a terminator** — multi-paragraph tag content is allowed (`<aside | First paragraph.\n\nSecond paragraph.>` produces an aside with two paragraph children). A tag terminates only on its **explicit closing `>`** or at **EOF**. An unclosed tag — one whose stream ends without its closer — produces a visible `enscribeTagError` at the tag's opening position; the consumed span renders as the error node's best-effort content.
+
+EOF is the **only** terminator besides the explicit `>`. There is no additional "hard structural boundary" terminator (e.g. end of region, start of a new structural construct). This was a deliberate design choice: a structural-boundary terminator would require the tokenizer to detect blank-line-followed-by-a-tag-opener, reintroducing exactly the blank-line-as-signal heuristic this design was chosen to avoid. The bounded cost of EOF-only termination — an unclosed tag near the top of a long document swallows the rest of the document into the error node — is acceptable: the error renders visibly at the open position (so the author sees *where* the problem is) and the conspicuously missing downstream content is itself a strong author signal. Tighter localization, if ever needed, is an incremental future change — not foreclosed by EOF-only.
+
+The design rests on and reinforces the always-renders guarantee in `principles.md`: errors stay bounded enough that the document renders and the author can locate the problem. Multi-paragraph tag content is a desirable feature; it yields to the always-renders guarantee if the two ever conflict, but under EOF-only termination they do not. Integration fixtures `document-23-multi-paragraph-tag-content.emd` and `document-24-unclosed-tag-at-eof.emd` pin both halves against regression.
+
+# Why this is not just another markdown extension
+
+Three differences:
+
+1. **The target is specified independently.** Layer 1 stands alone, and it is canonical. Markdown extensions typically conflate syntax and semantics; enscribe separates them, and keeps the semantic form — not a display projection of it — as the source of truth.
+
+2. **The shorthand is uniform.** One construct (`<tag attrs | content>`) handles all cases that need attributes, instead of accreting per-feature idioms (trailing curly braces for headings, fenced divs for callouts, special prefixes for citations, etc.).
+
+3. **The implementation rides on existing infrastructure.** Enscribe builds on the unified/remark/rehype ecosystem rather than reimplementing parsing, list handling, math rendering, syntax highlighting, etc.
+
+## Why the unified ecosystem
+
+The parser-substrate decision had three candidates: continue the original regex prototype, hand-write a grammar (Peggy or Chevrotain), or build on unified/remark/rehype. Each is briefly:
+
+- **Regex.** Familiar, and existing prototype code worked for some cases. But the approach doesn't scale: edge cases break, list handling has to be rebuilt, every new feature reinvents wheels remark already has.
+- **Hand-written grammar.** Clean grammar file, full control over the syntax. But the cost is rebuilding everything around it — lists, tables, math integration, syntax highlighting — outside the JS ecosystem where rendering ultimately happens.
+- **Unified plugins.** Enscribe inherits markdown parsing, lists, tables, math, syntax highlighting, footnotes, GFM autolinks. The novel work (shorthand syntax, citations, cross-references, section nesting) maps cleanly onto the plugin model. The learning curve is the AST mental model.
+
+The unified ecosystem is what enscribe uses. The project's surface area shrinks dramatically because most of what enscribe needs already exists as plugins. The "rediscovering the wheel" motto applies directly: unified is the wheel.
+
+## The JATS export plugin
+
+`rehype-enscribe-to-jats` takes a Layer 1 hast tree and produces JATS XML. Most mappings are 1:1 element renames; a minority require restructuring. For example, enscribe's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but enscribe's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The enscribe-to-JATS mapping table is the heart of the plugin, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes enscribe a credible scholarly-publishing target rather than just "another web markdown."
+
+## Package structure
+
+The project is organized as an npm workspace of three packages: **`enscribe`** (the Layer 1 core, the shorthand parser, and the interpreter — the `src/core/`, `src/parser/`, and `src/interpreter/` folders), **`@enscribejs/cli`** (the `enscribe` command: rendering, JATS export/import, and the pandoc bridge), and **`@enscribejs/layer1-vocabulary`** (the generated vocabulary data). Within `enscribe` the dependency graph points inward through the shared `src/core/` folder, which depends on nothing internal; the parser and interpreter depend on it. The build/run-time seam doubles as the browser-safety boundary — `src/core/` and the shippable runtime paths are filesystem-free by design, so the client-side build does not have to redraw the boundaries. See `notes/specs/core.md` for the full architecture-decision record, including the dependency diagram, the per-module inventory, the seam definition, and the standing client-side build constraints rule.
+
+# Design tensions and accepted tradeoffs
+
+**Shorthand is less readable than plain markdown.** Acknowledged. The shorthand is more readable than HTML and more readable than markdown plus the trailing-attribute extensions that academic markdown flavors require. Where plain markdown suffices, enscribe uses it. The shorthand is reached for only when needed.
+
+**Implicit closing differs from HTML.** Standard HTML linters may flag enscribe source. This is acceptable because enscribe source is not HTML — it compiles to HTML. Tooling for the shorthand is a separate concern from HTML tooling.
+
+**`@` for references collides with social-media usage.** Not a real problem in academic prose. Pandoc has used `@key` for citations for years without confusion.
+
+**Custom elements have no built-in semantics without help.** A custom element styled by CSS displays correctly but is, to a screen reader or an outline tool, semantically inert. Enscribe accepts this as the cost of a semantically explicit canonical form, and answers it with the display ladder: the default target adds CSS, and render mode lowers custom elements to their plain-HTML equivalents where real heading semantics are needed. Static export to other formats (PDF, EPUB, DOCX) goes through Pandoc or similar, which handles custom elements via configuration. The accessibility gap is met by lowering, not by abandoning the semantic vocabulary.
+
+**The interpreter does not call `customElements.define()`.** Layer 1 elements (`<note-list>`, `<article-body>`, `<article-front>`, …) are emitted as raw custom HTML elements; browsers treat them as instances of `HTMLElement` with no built-in behavior. CSS targeting works; ARIA semantics and JavaScript behavior do not exist by default. This is intentional: registering custom elements is an application-layer concern, and the host application or theme is the right place to do it. The interpreter's job is to emit semantically explicit HTML; turning a `<note-list>` into a behaviorally rich element is a downstream choice that depends on the host context.
+
+**Cross-references resolve only to colon-ids.** The cross-reference registry indexes targets by colon-id (`fig:scatter`, `eqn:model`, `sec:methods`) — the `type:name` convention — not by every id in the document. A `<ref @figure-3>` against a non-colon id produces a `ref-error` even if `figure-3` is a valid id elsewhere. This is intentional and is the reason the colon convention exists: colon-ids unambiguously identify a referenceable target across types, and the labelled-target/free-id distinction lets authors use ordinary ids for non-referenceable hooks (URL anchors, CSS targets) without crowding the cross-reference namespace. The convention is the price authors pay for unambiguous cross-references.
+
+# Design directions (discovered through implementation)
+
+The sections above describe enscribe's design as it was conceived. Building the system surfaced a further set of directions — principles that weren't obvious at the outset but became clear once real documents were being authored and rendered. They are recorded here because they guide ongoing work. Open items that bear on these directions are tracked in GitHub Issues; `notes/archive/design-directions-2026-05.md` retains the fuller implementation-level version with its DD-numbering.
+
+**Content gets parsed; arguments don't.** A value's syntactic form — keyword argument, positional, pipe-content, child element — is incidental. What matters is its semantic role. *Arguments* are configuration: `citation-style="apa"`, `placement="end"`, `src="refs.bib"`. They are opaque strings or enumerations and pass through the pipeline uninterpreted. *Content* is authored prose-and-structure that may contain nested tags, citations, math, or emphasis, and must be parsed recursively. The trap is content-shaped values that happen to be written as keyword arguments — a `caption="..."` containing a `<cite>` is content wearing an argument's clothing, and must be parsed as such. The direction: vocabulary entries declare each keyword argument's role, and the interpreter treats `role: content` arguments the same as child nodes.
+
+**Caption-bearing elements support two equivalent forms.** Elements like figures, tables, and code blocks carry both metadata (id, format hint) and content-like material (caption, alt text). Authors should be able to choose a compact form, where the caption is a keyword argument, or an explicit form, where the caption is a child element — and both produce identical output. The compact form suits brief captions; the explicit form suits captions with rich content or elements with several content sections. This generalizes the previous direction: the explicit form is simply the case where content-shaped material is given its own element rather than an argument slot.
+
+**`<meta>` is for metadata; `<config>` is for options.** Two document-level constructs with a boundary that must stay sharp. `<meta>` holds metadata that appears in or shapes the rendered document — title, author, date, affiliations, abstract — and is JATS-like in spirit. `<config>` holds processing options that never render — citation style, numbering preferences, theme settings. Each should validate the attributes it accepts rather than silently absorbing the other's. Blurring them produces silent failure: a title placed in `<config>` simply vanishes.
+
+**Configuration and metadata are data, not prose — author them in a data register.** Configuration and metadata are *data*: named settings and key/values, sometimes nested. Authoring data in a prose register — a named tag with body content, or a hand-written tree of child tags — is a category mismatch, and it is the friction behind the long-running `<config>` authoring questions and the stray-child render that surfaced in [#133](https://github.com/enscribejs/enscribe/issues/133). The settled direction ([#134](https://github.com/enscribejs/enscribe/issues/134)) gives data its own register, split by shape. **Flat settings are kwargs on the tag** — `<config citation-style=author-year number-sections=true />` — exactly as today; this is how every live `<config>` option is authored now. **Structured settings will be a fenced data block inside the tag** — a bounded island of a data mini-language (e.g. YAML) between the tag's delimiters, the same "foreign language behind a fence" pattern `<library>` uses for BibTeX and `<$$ … $$>` for LaTeX, parsed by an existing library per *delegate the lexer* (enscribe does not write a data parser). What structured settings are **not** is a hand-authored tree of child tags (`<config><numbering><sections>true</sections></numbering></config>`): verbose, indistinguishable from body content, and the source of #133's stray child. This is the one place the kwargs-or-child-tags interface of the structured-data containers above does *not* extend — `<meta>` / `<author>` carry their named descriptive *fields* as child tags by design, but `<config>` options, and bulk or nested settings generally, get the data block instead of a child-tag tree. Each register normalizes to its own canonical target: `<config>` settings into the configuration registry that drives the pipeline; `<meta>` fields into the canonical `<meta>` structured-children shape that exports to JATS `<article-meta>` — the same Layer 2 → Layer 1 move as prose, where the author writes the easy register and the normalizer produces the canonical one. This direction keeps [#123](https://github.com/enscribejs/enscribe/issues/123)'s ruling (flat `<config>` is kwargs-only) and adds the structured register above it. The structured-block register is **unbuilt**: its mechanics — the data language (YAML / TOML / JSON), and whether document-level metadata also gains a `---` front-matter surface — are open build choices tracked in #134. What is settled, and recorded here, is the *shape* of the answer: kwargs for flat, a fenced data block for structured, never a child-tag tree.
+
+**All tag forms work for every tag where they make sense.** The shorthand grammar admits several tag forms — short, pipe-content, multi-line pipe-content, long-form nesting, self-closing. The principle is that for any given tag, every form that is *semantically* meaningful should *actually* work, and produce equivalent output. Where a form is silently broken for some tags but not others, authors have no way to know the rule, and the uniformity that justifies the shorthand erodes. The direction: vocabulary entries declare which forms each tag supports, tests cover each declared form, and parser-level conflicts that block a declared form are treated as bugs.
+
+**Standalone HTML is the build target; client-side rendering is substantially built.** This direction concerns *when* processing happens, a separate axis from the *what form* question settled by the display ladder above. The pipeline produces self-contained HTML at build time — with `embedResources: true`, every document carries its own CSS, fonts, rendered citations, and interactive infrastructure, so it can be emailed, archived, or read offline and render identically anywhere. (The *default* now links fonts and KaTeX CSS to CDNs for leaner output; full self-containment is opt-in but remains a first-class build target.) That archival target does not change. The further target is client-side rendering: the parser, the plugin pipeline, and the handlers running in the browser, not only in Node, so an `.emd` source can be rendered without a build step, in the spirit of JupyterLite. The browser library ships — `render` / `renderInto` / `executeAssets`, in the `enscribe.browser` bundle — so a host page can parse and render enscribe source in the browser today. What remains is the fuller no-build edit loop on top of that foundation. The target shaped current decisions all along: plugin code stays framework-agnostic, pure where possible, and free of Node-specific APIs, so reaching the browser was a migration rather than a rewrite.
+
+**Markdown forms are shorthand for the canonical enscribe form.** Several constructs exist in both registers — `$x$` and `<$ x $>`, a GFM pipe table and `<table>`, `# Heading` and `<# ... #>`. Where a construct exists in both, the enscribe form is canonical and the markdown form is *surface shorthand for it*, not an independent parallel path. This refines the delegation principle by drawing a line through the middle of it. Delegation still holds for *tokenizing*: finding `$x$` in a stream of text is hard, remark already does it well, and enscribe does not reimplement it — that would be reinventing a working wheel. But delegation does **not** extend to *node identity*. When remark's tokenizer finds a markdown construct that has an enscribe equivalent, the resulting standard node (`inlineMath`, `table`, `heading`, ...) is rewritten into its canonical `enscribeTag` form by a normalization pass, before any structural or semantic plugin runs. Downstream of normalization, only the enscribe form exists; every later plugin — numbering, cross-references, asset detection, the eventual JATS export — sees one node type per construct, not two. The markdown spelling is genuinely just a faster way to type the canonical thing. The split is: *delegate the lexer, own the node identity.* Reusing remark's finder is not reinventing the wheel; accepting remark's name for what it found would be ceding the vocabulary, and the vocabulary is the project. This also makes the remark dependency shrink gracefully over time rather than by a hard cut: a markdown construct stays delegated as long as remark's tokenizer is an adequate wheel for it, and enscribe supersedes at the lexer level only for a specific construct, only when remark's coverage is genuinely inadequate and a deliberate decision is made — never reflexively. The principle is universal in intent: it governs every markdown/enscribe overlap. Its implementation is incremental: the normalization pass grows one construct at a time, and a construct not yet covered is a not-yet-done item, never a decision that it was meant to stay a separate path.
+
+# What's deliberately out of scope
+
+- A new markdown parser. Use remark.
+- A new HTML parser. Use rehype.
+- A math renderer. Use KaTeX or MathJax.
+- A citation formatter. Use citation-js with CSL.
+- A diagram renderer. Use Mermaid.
+- A code highlighter. Use Shiki or Prism.
+- A PDF generator. Use Pandoc, Paged.js, or Prince downstream.
+
+JATS export is *in* scope (see "JATS as reference and export target" above). Render mode — the lossy lowering of Layer 1 to plain HTML headings — is also *in* scope: it is the third rung of the display ladder, not a discarded alternative to it. The project's contribution is the specification (Layer 1, the canonical semantic form), the shorthand (Layer 2), the glue plugins that connect them to the existing ecosystem, the display targets that render Layer 1 for different consumers, and the bridge to scholarly publishing via JATS.
