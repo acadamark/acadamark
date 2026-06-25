@@ -3,7 +3,7 @@
 </meta>
 
 <nav>
-<item src="sources/index.emd" | Home>
+<item src="sources/home.emd" | Home>
 <item src="sources/design.emd" | Design>
 <nav-group title="Vocabulary">
 <item src="sources/enscribe-shorthand.emd" | Enscribe Shorthand>
