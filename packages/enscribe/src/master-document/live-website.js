@@ -1,9 +1,8 @@
 // Live website nav helpers (live track — #246 S2a; the composition lift — #324 / #320).
 //
 // What remains here after the live #300 step-2 lift: the small browser-pure helpers the live
-// website shell still needs — the nav-model flattener and the `?page=` not-found view (plus a
-// caller-less page-param resolver, see resolvePageParam below). The ACTUAL live website
-// composition — number each page in its OWN native scope, harvest, merge ONE cross-ref registry,
+// website shell still needs — the nav-model flattener and the `?page=` not-found view. The ACTUAL
+// live website composition — number each page in its OWN native scope, harvest, merge ONE cross-ref registry,
 // render per page — moved to the shared browser-pure core (master-document/compose-site.js) that
 // BOTH surfaces (static build + live SPA) now call; browser.js's mountLiveWebsite drives it with
 // the fetch + DOM + `?page=` History router.
@@ -46,24 +45,4 @@ export function renderNotFoundView(slug, model) {
     (first ? `<p><a href="?page=${esc(first)}">Go to the first page</a></p>` : '') +
     `</div>`
   );
-}
-
-/**
- * The `?page=` router's pure resolver. Empty `?page=` → the first page; a known slug → that
- * page; an unknown slug → a not-found result (the caller renders renderNotFoundView).
- *
- * NOTE (#320, verify-first): this currently has NO callers — browser.js's mountLiveWebsite inlines
- * its own `resolvePage` over its `pageBySlug` map. Kept this slice (it is out of the flatten-
- * deletion scope), but it and its barrel re-export are a candidate for a follow-up removal.
- *
- * @param {string} search - location.search (with or without the leading '?')
- * @param {{ slugToPart: Map, firstSlug: string|null }} model - any object exposing the page set
- *        (`slugToPart.has`) and the default `firstSlug`.
- * @returns {{slug: string|null, notFound: boolean}}
- */
-export function resolvePageParam(search, model) {
-  const requested = new URLSearchParams(search || '').get('page');
-  if (!requested) return { slug: model.firstSlug, notFound: false };
-  if (model.slugToPart.has(requested)) return { slug: requested, notFound: false };
-  return { slug: requested, notFound: true };
 }
