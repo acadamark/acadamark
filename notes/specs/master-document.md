@@ -193,22 +193,15 @@ The assembler is the multi-file/project system (#72) plus a build model. Its des
 
 ### Website assembly
 
-A website's pages live inside `<nav>` (`<item src>`), not at the master's top level, and `<nav>` content is
-unstructured until the pipeline runs — so the book's top-level child discovery and `loadAndAssembleMaster`
-do **not** apply. The website assembler instead:
+A website is assembled by **composition over one merged site cross-reference registry** — *not* by
+flattening its pages into a single page-scope tree. Each page (an external `<item src>`, read from the nav
+model) is numbered and rendered in its **own native scope** — an article as an article, a book as a book —
+and every page's anchors merge into one site registry that each page renders over via a read-through, so
+books keep book numbering and a cross-page `<ref>` resolves to its target's **native** number (a book figure
+stays `2.1`, not a flattened `figure 1`) and links to the page that owns it, in every direction. The first
+cut renders external `<item src>` pages (the docs-site dogfood is entirely external); inline-page rendering
+(`<item | Title>` + body) is a fast-follow.
 
-1. **reads the nav model** (the structurer's `ENSCRIBE_NAV_MODEL`) for the page list — slug, title, `src`,
-   and group nesting;
-2. **fetches the external `<item src>` pages** and assembles them into one tree, building a **cross-page
-   registry** (which page owns each anchor);
-3. **resolves cross-page references** to `?page=owner-slug#anchor` via that registry (intra-page refs stay a
-   bare `#anchor`);
-4. renders each page from the assembled tree.
-
-**Per-page numbering** (each page numbered independently, article-style — not continuous across pages) is the
-intended scope; the first cut may inherit book-style numbering from the assembly and refine to per-page when
-a site actually numbers sections/figures.
-
-**Inline pages** (`<item | Title>` + body) are a fast-follow: the first cut renders external `<item src>`
-pages (the docs-site dogfood is entirely external). Inline rendering needs a single global pass that gets
-fresh page content in without double-processing — specified when it lands.
+The full website model — the two-phase number-then-render, the merged registry and read-through, page
+identity (slugs), the static/live URL schemes and the parity contract, and the always-render invariants — is
+specified in **`notes/specs/website.md`**, its home; it is not duplicated here.

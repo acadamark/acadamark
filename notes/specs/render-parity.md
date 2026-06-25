@@ -171,8 +171,25 @@ and asserted byte-identical on matched options — now landed as
   on landing (holds by construction; a standing regression guard for the per-chapter
   render the live lazy path is built on).
 
+## The website path — TODO (#319)
+
+The static website composition and the live website are a **third render-producing surface**, added
+after this spec's two-entry-point model was written. Their parity is **not** raw-href byte-identity —
+the static dir-per-page `.html` and the live `?page=slug` schemes differ by design — it is checked on
+the **display number** and a **scheme-normalized owner** (two references agree when they show the same
+number and resolve to the same owner page once the scheme is normalized away). The model is specified
+in `notes/specs/website.md`.
+
+> **TODO (#319):** write the substantive website-path parity section here — the both-ways corpus and
+> the scheme-normalized-owner predicate — to the standard of the sections above. The live book-flatten
+> (`isWebsiteAssembly`, #314) is the scoped-out divergence until the live path converges on the
+> composition model. (This stub is the seam `website.md` references; the full section is the follow-on
+> slice.)
+
 ## Cross-references
 
+- `notes/specs/website.md` — the website composition model and the live/static website parity seam
+  (display number + scheme-normalized owner); the substantive parity section above is pending (#319).
 - `DESIGN.md` — "Live and static rendering are one engine, not two." (the
   rationale; the substrate premise that the browser *is* the renderer).
 - `notes/specs/pipeline.md` §14 (Client-side rendering) — the browser entries and
