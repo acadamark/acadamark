@@ -25,7 +25,7 @@ try {
   runEmbeddedAssetTests(); // #190: <data> embedded-png asset → numbered figure via src="@id"
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
-  runWebsiteXrefTests(); // #300 slice 2: cross-page <ref> resolves via the merged site registry (composition)
+  await runWebsiteXrefTests(); // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)
   runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);

@@ -1211,11 +1211,12 @@ export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderL
 // Write/Preview edit view. The pure core of the authoring loop; browser.js mountLiveBook wires
 // the in-memory source map, the debounced re-render, and the CodeMirror editor adapter onto it.
 export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapterPreviewBody } from '../master-document/live-book.js';
-// Live app-shell WEBSITE render (#246 S2a): a website is "the book with pages instead of
-// chapters" — these pure fns assemble external `<item src>` pages as `<book-part>`s, build the
-// model + the `?page=` resolver, and render a page (renderChapter + a cross-page href rewrite).
-// The browser entry (browser.js mountLiveWebsite) wraps them with the fetch + DOM + History router.
-export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, resolvePageParam, flattenNavPages } from '../master-document/live-website.js';
+// Live website nav helpers (#246 S2a). The nav-model flattener + the `?page=` not-found view that
+// browser.js's mountLiveWebsite still uses (+ resolvePageParam, currently caller-less — see #320).
+// The website COMPOSITION itself (number each page natively → merge one registry → render per page)
+// is the shared composeSiteRegistry below; the synthetic-<book> flatten that used to live here
+// (buildWebsiteTree/buildLiveWebsite/renderLiveWebsitePage) was removed with the live #300 lift (#320).
+export { renderNotFoundView, resolvePageParam, flattenNavPages } from '../master-document/live-website.js';
 // The browser-pure website COMPOSITION core (website.md Phase 1 — the live #300, step 1, #324): number
 // each page natively → harvest → merge one site cross-ref registry → the read-through seed Phase 2 consumes.
 // Browser-pure (I/O injected); the static build calls it, a later live caller will too. See compose-site.js.

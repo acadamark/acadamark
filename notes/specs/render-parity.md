@@ -195,24 +195,27 @@ The two load-bearing terms:
   with the surface's URL scheme stripped away (`.html` path vs `?page=` route). Two references agree
   when they show the same number and resolve to the same owner.
 
-### Scoped out: the live book-flatten (#314)
+### One composition path, no flatten
 
-The live SPA currently assembles all pages under one synthetic page-scope container
-(`isWebsiteAssembly`), which renumbers a book page in page scope rather than its native book scope — so
-a book page's display numbers diverge from the static native numbers until the live path converges on
-the composition model. This is a **tracked deviation ([#314](https://github.com/enscribejs/enscribe/issues/314))**,
-scoped out of the website-parity claim for book pages exactly as the packaging differences are scoped
-out above; `website.md` describes the composition target the live path is being brought to.
+Both surfaces compose a website the **same** way: `composeSiteRegistry` (the browser-pure core in
+`master-document/compose-site.js`) numbers each page in its own native scope and merges one site
+registry; the static build and the live SPA's `mountLiveWebsite` are its two callers. A book page keeps
+**book** numbering on both surfaces — the earlier live deviation, where the SPA flattened all pages into
+one synthetic page-scope container (`isWebsiteAssembly`) and renumbered a book page to page scope
+([#314](https://github.com/enscribejs/enscribe/issues/314)), is **resolved**: that flatten
+(`buildWebsiteTree`/`buildLiveWebsite`/`renderLiveWebsitePage` and the `'page'` counter scope) was
+deleted with the parity-corpus slice ([#320](https://github.com/enscribejs/enscribe/issues/320)), so no
+re-implementation can reintroduce it. `website.md` specifies the composition model.
 
 ### Audit
 
 `packages/cli/test/website-xref.test.js` exercises the website cross-reference effect in all four
-directions (article↔article, article↔book, book↔article, book↔book). The **article→article** direction
-is asserted **both ways** — the display number is byte-identical static≡live and the owner matches once
-the scheme is normalized — and the book-involving directions are asserted on the static surface (the
-live side flattens books, #314). Extending the corpus to exercise the website entry point both-ways
-under the standing parity harness is tracked separately
-([#320](https://github.com/enscribejs/enscribe/issues/320)).
+directions (article→book, book→article, book→book, within-book) **both ways**: it drives the real static
+build (`buildStaticWebsite`) and the real live SPA (`mountLiveWebsite` in jsdom) over the shared p314
+corpus and asserts, for every direction, that the **display number is byte-identical static≡live** and
+the **owner matches once the scheme is normalized**. The book direction — a book page rendering as a
+book with native numbering (`figure 2.1`, not a flattened `figure 1`) on both surfaces — is the
+observable signature that the flatten is gone ([#320](https://github.com/enscribejs/enscribe/issues/320)).
 
 ## Cross-references
 
