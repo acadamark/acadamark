@@ -16,7 +16,8 @@
 // any depth); deployment copies dist/ to wherever github.io serves from. See
 // docs-site/README.md for the workflow and the (manual, for now) deploy path.
 
-import { buildEnscribePipeline, emitLiveShell } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, emitLiveShell, flattenNavPages, slugifyPage } from '@enscribejs/enscribe';
+import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys'; // the website structurer's nav model, keyed on file.data
 import { escapeHtmlAttr as escapeHtml } from '@enscribejs/enscribe/core/escape-html'; // #263: this script's escaper is 4-entity (& < > "), the shared attr-grade escaper
 import { importJats } from '@enscribejs/cli/jats-import';
 import { copyShellAssets, discoverMasterSrcChildren } from '@enscribejs/cli/build-live';
@@ -24,8 +25,9 @@ import { buildGallery } from './gen-gallery.js';
 // #223/#246: the Documentation catalogs are now generated `.emd` (gen-catalogs.js, run by `docs:gen`)
 // rendered like any other page — build.js no longer special-cases them (the catalog builders moved out).
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { VFile } from 'vfile';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..');
@@ -85,50 +87,90 @@ const RENDER_OPTIONS = {
   assetsDir: SOURCES_DIR,
 };
 
-// The site's pages, in nav order. Hardcoded for v0.1.0; when more content lands
-// in later slices this list grows. A manifest file would be overkill at this
-// size. All carry real content; only Quickstart is a playground (editable). The
-// docs-site content arc (Slices 3b–3f) is complete: Home, Design, Quickstart, the
-// full Authoring Guide, the Layer 1 Vocabulary Reference, and the JATS article.
+// ── The page set comes from the website master's <nav>, not a hardcoded list ──────────────────────
+// The site's pages, order, and nav labels ARE the <nav> in sources/index.emd — a <meta type=website>
+// master — read here via the SAME website structurer the live/static website builds use
+// (enscribeWebsiteStructuring → ENSCRIBE_NAV_MODEL). There is no second page manifest: adding a page is
+// one <item src> entry in the master and it builds as a plain content page — no edit here, no silent
+// drop. (#223: the docs-site dogfoods the website type; this is the page-manifest piece, not the whole
+// rethink — the full website-composition render is still build.js's own bespoke per-page path below.)
 //
-// The on-this-page ToC is **config-driven** (#207 adoption): the content pages declare
-// `<config toc toc-location=right>` in their `.emd` source, which the shared compiler
-// reads — so the static build AND the /live render get the floating ToC from the same
-// source (closing the #207 live-pages-have-no-ToC gap). No `renderOptions.toc` here: the
-// build no longer passes the ToC as a build-only option; the document is the source of truth.
-const PAGES = [
-  { slug: 'index',           source: 'index.emd',           title: 'enscribe',                       nav: 'Home',            kind: 'page' },
-  { slug: 'design',          source: 'design.emd',          title: 'Design — enscribe',              nav: 'Design',          kind: 'page' },
-  { slug: 'quickstart',      source: 'quickstart.emd',      title: 'Quickstart — enscribe',          nav: 'Quickstart',      kind: 'playground' },
-  { slug: 'authoring-guide', source: 'authoring-guide.emd', title: 'Authoring Guide — enscribe',      nav: 'Authoring Guide', kind: 'page' },
-  { slug: 'layer1-reference',source: 'layer1-reference.emd',title: 'Layer 1 Reference — enscribe',    nav: 'Layer 1 Reference', kind: 'page' },
-  { slug: 'book-build',      source: 'book-build.emd',      title: 'Building a Book — enscribe',      nav: 'Book Build',      kind: 'page' },
-  { slug: 'gallery',         source: null,                  title: 'Gallery — enscribe',             nav: 'Gallery',         kind: 'gallery' },
-  // #223/#246/#241: the Vocabulary register intros — authored `.template.emd` PROSE with the generated
-  // featured-examples block injected at the FEATUREDEXAMPLES marker by `docs:gen` (examples pulled live from
-  // the vocab source via the curated FEATURED_* lists, the SAME <code>/<frame> shape the catalogs use). The
-  // served `.emd` is generated build product like the catalogs, so `source` is the generated file build.js
-  // reads; `sourceUrl` points "view source" at the committed `.template.emd` (the generated `.emd` is
-  // gitignored — not on GitHub). Plain `page` now: rendered through the type like any other page, so the
-  // live website type shows the examples too (no build-time HTML injection for the type render to skip).
-  { slug: 'enscribe-shorthand', source: 'enscribe-shorthand.emd', sourceUrl: `${GITHUB_BLOB_BASE}/enscribe-shorthand.template.emd`, title: 'Enscribe Shorthand — enscribe', nav: 'Enscribe Shorthand', kind: 'page' },
-  { slug: 'layer1',          source: 'layer1.emd', sourceUrl: `${GITHUB_BLOB_BASE}/layer1.template.emd`, title: 'Layer 1 — enscribe', nav: 'Layer 1', kind: 'page' },
-  // #223/#246: the generated Documentation catalogs — ordinary `.emd` pages now (gen-catalogs.js writes
-  // sources/{layer1,shorthand}-catalog.emd from the vocab source; rendered through the type, static + live).
-  // They are FULLY generated from the vocab — there is no single authored source file to view — so they set
-  // `sourceUrl: null` to SUPPRESS the "view source" footer link (it would otherwise 404 at the gitignored
-  // generated `.emd`). Unlike the intros/rendering-guide, there is no `.template.emd` to point at.
-  { slug: 'layer1-catalog',  source: 'layer1-catalog.emd',  sourceUrl: null, title: 'Layer 1 catalog — enscribe',     nav: 'Layer 1 catalog', kind: 'page' },
-  { slug: 'shorthand-catalog', source: 'shorthand-catalog.emd', sourceUrl: null, title: 'Shorthand catalog — enscribe', nav: 'Shorthand catalog', kind: 'page' },
-  // #223/#246: the Rendering guide — authored `.template.emd` with the generated <config> options grid
-  // injected at the CONFIGOPTIONSGRID marker by `docs:gen` (like the catalogs/intros). The served `.emd` is
-  // generated build product, so `source` is the generated file build.js reads; `sourceUrl` points "view
-  // source" at the committed `.template.emd`. Plain `page` now: rendered through the type, so the live
-  // website type shows the grid too (no build-time HTML injection for the type render to skip).
-  { slug: 'rendering-guide', source: 'rendering-guide.emd', sourceUrl: `${GITHUB_BLOB_BASE}/rendering-guide.template.emd`, title: 'Rendering guide — enscribe', nav: 'Rendering guide', kind: 'page' },
-  { slug: 'jats',            source: 'jats.emd',            title: 'JATS — enscribe',                nav: 'JATS',            kind: 'page' },
-  { slug: 'demos',           source: null,                  title: 'Demos — enscribe',               nav: 'Demos',           kind: 'demo-index' },
-];
+// The on-this-page ToC stays **config-driven** (#207): content pages declare `<config toc
+// toc-location=right>` in their own `.emd`, so the static build AND the /live render get the same
+// floating ToC from the source — no build-only toc option here.
+const MASTER = 'index.emd';
+
+// A docs page's slug is its URL stem (layer1.html), so it is the src FILENAME stem (via the shared
+// slugifyPage) — NOT the title-derived "layer-1" the nav model computes (the deployed docs URLs ARE the
+// source filenames, so the stem is the stable identity). A source-less special (Gallery/Demos) has no
+// src, so it falls back to its nav label. The FIRST nav page is the site home → the dist root
+// index.html (website.md: "first nav page → empty nav-path → index.html"); in this flat-file build that
+// is the slug `index`.
+function pageSlug(entry, isHome) {
+  if (isHome) return 'index';
+  if (entry.src) return slugifyPage(basename(entry.src, extname(entry.src)));
+  return slugifyPage(entry.title);
+}
+
+// Build-specific per-page behavior the nav cannot express, keyed by slug. EVERYTHING ELSE flows from
+// the nav: a page absent here is a plain content `page` with the default "view source on GitHub" link
+// (the common case). So this shrinks to only the specials:
+//   • kind   — the non-`page` render paths: the Quickstart `playground` (editable), and the generated
+//              `gallery` / `demo-index` indices (bespoke builders, not the plain page render).
+//   • source — the Gallery/Demos indices have NO single `.emd` source (they are generated build product).
+//   • title  — the HTML <title> where it deviates from the default `<nav label> — enscribe`: Home is
+//              just "enscribe"; the Book/Website build guides title as "Building a …" (their shorter nav
+//              labels are "Book Build" / "Website Build").
+//   • sourceUrl — #223/#246: the Vocabulary intros and the Rendering guide are SERVED from generated
+//              `.emd` (a committed `.template.emd` + a docs:gen-injected block), so "view source" points
+//              at the committed `.template.emd`; the fully-generated catalogs have no authored source at
+//              all, so `null` SUPPRESSES the link (it would otherwise 404 at the generated `.emd`).
+const PAGE_OVERRIDES = {
+  index:                { title: 'enscribe' },
+  quickstart:           { kind: 'playground' },
+  'book-build':         { title: 'Building a Book — enscribe' },
+  'website-build':      { title: 'Building a Website — enscribe' },
+  gallery:              { kind: 'gallery', source: null },
+  demos:                { kind: 'demo-index', source: null },
+  'enscribe-shorthand': { sourceUrl: `${GITHUB_BLOB_BASE}/enscribe-shorthand.template.emd` },
+  layer1:               { sourceUrl: `${GITHUB_BLOB_BASE}/layer1.template.emd` },
+  'rendering-guide':    { sourceUrl: `${GITHUB_BLOB_BASE}/rendering-guide.template.emd` },
+  'layer1-catalog':     { sourceUrl: null },
+  'shorthand-catalog':  { sourceUrl: null },
+};
+
+/**
+ * The ordered page list, derived from the website master's <nav>: one
+ * `{ slug, source, title, nav, kind, sourceUrl }` per page, in nav order, with PAGE_OVERRIDES merged
+ * over the nav-derived defaults. Reuses the website structurer (ENSCRIBE_NAV_MODEL) — it does NOT
+ * hand-parse the nav. Throws if the master declares a website but its nav yields no pages (a
+ * misconfigured master should fail loudly, not build an empty site).
+ */
+function derivePages() {
+  const masterSource = readFileSync(join(SOURCES_DIR, MASTER), 'utf8');
+  const proc = buildEnscribePipeline({ assetsDir: SOURCES_DIR });
+  const file = new VFile({ path: MASTER, value: masterSource });
+  proc.runSync(proc.parse(masterSource), file);
+  const navModel = file.data?.[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
+  const entries = flattenNavPages(navModel.entries ?? []);
+  if (entries.length === 0) {
+    throw new Error(`docs-site: ${MASTER} declares <meta type=website> but its <nav> yielded no pages`);
+  }
+  return entries.map((entry, i) => {
+    const slug = pageSlug(entry, i === 0);
+    const ov = PAGE_OVERRIDES[slug] ?? {};
+    return {
+      slug,
+      source: 'source' in ov ? ov.source : (entry.src ?? null),
+      title: ov.title ?? `${entry.title} — enscribe`,
+      nav: entry.title,
+      kind: ov.kind ?? 'page',
+      sourceUrl: ov.sourceUrl,
+    };
+  });
+}
+
+const navPages = derivePages();
 
 /** Render an enscribe source string to an HTML fragment. Per-page `extra`
  *  options (e.g. `{ toc: true }`) merge over the shared RENDER_OPTIONS. */
@@ -264,7 +306,7 @@ function stripFigureSrc(node) {
 
 /** Nav links for the header; the active page is marked aria-current. */
 function buildNav(activeSlug) {
-  return PAGES.map((p) => {
+  return navPages.map((p) => {
     const current = p.slug === activeSlug ? ' aria-current="page"' : '';
     return `<a href="${p.slug}.html"${current}>${p.nav}</a>`;
   }).join('\n        ');
@@ -406,7 +448,7 @@ function main() {
   // injected at BUILD time as HTML — a client-side live render showed the bare marker. #241 (intros) and
   // #246 (this slice) moved those generated blocks into the served `.emd` via docs:gen, so every
   // source-bearing page now renders live like the catalogs and none is excluded.)
-  const livePages = PAGES.filter((p) => p.source);
+  const livePages = navPages.filter((p) => p.source);
   const liveSlugs = new Set(bundlePresent ? livePages.map((p) => p.slug) : []);
 
   // Demo papers → self-contained standalone pages under dist/demo/. Render first
@@ -431,7 +473,7 @@ function main() {
     console.log(`[docs:build] wrote dist/demo/${paper.slug}.html (${paper.journal}${paper.assets ? ', +figures' : ''})`);
   }
 
-  for (const page of PAGES) {
+  for (const page of navPages) {
     let body;
     let headExtra = '';
     if (page.kind === 'playground') {
@@ -467,7 +509,7 @@ function main() {
   const liveSlugsEmitted = bundlePresent ? buildLiveSite(livePages) : [];
 
   console.log(
-    `[docs:build] done — ${PAGES.length} site pages + ${DEMO_PAPERS.length} demo papers` +
+    `[docs:build] done — ${navPages.length} site pages + ${DEMO_PAPERS.length} demo papers` +
       `${liveSlugsEmitted.length ? ` + ${liveSlugsEmitted.length} live pages` : ''} in ${DIST_DIR}`,
   );
 }

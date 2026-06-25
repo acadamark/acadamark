@@ -8,14 +8,17 @@ to GitHub Pages.
 This is the docs-site **build framework** plus the site's content: a homepage, a
 written Quickstart playground, full articles translated from the README and DESIGN,
 the Authoring Guide, the Layer 1 vocabulary reference, a generated coverage gallery,
-and the JATS demo papers. The page set is hardcoded in `build.js`'s `PAGES` array (it
-is the source of truth for the nav).
+and the JATS demo papers. The page set, order, and nav labels come from the `<nav>`
+in `sources/index.emd` — a `<meta type=website>` master — which `build.js` reads as
+the single source of truth (it keeps no second page list). Adding a page is one
+`<item src>` entry there.
 
 ## Pages
 
 | Source                         | Page                    | Kind        |
 | ------------------------------ | ----------------------- | ----------- |
-| `sources/index.emd`            | `index.html`            | read-only   |
+| `sources/index.emd`            | _(website master — the `<nav>`)_ | manifest |
+| `sources/home.emd`             | `index.html`            | read-only   |
 | `sources/design.emd`           | `design.html`           | read-only   |
 | `sources/quickstart.emd`       | `quickstart.html`       | playground  |
 | `sources/authoring-guide.emd`  | `authoring-guide.html`  | read-only   |
@@ -110,7 +113,9 @@ copies it into the site's `dist/assets/` when present.
    `dist/live/assets/`), the four shell assets copied once, and each page's `.emd`
    source copied beside its shell. Adds the static→live footer link to each source page.
 
-Navigation is hardcoded in `build.js`'s page list; it grows as real pages land.
+Navigation comes from the `<nav>` in `sources/index.emd` (the website master);
+`build.js` reads that nav for the page set, order, and labels — adding a page is one
+`<item src>` entry there, no `build.js` edit.
 
 ## Deploying to GitHub Pages
 
