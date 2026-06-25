@@ -13,7 +13,8 @@
 // by COMPOSITION over a merged site cross-ref registry — NOT by flattening every page to one page-scope
 // assembly (the live SPA's buildWebsiteTree — a separate surface, flagged not fixed here), and NOT by the
 // per-page-ISOLATED render that bypassed the site registry (the #300 regression: a cross-page `<ref>` could
-// not resolve, since each page was a separate pass). Two phases. PHASE 1 numbers each page in its OWN native
+// not resolve, since each page was a separate pass). Two numbering/render phases, then a framing pass.
+// PHASE 1 numbers each page in its OWN native
 // scope — an article as an article, a book as a book (assembleAndNumber/prepareBook) — and harvests its
 // cross-ref registry, MERGING every anchor into ONE site registry (anchor → its NATIVE number + the
 // page/chapter-page that owns it). PHASE 2 renders each page NATIVELY through the SAME shared per-document
@@ -389,7 +390,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   // own diagrams; a DSL's init is a no-op where its markers are absent). #298.
   const dslHead = buildWebsiteDslHead(siteDslNames);
 
-  // PASS 2 — frame each rendered fragment in the universal shell (now carrying the site's diagram
+  // FRAMING PASS — frame each rendered fragment in the universal shell (now carrying the site's diagram
   // runtime in its head), then staticize its `?page=` chrome links for the page's depth. (The authored
   // `<a {slug}>` content links were already resolved per fragment in PHASE 2.)
   for (const { outPath, title, content, page } of rendered) {

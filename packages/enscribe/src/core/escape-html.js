@@ -12,8 +12,10 @@
 //   escapeHtmlAttr — `& < > "`. The superset, for ATTRIBUTE-value contexts (and any
 //                    site that prefers to escape quotes defensively).
 //
-// (The CLI has its own xml-escape.js; a fourth, 3-entity copy in
-// packages/cli/src/pandoc-import.js is the sibling consolidation tracked by #99.)
+// (The CLI has its own xml-escape.js for the JATS paths; pandoc-import.js imports the
+// shared 3-entity escapeHtml here, as of #263. The two website-chrome 4-entity copies in
+// master-document/live-website.js and interpreter/assets/website-nav-asset.js were folded
+// onto escapeHtmlAttr here in #316.)
 
 /** Escape text for HTML ELEMENT content (`& < >`). */
 export function escapeHtml(s) {

@@ -49,6 +49,7 @@
 
 import { ENSCRIBE_ASSETS } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
+import { makeErrorNode, injectBodyErrors } from '../lib/error-injection.js';
 import { collectDataNodes } from './library-load.js';
 
 // #190: the embedded-asset format flag → the image MIME type for the data: URI.
@@ -95,7 +96,7 @@ function collectAssetPayload(content) {
  * payload shows a visible block naming the reference, never a broken <img src="@…">.
  */
 export function makeAssetError(ref, message) {
-  return { type: 'enscribeTag', tagname: '__asset-error', kwargs: { ref: ref ?? '', message }, content: null };
+  return makeErrorNode('__asset-error', 'ref', ref, message);
 }
 
 /**
@@ -112,32 +113,6 @@ export function assetError(node, ref, message) {
   node.positional = [];
   node.booleans = {};
   node.atRefs = [];
-}
-
-/**
- * Inject visible __asset-error nodes at the top of the rendered body so a
- * duplicate-declaration collision is never silently dropped. Targets the first
- * <article-body>/<book-body>; falls back to the tree root. Mirrors
- * library-load.js's injectLibraryErrors (a future shared helper could DRY both).
- */
-function injectAssetErrors(tree, errors) {
-  if (errors.length === 0) return;
-  let target = null;
-  (function find(nodes) {
-    for (const n of nodes ?? []) {
-      if (target) return;
-      if (isEnscribeTag(n, 'article-body') || isEnscribeTag(n, 'book-body')) { target = n; return; }
-      if (isEnscribeTag(n) && Array.isArray(n.content)) find(n.content);
-      if (Array.isArray(n.children)) find(n.children);
-    }
-  })(tree.children ?? []);
-  if (target) {
-    target.content = Array.isArray(target.content) ? target.content : [];
-    target.content.unshift(...errors);
-  } else {
-    tree.children = tree.children ?? [];
-    tree.children.unshift(...errors);
-  }
 }
 
 /**
@@ -189,7 +164,7 @@ export function buildAssetIndex(tree, file) {
     file.data[ENSCRIBE_ASSETS] = assets;
   }
   // always-renders: inject any duplicate-declaration collision flags into the body.
-  injectAssetErrors(tree, errors);
+  injectBodyErrors(tree, errors);
 }
 
 /**

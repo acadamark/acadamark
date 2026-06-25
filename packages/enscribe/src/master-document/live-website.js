@@ -33,9 +33,12 @@ import { makeTag, isEnscribeTag } from '../core/tag.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
+import { escapeHtmlAttr } from '../core/escape-html.js';
 
-const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ESC[c]);
+// The shared 4-entity attribute escaper (#316/1-A), wrapped to keep the inline copy's null-safe
+// guard (escapeHtmlAttr coerces null→"null"; here an absent value → ""). Byte-identical to the
+// retired inline `[&<>"]` map.
+const esc = (s) => escapeHtmlAttr(s ?? '');
 
 /**
  * Flatten the S1 nav model into an ordered page list, descending `<nav-group>`s.

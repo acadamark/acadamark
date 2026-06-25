@@ -207,7 +207,7 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
  *  PAGE (a stable index.html entry point that does not privilege one chapter). The rail
  *  carries the same return-to-cover masthead as the chapter pages (here a self-link to
  *  the cover) so the chrome is uniform across every page. */
-function renderIndexBody(parts, idToUrl, opts) {
+function renderIndexBody(parts, opts) {
   const { bookTitle, bookNav, file } = opts;
   // `current: true` — on the cover the masthead is a self-link (index.html → itself), so
   // mark it aria-current="page" rather than presenting a 'home' link to the page you are
@@ -236,8 +236,8 @@ function renderIndexBody(parts, idToUrl, opts) {
 }
 
 /** The landing/index page wrapped in the standalone page shell. */
-function renderIndex(parts, idToUrl, opts) {
-  const { body, title } = renderIndexBody(parts, idToUrl, opts);
+function renderIndex(parts, opts) {
+  const { body, title } = renderIndexBody(parts, opts);
   return pageShell(body, title, opts.defaultCss, opts.bookNav);
 }
 
@@ -282,7 +282,7 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
   });
   pages.set(INDEX_PAGE, bookNav.cover
-    ? renderIndex(parts, idToUrl, opts)
+    ? renderIndex(parts, opts)
     : redirectPage(parts[0].slug, bookTitle));
   return pages;
 }
@@ -308,7 +308,7 @@ export function publishBookPageBodies({ numbered, file, proc }) {
     pages.set(part.slug, renderPageBody(part, parts, idx, registry, idToUrl, opts));
   });
   pages.set(INDEX_PAGE, bookNav.cover
-    ? renderIndexBody(parts, idToUrl, opts)
+    ? renderIndexBody(parts, opts)
     : { page: redirectPage(parts[0].slug, bookTitle) });
   return pages;
 }
