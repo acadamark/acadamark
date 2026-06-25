@@ -17,6 +17,9 @@
 // article. So the same emitted shell drives either kind, and a document that changes type never
 // needs a re-emit. Staying pure (no emit-time master read) is the point — the dispatch lives in the
 // engine, not here.
+//
+// The delivery-mode model this shell realizes (the Live mode — shell + runtime fetch + the asset
+// seam below) is specced in `notes/specs/delivery-modes.md`.
 
 import { escapeHtml } from '../core/escape-html.js';
 import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';

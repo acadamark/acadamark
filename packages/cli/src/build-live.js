@@ -6,6 +6,10 @@
 // emitted shell with `assetBase: './'`. The result is a portable, self-standing LIVE FOLDER — open
 // it (served over HTTP) to read; `?edit` mounts the #211 edit loop — with no CDN dependency for the
 // chrome (the CodeMirror-from-CDN load inside the editor factory is the #117-deferred asset concern).
+//
+// This is the Live delivery mode with sibling assets (the wired default); the delivery-mode model
+// (shell / fetch / asset seam, and the unbuilt single-file mode) is specced in
+// `notes/specs/delivery-modes.md`.
 
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve } from 'node:path';
