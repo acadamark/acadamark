@@ -199,12 +199,15 @@ and never halt rendering. The one boundary is structural rather than content: a 
   slug. The old page-scope `buildWebsiteTree` / `isWebsiteAssembly` assembly is retired from the live
   render (production-dead; it survives only behind the `website-xref.test.js` parity mirror, retired by
   **#320**, which then removes the dead flatten + the `numbering.js` `'page'`-scope branch).
-- **Two live lags remain** — narrow, named, and *not* composition:
-  - **`<a {slug}>` LINK resolution** is not yet done live: the `<a>` handler's `data-page-slug` markers
-    are still inert in the SPA. Doing it bundle-safely needs a render-time `<a>`-handler resolver (the
-    static path's `resolvePageSlugLinks` uses an HTML re-parser deliberately kept out of the browser
-    bundle, #25), so it is its own slice (**#318**, deferred). Cross-page `<ref>`s — a *different*,
-    string-only resolver (`rewriteCrossPageHrefs`) — already resolve live, in every direction.
+- **The `<a {slug}>` LINK layer now resolves on BOTH surfaces (#318).** The `<a>` handler still records a
+  `data-page-slug` marker, but resolution moved UPSTREAM of serialization: a render-time hast tree-pass
+  (`resolvePageSlugLinksInTree`) the compiler runs over the in-memory tree just before stringify, when the
+  website builder injects a resolver on `file.data` (`ENSCRIBE_PAGE_LINK_RESOLVER`). So ONE mechanism serves
+  static and live — the URL scheme (`.html` path vs `?page=` route) is the injected resolver's, the same
+  scheme-hook seam as the cross-page `<ref>` rewriter. This removed the HTML re-parser the old string-pass
+  needed (parse5 was a browser-bundle hazard, #25) from the slug-link path entirely; cross-page `<ref>`s — a
+  *different*, string-only resolver (`rewriteCrossPageHrefs`) — already resolve live, in every direction.
+- **One live lag remains** — narrow, named, and *not* composition:
   - **Edit mode for a book page** renders the master source standalone (without its chapter children),
     so a book page's live *edit* preview is degraded; **read** mode renders it as a full book. A follow-on.
 

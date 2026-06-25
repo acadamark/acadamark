@@ -11,25 +11,25 @@
 //     the separate-pages book publish (the old `rewriteCrossPageRefs`, folded in via `refsOnly`)
 //     and the website composition + live SPA — one job, the predicate/resolver injected.
 //
-//   resolvePageSlugLinks — `<a {slug}>` internal PAGE links (the #289 form the <a> handler emits as
-//     `<a data-page-slug="slug">label</a>`). This one CAN auto-label an empty link from the target
+//   resolvePageSlugLinksInTree — `<a {slug}>` internal PAGE links (the #289 form the <a> handler emits
+//     as `<a data-page-slug="slug">label</a>`). This one CAN auto-label an empty link from the target
 //     page's title, so it must read the link's LABEL — and reading a label by regex
 //     (`<a …>([\s\S]*?)</a>`) is fragile: a label that itself contains a nested anchor (a `<ref>`, or
 //     another `<a {slug}>`) ends at the WRONG `</a>` and the inner link is left unresolved. So this
-//     resolver is STRUCTURAL: it parses the fragment, walks the `<a>` element nodes, and resolves each.
+//     resolver is STRUCTURAL — it walks the `<a>` ELEMENT NODES and resolves each.
 //
-//     SEAM (verify-first, the Step-0 call): a FULL re-serialize of the parsed fragment is NOT byte-safe
-//     for enscribe's Layer 1. `<meta>` is a VOID element in HTML5, so parse5 (hast-util-from-html) drops
-//     the custom `<meta>…</meta>` container's close tag, and rehype-format's (#117) custom-element
-//     indentation does not survive a parse→serialize round-trip. So we re-serialize ONLY the `<a>`
-//     subtrees and SPLICE them back into the original string by source position (parse5 records each
-//     node's source offsets) — every byte outside a resolved link is the untouched original. An `<a>`
-//     label is inline content (text, <i>/<code>/math), which DOES round-trip byte-identically. A broken
-//     slug DEGRADES (always-renders): the label text is kept, the live href dropped, and the `ref-error`
-//     marker class applied — never a thrown build.
+//     SEAM (the #318 Step-0 call): resolution runs at RENDER TIME, on the in-memory hast tree the
+//     compiler already holds, JUST BEFORE serialization (interpreter/index.js compileToHtml, gated on
+//     file.data[ENSCRIBE_PAGE_LINK_RESOLVER]) — so it needs NO HTML re-parse. The previous form ran on
+//     the SERIALIZED string and so HAD to re-parse with parse5 (hast-util-from-html) to walk the labels;
+//     that re-parse was both a browser-bundle hazard (#25) and a Layer-1 byte hazard (parse5 drops the
+//     VOID `<meta>…</meta>` close tag, and #117 custom-element indentation does not survive a
+//     parse→serialize round-trip). Walking the tree upstream of serialization removes the re-parse
+//     entirely and lets ONE mechanism serve both the static and live surfaces (the URL scheme is the
+//     injected resolver's, the one output difference per website.md). A broken slug DEGRADES
+//     (always-renders): the label is kept, the live href dropped, and the `ref-error` marker applied —
+//     never a thrown build.
 
-import { fromHtml } from 'hast-util-from-html';
-import { toHtml } from 'hast-util-to-html';
 import { visit } from 'unist-util-visit';
 
 /**
@@ -82,8 +82,9 @@ function isEmptyLabel(node) {
 }
 
 /**
- * Resolve `<a data-page-slug="slug">label</a>` internal page links STRUCTURALLY (the #289 form the
- * <a> handler records). Parses the fragment, walks every `<a>` carrying `data-page-slug`, and asks
+ * Resolve `<a data-page-slug="slug">label</a>` internal page links STRUCTURALLY, IN THE HAST TREE, at
+ * render time — before the compiler serializes it (the #318 render-time resolver; no HTML re-parse).
+ * Walks every `<a>` carrying the `data-page-slug` marker the <a> handler emits, and asks
  * `resolve(slug, { empty })` how to handle it:
  *
  *   - `{ href, label }`        → a resolvable link: set the real href (drop the marker), and when the
@@ -93,43 +94,28 @@ function isEmptyLabel(node) {
  *                                the `ref-error` marker class (the existing unresolved-link styling).
  *                                Never throws; the caller logs a warning.
  *
- * A fragment with no `data-page-slug` is returned untouched (no parse), so non-linking pages stay
- * byte-identical; a fragment with links round-trips byte-identically except at the resolved/degraded
- * links themselves.
+ * Mutates the tree in place; the compiler then serializes it normally, so every node outside a resolved
+ * `<a>` is untouched. A tree with no markers is left exactly as-is (each `<a>` without `data-page-slug`
+ * is skipped) — non-linking pages stay byte-identical. The marker key is the kebab `data-page-slug` the
+ * <a> handler sets on the raw toHast node (NOT the camelCase a serialize→reparse would have produced).
  *
- * @param {string}   html    - the rendered page fragment.
+ * @param {import('hast').Root|import('hast').Element} tree - the in-memory hast tree (pre-serialize).
  * @param {Function} resolve - (slug, { empty }) => { href, label } | { broken, label }
- * @returns {string} the fragment with page-slug links resolved or degraded.
  */
-export function resolvePageSlugLinks(html, resolve) {
-  const src = String(html);
-  if (!src.includes('data-page-slug')) return src; // fast path: nothing to do, no re-parse
-  const tree = fromHtml(src, { fragment: true }); // parse5 records source positions on each node
-  const splices = []; // { start, end, replacement } — only the <a> spans are re-serialized
+export function resolvePageSlugLinksInTree(tree, resolve) {
   visit(tree, 'element', (node) => {
-    if (node.tagName !== 'a' || node.properties?.dataPageSlug == null || !node.position) return;
-    const slug = String(node.properties.dataPageSlug);
+    if (node.tagName !== 'a' || node.properties?.['data-page-slug'] == null) return;
+    const slug = String(node.properties['data-page-slug']);
     const empty = isEmptyLabel(node);
     const r = resolve(slug, { empty });
-    delete node.properties.dataPageSlug; // the build-time marker is consumed either way
+    delete node.properties['data-page-slug']; // the build-time marker is consumed either way
     if (r.broken) {
       delete node.properties.href; // degrade: no live href
       node.properties.className = [...(node.properties.className || []), 'ref-error'];
       if (empty) node.children = [{ type: 'text', value: r.label ?? slug }];
     } else {
-      node.properties.href = r.href; // marker → real relative URL (added last, where the marker was)
+      node.properties.href = r.href; // marker → the real URL in the caller's scheme
       if (empty && r.label != null) node.children = [{ type: 'text', value: r.label }];
     }
-    splices.push({
-      start: node.position.start.offset,
-      end: node.position.end.offset,
-      replacement: toHtml(node, { allowDangerousHtml: true }),
-    });
   });
-  // Splice right-to-left so each replacement leaves earlier offsets valid; every byte outside an <a>
-  // span is the untouched original (so <meta>/<section>/formatting stay byte-identical).
-  splices.sort((a, b) => b.start - a.start);
-  let out = src;
-  for (const s of splices) out = out.slice(0, s.start) + s.replacement + out.slice(s.end);
-  return out;
 }

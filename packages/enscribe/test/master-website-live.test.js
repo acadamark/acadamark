@@ -424,6 +424,35 @@ export async function run() {
       assert.strictEqual(ownerOfHref(aToB.href), 'bookp', 'article→book links to ?page=bookp');
       console.log(`PASS: #314 — article→book ref shows the book NATIVE "${aToB.text}" (composition, not flattened) → ?page=bookp`);
 
+      // ── #318: authored <a {slug}> internal LINKS resolve at RENDER TIME (one registry, ?page= scheme, no parse5) ──
+      // On the default (artp) view. Assert on the OWNER (scheme-normalized) + the DISPLAY text, never a raw href. A
+      // page-LINK is `?page=slug` with NO #fragment; a cross-page <ref> carries `#anchor`, so the fragment excludes it.
+      const art = content();
+      const pageLinks = [...art.querySelectorAll('a')]
+        .map((a) => ({ owner: ownerOfHref(a.getAttribute('href')), frag: (a.getAttribute('href') || '').includes('#'), text: a.textContent.replace(/\s+/g, ' ').trim(), el: a }))
+        .filter((l) => l.owner && !l.frag);
+      // (a) resolvable → owner bookp, the authored label kept
+      assert.ok(pageLinks.some((l) => l.owner === 'bookp' && l.text === 'the book page'),
+        '<a bookp | the book page> resolves to a ?page=bookp link with its authored label');
+      // (b) auto-label → an empty <a atlasp | > fills from the TARGET PAGE TITLE ("Atlas")
+      assert.ok(pageLinks.some((l) => l.owner === 'atlasp' && l.text === 'Atlas'),
+        '<a atlasp | > auto-labels from the target page title ("Atlas")');
+      // (c) broken slug → DEGRADE: a ref-error marker, label kept, no live ?page= owner (always-renders, no throw)
+      const deadLink = [...art.querySelectorAll('a.ref-error')].find((a) => /a dead link/.test(a.textContent));
+      assert.ok(deadLink && !ownerOfHref(deadLink.getAttribute('href')),
+        'a broken <a no-such-page> degrades to an inert ref-error marker (label kept, no live ?page= link)');
+      // (d) NESTED-label slug link `<a bookp | go to <a atlasp | the atlas> here>`: BOTH the outer (?page=bookp)
+      //     and the inner (?page=atlasp) resolve — the case the old serialized-HTML regex could NOT (it stopped at
+      //     the inner </a>, leaving one link unresolved). The render-time tree-pass walks each <a> node, so both
+      //     resolve. (HTML5 forbids a nested <a>, so jsdom HOISTS the inner anchor to a SIBLING on innerHTML — the
+      //     two are siblings in the DOM, both resolved. The strict tree-level nesting PRESERVATION is asserted in
+      //     cross-page-links.test.js, where the hast serializes <a …>see <a …>the atlas</a> here</a> intact.)
+      assert.ok(pageLinks.some((l) => l.owner === 'atlasp' && l.text === 'the atlas'),
+        'the nested INNER <a atlasp | the atlas> resolved (?page=atlasp) — the link the old regex left dead');
+      assert.ok(pageLinks.some((l) => l.owner === 'bookp' && /go to/.test(l.text)),
+        'the nested OUTER <a bookp | …> resolved (?page=bookp) too — both nested links resolve');
+      console.log('PASS: #318 — <a {slug}> links resolve live: ?page= + auto-label + broken-degrade + nested-label (render-time, one registry, no re-parse)');
+
       // (2) the book PAGE renders AS a native book — chapter routes (#one, #two), not one collapsed book-part.
       popTo(dom, '?page=bookp');
       const hrefs = [...content().querySelectorAll('a')].map((a) => a.getAttribute('href'));
