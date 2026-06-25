@@ -1216,6 +1216,10 @@ export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapte
 // model + the `?page=` resolver, and render a page (renderChapter + a cross-page href rewrite).
 // The browser entry (browser.js mountLiveWebsite) wraps them with the fetch + DOM + History router.
 export { buildWebsiteTree, buildLiveWebsite, renderLiveWebsitePage, renderNotFoundView, resolvePageParam, flattenNavPages } from '../master-document/live-website.js';
+// The browser-pure website COMPOSITION core (website.md Phase 1 — the live #300, step 1, #324): number
+// each page natively → harvest → merge one site cross-ref registry → the read-through seed Phase 2 consumes.
+// Browser-pure (I/O injected); the static build calls it, a later live caller will too. See compose-site.js.
+export { composeSiteRegistry } from '../master-document/compose-site.js';
 // The cross-page LINK LAYER — one home for both resolvers: the href-only cross-page <ref> rewriter
 // (rewriteCrossPageHrefs, shared by the live SPA, the separate-pages book publish, and the static
 // website) and the structural <a {slug}> page-link resolver (resolvePageSlugLinks). See cross-page-links.js.
