@@ -116,3 +116,10 @@ This rides on the static website emitter (#246 / #278). It is engine + builder w
 parses `<a {slug} | label>` and the `<meta slug=…>` kwarg; the builder owns slug harvest,
 nav-path computation, link resolution, and the path-style output. Pretty trailing-slash URLs
 (`/slug/` not `/slug/index.html`) land with it.
+
+## See also
+`notes/specs/website.md` — the website composition model that **consumes** this slug identity and
+`<a {slug}>` link layer: how a website page resolves authored links against the merged site registry,
+the static (dir-per-page `.html`) vs live (`?page=`) URL schemes the slug realizes into, and the
+always-render handling of a broken link. This spec owns slug identity + the degrade marker;
+`website.md` owns how the website build applies them.
