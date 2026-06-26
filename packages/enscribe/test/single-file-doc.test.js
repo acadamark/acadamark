@@ -7,7 +7,7 @@
 import assert from 'node:assert';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveDocument } from '../src/interpreter/browser.js';
-import { emitSingleFileShell, SINGLE_FILE_ASSET_BASE } from '../src/shell/emit-shell.js';
+import { emitSingleFileShell, SINGLE_FILE_ASSETS, SINGLE_FILE_CDN_ROOT } from '../src/shell/emit-shell.js';
 
 const SELF_CONTAINED = [
   '<meta type=article>',
@@ -82,7 +82,13 @@ export async function run() {
     const html = emitSingleFileShell({ source: SELF_CONTAINED, title: 'Doc', editable: true });
     assert.ok(html.includes('<template id="enscribe-source">'), 'the source rides in a <template id=enscribe-source>');
     assert.ok(html.includes('mountLiveDocument'), 'the bootstrap mounts via mountLiveDocument (no fetch)');
-    assert.ok(html.includes(SINGLE_FILE_ASSET_BASE + 'enscribe.browser.global.js'), 'the engine loads from the web (jsDelivr default)');
+    // The four chrome assets load from the PINNED npm CDN (@0.4.1), each at its real (non-flat)
+    // tarball path — engine in dist/, the rest scattered under src/.
+    assert.ok(SINGLE_FILE_CDN_ROOT.includes('@enscribejs/enscribe@0.4.1'), 'the CDN root is pinned to the published 0.4.1');
+    assert.ok(html.includes(`src="${SINGLE_FILE_ASSETS.engine}"`), 'the engine loads from the pinned npm CDN (dist/)');
+    assert.ok(html.includes(`href="${SINGLE_FILE_ASSETS.defaultCss}"`), 'default.css loads from the pinned npm CDN (src/interpreter/assets/)');
+    assert.ok(html.includes(`href="${SINGLE_FILE_ASSETS.shellCss}"`), 'the shell CSS loads from the pinned npm CDN (src/shell/)');
+    assert.ok(html.includes(`from '${SINGLE_FILE_ASSETS.editor}'`), 'the editor module loads from the pinned npm CDN (src/shell/)');
     assert.ok(html.includes('codeMirrorEditorFactory'), 'a self-contained doc wires the editor (editable)');
     // Round-trip: the <template> content decodes back to the exact source.
     const dom = new JSDOM(html);

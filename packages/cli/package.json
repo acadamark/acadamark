@@ -24,7 +24,7 @@
     "node": ">=18"
   },
   "bin": {
-    "enscribe": "./bin/enscribe.js"
+    "enscribe": "bin/enscribe.js"
   },
   "exports": {
     ".": "./src/cli.js",

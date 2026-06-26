@@ -40,13 +40,28 @@ const FLAT_FILENAMES = {
 };
 
 // Single-file mode (delivery-modes.md §Single-file): the chrome assets load FROM THE WEB (the file
-// carries only the document content, not the ~3 MB engine). The default base is jsDelivr fronting the
-// repo's committed `site/live/` assets at `main`. NOTE — raw.githubusercontent.com (the host the
-// scoping named) serves these as `text/plain` with `X-Content-Type-Options: nosniff`, which browsers
-// REFUSE to execute as a `<script>` or import as a module; jsDelivr serves the SAME GitHub content
-// with the correct `application/javascript` MIME, so it is the working "assets from the web" host.
-// Override via emitSingleFileShell's `assetBase` / `assets` for a pinned tag or a self-hosted base.
-export const SINGLE_FILE_ASSET_BASE = 'https://cdn.jsdelivr.net/gh/enscribejs/enscribe@main/site/live/';
+// carries only the document content, not the ~3 MB engine). The default is jsDelivr fronting the
+// PINNED, PUBLISHED npm package — `@enscribejs/enscribe@0.4.1` — an immutable version, not the moving
+// `@main` git ref the stopgap used. jsDelivr serves npm files with the correct MIME
+// (`application/javascript` for the engine + editor, `text/css` for the stylesheets), so they execute
+// as a `<script>` / import as a module / apply as a stylesheet.
+//
+// The npm tarball is NOT flat (unlike the deployed `site/live/`): the four assets sit at DIFFERENT
+// subpaths under the package root (engine in `dist/`, the others scattered under `src/`). So the
+// single-file default is a PER-ASSET map at those real paths — NOT a flat `base + filename` (which
+// would 404). Bumping the pinned version is one edit to SINGLE_FILE_CDN_ROOT. Override the whole set
+// with emitSingleFileShell's `assetBase` (a flat self-host) or `assets` (per-asset).
+export const SINGLE_FILE_CDN_ROOT = 'https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/';
+
+// The four chrome assets at their REAL paths in the pinned `0.4.1` tarball (verified non-404, correct
+// MIME). These mirror the package `exports`: `./browser-global` → `dist/…`, `./default.css` →
+// `src/interpreter/assets/…`, `./shell/*` → `src/shell/…`.
+export const SINGLE_FILE_ASSETS = Object.freeze({
+  engine: SINGLE_FILE_CDN_ROOT + 'dist/enscribe.browser.global.js',
+  defaultCss: SINGLE_FILE_CDN_ROOT + 'src/interpreter/assets/default.css',
+  shellCss: SINGLE_FILE_CDN_ROOT + 'src/shell/enscribe-shell.css',
+  editor: SINGLE_FILE_CDN_ROOT + 'src/shell/editor-codemirror.js',
+});
 
 /**
  * Resolve the four asset hrefs the shell references: the engine bundle, default.css, the shell
@@ -143,8 +158,8 @@ ${HEAD_ASSET_LINKS}
  * Emit a SINGLE self-contained HTML file for ONE document (delivery-modes.md §Single-file). Unlike
  * `emitLiveShell` (which references a master FETCHED at runtime), this EMBEDS the document's `.emd`
  * source inside the file and mounts it via `mountLiveDocument` — so the file renders with no fetch of
- * the master (assets still load from the web; see SINGLE_FILE_ASSET_BASE). Pure (no I/O): the caller
- * (the CLI `--single-file` build) supplies the source text + the editability decision.
+ * the master (assets still load from the web — the pinned npm CDN; see SINGLE_FILE_ASSETS). Pure (no
+ * I/O): the caller (the CLI `--single-file` build) supplies the source text + the editability decision.
  *
  * @param {object} opts
  * @param {string} opts.source - the document's `.emd` source text (embedded verbatim). Required.
@@ -153,15 +168,23 @@ ${HEAD_ASSET_LINKS}
  *   flips it at runtime, also only when `editable`.
  * @param {boolean} [opts.editable=true] - whether the document is self-contained (no `<… src>`
  *   children) and therefore editable (gate C). When false the file is render-only (no editor loaded).
- * @param {string} [opts.assetBase=SINGLE_FILE_ASSET_BASE] - the WEB base for the four chrome assets.
- * @param {{engine?,defaultCss?,shellCss?,editor?}} [opts.assets] - explicit per-asset hrefs.
+ * @param {string} [opts.assetBase] - a FLAT web base (e.g. a self-host) for the four chrome assets;
+ *   when omitted the default is the pinned npm CDN per-asset map (SINGLE_FILE_ASSETS), since the npm
+ *   package is not flat.
+ * @param {{engine?,defaultCss?,shellCss?,editor?}} [opts.assets] - explicit per-asset hrefs (override
+ *   individual entries of whichever base applies).
  * @returns {string} the single-file HTML.
  */
-export function emitSingleFileShell({ source, title, edit = false, editable = true, assetBase = SINGLE_FILE_ASSET_BASE, assets } = {}) {
+export function emitSingleFileShell({ source, title, edit = false, editable = true, assetBase, assets } = {}) {
   if (typeof source !== 'string') {
     throw new Error('emitSingleFileShell: `source` (the document .emd text) is required');
   }
-  const a = resolveShellAssets(assetBase, assets);
+  // Default: the pinned npm-CDN per-asset map (the package is not flat). An explicit `assetBase` (a
+  // flat self-host layout) routes through resolveShellAssets like the served modes; `assets` overrides
+  // individual entries either way.
+  const a = assetBase !== undefined
+    ? resolveShellAssets(assetBase, assets)
+    : { ...SINGLE_FILE_ASSETS, ...assets };
   const pageTitle = title ?? 'enscribe document';
   // The carrier: an inert <template> holding the HTML-ESCAPED `.emd`. A <template>'s content is parsed
   // as inert HTML, so the escaped text round-trips — the bootstrap reads `.content.textContent` and the

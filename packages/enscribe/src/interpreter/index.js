@@ -1267,7 +1267,7 @@ export { renderLiveArticleEditView } from '../master-document/live-edit-view.js'
 // hand-written shell), and resolveShellAssets (flat vs explicit asset hrefs). The build helper
 // (CLI) imports these to generate a deployable live folder; the shell layer they reference ships
 // at src/shell/ (exported via package.json "./shell/*").
-export { emitLiveShell, emitSingleFileShell, resolveShellAssets, SINGLE_FILE_ASSET_BASE } from '../shell/emit-shell.js';
+export { emitLiveShell, emitSingleFileShell, resolveShellAssets, SINGLE_FILE_CDN_ROOT, SINGLE_FILE_ASSETS } from '../shell/emit-shell.js';
 
 export function collectLibrarySources(source) {
   const tree = liftToCanonicalMdast(source);
