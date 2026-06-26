@@ -1,6 +1,6 @@
 {
   "name": "@enscribejs/layer1-vocabulary",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Layer 1 semantic HTML vocabulary specification for academic publishing. Defines the element set for articles, books, chapters, floats, citations, cross-references, notes, and apparatus.",
   "keywords": [
     "enscribe",
