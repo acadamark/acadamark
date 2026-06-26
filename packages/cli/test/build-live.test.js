@@ -193,8 +193,8 @@ export function run_tests() {
       assert.ok(solo.html.includes('<template id="enscribe-source">'), 'the source is embedded in a <template>');
       assert.ok(/\.mountLiveDocument\('#enscribe-book-root'/.test(solo.html) && !solo.html.includes(".mountLiveShell('"),
         'the file mounts via mountLiveDocument (embedded read), not the fetching mountLiveShell');
-      assert.ok(/cdn\.jsdelivr\.net\/gh\/enscribejs[^"]+enscribe\.browser\.global\.js/.test(solo.html),
-        'the engine loads from the web (no embedded engine, no sibling assets)');
+      assert.ok(/cdn\.jsdelivr\.net\/npm\/@enscribejs\/enscribe@0\.4\.1\/dist\/enscribe\.browser\.global\.js/.test(solo.html),
+        'the engine loads from the pinned npm CDN @0.4.1 (no embedded engine, no sibling assets)');
       assert.ok(solo.html.includes('codeMirrorEditorFactory'), 'editable → the editor is wired');
       // the source is embedded HTML-escaped (the round-trip via <template>.content.textContent is
       // proven in the engine suite's single-file test; here we confirm the escaped content is carried)

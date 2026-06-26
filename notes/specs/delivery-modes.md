@@ -152,9 +152,14 @@ instead of fetch) and forecloses the server.
   with children (or a website) is emitted **render-only** with a warning (its children/pages are not
   embedded — see the widenings below).
 - **Assets from the web.** The chrome + display assets (engine, CSS, KaTeX, fonts, CodeMirror) load
-  by URL — the file is small (shell + content), no engine inlined. (NB: `raw.githubusercontent.com`
-  serves `text/plain` + `nosniff`, which browsers refuse to execute; the default base is **jsDelivr**,
-  the same GitHub content with correct MIME.)
+  by URL — the file is small (shell + content), no engine inlined. The default source is the
+  **pinned, published npm package** on jsDelivr — `cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/`,
+  an **immutable version** (not the moving `@main` git ref the initial stopgap used). The npm tarball
+  is not flat, so the four chrome assets are referenced at their real per-package paths (engine in
+  `dist/`, the stylesheets + editor under `src/`), each verified to resolve with the correct MIME
+  (`application/javascript` / `text/css`). Bumping the pin is one edit; a self-host or alternate tag is
+  the emitter's `assetBase` / `assets` override. (NB: `raw.githubusercontent.com` serves `text/plain`
+  + `nosniff`, which browsers refuse to execute — hence jsDelivr.)
 
 **What is still unbuilt (the widenings, recorded as axes, not gaps in the core).**
 - **Site-in-a-file** — embedding a MULTI-document master (a book's chapters, a website's pages) in one
@@ -240,8 +245,8 @@ discriminator that separates Static from the others.
 - **Single-file** — **built for one self-contained document.** `build --single-file` embeds the `.emd`
   in a `<template>` and mounts it via `mountLiveDocument` (read-from-provided-source, no master fetch);
   editable iff self-contained (`childSrcs.length === 0`), else render-only with a warning; chrome +
-  display assets load from the web (jsDelivr default — *not* `raw.githubusercontent.com`, which serves
-  `text/plain`+`nosniff` and won't execute). **Still unbuilt:** site-in-a-file (embedding a multi-
+  display assets load from the web (the **pinned npm package** `@enscribejs/enscribe@0.4.1` on
+  jsDelivr — *not* `raw.githubusercontent.com`, which serves `text/plain`+`nosniff` and won't execute). **Still unbuilt:** site-in-a-file (embedding a multi-
   document master's children) and inlined-offline assets (open from `file://` with no network). The
   read-path seam is shared with #288, but #288 does **not** fall out free — over `file://` a page
   cannot fetch siblings, so in-place needs HTTP (or the children inlined); only #288-over-HTTP is
