@@ -1,6 +1,6 @@
 {
   "name": "@enscribejs/cli",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "The `enscribe` command-line tool — render Enscribe documents to HTML, exchange JATS XML (export and import), import other formats via a pandoc bridge, and rewrite source between authoring registers.",
   "keywords": [
     "enscribe",
@@ -43,8 +43,8 @@
     "test": "node test/run.js && node test/jats-export.test.js"
   },
   "dependencies": {
-    "@enscribejs/enscribe": "^0.4.0",
-    "@enscribejs/layer1-vocabulary": "^0.4.0",
+    "@enscribejs/enscribe": "^0.4.1",
+    "@enscribejs/layer1-vocabulary": "^0.4.1",
     "mathml-to-latex": "^1.5.0",
     "remark-parse": "^11.0.0",
     "saxes": "^6.0.0",

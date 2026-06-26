@@ -1,6 +1,6 @@
 {
   "name": "enscribe-monorepo",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax. Workspace root (private); the published packages live under packages/ (enscribe, @enscribejs/cli, @enscribejs/layer1-vocabulary).",
   "type": "module",
