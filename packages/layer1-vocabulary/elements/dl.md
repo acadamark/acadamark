@@ -51,11 +51,11 @@ shorthand_examples:
     layer1_html: |
       <dl>
         <dt>enscribe</dt>
-        <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+        <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>
         <dt>Layer 1</dt>
-        <dd>The canonical semantic HTML vocabulary.</dd>
+        <dd><p>The canonical semantic HTML vocabulary.</p></dd>
         <dt>Layer 2</dt>
-        <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>
+        <dd><p>The shorthand authoring syntax that compiles to Layer 1.</p></dd>
       </dl>
     notes: |
       Long-form <dl> with short-form <dt>/<dd> children. The natural
@@ -69,8 +69,8 @@ shorthand_examples:
     layer1_html: |
       <dl class="compact">
         <dt>term-1</dt>
-        <dd>First definition of term-1.</dd>
-        <dd>Second definition of term-1.</dd>
+        <dd><p>First definition of term-1.</p></dd>
+        <dd><p>Second definition of term-1.</p></dd>
       </dl>
     notes: |
       One term with multiple definitions — a valid HTML pattern.

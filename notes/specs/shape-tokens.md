@@ -96,57 +96,63 @@ axis. The list-item case is already encoded this way: `<item>` carries `contains
 byte-identical, differing only in human `notes:` text, so the model cannot today answer "is a `<p>`
 valid here") is to **add the `shape.contains` token that states their content model** —
 `[inline]` for phrasing, `[block]` for flow, `[inline, block]` for tight/loose — so the wrapping
-decision reads one field. *(The per-element encoding, the interpreter gate that consumes it, and the
-golden re-baseline are the follow-up implementation slice; this section defines the model.)*
+decision reads one field. *(Implemented in #326: every `content.type: prose` element now carries
+`content.shape.contains`; the parse-time gate `recursive-content.js#extractFromRoot` consumes it —
+flow keeps the single `<p>`, phrasing unwraps; the flow goldens were re-baselined to the wrapped
+render.)*
 
-> **Reading note — content model vs. source position.** This section reads `contains` as *what the
-> element holds* (its content model — the axis the `#326` wrapping decision needs). The section
-> *"Classification is by source position…"* above reads it as *where the element sits*. For most
-> elements the two agree; `<note>` is the documented divergence (it *sits* inline as a marker but
-> *holds* block content). For the wrapping decision, the **content-model** reading governs (a `<note>`
-> holds block → flow → wraps). This terminological overload of one field is **flagged for the
-> maintainer**: the two readings may warrant separate fields, or an explicit note that `contains`
-> means "holds" and placement is recorded elsewhere.
+> **Reading note — content model vs. source position (RESOLVED).** This section reads `contains` as
+> *what the element holds* (its content model — the axis the `#326` wrapping decision needs). The
+> section *"Classification is by source position…"* above reads it as *where the element sits*. For
+> most elements the two agree; `<note>` is the documented divergence (it *sits* inline as a marker but
+> *holds* block content). **Maintainer decision:** for the wrapping decision the **content-model
+> ("holds") reading governs** — `content.shape.contains` means "what the element holds," and that is
+> the field the `#326` gate consults, so a `<note>` (holds block) is **flow** and wraps. Source
+> position, where it diverges, is a separate concern recorded elsewhere (the placement taxonomy); it
+> does not feed the wrapping gate.
 
-### Proposed classification (for maintainer review — not finalized)
+### Finalized classification (maintainer-ratified, implemented in #326)
 
-Every `content.type: prose` element, classified by `<p>`-validity. **Marked `⚑` are calls made against
-the element's `category`** (proving `category` is *not* the signal) **or otherwise flagged for a
-decision.** This table is a **proposal pending maintainer review**; the interpreter behavior is
-unchanged until the follow-up slice encodes it.
+Every `content.type: prose` element, classified by `<p>`-validity and encoded as
+`content.shape.contains`. **The prose content model is a binary: flow or phrasing — there are NO prose
+tight/loose members** (the only tight/loose element is the structural `<item>`). The interpreter gate
+consumes this directly; the goldens are re-baselined to match.
 
-**phrasing → unwrap** (`contains: [inline]`):
-- *inline-formatting (clean):* `a`, `abbr`, `b`, `em`, `i`, `kbd`, `marginnote`, `output`, `q`, `s`, `samp`, `span`, `strong`, `sub`, `sup`, `term`, `u`, `var`
+**phrasing → unwrap** (`content.shape.contains: [inline]`):
+- *inline-formatting:* `a`, `abbr`, `b`, `em`, `i`, `kbd`, `marginnote`, `output`, `q`, `s`, `samp`, `span`, `strong`, `sub`, `sup`, `term`, `u`, `var`
 - *citations (render inline):* `cite`, `ref`
 - *metadata leaf values:* `date`, `name`, `affiliation`, `email`, `orcid`, `doi`, `lang`, `license`, `keywords`, `editor`, `subject`, `title`, `subtitle`, `version`, `publication-date`
-- *titles/subtitles (already carry `contains: [inline]`):* `article-title`, `article-subtitle`, `section-title`, `section-subtitle`, `sub-section-title`, `sub-section-subtitle`, `sub-sub-section-title`, `sub-sub-section-subtitle`, `book-title`, `book-subtitle`, `book-part-title`, `book-part-subtitle`
-- ⚑ `p` — *category `block-prose`*, but a `<p>` cannot contain a `<p>` (phrasing content); `<p | x>` must render `<p>x</p>`. **Against the prompt's lead (it listed `p` under flow).**
-- ⚑ `summary` — *category `block-prose`*, but HTML `<summary>` is phrasing content (`<summary><p>` is invalid). **Not in the prompt's lists; classified phrasing.**
+- *titles/subtitles (already carried `[inline]`):* `article-title`, `article-subtitle`, `section-title`, `section-subtitle`, `sub-section-title`, `sub-section-subtitle`, `sub-sub-section-title`, `sub-sub-section-subtitle`, `book-title`, `book-subtitle`, `book-part-title`, `book-part-subtitle`
+- `p` — a `<p>` cannot contain a `<p>` (phrasing content); `<p | x>` renders `<p>x</p>`.
+- `summary` — HTML `<summary>` is phrasing content (`<summary><p>` is invalid).
+- **`dt`** — HTML allows flow in `<dt>`, but a term reads as a short label; **maintainer chose phrasing** (`<dt | term>` → `<dt>term</dt>`, no `<p>`).
 
-**flow → wrap** (`contains: [block]`):
-- `abstract` — ⚑ *category `metadata`* (its phrasing siblings notwithstanding); the headline against-category case.
-- *theorem-family (clean):* `corollary`, `definition`, `example`, `lemma`, `proof`, `proposition`, `remark`, `theorem`
-- *block-prose:* `aside`, `blockquote`, `note`
+**flow → wrap** (`content.shape.contains: [block]`):
+- `abstract` — the headline against-`category` case (`category: metadata`, but flow).
+- *theorem-family:* `corollary`, `definition`, `example`, `lemma`, `proof`, `proposition`, `remark`, `theorem`
+- *block-prose:* `aside`, `blockquote`, **`note`** (maintainer: definitely flow — must support multi-paragraph; the "holds block" reading governs over its inline source position).
 - *frameables:* `fig`, `frame`
-- Note: `aside` **currently unwraps** (the `#326`-class behavior the interpreter does today); under this model it is flow and should **wrap** — the behavior change deferred to the follow-up.
+- **`dd`** — a `<p>` is valid in `<dd>`; **maintainer chose flow** (wrap for consistency), not the list-item tight/loose convention.
+- *(`aside`/`blockquote`/etc. unwrapped a single paragraph before #326; under this model they wrap — that behavior change is what #326 landed.)*
 
-**tight/loose → tight single, loose multi** (`contains: [inline, block]`):
-- ⚑ `dd` — *category `block-prose`*; a definition description follows the list-item (tight/loose) convention. **Against the prompt's lead (it listed `dd` under flow).** A defensible alternative is flow (a `<p>` is valid in `<dd>`); flagged for the call.
+**No prose tight/loose.** `<item>` keeps `content.shape.contains: [inline, block]` (the encoded
+exemplar of tight/loose) but it is structural navigation, not `content.type: prose`.
 
-**⚑ Flagged for an explicit decision:**
-- `dt` (definition **term**) — *category `block-prose`*. HTML allows flow in `<dt>` (so `<p>` is technically valid → flow), but a term reads as a short label (phrasing). **Recommend phrasing** (`<dt | term>` → `<dt>term</dt>`, no `<p>`); maintainer to confirm phrasing vs flow.
-- `note` — classified flow here, but see the *content-model vs source-position* note above (`<note>` is recorded `inline` by source position); also a footnote often holds a single phrase, so tight/loose is conceivable. Flagged.
-
-**Out of scope of this prose table (the prompt's leads that are not `content.type: prose`):**
-- `dl`, `glossary`, `glossary-entry` — `content.type: structured` (containers), not prose-bearing; their density is a property of their *item* children, governed by `notes/specs/lists.md`.
-- `item` — `content.type` absent (navigation); it already carries `contains: [inline, block]` — the **encoded exemplar** of tight/loose, via the `contains` mechanism rather than `content.type: prose`.
-- `figcaption`, `figure`, `caption` — no vocabulary element files exist under these names (the frameable caption/title surface is `fig` / `frame` + the `title` / `subtitle` elements).
+**Out of scope of this prose table (not `content.type: prose`):**
+- `dl`, `glossary`, `glossary-entry` — `content.type: structured` (containers); their single-paragraph `<dd>` children wrap because `dd` is flow, but the containers themselves carry no prose content model.
+- `item` — `content.type` absent (navigation); `[inline, block]` tight/loose, encoded already.
+- `caption` — the frameable caption surface; **`caption.md` classifies it `[block]` (flow)** (#326). A
+  single-paragraph caption WRAPS in `<p>`, identical across all three authoring forms — the `<caption | …>`
+  child tag, the legacy `<fig … | caption>` pipe-content, and the `caption="…"` kwarg — because all three
+  resolve to a flow `<caption>` whose single paragraph is kept by the one parse-time content-model gate. (The
+  paired `title` surface is `[inline]` / phrasing — a frameable title stays bare inline.)
+- `figcaption`, `figure` — no vocabulary element files under these names (the rendered output of `caption`
+  inside a figure is `<figcaption>`; the authored frameable is `fig` / `frame`).
 
 **Category does not map to content model.** `theorem-family` ≈ flow and `inline-formatting` ≈ phrasing
 map cleanly, but `metadata` mixes flow (`abstract`) with phrasing (everything else), and `block-prose`
-mixes **all three** (flow `aside`/`blockquote`/`note`; phrasing `p`/`summary`; tight/loose `dd`;
-flagged `dt`). That is precisely why the content model must be its own property (the `contains` token),
-not derived from `category`.
+mixes flow (`aside`/`blockquote`/`note`/`dd`) with phrasing (`p`/`summary`/`dt`). That is precisely why
+the content model is its own property (`content.shape.contains`), not derived from `category`.
 
 ## Related references
 
@@ -156,4 +162,4 @@ not derived from `category`.
 - `notes/specs/interpreter.md` §6.2 — `convertContent`, the interpreter consumer of this content-model
   (the single-paragraph wrapping decision).
 - `notes/specs/lists.md` — list `<item>` content (the tight/loose list-item convention this model names).
-- `notes/specs/frameable.md` — frameable `title` / `caption` (phrasing) vs the frameable body (flow).
+- `notes/specs/frameable.md` — frameable `title` (phrasing) vs `caption` and the frameable body (both flow).

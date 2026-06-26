@@ -325,8 +325,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "In-section footnote — collects into the section's per-section list.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "In-section footnote — collects into the section's per-section list.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 69,
+                                      "offset": 68
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -492,8 +511,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "Second in-section footnote. Per-section.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Second in-section footnote. Per-section.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 42,
+                                      "offset": 41
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -580,8 +618,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "Pre-section footnote — authored before any section starts. The outermost-section collection rule doesn't apply (no containing top-level section), so this collects into the article-back residual list.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Pre-section footnote — authored before any section starts. The outermost-section collection rule doesn't apply (no containing top-level section), so this collects into the article-back residual list.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 201,
+                                  "offset": 200
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -641,8 +698,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "An endnote. Goes to article-back.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "An endnote. Goes to article-back.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 35,
+                                  "offset": 34
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,

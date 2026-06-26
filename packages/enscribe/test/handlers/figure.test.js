@@ -65,7 +65,10 @@ export function run() {
     assert.equal(img.properties.src, 'elephant.jpg');
     assert.equal(img.properties.alt, 'An elephant.');
     assert.equal(figcaption.tagName, 'figcaption');
-    assert.equal(figcaption.children[0].value, 'An elephant.');
+    // #326: <fig> is flow — the single-paragraph caption keeps its <p> (the
+    // parse-time gate kept it; the handler converts content as-is, no unwrap).
+    assert.equal(figcaption.children[0].tagName, 'p', 'flow figcaption wraps in <p>');
+    assert.equal(figcaption.children[0].children[0].value, 'An elephant.');
     console.log('PASS: figure handler: image figure with src → img + figcaption');
   }
 
@@ -95,7 +98,9 @@ export function run() {
     assert.equal(nonImg, undefined, 'no img element');
     const figcaption = hast.children.find(c => c.tagName === 'figcaption');
     assert.ok(figcaption, 'figcaption present');
-    assert.equal(figcaption.children[0].value, 'A code listing.');
+    // #326 flow wrap: the single-paragraph caption keeps its <p>.
+    assert.equal(figcaption.children[0].tagName, 'p', 'flow figcaption wraps in <p>');
+    assert.equal(figcaption.children[0].children[0].value, 'A code listing.');
     console.log('PASS: figure handler: non-image figure → figcaption only');
   }
 

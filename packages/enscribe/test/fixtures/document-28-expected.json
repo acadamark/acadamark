@@ -162,8 +162,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "An academic publishing system built on HTML+CSS+JS.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "An academic publishing system built on HTML+CSS+JS.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 53,
+                                  "offset": 52
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -208,8 +227,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "The canonical semantic HTML vocabulary.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "The canonical semantic HTML vocabulary.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 41,
+                                  "offset": 40
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -254,8 +292,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "The shorthand authoring syntax that compiles to Layer 1.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "The shorthand authoring syntax that compiles to Layer 1.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 58,
+                                  "offset": 57
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -489,8 +546,27 @@
                           "properties": {},
                           "children": [
                             {
-                              "type": "text",
-                              "value": "The publishing system.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "The publishing system.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 24,
+                                      "offset": 23
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -544,8 +620,27 @@
                           "properties": {},
                           "children": [
                             {
-                              "type": "text",
-                              "value": "The canonical vocabulary.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "The canonical vocabulary.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 27,
+                                      "offset": 26
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,

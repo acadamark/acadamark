@@ -17,6 +17,8 @@ enscribe_attributes:
         Optional URL of the license terms (e.g. https://creativecommons.org/licenses/by/4.0/).
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The license name or short identifier (e.g. "CC BY 4.0",

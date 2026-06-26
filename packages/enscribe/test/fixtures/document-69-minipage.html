@@ -1518,7 +1518,9 @@ note-list li {
       <p>A document figure outside any box, on the document figure counter:</p>
       <figure id="fig:doc">
         <img src="doc.png" alt="A document figure.">
-        <figcaption><span class="figure-label">Figure 1.</span> A document figure.</figcaption>
+        <figcaption><span class="figure-label">Figure 1.</span>
+          <p>A document figure.</p>
+        </figcaption>
       </figure>
       <p>
         A sealed minipage holding its own private figure. The figure inside counts
@@ -1529,7 +1531,9 @@ note-list li {
         <p>The inner figure resolves within the box: <a href="#mp-numbering-fig:inner" class="ref">figure 1</a>.</p>
         <figure id="mp-numbering-fig:inner">
           <img src="inner.png" alt="An inner figure, numbered privately.">
-          <figcaption><span class="figure-label">Figure 1.</span> An inner figure, numbered privately.</figcaption>
+          <figcaption><span class="figure-label">Figure 1.</span>
+            <p>An inner figure, numbered privately.</p>
+          </figcaption>
         </figure>
         <figcaption><span class="minipage-label">Minipage 1.</span> A sealed box with a private figure</figcaption>
       </figure>
@@ -1567,7 +1571,9 @@ note-list li {
         <p>This box has a footnote.<sup id="mp-notes-noteref-1" data-note-id="mp-notes-note-1"><a href="#mp-notes-note-1">1</a></sup></p>
         <note-list class="endnotes">
           <ol>
-            <li id="mp-notes-note-1"><sup>1</sup> The footnote is collected at the box bottom. <a href="#mp-notes-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+            <li id="mp-notes-note-1"><sup>1</sup>
+              <p>The footnote is collected at the box bottom.</p><a href="#mp-notes-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+            </li>
           </ol>
         </note-list>
         <figcaption><span class="minipage-label">Minipage 4.</span> A box with a footnote</figcaption>
@@ -1585,7 +1591,9 @@ note-list li {
           <p>Inner content with its own private figure:
             <figure id="mp-outer-mp-inner-fig:nested">
               <img src="nested.png" alt="Nested figure.">
-              <figcaption><span class="figure-label">Figure 1.</span> Nested figure.</figcaption>
+              <figcaption><span class="figure-label">Figure 1.</span>
+                <p>Nested figure.</p>
+              </figcaption>
             </figure>
           </p>
           <figcaption><span class="minipage-label">Minipage 1.</span> Inner box</figcaption>

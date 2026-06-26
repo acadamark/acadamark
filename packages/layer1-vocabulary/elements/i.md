@@ -19,6 +19,8 @@ enscribe_attributes:
         accessibility tools and stylesheet targeting.
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
 content_handler: default
 jats_counterpart:

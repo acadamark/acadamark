@@ -59,7 +59,6 @@
 // AND by handlers/theorem.js (theorem family is structurally parallel,
 // not a frameable consumer).
 
-import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
 import { FRAMEABLE_LIFTABLE } from '../../core/frameable-elements.js';
 import { formatScopedNumber } from './scoped-number.js';
 import { convertChildren } from './ast-helpers.js';
@@ -180,14 +179,20 @@ export function extractFrameableChildren(state, node) {
 
   for (const child of content) {
     const tagname = child?.tagname;
+    // #326 caption convergence: do NOT re-decide the single-paragraph wrap here.
+    // The parse-time content-model gate (recursive-content.js) already made it,
+    // per each element's content model — `<caption>` is flow (its single
+    // paragraph KEEPS its <p>, so a child `<caption | cap>` matches the legacy
+    // pipe-content-as-caption form, which routes through the flow `<fig>`), and
+    // `<title>` is phrasing (already unwrapped to inline). Converting AS-IS — no
+    // bespoke unwrapSingleParagraph — is what makes the two authoring forms of a
+    // caption produce IDENTICAL figcaption content (one decision, one path).
     if (tagname === 'caption' && captionHast == null) {
       const innerMdast = Array.isArray(child.content) ? child.content : [];
-      const unwrapped = unwrapSingleParagraph(innerMdast);
-      captionHast = convertChildren(state, child, unwrapped);
+      captionHast = convertChildren(state, child, innerMdast);
     } else if (tagname === 'title' && titleHast == null) {
       const innerMdast = Array.isArray(child.content) ? child.content : [];
-      const unwrapped = unwrapSingleParagraph(innerMdast);
-      titleHast = convertChildren(state, child, unwrapped);
+      titleHast = convertChildren(state, child, innerMdast);
     } else {
       bodyContent.push(child);
     }

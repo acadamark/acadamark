@@ -56,6 +56,8 @@ enscribe_attributes:
         "default" uses the document-level <citation-style> from <config>.
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     Content inside <cite> is optional. When present, it overrides the

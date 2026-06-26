@@ -19,6 +19,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The title text. Inline elements work normally: <em>, <strong>,

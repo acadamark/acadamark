@@ -39,7 +39,7 @@ import { ENSCRIBE_STRICT_MODE } from '../core/file-data-keys.js'
 const MAX_DEPTH = 10
 
 export default function remarkRecursiveContent(options = {}) {
-  const { processor, processorSigil, processorCanonical } = options
+  const { processor, processorSigil, processorCanonical, flowTagnames } = options
   if (!processor) {
     throw new Error(
       'remarkRecursiveContent requires a { processor } option — ' +
@@ -57,7 +57,7 @@ export default function remarkRecursiveContent(options = {}) {
       mode === 'canonical' && processorCanonical ? processorCanonical :
       mode === 'sigil' && processorSigil ? processorSigil :
       processor
-    processNodes(tree, proc, 0)
+    processNodes(tree, proc, 0, flowTagnames)
   }
 }
 
@@ -67,8 +67,11 @@ export default function remarkRecursiveContent(options = {}) {
  * @param {object} subtree - any unist node with `.children`
  * @param {import('unified').Processor} processor
  * @param {number} depth - current recursion depth (0 = outermost)
+ * @param {Set<string>} [flowTagnames] - tagnames whose content model is flow
+ *   (a <p> is valid inside): their single-paragraph pipe body KEEPS its <p>
+ *   wrapper (#326). Absent/non-member tagnames unwrap, the prior behavior.
  */
-function processNodes(subtree, processor, depth) {
+function processNodes(subtree, processor, depth, flowTagnames) {
   visit(subtree, 'enscribeTag', (node) => {
     if (node.contentHandler !== 'default') return SKIP
     if (node.content === null) return SKIP
@@ -91,7 +94,12 @@ function processNodes(subtree, processor, depth) {
       return SKIP
     }
 
-    node.content = parseContent(node.content, processor)
+    // #326 content-model gate: a flow element's single-paragraph pipe body
+    // KEEPS its <p> (wrap); phrasing (and everything else) unwraps to inline
+    // children. This parse-time central unwrap is the single seam — the
+    // per-handler unwrap calls downstream do not re-decide it.
+    const keepParagraph = flowTagnames ? flowTagnames.has(node.tagname) : false
+    node.content = parseContent(node.content, processor, keepParagraph)
     node.isOpaqueContent = false
 
     // Recurse into the newly-revealed content nodes to handle any nested
@@ -100,6 +108,7 @@ function processNodes(subtree, processor, depth) {
       { type: 'root', children: toChildren(node.content) },
       processor,
       depth + 1,
+      flowTagnames,
     )
 
     return SKIP
@@ -111,38 +120,124 @@ function processNodes(subtree, processor, depth) {
  *
  * @param {string | Array} content
  * @param {import('unified').Processor} processor
+ * @param {boolean} keepParagraph - when true (flow content model), a single
+ *   paragraph is kept wrapped; when false, it is unwrapped to inline children.
  * @returns {Array} flat array of mdast nodes (and preserved error nodes)
  */
-function parseContent(content, processor) {
+function parseContent(content, processor, keepParagraph) {
   if (typeof content === 'string') {
-    return extractFromRoot(processor.parse(content))
+    return extractFromRoot(processor.parse(content), keepParagraph)
   }
-  // content is (string | enscribeParseError)[] from escape processing.
-  // Parse each string segment; preserve error nodes in-place.
-  return content.flatMap((item) =>
-    typeof item === 'string'
-      ? extractFromRoot(processor.parse(item))
-      : [item],
-  )
+  // content is a (string | node)[] mix: the OUTER parse already tokenized inline
+  // constructs inside the pipe body (sigil `^{}`/`_{}` → <sup>/<sub>, and
+  // escape-error markers), fragmenting the raw string AROUND already-resolved
+  // INLINE nodes. Those nodes are terminal — they must NOT be re-tokenized, and
+  // the fragments around them form ONE inline run per paragraph. Parsing each
+  // string segment INDEPENDENTLY and (for flow) wrapping each in its own <p>
+  // would split one inline run across paragraphs — the #326 bug where
+  // `<aside | A^{st}B>` rendered `<aside><p>A</p><sup>st</sup><p>B</p></aside>`.
+  // Assemble the fragments + resolved nodes into coherent paragraph(s), merging
+  // inline content across the boundaries, then apply the content-model decision
+  // ONCE to the whole — so the run stays a single <p> (flow) or bare inline
+  // (phrasing), exactly as the all-string case does.
+  return applyContentModel(assembleMixedContent(content, processor), keepParagraph)
 }
 
 /**
- * Extract usable content nodes from a parsed mdast root.
+ * Assemble a `(string | node)[]` pipe-content array into block nodes, merging
+ * inline content across fragment / resolved-node boundaries. String fragments
+ * are parsed through the inner pipeline; already-resolved nodes (sigil-produced
+ * `<sup>`/`<sub>`, inline tags, escape-error markers) are spliced into the open
+ * inline run AS-IS — terminal, never re-tokenized — so an inline node between
+ * two text fragments stays inside one paragraph. A blank-line break inside a
+ * fragment (a non-final parsed paragraph) closes the current paragraph and
+ * starts the next, so a genuinely multi-paragraph body still yields multiple
+ * paragraphs (each correctly carrying its inline nodes).
  *
- * Single-paragraph root → return the paragraph's inline children directly.
- * This matches the expected content shape for constructs like `<aside | text>`.
+ * @param {Array} content - the `(string | node)[]` mixed content
+ * @param {import('unified').Processor} processor
+ * @returns {import('mdast').Content[]} block nodes (paragraphs + any block passthrough)
+ */
+function assembleMixedContent(content, processor) {
+  const blocks = []
+  let run = null
+  const closeRun = () => {
+    if (run) {
+      blocks.push({ type: 'paragraph', children: run })
+      run = null
+    }
+  }
+  for (const item of content) {
+    if (typeof item !== 'string') {
+      // an already-resolved inline node — append to the open inline run (terminal)
+      if (!run) run = []
+      run.push(item)
+      continue
+    }
+    const parsed = processor.parse(item).children
+    for (let i = 0; i < parsed.length; i += 1) {
+      const block = parsed[i]
+      if (block.type === 'paragraph') {
+        // continue (or open) the inline run with this paragraph's inline children
+        if (!run) run = []
+        run.push(...block.children)
+        // a paragraph that is not the last parsed block ends at a hard break
+        if (i < parsed.length - 1) closeRun()
+      } else {
+        // a non-paragraph block (rare in inline pipe context) — flush + emit as-is
+        closeRun()
+        blocks.push(block)
+      }
+    }
+  }
+  closeRun()
+  return blocks
+}
+
+/**
+ * Extract usable content nodes from a parsed mdast root, gated by the
+ * element's content model (#326).
+ *
+ * Single-paragraph root, PHRASING content (`keepParagraph` false) → return the
+ * paragraph's inline children directly (unwrap). A <p> is invalid inside a
+ * phrasing element (e.g. `<em><p>x</p></em>`), so this is a correctness
+ * requirement. Matches constructs like `<em | text>` → `<em>text</em>`.
+ *
+ * Single-paragraph root, FLOW content (`keepParagraph` true) → return the
+ * root's children (the single `paragraph`), keeping the <p> wrapper so a
+ * single-paragraph `<abstract | text>` renders `<abstract><p>text</p></abstract>`,
+ * consistent with the multi-paragraph case.
  *
  * Multi-child root → return the root's children (block-level structure).
  * This handles multi-paragraph content like `<aside | para1\n\npara2>`.
  *
  * @param {import('mdast').Root} root
+ * @param {boolean} keepParagraph - flow content model keeps the single <p>.
  * @returns {import('mdast').Content[]}
  */
-function extractFromRoot(root) {
-  if (root.children.length === 1 && root.children[0].type === 'paragraph') {
-    return root.children[0].children
+function extractFromRoot(root, keepParagraph) {
+  return applyContentModel(root.children, keepParagraph)
+}
+
+/**
+ * Apply the #326 content-model decision to a list of block nodes. PHRASING
+ * (`keepParagraph` false) unwraps a lone paragraph to its inline children — a
+ * `<p>` is invalid inside a phrasing element, so this is a correctness
+ * requirement. FLOW (`keepParagraph` true) keeps the `<p>` wrapper so a
+ * single paragraph matches the multi-paragraph case. Multi-block content is
+ * returned unchanged. The all-string and mixed-array paths share this single
+ * decision, so an inline run wraps (or unwraps) identically however the outer
+ * parse fragmented it.
+ *
+ * @param {import('mdast').Content[]} blocks
+ * @param {boolean} keepParagraph - flow keeps the single `<p>`.
+ * @returns {import('mdast').Content[]}
+ */
+function applyContentModel(blocks, keepParagraph) {
+  if (!keepParagraph && blocks.length === 1 && blocks[0].type === 'paragraph') {
+    return blocks[0].children
   }
-  return root.children
+  return blocks
 }
 
 /**

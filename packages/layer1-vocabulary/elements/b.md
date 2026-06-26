@@ -16,6 +16,8 @@ enscribe_attributes:
       values: [keyword, product-name, lead, offset, other]
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
 content_handler: default
 jats_counterpart:

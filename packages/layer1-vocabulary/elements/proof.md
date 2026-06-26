@@ -27,6 +27,8 @@ enscribe_attributes:
         numbering can opt-in per instance with +numbered.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
   notes: |
     The proof body — paragraphs, math, lists, etc. The closing QED
@@ -59,7 +61,7 @@ shorthand_examples:
       <proof name="of Theorem 1.2">
       The argument follows from the preceding lemma.
       </proof>
-    layer1_html: '<proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span> The argument follows from the preceding lemma.</proof>'
+    layer1_html: '<proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span><p>The argument follows from the preceding lemma.</p></proof>'
     notes: |
       Optional `name` kwarg lets the proof identify what it proves
       (useful when the proof is separated from its theorem by

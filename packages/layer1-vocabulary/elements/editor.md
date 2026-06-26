@@ -23,6 +23,8 @@ enscribe_attributes:
       default: editor
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     Same content model as <author>. Simple form (pipe content as name)

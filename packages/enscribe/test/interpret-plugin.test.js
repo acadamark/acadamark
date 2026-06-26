@@ -14,26 +14,34 @@ function makeAcadaTag(tagname, content = [], kwargs = {}) {
   return makeTag(tagname, content, { kwargs });
 }
 
-// Helper: mdast paragraph node
+// Helper: mdast paragraph node (the form the parse-time gate keeps for FLOW
+// content; for PHRASING content the gate unwraps to inline before the hast
+// converter sees it — those tests feed `inline()` to reflect that reality).
 function para(value) {
   return { type: 'paragraph', children: [{ type: 'text', value }] };
+}
+// Helper: inline text (a phrasing element's content after the #326 parse-time
+// unwrap — `convertContent` no longer unwraps, so it must receive inline here).
+function inline(value) {
+  return { type: 'text', value };
 }
 
 export function run() {
   // --- schema dispatch: <p | text> ---
   {
-    const node = makeAcadaTag('p', [para('Hello world.')]);
+    const node = makeAcadaTag('p', [inline('Hello world.')]);
     const h = hast(node);
     assert.equal(h.tagName, 'p');
-    // Paragraph should be unwrapped (prose type): children are inline nodes
+    // <p> is phrasing: its body arrives already inline (the parse-time gate
+    // unwrapped it). convertContent passes it through — no nested <p>.
     assert.equal(h.children[0].type, 'text');
     assert.equal(h.children[0].value, 'Hello world.');
-    console.log('PASS: interpret-plugin: <p> → <p> with unwrapped text');
+    console.log('PASS: interpret-plugin: <p> → <p> with inline text');
   }
 
   // --- schema dispatch: <em> ---
   {
-    const node = makeAcadaTag('em', [para('emphasis')]);
+    const node = makeAcadaTag('em', [inline('emphasis')]);
     const h = hast(node);
     assert.equal(h.tagName, 'em');
     assert.equal(h.children[0].value, 'emphasis');
@@ -42,7 +50,7 @@ export function run() {
 
   // --- schema dispatch: <strong> ---
   {
-    const node = makeAcadaTag('strong', [para('bold')]);
+    const node = makeAcadaTag('strong', [inline('bold')]);
     const h = hast(node);
     assert.equal(h.tagName, 'strong');
     console.log('PASS: interpret-plugin: <strong> → <strong>');
@@ -155,15 +163,15 @@ export function run() {
   }
 
   // --- <blockquote> (explicit Layer 1 name) ---
-  // Single-paragraph content is prose-unwrapped to inline text (same as <p>, <em>).
+  // <blockquote> is FLOW (#326): its single paragraph keeps its <p> (the gate
+  // kept it; convertContent passes it through), matching the multi-paragraph case.
   {
     const node = makeAcadaTag('blockquote', [para('A quotation.')]);
     const h = hast(node);
     assert.equal(h.tagName, 'blockquote');
-    // Single paragraph is unwrapped (content.type: prose, content.length === 1).
-    assert.equal(h.children[0].type, 'text');
-    assert.equal(h.children[0].value, 'A quotation.');
-    console.log('PASS: interpret-plugin: <blockquote> → <blockquote> (prose-unwrapped)');
+    assert.equal(h.children[0].tagName, 'p', 'flow keeps the <p> wrapper');
+    assert.equal(h.children[0].children[0].value, 'A quotation.');
+    console.log('PASS: interpret-plugin: <blockquote> → <blockquote> (flow, <p> kept)');
   }
 
   // --- <quote> shorthand alias for <blockquote> (AUD-12) ---
@@ -172,8 +180,8 @@ export function run() {
     const h = hast(node);
     // <quote> expands to <blockquote> via shorthand alias in the generated VOCABULARY.
     assert.equal(h.tagName, 'blockquote');
-    assert.equal(h.children[0].type, 'text');
-    assert.equal(h.children[0].value, 'A short quotation.');
+    assert.equal(h.children[0].tagName, 'p', 'flow keeps the <p> wrapper');
+    assert.equal(h.children[0].children[0].value, 'A short quotation.');
     console.log('PASS: interpret-plugin: <quote> shorthand → <blockquote> (AUD-12 alias)');
   }
 }

@@ -85,9 +85,12 @@ function check(label, cond) {
 //   enscribeWebsiteStructuring into a nav model). Net: 104 → 107 primary.
 // - 2026-06-19: #115 — `minipage.md` added (a sealed frameable: a box whose body is a
 //   self-contained sub-document processed in its own pipeline run). Net: 107 → 108 primary.
+// - 2026-06-26: #326 — `caption.md` added (the frameable caption surface, classified flow so
+//   both authoring forms — the `<caption>` child tag and the legacy pipe-content-as-caption —
+//   wrap a single paragraph identically through the one content-model gate). Net: 108 → 109 primary.
 check(
-  `VOCABULARY has 110 entries (108 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 110,
+  `VOCABULARY has 111 entries (109 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 111,
 );
 
 // Build-time loader has nothing to report in normal state.

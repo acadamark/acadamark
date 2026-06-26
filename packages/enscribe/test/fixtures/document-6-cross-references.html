@@ -1539,17 +1539,23 @@ note-list li {
       <p>A figure with a colon-id and caption:</p>
       <figure id="fig:elephant">
         <img src="assets/elephant.jpg" alt="An African elephant photographed in Tanzania.">
-        <figcaption><span class="figure-label">Figure 1.</span> An African elephant photographed in Tanzania.</figcaption>
+        <figcaption><span class="figure-label">Figure 1.</span>
+          <p>An African elephant photographed in Tanzania.</p>
+        </figcaption>
       </figure>
       <p>A figure without a label (gets auto-number, not referenceable):</p>
       <figure>
         <img src="assets/scatter-regression.svg" alt="A scatter plot (stand-in for a second numbered figure).">
-        <figcaption><span class="figure-label">Figure 2.</span> A scatter plot (stand-in for a second numbered figure).</figcaption>
+        <figcaption><span class="figure-label">Figure 2.</span>
+          <p>A scatter plot (stand-in for a second numbered figure).</p>
+        </figcaption>
       </figure>
       <p>A figure with -numbered (no visible label, not in numbered sequence):</p>
       <figure id="fig:lion">
         <img src="assets/elephant.jpg" alt="Another elephant (stand-in for an unnumbered labeled figure).">
-        <figcaption>Another elephant (stand-in for an unnumbered labeled figure).</figcaption>
+        <figcaption>
+          <p>Another elephant (stand-in for an unnumbered labeled figure).</p>
+        </figcaption>
       </figure>
       <p>Reference to numbered figure (renders “figure 1”): see <a href="#fig:elephant" class="ref">figure 1</a>.</p>
     </section>
@@ -1560,7 +1566,9 @@ note-list li {
       <p>Reference to labeled note (renders “note 1”): see <a href="#note:galton" class="ref">note 1</a>.</p>
       <note-list class="footnotes">
         <ol>
-          <li id="note:galton"><sup>1</sup> Galton coined the term “regression” in 1886 while studying the heights of parents and their adult children. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+          <li id="note:galton"><sup>1</sup>
+            <p>Galton coined the term “regression” in 1886 while studying the heights of parents and their adult children.</p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
+          </li>
         </ol>
       </note-list>
     </section>
@@ -1576,7 +1584,9 @@ note-list li {
   <article-back>
     <note-list class="endnotes">
       <ol>
-        <li id="note-2"><sup>2</sup> This note has no id and cannot be cross-referenced. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a></li>
+        <li id="note-2"><sup>2</sup>
+          <p>This note has no id and cannot be cross-referenced.</p><a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
+        </li>
       </ol>
     </note-list>
     <config></config>

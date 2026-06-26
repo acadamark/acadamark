@@ -1260,7 +1260,9 @@ body:has(.enscribe-layout--toc) {
         requires it to render visibly at its source location, not fall through
         silently.
       </p>
-      <aside class="frameable-border">This aside has an unknown escape:<span class="parse-error">??parse: unknown-escape-sequence "\\z"??</span>and then more prose.</aside>
+      <aside class="frameable-border">
+        <p>This aside has an unknown escape:<span class="parse-error">??parse: unknown-escape-sequence "\\z"??</span>and then more prose.</p>
+      </aside>
       <p>
         Surrounding content continues to render normally — the error is bounded to
         its construct.

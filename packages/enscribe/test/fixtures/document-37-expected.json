@@ -286,52 +286,71 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "An African elephant, photographed in ",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "An African elephant, photographed in ",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 39,
+                                  "offset": 38
+                                }
+                              }
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "i",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Serengeti National Park",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 40,
+                                      "offset": 39
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 63,
+                                      "offset": 62
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": ".",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 64,
+                                  "offset": 63
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 65,
+                                  "offset": 64
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
                               "column": 2,
                               "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 39,
-                              "offset": 38
-                            }
-                          }
-                        },
-                        {
-                          "type": "element",
-                          "tagName": "i",
-                          "properties": {},
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "Serengeti National Park",
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 40,
-                                  "offset": 39
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 63,
-                                  "offset": 62
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "value": ".",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 64,
-                              "offset": 63
                             },
                             "end": {
                               "line": 1,
@@ -420,8 +439,15 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "A zebra in the savanna."
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A zebra in the savanna."
+                            }
+                          ]
                         }
                       ]
                     }
@@ -547,52 +573,71 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "A summary of our ",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A summary of our ",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 19,
+                                  "offset": 18
+                                }
+                              }
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "b",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "methods",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 21,
+                                      "offset": 20
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 28,
+                                      "offset": 27
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " section.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 30,
+                                  "offset": 29
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 39,
+                                  "offset": 38
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
                               "column": 2,
                               "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 19,
-                              "offset": 18
-                            }
-                          }
-                        },
-                        {
-                          "type": "element",
-                          "tagName": "b",
-                          "properties": {},
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "methods",
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 21,
-                                  "offset": 20
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 28,
-                                  "offset": 27
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "value": " section.",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 30,
-                              "offset": 29
                             },
                             "end": {
                               "line": 1,
@@ -806,8 +851,27 @@
                   },
                   "children": [
                     {
-                      "type": "text",
-                      "value": "A bordered callout that doesn't participate in the figure counter.",
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A bordered callout that doesn't participate in the figure counter.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 68,
+                              "offset": 67
+                            }
+                          }
+                        }
+                      ],
                       "position": {
                         "start": {
                           "line": 1,
@@ -869,8 +933,27 @@
                   },
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Body content here.",
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Body content here.",
+                          "position": {
+                            "start": {
+                              "line": 2,
+                              "column": 1,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 2,
+                              "column": 19,
+                              "offset": 19
+                            }
+                          }
+                        }
+                      ],
                       "position": {
                         "start": {
                           "line": 2,
@@ -909,8 +992,15 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "Numbered frame"
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Numbered frame"
+                            }
+                          ]
                         }
                       ]
                     }
@@ -1097,8 +1187,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "A plot caption.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A plot caption.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 17,
+                                  "offset": 16
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,

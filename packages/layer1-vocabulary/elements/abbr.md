@@ -20,6 +20,8 @@ enscribe_attributes:
         subsequent uses if the expansion is already in scope.
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The abbreviation as text — typically a short uppercase token

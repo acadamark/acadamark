@@ -16,6 +16,8 @@ enscribe_attributes:
       values: [misspelling, proper-name, editorial-correction, other]
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
 content_handler: default
 jats_counterpart:

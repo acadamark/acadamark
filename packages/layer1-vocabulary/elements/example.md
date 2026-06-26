@@ -26,6 +26,8 @@ enscribe_attributes:
         "example" theorem-style family. Default true.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
 content_handler: default
 jats_counterpart:
@@ -37,7 +39,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <example | The integers under addition form a group.>
-    layer1_html: '<example><span class="example-label">Example 1.</span> The integers under addition form a group.</example>'
+    layer1_html: '<example><span class="example-label">Example 1.</span><p>The integers under addition form a group.</p></example>'
   - source: |
       <example #ex:integers>
       The integers $\mathbb{Z}$ under addition form a group: the

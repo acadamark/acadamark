@@ -1533,12 +1533,16 @@ note-list li {
         </p>
         <figure id="fig:elephant">
           <img src="elephant.jpg" alt="An African elephant.">
-          <figcaption><span class="figure-label">Figure 1.</span> An African elephant.</figcaption>
+          <figcaption><span class="figure-label">Figure 1.</span>
+            <p>An African elephant.</p>
+          </figcaption>
         </figure>
         <p>The alias form:</p>
         <figure>
           <img src="zebra.jpg" alt="A zebra in the savanna.">
-          <figcaption><span class="figure-label">Figure 2.</span> A zebra in the savanna.</figcaption>
+          <figcaption><span class="figure-label">Figure 2.</span>
+            <p>A zebra in the savanna.</p>
+          </figcaption>
         </figure>
         <p>
           Both render as HTML-native <code>&#x3C;figure></code> elements. The handler decides the
@@ -1605,12 +1609,18 @@ note-list li {
           spans that slice 3a left deferred (the registry-side numbering landed in
           3a; the visible labels in 3b).
         </p>
-        <theorem id="thm:fundamental" data-name="Fundamental Theorem of Arithmetic">
-          <span class="theorem-label">Theorem 1 (Fundamental Theorem of Arithmetic).</span> Every integer greater than 1 either is prime itself or is the product
-          of prime numbers, and that this product is unique up to ordering.
+        <theorem id="thm:fundamental" data-name="Fundamental Theorem of Arithmetic"><span class="theorem-label">Theorem 1 (Fundamental Theorem of Arithmetic).</span>
+          <p>
+            Every integer greater than 1 either is prime itself or is the product
+            of prime numbers, and that this product is unique up to ordering.
+          </p>
         </theorem>
-        <lemma><span class="lemma-label">Lemma 2.</span> Every nonempty subset of the natural numbers has a least element.</lemma>
-        <proof><span class="proof-label">Proof.</span> By induction on the size of the subset.</proof>
+        <lemma><span class="lemma-label">Lemma 2.</span>
+          <p>Every nonempty subset of the natural numbers has a least element.</p>
+        </lemma>
+        <proof><span class="proof-label">Proof.</span>
+          <p>By induction on the size of the subset.</p>
+        </proof>
         <p>Cross-reference to <a href="#thm:fundamental" class="ref">theorem 1</a> resolves to “theorem 1”.</p>
       </sub-section>
       <sub-section>
@@ -1621,7 +1631,9 @@ note-list li {
         </p>
         <figure class="frameable-border">
           <img src="plot.png" alt="A plot with a frame around it.">
-          <figcaption><span class="figure-label">Figure 4.</span> A plot with a frame around it.</figcaption>
+          <figcaption><span class="figure-label">Figure 4.</span>
+            <p>A plot with a frame around it.</p>
+          </figcaption>
         </figure>
         <p>
           The class flows through to the rendered <code>&#x3C;figure></code> so theme stylesheets

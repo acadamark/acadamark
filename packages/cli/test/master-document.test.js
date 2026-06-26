@@ -231,11 +231,13 @@ export function run_tests() {
 
     // Continuous FIGURE numbering: the figure in the Nth child takes the Nth
     // document number — it does not restart per file. (alpha→1, beta→2, gamma→3.)
-    assert.ok(xref.includes('<figcaption><span class="figure-label">Figure 1.</span> The alpha figure.</figcaption>'),
+    // #326: <fig> is flow — the single-paragraph caption keeps its <p> (a block,
+    // so the formatter may break the line between the label span and the caption).
+    assert.ok(/<span class="figure-label">Figure 1\.<\/span>\s*<p>The alpha figure\.<\/p>/.test(xref),
       'cross-file: the first child file\'s figure is Figure 1');
-    assert.ok(xref.includes('<figcaption><span class="figure-label">Figure 2.</span> The beta figure.</figcaption>'),
+    assert.ok(/<span class="figure-label">Figure 2\.<\/span>\s*<p>The beta figure\.<\/p>/.test(xref),
       'cross-file: the second child file\'s figure continues as Figure 2 (no per-file restart)');
-    assert.ok(xref.includes('<figcaption><span class="figure-label">Figure 3.</span> The gamma figure.</figcaption>'),
+    assert.ok(/<span class="figure-label">Figure 3\.<\/span>\s*<p>The gamma figure\.<\/p>/.test(xref),
       'cross-file: the third child file\'s figure continues as Figure 3');
     console.log('PASS: #190 slice 2 — figures number continuously across child files');
 

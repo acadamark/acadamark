@@ -21,6 +21,8 @@ enscribe_attributes:
         value is drawn from.
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The subject classifier as text — either a free-form topic ("ecology

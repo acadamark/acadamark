@@ -43,6 +43,8 @@ enscribe_attributes:
         quoted-positional form).
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     Link text. The visible label for the link.

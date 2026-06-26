@@ -26,6 +26,8 @@ enscribe_attributes:
         abstract. Informational only; does not enforce.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
   notes: |
     Abstract content. Single-paragraph or multi-paragraph. Structured
@@ -69,7 +71,7 @@ shorthand_examples:
       >
     layer1_html: |
       <abstract data-word-limit="250">
-        <p>This paper presents...</p>
+        <p>This paper presents…</p>
       </abstract>
 interpreter_strategy: schema
 ---

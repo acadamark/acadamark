@@ -66,6 +66,7 @@ import {
   CONFIG_KWARGS, isConfigKwarg, isBooleanConfigKwarg,
 } from '../lib/apparatus-allowlists.js';
 import { createShorthandRegistry } from '../lib/shorthand-expansions.js';
+import { FLOW_TAGNAMES } from '../lib/content-model.js';
 import { hostAcceptsLanguage, HOST_ACCEPT_SETS } from '../lib/host-accept-sets.js';
 import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
 import { tagnamesInCategory } from '../lib/vocab-categories.js';
@@ -698,7 +699,19 @@ function liftFrameableKwargs(node, _file) {
 
   for (const [key, value] of Object.entries(kwargs)) {
     if (spec.liftedKwargs.has(key)) {
-      liftedChildren.push(makeTag(key, [{ type: 'text', value: String(value) }]));
+      // #326: this lift runs AFTER the content-model gate (recursive-content.js),
+      // so the lifted child never passes through it. Build the SAME content shape
+      // the gate would have produced for the equivalent child-tag form, keyed on
+      // the SAME classification (FLOW_TAGNAMES): a flow child (`<caption>`) wraps
+      // its text in a paragraph, so the kwarg form `caption="…"` renders
+      // identically to the child form `<caption | …>`; a phrasing child
+      // (`<title>`) stays bare inline. Without this, a kwarg caption would render
+      // unwrapped while the child/pipe forms wrap — the same divergence #326 fixes.
+      const text = { type: 'text', value: String(value) };
+      const childContent = FLOW_TAGNAMES.has(key)
+        ? [{ type: 'paragraph', children: [text] }]
+        : [text];
+      liftedChildren.push(makeTag(key, childContent));
     } else {
       newKwargs[key] = value;
     }

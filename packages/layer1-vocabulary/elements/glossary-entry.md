@@ -43,7 +43,7 @@ shorthand_examples:
     layer1_html: |
       <glossary-entry id="term:enscribe">
         <dt>enscribe</dt>
-        <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+        <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>
       </glossary-entry>
     notes: |
       A single glossary entry. The id uses the "term:" colon-prefix

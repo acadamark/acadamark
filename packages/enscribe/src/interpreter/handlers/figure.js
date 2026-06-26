@@ -20,7 +20,6 @@
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { extractPlainText, convertChildren } from '../lib/ast-helpers.js';
-import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
 import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFrameableBorder } from '../lib/frameable.js';
 
 /**
@@ -32,8 +31,11 @@ import { extractFrameableChildren, renderFrameable, frameableBorderLook, readFra
  */
 function buildPipeAsCaptionHast(state, node, bodyContent) {
   if (!bodyContent || bodyContent.length === 0) return null;
-  const nodes = unwrapSingleParagraph(bodyContent);
-  const children = convertChildren(state, node, nodes);
+  // The single-paragraph wrap/unwrap decision (#326) is made at parse time by
+  // the content-model gate (recursive-content.js extractFromRoot): <fig> is
+  // flow, so its single-paragraph pipe body keeps its <p>. Convert as-is — a
+  // re-unwrap here would undo that wrap.
+  const children = convertChildren(state, node, bodyContent);
   return children.length > 0 ? children : null;
 }
 

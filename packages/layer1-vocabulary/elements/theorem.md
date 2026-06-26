@@ -31,6 +31,8 @@ enscribe_attributes:
         written as numbered=true / numbered=false.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
   notes: |
     The theorem's body is paragraphs and inline content directly —
