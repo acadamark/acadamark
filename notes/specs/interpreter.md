@@ -212,16 +212,38 @@ same pass as those produced at the top level.
 as math, code, and raw table data) are skipped entirely.
 
 **Paragraph unwrapping:** The inner parser wraps prose in a paragraph node.
-For content that is logically inline (a single paragraph of text), the plugin
-unwraps the paragraph and stores the paragraph's children directly. Multi-paragraph
-content keeps the block structure. The extraction rule is:
+Whether that paragraph wrapper is kept or unwrapped is governed by the
+element's **content model** — *not* by the paragraph count. "Has one
+paragraph" and "is inline content" are different things: a single paragraph
+inside `<abstract>` is still flow (block) content that happens to have one
+paragraph, and it should wrap. The discriminator is whether a `<p>` is valid
+inside the element (`notes/specs/shape-tokens.md` §"Content model and
+single-paragraph wrapping"):
 
-- `root.children.length === 1 && root.children[0].type === 'paragraph'`
-  → return `paragraph.children` (inline array)
-- Otherwise → return `root.children` (block array)
+- **phrasing** (`contains: [inline]`, a `<p>` is invalid inside — e.g. `<em>`,
+  `<section-title>`) → **unwrap** the single paragraph to its inline children.
+  This is a correctness requirement.
+- **flow** (`contains` includes `block`, e.g. `<abstract>`, `<blockquote>`,
+  `<aside>`) → **keep the `<p>` wrapper**, so a single paragraph matches the
+  multi-paragraph case (`<abstract><p>…</p></abstract>`).
+- **tight/loose** (`contains: [inline, block]`, e.g. `<item>`) → a single
+  paragraph stays **bare** (tight); multiple paragraphs **wrap** (loose).
 
-This means `<em | emphasized>` produces an inline children array containing
-just the text node `"emphasized"` — not a paragraph wrapper around it.
+So `<em | emphasized>` (phrasing) produces an inline children array containing
+just the text node `"emphasized"` — not a paragraph wrapper — while
+`<abstract | one sentence>` (flow) keeps `<p>one sentence</p>`.
+
+> **Implementation status (#326).** The current code does *not* yet read the
+> content model: `extractFromRoot` / `convertContent` (§6.2) unwrap by paragraph
+> **count** — a single-paragraph body is unwrapped for *every* prose element.
+> That is correct for phrasing but wrong for flow: a single-paragraph
+> `<abstract>` currently renders bare (`<abstract>text</abstract>`) instead of
+> wrapped. Encoding the content model on the prose elements (the `contains`
+> token) and gating the unwrap on it — then re-baselining the goldens — is the
+> `#326` **follow-up implementation slice**. Until it lands, the `#304`
+> example-render check keeps the affected single-paragraph `<abstract>` examples
+> FLAGGED. This section states the target rule; the behavior is unchanged by the
+> spec slice that wrote it.
 
 **Mixed content:** When the parser's escape processing has produced a
 `(string | enscribeParseError)[]` array for `node.content`, each string
@@ -1311,14 +1333,30 @@ target it maps:
 5. In all cases: `nodes.flatMap(child => state.one(child, node))`.
 
 The paragraph unwrap handles the case where pipe text was re-parsed into a
-single-paragraph wrapper. For elements like `<em>`, `<strong>`, `<aside>`,
-and `<section-title>`, the content is prose and the paragraph wrapper would
-produce `<em><p>text</p></em>` instead of `<em>text</em>`. Unwrapping produces
-the correct output.
+single-paragraph wrapper. For **phrasing** elements like `<em>`, `<strong>`,
+and `<section-title>`, the content is inline-only and the paragraph wrapper
+would produce invalid output (`<em><p>text</p></em>` instead of
+`<em>text</em>`); unwrapping is required for correctness.
+
+> **Content-model gate (#326) — target vs. current.** Step 3 above is the
+> **current** rule: it keys on the paragraph *count* (`content.length === 1`)
+> for *every* `content.type: 'prose'` element. The **correct** rule keys on the
+> element's content model (`notes/specs/shape-tokens.md`): unwrap only for
+> **phrasing** elements; **flow** elements (e.g. `<abstract>`, `<aside>`,
+> `<blockquote>`) keep the `<p>` wrapper even for a single paragraph; **tight/
+> loose** elements (`<item>`) unwrap a single paragraph (tight) but wrap
+> multiple (loose). Today, because step 3 is count-based, a single-paragraph
+> *flow* element such as `<abstract>` is wrongly unwrapped to bare text — the
+> `#326` defect. Encoding the content model and replacing step 3's
+> `content.type === 'prose'` test with a "is this element phrasing (or
+> tight, single-paragraph)?" test is the `#326` follow-up implementation slice;
+> the seam is the parse-time central unwrap (`recursive-content.js`'s
+> `extractFromRoot`). `<aside>` is flow and therefore moves from the unwrap set
+> to the wrap set when the gate lands.
 
 Multi-paragraph content (e.g., a `<blockquote>` with two paragraphs in its
-pipe content) is not unwrapped. The paragraphs appear as block children of
-the blockquote element.
+pipe content) is not unwrapped on either rule. The paragraphs appear as block
+children of the blockquote element.
 
 ---
 

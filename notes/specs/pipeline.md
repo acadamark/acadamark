@@ -207,11 +207,23 @@ is handled by the plugin's own tree walk. (The structural plugins all run
 on the outer tree, after normalization has rewritten any delegated-parser
 nodes produced on either surface.)
 
-**Paragraph unwrapping:** Pipe text that resolves to a single paragraph (the
-common case for prose content) is unwrapped to its inline children. This means
-the node's content is `[text("emphasized text")]`, not
-`[paragraph([text("emphasized text")])]`. The wrapping is re-applied during
-hast conversion if the element's content type is `block` rather than `prose`.
+**Paragraph unwrapping:** Pipe text that resolves to a single paragraph is
+unwrapped to its inline children for **phrasing** elements (a `<p>` is invalid
+inside, e.g. `<em>`) — the node's content becomes `[text("emphasized text")]`,
+not `[paragraph([text("emphasized text")])]`. Whether the wrapper is kept is
+governed by the element's **content model** (flow / phrasing / tight-loose),
+*not* by the paragraph count: **flow** elements (a `<p>` is valid inside, e.g.
+`<abstract>`) keep the wrapper so a single paragraph matches the multi-paragraph
+case; **tight/loose** elements (`<item>`) keep a single paragraph bare but wrap
+multiple. The content-model property and the wrapping rule are defined in
+`notes/specs/shape-tokens.md` §"Content model and single-paragraph wrapping";
+the interpreter consumer is `notes/specs/interpreter.md` §6.2.
+
+> **Status (#326).** The current implementation unwraps by paragraph *count* for
+> all prose content (correct for phrasing, wrong for flow — a single-paragraph
+> `<abstract>` renders bare); gating the unwrap on the content model is the
+> `#326` follow-up. This describes the target rule; the behavior is unchanged by
+> the spec slice.
 
 **Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
 are converted to `enscribeParseError` nodes with `subtype: 'max-recursion-depth'`.

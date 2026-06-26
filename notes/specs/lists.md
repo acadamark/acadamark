@@ -17,6 +17,9 @@ All mark an item the same way.
 ## Item content
 Runs after the marker until the next marker / nested `<list>` / `</list>`. It can be
 multiple paragraphs — they follow the normal paragraph rules and need no indentation.
+A single-paragraph item stays bare while a multi-paragraph item wraps: this is the
+**tight/loose** content-model state (`<item>` carries `contains: [inline, block]`),
+defined in `notes/specs/shape-tokens.md` §"Content model and single-paragraph wrapping".
 
 ## Recognition
 Markers are recognized only at flow position — a marker begins a line. An inline
