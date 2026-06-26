@@ -14,7 +14,7 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, extractDocumentTitle } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, emitSingleFileShell, extractDocumentTitle } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { resolvePageSource } from './static-website.js';
@@ -188,4 +188,50 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   );
 
   return { outDir: out, master: masterName, children, assets: Object.keys(SHELL_ASSET_SPECS) };
+}
+
+/**
+ * Build a SINGLE self-contained HTML file for ONE document (delivery-modes.md §Single-file): read the
+ * master `.emd`, EMBED it in the file (a `<template>` the engine reads at mount via `mountLiveDocument`),
+ * and reference the chrome/display assets from the web. The file renders with no fetch of the document.
+ * No sibling assets, no sources folder — one file.
+ *
+ * EDITABILITY GATE (scope C): the document is editable IFF it is self-contained — no `<… src>` structure
+ * children (article/book) AND not a multi-page website (whose `<item src>` pages are external). A
+ * non-self-contained master is emitted READ-ONLY (its children/pages are NOT embedded — single document,
+ * scope B; site-in-a-file is a follow-on) and a warning is issued. The same `srcChildrenOf` /
+ * `discoverWebsitePages` signals the served build and the browser live-loader use.
+ *
+ * @param {object} opts
+ * @param {string} opts.master - path to the master `.emd`.
+ * @param {string} [opts.title] - the page <title>. Order: explicit → the document's `<title>` → filename.
+ * @param {boolean} [opts.edit=false] - default the editable file to the editor (`?edit` always works).
+ * @param {string} [opts.assetBase] - override the web asset base (default: jsDelivr; see emit-shell.js).
+ * @param {(msg:string)=>void} [opts.warn=console.warn] - warning sink (the CLI silences it under --quiet).
+ * @returns {{ html: string, master: string, editable: boolean, childSrcs: string[], websitePages: string[], type: string }}
+ */
+export function buildSingleFile({ master, title, edit = false, assetBase, warn = (m) => console.warn(m) }) {
+  const masterPath = resolve(master);
+  const masterName = basename(masterPath);
+  const masterSource = readFileSync(masterPath, 'utf8');
+
+  // One structuring read: parse once, derive type + the external-source signals from it.
+  const proc = buildEnscribePipeline({});
+  const tree = proc.parse(masterSource);
+  const type = classifyDocType(tree).type;
+  const childSrcs = srcChildrenOf(tree);
+  const websitePages = type === 'website' ? discoverWebsitePages(masterSource) : [];
+  const editable = childSrcs.length === 0 && websitePages.length === 0;
+
+  if (!editable) {
+    if (websitePages.length > 0) {
+      warn(`enscribe build (--single-file): "${masterName}" is a website with ${websitePages.length} external page(s) — a single self-contained file carries ONE document, not a site (site-in-a-file is a follow-on). Emitting READ-ONLY; the pages load from the web at render, and editing is disabled.`);
+    } else {
+      warn(`enscribe build (--single-file): "${masterName}" pulls in ${childSrcs.length} external <… src> child(ren), which are NOT embedded in a single file. Emitting READ-ONLY; the children load from the web at render, and editing is disabled. For a self-contained single file, inline the children into one document.`);
+    }
+  }
+
+  const fileTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
+  const html = emitSingleFileShell({ source: masterSource, title: fileTitle, edit, editable, assetBase });
+  return { html, master: masterName, editable, childSrcs, websitePages, type };
 }

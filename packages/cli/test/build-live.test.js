@@ -14,7 +14,7 @@ import { existsSync, readFileSync, writeFileSync, rmSync, mkdtempSync, mkdirSync
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
-import { buildLiveFolder } from '../src/build-live.js';
+import { buildLiveFolder, buildSingleFile } from '../src/build-live.js';
 
 const require = createRequire(import.meta.url);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -175,6 +175,46 @@ export function run_tests() {
     } finally {
       rmSync(siteDir, { recursive: true, force: true });
       rmSync(out, { recursive: true, force: true });
+    }
+  }
+
+  // ── build --single-file (delivery-modes.md §Single-file): one file, embedded source, edit gate ──
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-single-'));
+    try {
+      const selfContained = '<meta type=article>\n<title | Solo Doc>\n</meta>\n\n<section | Body>\n\nSelf-contained `text`.';
+      const soloPath = join(dir, 'solo.emd');
+      writeFileSync(soloPath, selfContained);
+
+      // self-contained → editable, one file, source embedded + mounted via mountLiveDocument (no fetch)
+      const solo = buildSingleFile({ master: soloPath, warn: () => {} });
+      assert.strictEqual(solo.editable, true, 'a self-contained document is editable');
+      assert.deepStrictEqual(solo.childSrcs, [], 'no `<… src>` children');
+      assert.ok(solo.html.includes('<template id="enscribe-source">'), 'the source is embedded in a <template>');
+      assert.ok(/\.mountLiveDocument\('#enscribe-book-root'/.test(solo.html) && !solo.html.includes(".mountLiveShell('"),
+        'the file mounts via mountLiveDocument (embedded read), not the fetching mountLiveShell');
+      assert.ok(/cdn\.jsdelivr\.net\/gh\/enscribejs[^"]+enscribe\.browser\.global\.js/.test(solo.html),
+        'the engine loads from the web (no embedded engine, no sibling assets)');
+      assert.ok(solo.html.includes('codeMirrorEditorFactory'), 'editable → the editor is wired');
+      // the source is embedded HTML-escaped (the round-trip via <template>.content.textContent is
+      // proven in the engine suite's single-file test; here we confirm the escaped content is carried)
+      assert.ok(solo.html.includes('&lt;section | Body&gt;') && solo.html.includes('Self-contained `text`.'),
+        'the document source is embedded (HTML-escaped) in the file');
+
+      // a document WITH `<… src>` children → render-only (gate C): warns, no editor wired
+      const multiPath = join(dir, 'multi.emd');
+      writeFileSync(multiPath, '<meta type=article>\n<title | Multi>\n</meta>\n\n<section src=a.emd />\n<section src=b.emd />');
+      let warned = '';
+      const multi = buildSingleFile({ master: multiPath, warn: (m) => { warned = m; } });
+      assert.strictEqual(multi.editable, false, 'a document with `<… src>` children is NOT editable (render-only)');
+      assert.deepStrictEqual([...multi.childSrcs].sort(), ['a.emd', 'b.emd'], 'the children are discovered');
+      assert.ok(/render-only|self-contained/i.test(warned), 'a non-self-contained single-file emit warns');
+      assert.ok(!multi.html.includes('codeMirrorEditorFactory') && multi.html.includes('const opts = {};'),
+        'render-only → no editor module, edit disabled');
+
+      console.log('PASS: single-file cli — buildSingleFile: self-contained→editable (embedded source, web assets); children→render-only (gate C)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
     }
   }
 }

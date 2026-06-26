@@ -39,6 +39,15 @@ const FLAT_FILENAMES = {
   editor: 'editor-codemirror.js',
 };
 
+// Single-file mode (delivery-modes.md §Single-file): the chrome assets load FROM THE WEB (the file
+// carries only the document content, not the ~3 MB engine). The default base is jsDelivr fronting the
+// repo's committed `site/live/` assets at `main`. NOTE — raw.githubusercontent.com (the host the
+// scoping named) serves these as `text/plain` with `X-Content-Type-Options: nosniff`, which browsers
+// REFUSE to execute as a `<script>` or import as a module; jsDelivr serves the SAME GitHub content
+// with the correct `application/javascript` MIME, so it is the working "assets from the web" host.
+// Override via emitSingleFileShell's `assetBase` / `assets` for a pinned tag or a self-hosted base.
+export const SINGLE_FILE_ASSET_BASE = 'https://cdn.jsdelivr.net/gh/enscribejs/enscribe@main/site/live/';
+
 /**
  * Resolve the four asset hrefs the shell references: the engine bundle, default.css, the shell
  * chrome CSS (#214), and the default editor module (#214). Explicit `assets` (the dev fixture's
@@ -121,6 +130,96 @@ ${HEAD_ASSET_LINKS}
     .mountLiveShell('#enscribe-book-root', '${masterLiteral}', opts)
     .catch((err) => {
       document.getElementById('enscribe-book-root').textContent = 'Failed to mount the live shell: ' + err.message;
+      // eslint-disable-next-line no-console
+      console.error(err);
+    });
+</script>
+</body>
+</html>
+`;
+}
+
+/**
+ * Emit a SINGLE self-contained HTML file for ONE document (delivery-modes.md §Single-file). Unlike
+ * `emitLiveShell` (which references a master FETCHED at runtime), this EMBEDS the document's `.emd`
+ * source inside the file and mounts it via `mountLiveDocument` — so the file renders with no fetch of
+ * the master (assets still load from the web; see SINGLE_FILE_ASSET_BASE). Pure (no I/O): the caller
+ * (the CLI `--single-file` build) supplies the source text + the editability decision.
+ *
+ * @param {object} opts
+ * @param {string} opts.source - the document's `.emd` source text (embedded verbatim). Required.
+ * @param {string} [opts.title] - the page <title>.
+ * @param {boolean} [opts.edit=false] - default to the editor (only honored when `editable`); `?edit`
+ *   flips it at runtime, also only when `editable`.
+ * @param {boolean} [opts.editable=true] - whether the document is self-contained (no `<… src>`
+ *   children) and therefore editable (gate C). When false the file is render-only (no editor loaded).
+ * @param {string} [opts.assetBase=SINGLE_FILE_ASSET_BASE] - the WEB base for the four chrome assets.
+ * @param {{engine?,defaultCss?,shellCss?,editor?}} [opts.assets] - explicit per-asset hrefs.
+ * @returns {string} the single-file HTML.
+ */
+export function emitSingleFileShell({ source, title, edit = false, editable = true, assetBase = SINGLE_FILE_ASSET_BASE, assets } = {}) {
+  if (typeof source !== 'string') {
+    throw new Error('emitSingleFileShell: `source` (the document .emd text) is required');
+  }
+  const a = resolveShellAssets(assetBase, assets);
+  const pageTitle = title ?? 'enscribe document';
+  // The carrier: an inert <template> holding the HTML-ESCAPED `.emd`. A <template>'s content is parsed
+  // as inert HTML, so the escaped text round-trips — the bootstrap reads `.content.textContent` and the
+  // browser has already decoded the entities back to the exact source. This is robust even when the
+  // `.emd` contains `</script>`, `<`, or `&` (a raw <script> data block would not decode entities and
+  // would terminate early at a literal `</script>`).
+  const embedded = escapeHtml(source);
+  // Gate C — editable IFF self-contained: a self-contained doc wires the editor + honors `?edit`; a doc
+  // WITH `<… src>` children is render-only (its children are not embedded — one document, scope B), so
+  // no editor module is loaded and `?edit` is inert.
+  const editAttr = (editable && edit) ? ' data-enscribe-edit' : '';
+  const editBootstrap = editable
+    ? `  // Editable (self-contained): load the default editor adapter (CodeMirror loads host-side, only
+  // when editing is on). \`?edit\` flips it; the \`data-enscribe-edit\` on the mount <div> is the default.
+  import { codeMirrorEditorFactory } from '${a.editor}';
+  const opts = { editorFactory: codeMirrorEditorFactory };
+  if (new URLSearchParams(location.search).has('edit')) opts.edit = true;`
+    : `  // Render-only: this document pulls in external <… src> children, which a single self-contained
+  // file does not embed (one document only). Editing is disabled; children load from the web at render.
+  const opts = {};`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(pageTitle)}</title>
+
+<!--
+  A SINGLE self-contained enscribe document (delivery-modes.md §Single-file). The document source is
+  EMBEDDED below (the <template id="enscribe-source">); the engine reads it from there and renders —
+  no fetch of the document. ${editable ? 'Self-contained → editable: `?edit` opens Write/Preview over the embedded source.' : 'Render-only (it pulls in external <… src> children, not embedded here).'}
+  The chrome/display assets load from the WEB (jsDelivr by default); the file itself carries no engine.
+-->
+<link rel="stylesheet" href="${a.defaultCss}">
+<link rel="stylesheet" href="${a.shellCss}">
+${HEAD_ASSET_LINKS}
+</head>
+<body>
+<!-- The embedded document source — read at mount via .content.textContent (entities decoded on parse). -->
+<template id="enscribe-source">${embedded}</template>
+
+<div id="enscribe-book-root"${editAttr}></div>
+
+<!-- The engine bundle (IIFE → window.enscribe), loaded from the web. -->
+<script src="${a.engine}"></script>
+
+<script type="module">
+${editBootstrap}
+
+  // Read the EMBEDDED source (no fetch of the document) and mount it. mountLiveDocument runs the same
+  // <meta type> dispatch + edit switch as the served mountLiveShell, only without the master fetch.
+  const source = document.getElementById('enscribe-source').content.textContent;
+
+  window.enscribe
+    .mountLiveDocument('#enscribe-book-root', source, opts)
+    .catch((err) => {
+      document.getElementById('enscribe-book-root').textContent = 'Failed to mount the document: ' + err.message;
       // eslint-disable-next-line no-console
       console.error(err);
     });
