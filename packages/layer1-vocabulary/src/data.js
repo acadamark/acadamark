@@ -1916,12 +1916,12 @@ const _code_block = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<``` python | print(\"hello, world\") ```>",
-        "layer1_html": "<pre><code class=\"language-python\">print(\"hello, world\")</code></pre>",
-        "notes": "The triple-backtick sigil. The first positional token is the\nlanguage (emitted as a `language-X` class on the <code>); the pipe\nseparates it from the verbatim, newline-preserving content.\n",
+        "layer1_html": "<pre><code class=\"language-python\"> print(\"hello, world\") </code></pre>",
+        "notes": "The triple-backtick sigil. The first positional token is the\nlanguage (emitted as a `language-X` class on the <code>); the pipe\nseparates it from the verbatim, whitespace-preserving content — the\npipe-form padding (the spaces around the content) is KEPT, since\nwhitespace in code is significant and visible to the reader. (#327)\n",
       },
       {
         "source": "<``` this is all content ```>",
-        "layer1_html": "<pre><code>this is all content</code></pre>",
+        "layer1_html": "<pre><code> this is all content </code></pre>",
         "notes": "The no-pipe form: the entire body is opaque content with no language\nextraction.\n",
       },
     ],
@@ -2263,8 +2263,8 @@ const _date = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<date | 2024-03-15>",
-        "layer1_html": "<date data-date-type=\"publication\">2024-03-15</date>",
-        "notes": "Simple publication date. The type defaults to \"publication\" when\nnot specified.\n",
+        "layer1_html": "<date>2024-03-15</date>",
+        "notes": "A bare <date> is UNTYPED (no data-date-type) — an authoring date is\n\"when you wrote it\" (like the date on a letter), not a publication\ndate (cf. Quarto/Pandoc/Bookdown preamble date slots). Use an explicit\ntype= (e.g. <date type=publication | …>) for a typed date. (#325)\n",
       },
       {
         "source": "<date type=submission | 2023-11-01>",
@@ -2277,7 +2277,7 @@ const _date = Object.freeze({
       },
       {
         "source": "<date | March 15, 2024>",
-        "layer1_html": "<date data-date-type=\"publication\">March 15, 2024</date>",
+        "layer1_html": "<date>March 15, 2024</date>",
         "notes": "Free-form date format. Acceptable but ISO 8601 is preferred for\nmachine readability and for predictable JATS export.\n",
       },
     ],
@@ -3564,12 +3564,12 @@ const _inline_code = Object.freeze({
     "shorthand_examples": [
       {
         "source": "Assign with <` x = 1 `> at the top of the function.",
-        "layer1_html": "<p>Assign with <code>x = 1</code> at the top of the function.</p>",
-        "notes": "The single-backtick sigil. With no pipe, the whole body is opaque\ncode content rendered as <code> (the same output as a markdown\nbacktick span).\n",
+        "layer1_html": "<p>Assign with <code>x = 1 </code>at the top of the function.</p>",
+        "notes": "The single-backtick sigil. With no pipe, the whole body is opaque\ncode content rendered as <code> (the same output as a markdown\nbacktick span). Whitespace in code is significant and preserved, so\nthe pipe-form padding stays INSIDE the <code>. (#327)\n",
       },
       {
         "source": "Call <` python | factorial(n) `> to recurse.",
-        "layer1_html": "<p>Call <code class=\"language-python\">factorial(n)</code> to recurse.</p>",
+        "layer1_html": "<p>Call <code class=\"language-python\">factorial(n) </code>to recurse.</p>",
         "notes": "The first positional token before the pipe is the language, emitted\nas a `language-X` class on the <code> (discoverable by highlighters;\nthe interpreter applies no highlighting itself).\n",
       },
     ],

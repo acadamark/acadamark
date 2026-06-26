@@ -25,13 +25,14 @@ content:
     constructs are interpreted inside inline code.
 shorthand_examples:
   - source: 'Assign with <` x = 1 `> at the top of the function.'
-    layer1_html: '<p>Assign with <code>x = 1</code> at the top of the function.</p>'
+    layer1_html: '<p>Assign with <code>x = 1 </code>at the top of the function.</p>'
     notes: |
       The single-backtick sigil. With no pipe, the whole body is opaque
       code content rendered as <code> (the same output as a markdown
-      backtick span).
+      backtick span). Whitespace in code is significant and preserved, so
+      the pipe-form padding stays INSIDE the <code>. (#327)
   - source: 'Call <` python | factorial(n) `> to recurse.'
-    layer1_html: '<p>Call <code class="language-python">factorial(n)</code> to recurse.</p>'
+    layer1_html: '<p>Call <code class="language-python">factorial(n) </code>to recurse.</p>'
     notes: |
       The first positional token before the pipe is the language, emitted
       as a `language-X` class on the <code> (discoverable by highlighters;

@@ -42,10 +42,12 @@ jats_counterpart:
     kwarg value.
 shorthand_examples:
   - source: '<date | 2024-03-15>'
-    layer1_html: '<date data-date-type="publication">2024-03-15</date>'
+    layer1_html: '<date>2024-03-15</date>'
     notes: |
-      Simple publication date. The type defaults to "publication" when
-      not specified.
+      A bare <date> is UNTYPED (no data-date-type) — an authoring date is
+      "when you wrote it" (like the date on a letter), not a publication
+      date (cf. Quarto/Pandoc/Bookdown preamble date slots). Use an explicit
+      type= (e.g. <date type=publication | …>) for a typed date. (#325)
   - source: '<date type=submission | 2023-11-01>'
     layer1_html: '<date data-date-type="submission">2023-11-01</date>'
   - source: |
@@ -64,7 +66,7 @@ shorthand_examples:
       Multiple dates of different types. The publication date is the
       primary; submission, acceptance, etc., go in JATS history.
   - source: '<date | March 15, 2024>'
-    layer1_html: '<date data-date-type="publication">March 15, 2024</date>'
+    layer1_html: '<date>March 15, 2024</date>'
     notes: |
       Free-form date format. Acceptable but ISO 8601 is preferred for
       machine readability and for predictable JATS export.
@@ -96,7 +98,7 @@ The `<date>` element with the `type` kwarg captures all of these. Multiple `<dat
 <date | 2024-03-15>
 ```
 
-The type defaults to `publication` when not specified. Suitable for casual authoring where only the publication date matters.
+A bare `<date>` is untyped (no `data-date-type`) — an authoring date is "when you wrote it," not a publication date. Add an explicit `type=` for a typed date (see below). (#325)
 
 **Specific date type.**
 
