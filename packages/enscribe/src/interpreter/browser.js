@@ -260,8 +260,15 @@ function discoverChildSrcs(proc, source) {
  *   and the VFile-shaped carrier holding file.data[ENSCRIBE_LOADED_SOURCES] (the channel
  *   runSync + stringify read: #197 library bibliography, #195 table data).
  */
-async function loadAndAssembleMaster(proc, source, childSrcs) {
+async function loadAndAssembleMaster(proc, source, childSrcs, loadSource) {
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
+  // The source-provider seam (single-file / #288): a caller may INJECT how a referenced source is
+  // read; the default is the HTTP fetch the served Live modes use. `preloadSources` already takes the
+  // loader as a parameter, so this is a one-line substitution — the embedded/in-place read path passes
+  // a non-fetch provider here while the website/folder/book modes keep fetching. (For a self-contained
+  // single document the list below is empty, so the provider is never invoked — only the master read,
+  // handled at the entry, differs; carrying embedded CHILDREN is the site-in-a-file follow-on.)
+  const load = loadSource ?? ((src) => fetchSourceText(src, baseUrl));
   // #197 / #195: pre-load the master's OWN `<library src>` bibliography AND `<table src>`
   // data in the SAME pass as its `src` structure children — one deduped fetch. The
   // structure children are consumed by the assembler (readPreloadedChild); library +
@@ -272,7 +279,7 @@ async function loadAndAssembleMaster(proc, source, childSrcs) {
   const tableSrcs = collectTableSources(source);
   const loaded = await preloadSources(
     [...childSrcs, ...librarySrcs, ...tableSrcs],
-    (src) => fetchSourceText(src, baseUrl),
+    load,
   );
   const tree = assembleMasterDocument({
     source,
@@ -1145,23 +1152,41 @@ export async function mountLiveWebsite(target, source, options = {}) {
 }
 
 export async function mountLiveShell(target, url, options = {}) {
+  // The SERVED Live entry: fetch the master ONCE, then mount it via the shared dispatch below. The
+  // single-file mode (embedded content) skips the fetch — it reads its carried source and calls
+  // `mountLiveDocument` directly. One dispatch, two source providers (fetch here; embedded there).
+  const source = await fetchMasterSource(url, 'mountLiveShell');
+  return mountLiveDocument(target, source, options);
+}
+
+/**
+ * Mount a master document from SOURCE ALREADY IN HAND — the read-from-provided-source entry that does
+ * NOT fetch the master. The shared core `mountLiveShell` delegates to after its fetch, and the entry
+ * the single-file shell calls with the `.emd` it carries embedded (a `<template>` it reads at mount).
+ * The 3-way `<meta type>` dispatch and the #213 edit switch are identical to the served path — only
+ * WHERE the master source comes from differs (the source-provider seam: fetch vs embedded).
+ *
+ * @param {string|Element} target - a CSS selector or the Element to mount into.
+ * @param {string} source - the master document's enscribe source (already read; not a URL).
+ * @param {object} [options] - mountLiveShell options (edit switch, editorFactory, pipeline options).
+ * @returns {Promise<Element>} the mounted element.
+ */
+export async function mountLiveDocument(target, source, options = {}) {
   const { edit, editorFactory, editDebounceMs, ...pipelineOptions } = options;
   const el = typeof target === 'string'
     ? (typeof document !== 'undefined' ? document.querySelector(target) : null)
     : target;
   const editEnabled = edit !== undefined ? !!edit : editAttrOn(el);
-  // Build the editor adapter on demand (READ mode never loads it), then fetch the master ONCE and
-  // dispatch 3-way on its `<meta type>`. editor === null → read mode (byte-identical to #209 / the
-  // article render); an adapter → the edit loop: #211 (book) / #216 (article) / #246 S2c (the website
-  // per-page loop). All three mounts receive `editor` the same way.
+  // Build the editor adapter on demand (READ mode never loads it), then dispatch 3-way on the master's
+  // `<meta type>`. editor === null → read mode (byte-identical to #209 / the article render); an
+  // adapter → the edit loop: #211 (book) / #216 (article) / #246 S2c (the website per-page loop).
   let editor = null;
   if (editEnabled) {
     if (typeof editorFactory !== 'function') {
-      throw new Error('mountLiveShell: editing is on but no `editorFactory` was provided to build/load the editor');
+      throw new Error('mountLiveDocument: editing is on but no `editorFactory` was provided to build/load the editor');
     }
     editor = await editorFactory();
   }
-  const source = await fetchMasterSource(url, 'mountLiveShell');
   const proc = getPipeline(pipelineOptions);
   const type = masterType(proc, source);
   const mountOptions = { ...pipelineOptions, editor, editDebounceMs };

@@ -70,6 +70,7 @@ import { run as runLiveBookParity } from './live-book-parity.test.js';
 import { run as runBookNavConfig } from './book-nav-config.test.js';
 import { run as runMasterBookLive } from './master-book-live.test.js';
 import { run as runMasterWebsiteLive } from './master-website-live.test.js';
+import { run as runSingleFileDoc } from './single-file-doc.test.js';
 import { run as runLiveEditLoop } from './live-edit-loop.test.js';
 import { run as runLiveEditSmoke } from './live-edit-smoke.test.js';
 import { run as runLiveBookShell } from './live-book-shell.test.js';
@@ -155,6 +156,7 @@ const suites = [
   ['book-nav-config',              runBookNavConfig],
   ['master-book-live',             runMasterBookLive],
   ['master-website-live',          runMasterWebsiteLive],
+  ['single-file-doc',              runSingleFileDoc],
   ['live-edit-loop',               runLiveEditLoop],
   ['live-edit-smoke',              runLiveEditSmoke],
   ['live-book-shell',              runLiveBookShell],

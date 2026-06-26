@@ -23,7 +23,7 @@ once here and referenced by each mode that admits them.
 |---|---|---|---|---|---|
 | **Static** | already HTML (pre-rendered) | no | no | view only | yes |
 | **Live** | `.emd`, **fetched** from siblings | yes (in browser) | yes (HTTP) | view, or view+edit | yes |
-| **Single-file** | `.emd`, **embedded** in the HTML | yes (in browser) | no (`file://` works) | view+edit | **no** |
+| **Single-file** | `.emd`, **embedded** in the HTML | yes (in browser) | no (assets need network) | view+edit | **yes** (one document; web assets) |
 
 **The two cross-cutting axes (the overlaps):**
 
@@ -118,7 +118,7 @@ view is single-sourced across article and book so the two cannot drift.
 - A live render is equivalent to the static render of the same source on display number and
   scheme-normalized owner (the parity contract; `render-parity.md`).
 
-## Mode: Single-file  *(designed here; not built)*
+## Mode: Single-file  *(built: one self-contained document, web assets, edit-when-self-contained)*
 
 **Axis choices:** content = `.emd`, **embedded** in the HTML; engine at read time = yes (in
 browser); assets = inlined **or** CDN (never siblings — it is one file); capability = view+edit;
@@ -136,26 +136,44 @@ runtime dispatch, and the engine-as-one-bundle already exist and are mode-indepe
 single-file mode does **not** invent an editor or a renderer; it changes *content delivery* (embed
 instead of fetch) and forecloses the server.
 
-**What this mode requires that does not yet exist (the build gap).**
-- **Content embedding** — the master and every child `.emd` carried inside the file (e.g. a
-  structured data block the engine reads), and an engine **read-from-embedded** path that
-  substitutes for the fetch (the mounter, finding embedded content, must not attempt an HTTP
-  fetch). This is the substance of the unbuilt work.
-- **Asset self-containment** — to truly open from `file://` with no network, the engine + CSS are
-  *inlined* (the file is larger but offline-complete); alternatively they load from *CDN* (smaller
-  file, needs network). This is the asset-delivery axis again, restricted to inlined-or-CDN. The
-  choice is a product decision and a natural place for a flag (e.g. an inline-everything vs.
-  load-from-CDN switch); it is recorded here as an axis, not settled.
+**What is built (the single-document core).**
+- **Content embedding + read-from-embedded.** `enscribe build … --single-file` emits ONE `.html` that
+  carries the document's `.emd` in an inert `<template id="enscribe-source">` (HTML-escaped, so it
+  round-trips exactly via `.content.textContent`). At mount, the engine reads that embedded source via
+  **`mountLiveDocument`** — the read-from-provided-source entry that runs the same `<meta type>`
+  dispatch + edit switch as the served `mountLiveShell`, only WITHOUT fetching the master. The
+  source-provider seam: `mountLiveShell` fetches then delegates to `mountLiveDocument`; the single-file
+  shell reads its `<template>` and calls `mountLiveDocument` directly. The child-loader inside
+  `loadAndAssembleMaster` is now injectable too (default = fetch), so the same seam carries embedded
+  CHILDREN when that lands.
+- **Edit-when-self-contained (the principled line).** Edit needs a single source of truth, so the
+  file is editable IFF it is **self-contained** — no `<… src>` children (the existing
+  `childSrcs.length === 0` test). A self-contained doc wires the editor + honors `?edit`; a master
+  with children (or a website) is emitted **render-only** with a warning (its children/pages are not
+  embedded — see the widenings below).
+- **Assets from the web.** The chrome + display assets (engine, CSS, KaTeX, fonts, CodeMirror) load
+  by URL — the file is small (shell + content), no engine inlined. (NB: `raw.githubusercontent.com`
+  serves `text/plain` + `nosniff`, which browsers refuse to execute; the default base is **jsDelivr**,
+  the same GitHub content with correct MIME.)
 
-**Relationship to zero-build-in-place (the "drop a shell into a source directory" goal).** A shell
-that renders a *directory of source in place* (no copy, no build — GitHub issue #288) is the
-**degenerate case of this mode with content embedding removed**: instead of carrying the `.emd`
-inside, the shell points at sibling `.emd` files already present in the directory. Once single-file
-(the harder case — the engine reading content from a non-fetched source) exists, in-place is the
-easier case of the same read-path with the source external rather than embedded. The two should
-share the "engine reads content from a provided source, not necessarily a fetch" seam. **Status:**
-single-file is unbuilt; in-place (#288) depends on its read-from-provided-source seam and is
-likewise unbuilt.
+**What is still unbuilt (the widenings, recorded as axes, not gaps in the core).**
+- **Site-in-a-file** — embedding a MULTI-document master (a book's chapters, a website's pages) in one
+  file. The read-path seam already exists (the injectable child loader); what is missing is carrying
+  the children inside the file and reading them from there. The core here is ONE document.
+- **Inlined assets / offline.** To open from `file://` with **no network at all**, the engine + CSS
+  must be *inlined* (larger file, offline-complete) rather than web-loaded. The current build is
+  web-assets only; inlined-assets is the asset-delivery axis (inlined-or-CDN), a flag, not built.
+
+**Relationship to zero-build-in-place (#288), corrected.** A shell that renders a *directory of source
+in place* (no copy, no build — GitHub issue #288) shares THIS mode's read-from-provided-source seam:
+instead of carrying the `.emd` embedded, the shell reads sibling `.emd` files. But the shared seam does
+**not** make #288 fall out free, and specifically **not over `file://`**: a `file://` page cannot
+`fetch()` sibling files (browsers block `file://` XHR/fetch), so in-place reading of siblings needs an
+HTTP server — exactly the server #288 wants to avoid. Over **HTTP**, in-place is near-free (point the
+provider at sibling URLs instead of the embedded `<template>`); over `file://` it would need the
+children inlined too (the site-in-a-file widening), not just the seam. **Status:** single-file (one
+document, web assets) is **built**; site-in-a-file and inlined-offline are unbuilt; #288 over HTTP is
+near-free on the seam, #288 over `file://` is not.
 
 **Invariants (target, for when it is built).**
 - The file opens and renders with **no server and no sibling files** (the `file://` test) when
@@ -219,9 +237,15 @@ discriminator that separates Static from the others.
   **CDN is reachable through the asset seam** (point the emitter's `assets` at a CDN href) but emitted
   by no build path; **inlined chrome assets are not built** (the shell emits only href / `src`
   references). See §"Asset delivery". (Display assets — fonts/KaTeX — are already CDN, separately.)
-- **Single-file** — **designed here, not built.** The gap is content-embedding (+ a
-  read-from-embedded engine path) and asset self-containment. Zero-build-in-place (#288) is the
-  easier sibling that depends on the same read-from-provided-source seam and is also unbuilt.
+- **Single-file** — **built for one self-contained document.** `build --single-file` embeds the `.emd`
+  in a `<template>` and mounts it via `mountLiveDocument` (read-from-provided-source, no master fetch);
+  editable iff self-contained (`childSrcs.length === 0`), else render-only with a warning; chrome +
+  display assets load from the web (jsDelivr default — *not* `raw.githubusercontent.com`, which serves
+  `text/plain`+`nosniff` and won't execute). **Still unbuilt:** site-in-a-file (embedding a multi-
+  document master's children) and inlined-offline assets (open from `file://` with no network). The
+  read-path seam is shared with #288, but #288 does **not** fall out free — over `file://` a page
+  cannot fetch siblings, so in-place needs HTTP (or the children inlined); only #288-over-HTTP is
+  near-free on the seam.
 
 This document is the single home for the *delivery-mode model*; whether each mode is built is a
 STATUS/ROADMAP question, tracked there. The spec relocates and unifies a model previously implicit

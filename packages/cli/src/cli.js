@@ -21,7 +21,7 @@ import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages } from '@enscribejs/enscribe';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { renderArticleDocument, assembleAndNumber } from './render-document.js';
-import { buildLiveFolder, copyShellAssets } from './build-live.js';
+import { buildLiveFolder, buildSingleFile, copyShellAssets } from './build-live.js';
 import { buildStaticWebsite } from './static-website.js';
 import { enscribeToJats } from './jats-export/index.js';
 import { importJats } from './jats-import/index.js';
@@ -184,6 +184,11 @@ Options:
   -o, --output <path>  Output file (single-page) or DIRECTORY (separate-pages book)
   --separate-pages     Build a book as separate per-chapter pages (book default)
   --single-page        Build the whole book/article as one HTML file
+  --live               Build a self-standing live folder (-o <dir>): the engine
+                       renders client-side; ?edit mounts the editor
+  --single-file        Emit ONE self-contained .html for one document: the source
+                       is embedded (read at mount, no fetch); chrome/display assets
+                       load from the web. Editable iff the document is self-contained
   --embed              Self-contained HTML, assets inlined (default)
   --no-embed           Link assets externally (fonts / KaTeX CSS from CDNs)
   --dsl-mode <mode>    DSL rendering mode: skip, live-link, live-inline, static
@@ -255,6 +260,7 @@ function parseCommandArgs(args) {
     else if (a === '--separate-pages') opts.pages = 'separate';
     else if (a === '--single-page') opts.pages = 'single';
     else if (a === '--live') opts.live = true;
+    else if (a === '--single-file') opts.singleFile = true;
     else if (a === '--edit') opts.edit = true;
     else if (a === '--title') { opts.title = args[++i]; if (opts.title == null) throw new CliError('--title needs a value'); }
     else if (a.startsWith('--title=')) opts.title = a.slice('--title='.length);
@@ -522,6 +528,20 @@ export function run(argv, io = {}) {
       case 'build': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(BUILD_HELP); return 0; }
+        // --single-file (delivery-modes.md §Single-file): emit ONE self-contained .html that EMBEDS the
+        // document's source (read at mount, no fetch of the document) and references chrome/display
+        // assets from the web. One file — no sibling assets, no sources folder. Editable iff the
+        // document is self-contained (no `<… src>` children); a non-self-contained master is emitted
+        // read-only with a warning. Written to -o <file> or stdout, like the ordinary single build.
+        if (opts.singleFile) {
+          const res = withQuiet(opts.quiet, () =>
+            buildSingleFile({ master: opts.input, title: opts.title, edit: opts.edit }));
+          emit(res.html, opts, out);
+          if (!opts.quiet && opts.output) {
+            out.write(`Wrote a single-file document to ${opts.output} (${res.editable ? 'self-contained → editable' : 'render-only — not self-contained'})\n`);
+          }
+          return 0;
+        }
         // --live (#215): generate a self-standing LIVE FOLDER (the engine renders the document client-
         // side; ?edit mounts the live edit loop). Copies the master + children + shell assets +
         // engine bundle into -o <dir> and writes the emitted shell. Works for a book OR an article
