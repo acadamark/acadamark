@@ -172,7 +172,25 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
       console.warn(`enscribe build (--live): nav item src "${src}" did not resolve to a .emd or page-directory — skipped`);
       continue;
     }
-    copyInto(resolved ? resolved.sourcePath : join(masterDir, src), src);
+    const pageSourcePath = resolved ? resolved.sourcePath : join(masterDir, src);
+    copyInto(pageSourcePath, src);
+
+    // A website PAGE may itself be a MULTI-FILE master — a book (`<meta type=book>`
+    // with `<chapter src>` / `<appendix src>` children) or an article with
+    // `<section src>` children. Those children are NOT website pages, so
+    // collectWebsitePageSrcs never sees them; without this they 404 (the page's
+    // scaffold mounts, but every chapter shows "could not load chapter source").
+    // At runtime the live book fetches each child `src` relative to
+    // `document.baseURI` — the `/live/` shell location — i.e. FLAT under outDir
+    // (browser.js fetchSourceText: `new URL(src, baseURI)`), so copy each child
+    // there. Reuses `srcChildrenOf` — the SAME child-source discovery the
+    // standalone-book path (the `else` branch above) uses — applied to a page
+    // that is a book; one mechanism, not a second copy path.
+    if (isWebsite) {
+      for (const childSrc of srcChildrenOf(proc.parse(readFileSync(pageSourcePath, 'utf8')))) {
+        copyInto(join(resolved.pageDir, childSrc), childSrc);
+      }
+    }
   }
 
   // 2. the shell assets + engine bundle, copied flat into the folder (assetBase './').
