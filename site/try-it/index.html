@@ -1378,6 +1378,24 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   margin: 0 auto;
   padding: 0 var(--enscribe-content-padding);
 }
+/* The per-page "open in playground" CTA (#static-live-link): every static page (view-only by design —
+   no engine) carries a link to its LIVE counterpart (live/?page=<slug>), where the document renders
+   live and a self-contained page (e.g. try-it) edits via ?edit. It rides at the top of the content
+   region, right-aligned, below the sticky nav — uniform across every page. */
+.enscribe-site .content .enscribe-playground-cta {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto var(--enscribe-space-4);
+  padding: 0 var(--enscribe-content-padding);
+  text-align: right;
+  font-family: var(--enscribe-font-sans);
+  font-size: 0.875rem;
+}
+.enscribe-site .content .enscribe-playground-cta a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-weight: 600;
+}
+.enscribe-site .content .enscribe-playground-cta a:hover { text-decoration: underline; }
 @media (min-width: 900px) {
   .enscribe-site .content .enscribe-toc,
   .enscribe-site .content .enscribe-onthispage {
@@ -1415,6 +1433,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
+<div class="enscribe-playground-cta"><a href="../live/?page=try-it">Open in playground ↗</a></div>
 
 <style>.tippy-box[data-animation=fade][data-state=hidden]{opacity:0}[data-tippy-root]{max-width:calc(100vw - 10px)}.tippy-box{position:relative;background-color:#333;color:#fff;border-radius:4px;font-size:14px;line-height:1.4;white-space:normal;outline:0;transition-property:transform,visibility,opacity}.tippy-box[data-placement^=top]>.tippy-arrow{bottom:0}.tippy-box[data-placement^=top]>.tippy-arrow:before{bottom:-7px;left:0;border-width:8px 8px 0;border-top-color:initial;transform-origin:center top}.tippy-box[data-placement^=bottom]>.tippy-arrow{top:0}.tippy-box[data-placement^=bottom]>.tippy-arrow:before{top:-7px;left:0;border-width:0 8px 8px;border-bottom-color:initial;transform-origin:center bottom}.tippy-box[data-placement^=left]>.tippy-arrow{right:0}.tippy-box[data-placement^=left]>.tippy-arrow:before{border-width:8px 0 8px 8px;border-left-color:initial;right:-7px;transform-origin:center left}.tippy-box[data-placement^=right]>.tippy-arrow{left:0}.tippy-box[data-placement^=right]>.tippy-arrow:before{left:-7px;border-width:8px 8px 8px 0;border-right-color:initial;transform-origin:center right}.tippy-box[data-inertia][data-state=visible]{transition-timing-function:cubic-bezier(.54,1.5,.38,1.11)}.tippy-arrow{width:16px;height:16px;color:#333}.tippy-arrow:before{content:"";position:absolute;border-color:transparent;border-style:solid}.tippy-content{position:relative;padding:5px 9px;z-index:1}
 .tippy-box[data-theme~=light-border]{background-color:#fff;background-clip:padding-box;border:1px solid rgba(0,8,16,.15);color:#333;box-shadow:0 4px 14px -2px rgba(0,8,16,.08)}.tippy-box[data-theme~=light-border]>.tippy-backdrop{background-color:#fff}.tippy-box[data-theme~=light-border]>.tippy-arrow:after,.tippy-box[data-theme~=light-border]>.tippy-svg-arrow:after{content:"";position:absolute;z-index:-1}.tippy-box[data-theme~=light-border]>.tippy-arrow:after{border-color:transparent;border-style:solid}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-arrow:before{border-top-color:#fff}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-arrow:after{border-top-color:rgba(0,8,16,.2);border-width:7px 7px 0;top:17px;left:1px}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-svg-arrow>svg{top:16px}.tippy-box[data-theme~=light-border][data-placement^=top]>.tippy-svg-arrow:after{top:17px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-arrow:before{border-bottom-color:#fff;bottom:16px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-arrow:after{border-bottom-color:rgba(0,8,16,.2);border-width:0 7px 7px;bottom:17px;left:1px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-svg-arrow>svg{bottom:16px}.tippy-box[data-theme~=light-border][data-placement^=bottom]>.tippy-svg-arrow:after{bottom:17px}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-arrow:before{border-left-color:#fff}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-arrow:after{border-left-color:rgba(0,8,16,.2);border-width:7px 0 7px 7px;left:17px;top:1px}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-svg-arrow>svg{left:11px}.tippy-box[data-theme~=light-border][data-placement^=left]>.tippy-svg-arrow:after{left:12px}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-arrow:before{border-right-color:#fff;right:16px}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-arrow:after{border-width:7px 7px 7px 0;right:17px;top:1px;border-right-color:rgba(0,8,16,.2)}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-svg-arrow>svg{right:11px}.tippy-box[data-theme~=light-border][data-placement^=right]>.tippy-svg-arrow:after{right:12px}.tippy-box[data-theme~=light-border]>.tippy-svg-arrow{fill:#fff}.tippy-box[data-theme~=light-border]>.tippy-svg-arrow:after{background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCA2czEuNzk2LS4wMTMgNC42Ny0zLjYxNUM1Ljg1MS45IDYuOTMuMDA2IDggMGMxLjA3LS4wMDYgMi4xNDguODg3IDMuMzQzIDIuMzg1QzE0LjIzMyA2LjAwNSAxNiA2IDE2IDZIMHoiIGZpbGw9InJnYmEoMCwgOCwgMTYsIDAuMikiLz48L3N2Zz4=);background-size:16px 6px;width:16px;height:6px}
@@ -1926,7 +1945,9 @@ Canonical,most,yes,yes
       </p>
       <figure id="fig:pipeline">
         <img src="https://picsum.photos/seed/enscribe/720/360" alt="The Enscribe pipeline in one breath — shorthand is parsed, lifted to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)">
-        <figcaption><span class="figure-label">Figure 1.</span> The Enscribe pipeline in one breath — shorthand is parsed, <i>lifted</i> to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)</figcaption>
+        <figcaption><span class="figure-label">Figure 1.</span>
+          <p>The Enscribe pipeline in one breath — shorthand is parsed, <i>lifted</i> to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)</p>
+        </figcaption>
       </figure>
       <p>
         Because the figure carries an id, prose elsewhere can point at it by name rather
@@ -1981,7 +2002,9 @@ Canonical,most,yes,yes
         <code>&#x3C;definition></code> is the plainest member, and this guide has been leaning on one term
         that earns it:
       </p>
-      <definition id="def:layer1" data-name="Layer 1"><span class="definition-label">Definition 1 (Layer 1).</span> <i>Layer 1</i> is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as <code>&#x3C;section></code>, <code>&#x3C;fig></code>, and <code>&#x3C;cite></code> that record what each piece of content <i>is</i>, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.</definition>
+      <definition id="def:layer1" data-name="Layer 1"><span class="definition-label">Definition 1 (Layer 1).</span>
+        <p><i>Layer 1</i> is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as <code>&#x3C;section></code>, <code>&#x3C;fig></code>, and <code>&#x3C;cite></code> that record what each piece of content <i>is</i>, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.</p>
+      </definition>
     </section>
     <section>
       <section-title>What you’ve built</section-title>
@@ -2011,24 +2034,30 @@ Canonical,most,yes,yes
   <article-back>
     <note-list class="endnotes">
       <ol>
-        <li id="note-1">
-          <sup>1</sup> The Markdown heading is a <i>lossy</i> convenience:
-          it lifts into the canonical section but has nowhere to put an id, so converting
-          Layer 1 back to shorthand emits the canonical form, never the <code>#</code>. The sigil and
-          canonical forms are co-equal and round-trip without loss — a distinction this
-          guide’s own headings rely on. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
+        <li id="note-1"><sup>1</sup>
+          <p>
+            The Markdown heading is a <i>lossy</i> convenience:
+            it lifts into the canonical section but has nowhere to put an id, so converting
+            Layer 1 back to shorthand emits the canonical form, never the <code>#</code>. The sigil and
+            canonical forms are co-equal and round-trip without loss — a distinction this
+            guide’s own headings rely on.
+          </p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
         </li>
-        <li id="note-2">
-          <sup>2</sup> KaTeX renders math to HTML and CSS rather than to an image or to
-          MathML, so the result is selectable, searchable text that scales with the
-          surrounding type. The canonical tag form of inline math is <code>&#x3C;$ ... $></code>; the
-          <code>$...$</code> you just saw is the Markdown-style shorthand for it, and the two produce
-          identical output. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
+        <li id="note-2"><sup>2</sup>
+          <p>
+            KaTeX renders math to HTML and CSS rather than to an image or to
+            MathML, so the result is selectable, searchable text that scales with the
+            surrounding type. The canonical tag form of inline math is <code>&#x3C;$ ... $></code>; the
+            <code>$...$</code> you just saw is the Markdown-style shorthand for it, and the two produce
+            identical output.
+          </p><a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
         </li>
-        <li id="note-3">
-          <sup>3</sup> This is the same delegation principle
-          as the math: Enscribe holds only the citation <i>keys</i> and the chosen <i>style name</i>,
-          and lets a dedicated engine do the formatting, ordering, and disambiguation. <a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
+        <li id="note-3"><sup>3</sup>
+          <p>
+            This is the same delegation principle
+            as the math: Enscribe holds only the citation <i>keys</i> and the chosen <i>style name</i>,
+            and lets a dedicated engine do the formatting, ordering, and disambiguation.
+          </p><a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
         </li>
       </ol>
     </note-list>

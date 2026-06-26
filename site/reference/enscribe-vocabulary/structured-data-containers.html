@@ -1378,6 +1378,24 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   margin: 0 auto;
   padding: 0 var(--enscribe-content-padding);
 }
+/* The per-page "open in playground" CTA (#static-live-link): every static page (view-only by design —
+   no engine) carries a link to its LIVE counterpart (live/?page=<slug>), where the document renders
+   live and a self-contained page (e.g. try-it) edits via ?edit. It rides at the top of the content
+   region, right-aligned, below the sticky nav — uniform across every page. */
+.enscribe-site .content .enscribe-playground-cta {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto var(--enscribe-space-4);
+  padding: 0 var(--enscribe-content-padding);
+  text-align: right;
+  font-family: var(--enscribe-font-sans);
+  font-size: 0.875rem;
+}
+.enscribe-site .content .enscribe-playground-cta a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-weight: 600;
+}
+.enscribe-site .content .enscribe-playground-cta a:hover { text-decoration: underline; }
 @media (min-width: 900px) {
   .enscribe-site .content .enscribe-toc,
   .enscribe-site .content .enscribe-onthispage {
@@ -1415,6 +1433,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
+<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html" class="enscribe-toc-active" aria-current="location">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:structured-data-containers" book-part-type="chapter">
       <meta>
         <book-part-title>Structured-data containers</book-part-title>

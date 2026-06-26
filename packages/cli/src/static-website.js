@@ -215,6 +215,14 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
     return (slug) => { const np = navPathOf.get(slug); return np === '' ? (up || './') : `${up}${np}/`; };
   };
 
+  // The page's LIVE counterpart URL (#static-live-link): the static site (view-only — no engine) at
+  // `<up>/` links to the live SPA at `<up>live/`, routed to this page via `?page=<slug>` (the SAME slug
+  // the live SPA routes on — resolvePageSlug is shared). Depth-relative (static at root, live at
+  // `/live/`). The `?page=` here is the LIVE route, NOT a chrome link, so the (tightened) `staticize`
+  // — which rewrites only `href="?page=…"` chrome links — leaves it intact.
+  const liveHrefFor = (outPath, slug) =>
+    `${'../'.repeat((outPath.match(/\//g) || []).length)}live/?page=${slug}`;
+
   // Build the authored `<a {slug}>` internal-link resolver for a page rendered at `outPath` (#318). It is
   // INJECTED on the page's file.data (ENSCRIBE_PAGE_LINK_RESOLVER) and the engine runs it over the in-memory
   // hast `<a data-page-slug>` markers at render time — no post-serialize re-parse. A resolvable slug → its
@@ -239,10 +247,13 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   };
 
   // The chrome's `?page=slug` router links → depth-relative pretty URLs (PASS 2, on the composed page).
+  // Anchored to `href="?page=…` (the chrome/nav form buildWebsiteTopBar emits) so it rewrites ONLY the
+  // nav links — never a `?page=` that appears MID-href, e.g. the per-page live link `…live/?page=<slug>`
+  // (#static-live-link), whose `?page=` is the LIVE route and must reach the live SPA verbatim.
   const staticize = (html, outPath) => {
     const relTo = relToFor(outPath);
-    return String(html).replace(/\?page=([^"#&]+)/g, (m, slug) =>
-      navPathOf.has(slug) ? relTo(slug) : m);
+    return String(html).replace(/href="\?page=([^"#&]+)/g, (m, slug) =>
+      navPathOf.has(slug) ? `href="${relTo(slug)}` : m);
   };
 
   // 4. The top bar (cross-site nav) is built once; its `?page=` links are relativized PER PAGE below.
@@ -364,10 +375,12 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   // FRAMING PASS — frame each rendered fragment in the universal shell (now carrying the site's diagram
   // runtime in its head), then staticize its `?page=` chrome links for the page's depth. (The authored
   // `<a {slug}>` content links were already resolved per fragment in PHASE 2.)
-  for (const { outPath, title, content, page } of rendered) {
+  for (const { outPath, slug, title, content, page } of rendered) {
+    // A redirect stub (cover-OFF book root) is hosted as-is — no shell, no CTA. Every framed page
+    // (article + book chapter) gets the uniform "open in playground" link to its live counterpart.
     const html = page != null
       ? page
-      : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead });
+      : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead, playgroundHref: liveHrefFor(outPath, slug) });
     pageMap.set(outPath, staticize(html, outPath));
   }
 

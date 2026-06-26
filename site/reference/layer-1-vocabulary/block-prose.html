@@ -1378,6 +1378,24 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   margin: 0 auto;
   padding: 0 var(--enscribe-content-padding);
 }
+/* The per-page "open in playground" CTA (#static-live-link): every static page (view-only by design —
+   no engine) carries a link to its LIVE counterpart (live/?page=<slug>), where the document renders
+   live and a self-contained page (e.g. try-it) edits via ?edit. It rides at the top of the content
+   region, right-aligned, below the sticky nav — uniform across every page. */
+.enscribe-site .content .enscribe-playground-cta {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto var(--enscribe-space-4);
+  padding: 0 var(--enscribe-content-padding);
+  text-align: right;
+  font-family: var(--enscribe-font-sans);
+  font-size: 0.875rem;
+}
+.enscribe-site .content .enscribe-playground-cta a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-weight: 600;
+}
+.enscribe-site .content .enscribe-playground-cta a:hover { text-decoration: underline; }
 @media (min-width: 900px) {
   .enscribe-site .content .enscribe-toc,
   .enscribe-site .content .enscribe-onthispage {
@@ -1415,6 +1433,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
+<div class="enscribe-playground-cta"><a href="../../live/?page=layer-1-vocabulary">Open in playground ↗</a></div>
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Layer 1 Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="document-containers.html">Document containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-regions.html">Structural regions</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html" class="enscribe-toc-active" aria-current="location">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="document-metadata.html">Document metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:block-prose" book-part-type="chapter">
       <meta>
         <book-part-title>Block prose</book-part-title>
@@ -1474,11 +1493,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <sub-section-title>Examples</sub-section-title><code id="code:l1-aside-1">
 &#x3C;aside | A side note about the elephant.></code>
           <figure id="mp:l1-aside-1" class="frameable-border">
-            <aside class="frameable-border">A side note about the elephant.</aside>
+            <aside class="frameable-border">
+              <p>A side note about the elephant.</p>
+            </aside>
             <figcaption><span class="minipage-label">Minipage 8.</span></figcaption>
           </figure><code id="code:l1-aside-2">&#x3C;aside type=warning .important | Be careful here.></code>
           <figure id="mp:l1-aside-2" class="frameable-border">
-            <aside class="important frameable-border" data-aside-type="warning">Be careful here.</aside>
+            <aside class="important frameable-border" data-aside-type="warning">
+              <p>Be careful here.</p>
+            </aside>
             <figcaption><span class="minipage-label">Minipage 9.</span></figcaption>
           </figure><code id="code:l1-aside-3">&#x3C;aside type=callout |
 This is a multi-line callout.
@@ -1534,7 +1557,9 @@ It can contain multiple paragraphs and other content like
           <sub-section-title>Examples</sub-section-title><code id="code:l1-blockquote-1">
 &#x3C;quote | A short quotation.></code>
           <figure id="mp:l1-blockquote-1" class="frameable-border">
-            <blockquote>A short quotation.</blockquote>
+            <blockquote>
+              <p>A short quotation.</p>
+            </blockquote>
             <figcaption><span class="minipage-label">Minipage 11.</span></figcaption>
           </figure>
           <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at Layer 1.</i></p><code id="code:l1-blockquote-2">&#x3C;quote cite=https://example.com/source |
@@ -1551,7 +1576,9 @@ The second paragraph of the quotation.
 All happy families are alike; each unhappy family is unhappy in its own way.
 ></code>
           <figure id="mp:l1-blockquote-3" class="frameable-border">
-            <blockquote data-blockquote-type="epigraph">All happy families are alike; each unhappy family is unhappy in its own way.</blockquote>
+            <blockquote data-blockquote-type="epigraph">
+              <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
+            </blockquote>
             <figcaption><span class="minipage-label">Minipage 13.</span></figcaption>
           </figure><code id="code:l1-blockquote-4">&#x3C;blockquote | Same as &#x3C;quote> but using the explicit Layer 1 name.></code>
           <p><i>Render pending — the example source has an unescaped <code>&#x3C;…></code> tag-mention the parser consumes into an empty nested element (issue #277).</i></p>
@@ -1570,7 +1597,9 @@ All happy families are alike; each unhappy family is unhappy in its own way.
           <sub-section-title>Examples</sub-section-title><code id="code:l1-dd-1">
 &#x3C;dd | An academic publishing system built on HTML+CSS+JS.></code>
           <figure id="mp:l1-dd-1" class="frameable-border">
-            <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+            <dd>
+              <p>An academic publishing system built on HTML+CSS+JS.</p>
+            </dd>
             <figcaption><span class="minipage-label">Minipage 14.</span></figcaption>
           </figure>
           <p><i>A definition-list description. Appears as a child of &#x3C;dl>, following the term it defines.</i></p><code id="code:l1-dd-2">&#x3C;dd |
@@ -1666,11 +1695,17 @@ This disclosure is expanded by default.
           <figure id="mp:l1-dl-1" class="frameable-border">
             <dl>
               <dt>enscribe</dt>
-              <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
               <dt>Layer 1</dt>
-              <dd>The canonical semantic HTML vocabulary.</dd>
+              <dd>
+                <p>The canonical semantic HTML vocabulary.</p>
+              </dd>
               <dt>Layer 2</dt>
-              <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>
+              <dd>
+                <p>The shorthand authoring syntax that compiles to Layer 1.</p>
+              </dd>
             </dl>
             <figcaption><span class="minipage-label">Minipage 18.</span></figcaption>
           </figure>
@@ -1682,8 +1717,12 @@ This disclosure is expanded by default.
           <figure id="mp:l1-dl-2" class="frameable-border">
             <dl class="compact">
               <dt>term-1</dt>
-              <dd>First definition of term-1.</dd>
-              <dd>Second definition of term-1.</dd>
+              <dd>
+                <p>First definition of term-1.</p>
+              </dd>
+              <dd>
+                <p>Second definition of term-1.</p>
+              </dd>
             </dl>
             <figcaption><span class="minipage-label">Minipage 19.</span></figcaption>
           </figure>
@@ -1763,7 +1802,9 @@ This disclosure is expanded by default.
           <figure id="mp:l1-glossary-entry-1" class="frameable-border">
             <glossary-entry id="mp-l1-glossary-entry-1-term:enscribe">
               <dt>enscribe</dt>
-              <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
             </glossary-entry>
             <figcaption><span class="minipage-label">Minipage 22.</span></figcaption>
           </figure>
@@ -1849,7 +1890,9 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
             <p>Some text<sup id="mp-l1-note-1-noteref-1" data-note-id="mp-l1-note-1-note-1"><a href="#mp-l1-note-1-note-1">1</a></sup>.</p>
             <note-list class="endnotes">
               <ol>
-                <li id="mp-l1-note-1-note-1"><sup>1</sup> A substantive note about the text. <a href="#mp-l1-note-1-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+                <li id="mp-l1-note-1-note-1"><sup>1</sup>
+                  <p>A substantive note about the text.</p><a href="#mp-l1-note-1-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                </li>
               </ol>
             </note-list>
             <figcaption><span class="minipage-label">Minipage 23.</span></figcaption>
@@ -1858,7 +1901,9 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
             <p>A claim<sup id="mp-l1-note-2-noteref-1" data-note-id="mp-l1-note-2-note-1"><a href="#mp-l1-note-2-note-1">1</a></sup>.</p>
             <note-list class="footnotes">
               <ol>
-                <li id="mp-l1-note-2-note-1"><sup>1</sup> A footnote. <a href="#mp-l1-note-2-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+                <li id="mp-l1-note-2-note-1"><sup>1</sup>
+                  <p>A footnote.</p><a href="#mp-l1-note-2-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                </li>
               </ol>
             </note-list>
             <figcaption><span class="minipage-label">Minipage 24.</span></figcaption>
@@ -1867,7 +1912,9 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
             <p>A definition<sup id="mp-l1-note-3-noteref-1" data-note-id="mp-l1-note-3-note-1"><a href="#mp-l1-note-3-note-1">1</a></sup>.</p>
             <note-list class="notes">
               <ol>
-                <li id="mp-l1-note-3-note-1" class="sidenote-fallback"><sup>1</sup> Inline-adjacent note. <a href="#mp-l1-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+                <li id="mp-l1-note-3-note-1" class="sidenote-fallback"><sup>1</sup>
+                  <p>Inline-adjacent note.</p><a href="#mp-l1-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                </li>
               </ol>
             </note-list>
             <figcaption><span class="minipage-label">Minipage 25.</span></figcaption>

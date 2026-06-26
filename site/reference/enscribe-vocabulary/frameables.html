@@ -1378,6 +1378,24 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   margin: 0 auto;
   padding: 0 var(--enscribe-content-padding);
 }
+/* The per-page "open in playground" CTA (#static-live-link): every static page (view-only by design —
+   no engine) carries a link to its LIVE counterpart (live/?page=<slug>), where the document renders
+   live and a self-contained page (e.g. try-it) edits via ?edit. It rides at the top of the content
+   region, right-aligned, below the sticky nav — uniform across every page. */
+.enscribe-site .content .enscribe-playground-cta {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto var(--enscribe-space-4);
+  padding: 0 var(--enscribe-content-padding);
+  text-align: right;
+  font-family: var(--enscribe-font-sans);
+  font-size: 0.875rem;
+}
+.enscribe-site .content .enscribe-playground-cta a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-weight: 600;
+}
+.enscribe-site .content .enscribe-playground-cta a:hover { text-decoration: underline; }
 @media (min-width: 900px) {
   .enscribe-site .content .enscribe-toc,
   .enscribe-site .content .enscribe-onthispage {
@@ -1415,6 +1433,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
+<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="sections.html">Sections</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-prose.html">Block prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="frameables.html" class="enscribe-toc-active" aria-current="location">Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="math.html">Math</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-family.html">Theorem family</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-references.html">Citations &#x26; references</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structured-data-containers.html">Structured-data containers</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="storage-hosts.html">Storage hosts</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="configuration.html">Configuration</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="navigation.html">Navigation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:frameables" book-part-type="chapter">
       <meta>
         <book-part-title>Frameables</book-part-title>
@@ -1496,7 +1515,9 @@ CDEFGABc</pre>
           <figure id="mp:sh-fig-1" class="frameable-border">
             <figure>
               <img src="elephant.jpg" alt="An adult African elephant.">
-              <figcaption><span class="figure-label">Figure 1.</span> An adult African elephant.</figcaption>
+              <figcaption><span class="figure-label">Figure 1.</span>
+                <p>An adult African elephant.</p>
+              </figcaption>
             </figure>
             <figcaption><span class="minipage-label">Minipage 83.</span></figcaption>
           </figure>
@@ -1504,7 +1525,9 @@ CDEFGABc</pre>
           <figure id="mp:sh-fig-2" class="frameable-border">
             <figure>
               <img src="elephant.jpg" alt="An adult African elephant.">
-              <figcaption><span class="figure-label">Figure 1.</span> An adult African elephant.</figcaption>
+              <figcaption><span class="figure-label">Figure 1.</span>
+                <p>An adult African elephant.</p>
+              </figcaption>
             </figure>
             <figcaption><span class="minipage-label">Minipage 84.</span></figcaption>
           </figure>
@@ -1512,7 +1535,9 @@ CDEFGABc</pre>
           <figure id="mp:sh-fig-3" class="frameable-border">
             <figure id="mp-sh-fig-3-elephant" data-align="right">
               <img src="elephant.jpg" alt="A photograph of an elephant">
-              <figcaption><span class="figure-label">Figure 1.</span> An adult African elephant photographed in Tanzania.</figcaption>
+              <figcaption><span class="figure-label">Figure 1.</span>
+                <p>An adult African elephant photographed in Tanzania.</p>
+              </figcaption>
             </figure>
             <figcaption><span class="minipage-label">Minipage 85.</span></figcaption>
           </figure>
@@ -1629,7 +1654,8 @@ Quarterly revenue for fiscal year 2024.
             <li>Canonical: <code>&#x3C;frame></code></li>
           </ul><code id="code:sh-frame-1">&#x3C;frame | A short callout.></code>
           <figure id="mp:sh-frame-1" class="frameable-border">
-            <figure class="frameable-border">A short callout.
+            <figure class="frameable-border">
+              <p>A short callout.</p>
               <figcaption><span class="figure-label">Figure 1.</span></figcaption>
             </figure>
             <figcaption><span class="minipage-label">Minipage 87.</span></figcaption>
@@ -1639,7 +1665,8 @@ Make sure to read this carefully.
 ></code>
           <figure id="mp:sh-frame-2" class="frameable-border">
             <figure data-frame-type="note" class="frameable-border">
-              <figcaption class="title">Important</figcaption>Make sure to read this carefully.
+              <figcaption class="title">Important</figcaption>
+              <p>Make sure to read this carefully.</p>
               <figcaption><span class="figure-label">Figure 1.</span></figcaption>
             </figure>
             <figcaption><span class="minipage-label">Minipage 88.</span></figcaption>
@@ -1656,7 +1683,9 @@ Make sure to read this carefully.
                 <li>Clean.</li>
                 <li>Model.</li>
               </ol>
-              <figcaption><span class="figure-label">Figure 1.</span> Workflow steps</figcaption>
+              <figcaption><span class="figure-label">Figure 1.</span>
+                <p>Workflow steps</p>
+              </figcaption>
             </figure>
             <figcaption><span class="minipage-label">Minipage 89.</span></figcaption>
           </figure>
@@ -1767,11 +1796,15 @@ A figure here counts privately.
               <p>A figure here counts privately.</p>
               <figure id="mp-sh-minipage-2-mp-compare-fig:left">
                 <img src="left.png" alt="Left panel.">
-                <figcaption><span class="figure-label">Figure 1.</span> Left panel.</figcaption>
+                <figcaption><span class="figure-label">Figure 1.</span>
+                  <p>Left panel.</p>
+                </figcaption>
               </figure>
               <figure id="mp-sh-minipage-2-mp-compare-fig:right">
                 <img src="right.png" alt="Right panel.">
-                <figcaption><span class="figure-label">Figure 2.</span> Right panel.</figcaption>
+                <figcaption><span class="figure-label">Figure 2.</span>
+                  <p>Right panel.</p>
+                </figcaption>
               </figure>
               <figcaption><span class="minipage-label">Minipage 1.</span> Side-by-side comparison</figcaption>
             </figure>
