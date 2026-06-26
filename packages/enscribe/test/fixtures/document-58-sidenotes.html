@@ -1595,8 +1595,8 @@ note-list li {
       <article-body>
         <section>
           <section-title>Numbered notes rendered as side notes</section-title>
-          <p>With <code>note-position=margin</code>, a numbered note renders as a <i>side note</i>: its body appears in the margin beside the marker.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup><span class="enscribe-sidenote"><sup>1</sup> This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin. </span>The numbering and back-reference machinery is untouched; only the HTML projection changes.</p>
-          <p>A second numbered note shows side notes stacking down the margin column.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup><span class="enscribe-sidenote"><sup>2</sup> A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback. </span>Each keeps its number.</p>
+          <p>With <code>note-position=margin</code>, a numbered note renders as a <i>side note</i>: its body appears in the margin beside the marker.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup><span class="enscribe-sidenote"><sup>1</sup><p>This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin.</p></span>The numbering and back-reference machinery is untouched; only the HTML projection changes.</p>
+          <p>A second numbered note shows side notes stacking down the margin column.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup><span class="enscribe-sidenote"><sup>2</sup><p>A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.</p></span>Each keeps its number.</p>
         </section>
         <section>
           <section-title>Side notes and margin notes share the margin</section-title>
@@ -1608,8 +1608,12 @@ note-list li {
       <article-back>
         <note-list class="endnotes">
           <ol>
-            <li id="note-1"><sup>1</sup> This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin. <a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
-            <li id="note-2"><sup>2</sup> A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback. <a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a></li>
+            <li id="note-1"><sup>1</sup>
+              <p>This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin.</p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
+            </li>
+            <li id="note-2"><sup>2</sup>
+              <p>A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.</p><a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
+            </li>
           </ol>
         </note-list>
         <config></config>

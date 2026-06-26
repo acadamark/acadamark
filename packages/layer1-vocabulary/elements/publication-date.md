@@ -19,6 +19,8 @@ enscribe_attributes:
         Default is iso (YYYY-MM-DD). Same set as <date>'s format kwarg.
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The publication date as text. ISO 8601 (YYYY-MM-DD) is preferred

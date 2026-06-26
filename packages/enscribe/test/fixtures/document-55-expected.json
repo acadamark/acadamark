@@ -250,8 +250,15 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "A reference plot, cross-referenced from a table cell."
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A reference plot, cross-referenced from a table cell."
+                            }
+                          ]
                         }
                       ]
                     }

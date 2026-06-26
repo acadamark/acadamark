@@ -12,6 +12,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The visible heading of the parent <details> disclosure. Typically

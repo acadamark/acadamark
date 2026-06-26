@@ -25,6 +25,8 @@ enscribe_attributes:
         family shared counter. Default true; -numbered suppresses.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
   notes: |
     Body content directly (no internal element parts), per the
@@ -40,13 +42,13 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <lemma | Every continuous function on a compact set attains its maximum.>
-    layer1_html: '<lemma><span class="lemma-label">Lemma 1.</span> Every continuous function on a compact set attains its maximum.</lemma>'
+    layer1_html: '<lemma><span class="lemma-label">Lemma 1.</span><p>Every continuous function on a compact set attains its maximum.</p></lemma>'
   - source: |
       <lemma name="Zorn" #lem:zorn>
       Every non-empty partially-ordered set in which every chain has
       an upper bound contains a maximal element.
       </lemma>
-    layer1_html: '<lemma data-name="Zorn" id="lem:zorn"><span class="lemma-label">Lemma 1 (Zorn).</span> Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</lemma>'
+    layer1_html: '<lemma data-name="Zorn" id="lem:zorn"><span class="lemma-label">Lemma 1 (Zorn).</span><p>Every non-empty partially-ordered set in which every chain has an upper bound contains a maximal element.</p></lemma>'
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js
 ---

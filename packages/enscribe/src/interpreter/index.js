@@ -115,6 +115,7 @@ import remarkGfm from 'remark-gfm';
 // Relative path import: @enscribejs/enscribe/parser does not re-export this module via
 // its package exports field; we access it directly within the workspace.
 import remarkRecursiveContent from '../parser/recursive-content.js';
+import { FLOW_TAGNAMES } from './lib/content-model.js';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 // #117: rehype-format, wrapped to be enscribe-inline-aware (it would otherwise treat custom
@@ -608,7 +609,7 @@ export function enscribeInterpreter(options = {}) {
   // 1. Parse pipe-content strings into mdast children. In sigil/canonical mode the
   //    inner processor is the matching registers-off one (the register(s) stay off
   //    inside pipe bodies too); recursive-content selects it via the file.data mode.
-  this.use(remarkRecursiveContent, { processor: innerProcessor, processorSigil: sigilProcessor, processorCanonical: canonicalProcessor });
+  this.use(remarkRecursiveContent, { processor: innerProcessor, processorSigil: sigilProcessor, processorCanonical: canonicalProcessor, flowTagnames: FLOW_TAGNAMES });
 
   // 1.5. The normalize-to-canonical gate. Runs after step 1 so both outer
   //      and inner processor runs have completed. Runs before step 2 so no
@@ -1154,7 +1155,7 @@ export function liftToCanonicalMdast(source) {
     inner = unified().use(remarkParse).use(remarkEnscribe, { sigils }).use(disableMarkdownIdioms);
   }
   unified()
-    .use(remarkRecursiveContent, { processor: inner })
+    .use(remarkRecursiveContent, { processor: inner, flowTagnames: FLOW_TAGNAMES })
     // Resolve the document class before the gate here too (lift / collect* path), so
     // book-context-gated book-part shorthand expansion fires for book documents — the
     // gate reads file.data.docType, which only enscribeDocTypeResolve populates.

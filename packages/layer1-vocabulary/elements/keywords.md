@@ -12,6 +12,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     Comma-separated keyword list as text, OR a structured list of

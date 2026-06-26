@@ -45,11 +45,11 @@ shorthand_examples:
       <glossary id="project-terms">
         <glossary-entry>
           <dt>enscribe</dt>
-          <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+          <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>
         </glossary-entry>
         <glossary-entry>
           <dt>Layer 1</dt>
-          <dd>The canonical semantic HTML vocabulary.</dd>
+          <dd><p>The canonical semantic HTML vocabulary.</p></dd>
         </glossary-entry>
       </glossary>
     notes: |

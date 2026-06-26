@@ -103,6 +103,8 @@ enscribe_attributes:
         default.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: figcaption
   notes: |
     The pipe content becomes a <figcaption> child of the figure. When
@@ -137,7 +139,7 @@ shorthand_expansions:
       routing) see the single canonical name.
 shorthand_examples:
   - source: '<fig src=elephant.jpg | An adult African elephant.>'
-    layer1_html: '<figure><img alt="An adult African elephant." src="elephant.jpg"><figcaption><span class="figure-label">Figure 1.</span> An adult African elephant.</figcaption></figure>'
+    layer1_html: '<figure><img alt="An adult African elephant." src="elephant.jpg"><figcaption><span class="figure-label">Figure 1.</span><p>An adult African elephant.</p></figcaption></figure>'
     notes: |
       The simplest case. The src kwarg generates the <img>; the pipe
       content generates the figcaption. The alt text defaults to the
@@ -146,12 +148,12 @@ shorthand_examples:
       because the HTML rendering surface is the HTML5 native element
       while the enscribe canonical name follows JATS's shorter <fig>.
   - source: '<figure src=elephant.jpg | An adult African elephant.>'
-    layer1_html: '<figure><img alt="An adult African elephant." src="elephant.jpg"><figcaption><span class="figure-label">Figure 1.</span> An adult African elephant.</figcaption></figure>'
+    layer1_html: '<figure><img alt="An adult African elephant." src="elephant.jpg"><figcaption><span class="figure-label">Figure 1.</span><p>An adult African elephant.</p></figcaption></figure>'
     notes: |
       `<figure>` is the authoring alias. The normalize-to-canonical gate rewrites the
       tagname to `fig` early; the rendered output is the same.
   - source: '<fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.>'
-    layer1_html: '<figure data-align="right" id="elephant"><img alt="A photograph of an elephant" src="elephant.jpg"><figcaption><span class="figure-label">Figure 1.</span> An adult African elephant photographed in Tanzania.</figcaption></figure>'
+    layer1_html: '<figure data-align="right" id="elephant"><img alt="A photograph of an elephant" src="elephant.jpg"><figcaption><span class="figure-label">Figure 1.</span><p>An adult African elephant photographed in Tanzania.</p></figcaption></figure>'
     notes: |
       The `id` enables cross-referencing with `<ref @elephant>` (or the
       canonical `<ref @fig:elephant>` colon-prefix form). Numbered by

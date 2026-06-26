@@ -16,6 +16,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The affiliation as text — typically institution, department, city,

@@ -15,13 +15,13 @@
 // tags are escaped literally, and HTML comments are stripped.
 //
 // PARAGRAPH UNWRAPPING
-// After remarkRecursiveContent, an element's pipe text has been parsed through
-// remark and often produces a single-paragraph wrapper around its actual inline
-// content. For elements with content.type === 'prose', we unwrap that wrapper
-// so <em | text> becomes <em>text</em>, not <em><p>text</p></em>.
-// Multi-paragraph content (content.length > 1) is never unwrapped.
+// The single-paragraph wrapping decision (#326) is made once, at parse time,
+// by the content-model gate in recursive-content.js extractFromRoot: phrasing
+// elements (a <p> is invalid inside, e.g. <em>) arrive already unwrapped to
+// inline children; flow elements (a <p> is valid, e.g. <abstract>) arrive with
+// their <p> kept. The hast converter here consumes that content as-is — it does
+// NOT re-decide the unwrap (doing so would undo the flow wrap).
 
-import { unwrapSingleParagraph } from '../core/paragraph-unwrap.js';
 import { mapAttributes } from '../core/map-attributes.js';
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { htmlEmit, aggregateHtmlProps } from './lib/html-emit.js';
@@ -212,9 +212,11 @@ export function schemaDispatch(state, node, vocab) {
 /**
  * Convert node.content to hast child nodes.
  *
- * For prose elements (em, strong, code, p, aside, section-title, etc.),
- * unwrap a single-paragraph wrapper produced by remark when the pipe text
- * was re-parsed. Multi-paragraph content is kept as-is.
+ * The single-paragraph wrapping decision (#326) is made at parse time by the
+ * content-model gate in `recursive-content.js` `extractFromRoot`: phrasing
+ * elements arrive already unwrapped to inline children, flow elements arrive
+ * with their `<p>` kept. So content is converted as-is here — re-running the
+ * unwrap would undo the flow wrap (see `notes/specs/shape-tokens.md`).
  */
 function convertContent(state, node, vocab) {
   // Opaque-content nodes (e.g. <library>, <csv>) have string content that is
@@ -226,14 +228,7 @@ function convertContent(state, node, vocab) {
   // re-parsed by remarkRecursiveContent (e.g. raw DSL content). Treat as empty.
   if (!Array.isArray(content)) return [];
 
-  // Prose-bearing tags get the single-paragraph unwrap (per spec); other
-  // tags pass content through as-is.
-  const nodes =
-    vocab?.content?.type === 'prose'
-      ? unwrapSingleParagraph(content)
-      : content;
-
-  return convertChildren(state, node, nodes);
+  return convertChildren(state, node, content);
 }
 
 // ─── Attribute mapping ────────────────────────────────────────────────────────

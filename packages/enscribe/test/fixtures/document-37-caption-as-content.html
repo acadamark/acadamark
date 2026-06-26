@@ -1532,7 +1532,9 @@ note-list li {
       </p>
       <figure>
         <img src="elephant.jpg" alt="An African elephant, photographed in Serengeti National Park.">
-        <figcaption><span class="figure-label">Figure 1.</span> An African elephant, photographed in <i>Serengeti National Park</i>.</figcaption>
+        <figcaption><span class="figure-label">Figure 1.</span>
+          <p>An African elephant, photographed in <i>Serengeti National Park</i>.</p>
+        </figcaption>
       </figure>
       <p>
         The kwarg form (lifts to child-tag at the gate — produces identical
@@ -1540,7 +1542,9 @@ note-list li {
       </p>
       <figure id="fig:zebra">
         <img src="zebra.jpg" alt="A zebra in the savanna.">
-        <figcaption><span class="figure-label">Figure 2.</span> A zebra in the savanna.</figcaption>
+        <figcaption><span class="figure-label">Figure 2.</span>
+          <p>A zebra in the savanna.</p>
+        </figcaption>
       </figure>
       <p>
         A frame with a title and caption, both rendered at the right edges
@@ -1553,7 +1557,9 @@ note-list li {
           input data, with leave-one-out cross-validation for hyperparameter
           search.
         </p>
-        <figcaption><span class="figure-label">Figure 3.</span> A summary of our <b>methods</b> section.</figcaption>
+        <figcaption><span class="figure-label">Figure 3.</span>
+          <p>A summary of our <b>methods</b> section.</p>
+        </figcaption>
       </figure>
       <p>
         Cross-reference resolves: <a href="#fig:zebra" class="ref">figure 2</a> → figure 1, <a href="#fig:method" class="ref">figure 3</a>
@@ -1566,10 +1572,15 @@ note-list li {
         Frames are numbered by default (#272), like figures and tables. A one-off
         callout opts out of the figure counter with <code>-numbered</code>, so no number registers:
       </p>
-      <figure class="frameable-border">A bordered callout that doesn’t participate in the figure counter.</figure>
+      <figure class="frameable-border">
+        <p>A bordered callout that doesn’t participate in the figure counter.</p>
+      </figure>
       <p>This frame is numbered (the default) and cross-referenceable via its id:</p>
-      <figure id="fig:opt-in" class="frameable-border">Body content here.
-        <figcaption><span class="figure-label">Figure 4.</span> Numbered frame</figcaption>
+      <figure id="fig:opt-in" class="frameable-border">
+        <p>Body content here.</p>
+        <figcaption><span class="figure-label">Figure 4.</span>
+          <p>Numbered frame</p>
+        </figcaption>
       </figure>
       <p>The numbered frame is figure 4 in the document figure sequence.</p>
     </section>
@@ -1582,7 +1593,9 @@ note-list li {
       <figure>
         <figcaption class="title">Figure title</figcaption>
         <img src="plot.png" alt="A plot caption.">
-        <figcaption><span class="figure-label">Figure 5.</span> A plot caption.</figcaption>
+        <figcaption><span class="figure-label">Figure 5.</span>
+          <p>A plot caption.</p>
+        </figcaption>
       </figure>
       <p>Title above; caption below; image in the middle.</p>
     </section>

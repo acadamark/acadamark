@@ -540,8 +540,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "An African elephant.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "An African elephant.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 22,
+                                      "offset": 21
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -633,8 +652,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "A zebra in the savanna.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A zebra in the savanna.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 25,
+                                      "offset": 24
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -1603,8 +1641,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "Every integer greater than 1 either is prime itself or is the product\nof prime numbers, and that this product is unique up to ordering.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Every integer greater than 1 either is prime itself or is the product\nof prime numbers, and that this product is unique up to ordering.",
+                              "position": {
+                                "start": {
+                                  "line": 2,
+                                  "column": 1,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 66,
+                                  "offset": 136
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 2,
@@ -1645,8 +1702,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "Every nonempty subset of the natural numbers has a least element.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Every nonempty subset of the natural numbers has a least element.",
+                              "position": {
+                                "start": {
+                                  "line": 2,
+                                  "column": 1,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 2,
+                                  "column": 66,
+                                  "offset": 66
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 2,
@@ -1687,8 +1763,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "By induction on the size of the subset.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "By induction on the size of the subset.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 41,
+                                  "offset": 40
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -1960,8 +2055,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "A plot with a frame around it.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A plot with a frame around it.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 32,
+                                      "offset": 31
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,

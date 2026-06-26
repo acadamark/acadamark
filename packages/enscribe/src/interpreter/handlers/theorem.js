@@ -34,7 +34,6 @@
 // element matching the source tagname (preserves the source-intent
 // distinction — `<theorem>` vs `<lemma>` vs etc. in the Layer 1 output).
 
-import { unwrapSingleParagraph } from '../../core/paragraph-unwrap.js';
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';
 import { formatLabel } from '../lib/frameable.js';
@@ -60,16 +59,17 @@ const THEOREM_PREFIXES = new Map([
 const UNNUMBERED_THEOREM_TAGNAMES = new Set(['remark', 'proof']);
 
 /**
- * Convert the theorem's pipe content (the body) to hast children. Prose-
- * shape unwrap matches the schema-dispatch behavior for prose content.
+ * Convert the theorem's pipe content (the body) to hast children. The
+ * theorem family is FLOW (#326): a single-paragraph body keeps its <p>, so
+ * `<theorem | text>` produces `<theorem><p>text</p></theorem>`, consistent
+ * with the multi-paragraph case. The wrap/unwrap decision is made once at
+ * parse time (recursive-content.js extractFromRoot); content is converted
+ * as-is here.
  */
 function buildBodyHast(state, node) {
   const content = node.content ?? [];
   if (!Array.isArray(content)) return [];
-  // Prose-bearing tag — single-paragraph unwrap so `<theorem | text>`
-  // produces `<theorem>text</theorem>` not `<theorem><p>text</p></theorem>`.
-  const nodes = unwrapSingleParagraph(content);
-  return convertChildren(state, node, nodes);
+  return convertChildren(state, node, content);
 }
 
 /**

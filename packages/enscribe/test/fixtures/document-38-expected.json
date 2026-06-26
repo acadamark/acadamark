@@ -209,8 +209,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "A preface footnote.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A preface footnote.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 21,
+                                      "offset": 20
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -391,8 +410,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "An introductory diagram.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "An introductory diagram.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 26,
+                                  "offset": 25
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -921,8 +959,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "An introduction footnote.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "An introduction footnote.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 27,
+                                      "offset": 26
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -982,8 +1039,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "Another intro footnote.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Another intro footnote.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 25,
+                                      "offset": 24
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -1180,8 +1256,27 @@
                           "value": " "
                         },
                         {
-                          "type": "text",
-                          "value": "The methodology diagram.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "The methodology diagram.",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 26,
+                                  "offset": 25
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 1,
@@ -1565,8 +1660,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "A methods footnote.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A methods footnote.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 21,
+                                      "offset": 20
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,
@@ -1772,8 +1886,27 @@
                               "value": " "
                             },
                             {
-                              "type": "text",
-                              "value": "An appendix footnote.",
+                              "type": "element",
+                              "tagName": "p",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "An appendix footnote.",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 23,
+                                      "offset": 22
+                                    }
+                                  }
+                                }
+                              ],
                               "position": {
                                 "start": {
                                   "line": 1,

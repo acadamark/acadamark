@@ -12,6 +12,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
   notes: |
     The description / definition of the preceding <dt> term. Prose
@@ -26,7 +28,7 @@ jats_counterpart:
     wraps the <dt>/<dd> pair in <def-item> at export.
 shorthand_examples:
   - source: '<dd | An academic publishing system built on HTML+CSS+JS.>'
-    layer1_html: '<dd>An academic publishing system built on HTML+CSS+JS.</dd>'
+    layer1_html: '<dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>'
     notes: |
       A definition-list description. Appears as a child of <dl>,
       following the term it defines.

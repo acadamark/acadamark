@@ -12,6 +12,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The ORCID identifier as text. The canonical form is the bare 16-digit

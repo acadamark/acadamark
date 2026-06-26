@@ -77,6 +77,8 @@ enscribe_attributes:
         articulated. Future work, not a current feature.
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     Optional override for the rendered cross-reference text. Most refs

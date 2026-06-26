@@ -12,6 +12,8 @@ enscribe_attributes:
     maps_to: class
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The author's name as a single string (e.g. "Jane Goodall"). No

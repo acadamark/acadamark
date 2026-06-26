@@ -29,6 +29,8 @@ enscribe_attributes:
         the default.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
 content_handler: default
 jats_counterpart:
@@ -40,7 +42,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <remark | The converse does not hold in general.>
-    layer1_html: '<remark><span class="remark-label">Remark.</span> The converse does not hold in general.</remark>'
+    layer1_html: '<remark><span class="remark-label">Remark.</span><p>The converse does not hold in general.</p></remark>'
   - source: |
       <remark>
       The hypothesis of compactness is essential here; without it

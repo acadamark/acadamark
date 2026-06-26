@@ -26,6 +26,8 @@ enscribe_attributes:
         Default is iso (YYYY-MM-DD).
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
   notes: |
     The date value, typically as text. Common formats:

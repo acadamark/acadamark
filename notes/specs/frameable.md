@@ -51,9 +51,11 @@ Every frameable element carries the identical attribute set:
 - **`title`** — optional title rendered at the top of the element.
 - **`caption`** — optional caption rendered at the foot of the element,
   with the number-and-label prefix folded in when numbered.
-  (`title` / `caption` are **phrasing** content; the frameable *body* — `<fig>` /
-  `<frame>` — is **flow**, so a single-paragraph body wraps. See the content-model
-  states in `notes/specs/shape-tokens.md` §"Content model and single-paragraph wrapping".)
+  (`title` is **phrasing** content (a single-line heading, stays bare inline); `caption` and the
+  frameable *body* — `<fig>` / `<frame>` — are **flow**, so a single-paragraph caption or body wraps
+  in `<p>`, identically across the `<caption>` child / pipe-content / `caption=` kwarg authoring forms
+  (#326). See the content-model states in `notes/specs/shape-tokens.md` §"Content model and
+  single-paragraph wrapping".)
 - **`border`** — optional outline box. `+border` / `-border` (or
   `border=true|false`) toggle it; the render convention is the
   `frameable-border` class, which theme stylesheets draw.

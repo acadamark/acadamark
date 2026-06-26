@@ -35,12 +35,14 @@ export async function run() {
   assert.ok(margin.includes('.enscribe-layout--margin .enscribe-sidenote'), 'margin mode injects the scoped sidenote CSS');
   assert.ok(margin.includes('<sup id="noteref-1" data-note-id="note-1">'), 'inline marker 1 kept');
   assert.ok(margin.includes('<sup id="noteref-2" data-note-id="note-2">'), 'inline marker 2 kept');
+  // <note> is flow (#326): its single-paragraph content keeps its <p>, so the
+  // margin projection carries the marker followed by the wrapped content.
   assert.ok(
-    /<span class="enscribe-sidenote"><sup>1<\/sup> a footnote about the first point/.test(margin),
+    /<span class="enscribe-sidenote"><sup>1<\/sup><p>a footnote about the first point<\/p>/.test(margin),
     'sidenote 1 carries its number + content into the margin',
   );
   assert.ok(
-    /<span class="enscribe-sidenote"><sup>2<\/sup> another note here/.test(margin),
+    /<span class="enscribe-sidenote"><sup>2<\/sup><p>another note here<\/p>/.test(margin),
     'sidenote 2 carries its number + content into the margin',
   );
   console.log('PASS: margin mode projects note content into the margin, numbering intact');

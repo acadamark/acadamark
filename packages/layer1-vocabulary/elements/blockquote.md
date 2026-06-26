@@ -26,6 +26,8 @@ enscribe_attributes:
         and may affect JATS export.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
 content_handler: default
 jats_counterpart:
@@ -43,7 +45,7 @@ shorthand_expansions:
       the interpreter; the rendered HTML uses HTML's native <blockquote>.
 shorthand_examples:
   - source: '<quote | A short quotation.>'
-    layer1_html: '<blockquote>A short quotation.</blockquote>'
+    layer1_html: '<blockquote><p>A short quotation.</p></blockquote>'
     notes: |
       The <quote> shorthand expands to <blockquote> at Layer 1.
   - source: |
@@ -63,10 +65,10 @@ shorthand_examples:
       >
     layer1_html: |
       <blockquote data-blockquote-type="epigraph">
-        All happy families are alike; each unhappy family is unhappy in its own way.
+        <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
       </blockquote>
   - source: '<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>'
-    layer1_html: '<blockquote>Same as <code>&#x3C;quote></code> but using the explicit Layer 1 name.</blockquote>'
+    layer1_html: '<blockquote><p>Same as <code>&#x3C;quote></code> but using the explicit Layer 1 name.</p></blockquote>'
     notes: |
       Authors can also write <blockquote> directly. Both forms produce
       the same Layer 1 output.

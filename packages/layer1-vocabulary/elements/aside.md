@@ -48,6 +48,8 @@ enscribe_attributes:
         suppress the outline.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
 content_handler: default
 jats_counterpart:
@@ -60,9 +62,9 @@ jats_counterpart:
     document-level collected footnotes — see <note-list>, not <aside>.
 shorthand_examples:
   - source: '<aside | A side note about the elephant.>'
-    layer1_html: '<aside class="frameable-border">A side note about the elephant.</aside>'
+    layer1_html: '<aside class="frameable-border"><p>A side note about the elephant.</p></aside>'
   - source: '<aside type=warning .important | Be careful here.>'
-    layer1_html: '<aside class="important frameable-border" data-aside-type="warning">Be careful here.</aside>'
+    layer1_html: '<aside class="important frameable-border" data-aside-type="warning"><p>Be careful here.</p></aside>'
   - source: |
       <aside type=callout |
       This is a multi-line callout.

@@ -19,6 +19,8 @@ enscribe_attributes:
       maps_to: title
 content:
   type: prose
+  shape:
+    contains: [inline]
   becomes: children
 content_handler: default
 jats_counterpart:

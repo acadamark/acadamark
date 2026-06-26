@@ -26,6 +26,8 @@ enscribe_attributes:
         conventional "definition" theorem-style family. Default true.
 content:
   type: prose
+  shape:
+    contains: [block]
   becomes: children
 content_handler: default
 jats_counterpart:
@@ -37,7 +39,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <definition | A *group* is a set with an associative binary operation, identity, and inverses.>
-    layer1_html: '<definition><span class="definition-label">Definition 1.</span> A <i>group</i> is a set with an associative binary operation, identity, and inverses.</definition>'
+    layer1_html: '<definition><span class="definition-label">Definition 1.</span><p>A <i>group</i> is a set with an associative binary operation, identity, and inverses.</p></definition>'
   - source: |
       <definition name="Group" #def:group>
       A *group* is a set $G$ together with a binary operation

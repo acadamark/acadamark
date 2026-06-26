@@ -919,8 +919,10 @@ export function run() {
       html.includes('<dt>enscribe</dt>'),
       'doc28: <dt> renders with its term content',
     );
+    // #326: <dd> is flow — its single-paragraph description keeps its <p>
+    // (a block, so the formatter breaks it across lines). <dt> stays phrasing.
     assert.ok(
-      html.includes('<dd>An academic publishing system built on HTML+CSS+JS.</dd>'),
+      /<dd>\s*<p>An academic publishing system built on HTML\+CSS\+JS\.<\/p>\s*<\/dd>/.test(html),
       'doc28: <dd> renders with its description content',
     );
 
@@ -1708,8 +1710,9 @@ export function run() {
     );
     // A plain frame keeps exactly the base class — no modifier (byte-identical
     // to pre-#58 output for frames without a named look).
+    // #326: <frame> is flow — its single-paragraph body keeps its <p>.
     assert.ok(
-      html.includes('<figure class="frameable-border">A plain frame'),
+      /<figure class="frameable-border">\s*<p>A plain frame/.test(html),
       'doc50: plain <frame> is unchanged (frameable-border only, no modifier)',
     );
 
@@ -1905,11 +1908,11 @@ export function run() {
     // Private numbering: the document figure and the box-private figure are BOTH
     // "Figure 1" — the inner figure counts in the box registry and does NOT
     // advance the document figure counter.
-    assert.ok(/<figure id="fig:doc">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> A document figure\./.test(html),
+    assert.ok(/<figure id="fig:doc">[\s\S]*?<span class="figure-label">Figure 1\.<\/span>\s*<p>A document figure\./.test(html),
       'doc69: the document figure is "Figure 1"');
     // #267: a minipage member's id is scope-qualified by the box slug (mp:numbering → mp-numbering)
     // so two boxes don't collide on id="fig:inner". The PRIVATE NUMBER is still "Figure 1".
-    assert.ok(/<figure id="mp-numbering-fig:inner">[\s\S]*?<span class="figure-label">Figure 1\.<\/span> An inner figure/.test(html),
+    assert.ok(/<figure id="mp-numbering-fig:inner">[\s\S]*?<span class="figure-label">Figure 1\.<\/span>\s*<p>An inner figure/.test(html),
       'doc69: the box-private figure is ALSO "Figure 1" (private counter, document counter untouched)');
     assert.ok(html.includes('<a href="#fig:doc" class="ref">figure 1</a>'),
       'doc69: the document figure cross-ref is "figure 1" — not bumped to 2 by the box figure');

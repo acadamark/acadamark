@@ -74,11 +74,13 @@ export async function run() {
 
     // ── continuous FIGURE numbering across child files (alpha→1, beta→2, gamma→3) ─
     {
-      assert.ok(html.includes('<figcaption><span class="figure-label">Figure 1.</span> The alpha figure.</figcaption>'),
+      // #326: <fig> is flow — the single-paragraph caption keeps its <p> (a
+      // block, so the formatter may break the line between label and caption).
+      assert.ok(/<span class="figure-label">Figure 1\.<\/span>\s*<p>The alpha figure\.<\/p>/.test(html),
         'browser cross-file: the first child file figure is Figure 1');
-      assert.ok(html.includes('<figcaption><span class="figure-label">Figure 2.</span> The beta figure.</figcaption>'),
+      assert.ok(/<span class="figure-label">Figure 2\.<\/span>\s*<p>The beta figure\.<\/p>/.test(html),
         'browser cross-file: the second child file figure continues as Figure 2');
-      assert.ok(html.includes('<figcaption><span class="figure-label">Figure 3.</span> The gamma figure.</figcaption>'),
+      assert.ok(/<span class="figure-label">Figure 3\.<\/span>\s*<p>The gamma figure\.<\/p>/.test(html),
         'browser cross-file: the third child file figure continues as Figure 3');
       console.log('PASS: #194 — figures number continuously across child files (browser)');
     }
