@@ -472,6 +472,13 @@ function wireEditTabs(root) {
     }
     if (panes.source) panes.source.hidden = name !== 'source';
     if (panes.preview) panes.preview.hidden = name !== 'preview';
+    // Display now defaults to PREVIEW (#editability model), so the editor (source pane) starts HIDDEN;
+    // an editor mounted into a `display:none` pane (CodeMirror) measures 0 and lays out wrong until it
+    // re-measures. Nudge it on the reveal — CodeMirror re-measures on a window resize — so the editor is
+    // correct the first time Source opens. Harmless where the adapter self-measures or the pane was visible.
+    if (name === 'source' && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new window.Event('resize'));
+    }
   };
   for (const t of tabs) {
     t.addEventListener('click', () => activate(t.getAttribute('data-edit-tab')));

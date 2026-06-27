@@ -121,12 +121,14 @@ export async function run() {
     // ── the Write/Preview tabs toggle the panes ──────────────────────────────────────────
     const sourcePane = root.querySelector('[data-edit-pane="source"]');
     const previewPane = root.querySelector('[data-edit-pane="preview"]');
-    assert.ok(!sourcePane.hidden && previewPane.hidden, 'Source tab is active by default');
-    root.querySelector('[data-edit-tab="preview"]').click();
-    assert.ok(sourcePane.hidden && !previewPane.hidden, 'clicking Preview shows the preview, hides the source');
+    // Display defaults to PREVIEW (#editability model): an editable page lands on the rendered document;
+    // the editor (Source) is one click away. One source of truth — live-edit-view.js DEFAULT_TAB.
+    assert.ok(sourcePane.hidden && !previewPane.hidden, 'Preview is the default landing view (source pane hidden)');
     root.querySelector('[data-edit-tab="source"]').click();
-    assert.ok(!sourcePane.hidden && previewPane.hidden, 'clicking Source flips back');
-    console.log('PASS: edit-loop DOM — the Write/Preview tabs toggle the source and preview panes');
+    assert.ok(!sourcePane.hidden && previewPane.hidden, 'clicking Source opens the editor, hides the preview');
+    root.querySelector('[data-edit-tab="preview"]').click();
+    assert.ok(sourcePane.hidden && !previewPane.hidden, 'clicking Preview flips back to the rendered document');
+    console.log('PASS: edit-loop DOM — Preview is the default landing; the Write/Preview tabs toggle the panes');
 
     // ── the "preview — unsaved" marker is present (lost-on-reload is not silent) ──────────
     assert.ok(root.querySelector('.enscribe-edit-status'),

@@ -10,29 +10,46 @@
 //
 // PURE BY DESIGN (no DOM, no fetch): a string builder, exactly like live-book.js's view functions.
 
-// The Write/Preview tab bar — Source active by default (you arrive to type), Preview second, and an
-// "unsaved" marker stating edits are preview-only (no save this slice). Identical for book + article.
-const EDIT_TABS =
-  '<div class="enscribe-edit-tabs" role="tablist">' +
-    '<button type="button" class="enscribe-edit-tab enscribe-edit-tab--active" data-edit-tab="source" role="tab" aria-selected="true">Source</button>' +
-    '<button type="button" class="enscribe-edit-tab" data-edit-tab="preview" role="tab" aria-selected="false">Preview</button>' +
-    '<span class="enscribe-edit-status" title="Edits are preview-only — they live in memory and are lost on reload (no save this slice).">preview — unsaved</span>' +
-  '</div>';
+// The landing view — ONE source of truth (#editability model). Both the active TAB and the visible
+// PANE derive from this single value, so flipping the landing view is one edit, not a tab class + a
+// `hidden` attribute kept in sync. Display defaults to PREVIEW: an editable page opens on the rendered
+// document; Source (the editor) is the inactive tab, one click away. (Edit-on-load is a deferred knob.)
+export const DEFAULT_TAB = 'preview';
+const TAB_LABELS = { source: 'Source', preview: 'Preview' };
+
+// The Write/Preview tab bar, derived from `defaultTab`: that tab is `--active` / `aria-selected="true"`,
+// the other inactive. The "unsaved" marker states edits are preview-only (no save this slice). Identical
+// for book + article. (With `defaultTab='source'` this emits exactly the pre-#editability markup.)
+function editTabs(defaultTab) {
+  const tab = (name) => {
+    const active = name === defaultTab;
+    return `<button type="button" class="enscribe-edit-tab${active ? ' enscribe-edit-tab--active' : ''}" ` +
+      `data-edit-tab="${name}" role="tab" aria-selected="${active ? 'true' : 'false'}">${TAB_LABELS[name]}</button>`;
+  };
+  return '<div class="enscribe-edit-tabs" role="tablist">' +
+      tab('source') + tab('preview') +
+      '<span class="enscribe-edit-status" title="Edits are preview-only — they live in memory and are lost on reload (no save this slice).">preview — unsaved</span>' +
+    '</div>';
+}
 
 /**
  * Build the Write/Preview `<main>` — the tab bar + the source mount + the preview pane. The shared
  * core of every edit view: the source pane is an empty mount (the browser entry fills it with the
  * editor adapter); the preview pane holds the initial live render and is re-rendered on each edit.
- * Source pane visible by default, preview hidden — the browser entry toggles them via the tabs.
+ * The visible pane is `defaultTab`'s; the other is `hidden` — the SAME single value the active tab
+ * derives from, so the landing view has one source of truth. The browser entry toggles via the tabs.
  *
  * @param {string} previewBody - the initial preview pane inner HTML (the live-rendered document)
+ * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
  * @returns {string} the `<main class="enscribe-edit-main">…</main>` fragment
  */
-export function buildEditMain(previewBody) {
+export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB) {
+  const pane = (name, cls, inner) =>
+    `<div class="enscribe-edit-pane ${cls}" data-edit-pane="${name}"${name === defaultTab ? '' : ' hidden'}>${inner}</div>`;
   const panes =
-    '<div class="enscribe-edit-pane enscribe-edit-pane--source" data-edit-pane="source"></div>' +
-    `<div class="enscribe-edit-pane enscribe-edit-pane--preview enscribe-body" data-edit-pane="preview" hidden>${previewBody}</div>`;
-  return `<main class="enscribe-edit-main">${EDIT_TABS}${panes}</main>`;
+    pane('source', 'enscribe-edit-pane--source', '') +
+    pane('preview', 'enscribe-edit-pane--preview enscribe-body', previewBody);
+  return `<main class="enscribe-edit-main">${editTabs(defaultTab)}${panes}</main>`;
 }
 
 /**
@@ -42,8 +59,9 @@ export function buildEditMain(previewBody) {
  * width, exactly as the read article centers, so editing and reading share the same column.
  *
  * @param {string} previewBody - the live-rendered `<article>` HTML for the preview pane
+ * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
  * @returns {string} the mounted article edit-view HTML
  */
-export function renderLiveArticleEditView(previewBody) {
-  return `<div class="enscribe-layout enscribe-layout--edit">${buildEditMain(previewBody)}</div>`;
+export function renderLiveArticleEditView(previewBody, defaultTab = DEFAULT_TAB) {
+  return `<div class="enscribe-layout enscribe-layout--edit">${buildEditMain(previewBody, defaultTab)}</div>`;
 }
