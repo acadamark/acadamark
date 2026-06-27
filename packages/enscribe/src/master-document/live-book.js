@@ -31,7 +31,7 @@ import { buildChapterRail, buildOnThisPage, buildContentsListing, chapterNavBar 
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
 import { assembleMasterDocument } from './assemble.js';
-import { buildEditMain } from './live-edit-view.js';
+import { buildEditMainInner } from './live-edit-view.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 import {
   collectBookParts,
@@ -43,7 +43,7 @@ import {
   resolveBookNavConfig,
   resolveBookContentsConfig,
 } from './book-scaffold.js';
-import { composeBookBody, BACK_TO_TOP_HTML, BOOK_LAYOUT } from '../interpreter/assets/book-nav-asset.js';
+import { composeBookBody, BACK_TO_TOP_HTML } from '../interpreter/assets/book-nav-asset.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 
@@ -323,7 +323,9 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
  * live-rendered chapter — `renderLiveChapterContent` + prev/next, the SAME render path as
  * read mode, so the preview content matches what the book publishes). Source tab is active
  * by default (you arrive to type); the browser entry toggles the panes and updates the
- * preview on each debounced edit. No on-this-page rail in edit mode (the panes own the width).
+ * preview on each debounced edit. The edit view composes through the SAME `composeBookBody` as read
+ * mode, so it carries BOTH rails — the chapter rail (left) and the on-this-page rail (right) — placed
+ * identically to a read chapter, with the document replaced by the Write/Preview tabs.
  *
  * @param {object} model - the (current) buildLiveBook result
  * @param {number} idx - the chapter's index in model.parts
@@ -355,10 +357,17 @@ export function renderLiveChapterEditView(model, idx, ctx) {
 
   const home = { href: bookNav.cover ? COVER_HASH : chapterHash(parts[0]), title: bookTitle };
   const rail = liveRail(parts, part.id, home, bookNav);
+  // The on-this-page rail reflects the CHAPTER being edited — built from `[part]`, EXACTLY as read mode
+  // (renderLiveChapterView) builds it — so the editable chapter carries both rails, placed identically.
+  const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
+  const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
 
-  // The Write/Preview pane is the SHARED edit-view UI (buildEditMain, #216) — single-sourced so the
-  // book and article edit views cannot drift. The book frames it in its OWN layout (BOOK_LAYOUT: the
-  // chapter rail + reading-column grid) — the page owns its layout, here too. No competing
-  // `enscribe-layout--edit` (the page's own BOOK_LAYOUT is the layout, not a separate edit grid).
-  return `<div class="${BOOK_LAYOUT}">${rail}${buildEditMain(previewBody)}</div>` + BOOK_LIVE_RAIL_SCRIPTS;
+  // Compose through the SAME composeBookBody read mode uses — NOT a hand-rolled grid. The shared
+  // Write/Preview UI (buildEditMainInner, #216) is the `content`, wrapped in `<div class="enscribe-edit-
+  // main">` (a <main> cannot nest inside composeBookBody's own `<main class="enscribe-body">`). So the
+  // editable chapter looks exactly like a read chapter — chapter rail + content column + on-this-page
+  // rail — with the document replaced by the tabs. (The preview pane already carries the chapter's
+  // prev/next bar via renderLiveChapterPreviewBody, so no separate prevNext is passed.)
+  const editMain = `<div class="enscribe-edit-main">${buildEditMainInner(previewBody)}</div>`;
+  return composeBookBody({ rail, content: editMain, onThisPage }) + BOOK_LIVE_RAIL_SCRIPTS;
 }

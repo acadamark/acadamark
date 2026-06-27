@@ -25,6 +25,11 @@
 .enscribe-edit-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--enscribe-space-2, 0.5rem) var(--enscribe-space-3, 0.75rem); margin-bottom: -1px; font: inherit; font-family: var(--enscribe-font-sans); font-weight: 600; font-size: var(--enscribe-text-sm, 0.875rem); color: var(--enscribe-text-secondary, #555); cursor: pointer; }
 .enscribe-edit-tab--active { color: var(--enscribe-text-primary, #1a1a1a); border-bottom-color: var(--enscribe-link, #0052cc); }
 .enscribe-edit-status { margin-left: auto; font-size: var(--enscribe-text-xs, 0.75rem); font-style: italic; color: var(--enscribe-text-secondary, #555); }
+/* The SOURCE pane is width-matched to the PREVIEW pane's reading column (the preview carries
+   `enscribe-body content`, so its render sits in the reading column). Without this the editor was
+   full-width and toggling Write↔Preview jumped the text column; now both panes are the same width so
+   the toggle is seamless. CodeMirror lays out within this constraint. */
+.enscribe-edit-pane--source { max-width: var(--enscribe-content-width); margin-inline: auto; }
 .enscribe-edit-pane--source .cm-editor { border: 1px solid var(--enscribe-border, #e1e1e1); border-radius: var(--enscribe-radius-sm, 2px); min-height: 65vh; font-size: 0.9rem; }
 .enscribe-edit-pane--source .cm-scroller { font-family: var(--enscribe-font-mono, 'Source Code Pro', ui-monospace, monospace); }
 .enscribe-edit-error { color: #b00020; font-style: italic; }
