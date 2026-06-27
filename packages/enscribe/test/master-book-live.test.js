@@ -99,6 +99,14 @@ export async function run() {
       'the chapter view carries the return-to-cover masthead');
     console.log('PASS: L2 — hash navigation lazily renders the target chapter with its chrome');
 
+    // ── page-owns-convergence: the live book chapter SHIPS its rail animators ──────────
+    // The chapter view carries the scroll-spy + on-this-page scripts WITH its rail, so the page owns
+    // its interactivity (executeAssets runs them on mount; the shell injects none). Previously the live
+    // book lost scrollspy because only the static/article paths injected the script.
+    assert.ok([...root.querySelectorAll('script')].some((s) => /IntersectionObserver/.test(s.textContent)),
+      'the live book chapter carries its scroll-spy script (page-owned interactivity — not shell-injected)');
+    console.log('PASS: page-owns — the live book chapter ships its scroll-spy/on-this-page script with its rail');
+
     // ── a cross-chapter anchor routes to its OWNING chapter and mounts it ─────────────
     navigate(dom, '#fig:transect');
     assert.ok(root.innerHTML.includes('id="fig:transect"'),

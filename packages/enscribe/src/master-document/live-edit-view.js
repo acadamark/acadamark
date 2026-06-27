@@ -46,22 +46,28 @@ function editTabs(defaultTab) {
 export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB) {
   const pane = (name, cls, inner) =>
     `<div class="enscribe-edit-pane ${cls}" data-edit-pane="${name}"${name === defaultTab ? '' : ' hidden'}>${inner}</div>`;
+  // The PREVIEW pane carries the `content` class so the page's render is framed EXACTLY as read mode
+  // frames it (the website `.content` rules — the bare-article reading column, and the `.content
+  // .enscribe-toc`/`.enscribe-onthispage` sticky-below-nav offsets). So the page owns its layout in the
+  // preview, the SAME as in read mode — not nested inside a competing edit grid. (In a standalone
+  // article/book mount the `content` class is inert; the page's own `.enscribe-layout--*` lays it out.)
   const panes =
     pane('source', 'enscribe-edit-pane--source', '') +
-    pane('preview', 'enscribe-edit-pane--preview enscribe-body', previewBody);
+    pane('preview', 'enscribe-edit-pane--preview enscribe-body content', previewBody);
   return `<main class="enscribe-edit-main">${editTabs(defaultTab)}${panes}</main>`;
 }
 
 /**
  * Render an ARTICLE's edit view (#216) — the single-unit collapse of the book's chapter edit view.
- * Just the Write/Preview pane in a chrome-free edit layout: NO chapter rail, NO routing, NO cover
- * (an article is one unit). The body centers the `enscribe-layout` block at the reading-column
- * width, exactly as the read article centers, so editing and reading share the same column.
+ * Just the Write/Preview pane: NO chapter rail, NO routing, NO cover (an article is one unit). The
+ * PAGE owns its layout — the preview pane (`.content`, in buildEditMain) frames the article exactly as
+ * read mode does, so its config-toc rail lays out the same. NO competing `enscribe-layout--edit`
+ * wrapper (it imposed nothing but signalled a competing layout; the page owns layout, here too).
  *
  * @param {string} previewBody - the live-rendered `<article>` HTML for the preview pane
  * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
  * @returns {string} the mounted article edit-view HTML
  */
 export function renderLiveArticleEditView(previewBody, defaultTab = DEFAULT_TAB) {
-  return `<div class="enscribe-layout enscribe-layout--edit">${buildEditMain(previewBody, defaultTab)}</div>`;
+  return buildEditMain(previewBody, defaultTab);
 }

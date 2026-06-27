@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { mountLiveBook } from '../src/interpreter/browser.js';
+import { renderLiveArticleEditView } from '../src/master-document/live-edit-view.js';
 
 const BOOK_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-book');
 const readBook = (name) => readFileSync(join(BOOK_DIR, name), 'utf8');
@@ -136,6 +137,21 @@ export async function run() {
     console.log('PASS: edit-loop DOM — the preview-unsaved marker is shown (no save this slice)');
   } finally {
     restoreDom(orig);
+  }
+
+  // ── page-owns-convergence: the edit view does NOT impose a competing layout ───────────
+  // The preview pane holds the page's OWN render framed like read mode: it carries the `content` class
+  // (read-mode framing), and there is NO `enscribe-layout--edit` wrapper (which signalled a competing
+  // layout). So a config-toc article's rail / a book's rails lay out in preview exactly as in read mode.
+  {
+    const view = renderLiveArticleEditView('<article class="enscribe-layout enscribe-layout--toc">body</article>');
+    assert.ok(!view.includes('enscribe-layout--edit'),
+      'the edit view has NO competing enscribe-layout--edit wrapper (the page owns its layout)');
+    assert.ok(view.includes('content" data-edit-pane="preview"'),
+      'the preview pane carries the `content` class — framing the page exactly as read mode does');
+    assert.ok(view.includes('enscribe-layout--toc'),
+      'the page\'s OWN layout survives intact inside the preview pane');
+    console.log('PASS: page-owns — the edit preview holds the page layout (content-framed; no competing --edit wrapper)');
   }
 
   console.log('All live book edit-loop (#203) browser-entry smoke checks passed.');

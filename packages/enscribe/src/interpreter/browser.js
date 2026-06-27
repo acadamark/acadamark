@@ -527,11 +527,16 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
     editorHandle = null;
   };
 
-  // Re-render ONLY the current chapter's preview pane (leave the editor + tabs intact).
+  // Re-render ONLY the current chapter's preview pane (leave the editor + tabs intact). Run the
+  // page-embedded interactivity (scrollspy / on-this-page) so the preview's rail spies like read mode.
+  const runPreviewAssets = () => {
+    const pane = root.querySelector('[data-edit-pane="preview"]');
+    if (pane) executeAssets(pane).catch(() => {});
+  };
   const updatePreview = () => {
     if (currentKey === 'cover' || currentIndex < 0) return;
     const pane = root.querySelector('[data-edit-pane="preview"]');
-    if (pane) pane.innerHTML = renderLiveChapterPreviewBody(model, currentIndex, ctx);
+    if (pane) { pane.innerHTML = renderLiveChapterPreviewBody(model, currentIndex, ctx); runPreviewAssets(); }
   };
 
   const rebuildAndPreview = () => {
@@ -566,6 +571,7 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
     currentKey = idx;
     root.innerHTML = renderLiveChapterEditView(model, idx, ctx);
     wireEditTabs(root);
+    runPreviewAssets();
     const mountEl = root.querySelector('[data-edit-pane="source"]');
     const src = srcForIndex(idx);
     if (mountEl && src != null) {
@@ -694,6 +700,13 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
 
   root.innerHTML = renderLiveArticleEditView(renderArticle(currentSource));
   wireEditTabs(root);
+  // Run the page-embedded interactivity (scrollspy / on-this-page) in the preview so its rail spies
+  // exactly as read mode (executeAssets runs the page's scripts; innerHTML does not).
+  const runPreviewAssets = () => {
+    const pane = root.querySelector('[data-edit-pane="preview"]');
+    if (pane) executeAssets(pane).catch(() => {});
+  };
+  runPreviewAssets();
 
   // Re-render ONLY the preview pane (leave the editor + tabs intact). always-renders: a mid-edit
   // parse/render error surfaces in the pane, never breaking the loop.
@@ -702,6 +715,7 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
     if (!pane) return;
     try {
       pane.innerHTML = renderArticle(currentSource);
+      runPreviewAssets();
     } catch (err) {
       const msg = (err && err.message) || String(err);
       pane.innerHTML = `<p class="enscribe-edit-error">live edit error: ${msg.replace(/</g, '&lt;')}</p>`;
@@ -1078,9 +1092,17 @@ export async function mountLiveWebsite(target, source, options = {}) {
     let currentSource = sourceBySlug.get(slug) ?? '';
     contentRegion.innerHTML = renderLiveArticleEditView(renderPageStandalone(currentSource));
     wireEditTabs(contentRegion);
+    // Run the page-embedded interactivity (scrollspy / on-this-page) in the preview so its rail spies
+    // exactly as read mode — the preview holds the page's REAL render, and executeAssets runs its
+    // scripts (innerHTML does not). Re-run after each edit so the new render's script re-attaches.
+    const runPreviewAssets = () => {
+      const pane = contentRegion.querySelector('[data-edit-pane="preview"]');
+      if (pane) executeAssets(pane).catch(() => {});
+    };
+    runPreviewAssets();
     const updatePreview = () => {
       const pane = contentRegion.querySelector('[data-edit-pane="preview"]');
-      if (pane) pane.innerHTML = renderPageStandalone(currentSource);
+      if (pane) { pane.innerHTML = renderPageStandalone(currentSource); runPreviewAssets(); }
     };
     activeDebounced = debounce(updatePreview, debounceMs);
     const mountEl = contentRegion.querySelector('[data-edit-pane="source"]');
