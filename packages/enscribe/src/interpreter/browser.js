@@ -40,6 +40,7 @@ import {
   renderNotFoundView,
   flattenNavPages,
   extractDocumentTitle,
+  WEBSITE_SHELL_CSS,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
@@ -49,7 +50,7 @@ import { classifyDocType } from './lib/classify-doc-type.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
-  setActivePage, buildOnThisPage,
+  setActivePage,
 } from './assets/website-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
 
@@ -960,6 +961,16 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // <nav-group> → a dropdown), the sidebar (the full tree via buildList), and the footer.
   // route() swaps ONLY `[data-enscribe-content]`, so the chrome survives every page swap.
   injectWebsiteNavStyles();
+  // Converge the live shell onto the STATIC website shell: inject the static `.content` region CSS
+  // (WEBSITE_SHELL_CSS) so a live page's content lays out identically — a bare article constrained to
+  // the reading column, a book/config-toc page carrying its OWN layout untouched. The shell is now
+  // nav + content (the page owns its layout); no shell rail, no content-column grid. Idempotent (id).
+  if (typeof document !== 'undefined' && !document.getElementById('enscribe-website-shell-style')) {
+    const s = document.createElement('style');
+    s.id = 'enscribe-website-shell-style';
+    s.textContent = WEBSITE_SHELL_CSS;
+    document.head.appendChild(s);
+  }
   const brand = { title: extractDocumentTitle(source) || '', icon: brandIcon, firstSlug };
   root.innerHTML = composeWebsiteShell({
     topBar: buildWebsiteTopBar(brand, navModel.entries),
@@ -969,7 +980,6 @@ export async function mountLiveWebsite(target, source, options = {}) {
   if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');
   // The top-bar dropdown is a native <details> disclosure (CSS-only) — no JS wiring needed.
   const contentRegion = root.querySelector('[data-enscribe-content]');
-  const onThisPageRegion = root.querySelector('[data-enscribe-onthispage]');
 
   // Per-page render (website.md Phase 2, lazy). An ARTICLE page renders its source over a FRESH read-through
   // seed (its own numbering shadows; a cross-page anchor reads the merged registry's NATIVE number), cached
@@ -987,12 +997,14 @@ export async function mountLiveWebsite(target, source, options = {}) {
     }
     contentRegion.innerHTML = articleCache.get(pd.slug);
     if (!executed.has(pd.slug)) { executeAssets(contentRegion); executed.add(pd.slug); }
-    if (onThisPageRegion) onThisPageRegion.innerHTML = buildOnThisPage(contentRegion);
+    // No shell on-this-page rail (maintainer decision): the article owns its layout. A `<config toc>`
+    // article renders its OWN contents rail inside the content (exactly as the static site does); a
+    // no-config-toc article has no ToC. The shell renders only the nav bar + this content slot.
   };
 
   // Render the chapter/cover the CURRENT #hash selects for the active book page. A new chapter swaps the
   // content + executes its assets; an in-chapter anchor scrolls once mounted. The book carries its OWN
-  // on-this-page rail (inside its reading chrome), so the website's rail region is cleared for a book page.
+  // layout (chapter rail + reading column + on-this-page) inside the content slot — the shell adds none.
   const renderBookChapter = () => {
     const b = currentBook;
     const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', b.model);
@@ -1005,7 +1017,6 @@ export async function mountLiveWebsite(target, source, options = {}) {
       contentRegion.innerHTML = b.chapterCache.get(key);
       b.currentKey = key;
       executeAssets(contentRegion);
-      if (onThisPageRegion) onThisPageRegion.innerHTML = '';
     }
     if (dest && !dest.cover && dest.anchor && typeof document !== 'undefined') {
       const el = document.getElementById(dest.anchor);
@@ -1060,7 +1071,6 @@ export async function mountLiveWebsite(target, source, options = {}) {
     let currentSource = sourceBySlug.get(slug) ?? '';
     contentRegion.innerHTML = renderLiveArticleEditView(renderPageStandalone(currentSource));
     wireEditTabs(contentRegion);
-    if (onThisPageRegion) onThisPageRegion.innerHTML = '';        // the Write/Preview pane owns the width
     const updatePreview = () => {
       const pane = contentRegion.querySelector('[data-edit-pane="preview"]');
       if (pane) pane.innerHTML = renderPageStandalone(currentSource);
@@ -1095,13 +1105,11 @@ export async function mountLiveWebsite(target, source, options = {}) {
         showEditPage(slug, dest.notFound);
       } else if (dest.notFound) {
         contentRegion.innerHTML = renderNotFoundView(slug, { firstSlug });
-        if (onThisPageRegion) onThisPageRegion.innerHTML = '';
       } else if (slug == null) {
         contentRegion.innerHTML = '';
-        if (onThisPageRegion) onThisPageRegion.innerHTML = '';
       } else {
         // Render the page NATIVELY — an article as an article, a book as a book sub-view (#314). The
-        // render helpers own executeAssets + the on-this-page rail (a book carries its own).
+        // render helpers own executeAssets + the page's own layout (a book carries its own rail).
         renderPageInto(pageBySlug.get(slug));
       }
       currentSlug = slug;
