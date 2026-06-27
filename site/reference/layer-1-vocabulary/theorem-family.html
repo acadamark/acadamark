@@ -1277,9 +1277,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 }
 .enscribe-site-dropdown-item:hover { background: var(--enscribe-bg-subtle, #f6f8fa); color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-dropdown-item[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-/* The layout: a left sidebar + the content + an on-this-page rail (3 columns on desktop). */
-.enscribe-site-layout { display: block; max-width: 84rem; margin: 0 auto; }
-.enscribe-site-main { padding: 1.5rem 1.75rem 0; min-width: 0; }
+/* The layout: nav bar + content. The PAGE owns its own layout (an article's config-toc, a book's
+   3-col) from default.css + WEBSITE_SHELL_CSS — the SAME .content model the static website shell uses.
+   The shell imposes no on-this-page rail and no content-column grid. An opted-in config-sidebar sits
+   to the left of the content; without it the content is a plain full-width .content block. */
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
@@ -1290,42 +1291,20 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
 .enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
-.enscribe-site-onthispage { padding: 1.5rem 1rem; }
-.enscribe-site-onthispage ul { list-style: none; margin: 0; padding: 0; }
-.enscribe-site-onthispage a { font-size: 0.82rem; color: var(--enscribe-text-muted, #57606a); text-decoration: none; }
-.enscribe-site-onthispage a:hover, .enscribe-site-onthispage a.active { color: var(--enscribe-link, #0969da); }
-/* An empty on-this-page rail (a page with <2 headings → innerHTML '') drops out of the flow entirely,
-   so its grid column can be reclaimed (the :has rules below) instead of leaving a blank padded box. */
-.enscribe-site-onthispage:empty { display: none; }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
   font-size: 0.85rem; color: var(--enscribe-text-muted, #57606a);
 }
 @media (min-width: 900px) {
-  /* The grid reflows to whatever columns are actually present (#246 S1.5). The sidebar is a master
-     opt-in (<config sidebar>), so it may be absent from the DOM; the on-this-page rail may be empty
-     (hidden above) on a short page. Four states, resolved by :has in source order (the most specific
-     last so it wins when several match). */
-  .enscribe-site-layout {
-    display: grid; gap: var(--enscribe-space-8, 2rem);
-    align-items: start; justify-content: center;
-    /* default: sidebar OFF, on-this-page present → content + the right rail. */
-    grid-template-columns: minmax(0, 46rem) 13rem;
+  /* Sidebar opt-in (config sidebar): a left nav column + the content. The content column is
+     UNCONSTRAINED (minmax(0,1fr)) so the page lays ITSELF out within it (no 46rem crush). Without a
+     sidebar there is no wrapper at all — the content is the plain .content block (static parity). */
+  .enscribe-site-withsidebar {
+    display: grid; gap: var(--enscribe-space-8, 2rem); align-items: start;
+    grid-template-columns: 14rem minmax(0, 1fr); max-width: 84rem; margin: 0 auto;
   }
-  /* sidebar ON → the full three columns. */
-  .enscribe-site-layout:has(.enscribe-site-sidebar) {
-    grid-template-columns: 14rem minmax(0, 46rem) 13rem;
-  }
-  /* no on-this-page rail → drop its column (a centred single content column when the sidebar is off too). */
-  .enscribe-site-layout:has(.enscribe-site-onthispage:empty) {
-    grid-template-columns: minmax(0, 46rem);
-  }
-  /* sidebar ON but no rail → sidebar + content. (Last, so it wins over the two single-condition rules.) */
-  .enscribe-site-layout:has(.enscribe-site-sidebar):has(.enscribe-site-onthispage:empty) {
-    grid-template-columns: 14rem minmax(0, 46rem);
-  }
-  .enscribe-site-sidebar, .enscribe-site-onthispage {
+  .enscribe-site-sidebar {
     position: sticky; top: calc(var(--enscribe-site-nav-height, 3.25rem) + 0.5rem);
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - 1rem); overflow: auto;
   }
@@ -1456,13 +1435,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <sub-section-title>Examples</sub-section-title><code id="code:l1-corollary-1">
 &#x3C;corollary | Every prime greater than 2 is odd.></code>
           <figure id="mp:l1-corollary-1" class="frameable-border">
-            <corollary><span class="corollary-label">Corollary 1.</span> Every prime greater than 2 is odd.</corollary>
+            <corollary><span class="corollary-label">Corollary 1.</span>
+              <p>Every prime greater than 2 is odd.</p>
+            </corollary>
             <figcaption><span class="minipage-label">Minipage 110.</span></figcaption>
           </figure><code id="code:l1-corollary-2">&#x3C;corollary #cor:bounded>
 Any continuous function on a closed interval is bounded.
 &#x3C;/corollary></code>
           <figure id="mp:l1-corollary-2" class="frameable-border">
-            <corollary id="mp-l1-corollary-2-cor:bounded"><span class="corollary-label">Corollary 1.</span> Any continuous function on a closed interval is bounded.</corollary>
+            <corollary id="mp-l1-corollary-2-cor:bounded"><span class="corollary-label">Corollary 1.</span>
+              <p>Any continuous function on a closed interval is bounded.</p>
+            </corollary>
             <figcaption><span class="minipage-label">Minipage 111.</span></figcaption>
           </figure></section>
         </sub-section>
@@ -1504,16 +1487,20 @@ Any continuous function on a closed interval is bounded.
           <sub-section-title>Examples</sub-section-title><code id="code:l1-definition-1">
 &#x3C;definition | A *group* is a set with an associative binary operation, identity, and inverses.></code>
           <figure id="mp:l1-definition-1" class="frameable-border">
-            <definition><span class="definition-label">Definition 1.</span> A <i>group</i> is a set with an associative binary operation, identity, and inverses.</definition>
+            <definition><span class="definition-label">Definition 1.</span>
+              <p>A <i>group</i> is a set with an associative binary operation, identity, and inverses.</p>
+            </definition>
             <figcaption><span class="minipage-label">Minipage 112.</span></figcaption>
           </figure><code id="code:l1-definition-2">&#x3C;definition name="Group" #def:group>
 A *group* is a set $G$ together with a binary operation
 $\cdot$ satisfying associativity, identity, and inverses.
 &#x3C;/definition></code>
           <figure id="mp:l1-definition-2" class="frameable-border">
-            <definition id="mp-l1-definition-2-def:group" data-name="Group">
-              <span class="definition-label">Definition 1 (Group).</span> A <i>group</i> is a set <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">G</span></span></span></span></inline-math> together with a binary operation
-              <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord">⋅</span></span></span></span></inline-math> satisfying associativity, identity, and inverses.
+            <definition id="mp-l1-definition-2-def:group" data-name="Group"><span class="definition-label">Definition 1 (Group).</span>
+              <p>
+                A <i>group</i> is a set <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">G</span></span></span></span></inline-math> together with a binary operation
+                <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord">⋅</span></span></span></span></inline-math> satisfying associativity, identity, and inverses.
+              </p>
             </definition>
             <figcaption><span class="minipage-label">Minipage 113.</span></figcaption>
           </figure></section>
@@ -1556,7 +1543,9 @@ $\cdot$ satisfying associativity, identity, and inverses.
           <sub-section-title>Examples</sub-section-title><code id="code:l1-example-1">
 &#x3C;example | The integers under addition form a group.></code>
           <figure id="mp:l1-example-1" class="frameable-border">
-            <example><span class="example-label">Example 1.</span> The integers under addition form a group.</example>
+            <example><span class="example-label">Example 1.</span>
+              <p>The integers under addition form a group.</p>
+            </example>
             <figcaption><span class="minipage-label">Minipage 114.</span></figcaption>
           </figure><code id="code:l1-example-2">&#x3C;example #ex:integers>
 The integers $\mathbb{Z}$ under addition form a group: the
@@ -1564,10 +1553,12 @@ operation is associative, $0$ is the identity, and every
 integer has an additive inverse.
 &#x3C;/example></code>
           <figure id="mp:l1-example-2" class="frameable-border">
-            <example id="mp-l1-example-2-ex:integers">
-              <span class="example-label">Example 1.</span> The integers <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6889em;"></span><span class="mord mathbb">Z</span></span></span></span></inline-math> under addition form a group: the
-              operation is associative, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> is the identity, and every
-              integer has an additive inverse.
+            <example id="mp-l1-example-2-ex:integers"><span class="example-label">Example 1.</span>
+              <p>
+                The integers <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6889em;"></span><span class="mord mathbb">Z</span></span></span></span></inline-math> under addition form a group: the
+                operation is associative, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> is the identity, and every
+                integer has an additive inverse.
+              </p>
             </example>
             <figcaption><span class="minipage-label">Minipage 115.</span></figcaption>
           </figure></section>
@@ -1610,16 +1601,20 @@ integer has an additive inverse.
           <sub-section-title>Examples</sub-section-title><code id="code:l1-lemma-1">
 &#x3C;lemma | Every continuous function on a compact set attains its maximum.></code>
           <figure id="mp:l1-lemma-1" class="frameable-border">
-            <lemma><span class="lemma-label">Lemma 1.</span> Every continuous function on a compact set attains its maximum.</lemma>
+            <lemma><span class="lemma-label">Lemma 1.</span>
+              <p>Every continuous function on a compact set attains its maximum.</p>
+            </lemma>
             <figcaption><span class="minipage-label">Minipage 116.</span></figcaption>
           </figure><code id="code:l1-lemma-2">&#x3C;lemma name="Zorn" #lem:zorn>
 Every non-empty partially-ordered set in which every chain has
 an upper bound contains a maximal element.
 &#x3C;/lemma></code>
           <figure id="mp:l1-lemma-2" class="frameable-border">
-            <lemma id="mp-l1-lemma-2-lem:zorn" data-name="Zorn">
-              <span class="lemma-label">Lemma 1 (Zorn).</span> Every non-empty partially-ordered set in which every chain has
-              an upper bound contains a maximal element.
+            <lemma id="mp-l1-lemma-2-lem:zorn" data-name="Zorn"><span class="lemma-label">Lemma 1 (Zorn).</span>
+              <p>
+                Every non-empty partially-ordered set in which every chain has
+                an upper bound contains a maximal element.
+              </p>
             </lemma>
             <figcaption><span class="minipage-label">Minipage 117.</span></figcaption>
           </figure></section>
@@ -1664,10 +1659,14 @@ Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
 even. $\square$
 &#x3C;/proof></code>
           <figure id="mp:l1-proof-1" class="frameable-border">
-            <theorem><span class="theorem-label">Theorem 1.</span> The sum of two even integers is even.</theorem>
-            <proof>
-              <span class="proof-label">Proof.</span> Let <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">m</span></span></span></span></inline-math> and <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">n</span></span></span></span></inline-math>. Then <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></inline-math>, which is
-              even. <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.675em;"></span><span class="mord amsrm">□</span></span></span></span></inline-math>
+            <theorem><span class="theorem-label">Theorem 1.</span>
+              <p>The sum of two even integers is even.</p>
+            </theorem>
+            <proof><span class="proof-label">Proof.</span>
+              <p>
+                Let <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">m</span></span></span></span></inline-math> and <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">n</span></span></span></span></inline-math>. Then <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></inline-math>, which is
+                even. <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.675em;"></span><span class="mord amsrm">□</span></span></span></span></inline-math>
+              </p>
             </proof>
             <figcaption><span class="minipage-label">Minipage 118.</span></figcaption>
           </figure>
@@ -1675,7 +1674,9 @@ even. $\square$
 The argument follows from the preceding lemma.
 &#x3C;/proof></code>
           <figure id="mp:l1-proof-2" class="frameable-border">
-            <proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span> The argument follows from the preceding lemma.</proof>
+            <proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span>
+              <p>The argument follows from the preceding lemma.</p>
+            </proof>
             <figcaption><span class="minipage-label">Minipage 119.</span></figcaption>
           </figure>
           <p><i>Optional <code>name</code> kwarg lets the proof identify what it proves (useful when the proof is separated from its theorem by intervening text).</i></p></section>
@@ -1716,16 +1717,20 @@ The argument follows from the preceding lemma.
           <sub-section-title>Examples</sub-section-title><code id="code:l1-proposition-1">
 &#x3C;proposition | The sum of two even integers is even.></code>
           <figure id="mp:l1-proposition-1" class="frameable-border">
-            <proposition><span class="proposition-label">Proposition 1.</span> The sum of two even integers is even.</proposition>
+            <proposition><span class="proposition-label">Proposition 1.</span>
+              <p>The sum of two even integers is even.</p>
+            </proposition>
             <figcaption><span class="minipage-label">Minipage 120.</span></figcaption>
           </figure><code id="code:l1-proposition-2">&#x3C;proposition name="Cauchy-Schwarz">
 For any vectors $u$, $v$ in an inner-product space,
 $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
 &#x3C;/proposition></code>
           <figure id="mp:l1-proposition-2" class="frameable-border">
-            <proposition data-name="Cauchy-Schwarz">
-              <span class="proposition-label">Proposition 1 (Cauchy-Schwarz).</span> For any vectors <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span></span></span></span></inline-math> in an inner-product space,
-              <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mopen">⟨</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mclose">⟩</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∥</span><span class="mord mathnormal">u</span><span class="mord">∥</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">∥</span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mord">∥</span></span></span></span></inline-math>.
+            <proposition data-name="Cauchy-Schwarz"><span class="proposition-label">Proposition 1 (Cauchy-Schwarz).</span>
+              <p>
+                For any vectors <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span></span></span></span></inline-math> in an inner-product space,
+                <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mopen">⟨</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mclose">⟩</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∥</span><span class="mord mathnormal">u</span><span class="mord">∥</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">∥</span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mord">∥</span></span></span></span></inline-math>.
+              </p>
             </proposition>
             <figcaption><span class="minipage-label">Minipage 121.</span></figcaption>
           </figure></section>
@@ -1770,16 +1775,20 @@ $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
           <sub-section-title>Examples</sub-section-title><code id="code:l1-remark-1">
 &#x3C;remark | The converse does not hold in general.></code>
           <figure id="mp:l1-remark-1" class="frameable-border">
-            <remark><span class="remark-label">Remark.</span> The converse does not hold in general.</remark>
+            <remark><span class="remark-label">Remark.</span>
+              <p>The converse does not hold in general.</p>
+            </remark>
             <figcaption><span class="minipage-label">Minipage 122.</span></figcaption>
           </figure><code id="code:l1-remark-2">&#x3C;remark>
 The hypothesis of compactness is essential here; without it
 the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
 &#x3C;/remark></code>
           <figure id="mp:l1-remark-2" class="frameable-border">
-            <remark>
-              <span class="remark-label">Remark.</span> The hypothesis of compactness is essential here; without it
-              the conclusion fails (consider <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1/</span><span class="mord mathnormal">x</span></span></span></span></inline-math> on <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></inline-math>).
+            <remark><span class="remark-label">Remark.</span>
+              <p>
+                The hypothesis of compactness is essential here; without it
+                the conclusion fails (consider <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1/</span><span class="mord mathnormal">x</span></span></span></span></inline-math> on <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></inline-math>).
+              </p>
             </remark>
             <figcaption><span class="minipage-label">Minipage 123.</span></figcaption>
           </figure></section>
@@ -1820,7 +1829,9 @@ the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
           <sub-section-title>Examples</sub-section-title><code id="code:l1-theorem-1">
 &#x3C;theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.></code>
           <figure id="mp:l1-theorem-1" class="frameable-border">
-            <theorem><span class="theorem-label">Theorem 1.</span> If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> then the triangle is right-angled.</theorem>
+            <theorem><span class="theorem-label">Theorem 1.</span>
+              <p>If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> then the triangle is right-angled.</p>
+            </theorem>
             <figcaption><span class="minipage-label">Minipage 124.</span></figcaption>
           </figure>
           <p><i>Short-form with pipe content. The body is parsed normally.</i></p><code id="code:l1-theorem-2">&#x3C;theorem name="Pythagoras" #thm:pyth>
@@ -1828,9 +1839,11 @@ If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
 is right-angled.
 &#x3C;/theorem></code>
           <figure id="mp:l1-theorem-2" class="frameable-border">
-            <theorem id="mp-l1-theorem-2-thm:pyth" data-name="Pythagoras">
-              <span class="theorem-label">Theorem 1 (Pythagoras).</span> If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math>, the triangle with sides <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></inline-math>
-              is right-angled.
+            <theorem id="mp-l1-theorem-2-thm:pyth" data-name="Pythagoras"><span class="theorem-label">Theorem 1 (Pythagoras).</span>
+              <p>
+                If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math>, the triangle with sides <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></inline-math>
+                is right-angled.
+              </p>
             </theorem>
             <figcaption><span class="minipage-label">Minipage 125.</span></figcaption>
           </figure>

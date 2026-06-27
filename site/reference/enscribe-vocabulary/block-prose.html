@@ -1277,9 +1277,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 }
 .enscribe-site-dropdown-item:hover { background: var(--enscribe-bg-subtle, #f6f8fa); color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-dropdown-item[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-/* The layout: a left sidebar + the content + an on-this-page rail (3 columns on desktop). */
-.enscribe-site-layout { display: block; max-width: 84rem; margin: 0 auto; }
-.enscribe-site-main { padding: 1.5rem 1.75rem 0; min-width: 0; }
+/* The layout: nav bar + content. The PAGE owns its own layout (an article's config-toc, a book's
+   3-col) from default.css + WEBSITE_SHELL_CSS — the SAME .content model the static website shell uses.
+   The shell imposes no on-this-page rail and no content-column grid. An opted-in config-sidebar sits
+   to the left of the content; without it the content is a plain full-width .content block. */
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
@@ -1290,42 +1291,20 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
 .enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
-.enscribe-site-onthispage { padding: 1.5rem 1rem; }
-.enscribe-site-onthispage ul { list-style: none; margin: 0; padding: 0; }
-.enscribe-site-onthispage a { font-size: 0.82rem; color: var(--enscribe-text-muted, #57606a); text-decoration: none; }
-.enscribe-site-onthispage a:hover, .enscribe-site-onthispage a.active { color: var(--enscribe-link, #0969da); }
-/* An empty on-this-page rail (a page with <2 headings → innerHTML '') drops out of the flow entirely,
-   so its grid column can be reclaimed (the :has rules below) instead of leaving a blank padded box. */
-.enscribe-site-onthispage:empty { display: none; }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
   font-size: 0.85rem; color: var(--enscribe-text-muted, #57606a);
 }
 @media (min-width: 900px) {
-  /* The grid reflows to whatever columns are actually present (#246 S1.5). The sidebar is a master
-     opt-in (<config sidebar>), so it may be absent from the DOM; the on-this-page rail may be empty
-     (hidden above) on a short page. Four states, resolved by :has in source order (the most specific
-     last so it wins when several match). */
-  .enscribe-site-layout {
-    display: grid; gap: var(--enscribe-space-8, 2rem);
-    align-items: start; justify-content: center;
-    /* default: sidebar OFF, on-this-page present → content + the right rail. */
-    grid-template-columns: minmax(0, 46rem) 13rem;
+  /* Sidebar opt-in (config sidebar): a left nav column + the content. The content column is
+     UNCONSTRAINED (minmax(0,1fr)) so the page lays ITSELF out within it (no 46rem crush). Without a
+     sidebar there is no wrapper at all — the content is the plain .content block (static parity). */
+  .enscribe-site-withsidebar {
+    display: grid; gap: var(--enscribe-space-8, 2rem); align-items: start;
+    grid-template-columns: 14rem minmax(0, 1fr); max-width: 84rem; margin: 0 auto;
   }
-  /* sidebar ON → the full three columns. */
-  .enscribe-site-layout:has(.enscribe-site-sidebar) {
-    grid-template-columns: 14rem minmax(0, 46rem) 13rem;
-  }
-  /* no on-this-page rail → drop its column (a centred single content column when the sidebar is off too). */
-  .enscribe-site-layout:has(.enscribe-site-onthispage:empty) {
-    grid-template-columns: minmax(0, 46rem);
-  }
-  /* sidebar ON but no rail → sidebar + content. (Last, so it wins over the two single-condition rules.) */
-  .enscribe-site-layout:has(.enscribe-site-sidebar):has(.enscribe-site-onthispage:empty) {
-    grid-template-columns: 14rem minmax(0, 46rem);
-  }
-  .enscribe-site-sidebar, .enscribe-site-onthispage {
+  .enscribe-site-sidebar {
     position: sticky; top: calc(var(--enscribe-site-nav-height, 3.25rem) + 0.5rem);
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - 1rem); overflow: auto;
   }
@@ -1429,11 +1408,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             <li>Canonical: <code>&#x3C;aside></code></li>
           </ul><code id="code:sh-aside-1">&#x3C;aside | A side note about the elephant.></code>
           <figure id="mp:sh-aside-1" class="frameable-border">
-            <aside class="frameable-border">A side note about the elephant.</aside>
+            <aside class="frameable-border">
+              <p>A side note about the elephant.</p>
+            </aside>
             <figcaption><span class="minipage-label">Minipage 8.</span></figcaption>
           </figure><code id="code:sh-aside-2">&#x3C;aside type=warning .important | Be careful here.></code>
           <figure id="mp:sh-aside-2" class="frameable-border">
-            <aside class="important frameable-border" data-aside-type="warning">Be careful here.</aside>
+            <aside class="important frameable-border" data-aside-type="warning">
+              <p>Be careful here.</p>
+            </aside>
             <figcaption><span class="minipage-label">Minipage 9.</span></figcaption>
           </figure><code id="code:sh-aside-3">&#x3C;aside type=callout |
 This is a multi-line callout.
@@ -1511,7 +1494,9 @@ It can contain multiple paragraphs and other content like
             <li>Alias: <code>&#x3C;quote></code> → <code>&#x3C;blockquote></code></li>
           </ul><code id="code:sh-blockquote-1">&#x3C;quote | A short quotation.></code>
           <figure id="mp:sh-blockquote-1" class="frameable-border">
-            <blockquote>A short quotation.</blockquote>
+            <blockquote>
+              <p>A short quotation.</p>
+            </blockquote>
             <figcaption><span class="minipage-label">Minipage 11.</span></figcaption>
           </figure>
           <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at Layer 1.</i></p><code id="code:sh-blockquote-2">&#x3C;quote cite=https://example.com/source |
@@ -1528,7 +1513,9 @@ The second paragraph of the quotation.
 All happy families are alike; each unhappy family is unhappy in its own way.
 ></code>
           <figure id="mp:sh-blockquote-3" class="frameable-border">
-            <blockquote data-blockquote-type="epigraph">All happy families are alike; each unhappy family is unhappy in its own way.</blockquote>
+            <blockquote data-blockquote-type="epigraph">
+              <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
+            </blockquote>
             <figcaption><span class="minipage-label">Minipage 13.</span></figcaption>
           </figure><code id="code:sh-blockquote-4">&#x3C;blockquote | Same as &#x3C;quote> but using the explicit Layer 1 name.></code>
           <p><i>Render pending — the example source has an unescaped <code>&#x3C;…></code> tag-mention the parser consumes into an empty nested element (issue #277).</i></p>
@@ -1574,7 +1561,9 @@ All happy families are alike; each unhappy family is unhappy in its own way.
             <li>Canonical: <code>&#x3C;dd></code></li>
           </ul><code id="code:sh-dd-1">&#x3C;dd | An academic publishing system built on HTML+CSS+JS.></code>
           <figure id="mp:sh-dd-1" class="frameable-border">
-            <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+            <dd>
+              <p>An academic publishing system built on HTML+CSS+JS.</p>
+            </dd>
             <figcaption><span class="minipage-label">Minipage 14.</span></figcaption>
           </figure>
           <p><i>A definition-list description. Appears as a child of &#x3C;dl>, following the term it defines.</i></p><code id="code:sh-dd-2">&#x3C;dd |
@@ -1670,11 +1659,17 @@ This disclosure is expanded by default.
           <figure id="mp:sh-dl-1" class="frameable-border">
             <dl>
               <dt>enscribe</dt>
-              <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
               <dt>Layer 1</dt>
-              <dd>The canonical semantic HTML vocabulary.</dd>
+              <dd>
+                <p>The canonical semantic HTML vocabulary.</p>
+              </dd>
               <dt>Layer 2</dt>
-              <dd>The shorthand authoring syntax that compiles to Layer 1.</dd>
+              <dd>
+                <p>The shorthand authoring syntax that compiles to Layer 1.</p>
+              </dd>
             </dl>
             <figcaption><span class="minipage-label">Minipage 18.</span></figcaption>
           </figure>
@@ -1686,8 +1681,12 @@ This disclosure is expanded by default.
           <figure id="mp:sh-dl-2" class="frameable-border">
             <dl class="compact">
               <dt>term-1</dt>
-              <dd>First definition of term-1.</dd>
-              <dd>Second definition of term-1.</dd>
+              <dd>
+                <p>First definition of term-1.</p>
+              </dd>
+              <dd>
+                <p>Second definition of term-1.</p>
+              </dd>
             </dl>
             <figcaption><span class="minipage-label">Minipage 19.</span></figcaption>
           </figure>
@@ -1752,7 +1751,9 @@ This disclosure is expanded by default.
           <figure id="mp:sh-glossary-entry-1" class="frameable-border">
             <glossary-entry id="mp-sh-glossary-entry-1-term:enscribe">
               <dt>enscribe</dt>
-              <dd>An academic publishing system built on HTML+CSS+JS.</dd>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
             </glossary-entry>
             <figcaption><span class="minipage-label">Minipage 22.</span></figcaption>
           </figure>
@@ -1810,7 +1811,9 @@ This disclosure is expanded by default.
             <p>Some text<sup id="mp-sh-note-1-noteref-1" data-note-id="mp-sh-note-1-note-1"><a href="#mp-sh-note-1-note-1">1</a></sup>.</p>
             <note-list class="endnotes">
               <ol>
-                <li id="mp-sh-note-1-note-1"><sup>1</sup> A substantive note about the text. <a href="#mp-sh-note-1-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+                <li id="mp-sh-note-1-note-1"><sup>1</sup>
+                  <p>A substantive note about the text.</p><a href="#mp-sh-note-1-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                </li>
               </ol>
             </note-list>
             <figcaption><span class="minipage-label">Minipage 23.</span></figcaption>
@@ -1819,7 +1822,9 @@ This disclosure is expanded by default.
             <p>A claim<sup id="mp-sh-note-2-noteref-1" data-note-id="mp-sh-note-2-note-1"><a href="#mp-sh-note-2-note-1">1</a></sup>.</p>
             <note-list class="footnotes">
               <ol>
-                <li id="mp-sh-note-2-note-1"><sup>1</sup> A footnote. <a href="#mp-sh-note-2-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+                <li id="mp-sh-note-2-note-1"><sup>1</sup>
+                  <p>A footnote.</p><a href="#mp-sh-note-2-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                </li>
               </ol>
             </note-list>
             <figcaption><span class="minipage-label">Minipage 24.</span></figcaption>
@@ -1828,7 +1833,9 @@ This disclosure is expanded by default.
             <p>A definition<sup id="mp-sh-note-3-noteref-1" data-note-id="mp-sh-note-3-note-1"><a href="#mp-sh-note-3-note-1">1</a></sup>.</p>
             <note-list class="notes">
               <ol>
-                <li id="mp-sh-note-3-note-1" class="sidenote-fallback"><sup>1</sup> Inline-adjacent note. <a href="#mp-sh-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a></li>
+                <li id="mp-sh-note-3-note-1" class="sidenote-fallback"><sup>1</sup>
+                  <p>Inline-adjacent note.</p><a href="#mp-sh-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                </li>
               </ol>
             </note-list>
             <figcaption><span class="minipage-label">Minipage 25.</span></figcaption>
