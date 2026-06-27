@@ -65,9 +65,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 }
 .enscribe-site-dropdown-item:hover { background: var(--enscribe-bg-subtle, #f6f8fa); color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-dropdown-item[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-/* The layout: a left sidebar + the content + an on-this-page rail (3 columns on desktop). */
-.enscribe-site-layout { display: block; max-width: 84rem; margin: 0 auto; }
-.enscribe-site-main { padding: 1.5rem 1.75rem 0; min-width: 0; }
+/* The layout: nav bar + content. The PAGE owns its own layout (an article's config-toc, a book's
+   3-col) from default.css + WEBSITE_SHELL_CSS — the SAME .content model the static website shell uses.
+   The shell imposes no on-this-page rail and no content-column grid. An opted-in config-sidebar sits
+   to the left of the content; without it the content is a plain full-width .content block. */
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
@@ -78,42 +79,20 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
 .enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
-.enscribe-site-onthispage { padding: 1.5rem 1rem; }
-.enscribe-site-onthispage ul { list-style: none; margin: 0; padding: 0; }
-.enscribe-site-onthispage a { font-size: 0.82rem; color: var(--enscribe-text-muted, #57606a); text-decoration: none; }
-.enscribe-site-onthispage a:hover, .enscribe-site-onthispage a.active { color: var(--enscribe-link, #0969da); }
-/* An empty on-this-page rail (a page with <2 headings → innerHTML '') drops out of the flow entirely,
-   so its grid column can be reclaimed (the :has rules below) instead of leaving a blank padded box. */
-.enscribe-site-onthispage:empty { display: none; }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
   font-size: 0.85rem; color: var(--enscribe-text-muted, #57606a);
 }
 @media (min-width: 900px) {
-  /* The grid reflows to whatever columns are actually present (#246 S1.5). The sidebar is a master
-     opt-in (<config sidebar>), so it may be absent from the DOM; the on-this-page rail may be empty
-     (hidden above) on a short page. Four states, resolved by :has in source order (the most specific
-     last so it wins when several match). */
-  .enscribe-site-layout {
-    display: grid; gap: var(--enscribe-space-8, 2rem);
-    align-items: start; justify-content: center;
-    /* default: sidebar OFF, on-this-page present → content + the right rail. */
-    grid-template-columns: minmax(0, 46rem) 13rem;
+  /* Sidebar opt-in (config sidebar): a left nav column + the content. The content column is
+     UNCONSTRAINED (minmax(0,1fr)) so the page lays ITSELF out within it (no 46rem crush). Without a
+     sidebar there is no wrapper at all — the content is the plain .content block (static parity). */
+  .enscribe-site-withsidebar {
+    display: grid; gap: var(--enscribe-space-8, 2rem); align-items: start;
+    grid-template-columns: 14rem minmax(0, 1fr); max-width: 84rem; margin: 0 auto;
   }
-  /* sidebar ON → the full three columns. */
-  .enscribe-site-layout:has(.enscribe-site-sidebar) {
-    grid-template-columns: 14rem minmax(0, 46rem) 13rem;
-  }
-  /* no on-this-page rail → drop its column (a centred single content column when the sidebar is off too). */
-  .enscribe-site-layout:has(.enscribe-site-onthispage:empty) {
-    grid-template-columns: minmax(0, 46rem);
-  }
-  /* sidebar ON but no rail → sidebar + content. (Last, so it wins over the two single-condition rules.) */
-  .enscribe-site-layout:has(.enscribe-site-sidebar):has(.enscribe-site-onthispage:empty) {
-    grid-template-columns: 14rem minmax(0, 46rem);
-  }
-  .enscribe-site-sidebar, .enscribe-site-onthispage {
+  .enscribe-site-sidebar {
     position: sticky; top: calc(var(--enscribe-site-nav-height, 3.25rem) + 0.5rem);
     max-height: calc(100vh - var(--enscribe-site-nav-height, 3.25rem) - 1rem); overflow: auto;
   }
@@ -175,16 +154,20 @@ export function buildWebsiteSidebar(entries) {
   return `<nav class="enscribe-site-sidebar" aria-label="Site navigation">${toHtml(list)}</nav>`;
 }
 
-/** The persistent shell: top bar + (sidebar | content | on-this-page) layout + the site-wide footer.
- *  route() swaps ONLY `[data-enscribe-content]`; the bar/sidebar/footer survive a page swap. */
+/** The persistent shell: the top nav bar + the page content + the site-wide footer. The shell's job
+ *  is the NAV BAR; the PAGE owns its own layout (an article's `<config toc>` rail, a book's 3-col
+ *  chapter-rail/reading-column/on-this-page) from default.css + WEBSITE_SHELL_CSS — exactly the model
+ *  the STATIC website shell uses (`.content`). The shell imposes NO on-this-page rail and NO
+ *  content-column grid (which crushed a book and double-railed a config-toc article). An opted-in
+ *  sidebar (`<config sidebar>`) sits to the left of the content; without it the content is a plain
+ *  full-width `.content` block. route() swaps ONLY `[data-enscribe-content]`; the bar/sidebar/footer
+ *  survive a page swap. */
 export function composeWebsiteShell({ topBar = '', sidebar = '', footer = '' }) {
-  return (
-    `${topBar}` +
-    `<div class="enscribe-site-layout">${sidebar}` +
-    `<main class="enscribe-site-main" data-enscribe-content></main>` +
-    `<aside class="enscribe-site-onthispage" data-enscribe-onthispage></aside></div>` +
-    `${footer}`
-  );
+  const content = `<main class="content" data-enscribe-content></main>`;
+  const body = sidebar
+    ? `<div class="enscribe-site-withsidebar">${sidebar}${content}</div>`
+    : content;
+  return `${topBar}${body}${footer}`;
 }
 
 /** Move `aria-current="page"` to the active page's link in BOTH the top bar and the sidebar, WITHOUT
@@ -200,30 +183,11 @@ export function setActivePage(root, slug) {
 }
 
 // The top-bar dropdown is a native <details> disclosure (CSS-only) — it needs NO JS wiring, so the
-// former bindWebsiteNav (click-toggle of aria-expanded/hidden) is gone. setActivePage (above) and
-// buildOnThisPage (below) are the remaining runtime helpers.
-
-/** Build the current page's "on this page" list from its id'd section-family headings (the id is on
- *  the `<section>` / `<sub-section>` / `<h*>`; the text is its `*-title` child). Pure DOM-in → HTML-out;
- *  the live mount re-runs it per page swap. Returns '' for fewer than two headings (no rail worth it).
- *
- *  #223/#246: a heading nested inside a `<frame>` (rendered `<figure class="frameable-border">`) or an
- *  `<aside>` is DEMO content — e.g. a Documentation catalog's live-render box showing a `<section>` — and
- *  must NOT appear in the page's on-this-page rail. Exclude any heading with a `figure` / `aside` ancestor
- *  (a real section heading never lives inside a float / boxed-prose element). */
-const ONTHISPAGE_HEADING_RE = /^(SECTION|SUB-SECTION|SUB-SUB-SECTION|H[1-6])$/;
-export function buildOnThisPage(contentEl) {
-  if (!contentEl || typeof contentEl.querySelectorAll !== 'function') return '';
-  const heads = Array.from(contentEl.querySelectorAll('[id]'))
-    .filter((el) => ONTHISPAGE_HEADING_RE.test(el.tagName)
-      && !(typeof el.closest === 'function' && el.closest('figure, aside')))
-    .map((el) => {
-      const titleEl = el.querySelector('section-title, sub-section-title, sub-sub-section-title');
-      const text = ((titleEl || el).textContent || '').trim().split('\n')[0].trim();
-      return { id: el.id, text };
-    })
-    .filter((h) => h.id && h.text);
-  if (heads.length < 2) return '';
-  const items = heads.map((h) => `<li><a href="#${esc(h.id)}">${esc(h.text)}</a></li>`).join('');
-  return `<nav aria-label="On this page"><ul>${items}</ul></nav>`;
-}
+// former bindWebsiteNav (click-toggle of aria-expanded/hidden) is gone. setActivePage (above) is the
+// remaining runtime helper.
+//
+// REMOVED (maintainer decision — the shell renders the nav bar; the PAGE owns its layout, including
+// whether it has a ToC): the shell's `buildOnThisPage` rail builder. The website no longer manufactures
+// an on-this-page rail. A page's rail comes only from the page itself — an article's `<config toc>`, a
+// book's own chapter-rail + on-this-page (the page-owned `buildOnThisPage` in lib/toc.js, used at build
+// time, is unaffected). A no-config-toc article simply has no ToC.

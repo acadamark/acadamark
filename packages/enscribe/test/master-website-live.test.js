@@ -14,7 +14,6 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveWebsite, mountLiveShell } from '../src/interpreter/browser.js';
-import { buildOnThisPage } from '../src/interpreter/assets/website-nav-asset.js';
 
 const DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-website');
 const read = (n) => readFileSync(join(DIR, n), 'utf8');
@@ -117,31 +116,17 @@ function refAnchor(html, targetId) {
 const ownerOfHref = (href) => (String(href).match(/[?&]page=([^#&]+)/) || [])[1] ?? null;
 
 export async function run() {
-  // ── #223/#246: buildOnThisPage excludes headings inside a <frame>/<aside> (demo render boxes) ──
-  // A Documentation catalog's live-render box (`<frame>` → `<figure>`) shows a `<section>` as DEMO content;
-  // it must NOT appear in the page's on-this-page rail. Pure DOM-in unit test.
-  {
-    const dom = new JSDOM('<!DOCTYPE html><html><body><main data-enscribe-content>' +
-      '<section id="s1"><section-title>One</section-title></section>' +
-      '<section id="s2"><section-title>Two</section-title></section>' +
-      '<figure class="frameable-border"><section id="demo"><section-title>Demo Inside Frame</section-title></section></figure>' +
-      '<aside><sub-section id="aside-demo"><sub-section-title>Aside Demo</sub-section-title></sub-section></aside>' +
-      '</main></body></html>');
-    const html = buildOnThisPage(dom.window.document.querySelector('[data-enscribe-content]'));
-    assert.ok(/One/.test(html) && /Two/.test(html), 'real top-level section headings appear in on-this-page');
-    assert.ok(!/Demo Inside Frame/.test(html), 'a <section> inside a <frame> (→<figure>) is excluded from on-this-page');
-    assert.ok(!/Aside Demo/.test(html), 'a heading inside an <aside> is excluded from on-this-page');
-    assert.ok(!/#demo"/.test(html) && !/#aside-demo"/.test(html), 'no demo-content anchors leak into the rail');
-    console.log('PASS: #223/#246 — buildOnThisPage skips frame/aside demo headings (no rail pollution)');
-  }
+  // (Removed with the maintainer's nav-only decision: the shell's `buildOnThisPage` rail builder and its
+  // frame/aside-skip unit test. The website shell no longer manufactures an on-this-page rail — it
+  // renders the nav bar; the PAGE owns its layout, including whether it has a ToC. A page's rail comes
+  // only from the page itself: an article's `<config toc>`, a book's own chapter-rail + on-this-page.)
 
   // (Retired with the old docs-site: the GENERATED Documentation catalog block — it imported
   // docs-site/gen-reference.js (buildLayer1Catalog/buildShorthandCatalog) to render the auto-built
   // Shorthand/Layer-1 catalogs through the website type. Those generators retired with the docs-site
   // archival; the new docs site (docs-source/) hand-authors its vocabulary as a book, so there is no
-  // generated catalog to exercise here. The buildOnThisPage frame/aside-skip unit test above and the
-  // mountLiveWebsite parity tests below — the load-bearing #314/#318 coverage — do not use the
-  // generators and stand on their own.)
+  // generated catalog to exercise here. The mountLiveWebsite parity tests below — the load-bearing
+  // #314/#318 coverage — do not use the generators and stand on their own.)
 
   // ── mount: chrome (brand + dropdown + sidebar + footer) + first-page content + cross-page ref ──
   {
@@ -196,12 +181,16 @@ export async function run() {
       assert.strictEqual(activeHref(root), '?page=guide', 'aria-current moved to Guide');
       console.log('PASS: S2b — content-region swap; persistent header + footer; aria-current moves');
 
-      // ── on-this-page: a multi-heading page populates the rail ──
+      // ── nav-only shell: NO shell on-this-page rail (maintainer decision). The shell renders the nav
+      //    bar; the PAGE owns its layout, so its headings render in the CONTENT — not in a separate
+      //    shell rail region (which double-railed a config-toc article and whose grid crushed a book).
       clickLink(dom, root, '?page=reference');
-      const otp = root.querySelector('[data-enscribe-onthispage]');
-      assert.ok(otp && otp.querySelectorAll('li').length === 3, 'the on-this-page rail lists the page\'s three headings');
-      assert.ok(/API Reference/.test(otp.textContent) && /Functions/.test(otp.textContent), 'on-this-page names the headings');
-      console.log('PASS: S2b — the on-this-page rail rebuilds from the current page\'s headings');
+      assert.ok(!root.querySelector('[data-enscribe-onthispage]'),
+        'the shell builds NO on-this-page rail region (it renders the nav bar; the page owns its layout)');
+      const refContent = root.querySelector('[data-enscribe-content]');
+      assert.ok(/API Reference/.test(refContent.textContent) && /Functions/.test(refContent.textContent),
+        'the page\'s headings render in the content (the page lays itself out)');
+      console.log('PASS: nav-only — the shell manufactures no on-this-page rail; the page owns its layout');
 
       // ── popstate + unknown → not-found ──
       popTo(dom, '?page=home');
