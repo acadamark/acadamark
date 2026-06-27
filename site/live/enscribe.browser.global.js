@@ -3685,6 +3685,24 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   margin: 0 auto;
   padding: 0 var(--enscribe-content-padding);
 }
+/* The per-page "open in playground" CTA (#static-live-link): every static page (view-only by design \u2014
+   no engine) carries a link to its LIVE counterpart (live/?page=<slug>), where the document renders
+   live and a self-contained page (e.g. try-it) edits via ?edit. It rides at the top of the content
+   region, right-aligned, below the sticky nav \u2014 uniform across every page. */
+.enscribe-site .content .enscribe-playground-cta {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto var(--enscribe-space-4);
+  padding: 0 var(--enscribe-content-padding);
+  text-align: right;
+  font-family: var(--enscribe-font-sans);
+  font-size: 0.875rem;
+}
+.enscribe-site .content .enscribe-playground-cta a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-weight: 600;
+}
+.enscribe-site .content .enscribe-playground-cta a:hover { text-decoration: underline; }
 @media (min-width: 900px) {
   .enscribe-site .content .enscribe-toc,
   .enscribe-site .content .enscribe-onthispage {
