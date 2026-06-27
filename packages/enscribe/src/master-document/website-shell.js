@@ -50,6 +50,24 @@ export const WEBSITE_SHELL_CSS = `
   margin: 0 auto;
   padding: 0 var(--enscribe-content-padding);
 }
+/* The per-page "open in playground" CTA (#static-live-link): every static page (view-only by design —
+   no engine) carries a link to its LIVE counterpart (live/?page=<slug>), where the document renders
+   live and a self-contained page (e.g. try-it) edits via ?edit. It rides at the top of the content
+   region, right-aligned, below the sticky nav — uniform across every page. */
+.enscribe-site .content .enscribe-playground-cta {
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto var(--enscribe-space-4);
+  padding: 0 var(--enscribe-content-padding);
+  text-align: right;
+  font-family: var(--enscribe-font-sans);
+  font-size: 0.875rem;
+}
+.enscribe-site .content .enscribe-playground-cta a {
+  color: var(--enscribe-link);
+  text-decoration: none;
+  font-weight: 600;
+}
+.enscribe-site .content .enscribe-playground-cta a:hover { text-decoration: underline; }
 @media (min-width: 900px) {
   .enscribe-site .content .enscribe-toc,
   .enscribe-site .content .enscribe-onthispage {
@@ -173,9 +191,16 @@ export function buildWebsiteDslHead(dslNames) {
  * @param {string} o.content    - the page's content fragment (article or book body).
  * @param {string} [o.dslHead]  - the live-diagram runtime block for the universal head
  *        (buildWebsiteDslHead output); '' (the default) leaves the head byte-unchanged. #298.
+ * @param {string} [o.playgroundHref] - the page's LIVE counterpart URL (e.g. `live/?page=<slug>`,
+ *        depth-relative). When set, a uniform "open in playground" link is emitted at the top of the
+ *        content region — the static site's (view-only) path to its live, editable twin. Omitted ⇒ no
+ *        link (head byte-unchanged), so a non-website caller is unaffected.
  * @returns {string} a standalone `<html>` document.
  */
-export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '' }) {
+export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref }) {
+  const cta = playgroundHref
+    ? `<div class="enscribe-playground-cta"><a href="${escapeHtml(playgroundHref)}">Open in playground ↗</a></div>\n`
+    : '';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,7 +216,7 @@ ${universalHeadStyle(defaultCss)}
 <div class="enscribe-site">
 ${topBar}
 <div class="content">
-${content}
+${cta}${content}
 </div>
 </div>
 ${SHELL_BODY_SCRIPTS}

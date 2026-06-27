@@ -66,7 +66,11 @@ export function run_tests() {
     assert.ok(!/class="enscribe-site-sidebar"/.test(home), 'an article page has NO left site sidebar element');
     assert.ok(home.includes('<div class="content">'), 'the article fragment is hosted in the shell content region');
     assert.ok(home.includes('Welcome'), 'the home article body is rendered into the content region');
-    assert.ok(!home.includes('?page='), 'no ?page= SPA-router links (a static site has no router)');
+    // The CHROME nav links carry no ?page= (a static site has no router — they staticize to pretty
+    // URLs). The ONE deliberate ?page= is the per-page "open in playground" link to the live SPA
+    // (live/?page=<slug>, #static-live-link), whose ?page= is the LIVE route — it must NOT be rewritten.
+    assert.ok(!/href="\?page=/.test(home), 'no ?page= chrome router links (a static site has no router)');
+    assert.ok(/href="(\.\.\/)*live\/\?page=[^"]+"/.test(home), 'the page links to its live counterpart (live/?page=<slug>)');
     assert.ok(!/href="[^"]*\/index\.html"/.test(home), 'no <navPath>/index.html link targets — pretty trailing-slash URLs');
     assert.ok(!/href="\/(?!\/)/.test(home), 'no absolute-path chrome links (href="/…")');
     // From home (dist root, depth 0): a top-level page → `about/`; a GROUPED page → `resources/deep-page/`;
@@ -113,7 +117,10 @@ export function run_tests() {
       'the book page carries the working CSS-only <details> dropdown markup (the shell reuses slice 1 chrome)');
     assert.ok(!/class="enscribe-site-sidebar"/.test(guideHome), 'a book page has no SITE sidebar element either — its left nav is its OWN chapter rail');
     assert.ok(guideHome.includes('href="../"'), 'a depth-1 book page links home as `../`');
-    assert.ok(!guideHome.includes('?page='), 'a book page has no un-staticized ?page= links');
+    // Same rule on a BOOK page: no un-staticized ?page= chrome links, but it DOES carry the per-page
+    // live link (book chapter pages get the uniform CTA too — their live counterpart is ?page=<book-slug>).
+    assert.ok(!/href="\?page=/.test(guideHome), 'a book page has no un-staticized ?page= chrome links');
+    assert.ok(/href="(\.\.\/)*live\/\?page=[^"]+"/.test(guideHome), 'a book page also links to its live counterpart');
     console.log('PASS: static-website — shell frames book/article (top nav in body, #295 gone), pretty depth-relative URLs, no /index.html / absolute / ?page=');
   }
 
