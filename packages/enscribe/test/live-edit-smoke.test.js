@@ -95,6 +95,20 @@ export async function run() {
       'the preview pane renders chapter 1 live (fig:transect as Figure 1.1)');
     console.log('PASS: edit-loop DOM — opening a chapter mounts the editor + renders the live preview');
 
+    // ── the layout fix: the chapter EDIT view composes through composeBookBody, so it carries BOTH
+    //    rails — the chapter rail (left) and the on-this-page rail (right) — placed exactly as read
+    //    mode, with the Write/Preview UI in the content column. (The old hand-rolled grid dropped the
+    //    on-this-page rail and crammed the edit-main in by hand.)
+    assert.ok(root.querySelector('nav.enscribe-chapter-rail'),
+      'edit view: the left chapter rail is present');
+    assert.ok(root.querySelector('nav.enscribe-onthispage'),
+      'edit view: the on-this-page rail is present (restored — read mode\'s layout reused via composeBookBody)');
+    assert.ok(root.querySelector('.enscribe-layout--book-3col'),
+      'edit view: the 3-col book grid (rail + content + on-this-page) — composeBookBody, both rails');
+    assert.ok(root.querySelector('main.enscribe-body .enscribe-edit-main [data-edit-pane="preview"]'),
+      'edit view: the Write/Preview UI sits inside the content column (composeBookBody, no nested <main>)');
+    console.log('PASS: book chapter edit view — composes via composeBookBody (both rails restored, edit UI in content column)');
+
     // ── "type" a structural edit: insert a figure before fig:transect → it renumbers to 1.2
     const editedCh1 = CHILDREN['chapter-1.emd'].replace(
       '<fig #fig:transect',

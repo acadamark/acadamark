@@ -44,6 +44,21 @@ function editTabs(defaultTab) {
  * @returns {string} the `<main class="enscribe-edit-main">…</main>` fragment
  */
 export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB) {
+  return `<main class="enscribe-edit-main">${buildEditMainInner(previewBody, defaultTab)}</main>`;
+}
+
+/**
+ * The Write/Preview INNER — the tab bar + the source mount + the preview pane — WITHOUT the outer
+ * wrapper. `buildEditMain` wraps it in `<main class="enscribe-edit-main">` (the ARTICLE edit view, a
+ * top-level mount). The BOOK chapter edit view wraps it in `<div class="enscribe-edit-main">` and frames
+ * THAT through `composeBookBody`'s content column — a `<main>` cannot nest inside composeBookBody's own
+ * `<main class="enscribe-body">`. Single-sourced so the two framings cannot drift.
+ *
+ * @param {string} previewBody - the initial preview pane inner HTML (the live-rendered document)
+ * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
+ * @returns {string} the tab bar + panes (no wrapper element)
+ */
+export function buildEditMainInner(previewBody, defaultTab = DEFAULT_TAB) {
   const pane = (name, cls, inner) =>
     `<div class="enscribe-edit-pane ${cls}" data-edit-pane="${name}"${name === defaultTab ? '' : ' hidden'}>${inner}</div>`;
   // The PREVIEW pane carries the `content` class so the page's render is framed EXACTLY as read mode
@@ -51,10 +66,12 @@ export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB) {
   // .enscribe-toc`/`.enscribe-onthispage` sticky-below-nav offsets). So the page owns its layout in the
   // preview, the SAME as in read mode — not nested inside a competing edit grid. (In a standalone
   // article/book mount the `content` class is inert; the page's own `.enscribe-layout--*` lays it out.)
+  // The SOURCE pane is width-matched to the preview's reading column by `.enscribe-edit-pane--source`
+  // (enscribe-shell.css) — so the Write/Preview toggle never jumps full-width ↔ reading-column.
   const panes =
     pane('source', 'enscribe-edit-pane--source', '') +
     pane('preview', 'enscribe-edit-pane--preview enscribe-body content', previewBody);
-  return `<main class="enscribe-edit-main">${editTabs(defaultTab)}${panes}</main>`;
+  return `${editTabs(defaultTab)}${panes}`;
 }
 
 /**

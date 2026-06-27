@@ -34,7 +34,13 @@ export async function run() {
     ]) {
       assert.ok(shellCss.includes(sel), `enscribe-shell.css carries the edit-mode chrome rule ${sel}`);
     }
-    console.log('PASS: #214 — enscribe-shell.css ships the masthead (verbatim) + edit-mode chrome CSS');
+    // The width-jump fix: the SOURCE pane is constrained to the reading column (max-width), the SAME
+    // width the PREVIEW pane gets (it carries `enscribe-body content`), so the Write/Preview toggle is
+    // seamless — no full-width ↔ reading-column lurch. (Applies to both the article and book edit views,
+    // which share buildEditMain.)
+    assert.ok(/\.enscribe-edit-pane--source\s*\{[^}]*max-width:\s*var\(--enscribe-content-width\)/.test(shellCss),
+      'enscribe-shell.css width-matches the edit SOURCE pane to the preview reading column (no Write/Preview width jump)');
+    console.log('PASS: #214 — enscribe-shell.css ships the masthead (verbatim) + edit-mode chrome CSS + the width-matched source pane');
   }
 
   // ── the minimal shell REFERENCES the package plumbing — nothing hand-copied left ────────────
