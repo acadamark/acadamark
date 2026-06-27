@@ -44,6 +44,20 @@ import {
   resolveBookContentsConfig,
 } from './book-scaffold.js';
 import { composeBookBody, BACK_TO_TOP_HTML, BOOK_LAYOUT } from '../interpreter/assets/book-nav-asset.js';
+import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
+import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
+
+// The live book view's rail animators — the scroll-spy (chapter-rail ToC active-section highlight) and
+// the on-this-page (book right-rail) scripts, shipped WITH the rendered chapter/cover so executeAssets
+// runs them on each chapter swap (the page owns its interactivity; the shell injects nothing).
+//
+// DELIBERATE TWO-PATH NON-UNIFORMITY (documented, not silent): an ARTICLE page gets these scripts from
+// the render pipeline's `injectBookScripts` (interpreter/index.js — it sees the document's tocType /
+// config-toc shape); a STATIC book page gets them appended at the page body (publish-pages.js). The
+// LIVE book renders chapters through live-book.js's own view functions — a path that does NOT run
+// `injectBookScripts` — so it appends them HERE. Three injection sites for one concern, each owning its
+// render path; converging them onto one seam (e.g. the toc.js rail builders) is a deferred follow-on.
+const BOOK_LIVE_RAIL_SCRIPTS = `<script>${SCROLL_SPY_JS}</script><script>${ON_THIS_PAGE_JS}</script>`;
 
 // The cover route (#209): the empty / root hash. Opening the shell (no hash) lands on the
 // cover, and the return-to-cover masthead points here, so every chapter round-trips to it —
@@ -172,7 +186,7 @@ export function renderLiveChapterView(model, idx, ctx) {
   return composeBookBody({
     rail, content, prevNext, onThisPage,
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
-  });
+  }) + BOOK_LIVE_RAIL_SCRIPTS;
 }
 
 /**
@@ -205,7 +219,7 @@ export function renderLiveCoverView(model) {
   return composeBookBody({
     rail, content: coverBodyHtml(bookTitle, contentsHtml),
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
-  });
+  }) + BOOK_LIVE_RAIL_SCRIPTS;
 }
 
 /**
@@ -343,6 +357,8 @@ export function renderLiveChapterEditView(model, idx, ctx) {
   const rail = liveRail(parts, part.id, home, bookNav);
 
   // The Write/Preview pane is the SHARED edit-view UI (buildEditMain, #216) — single-sourced so the
-  // book and article edit views cannot drift. The book wraps it in the chapter rail + book layout.
-  return `<div class="${BOOK_LAYOUT} enscribe-layout--edit">${rail}${buildEditMain(previewBody)}</div>`;
+  // book and article edit views cannot drift. The book frames it in its OWN layout (BOOK_LAYOUT: the
+  // chapter rail + reading-column grid) — the page owns its layout, here too. No competing
+  // `enscribe-layout--edit` (the page's own BOOK_LAYOUT is the layout, not a separate edit grid).
+  return `<div class="${BOOK_LAYOUT}">${rail}${buildEditMain(previewBody)}</div>` + BOOK_LIVE_RAIL_SCRIPTS;
 }
