@@ -50,7 +50,7 @@ import { classifyDocType } from './lib/classify-doc-type.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
-  setActivePage,
+  setActivePage, bindWebsiteNavDismiss,
 } from './assets/website-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
 
@@ -999,7 +999,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
     footer: footerHtml,
   });
   if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');
-  // The top-bar dropdown is a native <details> disclosure (CSS-only) — no JS wiring needed.
+  // The top-bar dropdown opens natively (<details>/<summary>); wire the missing dismissal — close on
+  // outside-click + Escape — once for the persistent chrome. Document-level + idempotent, so it stays live
+  // across every content swap and never double-binds (the static shell gets the same via WEBSITE_DROPDOWN_JS).
+  bindWebsiteNavDismiss();
   const contentRegion = root.querySelector('[data-enscribe-content]');
 
   // Per-page render (website.md Phase 2, lazy). An ARTICLE page renders its source over a FRESH read-through
