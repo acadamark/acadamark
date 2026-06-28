@@ -201,9 +201,11 @@ and never halt rendering. The one boundary is structural rather than content: a 
   `<ref>`s off the one merged registry. Nothing flattens; a book page keeps **book** numbering
   (`figure 2.1`), the composition's observable signature. Page **identity** converged too — the live
   path now loads page sources, so it resolves the pinned/derived slug (tiers 1–2), not just the nav-tier
-  slug. The old page-scope `buildWebsiteTree` / `isWebsiteAssembly` assembly is retired from the live
-  render (production-dead; it survives only behind the `website-xref.test.js` parity mirror, retired by
-  **#320**, which then removes the dead flatten + the `numbering.js` `'page'`-scope branch).
+  slug. The old page-scope `buildWebsiteTree` / `isWebsiteAssembly` assembly is **gone**: the
+  parity-corpus slice (**#320**) deleted the flatten (`buildWebsiteTree` / `buildLiveWebsite` /
+  `renderLiveWebsitePage`) and the `numbering.js` `'page'`-scope branch, and reworked
+  `website-xref.test.js` into a direct static≡live parity corpus that drives the real static build and
+  the real live SPA over one corpus (replacing the old flatten mirror).
 - **The `<a {slug}>` LINK layer now resolves on BOTH surfaces (#318).** The `<a>` handler still records a
   `data-page-slug` marker, but resolution moved UPSTREAM of serialization: a render-time hast tree-pass
   (`resolvePageSlugLinksInTree`) the compiler runs over the in-memory tree just before stringify, when the
@@ -237,5 +239,7 @@ and never halt rendering. The one boundary is structural rather than content: a 
 `packages/enscribe/src/master-document/compose-site.js` (`composeSiteRegistry`), called by **both**
 `packages/cli/src/static-website.js` (the static build, fs reader) and
 `packages/enscribe/src/interpreter/browser.js` `mountLiveWebsite` (the live SPA, fetch reader).
-`master-document/live-website.js`'s `buildWebsiteTree` flatten is retired (production-dead; the #320
-parity mirror only). These are non-normative pointers; the model above is the blueprint.*
+`master-document/live-website.js`'s `buildWebsiteTree` flatten was deleted by #320 (the file now holds
+only the nav-model flattener + the `?page=` not-found view); `cli/test/website-xref.test.js` proves
+static≡live directly over the real composition path. These are non-normative pointers; the model above
+is the blueprint.*
