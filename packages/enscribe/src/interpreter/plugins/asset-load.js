@@ -1,5 +1,11 @@
-// asset-load plugin (#190) — the asset half of <data>, mirroring the citation
-// half (library-load.js / buildCitationIndex).
+// asset-load plugin (#190) — the asset (and, since #313, dataset) half of <data>,
+// mirroring the citation half (library-load.js / buildCitationIndex).
+//
+// #313 slice 1: a <dataset> is a second OPAQUE store declaration that rides this same
+// harvest into the same id-keyed store (file.data.enscribeAssets) — one neutral store,
+// not a parallel one (notes/specs/data-store.md). It holds raw CSV/JSON/… bytes (+ an
+// optional format hint) under its id for an @id consumer to interpret later (slice 2);
+// it is pure storage, harvested + stripped here, never rendered. See buildAssetIndex.
 //
 // An embedded asset is DECLARED inside <data> as a <fig> with an id, a format
 // flag (png), and a base64 body:
@@ -44,8 +50,10 @@
 // relative for a cross-file child), emitting a plain <img src="path">.
 //
 // Scope (#190): single-file and cross-file; embedded (png/jpg/jpeg/svg/gif/webp)
-// and external assets; re-placement of one asset. Only JATS <graphic> export
-// remains (slice 4). FORMAT_MIME below is the embedded media-type extension point.
+// and external assets; re-placement of one asset; JATS <graphic> export (DONE —
+// data: URI / rebased path, DTD-valid). FORMAT_MIME below is the embedded media-type
+// extension point. (#313 slice 1 adds opaque <dataset> storage to this harvest; the
+// fig-shaped @-resolver below is neutralized in slice 2, not here.)
 
 import { ENSCRIBE_ASSETS } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
@@ -116,11 +124,45 @@ export function assetError(node, ref, message) {
 }
 
 /**
- * Build the embedded-asset index from <fig> declarations inside <data> nodes,
- * and strip each harvested declaration from its <data>. Writes
- * file.data.enscribeAssets (a Map id → { format, base64 }). Runs at the index
- * stage before numbering. Does not touch <library> nodes (the citation index,
- * which ran first, owns those).
+ * Extract a `<dataset>`'s OPAQUE payload (#313 slice 1). A `<dataset>` is opaque
+ * (`getContentHandler('dataset')` is non-`default`), so its `content` is the raw,
+ * never-markdown-parsed body STRING. Trim only the OUTER whitespace — the `| ` pipe
+ * delimiter leaves a leading space that is syntax, not data — exactly as `<library>`
+ * (the sibling storage host) trims its payload. `String.trim()` touches only the ends,
+ * so a `#`/`*`/`_` INSIDE the payload, and any internal indentation (e.g. pretty JSON),
+ * survive untouched; no brace-strip (a JSON `{…}` keeps its braces, unlike an asset
+ * base64 payload). The array branch is defensive only — opaque content is a string.
+ */
+function datasetPayload(content) {
+  if (typeof content === 'string') return content.trim();
+  let text = '';
+  const walk = (nodes) => {
+    for (const n of nodes ?? []) {
+      if (n == null) continue;
+      if (typeof n.value === 'string') text += n.value;
+      if (Array.isArray(n.children)) walk(n.children);
+    }
+  };
+  if (Array.isArray(content)) walk(content);
+  return text.trim();
+}
+
+/**
+ * Build the data-store index from store declarations inside <data> nodes, and strip
+ * each harvested declaration from its <data>. Writes file.data.enscribeAssets (a Map
+ * id → an opaque store entry). Runs at the index stage before numbering. Does not
+ * touch <library> nodes (the citation index, which ran first, owns those).
+ *
+ * Two kinds of declaration share the one store + id namespace (#313 slice 1: one
+ * neutral store, not a parallel one — see notes/specs/data-store.md):
+ *   - embedded asset  <fig #id fmt>base64</fig>  → { format, base64 }   (#190)
+ *   - external asset  <fig #id src="path" />     → { src }              (#190)
+ *   - dataset         <dataset #id fmt | bytes>  → { format, content }  (#313)
+ * A `<dataset>` is pure OPAQUE storage: its raw bytes are held under its id (with an
+ * optional format hint) for an `@id` consumer to interpret later (slice 2). Nothing
+ * renders or interprets it here — like an embedded asset declaration, it is stripped
+ * from <data> (render-suppressed but still WALKED by numbering, so an un-stripped
+ * declaration could perturb the walk).
  *
  * @param {{ children: Array }} tree
  * @param {import('vfile').VFile} file
@@ -132,13 +174,15 @@ export function buildAssetIndex(tree, file) {
 
   for (const dataNode of dataNodes) {
     if (!Array.isArray(dataNode.content)) continue;
-    // Harvest embedded <fig #id fmt>base64</fig> declarations; strip them so the
-    // render-suppressed declaration is not also counted by numbering.
+    // Harvest <fig> embedded-asset and <dataset> store declarations; strip them so the
+    // render-suppressed declaration is not also walked by numbering.
     dataNode.content = dataNode.content.filter((child) => {
-      if (!isEnscribeTag(child, 'fig')) return true;          // not an asset decl — leave it
+      const isFig = isEnscribeTag(child, 'fig');
+      const isDataset = isEnscribeTag(child, 'dataset');       // #313 slice 1: opaque dataset store
+      if (!isFig && !isDataset) return true;                   // not a store declaration — leave it
       const id = child.id ?? null;
       if (!id) {
-        file?.message?.('asset-load: <fig> in <data> has no #id — not registered as an asset', child);
+        file?.message?.(`asset-load: <${child.tagname}> in <data> has no #id — not registered in the data store`, child);
         return true;                                          // malformed: leave it (and warn)
       }
       if (assets.has(id)) {
@@ -146,15 +190,24 @@ export function buildAssetIndex(tree, file) {
         // block (e.g. two chapters of an assembled book). dataNodes are in
         // document order, so the set() below keeps the LAST declaration; emit a
         // visible always-renders collision flag — mirroring library-load's
-        // duplicate-citation-key handling, never a silent overwrite.
-        errors.push(makeAssetError('', `duplicate embedded-asset id "${id}" declared in more than one <data> block — last declaration wins`));
+        // duplicate-citation-key handling, never a silent overwrite. One id
+        // namespace across assets + datasets (#313), so a cross-kind clash is caught too.
+        errors.push(makeAssetError('', isDataset
+          ? `duplicate data-store id "${id}" declared in more than one <data> block — last declaration wins`
+          : `duplicate embedded-asset id "${id}" declared in more than one <data> block — last declaration wins`));
       }
-      // External (<fig #id src="path" />) vs embedded (<fig #id fmt>base64</fig>):
-      // store the (already assembly-rebased) src for external, or the {format,
-      // base64} for embedded. resolveFig resolves each accordingly.
-      assets.set(id, child.kwargs?.src
-        ? { src: child.kwargs.src }
-        : { format: child.positional?.[0] ?? null, base64: collectAssetPayload(child.content) });
+      if (isDataset) {
+        // Pure opaque storage: the raw bytes + an optional format hint
+        // (`<dataset #id csv | …>` or `format=csv`), stored verbatim for an @id consumer.
+        assets.set(id, { format: child.positional?.[0] ?? child.kwargs?.format ?? null, content: datasetPayload(child.content) });
+      } else {
+        // External (<fig #id src="path" />) vs embedded (<fig #id fmt>base64</fig>):
+        // store the (already assembly-rebased) src for external, or the {format,
+        // base64} for embedded. resolveFig resolves each accordingly.
+        assets.set(id, child.kwargs?.src
+          ? { src: child.kwargs.src }
+          : { format: child.positional?.[0] ?? null, base64: collectAssetPayload(child.content) });
+      }
       return false;                                           // strip the declaration
     });
   }

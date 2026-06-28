@@ -176,6 +176,30 @@ function validateWithXmllint(fixtureName, jatsXml) {
     threw && /no JATS\/BITS projection/.test(msg));
 }
 
+// ─── #313 slice 1: a <dataset> does not BREAK JATS export ───────────────────
+// A <dataset> has no JATS projection yet (the open question deferred to the JATS slice). It must be a
+// CLEAN skip: the index pass strips the harvested declaration from <data> before JATS lowering, so the
+// exporter never sees it — no crash, no <dataset> tag, no leaked payload, still a valid <article>/<body>.
+{
+  const src = [
+    '<meta type=article>', '<title | Has a dataset>', '<author | A>', '</meta>', '',
+    '<section | Intro>', '', 'Body prose.', '',
+    '<data>',
+    '<dataset #d1 csv | name,note',
+    'alpha,*bold* #h1',
+    'beta,2>',
+    '</data>',
+  ].join('\n');
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  let jats = null; let threw = false;
+  try { jats = enscribeToJats(proc.runSync(proc.parse(src))); } catch { threw = true; }
+  check('#313: a <dataset> does not break JATS export (no throw)', !threw && typeof jats === 'string');
+  check('#313: JATS has no <dataset> tag and no leaked payload (clean skip)',
+    !!jats && !/<dataset/.test(jats) && !jats.includes('name,note'));
+  check('#313: JATS export with a dataset is still a valid <article>/<body>',
+    !!jats && /<article/.test(jats) && /<body>/.test(jats));
+}
+
 // ─── Integration: doc-39 minimal article through full pipeline ─────────────
 
 {
