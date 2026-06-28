@@ -95,8 +95,17 @@ export function resolvePageSource(masterDir, src) {
   return null;
 }
 
-/** Co-located, non-source files in a page-directory (images, data) that travel with the page. */
-function pageDirAssets(pageDir, masterDir, destPrefix) {
+/**
+ * Co-located, non-source files in a page-directory (images, data) that travel with the page — e.g. a
+ * `<fig src=elephant.jpg>` example image sitting beside the chapter that references it. The figure
+ * handler emits `<img src="elephant.jpg">` verbatim, so the asset must ship at the page's own depth or
+ * it 404s (#fig-404). Returns `{from, to}` pairs (`to` = `destPrefix` + filename). The `pageDir ===
+ * masterDir` guard is deliberate: a flat page shares the master directory, and scanning that would copy
+ * unrelated top-level files (built site chrome, READMEs) — only a page with its OWN subdirectory has a
+ * private asset set. SINGLE AUTHORITY for "what co-located files travel with a page": the live build
+ * (build-live.js) calls this with `destPrefix=''` to copy the SAME set FLAT into its folder.
+ */
+export function pageDirAssets(pageDir, masterDir, destPrefix) {
   if (pageDir === masterDir) return []; // a flat page has no private dir of its own
   const out = [];
   for (const name of readdirSync(pageDir)) {

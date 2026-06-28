@@ -94,7 +94,10 @@ defines the single-file mode below.
 
 **Asset delivery on Live (the cross-cutting axis, here concretely):**
 - *Siblings* — the deployed default: the engine bundle + CSS copied flat alongside the shell, the
-  shell's asset base pointing at them. Self-standing folder, no CDN dependency for the chrome.
+  shell's asset base pointing at them. Self-standing folder, no CDN dependency for the chrome. The
+  document's own co-located assets — `<fig src>` figure images, data files sitting beside the sources —
+  are copied flat too, so a rendered `<img src="elephant.jpg">` resolves against the shell's location
+  like every other body fetch (without this they 404).
 - *CDN* — the same shell with asset hrefs pointing at a CDN instead of siblings (smaller folder,
   network dependency). Display assets (fonts, KaTeX) are already CDN by default; the engine/CSS
   *could* be too — reachable through the asset seam, but not emitted by a build path today (see

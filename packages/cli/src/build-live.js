@@ -2,8 +2,9 @@
 //
 // The file-I/O half of the live-shell emitter: pure `emitLiveShell` (params -> shell HTML) lives in
 // the engine package; THIS resolves the shipped shell assets + engine bundle (via the package
-// exports), copies them + the master + its `src` children FLAT into an output dir, and writes the
-// emitted shell with `assetBase: './'`. The result is a portable, self-standing LIVE FOLDER — open
+// exports), copies them + the master + its `src` children + the bodies' co-located assets (figure
+// images, data files) FLAT into an output dir, and writes the emitted shell with `assetBase: './'`.
+// The result is a portable, self-standing LIVE FOLDER — open
 // it (served over HTTP) to read; `?edit` mounts the #211 edit loop — with no CDN dependency for the
 // chrome (the CodeMirror-from-CDN load inside the editor factory is the #117-deferred asset concern).
 //
@@ -17,7 +18,7 @@ import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, emitSingleFileShell, extractDocumentTitle } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
-import { resolvePageSource } from './static-website.js';
+import { resolvePageSource, pageDirAssets } from './static-website.js';
 
 const require = createRequire(import.meta.url);
 
@@ -189,6 +190,19 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
     if (isWebsite) {
       for (const childSrc of srcChildrenOf(proc.parse(readFileSync(pageSourcePath, 'utf8')))) {
         copyInto(join(resolved.pageDir, childSrc), childSrc);
+      }
+
+      // Co-located non-source assets (figure images, data files) referenced by the page's bodies —
+      // copy them FLAT beside the sources (#fig-404). A `<fig src=elephant.jpg>` in a chapter renders
+      // `<img src="elephant.jpg">`, which the live shell resolves against its `/live/` location, i.e.
+      // FLAT under outDir — the SAME flat space the chapter-source copy above targets. We reuse the
+      // static build's `pageDirAssets` (SINGLE AUTHORITY for "what co-located files travel with a page",
+      // incl. the `.emd`-skip and the page-in-its-own-subdir guard) with `destPrefix=''` to get the flat
+      // names. Same-named assets across pages collide last-wins in the flat folder — exactly as the flat
+      // chapter-source copy above already does (e.g. two books each with a `code.emd`); harmless for
+      // shared identical assets, a known live-folder flat-namespace limitation for distinct ones.
+      for (const { from, to } of pageDirAssets(resolved.pageDir, masterDir, '')) {
+        copyInto(from, to);
       }
     }
   }
