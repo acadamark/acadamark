@@ -334,9 +334,15 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
  */
 /**
  * The PREVIEW pane body for a chapter in edit mode: the live-rendered chapter content +
- * its prev/next bar — the SAME render path read mode uses, so the preview matches what the
- * book publishes. Factored out so the browser edit loop can re-render JUST this pane on each
- * debounced edit (leaving the editor + tabs untouched), and so the edit view builds it once.
+ * its prev/next bar + the live-rail scripts — the SAME render path AND the SAME scripts read
+ * mode ships (renderLiveChapterView), so the preview matches what the book publishes AND its
+ * on-this-page / scroll-spy rail spies exactly like read mode. The scripts ride INSIDE this
+ * body (not appended to the surrounding edit view) because the edit loop only ever runs
+ * `executeAssets` on the PREVIEW PANE — on first mount AND on each debounced re-render — never
+ * on the whole edit view; a script outside the pane would never execute. Carrying them here is
+ * also what re-arms the rail after every edit: the pane is re-rendered with the scripts, then
+ * re-executed (ON_THIS_PAGE_JS / SCROLL_SPY_JS have no init guard, so re-running cleanly
+ * re-observes the fresh section nodes — the same re-run read mode does on a chapter swap).
  *
  * @param {object} model - the (current) buildLiveBook result
  * @param {number} idx - the chapter's index in model.parts
@@ -346,7 +352,7 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
 export function renderLiveChapterPreviewBody(model, idx, ctx) {
   const navBar = chapterNavBar(model.parts, idx, chapterHash);
   const prevNext = (model.bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
-  return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext;
+  return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext + BOOK_LIVE_RAIL_SCRIPTS;
 }
 
 export function renderLiveChapterEditView(model, idx, ctx) {
@@ -367,7 +373,9 @@ export function renderLiveChapterEditView(model, idx, ctx) {
   // main">` (a <main> cannot nest inside composeBookBody's own `<main class="enscribe-body">`). So the
   // editable chapter looks exactly like a read chapter — chapter rail + content column + on-this-page
   // rail — with the document replaced by the tabs. (The preview pane already carries the chapter's
-  // prev/next bar via renderLiveChapterPreviewBody, so no separate prevNext is passed.)
+  // prev/next bar AND the live-rail scripts via renderLiveChapterPreviewBody, so no separate prevNext
+  // and no BOOK_LIVE_RAIL_SCRIPTS is appended here: the edit loop runs executeAssets on the PREVIEW
+  // PANE only, so the rail scripts must live inside the pane — appending them out here would never run.)
   const editMain = `<div class="enscribe-edit-main">${buildEditMainInner(previewBody)}</div>`;
-  return composeBookBody({ rail, content: editMain, onThisPage }) + BOOK_LIVE_RAIL_SCRIPTS;
+  return composeBookBody({ rail, content: editMain, onThisPage });
 }

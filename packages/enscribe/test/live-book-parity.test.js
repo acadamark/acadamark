@@ -28,11 +28,15 @@ import {
   buildLiveBook,
   renderLiveChapterContent,
   renderLiveChapterView,
+  renderLiveChapterPreviewBody,
+  renderLiveChapterEditView,
   renderLiveCoverView,
   resolveHash,
   extractBookPart,
 } from '../src/interpreter/index.js';
 import { coverBodyHtml } from '../src/master-document/book-scaffold.js';
+import { SCROLL_SPY_JS } from '../src/interpreter/assets/scroll-spy-asset.js';
+import { ON_THIS_PAGE_JS } from '../src/interpreter/assets/on-this-page-asset.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -104,6 +108,45 @@ export async function run() {
     assert.ok(!view.includes('.html#fig:transect'),
       'the live view does NOT cross-page-rewrite refs (that is P1\'s separate-files concern)');
     console.log('PASS: L2 — live view = renderChapter + C\'s chrome with #-routes; cross-chapter refs stay bare #anchor');
+  }
+
+  // ── EDIT-PREVIEW RAIL PARITY: the edit preview ships read mode's live-rail scripts ──────
+  // The book edit preview's on-this-page / scroll-spy rail must spy EXACTLY like read mode.
+  // That holds only if the preview pane carries the SAME rail scripts read mode ships AND they
+  // ride INSIDE the preview body — because the browser edit loop runs executeAssets on the
+  // PREVIEW PANE only (on first mount AND each debounced re-render), never on the whole edit
+  // view. A script appended to the edit view OUTSIDE the pane is never executed (the dead-script
+  // bug this guards: scrollspy worked in read mode but the edit preview rail stayed un-spied).
+  {
+    const idx = model.stemToIndex.get('counting-elephants');
+    const readView = renderLiveChapterView(model, idx, ctx);
+    const previewBody = renderLiveChapterPreviewBody(model, idx, ctx);
+    const editView = renderLiveChapterEditView(model, idx, ctx);
+    const occurrences = (s, sub) => s.split(sub).length - 1;
+
+    // read mode is the authority: it ships both rail scripts.
+    assert.ok(readView.includes(SCROLL_SPY_JS) && readView.includes(ON_THIS_PAGE_JS),
+      'read mode chapter view ships the scroll-spy + on-this-page scripts (the authority)');
+
+    // the edit PREVIEW BODY — the unit re-rendered on each edit — ships the SAME scripts, so the
+    // rail re-arms after every edit and spies like read mode.
+    assert.ok(previewBody.includes(SCROLL_SPY_JS) && previewBody.includes(ON_THIS_PAGE_JS),
+      'the edit preview body ships the SAME scroll-spy + on-this-page scripts as read mode');
+
+    // the edit VIEW carries them via the preview body, exactly ONCE each — not also appended
+    // outside the preview pane (where executeAssets would never reach them, and a double-append
+    // would double-run the scripts on first mount).
+    assert.strictEqual(occurrences(editView, SCROLL_SPY_JS), 1,
+      'the edit view carries the scroll-spy script exactly once (inside the preview pane, no dead external copy)');
+    assert.strictEqual(occurrences(editView, ON_THIS_PAGE_JS), 1,
+      'the edit view carries the on-this-page script exactly once (inside the preview pane)');
+
+    // and that single copy lives within the preview-pane region (so executeAssets(pane) runs it).
+    const paneAt = editView.indexOf('data-edit-pane="preview"');
+    assert.ok(paneAt !== -1 && editView.indexOf(SCROLL_SPY_JS) > paneAt,
+      'the rail scripts sit inside the preview pane region of the edit view');
+
+    console.log('PASS: L2 — edit preview ships read mode\'s rail scripts inside the preview pane (spies like read mode; re-arms on each edit)');
   }
 
   // ── the hash ROUTER: empty→COVER, stem→chapter, anchor→owning chapter+scroll, unknown→null
