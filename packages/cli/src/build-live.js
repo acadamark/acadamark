@@ -1,12 +1,17 @@
 // Live-folder build helper (#215).
 //
 // The file-I/O half of the live-shell emitter: pure `emitLiveShell` (params -> shell HTML) lives in
-// the engine package; THIS resolves the shipped shell assets + engine bundle (via the package
-// exports), copies them + the master + its `src` children + the bodies' co-located assets (figure
-// images, data files) FLAT into an output dir, and writes the emitted shell with `assetBase: './'`.
-// The result is a portable, self-standing LIVE FOLDER — open
-// it (served over HTTP) to read; `?edit` mounts the #211 edit loop — with no CDN dependency for the
-// chrome (the CodeMirror-from-CDN load inside the editor factory is the #117-deferred asset concern).
+// the engine package; THIS resolves the shipped shell assets + engine bundle (via the package exports)
+// and copies them, the master, and the document bodies into an output dir, then writes the emitted shell
+// with `assetBase: './'`. Layout (#331): the chrome assets copy FLAT; for a WEBSITE master each page is
+// deployed in its OWN directory — master at `<src>/index.emd`, a book page's `<chapter src>` children
+// BESIDE it at `<src>/<child>` — so same-named children across pages don't collide last-wins (the runtime
+// fetches `<src>/index.emd` and resolves children master-relative). Co-located figure ASSETS stay FLAT
+// (a rendered `<img src>` resolves against the /live/ shell location, not the chapter source). A
+// standalone book/article folder stays flat (its children already sit beside their own master). The
+// result is a portable, self-standing LIVE FOLDER — open it (served over HTTP) to read; `?edit` mounts
+// the #211 edit loop — with no CDN dependency for the chrome (the CodeMirror-from-CDN load inside the
+// editor factory is the #117-deferred asset concern).
 //
 // This is the Live delivery mode with sibling assets (the wired default); the delivery-mode model
 // (shell / fetch / asset seam, and the unbuilt single-file mode) is specced in
@@ -174,33 +179,36 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
       continue;
     }
     const pageSourcePath = resolved ? resolved.sourcePath : join(masterDir, src);
-    copyInto(pageSourcePath, src);
+    // #331: a WEBSITE page is deployed in its OWN directory — the master at `<src>/index.emd`, its book
+    // children BESIDE it at `<src>/<childSrc>` — so two books' same-named chapters (frameables.emd, code.emd,
+    // …) no longer collide last-wins in a single flat namespace and serve the WRONG book's content. At runtime
+    // the live shell fetches the page master at `<src>/index.emd` and resolves a book page's children
+    // MASTER-RELATIVE (`new URL(childSrc, masterUrl)` → `<src>/<childSrc>`): deploy + runtime express the ONE
+    // rule "children are master-relative" — the same `new URL(rel, base)` everywhere, no fetch fork (browser.js
+    // eager pre-fetch). Uniform across page TYPES: an article page is deployed at `<src>/index.emd` too (it just
+    // has no children). The standalone book/article folder (the non-website `else` path) keeps its flat layout —
+    // its children already sit beside their own master, no cross-page collision.
+    const pageDest = isWebsite ? join(src, 'index.emd') : src;
+    copyInto(pageSourcePath, pageDest);
 
-    // A website PAGE may itself be a MULTI-FILE master — a book (`<meta type=book>`
-    // with `<chapter src>` / `<appendix src>` children) or an article with
-    // `<section src>` children. Those children are NOT website pages, so
-    // collectWebsitePageSrcs never sees them; without this they 404 (the page's
-    // scaffold mounts, but every chapter shows "could not load chapter source").
-    // At runtime the live book fetches each child `src` relative to
-    // `document.baseURI` — the `/live/` shell location — i.e. FLAT under outDir
-    // (browser.js fetchSourceText: `new URL(src, baseURI)`), so copy each child
-    // there. Reuses `srcChildrenOf` — the SAME child-source discovery the
-    // standalone-book path (the `else` branch above) uses — applied to a page
-    // that is a book; one mechanism, not a second copy path.
+    // A website PAGE may itself be a MULTI-FILE master — a book (`<meta type=book>` with `<chapter src>` /
+    // `<appendix src>` children). Those children are NOT website pages, so collectWebsitePageSrcs never sees
+    // them; without this they 404. Copy each child BESIDE the page master, under the page's own dir, so the
+    // master-relative runtime fetch finds it there (and two books' same-named children stay distinct). Reuses
+    // `srcChildrenOf` — the SAME child-source discovery the standalone-book path (the `else` branch) uses.
     if (isWebsite) {
       for (const childSrc of srcChildrenOf(proc.parse(readFileSync(pageSourcePath, 'utf8')))) {
-        copyInto(join(resolved.pageDir, childSrc), childSrc);
+        copyInto(join(resolved.pageDir, childSrc), join(src, childSrc));
       }
 
-      // Co-located non-source assets (figure images, data files) referenced by the page's bodies —
-      // copy them FLAT beside the sources (#fig-404). A `<fig src=elephant.jpg>` in a chapter renders
-      // `<img src="elephant.jpg">`, which the live shell resolves against its `/live/` location, i.e.
-      // FLAT under outDir — the SAME flat space the chapter-source copy above targets. We reuse the
-      // static build's `pageDirAssets` (SINGLE AUTHORITY for "what co-located files travel with a page",
-      // incl. the `.emd`-skip and the page-in-its-own-subdir guard) with `destPrefix=''` to get the flat
-      // names. Same-named assets across pages collide last-wins in the flat folder — exactly as the flat
-      // chapter-source copy above already does (e.g. two books each with a `code.emd`); harmless for
-      // shared identical assets, a known live-folder flat-namespace limitation for distinct ones.
+      // Co-located non-source assets (figure images, data files) stay FLAT under outDir (#fig-404) — NOT
+      // under the page dir. A `<fig src=elephant.jpg>` renders `<img src="elephant.jpg">`, and the SPA
+      // resolves that relative URL against the `/live/` DOCUMENT base (one shell page for all chapters), NOT
+      // the chapter SOURCE's location — so the image must sit flat at `/live/elephant.jpg` wherever the source
+      // now lives. (Namespacing assets would need an `<img src>` rewrite, which would break live≡static render
+      // parity; a same-named DISTINCT asset across books still collides last-wins — harmless for shared
+      // identical assets like the docs' elephant.jpg, and otherwise an asset-IDENTITY follow-up (#313-adjacent,
+      // the data-store `@id` model), not a deploy move.) pageDirAssets with destPrefix='' yields the flat names.
       for (const { from, to } of pageDirAssets(resolved.pageDir, masterDir, '')) {
         copyInto(from, to);
       }

@@ -56,7 +56,13 @@ function installDom(url = 'https://example.com/site/') {
   Object.defineProperty(global, 'location', { value: dom.window.location, configurable: true, writable: true });
   Object.defineProperty(global, 'history', { value: dom.window.history, configurable: true, writable: true });
   global.fetch = async (u) => {
-    const name = String(u).split('/').pop().split('?')[0];
+    // #331: each website page is now deployed/fetched at `<src>/index.emd` (its own directory), and a book
+    // page's chapter children resolve MASTER-RELATIVE at `<src>/<child>`. Map a request back to a FILES key:
+    // a trailing `/index.emd` is a page master → key on the parent segment (the page src); any other path
+    // → key on its own last segment (the master, the footer, or a book child by its filename).
+    const segs = String(u).split('?')[0].split('/').filter(Boolean);
+    let name = segs[segs.length - 1];
+    if (name === 'index.emd' && segs.length >= 2) name = segs[segs.length - 2];
     if (Object.prototype.hasOwnProperty.call(FILES, name)) {
       return { ok: true, status: 200, statusText: 'OK', text: async () => FILES[name] };
     }

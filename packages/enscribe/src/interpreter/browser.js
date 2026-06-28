@@ -937,15 +937,25 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // large site this is the eager-fetch cost: a later progressive/lazy-fill follow-up (noted, not solved here).
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
   const fetched = await Promise.all(externalPages.map(async (p) => {
-    const src = await fetchSourceText(p.src, baseUrl);
+    // #331: each website page is deployed in its OWN directory — master at `<src>/index.emd`, its book
+    // children BESIDE it (build-live.js). Fetch the master at `<src>/index.emd`, and resolve a book page's
+    // chapter children MASTER-RELATIVE (`new URL(childSrc, masterUrl)` → `<src>/<childSrc>`) via the
+    // loadAndAssembleMaster `loadSource` seam — NOT against `document.baseURI` (the flat `/live/` root, where
+    // two books' same-named `frameables.emd` collided and served the wrong book). Same `new URL(rel, base)`
+    // rule everywhere; no fork in fetchSourceText. (Figure ASSETS stay flat — a rendered `<img src>` resolves
+    // against the /live/ document base, not the chapter source; see build-live.js + the #331 report.)
+    const masterPath = `${p.src}/index.emd`;
+    const masterUrl = baseUrl ? new URL(masterPath, baseUrl) : undefined;
+    const src = await fetchSourceText(masterPath, baseUrl);
     const isBook = classifyDocType(proc.parse(src)).type === 'book';
     // A book page's chapter children are fetched up front; we cache the LOADED child sources (not an
     // assembled tree) and re-assemble a FRESH tree per use — runSync mutates the tree in place, and the
     // book is numbered TWICE (Phase 1 native, then Phase 2 over the seed), so a shared tree would bake
     // Phase 1's results (incl. unresolved cross-page refs) into Phase 2. Same as the static build, which
-    // re-reads + re-assembles per phase.
+    // re-reads + re-assembles per phase. The children load MASTER-RELATIVE (the loadSource seam).
     const loaded = isBook && HAS_MASTER_SRC.test(src)
-      ? (await loadAndAssembleMaster(proc, src, discoverChildSrcs(proc, src))).loadedFile.data[ENSCRIBE_LOADED_SOURCES]
+      ? (await loadAndAssembleMaster(proc, src, discoverChildSrcs(proc, src),
+          (childSrc) => fetchSourceText(childSrc, masterUrl))).loadedFile.data[ENSCRIBE_LOADED_SOURCES]
       : null;
     return { p, src, isBook, loaded };
   }));

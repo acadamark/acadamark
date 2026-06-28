@@ -94,10 +94,19 @@ defines the single-file mode below.
 
 **Asset delivery on Live (the cross-cutting axis, here concretely):**
 - *Siblings* — the deployed default: the engine bundle + CSS copied flat alongside the shell, the
-  shell's asset base pointing at them. Self-standing folder, no CDN dependency for the chrome. The
-  document's own co-located assets — `<fig src>` figure images, data files sitting beside the sources —
-  are copied flat too, so a rendered `<img src="elephant.jpg">` resolves against the shell's location
-  like every other body fetch (without this they 404).
+  shell's asset base pointing at them. Self-standing folder, no CDN dependency for the chrome.
+  *Page SOURCES are deployed master-relative* (#331): for a multi-page website each page lives in its
+  OWN directory — the page master at `<src>/index.emd`, a book page's `<chapter src>` children BESIDE it
+  at `<src>/<child>` — so two books with same-named chapters (e.g. each a `frameables.emd`) do not collide
+  last-wins in a flat namespace and serve the wrong book's content. The runtime fetches the master at
+  `<src>/index.emd` and resolves children with the one `new URL(child, masterUrl)` rule (no fetch fork).
+  Co-located ASSETS, by contrast, are copied FLAT — `<fig src>` figure images, data files — because a
+  rendered `<img src="elephant.jpg">` resolves against the SPA's single shell/document location, not the
+  chapter source, so the image must sit flat beside the shell (without this they 404); namespacing an
+  asset would require rewriting its `<img src>` for Live only, which would break live≡static render parity.
+  A same-named DISTINCT asset across pages therefore still collides last-wins — harmless for shared
+  identical assets, otherwise an asset-IDENTITY follow-up (the data-store `@id` model, #313-adjacent),
+  not a deploy move.
 - *CDN* — the same shell with asset hrefs pointing at a CDN instead of siblings (smaller folder,
   network dependency). Display assets (fonts, KaTeX) are already CDN by default; the engine/CSS
   *could* be too — reachable through the asset seam, but not emitted by a build path today (see
