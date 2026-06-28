@@ -214,9 +214,13 @@ and never halt rendering. The one boundary is structural rather than content: a 
   scheme-hook seam as the cross-page `<ref>` rewriter. This removed the HTML re-parser the old string-pass
   needed (parse5 was a browser-bundle hazard, #25) from the slug-link path entirely; cross-page `<ref>`s — a
   *different*, string-only resolver (`rewriteCrossPageHrefs`) — already resolve live, in every direction.
-- **One live lag remains** — narrow, named, and *not* composition:
-  - **Edit mode for a book page** renders the master source standalone (without its chapter children),
-    so a book page's live *edit* preview is degraded; **read** mode renders it as a full book. A follow-on.
+- **The live edit surface is uniform across page types.** A book PAGE in edit mode edits PER-CHAPTER — the
+  same `mountEditLoop` machinery the standalone book mount uses, embedded so the website's own `?page=`/`#hash`
+  router drives it: `?page=book&edit` assembles the book's chapter children and renders the per-chapter edit
+  view, a `#stem` switching the editable chapter, mirroring how **read** mode renders it as a book. (This closed
+  the one earlier live lag, where a book-page edit preview rendered the master standalone — empty chapters.) As
+  with the article edit preview, a cross-page `<ref>` to ANOTHER page stays unresolved while editing (the
+  standalone-render approximation); the authoritative link is the read render / on reload.
 
 ## Cross-references
 

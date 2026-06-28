@@ -458,5 +458,52 @@ export async function run() {
     }
   }
 
+  // ── #unify — a BOOK page in EDIT mode edits PER-CHAPTER (the gap audit P1 fixed; the test 5.1 whose absence let it survive) ──
+  // Before the unification, mountLiveWebsite's edit route was book-blind: a book page fell to the single-unit
+  // renderPageStandalone, which renders the UNASSEMBLED master (empty chapters, no rail). The S2c edit tests
+  // above exercise only ARTICLE pages, and the per-chapter book edit was tested only via mountLiveBook DIRECTLY
+  // (a route the SPA never takes) — so this combination (a book PAGE inside a website, in edit mode) had ZERO
+  // coverage. Assert the fix end-to-end: the per-chapter edit view (rail + Source/Preview tabs + ASSEMBLED
+  // chapter prose in the preview + the chapter's OWN source in the editor), a #stem switching the editable
+  // chapter, and an edit round-tripping into the preview.
+  {
+    const { dom, orig } = installDom();
+    const stub = makeEditorStub();
+    try {
+      const root = await mountLiveWebsite('#root', FILES['p314-master.emd'], { editor: stub.editor, editDebounceMs: 0 });
+      const content = () => root.querySelector('[data-enscribe-content]');
+      const preview = () => content().querySelector('[data-edit-pane="preview"]');
+      // Navigate to the BOOK page in edit mode, then into chapter ONE.
+      popTo(dom, '?page=bookp');
+      hashTo(dom, '#one');
+      // (1) the per-chapter EDIT view is reached — Write/Preview tabs + the book's chapter rail (NOT the empty master).
+      assert.ok(content().querySelector('[data-edit-tab]'),
+        'a book page in edit mode shows the per-chapter Write/Preview edit view (tabs present), not the article fallback');
+      const railHrefs = [...content().querySelectorAll('a')].map((a) => a.getAttribute('href'));
+      assert.ok(railHrefs.includes('#one') && railHrefs.includes('#two'),
+        'the editable book carries its chapter rail (#one/#two routes) — NOT the rail-less empty master');
+      // (2) the editor mounted with THIS CHAPTER's source (Chapter One), NOT the book master (<meta type=book>).
+      assert.ok(stub.last && /Chapter One/.test(stub.last.value),
+        `the editor holds chapter ONE's source (got: ${JSON.stringify(stub.last && stub.last.value.slice(0, 36))})`);
+      assert.ok(!/type=book/.test(stub.last.value),
+        'the editor is NOT mounted with the unassembled book master — that was the bug');
+      // (3) the PREVIEW pane holds the ASSEMBLED chapter prose — the empty-master degrade rendered nothing here.
+      assert.ok(/Chapter One/.test(preview().textContent),
+        'the preview pane renders the ASSEMBLED chapter content (Chapter One), not an empty book skeleton');
+      // (4) typing in the editor round-trips into THAT chapter's preview (debounce 0 → ready after a tick).
+      stub.last.onChange('<section | Chapter One>\n\nUNIFY-EDIT-MARKER');
+      await tick();
+      assert.ok(/UNIFY-EDIT-MARKER/.test(preview().textContent),
+        'an edit to the chapter source re-renders that chapter\'s preview (round-trip), like the article edit');
+      // (5) a #stem change switches the EDITABLE chapter — the editor re-mounts with chapter TWO's source.
+      const priorMount = stub.last;
+      hashTo(dom, '#two');
+      assert.ok(stub.last !== priorMount && /Chapter Two/.test(stub.last.value),
+        'a #stem hash change switches the editable chapter (editor re-mounts with chapter TWO source)');
+      assert.strictEqual(priorMount.destroyed, true, 'the prior chapter editor was destroyed on the chapter switch (no leak)');
+      console.log('PASS: #unify — a book PAGE edits PER-CHAPTER in the website (rail + assembled preview + per-chapter source + #stem switch + round-trip)');
+    } finally { restoreDom(orig); }
+  }
+
   console.log('All live website render (#246 S2a engine + S2b chrome + #314 composition) browser-entry checks passed.');
 }
