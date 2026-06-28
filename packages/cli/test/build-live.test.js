@@ -121,8 +121,13 @@ export function run_tests() {
       const res = buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out });
       assert.deepStrictEqual([...res.children].sort(), ['pages/a.emd', 'pages/b.emd'],
         'the website\'s nav pages (descending groups), NOT assembler children, are discovered + copied');
-      for (const name of [res.master, ...res.children, ...res.assets]) {
-        assert.ok(existsSync(join(out, name)), `copied into the website folder: ${name}`);
+      // The website master + shell assets sit flat at the folder root.
+      assert.ok(existsSync(join(out, res.master)), `website master copied: ${res.master}`);
+      for (const name of res.assets) assert.ok(existsSync(join(out, name)), `shell asset copied: ${name}`);
+      // #331: each page is deployed in its OWN directory — master at `<src>/index.emd` — so same-named
+      // children across pages cannot collide. (The runtime fetches `<src>/index.emd` to match.)
+      for (const name of res.children) {
+        assert.ok(existsSync(join(out, name, 'index.emd')), `page copied to its own dir: ${name}/index.emd`);
       }
       const html = readFileSync(join(out, 'index.html'), 'utf8');
       assert.ok(html.includes("mountLiveShell('#enscribe-book-root', 'site.emd'"),
@@ -163,15 +168,17 @@ export function run_tests() {
       // The page-directory item is discovered by its raw src, alongside the flat page.
       assert.deepStrictEqual([...res.children].sort(), ['flat.emd', 'home'],
         'the page-directory nav item is discovered by its raw src alongside the flat page');
-      // Its BODY (home/index.emd) is emitted at the path the live shell fetches (the raw src "home"),
-      // as a FILE — not the directory that caused the crash.
-      assert.ok(existsSync(join(out, 'home')), 'the page-directory body is emitted at its fetch path (out/home)');
-      assert.strictEqual(readFileSync(join(out, 'home'), 'utf8'), '<section | Home Page>\n\nHome body.',
-        'out/home holds the resolved home/index.emd body (the file, not the directory)');
-      assert.ok(existsSync(join(out, 'flat.emd')) && existsSync(join(out, 'index.html')),
-        'the flat page and the shell are also emitted');
+      // #331: each page's BODY is emitted at `<src>/index.emd` — the path the live shell now fetches —
+      // giving every page its own directory (so book children can't collide across pages). The
+      // page-directory item's resolved home/index.emd body lands at out/home/index.emd.
+      assert.ok(existsSync(join(out, 'home', 'index.emd')), 'the page-directory body is emitted at out/home/index.emd');
+      assert.strictEqual(readFileSync(join(out, 'home', 'index.emd'), 'utf8'), '<section | Home Page>\n\nHome body.',
+        'out/home/index.emd holds the resolved home/index.emd body');
+      // The flat-file page is namespaced the SAME uniform way (`<src>/index.emd`), keyed on the raw src.
+      assert.ok(existsSync(join(out, 'flat.emd', 'index.emd')) && existsSync(join(out, 'index.html')),
+        'the flat-file page is emitted at out/flat.emd/index.emd (uniform <src>/index.emd) and the shell is written');
 
-      console.log('PASS: #286 cli — build --live resolves page-directory nav items (no EISDIR; body emitted at its fetch path)');
+      console.log('PASS: #286/#331 cli — build --live deploys each page at <src>/index.emd (own directory; no EISDIR)');
     } finally {
       rmSync(siteDir, { recursive: true, force: true });
       rmSync(out, { recursive: true, force: true });
@@ -207,15 +214,60 @@ export function run_tests() {
 
       buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out });
 
-      // both images land FLAT in the live folder, at the path the runtime <img src> fetches
+      // Both images land FLAT in the live folder — a rendered `<img src>` resolves against the /live/
+      // DOCUMENT base, not the chapter source, so assets MUST stay flat (#331 keeps them flat on purpose;
+      // namespacing them would 404 or break live≡static parity).
       assert.ok(existsSync(join(out, 'pic.png')), 'the home page co-located image is copied flat (out/pic.png)');
       assert.ok(existsSync(join(out, 'plot.png')), 'the book chapter co-located image is copied flat (out/plot.png)');
       assert.strictEqual(readFileSync(join(out, 'pic.png')).toString('binary'), '\x89PNG\r\n\x1a\n-home-pic',
         'the copied image is byte-for-byte the source');
-      // the chapter source itself is also flat (the existing source-copy path), so the <img> resolves
-      assert.ok(existsSync(join(out, 'ch.emd')), 'the book chapter source is also copied flat');
+      // #331: the chapter SOURCE is now nested under the book page's own dir (out/book/ch.emd), where the
+      // master-relative runtime fetch finds it — while the image stays flat.
+      assert.ok(existsSync(join(out, 'book', 'ch.emd')), 'the book chapter source is copied under its page dir (out/book/ch.emd)');
 
-      console.log('PASS: #fig-404 cli — build --live copies pages\' co-located figure assets flat (no <img> 404)');
+      console.log('PASS: #fig-404/#331 cli — figure assets stay FLAT; chapter sources nest under the page dir');
+    } finally {
+      rmSync(siteDir, { recursive: true, force: true });
+      rmSync(out, { recursive: true, force: true });
+    }
+  }
+
+  // ── #331: two book pages with SAME-named children land in SEPARATE per-page dirs (no flat collision) ──
+  {
+    // The share-blocker: before #331 every page's children were copied FLAT, so two books each with a
+    // `frameables.emd` collided last-wins under outDir and one book served the OTHER's chapter content.
+    // Now each page is deployed at `<src>/index.emd` with its children beside it, so same-named children
+    // stay distinct. Fixture: two book pages, each with a `shared.emd` chapter carrying DISTINCT content.
+    const siteDir = mkdtempSync(join(tmpdir(), 'enscribe-live-collide-'));
+    const out = mkdtempSync(join(tmpdir(), 'enscribe-live-collide-out-'));
+    try {
+      writeFileSync(join(siteDir, 'site.emd'), [
+        '<meta type=website>', '<title | Two Books>', '</meta>', '',
+        '<nav>', '<item src="alpha" | Alpha>', '<item src="beta" | Beta>', '</nav>',
+      ].join('\n'));
+      for (const [book, marker] of [['alpha', 'ALPHA-only frameable'], ['beta', 'BETA-only frameable']]) {
+        mkdirSync(join(siteDir, book));
+        writeFileSync(join(siteDir, book, 'index.emd'),
+          `<meta type=book>\n<title | ${book}>\n</meta>\n\n<chapter src="shared.emd" | Shared>`);
+        writeFileSync(join(siteDir, book, 'shared.emd'), `<section | Shared>\n\n${marker}.`);
+      }
+
+      buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out });
+
+      // Each book's master + its same-named child live in the book's OWN directory — no collision.
+      assert.ok(existsSync(join(out, 'alpha', 'index.emd')) && existsSync(join(out, 'beta', 'index.emd')),
+        'each book master is at its own <src>/index.emd');
+      assert.ok(existsSync(join(out, 'alpha', 'shared.emd')) && existsSync(join(out, 'beta', 'shared.emd')),
+        'each book\'s same-named child sits beside its own master (no flat collision)');
+      assert.match(readFileSync(join(out, 'alpha', 'shared.emd'), 'utf8'), /ALPHA-only/,
+        'out/alpha/shared.emd holds ALPHA\'s content');
+      assert.match(readFileSync(join(out, 'beta', 'shared.emd'), 'utf8'), /BETA-only/,
+        'out/beta/shared.emd holds BETA\'s content (NOT alpha\'s — the #331 wrong-content bug is gone)');
+      // And NOT a single flat shared.emd at the root (the old collided layout).
+      assert.ok(!existsSync(join(out, 'shared.emd')),
+        'no flat root-level shared.emd (the old last-wins collision is gone)');
+
+      console.log('PASS: #331 cli — same-named children across book pages stay distinct (per-page-dir; no flat collision)');
     } finally {
       rmSync(siteDir, { recursive: true, force: true });
       rmSync(out, { recursive: true, force: true });

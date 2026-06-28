@@ -1,0 +1,146 @@
+<section #sh-author | `<author>`>
+
+<sub-section | General Usage>
+
+Semantic role: *author*. Compiles to Layer 1 `<author>`.
+
+Registers:
+
+- Canonical: `<author>`
+
+<code #code:sh-author-1>
+<author | Jane Goodall>
+</code>
+
+<minipage #mp:sh-author-1>
+<author | Jane Goodall>
+</minipage>
+
+*Backward-compatible casual form (carried forward from before the structured-interface reconciliation). The pipe content sits as text content of &lt;author&gt;; it is NOT lifted to a &lt;name&gt; child — authors who want the structured shape use the kwarg form below or the child-tag form. JATS export reads the name string either way.*
+
+<code #code:sh-author-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+</code>
+
+<minipage #mp:sh-author-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+</minipage>
+
+*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical Layer 1 &lt;author&gt;.*
+
+<code #code:sh-author-3>
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+  <email | jane@example.com>
+</author>
+</code>
+
+<minipage #mp:sh-author-3>
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+  <email | jane@example.com>
+</author>
+</minipage>
+
+*Child-tag form. The canonical Layer 1 shape. Both this form and the equivalent kwarg form above produce the same Layer 1 output.*
+
+<code #code:sh-author-4>
+<meta>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <author +corresponding | Charles Darwin>
+</meta>
+</code>
+
+<minipage #mp:sh-author-4>
+<meta>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <author +corresponding | Charles Darwin>
+</meta>
+</minipage>
+
+*Multiple authors are sibling &lt;author&gt; elements inside &lt;meta&gt;. The third is the corresponding author. JATS export groups them as &lt;contrib-group&gt;.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | The author's name. Authored as a kwarg, lifted at the normalize-to-canonical gate to a <name> child tag. Equivalent to authoring <name \| ...> inside the <author>'s child-tag form. |
+| `affiliation` | kwarg |  | Author's institutional affiliation. Lifts to <affiliation>. |
+| `orcid` | kwarg |  | Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to <orcid>. |
+| `email` | kwarg |  | Author's contact email address. Lifts to <email>. |
+| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical Layer 1 <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical Layer 1 node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
+
+</section>
+
+<section #sh-meta | `<meta>`>
+
+<sub-section | General Usage>
+
+Semantic role: *meta*. Compiles to Layer 1 `<meta>`.
+
+Registers:
+
+- Canonical: `<meta>`
+
+<code #code:sh-meta-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins.
+</code>
+
+<minipage #mp:sh-meta-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins.
+</minipage>
+
+*Author writes &lt;meta type=article&gt; at the top with no &lt;article&gt; wrapper. The structural plugin reads type=article and generates: - the &lt;article&gt; container - &lt;article-front&gt; wrapping the original &lt;meta&gt; - &lt;article-body&gt; wrapping the section content &lt;title&gt; is promoted to &lt;article-title&gt; as the first child of &lt;meta&gt;. &lt;meta&gt; itself survives in the output, inside &lt;article-front&gt;.*
+
+<code #code:sh-meta-2>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+</code>
+
+<minipage #mp:sh-meta-2>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+</minipage>
+
+*type=book generates the book-shaped wrapper instead. Changing the single kwarg switches the entire output structure. Each book-part contains its own &lt;meta&gt; with &lt;book-part-title&gt;; no &lt;book-part-meta&gt; wrapper.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which Layer 1 wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
+| `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` | For a single-file book-part (type=book-part) only: sets the book-part-type on the generated `<book-part>` wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always "chapter". Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive `<meta>` field). Default "chapter" when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the `<chapter>` / `<appendix>` / … shorthand instead. |
+| `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is `<meta>`'s title — there is no in-header `<icon>`/`<title>` tag. |
+
+</section>
+

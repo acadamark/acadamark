@@ -82,7 +82,12 @@ function installDom(url = 'https://example.com/site/') {
   Object.defineProperty(global, 'location', { value: dom.window.location, configurable: true, writable: true });
   Object.defineProperty(global, 'history', { value: dom.window.history, configurable: true, writable: true });
   global.fetch = async (u) => {
-    const name = String(u).split('/').pop().split('?')[0];
+    // #331: each website page is now fetched at `<src>/index.emd` (its own directory); a book page's
+    // chapter children resolve master-relative at `<src>/<child>`. Map back to a FILES key: a trailing
+    // `/index.emd` → the parent segment (the page src); otherwise the path's own last segment.
+    const segs = String(u).split('?')[0].split('/').filter(Boolean);
+    let name = segs[segs.length - 1];
+    if (name === 'index.emd' && segs.length >= 2) name = segs[segs.length - 2];
     return Object.prototype.hasOwnProperty.call(FILES, name)
       ? { ok: true, status: 200, statusText: 'OK', text: async () => FILES[name] }
       : { ok: false, status: 404, statusText: 'Not Found', text: async () => '' };

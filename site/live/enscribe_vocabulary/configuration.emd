@@ -1,0 +1,34 @@
+<section #sh-config | `<config>`>
+
+<sub-section | General Usage>
+
+Semantic role: *config*. Compiles to Layer 1 `<config>`.
+
+Registers:
+
+- Canonical: `<config>`
+
+<code #code:sh-config-1>
+<config citation-style=author-year number-sections=true />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*The authoring form for &lt;config&gt; is kwargs. Settings are read at the discovery pass into the configuration registry; the element itself produces no body output (it renders as an empty &lt;config&gt;).*
+
+<code #code:sh-config-2>
+<config number-figures=true number-tables=true show-source=true />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*More operational options, all from the live kwarg allowlist (citation-style, number-sections, number-figures, number-tables, number-equations, show-source, parse-data-tables, ref-prefix-).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `notes` | kwarg |  |  |
+
+</section>
+
