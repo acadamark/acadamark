@@ -226,11 +226,13 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
 
   // The page's LIVE counterpart URL (#static-live-link): the static site (view-only — no engine) at
   // `<up>/` links to the live SPA at `<up>live/`, routed to this page via `?page=<slug>` (the SAME slug
-  // the live SPA routes on — resolvePageSlug is shared). Depth-relative (static at root, live at
-  // `/live/`). The `?page=` here is the LIVE route, NOT a chrome link, so the (tightened) `staticize`
-  // — which rewrites only `href="?page=…"` chrome links — leaves it intact.
-  const liveHrefFor = (outPath, slug) =>
-    `${'../'.repeat((outPath.match(/\//g) || []).length)}live/?page=${slug}`;
+  // the live SPA routes on — resolvePageSlug is shared). For a BOOK CHAPTER page the static URL is
+  // `<book-dir>/<stem>.html`; its live twin is `?page=<slug>&chapter=<stem>` (chapter-as-page) — so the
+  // static chapter page links to its EXACT live chapter, not just the book cover (static↔live parity).
+  // Depth-relative (static at root, live at `/live/`). The `?page=` here is the LIVE route, NOT a chrome
+  // link, so the (tightened) `staticize` — which rewrites only `href="?page=…"` chrome links — leaves it intact.
+  const liveHrefFor = (outPath, slug, chapterStem = null) =>
+    `${'../'.repeat((outPath.match(/\//g) || []).length)}live/?page=${slug}${chapterStem ? `&chapter=${chapterStem}` : ''}`;
 
   // Build the authored `<a {slug}>` internal-link resolver for a page rendered at `outPath` (#318). It is
   // INJECTED on the page's file.data (ENSCRIBE_PAGE_LINK_RESOLVER) and the engine runs it over the in-memory
@@ -343,7 +345,10 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
               ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
             });
             collectDslNames(body, siteDslNames);
-            rendered.push({ outPath, slug, title: entry.title, content: body });
+            // A book chapter's static file is `<stem>.html` (its cover is `index.html`); carry the stem so
+            // the framing pass links this chapter page to its exact live twin `?page=<slug>&chapter=<stem>`.
+            const chapterStem = fname === 'index.html' ? null : fname.replace(/\.html$/, '');
+            rendered.push({ outPath, slug, title: entry.title, content: body, chapterStem });
           }
         }
       } else {
@@ -384,12 +389,13 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   // FRAMING PASS — frame each rendered fragment in the universal shell (now carrying the site's diagram
   // runtime in its head), then staticize its `?page=` chrome links for the page's depth. (The authored
   // `<a {slug}>` content links were already resolved per fragment in PHASE 2.)
-  for (const { outPath, slug, title, content, page } of rendered) {
+  for (const { outPath, slug, title, content, page, chapterStem } of rendered) {
     // A redirect stub (cover-OFF book root) is hosted as-is — no shell, no CTA. Every framed page
-    // (article + book chapter) gets the uniform "open in playground" link to its live counterpart.
+    // (article + book chapter) gets the uniform "open in playground" link to its live counterpart
+    // (a book chapter → its exact `?page=<slug>&chapter=<stem>` live twin).
     const html = page != null
       ? page
-      : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead, playgroundHref: liveHrefFor(outPath, slug) });
+      : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead, playgroundHref: liveHrefFor(outPath, slug, chapterStem) });
     pageMap.set(outPath, staticize(html, outPath));
   }
 

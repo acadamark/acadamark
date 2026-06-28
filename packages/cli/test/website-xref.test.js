@@ -97,7 +97,6 @@ function restoreDom(orig) {
   global.fetch = orig.fetch;
 }
 const pop = (dom, search) => { dom.window.history.pushState(null, '', search); dom.window.dispatchEvent(new dom.window.Event('popstate')); };
-const hashTo = (dom, hash) => { dom.window.location.hash = hash; dom.window.dispatchEvent(new dom.window.Event('hashchange')); };
 
 export async function run_tests() {
   // ── STATIC: build the whole site from the p314 master on disk. ──
@@ -113,11 +112,12 @@ export async function run_tests() {
     const root = await mountLiveWebsite('#root', MASTER);
     const content = () => root.querySelector('[data-enscribe-content]').innerHTML;
     const artp = content();                       // first render is the home page (artp)
-    pop(dom, '?page=bookp'); hashTo(dom, '#one'); const bookpOne = content();
-    hashTo(dom, '#two'); const bookpTwo = content();
-    // atlasp is a single-chapter book; a bare ?page=atlasp shows its cover, so route to the chapter (#maps)
+    // Chapter-as-page: a chapter is the `?page=<book>&chapter=<stem>` route (not a hash).
+    pop(dom, '?page=bookp&chapter=one'); const bookpOne = content();
+    pop(dom, '?page=bookp&chapter=two'); const bookpTwo = content();
+    // atlasp is a single-chapter book; a bare ?page=atlasp shows its cover, so route to the chapter
     // — the same chapter the static build emits as atlasp/maps.html — to see the figure's native label.
-    pop(dom, '?page=atlasp'); hashTo(dom, '#maps'); const atlaspMaps = content();
+    pop(dom, '?page=atlasp&chapter=maps'); const atlaspMaps = content();
     L = { artp, bookpOne, bookpTwo, atlaspMaps };
   } finally {
     restoreDom(orig);
@@ -164,8 +164,9 @@ export async function run_tests() {
   direction('book→article', 'fig:artp', 'figure 1', 'artp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
   // (3) book→book: a book chapter's ref to the OTHER book's figure → its native "figure 1.1", owner atlasp.
   direction('book→book', 'fig:atlasp', 'figure 1.1', 'atlasp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
-  // (4) within-book: a book chapter's ref to a figure in the SAME book → "figure 2.1", owner the book page
-  //     itself (static a sibling `two.html`, live a bare `#fig:bookp` — both stay within the bookp page).
+  // (4) within-book: a book chapter's ref to a figure in the SAME book (cross-chapter: fig:bookp is in ch2)
+  //     → "figure 2.1", owner the book page itself (static a sibling `two.html`, live `?page=bookp&chapter=two`
+  //     — both stay within the bookp page; the owner normalizes to bookp on both surfaces).
   direction('within-book', 'fig:bookp', 'figure 2.1', 'bookp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
 
   console.log('All #320 website parity (static ≡ live, all four directions, book direction now covered) checks passed.');

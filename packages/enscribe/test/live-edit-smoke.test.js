@@ -31,10 +31,11 @@ function installDom() {
   const dom = new JSDOM('<!DOCTYPE html><html><body><div id="root"></div></body></html>', {
     url: 'https://example.com/book/',
   });
-  const orig = { window: global.window, document: global.document, location: global.location, fetch: global.fetch };
+  const orig = { window: global.window, document: global.document, location: global.location, history: global.history, fetch: global.fetch };
   global.window = dom.window;
   global.document = dom.window.document;
   Object.defineProperty(global, 'location', { value: dom.window.location, configurable: true, writable: true });
+  Object.defineProperty(global, 'history', { value: dom.window.history, configurable: true, writable: true });
   global.fetch = async (url) => {
     const name = String(url).split('/').pop();
     if (Object.prototype.hasOwnProperty.call(CHILDREN, name)) {
@@ -48,12 +49,14 @@ function restoreDom(orig) {
   global.window = orig.window;
   global.document = orig.document;
   Object.defineProperty(global, 'location', { value: orig.location, configurable: true, writable: true });
+  Object.defineProperty(global, 'history', { value: orig.history, configurable: true, writable: true });
   global.fetch = orig.fetch;
 }
 
-function navigate(dom, hash) {
-  dom.window.location.hash = hash;
-  dom.window.dispatchEvent(new dom.window.Event('hashchange'));
+// Navigate to a chapter via the `?chapter=` route (pushState + popstate — the standalone edit router's path).
+function gotoChapter(dom, stem) {
+  dom.window.history.pushState(null, '', `?chapter=${stem}`);
+  dom.window.dispatchEvent(new dom.window.Event('popstate'));
 }
 const tick = (ms = 5) => new Promise((r) => setTimeout(r, ms));
 
@@ -84,7 +87,7 @@ export async function run() {
       'edit mode still opens on the cover; the cover has no editor');
 
     // ── open chapter 1: the editor mounts with chapter 1's source; the preview shows fig 1.1
-    navigate(dom, '#counting-elephants');
+    gotoChapter(dom, 'counting-elephants');
     assert.strictEqual(state.mounts, 1, 'opening a chapter mounts the editor once');
     assert.ok(root.querySelector('[data-edit-pane="source"][data-editor-mounted="1"]'),
       'the editor is mounted into the source pane');
@@ -125,7 +128,7 @@ export async function run() {
     console.log('PASS: edit-loop DOM — typing re-renders only the current chapter\'s preview (debounced)');
 
     // ── the structural edit is consistent across chapters: chapter 2\'s cross-ref follows ──
-    navigate(dom, '#estimating-browse-pressure');
+    gotoChapter(dom, 'estimating-browse-pressure');
     assert.strictEqual(state.destroys, 1, 'navigating away destroyed the chapter-1 editor');
     assert.strictEqual(state.mounts, 2, 'and mounted a fresh editor for chapter 2');
     assert.ok(state.value.includes('Browse Scoring'), 'chapter 2\'s source is handed to the editor');

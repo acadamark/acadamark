@@ -102,11 +102,6 @@ function makeEditorStub() {
   };
 }
 const tick = (ms = 5) => new Promise((r) => setTimeout(r, ms));
-// A hash change inside a page (the book sub-view's in-page chapter routing fires on hashchange).
-function hashTo(dom, hash) {
-  dom.window.location.hash = hash;
-  dom.window.dispatchEvent(new dom.window.Event('hashchange'));
-}
 // The rendered <ref> anchor for a target colon-id: { href, text } (text stripped of inner markup).
 function refAnchor(html, targetId) {
   const m = String(html).match(new RegExp(`<a ([^>]*?)href="([^"]*?#${targetId.replace(/:/g, '\\:')})"([^>]*?)>([\\s\\S]*?)</a>`));
@@ -427,29 +422,32 @@ export async function run() {
         'the nested OUTER <a bookp | …> resolved (?page=bookp) too — both nested links resolve');
       console.log('PASS: #318 — <a {slug}> links resolve live: ?page= + auto-label + broken-degrade + nested-label (render-time, one registry, no re-parse)');
 
-      // (2) the book PAGE renders AS a native book — chapter routes (#one, #two), not one collapsed book-part.
+      // (2) the book PAGE renders AS a native book — chapter ROUTES (?page=bookp&chapter=one/two), not one
+      //     collapsed book-part. Chapter-as-page: the chapter is the query, fully-qualified with the page slug.
       popTo(dom, '?page=bookp');
       const hrefs = [...content().querySelectorAll('a')].map((a) => a.getAttribute('href'));
-      assert.ok(hrefs.includes('#one') && hrefs.includes('#two'),
-        'the book page renders AS a book — its chapter routes (#one, #two) are present (not flattened to one part)');
-      console.log('PASS: #314 — the book PAGE renders as a native book (its chapters #one/#two are navigable)');
+      assert.ok(hrefs.includes('?page=bookp&chapter=one') && hrefs.includes('?page=bookp&chapter=two'),
+        'the book page renders AS a book — its chapter routes (?page=bookp&chapter=one/two) are present (not flattened)');
+      console.log('PASS: #314 — the book PAGE renders as a native book (its chapters ?chapter=one/two are navigable)');
 
       // (3) inside chapter one: the three OUTBOUND ref directions resolve to native numbers + the right scheme.
-      hashTo(dom, '#one');
+      popTo(dom, '?page=bookp&chapter=one');
       const ch1 = content().innerHTML;
       const bToA = refAnchor(ch1, 'fig:artp');      // book→article: the article's native "figure 1"
       const bToB = refAnchor(ch1, 'fig:atlasp');    // book→book: the OTHER book's native "figure 1.1"
-      const within = refAnchor(ch1, 'fig:bookp');   // within-book: a bare #anchor (the book router scrolls)
+      const within = refAnchor(ch1, 'fig:bookp');   // within-book CROSS-chapter (fig:bookp is in chapter two)
       assert.ok(bToA && bToA.text === 'figure 1' && ownerOfHref(bToA.href) === 'artp',
         `book→article shows the article native "figure 1" → ?page=artp (got ${JSON.stringify(bToA)})`);
       assert.ok(bToB && bToB.text === 'figure 1.1' && ownerOfHref(bToB.href) === 'atlasp',
         `book→book shows the OTHER book's native "figure 1.1" → ?page=atlasp (got ${JSON.stringify(bToB)})`);
-      assert.ok(within && within.text === 'figure 2.1' && within.href === '#fig:bookp',
-        `within-book ref shows "figure 2.1" + a bare #anchor (intra-page; the book sub-view's router scrolls) (got ${JSON.stringify(within)})`);
-      console.log('PASS: #314 — book→article "figure 1"→?page=artp · book→book "figure 1.1"→?page=atlasp · within-book "figure 2.1"→#anchor');
+      // refAnchor reads the raw innerHTML, where the href's `&` serializes as the entity `&amp;` (getAttribute
+      // would decode it — as the rail assertion above shows). Decode it to compare the functional URL.
+      assert.ok(within && within.text === 'figure 2.1' && within.href.replace(/&amp;/g, '&') === '?page=bookp&chapter=two#fig:bookp',
+        `within-book cross-chapter ref shows "figure 2.1" + the owning chapter route + section (?page=bookp&chapter=two#fig:bookp) (got ${JSON.stringify(within)})`);
+      console.log('PASS: #314 — book→article "figure 1"→?page=artp · book→book "figure 1.1"→?page=atlasp · within-book cross-chapter "figure 2.1"→?page=bookp&chapter=two#fig:bookp');
 
       // (4) navigating within the book to chapter two: the figure carries its BOOK native label "Figure 2.1".
-      hashTo(dom, '#two');
+      popTo(dom, '?page=bookp&chapter=two');
       assert.ok(/Figure\s*2\.1\b/.test(content().textContent),
         'the book figure carries its BOOK native label "Figure 2.1" (chapter-scoped), not a page-scope "Figure 1"');
       console.log('PASS: #314 — the book figure is "Figure 2.1" (book numbering) on its chapter view');
@@ -464,8 +462,8 @@ export async function run() {
   // above exercise only ARTICLE pages, and the per-chapter book edit was tested only via mountLiveBook DIRECTLY
   // (a route the SPA never takes) — so this combination (a book PAGE inside a website, in edit mode) had ZERO
   // coverage. Assert the fix end-to-end: the per-chapter edit view (rail + Source/Preview tabs + ASSEMBLED
-  // chapter prose in the preview + the chapter's OWN source in the editor), a #stem switching the editable
-  // chapter, and an edit round-tripping into the preview.
+  // chapter prose in the preview + the chapter's OWN source in the editor), a ?chapter= change switching the
+  // editable chapter, and an edit round-tripping into the preview.
   {
     const { dom, orig } = installDom();
     const stub = makeEditorStub();
@@ -473,15 +471,15 @@ export async function run() {
       const root = await mountLiveWebsite('#root', FILES['p314-master.emd'], { editor: stub.editor, editDebounceMs: 0 });
       const content = () => root.querySelector('[data-enscribe-content]');
       const preview = () => content().querySelector('[data-edit-pane="preview"]');
-      // Navigate to the BOOK page in edit mode, then into chapter ONE.
+      // Navigate to the BOOK page in edit mode, then into chapter ONE (the ?chapter= route).
       popTo(dom, '?page=bookp');
-      hashTo(dom, '#one');
+      popTo(dom, '?page=bookp&chapter=one');
       // (1) the per-chapter EDIT view is reached — Write/Preview tabs + the book's chapter rail (NOT the empty master).
       assert.ok(content().querySelector('[data-edit-tab]'),
         'a book page in edit mode shows the per-chapter Write/Preview edit view (tabs present), not the article fallback');
       const railHrefs = [...content().querySelectorAll('a')].map((a) => a.getAttribute('href'));
-      assert.ok(railHrefs.includes('#one') && railHrefs.includes('#two'),
-        'the editable book carries its chapter rail (#one/#two routes) — NOT the rail-less empty master');
+      assert.ok(railHrefs.includes('?page=bookp&chapter=one') && railHrefs.includes('?page=bookp&chapter=two'),
+        'the editable book carries its chapter rail (?chapter=one/two routes) — NOT the rail-less empty master');
       // (2) the editor mounted with THIS CHAPTER's source (Chapter One), NOT the book master (<meta type=book>).
       assert.ok(stub.last && /Chapter One/.test(stub.last.value),
         `the editor holds chapter ONE's source (got: ${JSON.stringify(stub.last && stub.last.value.slice(0, 36))})`);
@@ -495,13 +493,13 @@ export async function run() {
       await tick();
       assert.ok(/UNIFY-EDIT-MARKER/.test(preview().textContent),
         'an edit to the chapter source re-renders that chapter\'s preview (round-trip), like the article edit');
-      // (5) a #stem change switches the EDITABLE chapter — the editor re-mounts with chapter TWO's source.
+      // (5) a ?chapter= change switches the EDITABLE chapter — the editor re-mounts with chapter TWO's source.
       const priorMount = stub.last;
-      hashTo(dom, '#two');
+      popTo(dom, '?page=bookp&chapter=two');
       assert.ok(stub.last !== priorMount && /Chapter Two/.test(stub.last.value),
-        'a #stem hash change switches the editable chapter (editor re-mounts with chapter TWO source)');
+        'a ?chapter= change switches the editable chapter (editor re-mounts with chapter TWO source)');
       assert.strictEqual(priorMount.destroyed, true, 'the prior chapter editor was destroyed on the chapter switch (no leak)');
-      console.log('PASS: #unify — a book PAGE edits PER-CHAPTER in the website (rail + assembled preview + per-chapter source + #stem switch + round-trip)');
+      console.log('PASS: #unify — a book PAGE edits PER-CHAPTER in the website (rail + assembled preview + per-chapter source + ?chapter= switch + round-trip)');
     } finally { restoreDom(orig); }
   }
 
