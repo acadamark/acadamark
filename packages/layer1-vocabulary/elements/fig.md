@@ -48,7 +48,9 @@ enscribe_attributes:
         renders a visible asset-error rather than a broken image. Assets
         merge project-wide across an assembled document; the same id declared
         in two `<data>` blocks is last-wins with a visible collision flag.
-        (JATS `<graphic>` export of assets is the remaining slice.)
+        (JATS `<graphic>` export of assets is done — an embedded asset
+        projects to a `data:` URI, an external one to the rebased path,
+        DTD-valid; the opaque-store design is `notes/specs/data-store.md`.)
     alt:
       handled_by: handler
       notes: |
