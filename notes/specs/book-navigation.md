@@ -33,7 +33,11 @@ by default, and it preserves the existing book view, which already renders this 
 `split-by` sets the granularity at which the book becomes navigable units:
 
 - `chapter` (default) — each chapter is its own page/route; the rail and prev/next move between
-  chapters. This is what the live render and the static separate-pages build do today.
+  chapters. This is what the live render and the static separate-pages build do today. The chapter is an
+  **addressable page**: static a per-chapter file (`<book-dir>/<stem>.html`), live a query route
+  (`?chapter=<stem>`, or `?page=<slug>&chapter=<stem>` inside a website) — analogous forms of the same
+  unit. A section WITHIN a chapter is the URL **hash** (`…#<id>`), so a section is independently
+  deep-linkable; the chapter (the page) and the section (the hash) never compete for one slot.
 - `section` — split one level deeper, so each top-level section is its own unit.
 - `none` — the whole book is a single scroll, with the rail acting as in-page jump links.
 

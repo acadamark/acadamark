@@ -128,7 +128,11 @@ cross-page href resolver:
 - **static** — a dir-per-page tree: each page is written at its nav-path location and addressed by a
   pretty trailing-slash path URL relative to the current page's depth (`../references/export/`); the
   home page (empty nav-path) is the dist root (`index.html`).
-- **live** — the single-page app keeps client-side `?page=slug` routing.
+- **live** — the single-page app keeps client-side `?page=slug` routing. A book page's CHAPTER is a
+  sub-route on the same query: `?page=slug&chapter=<stem>` (the chapter-as-page scheme — analogous to
+  the static `<book-dir>/<stem>.html`), and the URL **hash** is purely a section anchor within a
+  chapter (`?page=slug&chapter=<stem>#<id>`), so a section is deep-linkable. `&edit` is just another
+  query param, so chapter + edit are order-independent.
 
 > **One engine, two adapters, two scheme hooks (the realized form, #324).** Both surfaces run the
 > *same* composition engine — `composeSiteRegistry` (Phase 1 above) — and differ in exactly **two**
@@ -137,8 +141,11 @@ cross-page href resolver:
 > SPA are two callers of one engine; see *Relationships and the live deviation*.
 
 A cross-page reference's href is realized to the **owner page's** scheme (a reference into a book page
-points at the owning chapter-page's file/route, with the anchor preserved). An intra-page reference
-keeps a bare `#anchor` (the owning page is the one being served).
+points at the owning chapter-page's file/route — static `<book-dir>/<stem>.html#anchor`, live
+`?page=slug&chapter=<stem>#anchor` — with the anchor preserved). A same-page reference into ANOTHER
+chapter of the book being served is realized to that chapter's route too (static a sibling
+`<stem>.html#anchor`, live `?chapter=<stem>#anchor`); only a SAME-chapter reference keeps a bare
+`#anchor` (a pure in-page scroll).
 
 > **Parity contract.** The static and live surfaces are compared on the **display number** and a
 > **scheme-normalized owner** — never on raw hrefs, which differ by design (a `.html` path vs a
@@ -215,9 +222,10 @@ and never halt rendering. The one boundary is structural rather than content: a 
   needed (parse5 was a browser-bundle hazard, #25) from the slug-link path entirely; cross-page `<ref>`s — a
   *different*, string-only resolver (`rewriteCrossPageHrefs`) — already resolve live, in every direction.
 - **The live edit surface is uniform across page types.** A book PAGE in edit mode edits PER-CHAPTER — the
-  same `mountEditLoop` machinery the standalone book mount uses, embedded so the website's own `?page=`/`#hash`
-  router drives it: `?page=book&edit` assembles the book's chapter children and renders the per-chapter edit
-  view, a `#stem` switching the editable chapter, mirroring how **read** mode renders it as a book. (This closed
+  same `mountEditLoop` machinery the standalone book mount uses, embedded so the website's own
+  `?page=`/`?chapter=`/`#hash` router drives it: `?page=book&chapter=<stem>&edit` assembles the book's chapter
+  children and renders the per-chapter edit view, the `?chapter=` route switching the editable chapter (order-
+  independent with `&edit`), mirroring how **read** mode renders it as a book. (This closed
   the one earlier live lag, where a book-page edit preview rendered the master standalone — empty chapters.) As
   with the article edit preview, a cross-page `<ref>` to ANOTHER page stays unresolved while editing (the
   standalone-render approximation); the authoritative link is the read render / on reload.

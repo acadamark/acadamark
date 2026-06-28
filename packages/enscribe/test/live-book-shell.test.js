@@ -25,10 +25,11 @@ function installDom() {
   const dom = new JSDOM('<!DOCTYPE html><html><body><div id="root"></div></body></html>', {
     url: 'https://example.com/book/',
   });
-  const orig = { window: global.window, document: global.document, location: global.location, fetch: global.fetch };
+  const orig = { window: global.window, document: global.document, location: global.location, history: global.history, fetch: global.fetch };
   global.window = dom.window;
   global.document = dom.window.document;
   Object.defineProperty(global, 'location', { value: dom.window.location, configurable: true, writable: true });
+  Object.defineProperty(global, 'history', { value: dom.window.history, configurable: true, writable: true });
   global.fetch = async (url) => {
     const name = String(url).split('/').pop();
     if (Object.prototype.hasOwnProperty.call(SERVED, name)) {
@@ -42,11 +43,13 @@ function restoreDom(orig) {
   global.window = orig.window;
   global.document = orig.document;
   Object.defineProperty(global, 'location', { value: orig.location, configurable: true, writable: true });
+  Object.defineProperty(global, 'history', { value: orig.history, configurable: true, writable: true });
   global.fetch = orig.fetch;
 }
-function navigate(dom, hash) {
-  dom.window.location.hash = hash;
-  dom.window.dispatchEvent(new dom.window.Event('hashchange'));
+// Navigate to a chapter via the `?chapter=` route (pushState + popstate — the standalone router's path).
+function gotoChapter(dom, stem) {
+  dom.window.history.pushState(null, '', `?chapter=${stem}`);
+  dom.window.dispatchEvent(new dom.window.Event('popstate'));
 }
 
 // A fake editor factory + adapter, counting factory-builds and editor-mounts.
@@ -75,7 +78,7 @@ export async function run() {
       assert.strictEqual(s.builds, 0, 'edit off → the editorFactory is NOT called (CodeMirror never loaded)');
       assert.ok(root.innerHTML.includes('Select a chapter to begin reading.'),
         'edit off → read mode opens on the cover (#209)');
-      navigate(dom, '#counting-elephants');
+      gotoChapter(dom, 'counting-elephants');
       assert.ok(root.querySelector('book-part') && !root.querySelector('[data-editor-mounted]'),
         'edit off → a chapter renders read-only (no editor pane)');
       console.log('PASS: shell #213 — flag off mounts read mode; the editor is never built');
@@ -91,7 +94,7 @@ export async function run() {
       assert.strictEqual(s.builds, 1, 'edit on → the editorFactory is built once (CodeMirror loaded host-side)');
       assert.ok(root.innerHTML.includes('Select a chapter to begin reading.') && s.mounts === 0,
         'edit on → still opens on the cover (no editor on the cover)');
-      navigate(dom, '#counting-elephants');
+      gotoChapter(dom, 'counting-elephants');
       assert.ok(root.querySelector('[data-edit-pane="source"][data-editor-mounted="1"]') && s.mounts === 1,
         'edit on → opening a chapter mounts the editor (the #211 loop)');
       console.log('PASS: shell #213 — flag on builds the editor once and mounts it on a chapter');
@@ -106,7 +109,7 @@ export async function run() {
       dom.window.document.getElementById('root').setAttribute('data-enscribe-edit', '');
       const root = await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory });
       assert.strictEqual(s.builds, 1, 'data-enscribe-edit present → edit mode (factory built)');
-      navigate(dom, '#counting-elephants');
+      gotoChapter(dom, 'counting-elephants');
       assert.ok(root.querySelector('[data-editor-mounted="1"]'), 'data-enscribe-edit → the editor mounts');
       console.log('PASS: shell #213 — the data-enscribe-edit attribute enables edit mode');
     } finally { restoreDom(orig); }

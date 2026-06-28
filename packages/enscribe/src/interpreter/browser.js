@@ -32,7 +32,7 @@ import {
   renderLiveChapterPreviewBody,
   renderLiveArticleEditView,
   createIncrementalRebuilder,
-  resolveHash,
+  resolveRoute,
   composeSiteRegistry,
   rewriteCrossPageHrefs,
   resolvePageSlug,
@@ -330,6 +330,46 @@ export async function renderMasterIntoAsync(target, source, options = {}) {
   return el;
 }
 
+// ─── Chapter-as-page routing helpers (shared by the three live book routers) ─────────────────────────
+// A chapter is addressed by the `?chapter=<stem>` QUERY (not the hash); the hash is purely a section
+// anchor. These read the current route and intercept query-nav clicks so a chapter link is an SPA nav
+// (a history entry → Back walks chapters) rather than a full reload.
+
+/** The current route: the `?chapter=` stem (‹empty› = cover) + the `#` section hash. */
+function currentRoute() {
+  const search = (typeof location !== 'undefined' && location.search) || '';
+  const hash = (typeof location !== 'undefined' && location.hash) || '';
+  return { chapter: new URLSearchParams(search).get('chapter') || '', hash };
+}
+
+/** Bind the shared query-nav click interceptor on `root`: a `<a href="?…">` (a chapter route, the cover
+ *  link, or a cross-chapter / cross-page ref) → pushState the MERGED URL — preserve the current query
+ *  (notably `&edit`, and in a website `&page`), overlay the link's `page`/`chapter` (a link without
+ *  `chapter` CLEARS it → the cover), carry the link's hash — then `route()`. Without this a `?chapter=`
+ *  href would reload the page. `onNav` runs after the pushState (the website closes an open nav dropdown
+ *  — the rider). One interceptor, both contexts: a standalone book's links carry no `page` (untouched);
+ *  a website's links carry `page` (overlaid). */
+function bindRouteNav(root, route, onNav) {
+  if (typeof window === 'undefined' || !root || typeof root.addEventListener !== 'function') return;
+  root.addEventListener('click', (ev) => {
+    const a = ev.target && ev.target.closest && ev.target.closest('a[href^="?"]');
+    if (!a) return;
+    ev.preventDefault();
+    const here = (typeof location !== 'undefined' && location.href) || 'http://localhost/';
+    const link = new URL(a.getAttribute('href'), here);
+    const next = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+    const pg = link.searchParams.get('page');
+    if (pg != null) next.set('page', pg);                       // website: overlay the target page
+    const ch = link.searchParams.get('chapter');
+    if (ch) next.set('chapter', ch); else next.delete('chapter'); // a link without chapter → the cover
+    if (typeof history !== 'undefined' && typeof history.pushState === 'function') {
+      history.pushState(null, '', `?${next}${link.hash}`);
+    }
+    if (typeof onNav === 'function') onNav();
+    route();
+  });
+}
+
 /**
  * Mount a multi-file BOOK master as a LIVE, hash-routed reading app (live track, L2 —
  * #208). The live counterpart of `enscribe build`'s separate-pages output (P1, #205):
@@ -415,8 +455,9 @@ export async function mountLiveBook(target, source, options = {}) {
 
   let currentKey = null;                          // 'cover' | a chapter index | null (unmounted)
   const route = () => {
-    const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', model);
-    if (dest == null) return;                     // unknown anchor owned by no chapter — no-op
+    const { chapter, hash } = currentRoute();
+    const dest = resolveRoute(chapter, hash, model);
+    if (dest == null) return;                     // unknown chapter stem — no-op
     const key = dest.cover ? 'cover' : dest.index;
     if (key !== currentKey) {
       root.innerHTML = viewFor(key);
@@ -425,7 +466,7 @@ export async function mountLiveBook(target, source, options = {}) {
       // after each chapter swap (idempotent; a no-op when back-to-top is off or unbuilt).
       if (model.bookNav.backToTop) bindBackToTop();
     }
-    // An in-chapter / cross-chapter anchor: scroll to it once its owning chapter is mounted.
+    // A section anchor: scroll to it once its owning chapter is mounted.
     if (!dest.cover && dest.anchor && typeof document !== 'undefined') {
       const anchorEl = document.getElementById(dest.anchor);
       if (anchorEl && typeof anchorEl.scrollIntoView === 'function') anchorEl.scrollIntoView();
@@ -433,9 +474,11 @@ export async function mountLiveBook(target, source, options = {}) {
   };
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-    window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);   // back/forward over the ?chapter= route (pushState is silent)
+    window.addEventListener('hashchange', route); // a #section anchor change → scroll within the chapter
+    bindRouteNav(root, route);                    // ?chapter= links are query nav → intercept (no reload)
   }
-  route();                                        // initial render from the current hash
+  route();                                        // initial render from the current ?chapter= + #section
   return root;
 }
 
@@ -500,13 +543,13 @@ function wireEditTabs(root) {
  * keeping CodeMirror (a browser-only dependency) out of the engine and out of jsdom — the
  * gate drives this loop through a fake adapter.
  */
-function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs, embedded = false }) {
+function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs, embedded = false, pageSlug = null }) {
   const loaded = loadedFile.data[ENSCRIBE_LOADED_SOURCES] || {};
   // The editable in-memory source map (structure children), seeded from the fetched sources.
   const sources = new Map();
   for (const src of childSrcs) sources.set(src, readPreloadedChild(loaded, src));
 
-  const rebuilder = createIncrementalRebuilder({ masterSource, sources, proc, loadedSources: loaded });
+  const rebuilder = createIncrementalRebuilder({ masterSource, sources, proc, loadedSources: loaded, pageSlug });
   let { model, file } = rebuilder.rebuild();   // the initial (full) build
   let ctx = { proc, file };
 
@@ -590,7 +633,8 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
   };
 
   const route = () => {
-    const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', model);
+    const { chapter, hash } = currentRoute();
+    const dest = resolveRoute(chapter, hash, model);
     if (dest == null) return;
     if (dest.cover) {
       if (currentKey !== 'cover') renderCover();
@@ -604,14 +648,17 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
   };
 
   // EMBEDDED (the page-edit unification): when mountLiveWebsite mounts a book PAGE in edit mode it
-  // drives the `?page=`/`#hash` routing itself (ONE router), so the loop must NOT add a second
-  // hashchange listener. Embedded, it exposes `route()` (the host calls it on an in-page `#stem`
-  // change to switch the editable chapter) and `teardown()` (cancel the pending rebuild + destroy the
-  // editor when the host navigates away). Standalone (the default) keeps its own listener and returns
-  // the mount element — byte-behaviour-identical to before this flag existed.
+  // drives the `?page=`/`?chapter=`/`#hash` routing itself (ONE router), so the loop must NOT add its
+  // own listeners. Embedded, it exposes `route()` (the host calls it on a `?chapter=`/`#section` change
+  // to switch the editable chapter) and `teardown()` (cancel the pending rebuild + destroy the editor
+  // when the host navigates away). Standalone (the default) keeps its OWN listeners — popstate +
+  // hashchange + the query-nav interceptor (a `?chapter=` rail link is query nav, not a hash change) —
+  // and returns the mount element.
   const teardown = () => { debouncedRebuild.cancel(); destroyEditor(); };
   if (!embedded && typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('popstate', route);
     window.addEventListener('hashchange', route);
+    bindRouteNav(root, route);
   }
   route();
   return embedded ? { root, route, teardown } : root;
@@ -947,14 +994,23 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const pageBySlug = new Map(pageData.map((pd) => [pd.slug, pd]));
 
   // The live cross-page REF resolver (#318 refs; slug-LINKS are a follow-on slice). A `<ref>`'s owner key →
-  // its PAGE slug (a book chapter owner `slug::fname` → `slug`): a ref whose owner is ANOTHER page becomes
-  // `?page=slug#anchor`; an intra-page / same-book ref stays a bare `#anchor` (the page — or its book
-  // sub-view's router — scrolls to it). Reuses rewriteCrossPageHrefs (the SAME browser-safe string rewriter
-  // the static build uses, NO parse5), the `?page=` scheme being the only output difference (website.md).
+  // the target's PAGE route: a ref whose owner is ANOTHER page becomes `?page=slug[&chapter=stem]#anchor`;
+  // an intra-page / same-book-chapter ref stays a bare `#anchor` (live-book's own cross-chapter rewrite
+  // handles same-book chapter switches; the in-chapter ones scroll). The owner key for a book chapter is
+  // `slug::<stem>.html` (compose-site.js) — so a cross-page ref to a BOOK section carries the owning
+  // CHAPTER too (chapter-as-page: the target book's router reads `?chapter=`, the hash is purely the
+  // section). An article owner is a bare `slug` (no `::`); a book COVER owner is `slug::index.html` (no
+  // chapter). Reuses rewriteCrossPageHrefs (the SAME browser-safe string rewriter the static build uses).
   const pageSlugOfOwner = (owner) => String(owner).split('::')[0];
+  // owner → the cross-page route TAIL after the slug: `&chapter=<stem>` for a book chapter, '' otherwise.
+  const chapterQueryOfOwner = (owner) => {
+    const fname = String(owner).split('::')[1];
+    if (!fname || fname === 'index.html') return '';
+    return `&chapter=${fname.replace(/\.html$/, '')}`;
+  };
   const resolveRefs = (html, thisSlug) => rewriteCrossPageHrefs(html, null, {
     ownerOf: (anchor) => { const o = idToOwner.get(anchor); return o != null && pageSlugOfOwner(o) !== thisSlug ? o : null; },
-    hrefFor: (owner, anchor) => `?page=${pageSlugOfOwner(owner)}#${anchor}`,
+    hrefFor: (owner, anchor) => `?page=${pageSlugOfOwner(owner)}${chapterQueryOfOwner(owner)}#${anchor}`,
   });
   // The authored `<a {slug}>` LINK resolver (#318) — injected on each page's file.data so the engine resolves
   // the `<a data-page-slug>` markers IN-TREE at render time (resolvePageSlugLinksInTree), the SAME mechanism
@@ -1020,7 +1076,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // Per-page render (website.md Phase 2, lazy). An ARTICLE page renders its source over a FRESH read-through
   // seed (its own numbering shadows; a cross-page anchor reads the merged registry's NATIVE number), cached
   // (hash-independent). A BOOK page renders as a native book SUB-VIEW (#314): re-number the pre-assembled
-  // book over the seed → buildLiveBook → render the chapter/cover the in-page #hash selects (resolveHash),
+  // book over the seed → buildLiveBook → render the chapter/cover the `?chapter=` selects (resolveRoute),
   // each chapter cached. executeAssets runs on every FIRST build (innerHTML does not run <script>).
   const articleCache = new Map();              // slug → rendered article HTML (hash-independent)
   const executed = new Set();
@@ -1039,12 +1095,14 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // no-config-toc article has no ToC. The shell renders only the nav bar + this content slot.
   };
 
-  // Render the chapter/cover the CURRENT #hash selects for the active book page. A new chapter swaps the
-  // content + executes its assets; an in-chapter anchor scrolls once mounted. The book carries its OWN
-  // layout (chapter rail + reading column + on-this-page) inside the content slot — the shell adds none.
+  // Render the chapter/cover the CURRENT `?chapter=` selects for the active book page; the `#hash` is the
+  // section anchor to scroll to. A new chapter swaps the content + executes its assets; the section anchor
+  // scrolls once mounted. The book carries its OWN layout (chapter rail + reading column + on-this-page)
+  // inside the content slot — the shell adds none.
   const renderBookChapter = () => {
     const b = currentBook;
-    const dest = resolveHash((typeof location !== 'undefined' && location.hash) || '', b.model);
+    const { chapter, hash } = currentRoute();
+    const dest = resolveRoute(chapter, hash, b.model);
     const key = dest == null || dest.cover ? 'cover' : dest.index;
     if (key !== b.currentKey) {
       if (!b.chapterCache.has(key)) {
@@ -1068,7 +1126,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
       // resolve to the target's native number) on a FRESH tree (not Phase 1's). loaded sources + the seed +
       // the authored `<a {slug}>` resolver (#318), which the per-chapter stringify resolves in-tree.
       const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded, ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(pd.slug) } };
-      currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(assembleBookTree(pd.source, loaded), f), file: f }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
+      // pageSlug = pd.slug → the book sub-view's rail/route hrefs are fully-qualified `?page=<slug>&chapter=…`
+      // (copyable section deep-links), and its cross-chapter refs route within the page.
+      currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(assembleBookTree(pd.source, loaded), f), file: f, pageSlug: pd.slug }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
       renderBookChapter();
     } else {
       currentBook = null;
@@ -1123,7 +1183,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
         root: contentRegion, proc, masterSource: pd.source,
         childSrcs: discoverChildSrcs(proc, pd.source),
         loadedFile: { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } },
-        editor, debounceMs, embedded: true,
+        editor, debounceMs, embedded: true, pageSlug: pd.slug,
       });
       return;
     }
@@ -1184,39 +1244,38 @@ export async function mountLiveWebsite(target, source, options = {}) {
       // move aria-current to the active page in the (persistent) chrome — no rebuild (both modes).
       setActivePage(root, dest.notFound ? null : slug);
     } else if (currentBook && !editor) {
-      // SAME book page (READ), only the in-page #hash changed → switch chapter (the book sub-view's own routing).
+      // SAME book page (READ): the `?chapter=` and/or `#section` changed → switch chapter / scroll (the
+      // book sub-view's own routing reads both from the URL).
       renderBookChapter();
     } else if (currentBookEdit) {
-      // SAME book page (EDIT), the in-page #hash changed → switch the EDITABLE chapter. The embedded book edit
-      // loop owns the per-chapter render + the source→chapter swap; we just drive its router (book sub-routing
-      // is a property of the active page being a book, NOT of read-vs-edit mode).
+      // SAME book page (EDIT): the `?chapter=`/`#section` changed → switch the EDITABLE chapter. The embedded
+      // book edit loop owns the per-chapter render + the source→chapter swap; we just drive its router (book
+      // sub-routing is a property of the active page being a book, NOT of read-vs-edit mode).
       currentBookEdit.route();
     }
     // An ARTICLE `?page=…#anchor` deep-link scrolls here (after mount); a BOOK page (read or edit) scrolls to its
-    // anchor inside its own router (renderBookChapter / the embedded edit loop) once the owning chapter mounts.
+    // section anchor inside its own router (renderBookChapter / the embedded edit loop) once the chapter mounts.
     if (!currentBook && !currentBookEdit) scrollToHash();
+  };
+
+  // The rider: a dropdown item is a `?page=` link INSIDE the open `<details>` panel, so the outside-click /
+  // Escape dismissal (bindWebsiteNavDismiss) correctly does NOT fire on it — close any open nav dropdown
+  // after a route nav so picking an item navigates AND closes the panel. (Static is moot: a full reload
+  // resets the dropdown.) Single dismissal action, shared by every query-nav click via bindRouteNav.
+  const closeOpenDropdowns = () => {
+    if (typeof document === 'undefined') return;
+    document.querySelectorAll('details.enscribe-site-dropdown[open]').forEach((d) => d.removeAttribute('open'));
   };
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
     window.addEventListener('popstate', route);   // back/forward — pushState does NOT fire popstate
-    // hashchange drives the book sub-view's in-page chapter routing (a `#stem`/`#anchor` link inside a
-    // book page) AND an article's `#anchor` deep-link scroll; route() is a no-op when neither applies.
+    // hashchange drives the book sub-view's in-page section scroll (a `#anchor` inside a book page) AND an
+    // article's `#anchor` deep-link scroll; route() is a no-op when neither applies.
     window.addEventListener('hashchange', route);
-    // Delegated internal nav: any `?page=` link (incl. cross-page ref hrefs) → pushState + route,
-    // PRESERVING other query params (e.g. &edit) — never a bare `?page=slug` that wipes the query.
-    root.addEventListener('click', (ev) => {
-      const a = ev.target && ev.target.closest && ev.target.closest('a[href^="?page="]');
-      if (!a) return;
-      ev.preventDefault();
-      const here = (typeof location !== 'undefined' && location.href) || 'http://localhost/';
-      const link = new URL(a.getAttribute('href'), here);
-      const next = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
-      next.set('page', link.searchParams.get('page') || firstSlug || '');
-      if (typeof history !== 'undefined' && typeof history.pushState === 'function') {
-        history.pushState(null, '', `?${next}${link.hash}`);
-      }
-      route();
-    });
+    // Delegated internal nav: any `?…` route link (a `?page=` page link, a `?page=…&chapter=…` chapter route,
+    // a cross-page/cross-chapter ref) → pushState (preserving &edit) + route. The shared bindRouteNav owns the
+    // merge; the rider closes an open dropdown after the nav.
+    bindRouteNav(root, route, closeOpenDropdowns);
   }
 
   // Initial deep-link: normalize the URL with replaceState (no duplicate history entry), then render.

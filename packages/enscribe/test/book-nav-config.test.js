@@ -17,7 +17,7 @@ import {
   buildLiveBook,
   renderLiveChapterView,
   renderLiveCoverView,
-  resolveHash,
+  resolveRoute,
 } from '../src/interpreter/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -71,7 +71,7 @@ export async function run() {
     assert.ok(staticPage.includes(PREV_NEXT), 'default: static prev/next present');
     assert.ok(chapterView.includes(PREV_NEXT), 'default: live prev/next present');
     assert.ok(!pages.get('index.html').includes('http-equiv="refresh"'), 'default: index.html is a real cover');
-    assert.equal(resolveHash('', model).cover, true, 'default: live empty hash → cover');
+    assert.equal(resolveRoute('', '', model).cover, true, 'default: live no-chapter route → cover');
     assert.ok(!staticPage.includes(BACK_TO_TOP_BTN), 'default: no back-to-top control');
     assert.ok(!staticPage.includes(RAIL_SECTIONS), 'default: rail is chapters-only (depth 1)');
     assert.ok(staticPage.includes(ON_THIS_PAGE), 'default: static on-this-page rail present');
@@ -135,8 +135,8 @@ export async function run() {
     const index = pages.get('index.html');
     assert.ok(index.includes('http-equiv="refresh"'), 'cover=false: static index.html is a redirect');
     assert.ok(/url=[^"]*\.html/.test(index), 'cover=false: the redirect targets the first chapter page');
-    const dest = resolveHash('', model);
-    assert.ok(dest.cover === false && dest.index === 0, 'cover=false: live empty hash → first chapter');
+    const dest = resolveRoute('', '', model);
+    assert.ok(dest.cover === false && dest.index === 0, 'cover=false: live no-chapter route → first chapter');
     console.log('PASS: cover=false lands on the first chapter (static redirect + live route)');
   }
 
@@ -189,10 +189,10 @@ export async function run() {
     const liveCover = renderLiveCoverView(buildLiveBook({ numbered: l.numbered, file: l.file }));
     assert.ok(staticCover.includes(CONTENTS), '<config toc>: static cover renders the contents overview');
     assert.ok(liveCover.includes(CONTENTS), '<config toc>: live cover renders the contents overview');
-    // cross-shape hrefs: static cross-page (`slug.html`, `slug.html#id`), live route (`#stem`).
+    // cross-shape hrefs: static cross-page (`slug.html`, `slug.html#id`), live route (`?chapter=<stem>`).
     assert.ok(/href="counting-elephants\.html"/.test(staticCover), 'static overview: chapter href is the page URL');
     assert.ok(/href="counting-elephants\.html#/.test(staticCover), 'static overview: section href is page#anchor');
-    assert.ok(/href="#counting-elephants"/.test(liveCover), 'live overview: chapter href is the #stem route');
+    assert.ok(/href="\?chapter=counting-elephants"/.test(liveCover), 'live overview: chapter href is the ?chapter= route');
     // static ≡ live: the same listing, modulo href form (proves both shapes build one overview).
     const listingOf = (html) => {
       const m = html.match(/<nav class="enscribe-contents"[\s\S]*?<\/nav>/);

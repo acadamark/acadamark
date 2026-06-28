@@ -1212,13 +1212,14 @@ export { makeReadThroughRegistry, ensureRegistry } from '../core/registry.js';
 // (no page shell), so the static-website build can host a book inside its own universal
 // shell instead of stapling chrome onto a finished book page.
 export { publishBookPages, publishBookPageBodies, prepareBook } from '../master-document/publish-pages.js';
-// Live app-shell book render, L2 (#208): the live counterpart of P1 — render the CURRENT
-// chapter live from .emd source, hash-routed and lazy. buildLiveBook is the pure model
-// (scaffold + router maps + harvested registry); renderLiveChapterView the per-chapter
-// mounted view (renderChapter + C's chrome, hash hrefs); resolveHash the pure router
-// core. The browser entry (browser.js mountLiveBook) wraps these with the fetch loader,
-// the DOM mount, and the hashchange router. Shares P1's book-scaffold for content parity.
-export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderLiveCoverView, resolveHash, chapterHash } from '../master-document/live-book.js';
+// Live app-shell book render, L2 (#208): the live counterpart of P1 — render the CURRENT chapter live
+// from .emd source, routed by the chapter-as-page scheme (`?chapter=<stem>` query; the hash is purely a
+// section anchor) and lazy. buildLiveBook is the pure model (scaffold + router maps + harvested registry);
+// renderLiveChapterView the per-chapter mounted view (renderChapter + C's chrome, `?chapter=` route hrefs);
+// resolveRoute the pure router core (chapter from the query, section from the hash); chapterHref/coverHref/
+// sectionHref the route-href builders. The browser entry (browser.js) wraps these with the fetch loader,
+// the DOM mount, and the popstate/hashchange/query-nav router. Shares P1's book-scaffold for content parity.
+export { buildLiveBook, renderLiveChapterContent, renderLiveChapterView, renderLiveCoverView, resolveRoute, chapterHref, coverHref, sectionHref } from '../master-document/live-book.js';
 // Edit loop, L2 follow-up (#203 payoff): the incremental rebuilder (re-parse only the edited
 // chapter via a memoized parse + clone; re-run the cheap global pass) and the GitHub-style
 // Write/Preview edit view. The pure core of the authoring loop; browser.js mountLiveBook wires

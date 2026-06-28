@@ -30,6 +30,7 @@ import { toHtml } from 'hast-util-to-html';
 import { buildChapterRail, buildOnThisPage, buildContentsListing, chapterNavBar } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
+import { rewriteCrossPageHrefs } from './cross-page-links.js';
 import { assembleMasterDocument } from './assemble.js';
 import { buildEditMainInner } from './live-edit-view.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
@@ -59,16 +60,29 @@ import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 // render path; converging them onto one seam (e.g. the toc.js rail builders) is a deferred follow-on.
 const BOOK_LIVE_RAIL_SCRIPTS = `<script>${SCROLL_SPY_JS}</script><script>${ON_THIS_PAGE_JS}</script>`;
 
-// The cover route (#209): the empty / root hash. Opening the shell (no hash) lands on the
-// cover, and the return-to-cover masthead points here, so every chapter round-trips to it —
-// the live counterpart of P1's `index.html` cover, projected to a hash route, not a file.
-const COVER_HASH = '#';
+// ─── The chapter-as-page route scheme (chapter-as-page slice) ──────────────────────────────────────
+// A chapter is an addressable PAGE, not a hash: `?[page=<slug>&]chapter=<stem>`. The hash is now PURELY
+// a section anchor WITHIN a chapter (`…#<id>`), so a section can be deep-linked — chapter and section no
+// longer compete for the one hash slot (the defect). This mirrors the static separate-pages model
+// (publish-pages.js: `<book-dir>/<stem>.html` + `#<id>`) — static `<stem>.html` ⇄ live `?chapter=<stem>`.
+//
+// `pageSlug` is the WEBSITE page slug when the book renders as a website sub-view (mountLiveWebsite),
+// `null` for a standalone live book (mountLiveBook) which has no `?page=`. It is carried on the model so
+// the rail/cover/nav hrefs are FULLY-QUALIFIED in the DOM (copyable section deep-links — the whole point).
 
-/** Live projection: a chapter's hash route is the shared neutral stem with a leading
- *  `#` (`#counting-elephants`) — the per-chapter URL scheme matching P1's slugs, sans
- *  the `.html` P1 appends. This is the live target's own formatting (book-scaffold owns
- *  the stem; the suffix/prefix is each consumer's). */
-export const chapterHash = (p) => `#${p.stem}`;
+/** A chapter's route href: `?[page=<slug>&]chapter=<stem>`. */
+export const chapterHref = (p, pageSlug = null) =>
+  `?${pageSlug ? `page=${pageSlug}&` : ''}chapter=${p.stem}`;
+
+/** The cover/landing route: the page with NO `chapter` param — `?page=<slug>` (website) or `?`
+ *  (standalone, clears the chapter). The masthead/home link points here; the click interceptor reads
+ *  the absent `chapter` and lands on the cover (or the first chapter when cover is off). */
+export const coverHref = (pageSlug = null) => (pageSlug ? `?page=${pageSlug}` : '?');
+
+/** A section's route href: the owning chapter's route + the section anchor — used by cross-chapter
+ *  links (the cover contents listing, the rail at navDepth≥2, cross-chapter refs). A SAME-chapter
+ *  section link is just `#<id>` (a pure in-page scroll); this is for links that may cross chapters. */
+export const sectionHref = (p, s, pageSlug = null) => `${chapterHref(p, pageSlug)}#${s.id}`;
 
 /**
  * Build the live book model from a numbered tree (proc.runSync output).
@@ -90,7 +104,7 @@ export const chapterHash = (p) => `#${p.stem}`;
  *   render takes it via ctx — kept in the signature for symmetry with publishBookPages)
  * @returns {{ parts: object[], bookTitle: string, registry: Map, stemToIndex: Map<string,number>, idToStem: Map<string,string> }}
  */
-export function buildLiveBook({ numbered, file }) {
+export function buildLiveBook({ numbered, file, pageSlug = null }) {
   const bookEl = findBook(numbered);
   if (!bookEl) throw new Error('buildLiveBook: no <book> element — the live app-shell render is a book-only path');
 
@@ -126,7 +140,7 @@ export function buildLiveBook({ numbered, file }) {
     }
   }
 
-  return { parts, bookTitle, registry, stemToIndex, idToStem, bookNav: resolveBookNavConfig(file), contents: resolveBookContentsConfig(file) };
+  return { parts, bookTitle, registry, stemToIndex, idToStem, pageSlug, bookNav: resolveBookNavConfig(file), contents: resolveBookContentsConfig(file) };
 }
 
 /**
@@ -161,26 +175,45 @@ export function renderLiveChapterContent(part, model, ctx) {
  * @param {object} ctx - { proc, file }
  * @returns {string} the mounted chapter view HTML (a `<div class="enscribe-layout…">`)
  */
-/** The live chapter rail, gated on chapter-nav and threaded with chapter-nav-depth (#221).
- *  Live section links resolve via the router's id→chapter map, so buildChapterRail's default
- *  `#${id}` sectionHref applies. Returns '' when chapter-nav is off. */
-function liveRail(parts, activeId, home, bookNav) {
+/** The live chapter rail, gated on chapter-nav and threaded with chapter-nav-depth (#221). Chapter
+ *  links are the `?[page&]chapter=<stem>` route; at navDepth≥2 a section link is the owning chapter's
+ *  route + `#<id>` (a cross-chapter section route, not a bare hash). Returns '' when chapter-nav is off. */
+function liveRail(parts, activeId, home, bookNav, pageSlug) {
   if (!bookNav.chapterNav) return '';
-  const opts = bookNav.chapterNavDepth >= 2 ? { navDepth: bookNav.chapterNavDepth } : {};
-  return toHtml(buildChapterRail(parts, chapterHash, activeId, home, opts));
+  const opts = bookNav.chapterNavDepth >= 2
+    ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => sectionHref(p, s, pageSlug) }
+    : {};
+  return toHtml(buildChapterRail(parts, (p) => chapterHref(p, pageSlug), activeId, home, opts));
+}
+
+/** Rewrite a rendered chapter's CROSS-chapter ref hrefs (`#anchor` whose owning chapter ≠ this one) to
+ *  the owning chapter's route + the anchor (`?[page&]chapter=<owning-stem>#<anchor>`) — the live analog
+ *  of P1's `<stem>.html#anchor` rewrite, via the SAME shared `rewriteCrossPageHrefs`. A SAME-chapter ref
+ *  stays a bare `#anchor` (a pure in-page scroll). Done in the VIEW, never in renderLiveChapterContent
+ *  (that stays bare — the parity target). Refs owned by NO chapter of this book (a cross-PAGE website ref)
+ *  are left bare for the website's own cross-page rewrite (resolveRefs) to handle. */
+function rewriteCrossChapterRefs(html, currentPart, model) {
+  const byId = new Map(model.parts.map((p) => [p.id, p]));
+  return rewriteCrossPageHrefs(html, currentPart.id, {
+    ownerOf: (anchor) => model.registry.get(anchor)?.chapter ?? null,
+    hrefFor: (chapterId, anchor) => {
+      const owning = byId.get(chapterId);
+      return owning ? `${chapterHref(owning, model.pageSlug)}#${anchor}` : `#${anchor}`;
+    },
+  });
 }
 
 export function renderLiveChapterView(model, idx, ctx) {
-  const { parts, bookTitle, bookNav } = model;
+  const { parts, bookTitle, bookNav, pageSlug } = model;
   const part = parts[idx];
 
-  const content = renderLiveChapterContent(part, model, ctx);
+  const content = rewriteCrossChapterRefs(renderLiveChapterContent(part, model, ctx), part, model);
   // cover off → the masthead 'home' points at the first chapter (the landing), not the cover.
-  const home = { href: bookNav.cover ? COVER_HASH : chapterHash(parts[0]), title: bookTitle };
-  const rail = liveRail(parts, part.id, home, bookNav);
+  const home = { href: bookNav.cover ? coverHref(pageSlug) : chapterHref(parts[0], pageSlug), title: bookTitle };
+  const rail = liveRail(parts, part.id, home, bookNav, pageSlug);
   const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
-  const navBar = chapterNavBar(parts, idx, chapterHash);
+  const navBar = chapterNavBar(parts, idx, (p) => chapterHref(p, pageSlug));
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
 
   return composeBookBody({
@@ -201,17 +234,18 @@ export function renderLiveChapterView(model, idx, ctx) {
  * @returns {string} the mounted cover view HTML (a `<div class="enscribe-layout…">`)
  */
 export function renderLiveCoverView(model) {
-  const { parts, bookTitle, bookNav, contents } = model;
-  const home = { href: COVER_HASH, title: bookTitle, current: true };
-  const rail = liveRail(parts, null, home, bookNav);
+  const { parts, bookTitle, bookNav, contents, pageSlug } = model;
+  const home = { href: coverHref(pageSlug), title: bookTitle, current: true };
+  const rail = liveRail(parts, null, home, bookNav, pageSlug);
   // #226: a `<config toc>` book renders its whole-book contents overview on the cover view —
   // the live counterpart of the separate-pages cover, structurally identical (static≡live),
-  // differing only in href form: chapter → `#stem` route, section → `#id` (resolveHash maps it
-  // to the owning chapter via idToStem and scrolls). No `<config toc>` → '' → byte-identical.
+  // differing only in href form: chapter → the `?chapter=<stem>` route, section → the owning
+  // chapter's route + `#<id>` (chapter-as-page; the hash is purely the section). No `<config toc>`
+  // → '' → byte-identical.
   const contentsHtml = contents
     ? toHtml(buildContentsListing(parts, {
-        chapterHref: (p) => chapterHash(p),
-        sectionHref: (p, s) => `#${s.id}`,
+        chapterHref: (p) => chapterHref(p, pageSlug),
+        sectionHref: (p, s) => sectionHref(p, s, pageSlug),
         title: contents.title,
         depth: contents.depth,
       }))
@@ -223,28 +257,35 @@ export function renderLiveCoverView(model) {
 }
 
 /**
- * Resolve a URL hash to a routing destination. The router's pure core (no DOM), shared by
- * the browser entry and the Node smoke test.
+ * Resolve the chapter-as-page route to a routing destination. The router's pure core (no DOM), shared
+ * by the three browser entries (standalone read / standalone edit / website sub-view) and the Node smoke
+ * test. The chapter comes from the `?chapter=` QUERY (direct — no longer competing with the hash); the
+ * hash is PURELY the section anchor to scroll to once the chapter is mounted.
  *
- *   - ''                    → the COVER (#209; the empty/root route, the entry point).
- *   - a known chapter stem  → that chapter, no scroll (top of chapter).
- *   - a known element id    → the chapter that OWNS it, scroll to the id.
- *   - anything else         → null (unknown anchor owned by no chapter; caller no-ops).
+ *   - no chapter          → the COVER (#209; or the first chapter when cover is off). A stray section
+ *                           hash with no chapter falls back to its OWNING chapter via idToStem (so an
+ *                           in-content `#id` or an old `#id` deep-link still lands somewhere correct).
+ *   - a known chapter stem → that chapter; the hash (if any) is its section anchor.
+ *   - an unknown stem      → null (caller no-ops).
  *
- * @param {string} hash - location.hash (with or without the leading '#')
+ * @param {string} chapter - the `?chapter=` query value (the chapter stem; '' / null = none)
+ * @param {string} hash - location.hash (with or without the leading '#') — the section anchor
  * @param {object} model - the buildLiveBook result (stemToIndex + idToStem)
  * @returns {{ cover: true } | { cover: false, index: number, anchor: string|null } | null}
  */
-export function resolveHash(hash, model) {
-  const h = String(hash || '').replace(/^#/, '');
-  if (h === '') {
-    // #221: cover off → the empty/root route lands on the first chapter, not a cover view.
-    return model.bookNav?.cover === false
-      ? { cover: false, index: 0, anchor: null }
-      : { cover: true };
+export function resolveRoute(chapter, hash, model) {
+  const stem = String(chapter || '');
+  const anchor = String(hash || '').replace(/^#/, '') || null;
+  if (stem === '') {
+    // No chapter selected. A stray section hash → its owning chapter (graceful: an in-content `#id`
+    // click that didn't carry a chapter, or an old `#id` deep-link), else the cover.
+    if (anchor && model.idToStem.has(anchor)) {
+      return { cover: false, index: model.stemToIndex.get(model.idToStem.get(anchor)), anchor };
+    }
+    // #221: cover off → the no-chapter route lands on the first chapter, not a cover view.
+    return model.bookNav?.cover === false ? { cover: false, index: 0, anchor } : { cover: true };
   }
-  if (model.stemToIndex.has(h)) return { cover: false, index: model.stemToIndex.get(h), anchor: null };
-  if (model.idToStem.has(h)) return { cover: false, index: model.stemToIndex.get(model.idToStem.get(h)), anchor: h };
+  if (model.stemToIndex.has(stem)) return { cover: false, index: model.stemToIndex.get(stem), anchor };
   return null;
 }
 
@@ -279,9 +320,11 @@ export function resolveHash(hash, model) {
  * @param {object} [opts.loadedSources] - the preloaded `<library src>` / `<table src>` map
  *   (rides each rebuild's VFile for the table/library handlers; the structure children are
  *   read from `sources`, not from here)
+ * @param {string|null} [opts.pageSlug] - the website page slug when this book edits as a website
+ *   sub-view (so the rebuilt model's rail/route hrefs are `?page=<slug>&chapter=…`); null standalone.
  * @returns {{ rebuild: () => { numbered: object, file: object, model: object } }}
  */
-export function createIncrementalRebuilder({ masterSource, sources, proc, loadedSources = {} }) {
+export function createIncrementalRebuilder({ masterSource, sources, proc, loadedSources = {}, pageSlug = null }) {
   // Memoize parse by source string; return a CLONE so the cached tree stays pristine while
   // runSync mutates the assembled clones. Cache-miss == a source seen for the first time
   // (the edited chapter on each edit), so exactly one re-parse per edit.
@@ -308,7 +351,7 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
       warn: () => {},
     });
     const numbered = proc.runSync(tree, file);
-    const model = buildLiveBook({ numbered, file });
+    const model = buildLiveBook({ numbered, file, pageSlug });
     return { numbered, file, model };
   }
 
@@ -350,19 +393,19 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
  * @returns {string} the preview pane's inner HTML
  */
 export function renderLiveChapterPreviewBody(model, idx, ctx) {
-  const navBar = chapterNavBar(model.parts, idx, chapterHash);
+  const navBar = chapterNavBar(model.parts, idx, (p) => chapterHref(p, model.pageSlug));
   const prevNext = (model.bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
   return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext + BOOK_LIVE_RAIL_SCRIPTS;
 }
 
 export function renderLiveChapterEditView(model, idx, ctx) {
-  const { parts, bookTitle, bookNav } = model;
+  const { parts, bookTitle, bookNav, pageSlug } = model;
   const part = parts[idx];
 
   const previewBody = renderLiveChapterPreviewBody(model, idx, ctx);
 
-  const home = { href: bookNav.cover ? COVER_HASH : chapterHash(parts[0]), title: bookTitle };
-  const rail = liveRail(parts, part.id, home, bookNav);
+  const home = { href: bookNav.cover ? coverHref(pageSlug) : chapterHref(parts[0], pageSlug), title: bookTitle };
+  const rail = liveRail(parts, part.id, home, bookNav, pageSlug);
   // The on-this-page rail reflects the CHAPTER being edited — built from `[part]`, EXACTLY as read mode
   // (renderLiveChapterView) builds it — so the editable chapter carries both rails, placed identically.
   const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
