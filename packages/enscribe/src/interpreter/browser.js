@@ -500,7 +500,7 @@ function wireEditTabs(root) {
  * keeping CodeMirror (a browser-only dependency) out of the engine and out of jsdom — the
  * gate drives this loop through a fake adapter.
  */
-function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs }) {
+function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs, embedded = false }) {
   const loaded = loadedFile.data[ENSCRIBE_LOADED_SOURCES] || {};
   // The editable in-memory source map (structure children), seeded from the fetched sources.
   const sources = new Map();
@@ -603,11 +603,18 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
     }
   };
 
-  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  // EMBEDDED (the page-edit unification): when mountLiveWebsite mounts a book PAGE in edit mode it
+  // drives the `?page=`/`#hash` routing itself (ONE router), so the loop must NOT add a second
+  // hashchange listener. Embedded, it exposes `route()` (the host calls it on an in-page `#stem`
+  // change to switch the editable chapter) and `teardown()` (cancel the pending rebuild + destroy the
+  // editor when the host navigates away). Standalone (the default) keeps its own listener and returns
+  // the mount element — byte-behaviour-identical to before this flag existed.
+  const teardown = () => { debouncedRebuild.cancel(); destroyEditor(); };
+  if (!embedded && typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
     window.addEventListener('hashchange', route);
   }
   route();
-  return root;
+  return embedded ? { root, route, teardown } : root;
 }
 
 /**
@@ -822,18 +829,23 @@ function masterType(proc, source) {
  */
 /**
  * Mount a multi-file WEBSITE master as a LIVE, `?page=`-routed site (#246 S2a). A website is
- * "the book with pages instead of chapters": it reuses the book's assemble → ONE global
- * numbering/cross-ref pass → lazy per-view render machinery, swapping the router (`?page=slug`
- * + History back/forward) for the book's hash router. This slice handles EXTERNAL `<item src>`
- * pages (inline `<item | Title>` + body pages are a documented follow-on) and renders read-only
- * (the website edit loop is a follow-on); chrome styling (top bar / dropdowns / sidebar) is S2b —
- * here the chrome is a minimal `<ul>` of `?page=` links, enough to drive the router.
+ * "the book with pages instead of chapters": persistent chrome (top bar / dropdowns / sidebar) over a
+ * swapped content region, with a `?page=slug` History router (back/forward) in place of the book's hash
+ * router. This slice handles EXTERNAL `<item src>` pages (inline `<item | Title>` body pages are a
+ * documented follow-on).
  *
- * Pass 1 harvests the S1 nav model (the page list) from the master; the external pages are then
- * fetched FRESH (base-relative), assembled as `<book-part #slug>` under a synthetic `<book>`, and
- * run through ONE global pass — so a cross-page `<ref>` resolves exactly as a cross-chapter ref in
- * a book, and its href is rewritten to `?page=owner#anchor`. Persistent chrome + a swapped content
- * region: `route()` swaps ONLY the content region, never `root`.
+ * Composition is the SHARED browser-pure core composeSiteRegistry (#300/#320 — the SAME core the static
+ * build calls): Pass 1 harvests the S1 nav model (the page list), then each external page is fetched FRESH
+ * (base-relative) and numbered in its OWN native scope, merged into ONE site cross-ref registry — a book
+ * page keeps BOOK numbering ("figure 2.1"), an article its own — so a cross-page `<ref>` resolves to the
+ * target's native number, its href rewritten to `?page=owner#anchor`. (The page-scope flatten that once
+ * assembled every page under a synthetic `<book>` was DELETED by #320; there is no flatten.)
+ *
+ * READ mode renders each page natively (article → article, book → a book sub-view with its own `#hash`
+ * chapter routing). EDIT mode (an `editor` adapter) gives the page a Write/Preview pane: an article edits
+ * as ONE unit, a book PER-CHAPTER (the same machinery the standalone book mount uses) — route() dispatches
+ * on page TYPE exactly as the read path does. Persistent chrome + a swapped content region: `route()` swaps
+ * ONLY the content region, never `root`.
  *
  * @param {string|Element} target - a CSS selector or the Element to mount into.
  * @param {string} source - the website master's enscribe source (`<meta type=website>` + `<nav>`).
@@ -1009,7 +1021,8 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // each chapter cached. executeAssets runs on every FIRST build (innerHTML does not run <script>).
   const articleCache = new Map();              // slug → rendered article HTML (hash-independent)
   const executed = new Set();
-  let currentBook = null;                      // { pd, model, ctx, chapterCache, currentKey } when the active page is a book
+  let currentBook = null;                      // { pd, model, ctx, chapterCache, currentKey } when the active READ page is a book
+  let currentBookEdit = null;                  // the embedded mountEditLoop handle when the active EDIT page is a book
 
   const renderArticleInto = (pd) => {
     if (!articleCache.has(pd.slug)) {
@@ -1060,12 +1073,13 @@ export async function mountLiveWebsite(target, source, options = {}) {
     }
   };
 
-  // EDIT mode (#246 S2c): render the current page's source into a Write/Preview pane (the SAME
-  // wireEditTabs + editor.mount contract the article edit loop uses, browser.js mountArticleEditLoop),
-  // inside the persistent chrome. The preview is a STANDALONE render of the edited page (one runSync
-  // over JUST that page — NOT the multi-page global pass): the live-preview approximation. Cross-page
-  // refs can't resolve standalone, so they show unresolved WHILE EDITING; the authoritative
-  // ?page=owner#… link is the read render / on reload (a known, accepted limitation).
+  // EDIT mode (#246 S2c), the ARTICLE-page preview renderer (a book page edits PER-CHAPTER via the embedded
+  // mountEditLoop in showEditPage, NOT through here): render the page's source into a Write/Preview pane (the
+  // SAME wireEditTabs + editor.mount contract the article edit loop uses, browser.js mountArticleEditLoop),
+  // inside the persistent chrome. The preview is a STANDALONE render of the edited page (one runSync over JUST
+  // that page — NOT the multi-page global pass): the live-preview approximation. Cross-page refs can't resolve
+  // standalone, so they show unresolved WHILE EDITING; the authoritative ?page=owner#… link is the read render
+  // / on reload (a known, accepted limitation, shared with the book edit preview).
   const renderPageStandalone = (src) => {
     try {
       const f = { data: {} };
@@ -1087,8 +1101,30 @@ export async function mountLiveWebsite(target, source, options = {}) {
     editHandle = null;
   };
   const showEditPage = (slug, notFound) => {
-    teardownEdit();                                              // every entry tears down the prior page first
+    teardownEdit();                                              // tear down the prior ARTICLE-page editor
+    if (currentBookEdit) { currentBookEdit.teardown(); currentBookEdit = null; }  // and a prior BOOK-page editor
     if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, { firstSlug }) : ''; return; }
+    // Dispatch on page TYPE exactly as READ mode (renderPageInto) does — a book page edits PER-CHAPTER, an
+    // article page edits as one unit. (Before the unification this path was book-blind: EVERY page fell to the
+    // single-unit branch below, so a book page rendered its UNASSEMBLED master — empty chapters, no rail.)
+    const pd = pageBySlug.get(slug);
+    if (pd && pd.isBook) {
+      // PER-CHAPTER book edit — the SAME machinery the standalone book mount uses (mountEditLoop), EMBEDDED so
+      // THIS website's `?page=`/`#hash` router drives it (no second hashchange listener). The book's chapter
+      // sources were pre-fetched into loadedBySrc (the eager pre-fetch above), so it assembles + numbers + edits
+      // per chapter, mirroring how READ mode's renderPageInto book branch assembles to render. The edit preview
+      // is the book rendered STANDALONE (its own registry), so a cross-page ref to ANOTHER page stays unresolved
+      // WHILE EDITING — the same accepted limitation as the article edit preview.
+      const loaded = loadedBySrc.get(pd.resolved.sourcePath) || {};
+      currentBookEdit = mountEditLoop({
+        root: contentRegion, proc, masterSource: pd.source,
+        childSrcs: discoverChildSrcs(proc, pd.source),
+        loadedFile: { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } },
+        editor, debounceMs, embedded: true,
+      });
+      return;
+    }
+    // An ARTICLE page: the single-unit Write/Preview edit (unchanged).
     let currentSource = sourceBySlug.get(slug) ?? '';
     contentRegion.innerHTML = renderLiveArticleEditView(renderPageStandalone(currentSource));
     wireEditTabs(contentRegion);
@@ -1127,10 +1163,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
     if (slug !== currentSlug) {
       currentBook = null;                                          // leaving any prior page (book or article)
       if (editor) {
-        // EDIT mode: the current page's Write/Preview pane. A nav re-renders the pane and re-mounts
-        // the editor with the NEW page's source; the chrome + the editor adapter persist. (A book page
-        // edits its master source standalone — full book-page editing is a follow-on; read mode renders
-        // it as a book.)
+        // EDIT mode: the current page's Write/Preview pane. A nav re-renders it and re-mounts the editor
+        // with the NEW page's source; the chrome + the editor adapter persist. showEditPage dispatches on
+        // page TYPE — an article edits as one unit, a book PER-CHAPTER (the same machinery the standalone
+        // book mount uses), exactly as READ mode (renderPageInto) dispatches.
         showEditPage(slug, dest.notFound);
       } else if (dest.notFound) {
         contentRegion.innerHTML = renderNotFoundView(slug, { firstSlug });
@@ -1145,12 +1181,17 @@ export async function mountLiveWebsite(target, source, options = {}) {
       // move aria-current to the active page in the (persistent) chrome — no rebuild (both modes).
       setActivePage(root, dest.notFound ? null : slug);
     } else if (currentBook && !editor) {
-      // SAME book page, only the in-page #hash changed → switch chapter (the book sub-view's own routing).
+      // SAME book page (READ), only the in-page #hash changed → switch chapter (the book sub-view's own routing).
       renderBookChapter();
+    } else if (currentBookEdit) {
+      // SAME book page (EDIT), the in-page #hash changed → switch the EDITABLE chapter. The embedded book edit
+      // loop owns the per-chapter render + the source→chapter swap; we just drive its router (book sub-routing
+      // is a property of the active page being a book, NOT of read-vs-edit mode).
+      currentBookEdit.route();
     }
-    // An ARTICLE `?page=…#anchor` deep-link scrolls here (after mount); a BOOK page scrolls to its anchor
-    // inside renderBookChapter (the owning chapter must mount first).
-    if (!currentBook) scrollToHash();
+    // An ARTICLE `?page=…#anchor` deep-link scrolls here (after mount); a BOOK page (read or edit) scrolls to its
+    // anchor inside its own router (renderBookChapter / the embedded edit loop) once the owning chapter mounts.
+    if (!currentBook && !currentBookEdit) scrollToHash();
   };
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
