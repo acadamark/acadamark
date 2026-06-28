@@ -159,17 +159,31 @@ export async function run() {
       assert.strictEqual(activeHref(root), '?page=home', 'aria-current marks the active page (Home)');
       console.log('PASS: S2b — brand (meta title+icon), <nav-group> dropdown + non-link sidebar label, footer, aria-current');
 
-      // ── dropdown opens/closes on click via the NATIVE <details> disclosure (CSS-only, no JS wiring) ──
+      // ── dropdown OPENS via the NATIVE <details> disclosure (no script to open; the panel is CSS-revealed) ──
       const details = toggle.closest('details');
       assert.ok(details && details.classList.contains('enscribe-site-dropdown'), 'the toggle is a <summary> inside the <details> dropdown');
       assert.ok(details.querySelector('.enscribe-site-dropdown-panel'), 'the panel is the <details> content (revealed by CSS on [open])');
-      assert.ok(!toggle.hasAttribute('aria-expanded'), 'no aria-expanded JS-state attribute (the dropdown is CSS-only)');
+      assert.ok(!toggle.hasAttribute('aria-expanded'), 'no aria-expanded JS-state attribute (native <summary> exposes its own open/closed state)');
       assert.strictEqual(details.open, false, 'dropdown starts closed');
       toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
       assert.strictEqual(details.open, true, 'clicking the summary opens the dropdown (native <details>, no script)');
       toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
-      assert.strictEqual(details.open, false, 'clicking the summary again closes it');
-      console.log('PASS: chrome — the top-bar dropdown is a native CSS-only <details> (opens/closes on click, no JS)');
+      assert.strictEqual(details.open, false, 'clicking the summary again closes it (native toggle)');
+      console.log('PASS: chrome — the top-bar dropdown OPENS via the native <details> (CSS-revealed panel, no aria-expanded)');
+
+      // ── dismissal (the fix): an OPEN dropdown closes on an outside-click and on Escape (was broken: a
+      //    native <details> stays open until the summary is re-clicked). bindWebsiteNavDismiss() wired the
+      //    document-level handlers in mountLiveWebsite for the persistent chrome. ──
+      toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
+      assert.strictEqual(details.open, true, 're-opened for the outside-click check');
+      dom.window.document.body.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
+      assert.strictEqual(details.open, false, 'a click OUTSIDE the open dropdown dismisses it');
+      toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
+      assert.strictEqual(details.open, true, 're-opened for the Escape check');
+      dom.window.document.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      assert.strictEqual(details.open, false, 'Escape dismisses the open dropdown');
+      assert.strictEqual(dom.window.document.activeElement, toggle, 'Escape returns focus to the summary (a11y)');
+      console.log('PASS: dropdown dismissal — outside-click + Escape close the open dropdown (focus returns to summary)');
 
       // ── internal nav: content swaps, chrome (header + footer) PERSISTS, aria-current moves ──
       const headerBefore = root.querySelector('.enscribe-site-header');
@@ -180,6 +194,14 @@ export async function run() {
       assert.strictEqual(root.querySelector('.enscribe-site-footer'), footerBefore, 'the footer survives the page swap (same element)');
       assert.strictEqual(activeHref(root), '?page=guide', 'aria-current moved to Guide');
       console.log('PASS: S2b — content-region swap; persistent header + footer; aria-current moves');
+
+      // ── re-open + dismiss AFTER a SPA page swap: the document-level dismissal still works (the handler
+      //    lives on the persistent document, so the content swap left it neither dead nor double-bound) ──
+      toggle.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
+      assert.strictEqual(details.open, true, 're-opening the dropdown after a page swap still opens it');
+      dom.window.document.body.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true, cancelable: true }));
+      assert.strictEqual(details.open, false, 'outside-click still dismisses after a SPA navigation (handler not dead, not double-bound)');
+      console.log('PASS: dropdown dismissal survives a SPA page swap (persistent document handler, idempotent)');
 
       // ── nav-only shell: NO shell on-this-page rail (maintainer decision). The shell renders the nav
       //    bar; the PAGE owns its layout, so its headings render in the CONTENT — not in a separate

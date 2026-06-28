@@ -114,7 +114,12 @@ export function run_tests() {
         'the universal head links the document fonts (Inter body + Source Code Pro code)');
     }
     assert.ok(guideHome.includes('<details class="enscribe-site-dropdown">'),
-      'the book page carries the working CSS-only <details> dropdown markup (the shell reuses slice 1 chrome)');
+      'the book page carries the native <details> dropdown markup (the shell reuses slice 1 chrome)');
+    // The static page also ships the dropdown DISMISSAL script (outside-click + Escape) at body-end — the
+    // static counterpart of the live shell's bindWebsiteNavDismiss() call, so a static "Reference" dropdown
+    // closes like the live one's. Keyed on the handler's hallmark selector + its idempotency guard.
+    assert.ok(guideHome.includes("details.enscribe-site-dropdown[open]") && guideHome.includes('__enscribeNavDismissBound'),
+      'the static page injects the dropdown dismissal script (close on outside-click + Escape)');
     assert.ok(!/class="enscribe-site-sidebar"/.test(guideHome), 'a book page has no SITE sidebar element either — its left nav is its OWN chapter rail');
     assert.ok(guideHome.includes('href="../"'), 'a depth-1 book page links home as `../`');
     // Same rule on a BOOK page: no un-staticized ?page= chrome links, but it DOES carry the per-page

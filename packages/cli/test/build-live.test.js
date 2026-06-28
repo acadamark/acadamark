@@ -178,6 +178,50 @@ export function run_tests() {
     }
   }
 
+  // ── #fig-404: a page's co-located figure assets are copied FLAT into the live folder ──────────────
+  {
+    // A `<fig src=elephant.jpg>` in a page renders `<img src="elephant.jpg">`; the live shell resolves
+    // that against its `/live/` location, i.e. FLAT under outDir. Before this, build --live copied the
+    // master + sources + shell assets but NOT the co-located images, so every example figure 404'd. The
+    // fix copies each page-directory's non-source files (pageDirAssets, shared with the static build)
+    // flat. Fixture: a page-directory page with a co-located image + a book page whose chapter has one.
+    const siteDir = mkdtempSync(join(tmpdir(), 'enscribe-live-figassets-'));
+    const out = mkdtempSync(join(tmpdir(), 'enscribe-live-figassets-out-'));
+    try {
+      writeFileSync(join(siteDir, 'site.emd'), [
+        '<meta type=website>', '<title | Fig Site>', '</meta>', '',
+        '<nav>', '<item src="home" | Home>', '<item src="book" | Book>', '</nav>',
+      ].join('\n'));
+      // a flat page-directory with a co-located image
+      mkdirSync(join(siteDir, 'home'));
+      writeFileSync(join(siteDir, 'home', 'index.emd'), '<section | Home>\n\n<fig src=pic.png | A picture.>');
+      writeFileSync(join(siteDir, 'home', 'pic.png'), Buffer.from('\x89PNG\r\n\x1a\n-home-pic', 'binary'));
+      // a BOOK page whose chapter references a co-located image (in the book's own directory)
+      mkdirSync(join(siteDir, 'book'));
+      writeFileSync(join(siteDir, 'book', 'index.emd'),
+        '<meta type=book>\n<title | B>\n</meta>\n\n<chapter src="ch.emd" | Ch>');
+      writeFileSync(join(siteDir, 'book', 'ch.emd'), '<section | Ch>\n\n<fig src=plot.png | A plot.>');
+      writeFileSync(join(siteDir, 'book', 'plot.png'), Buffer.from('\x89PNG\r\n\x1a\n-book-plot', 'binary'));
+      // a non-image co-located file is carried too; a sibling .emd that is NOT a source is left to the
+      // source-copy path (we only assert images here)
+
+      buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out });
+
+      // both images land FLAT in the live folder, at the path the runtime <img src> fetches
+      assert.ok(existsSync(join(out, 'pic.png')), 'the home page co-located image is copied flat (out/pic.png)');
+      assert.ok(existsSync(join(out, 'plot.png')), 'the book chapter co-located image is copied flat (out/plot.png)');
+      assert.strictEqual(readFileSync(join(out, 'pic.png')).toString('binary'), '\x89PNG\r\n\x1a\n-home-pic',
+        'the copied image is byte-for-byte the source');
+      // the chapter source itself is also flat (the existing source-copy path), so the <img> resolves
+      assert.ok(existsSync(join(out, 'ch.emd')), 'the book chapter source is also copied flat');
+
+      console.log('PASS: #fig-404 cli — build --live copies pages\' co-located figure assets flat (no <img> 404)');
+    } finally {
+      rmSync(siteDir, { recursive: true, force: true });
+      rmSync(out, { recursive: true, force: true });
+    }
+  }
+
   // ── build --single-file (delivery-modes.md §Single-file): one file, embedded source, edit gate ──
   {
     const dir = mkdtempSync(join(tmpdir(), 'enscribe-single-'));

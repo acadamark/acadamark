@@ -1642,5 +1642,36 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 })();</script>
+<script>(function bindWebsiteNavDismiss() {
+  if (typeof document === 'undefined' || document.__enscribeNavDismissBound) return;
+  document.__enscribeNavDismissBound = true;
+  function openDropdowns() {
+    return Array.prototype.slice.call(document.querySelectorAll('details.enscribe-site-dropdown[open]'));
+  }
+  // Outside-click closes an open dropdown. A click on the summary (native open / native toggle-closed) or on
+  // a panel item is INSIDE the <details>, so it is left to the native disclosure; only a click ELSEWHERE
+  // dismisses. The open set is read BEFORE the summary toggle's default action runs, so opening a closed
+  // dropdown is never self-cancelled — it is not yet in the open set when this bubble-phase handler sees the
+  // click, and even if a browser toggled it first, the `contains(target)` guard keeps the summary's own click
+  // out of the close path.
+  document.addEventListener('click', function (ev) {
+    var open = openDropdowns();
+    for (var i = 0; i < open.length; i++) {
+      if (!open[i].contains(ev.target)) open[i].removeAttribute('open');
+    }
+  });
+  // Escape closes every open dropdown and returns focus to its <summary> (a11y: focus must not strand on a
+  // control that just collapsed). Only one dropdown is ever open at a time (opening one outside-click-closes
+  // the others), so this restores focus to the dropdown the user was actually in.
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape' && ev.key !== 'Esc') return;
+    var open = openDropdowns();
+    for (var i = 0; i < open.length; i++) {
+      open[i].removeAttribute('open');
+      var summary = open[i].querySelector('summary');
+      if (summary && typeof summary.focus === 'function') summary.focus();
+    }
+  });
+})();</script>
 </body>
 </html>
