@@ -17,7 +17,7 @@
 // This module is a PURE string builder (no fs), like composeBookBody / pageShell — the caller
 // (the CLI static-website build) reads default.css and passes it in.
 
-import { WEBSITE_NAV_CSS } from '../interpreter/assets/website-nav-asset.js';
+import { WEBSITE_NAV_CSS, WEBSITE_DROPDOWN_JS } from '../interpreter/assets/website-nav-asset.js';
 import {
   BOOK_NAV_NOLEFT_CSS,
   BOOK_NAV_DEPTH_CSS,
@@ -115,14 +115,19 @@ function universalHeadStyle(defaultCss) {
 // #296 stripped the article fragment's own KaTeX/fonts links (the static builder renders article fragments
 // with documentFontsCss/katexCss:'skip'), so each asset is linked exactly once, here.
 
-// The book reading-interface scripts, appended once at body-end on EVERY page. Each guards on its
-// target element (`nav.enscribe-toc` / `nav.enscribe-onthispage` / `[data-enscribe-back-to-top]`)
-// and returns immediately when it is absent, so they are pure no-ops on a page without that chrome
-// (e.g. a plain article) — uniform shell, no per-page-type branching.
+// The shell's body-end scripts, appended once on EVERY page. The first three are the book
+// reading-interface scripts — each guards on its target element (`nav.enscribe-toc` /
+// `nav.enscribe-onthispage` / `[data-enscribe-back-to-top]`) and returns immediately when it is absent,
+// so they are pure no-ops on a page without that chrome (e.g. a plain article). The last is the website
+// nav-bar dropdown dismissal (outside-click + Escape) — the static counterpart of the live shell's direct
+// bindWebsiteNavDismiss() call, so a static page's "Reference" dropdown closes like the live one's. It is
+// a no-op on a page whose chrome has no dropdown (its handlers find no open `.enscribe-site-dropdown`).
+// Uniform shell, no per-page-type branching.
 const SHELL_BODY_SCRIPTS =
   `<script>${SCROLL_SPY_JS}</script>\n` +
   `<script>${ON_THIS_PAGE_JS}</script>\n` +
-  `<script>${BACK_TO_TOP_JS}</script>`;
+  `<script>${BACK_TO_TOP_JS}</script>\n` +
+  `<script>${WEBSITE_DROPDOWN_JS}</script>`;
 
 // The external-DSL contract marker the diagram handler emits on every diagram's `<pre>` container,
 // regardless of render mode (the value is the DSL's registry name). collectDslNames reads it back

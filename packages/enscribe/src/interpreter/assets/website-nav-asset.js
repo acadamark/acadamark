@@ -110,9 +110,10 @@ export function injectWebsiteNavStyles(doc) {
 }
 
 // One top-bar item: a page → a link; a <nav-group> → a NATIVE <details> disclosure dropdown (the panel
-// lists the group's child pages — the first cut is shallow, one level). <details>/<summary> open and
-// close on summary click in the browser with NO script, so this works identically on a static page and
-// in the live shell. data-less; the active mover keys on href.
+// lists the group's child pages — the first cut is shallow, one level). <details>/<summary> OPEN on summary
+// click with no script (the CSS reveals the panel on `[open]`), so opening works identically on a static
+// page and in the live shell; the small dismissal layer (outside-click + Escape, bindWebsiteNavDismiss
+// below) ships to both. data-less; the active mover keys on href.
 function topItemHtml(entry) {
   if (entry.kind === 'group') {
     const items = (entry.children || [])
@@ -182,9 +183,61 @@ export function setActivePage(root, slug) {
   });
 }
 
-// The top-bar dropdown is a native <details> disclosure (CSS-only) — it needs NO JS wiring, so the
-// former bindWebsiteNav (click-toggle of aria-expanded/hidden) is gone. setActivePage (above) is the
-// remaining runtime helper.
+// The top-bar dropdown is a native <details>/<summary> disclosure: it OPENS on summary click and the CSS
+// reveals the panel on `[open]` — no script needed to open. But a native <details> does NOT dismiss on an
+// outside-click or on Escape, which is broken dropdown UX (an audit-7.1 finding). bindWebsiteNavDismiss adds
+// exactly that missing dismissal and nothing else: the element stays a <details>, native open/close (summary
+// click, keyboard) and its native expanded-state semantics are kept — so no aria-expanded bookkeeping is
+// added to fight them (a native <summary> already exposes its open/closed state to assistive tech).
+//
+// Document-level DELEGATION (not a per-<details> bind): one click + one keydown handler on `document` read
+// the OPEN dropdowns at event time. That survives the live shell's chrome re-render (the handler is on the
+// persistent document, not on a node that gets replaced), covers any number of dropdowns, and never needs
+// re-binding. Idempotent via a one-shot `document` flag, so a second call — a live re-mount, or a static
+// page that injects the <script> twice — is a no-op. The static separate-pages path runs the IIFE-wrapped
+// string form (WEBSITE_DROPDOWN_JS) as an inline <script>; the live website shell imports and calls this
+// function directly (its chrome is set via innerHTML, where an injected <script> would not execute) — the
+// same dual delivery book-nav-asset.js uses for bindBackToTop / BACK_TO_TOP_JS.
+export function bindWebsiteNavDismiss() {
+  if (typeof document === 'undefined' || document.__enscribeNavDismissBound) return;
+  document.__enscribeNavDismissBound = true;
+  function openDropdowns() {
+    return Array.prototype.slice.call(document.querySelectorAll('details.enscribe-site-dropdown[open]'));
+  }
+  // Outside-click closes an open dropdown. A click on the summary (native open / native toggle-closed) or on
+  // a panel item is INSIDE the <details>, so it is left to the native disclosure; only a click ELSEWHERE
+  // dismisses. The open set is read BEFORE the summary toggle's default action runs, so opening a closed
+  // dropdown is never self-cancelled — it is not yet in the open set when this bubble-phase handler sees the
+  // click, and even if a browser toggled it first, the `contains(target)` guard keeps the summary's own click
+  // out of the close path.
+  document.addEventListener('click', function (ev) {
+    var open = openDropdowns();
+    for (var i = 0; i < open.length; i++) {
+      if (!open[i].contains(ev.target)) open[i].removeAttribute('open');
+    }
+  });
+  // Escape closes every open dropdown and returns focus to its <summary> (a11y: focus must not strand on a
+  // control that just collapsed). Only one dropdown is ever open at a time (opening one outside-click-closes
+  // the others), so this restores focus to the dropdown the user was actually in.
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape' && ev.key !== 'Esc') return;
+    var open = openDropdowns();
+    for (var i = 0; i < open.length; i++) {
+      open[i].removeAttribute('open');
+      var summary = open[i].querySelector('summary');
+      if (summary && typeof summary.focus === 'function') summary.focus();
+    }
+  });
+}
+
+// The IIFE-wrapped string form for STATIC pages — injected as an inline <script>, which the browser runs at
+// parse time. Derived from the one function above (so the bind logic has a single source), exactly as
+// book-nav-asset.js derives BACK_TO_TOP_JS from bindBackToTop. The live path cannot use this string (its
+// chrome is innerHTML-set, where a <script> stays inert) and calls bindWebsiteNavDismiss() directly instead.
+export const WEBSITE_DROPDOWN_JS = `(${bindWebsiteNavDismiss.toString()})();`;
+
+// The former bindWebsiteNav (a JS click-toggle of aria-expanded/hidden) is gone — the dropdown opens
+// natively now; only the dismissal above is scripted. setActivePage (above) is the other runtime helper.
 //
 // REMOVED (maintainer decision — the shell renders the nav bar; the PAGE owns its layout, including
 // whether it has a ToC): the shell's `buildOnThisPage` rail builder. The website no longer manufactures
