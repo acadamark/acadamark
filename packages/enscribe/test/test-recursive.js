@@ -409,5 +409,46 @@ function parseInlineShortcut(src, tagname) {
   console.log('PASS RC-21: max-recursion enscribeParseError is uniformly sparse (#84)')
 }
 
+// ─── Test RC-22: pipe-body SEAM whitespace is preserved (#330) ───────────────
+//
+// The mixed-content reassembly (assembleMixedContent) parses each string fragment
+// of a pipe body through markdown, which drops the fragment's leading/trailing
+// whitespace. That trim is correct at a paragraph / body edge but used to eat a
+// MEANINGFUL space where a fragment abuts a resolved inline node (`x ^{2}` lost the
+// space before <sup>). The fix restores one collapsed space at a node SEAM only —
+// general by construction (keyed on the seam, not the sigil), so sigils AND
+// escape-error markers (the two things the outer parse pre-tokenizes into the mixed
+// array) are both covered, while paragraph / body edges stay trimmed.
+{
+  // The text-node values of a pipe body's reassembled content, in order. The
+  // resolved inline nodes (sup/sub/parse-error) sit between them; the seam space,
+  // when preserved, rides on the adjacent text node (merged, no split text node).
+  const texts = (src) => parseTag(src).content.filter((n) => n.type === 'text').map((n) => n.value)
+
+  // ^{} after a space → the space is kept on the preceding text node ("x ", not "x").
+  assert.deepEqual(texts('<aside | x ^{2}>'), ['x '], 'RC-22a: ^{} keeps the leading-seam space')
+  // _{} likewise.
+  assert.deepEqual(texts('<aside | x _{2}>'), ['x '], 'RC-22b: _{} keeps the leading-seam space')
+  // A trailing-seam space (after the sigil) rides on the following text node.
+  assert.deepEqual(
+    texts('<aside | The 1^{st} law>'), ['The 1', ' law'],
+    'RC-22c: a space AFTER a sigil is preserved (the canonical #330 repro)',
+  )
+  // A space on BOTH sides of a sigil is preserved on both adjacent text nodes.
+  assert.deepEqual(texts('<aside | a ^{2} b>'), ['a ', ' b'], 'RC-22d: spaces on both sides preserved')
+  // No over-correction: a sigil glued to text (no space) gains NO space.
+  assert.deepEqual(texts('<aside | z^{2}>'), ['z'], 'RC-22e: a glued sigil stays glued (no spurious space)')
+  // Body edges stay trimmed (the trim's legitimate intent): a trailing body space is
+  // not a seam (no node follows it), so it is not restored.
+  assert.deepEqual(texts('<aside | x ^{2} >'), ['x '], 'RC-22f: a trailing BODY-edge space stays trimmed')
+  // GENERAL (not a per-sigil patch): the same seam rule covers an escape-error marker,
+  // the OTHER construct the outer parse pre-tokenizes into the mixed array.
+  assert.deepEqual(
+    texts('<aside | a \\z b>'), ['a ', ' b'],
+    'RC-22g: an escape-error-marker seam preserves its whitespace too (one general rule)',
+  )
+  console.log('PASS RC-22: pipe-body seam whitespace preserved for sigils + escape markers, edges still trimmed (#330)')
+}
+
 console.log('\nAll recursive-content tests passed.')
-console.log('\n21/21 recursive-content tests passed.')
+console.log('\n22/22 recursive-content tests passed.')

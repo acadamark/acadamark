@@ -364,7 +364,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "value": "This aside has an unknown escape:",
+                          "value": "This aside has an unknown escape: ",
                           "position": {
                             "start": {
                               "line": 1,
@@ -398,7 +398,7 @@
                         },
                         {
                           "type": "text",
-                          "value": "and then more prose.",
+                          "value": " and then more prose.",
                           "position": {
                             "start": {
                               "line": 1,

@@ -167,19 +167,43 @@ function assembleMixedContent(content, processor) {
       run = null
     }
   }
-  for (const item of content) {
+  for (let idx = 0; idx < content.length; idx += 1) {
+    const item = content[idx]
     if (typeof item !== 'string') {
       // an already-resolved inline node — append to the open inline run (terminal)
       if (!run) run = []
       run.push(item)
       continue
     }
+    // SEAM WHITESPACE (#330): processor.parse() drops a fragment's leading/trailing
+    // whitespace (a markdown paragraph carries no edge whitespace). That trim is correct
+    // at a paragraph / body edge, but it also eats a MEANINGFUL space where a fragment
+    // abuts a resolved inline node (`x ^{2}` → the space before <sup>, `1^{st} law` → the
+    // space after it). Restore one collapsed space at a node SEAM only:
+    //   - leading  — when inline content already precedes this fragment in the open run
+    //                (a true seam, not a paragraph / body start);
+    //   - trailing — when a resolved node follows it (a true seam, not a paragraph / body end).
+    // A fragment's INTERNAL whitespace and the paragraph / body edges are left exactly as
+    // markdown leaves them, so the trim's legitimate intent is preserved — only the
+    // collateral seam loss is undone. General by construction: it keys on the seam, not on
+    // the sigil, so ANY mixed-array node (sigil today; future inline fragments) is covered.
+    const lead = /^\s/.test(item) && run != null && run.length > 0
+    const trail = /\s$/.test(item)
+      && idx + 1 < content.length && typeof content[idx + 1] !== 'string'
     const parsed = processor.parse(item).children
     for (let i = 0; i < parsed.length; i += 1) {
       const block = parsed[i]
       if (block.type === 'paragraph') {
         // continue (or open) the inline run with this paragraph's inline children
         if (!run) run = []
+        // restore the leading seam space on the FIRST paragraph only (a later paragraph
+        // begins after a hard break — its edge stays trimmed, as markdown leaves it).
+        // Merge into the first text child to avoid an adjacent-text-node split.
+        if (i === 0 && lead) {
+          const first = block.children[0]
+          if (first && first.type === 'text') first.value = ` ${first.value}`
+          else block.children.unshift({ type: 'text', value: ' ' })
+        }
         run.push(...block.children)
         // a paragraph that is not the last parsed block ends at a hard break
         if (i < parsed.length - 1) closeRun()
@@ -188,6 +212,13 @@ function assembleMixedContent(content, processor) {
         closeRun()
         blocks.push(block)
       }
+    }
+    // restore the trailing seam space onto the still-open run (a resolved node follows it).
+    // Merge into the run's trailing text node when present (else push a lone space node).
+    if (trail && run && run.length) {
+      const last = run[run.length - 1]
+      if (last.type === 'text') last.value += ' '
+      else run.push({ type: 'text', value: ' ' })
     }
   }
   closeRun()
