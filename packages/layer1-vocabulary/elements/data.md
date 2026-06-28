@@ -33,7 +33,7 @@ content:
     - element: dataset
       required: false
       multiple: true
-      notes: 'Future: tabular data referenced by tables or figures.'
+      notes: 'Opaque data store (#313 slice 1): <dataset #id format=csv | a,b\n1,2> (or a leading-positional format, <dataset #id csv | …>) holds a CSV/TSV/JSON/… payload as OPAQUE bytes under its id — never markdown-parsed, so a #/*/_ in the payload passes through untouched. Pure storage: a consumer (<table src="@id">, a future <plot>) interprets the bytes; <dataset> itself renders nothing (invisible, like <library>). Harvested into the project data store keyed by id (+ the optional format hint), project-wide merged. Consumer-side interpretation is slice 2; see notes/specs/data-store.md Piece 1.'
 content_handler: default
 jats_counterpart:
   element: 'no direct equivalent'
@@ -99,7 +99,7 @@ Resources that are **referenced by other elements** but don't render inline:
 
 - **Inline bibliography blocks**: `<library format=bibtex>...</library>` to paste BibTeX / CSL-JSON content from a reference manager. (`<bib-entry>` is *not* authored here — it is the generated form citation-js produces into `<bibliography>` from these sources.)
 - **Hardcoded image data** (future): base64-encoded image data that figures reference by id.
-- **Datasets** (future): tabular data that tables or figures reference.
+- **Datasets** (`<dataset>`, #313 slice 1): CSV/TSV/JSON/… held as opaque bytes under an id, for a consumer (`<table src="@id">`, a future `<plot>`) to interpret. Storage only — `<dataset>` renders nothing; the consumer-side reading is slice 2 (see `notes/specs/data-store.md`).
 - **Other resource types** (future): anything that fits the "reference, not display" pattern.
 
 What does **not** go in `<data>`:

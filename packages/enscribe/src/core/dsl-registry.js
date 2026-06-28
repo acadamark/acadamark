@@ -102,6 +102,17 @@ export const LANGUAGES = new Map([
   ['eqnarray', 'eqnarray'],
   ['table',    'table'],
   ['library',  'library'],
+  // #313 slice 1: the `<dataset>` storage host. Like `<library>`, its body is an
+  // OPAQUE payload (CSV/TSV/JSON/…) held under an id for an `@id` consumer to pull
+  // and interpret later (slice 2+) — `<dataset>` is pure storage, never a renderer.
+  // A non-`default` handler is all that is needed: it makes the parser set
+  // `isOpaqueContent: true` (from-markdown), so recursive-content's
+  // `contentHandler !== 'default'` guard skips it and the bytes are never re-parsed
+  // as markdown. The value is the opaque MARKER only — nothing dispatches a render
+  // off it (the declaration is harvested + stripped in <data>, like an embedded
+  // asset; the `format` hint is a kwarg read at harvest, not a handler). See
+  // notes/specs/data-store.md Piece 1.
+  ['dataset',  'dataset'],
   ['svg',      'svg'],
   // #115: the minipage host. Its pipe content is a SEALED sub-document —
   // held opaque (raw source string) at parse time so the main pipeline never

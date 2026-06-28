@@ -34,6 +34,10 @@ const EXPECTED = [
   ['eqnarray', 'eqnarray'],
   ['table',    'table'],
   ['library',  'library'],
+  // #313 slice 1: the <dataset> storage host — an opaque payload (CSV/JSON/…) held
+  // under an id for an @id consumer; a non-default handler so its bytes are never
+  // markdown-parsed. The value is the opaque marker only (nothing dispatches off it).
+  ['dataset',  'dataset'],
   ['svg',      'svg'],
   // #115: the minipage host — its sealed body is held opaque (raw source) at
   // parse time so the main pipeline never descends into it.
