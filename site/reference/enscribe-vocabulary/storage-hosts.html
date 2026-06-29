@@ -1436,7 +1436,41 @@ year = {2024}
 &#x3C;/library>
 &#x3C;/data></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &#x3C;data> block itself produces no rendered output.</i></p></section>
+          <p><i>A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &#x3C;data> block itself produces no rendered output.</i></p>
+          <p>A <code>&#x3C;data></code> block can also store a <b>dataset</b> — a payload (CSV/TSV/JSON/…) held under an id with a <code>&#x3C;dataset></code> — that a consuming element pulls in by <code>@id</code>. Here a CSV dataset is stored once and a <code>&#x3C;table src="@id" /></code> renders it as a grid:</p><code id="code:sh-data-2">&#x3C;data>
+&#x3C;dataset #parts-stock format=csv | part,code,in_stock
+hex bolt,#HB-08,120
+flat washer,#FW-04,340
+lock nut,#LN-06,210>
+&#x3C;/data>
+&#x3C;table src="@parts-stock" /></code>
+          <table>
+            <thead>
+              <tr>
+                <th>part</th>
+                <th>code</th>
+                <th>in_stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>hex bolt</td>
+                <td>#HB-08</td>
+                <td>120</td>
+              </tr>
+              <tr>
+                <td>flat washer</td>
+                <td>#FW-04</td>
+                <td>340</td>
+              </tr>
+              <tr>
+                <td>lock nut</td>
+                <td>#LN-06</td>
+                <td>210</td>
+              </tr>
+            </tbody>
+          </table>
+          <p><i>Unlike the front-matter examples above, this one renders a live result: the table grid above is produced from the stored dataset. The dataset is held verbatim as opaque data — never interpreted as markup, so the <code>#</code>-prefixed part codes appear as literal cell text — and the consuming element (here, a <code>&#x26;lt;table&#x26;gt;</code>) decides how to present it. (The <code>&#x26;lt;data&#x26;gt;</code>/<code>&#x26;lt;dataset&#x26;gt;</code> declaration itself renders nothing; only the table does.)</i></p></section>
         </sub-section>
       </section>
       <section id="sh-library">
