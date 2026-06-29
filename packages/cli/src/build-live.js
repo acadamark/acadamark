@@ -18,7 +18,7 @@
 // `notes/specs/delivery-modes.md`.
 
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
-import { dirname, basename, join, resolve } from 'node:path';
+import { dirname, basename, join, resolve, extname } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, emitSingleFileShell, extractDocumentTitle } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
@@ -230,11 +230,113 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
   return { outDir: out, master: masterName, children, assets: Object.keys(SHELL_ASSET_SPECS) };
 }
 
+// #313 slice 4 — binary packaging: embed a single file's EXTERNAL referenced assets into its source so
+// the one file is truly self-contained (renders the assets when opened from anywhere, no dangling path).
+// EMBEDDED assets (`<fig #id fmt>base64</fig>`) and `<dataset>`s already travel — they are base64/text
+// INSIDE the .emd source. The gap is EXTERNAL file references; we close it as a parse-guided SOURCE edit
+// (the engine re-parses the edited source at mount — no serialize-then-reparse; the round-trip invariant,
+// data-store.md Piece 3), reusing the EXISTING rendering paths (no new format):
+//   - `<fig src="local.png">`   → swap the src VALUE to a `data:<mime>;base64,…` URI (the same data: URI
+//     an embedded asset resolves to; the fig handler emits it as an <img> verbatim).
+//   - `<table fmt src="local.csv"/>` → rewrite to inline long-form `<table fmt>…bytes…</table>` (the same
+//     inline-data path `<table fmt | …>` uses; long-form is `>`-safe where the pipe form is not).
+// The asset BYTES stay opaque (base64 / verbatim text), read at build (the build has fs access). A `@id`
+// ref / a `data:` URI / an http(s) URL / a missing file is left untouched (already portable, or warned).
+
+// Image extension → MIME for the embedded `data:` URI. External figs are format-agnostic by path, so we
+// map by extension (a superset of the embedded-asset FORMAT_MIME, since a data: URI can carry any type).
+const IMG_EXT_MIME = {
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
+  '.svg': 'image/svg+xml', '.webp': 'image/webp', '.avif': 'image/avif', '.bmp': 'image/bmp',
+};
+
+/** A `src` that names a LOCAL FILE to embed: not an `@id` store ref, not an already-inline `data:` URI,
+ *  not an http(s)/protocol/absolute-network URL (those resolve from the web anywhere — already portable). */
+function isLocalAssetSrc(src) {
+  return typeof src === 'string' && src.length > 0
+    && !src.startsWith('@') && !src.startsWith('data:')
+    && !/^[a-z][a-z0-9+.-]*:\/\//i.test(src) && !src.startsWith('//');
+}
+
+/** Build a regex matching the `src=` attribute (optionally quoted) for an exact path value. */
+function srcAttrRegex(path) {
+  const esc = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(\\bsrc\\s*=\\s*)(["'])?${esc}\\2?`);
+}
+
+/**
+ * Embed a document's external referenced assets INTO its `.emd` source, returning the rewritten source +
+ * a count. Parse-guided: each external `<fig|figure src>` / `<table src>` body use-site is found in the
+ * (bare-parsed) `tree` with its exact source span (so references inside opaque `<code>` examples — which
+ * are not parsed nodes — are never touched), its bytes are read relative to `masterDir`, and the source
+ * span is rewritten in place (edits applied back-to-front so offsets stay valid).
+ *
+ * @param {string} source - the master `.emd` source
+ * @param {object} tree - the bare-parsed master (proc.parse) — body fig/table are nodes with positions
+ * @param {string} masterDir - directory the external paths resolve against
+ * @param {(msg:string)=>void} warn
+ * @returns {{ source: string, embedded: number }}
+ */
+function embedExternalAssets(source, tree, masterDir, warn) {
+  const edits = [];   // { start, end, newText }
+
+  const visit = (nodes) => {
+    for (const n of nodes ?? []) {
+      if (!n || typeof n !== 'object') continue;
+      const tag = n.tagname;
+      const src = n.kwargs?.src;
+      if ((tag === 'fig' || tag === 'figure' || tag === 'table') && isLocalAssetSrc(src) && n.position) {
+        const start = n.position.start.offset;
+        const end = n.position.end.offset;
+        const span = source.slice(start, end);
+        const abs = resolve(masterDir, src);
+        try {
+          if (tag === 'table') {
+            // A table needs INLINE data (the handler reads node.content). Rewrite the self-closing
+            // external table to long-form inline: drop the src attribute, turn `/>` into `>bytes</table>`.
+            if (!n.selfClosing && !/\/>\s*$/.test(span)) {
+              warn(`enscribe build (--single-file): <table src="${src}"> is not self-closing — not embedded (inline its data, or use a self-closing <table … src="…" />). Left as a path.`);
+              continue;
+            }
+            const bytes = readFileSync(abs, 'utf8');
+            const opening = span.replace(srcAttrRegex(src), '').replace(/\s*\/>\s*$/, '>');
+            // Long-form opaque content begins on the line AFTER the opening `>`, so newline-sandwich the
+            // bytes: `<table fmt>\n<bytes>\n</table>`. The CSV/TSV/… parser ignores the framing newlines.
+            edits.push({ start, end, newText: `${opening}\n${bytes}${bytes.endsWith('\n') ? '' : '\n'}</table>` });
+          } else {
+            // A fig embeds as a data: URI in its src (the same form an embedded asset resolves to).
+            const mime = IMG_EXT_MIME[extname(src).toLowerCase()];
+            if (!mime) {
+              warn(`enscribe build (--single-file): <fig src="${src}"> has an unrecognized image extension — not embedded. Left as a path.`);
+              continue;
+            }
+            const b64 = readFileSync(abs).toString('base64');
+            edits.push({ start, end, newText: span.replace(srcAttrRegex(src), `$1"data:${mime};base64,${b64}"`) });
+          }
+        } catch (err) {
+          warn(`enscribe build (--single-file): could not read external asset "${src}" (${err.message}) — left as a path (it will dangle if the file moves).`);
+          continue;
+        }
+      }
+      if (Array.isArray(n.content)) visit(n.content);
+      if (Array.isArray(n.children)) visit(n.children);
+    }
+  };
+  visit(tree.children ?? []);
+
+  if (edits.length === 0) return { source, embedded: 0 };
+  edits.sort((a, b) => b.start - a.start);   // back-to-front: earlier offsets stay valid as we splice
+  let out = source;
+  for (const e of edits) out = out.slice(0, e.start) + e.newText + out.slice(e.end);
+  return { source: out, embedded: edits.length };
+}
+
 /**
  * Build a SINGLE self-contained HTML file for ONE document (delivery-modes.md §Single-file): read the
- * master `.emd`, EMBED it in the file (a `<template>` the engine reads at mount via `mountLiveDocument`),
- * and reference the chrome/display assets from the web. The file renders with no fetch of the document.
- * No sibling assets, no sources folder — one file.
+ * master `.emd`, embed its EXTERNAL referenced assets into the source (#313 slice 4), EMBED that source in
+ * the file (a `<template>` the engine reads at mount via `mountLiveDocument`), and reference the
+ * chrome/display assets from the web. The file renders with no fetch of the document AND no fetch of its
+ * assets — one truly self-contained file. No sibling assets, no sources folder.
  *
  * EDITABILITY GATE (scope C): the document is editable IFF it is self-contained — no `<… src>` structure
  * children (article/book) AND not a multi-page website (whose `<item src>` pages are external). A
@@ -248,11 +350,12 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
  * @param {boolean} [opts.edit=false] - default the editable file to the editor (`?edit` always works).
  * @param {string} [opts.assetBase] - override the web asset base (default: jsDelivr; see emit-shell.js).
  * @param {(msg:string)=>void} [opts.warn=console.warn] - warning sink (the CLI silences it under --quiet).
- * @returns {{ html: string, master: string, editable: boolean, childSrcs: string[], websitePages: string[], type: string }}
+ * @returns {{ html: string, master: string, editable: boolean, childSrcs: string[], websitePages: string[], type: string, embeddedAssets: number }}
  */
 export function buildSingleFile({ master, title, edit = false, assetBase, warn = (m) => console.warn(m) }) {
   const masterPath = resolve(master);
   const masterName = basename(masterPath);
+  const masterDir = dirname(masterPath);
   const masterSource = readFileSync(masterPath, 'utf8');
 
   // One structuring read: parse once, derive type + the external-source signals from it.
@@ -261,6 +364,9 @@ export function buildSingleFile({ master, title, edit = false, assetBase, warn =
   const type = classifyDocType(tree).type;
   const childSrcs = srcChildrenOf(tree);
   const websitePages = type === 'website' ? discoverWebsitePages(masterSource) : [];
+  // Editability is about `<… src>` STRUCTURE children (article/book/website pages), NOT asset references —
+  // computed from the parsed tree, BEFORE embedding assets, so embedding external assets (a fig/table
+  // `src` is not a structure child) never changes the classification (#313 slice 4).
   const editable = childSrcs.length === 0 && websitePages.length === 0;
 
   if (!editable) {
@@ -271,7 +377,11 @@ export function buildSingleFile({ master, title, edit = false, assetBase, warn =
     }
   }
 
+  // #313 slice 4: embed EXTERNAL referenced assets (external <fig src>/<table src> files) into the source
+  // so the one file carries everything (embedded assets + <dataset>s already travel in the source).
+  const { source: packagedSource, embedded: embeddedAssets } = embedExternalAssets(masterSource, tree, masterDir, warn);
+
   const fileTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
-  const html = emitSingleFileShell({ source: masterSource, title: fileTitle, edit, editable, assetBase });
-  return { html, master: masterName, editable, childSrcs, websitePages, type };
+  const html = emitSingleFileShell({ source: packagedSource, title: fileTitle, edit, editable, assetBase });
+  return { html, master: masterName, editable, childSrcs, websitePages, type, embeddedAssets };
 }

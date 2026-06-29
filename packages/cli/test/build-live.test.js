@@ -15,6 +15,7 @@ import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { buildLiveFolder, buildSingleFile } from '../src/build-live.js';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 
 const require = createRequire(import.meta.url);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -309,6 +310,76 @@ export function run_tests() {
         'render-only → no editor module, edit disabled');
 
       console.log('PASS: single-file cli — buildSingleFile: self-contained→editable (embedded source, web assets); children→render-only (gate C)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #313 slice 4: binary packaging — the single file EMBEDS its external referenced assets ──────────
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-pkg-'));
+    // Render the source embedded in a single-file's <template> (decode the entities the template carries),
+    // through the SAME pipeline the browser mount uses — so we prove the embedded file actually renders.
+    const renderEmbedded = (html) => {
+      // The REAL <template> element (its content), not the comment that mentions the literal tag — so
+      // anchor on the LAST occurrence (lastIndexOf), exactly as the browser's getElementById would target it.
+      const OPEN = '<template id="enscribe-source">';
+      const after = html.slice(html.lastIndexOf(OPEN) + OPEN.length);
+      const tpl = after.slice(0, after.indexOf('</template>'));
+      const src = tpl.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&amp;/g, '&');
+      const proc = buildEnscribePipeline({});
+      const file = { data: {} };
+      return String(proc.stringify(proc.runSync(proc.parse(src), file), file));
+    };
+    try {
+      // A tiny real PNG + a CSV with a # in a cell (opacity check).
+      const PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      writeFileSync(join(dir, 'cat.png'), Buffer.from(PNG_B64, 'base64'));
+      writeFileSync(join(dir, 'data.csv'), 'item,code\nbolt,#B-1\nnut,#N-2\n');
+
+      // (1) EXTERNAL fig → embedded as a data: URI in the source; no bare path survives.
+      const figPath = join(dir, 'ext-fig.emd');
+      writeFileSync(figPath, '<meta type=article>\n<title | F</title>\n</meta>\n\n<section | S>\n\n<fig src="cat.png" | A cat.>');
+      const fig = buildSingleFile({ master: figPath, warn: () => {} });
+      assert.strictEqual(fig.embeddedAssets, 1, 'external fig: one asset embedded');
+      assert.ok(fig.html.includes(`data:image/png;base64,${PNG_B64}`), 'external fig: the PNG bytes are embedded as a data: URI in the source');
+      assert.ok(!/src="cat\.png"|src=cat\.png/.test(fig.html), 'external fig: no bare external path survives');
+      assert.match(renderEmbedded(fig.html), new RegExp(`<img[^>]*src="data:image/png;base64,${PNG_B64.slice(0, 16)}`), 'external fig: the embedded source renders an <img> with the data: URI (self-contained)');
+      assert.strictEqual(fig.editable, true, 'embedding an external ASSET does not flip editability (it is not a structure child)');
+
+      // (2) EXTERNAL table → embedded as inline long-form data; renders a grid; # cell is literal (opaque).
+      const tabPath = join(dir, 'ext-table.emd');
+      writeFileSync(tabPath, '<meta type=article>\n<title | T</title>\n</meta>\n\n<section | S>\n\n<table csv src="data.csv" />');
+      const tab = buildSingleFile({ master: tabPath, warn: () => {} });
+      assert.strictEqual(tab.embeddedAssets, 1, 'external table: one asset embedded');
+      assert.ok(!/src="data\.csv"/.test(tab.html), 'external table: no bare external path survives');
+      const tabHtml = renderEmbedded(tab.html);
+      assert.match(tabHtml, /<th>item<\/th>/, 'external table: the embedded data renders a grid (header)');
+      assert.match(tabHtml, /<td>bolt<\/td>/, 'external table: a body cell renders');
+      assert.ok(tabHtml.includes('#B-1') && !/<h1/.test(tabHtml), 'external table: a # in a cell is literal text (opaque), not a heading');
+      assert.strictEqual(tab.editable, true, 'embedding an external table source does not flip editability');
+
+      // (3) REGRESSION — an EMBEDDED asset + a <dataset> already travel (nothing external to embed).
+      const embPath = join(dir, 'emb.emd');
+      writeFileSync(embPath, [
+        '<meta type=article>', '<title | E</title>', '</meta>', '',
+        '<section | S>', '', '<fig src="@logo" | logo>', '', '<table src="@grid" />', '',
+        '<data>', `<fig #logo png>${PNG_B64}</fig>`, '<dataset #grid csv | a,b\n1,2>', '</data>',
+      ].join('\n'));
+      const emb = buildSingleFile({ master: embPath, warn: () => {} });
+      assert.strictEqual(emb.embeddedAssets, 0, 'embedded asset + dataset: nothing external to embed (they already travel in the source)');
+      const embHtml = renderEmbedded(emb.html);
+      assert.match(embHtml, new RegExp(`<img[^>]*src="data:image/png;base64,${PNG_B64.slice(0, 16)}`), 'embedded @id fig still resolves to a data: URI img');
+      assert.match(embHtml, /<th>a<\/th>/, 'embedded @id dataset still renders a table grid');
+
+      // (4) @id / data: / http(s) src are NOT treated as external files (left untouched).
+      const skipPath = join(dir, 'skip.emd');
+      writeFileSync(skipPath, '<meta type=article>\n<title | K</title>\n</meta>\n\n<section | S>\n\n<fig src="@a" | x>\n\n<fig src="data:image/png;base64,ZZ" | y>\n\n<fig src="https://example.com/i.png" | z>');
+      const skip = buildSingleFile({ master: skipPath, warn: () => {} });
+      assert.strictEqual(skip.embeddedAssets, 0, '@id / data: / http(s) srcs are not local files — none embedded');
+      assert.ok(skip.html.includes('https://example.com/i.png'), 'an http(s) src is left untouched (portable from the web)');
+
+      console.log('PASS: #313/4 cli — single-file embeds external fig (data: URI) + external table (inline); embedded/@id/dataset travel; editability unchanged');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

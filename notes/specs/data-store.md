@@ -169,7 +169,18 @@ first, interpretation per consumer, packaging last.
    (HTML render + JATS projection). `<fig>`→`<graphic>` is done and `<table src="@id">` renders a grid
    (slice 2); the `<dataset>`→JATS projection question (Piece 4) is still open for the JATS slice; a
    `<code src="@id">` / `<plot>` consumer is a trivial future caller of `resolveAssetReference`.
-4. **Binary packaging** — greenfield, last (out of scope for the early slices).
+4. **Binary packaging** — the single-file build embeds a document's EXTERNAL referenced assets so the one
+   file is truly self-contained (renders its assets when opened from anywhere). **(DONE — `buildSingleFile`
+   `embedExternalAssets`: a parse-guided source edit rewrites each external `<fig src="local">` to a
+   `data:` URI and each `<table … src="local"/>` to inline long-form `<table …>bytes</table>`, reading the
+   bytes at build; embedded `<fig #id>base64</fig>` / `<dataset>` already travel in the source; an
+   `@id`/`data:`/http(s) src is left untouched. Round-trip-safe: opaque bytes, the engine re-parses normal
+   source at mount, no serialize-then-reparse. SCOPE: assets only — embedding external STRUCTURE children
+   (book chapters / website pages = site-in-a-file) is a separate, still-deferred follow-on.)**
+
+This completes the #313 build sequence (slices 0–4). The remaining #313-adjacent open items are the
+`<dataset>`→JATS projection (Piece 4 / the JATS slice), the `<code src="@id">` / `<plot>` consumers (trivial
+future callers of `resolveAssetReference`), and site-in-a-file (external structure children in one file).
 
 **[#330] parallelizes.** #330 is an independent parser fix for mixed-content whitespace; it **cannot**
 affect stored data, because opaque content never enters the interpreted-content mixer (Piece 1). The

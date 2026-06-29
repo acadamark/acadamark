@@ -23,7 +23,7 @@ once here and referenced by each mode that admits them.
 |---|---|---|---|---|---|
 | **Static** | already HTML (pre-rendered) | no | no | view only | yes |
 | **Live** | `.emd`, **fetched** from siblings | yes (in browser) | yes (HTTP) | view, or view+edit | yes |
-| **Single-file** | `.emd`, **embedded** in the HTML | yes (in browser) | no (assets need network) | view+edit | **yes** (one document; web assets) |
+| **Single-file** | `.emd` + its referenced assets, **embedded** in the HTML | yes (in browser) | no (only the chrome needs network) | view+edit | **yes** (one document + its assets; chrome from web) |
 
 **The two cross-cutting axes (the overlaps):**
 
@@ -158,6 +158,20 @@ instead of fetch) and forecloses the server.
   shell reads its `<template>` and calls `mountLiveDocument` directly. The child-loader inside
   `loadAndAssembleMaster` is now injectable too (default = fetch), so the same seam carries embedded
   CHILDREN when that lands.
+- **Embedded referenced ASSETS (#313 slice 4 — the binary-packaging piece).** A single file carries not
+  just the source but the assets the source references, so it renders its figures and data tables when
+  opened from anywhere (no dangling external path). EMBEDDED assets (`<fig #id fmt>base64</fig>`) and
+  `<dataset>`s already travel — they are bytes inside the `.emd`. For EXTERNAL references, `buildSingleFile`
+  (`embedExternalAssets`) reads the files at build (relative to the master dir) and rewrites the source
+  in place — a parse-guided edit (each external use-site is a parsed node with a source span, so refs
+  inside opaque `<code>` examples are never touched): an external `<fig src="local.png">` becomes a
+  `data:<mime>;base64,…` URI (the same form an embedded asset resolves to); an external
+  `<table fmt src="local.csv"/>` becomes inline long-form `<table fmt>…bytes…</table>` (the same
+  inline-data path `<table fmt | …>` uses). The asset bytes stay opaque; the engine re-parses ordinary
+  source at mount (no serialize-then-reparse — the data-store round-trip invariant). An `@id`/`data:`/
+  http(s) src is left untouched (already portable). Embedding an external ASSET never changes editability
+  — an asset reference is not a `<… src>` STRUCTURE child. (Embedding external STRUCTURE children —
+  book chapters / website pages, i.e. site-in-a-file — remains the deferred follow-on below.)
 - **Edit-when-self-contained (the principled line).** Edit needs a single source of truth, so the
   file is editable IFF it is **self-contained** — no `<… src>` children (the existing
   `childSrcs.length === 0` test). A self-contained doc wires the editor + honors `?edit`; a master
