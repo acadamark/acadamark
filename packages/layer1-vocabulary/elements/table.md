@@ -58,9 +58,15 @@ enscribe_attributes:
         prepended. Long-form caption (<caption | ...> nested tag) is deferred.
     src:
       notes: |
-        Path to an external data file. Relative to the document's assets
-        directory (configurable via the assetsDir interpreter option).
-        The content handler reads the file at interpretation time.
+        Where the table's data comes from. Either a path to an external data
+        file (relative to the document's assets directory, configurable via the
+        assetsDir interpreter option; read at interpretation time), OR an @id
+        reference (#313 slice 2) that pulls a stored <dataset> declared in
+        <data> — e.g. <table src="@sales"> renders the <dataset #sales csv | …>
+        as a grid (the dataset's format hint applies when the table names no
+        format word). The opaque bytes go straight from the store to the table
+        parser. An unresolved/wrong-kind @id is a visible asset-error (never a
+        silently-empty table).
     type:
       maps_to: data-table-type
       values: [data, layout, comparison, schedule, results, other]

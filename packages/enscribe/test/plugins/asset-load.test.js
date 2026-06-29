@@ -8,7 +8,7 @@
 // never a silent overwrite). Plus the makeAssetError / assetError node shapes.
 
 import assert from 'node:assert/strict';
-import { buildAssetIndex, makeAssetError, assetError } from '../../src/interpreter/plugins/asset-load.js';
+import { buildAssetIndex, makeAssetError, assetError, resolveAssetReference } from '../../src/interpreter/plugins/asset-load.js';
 import { ENSCRIBE_ASSETS } from '../../src/core/file-data-keys.js';
 import { makeTag } from '../../src/core/tag.js';
 import { buildEnscribePipeline } from '../../src/interpreter/index.js';
@@ -188,5 +188,87 @@ export function run() {
     assert.ok(!html.includes('name,note'), 'end-to-end: the dataset renders NOTHING (invisible, like <library>)');
     assert.ok(html.includes('Hello world'), 'end-to-end: the surrounding body still renders normally');
     console.log('PASS: dataset (#313) — END-TO-END: opaque payload harvested by id, never markdown-parsed, renders nothing');
+  }
+
+  // ══ #313 slice 2: neutralize the resolver; <table src="@id"> works; all @id errors visible ══════════
+
+  // Render a full document and return its HTML. (data declared after the use-site — collectDataNodes is
+  // position-independent, like a <library>.)
+  const renderDoc = (body, data) => {
+    const proc = buildEnscribePipeline({});
+    const file = { data: {} };
+    return String(proc.stringify(proc.runSync(proc.parse(`${body}\n${data}`), file), file));
+  };
+  const DATASET = '\n<data>\n<dataset #d1 csv | name,note\nalpha,*bold* #h1\nbeta,2>\n</data>';
+
+  // 13. resolveAssetReference is CONSUMER-AGNOSTIC: bytes + status, no data:/img/grid/parse inside it.
+  {
+    const assets = new Map([
+      ['img', { format: 'png', base64: 'PNGDATA' }],
+      ['ext', { src: 'p/q.png' }],
+      ['ds', { format: 'csv', content: 'a,b' }],
+    ]);
+    assert.equal(resolveAssetReference('notaref', assets), null, 'a non-@ src is not an asset reference (null)');
+    assert.equal(resolveAssetReference('plain.csv', assets), null, 'a file path is not an asset reference (null)');
+    assert.deepEqual(resolveAssetReference('@img', assets), { ref: '@img', id: 'img', found: true, entry: { format: 'png', base64: 'PNGDATA' } }, 'embedded asset → raw entry, uninterpreted');
+    assert.deepEqual(resolveAssetReference('@ds', assets), { ref: '@ds', id: 'ds', found: true, entry: { format: 'csv', content: 'a,b' } }, 'dataset → raw entry, uninterpreted');
+    assert.deepEqual(resolveAssetReference('@nope', assets), { ref: '@nope', id: 'nope', found: false, entry: null }, 'unknown id → a uniform not-found signal');
+    // No media assumption: the returned shape carries bytes/path + status only — never a data: URI, <img>, or grid.
+    const dump = JSON.stringify(['@img', '@ds', '@ext', '@nope'].map((s) => resolveAssetReference(s, assets)));
+    assert.ok(!/data:|<img|<table|<td/.test(dump), 'resolveAssetReference makes NO media assumption (no data:/<img>/grid in its output)');
+    console.log('PASS: #313/2 — resolveAssetReference is consumer-agnostic (bytes + status, no interpretation)');
+  }
+
+  // 14. <table src="@d1" /> reading a <dataset> → a REAL grid (the first cross-consumer pull from the store).
+  {
+    const html = renderDoc('<section | S>\n\n<table src="@d1" />', DATASET);
+    assert.match(html, /<th>name<\/th>/, 'table-from-dataset: header cell from the dataset');
+    assert.match(html, /<th>note<\/th>/, 'table-from-dataset: second header');
+    assert.match(html, /<td>beta<\/td>/, 'table-from-dataset: a body cell from the dataset');
+    assert.match(html, /<td>2<\/td>/, 'table-from-dataset: the grid row 1,2 rendered');
+    console.log('PASS: #313/2 — <table src="@d1"> renders the dataset as a grid (format from the dataset hint)');
+  }
+
+  // 15. OPAQUE to the consumer: a #/* in the dataset is parsed as a CSV CELL, NOT markdown.
+  {
+    const html = renderDoc('<section | S>\n\n<table src="@d1" />', DATASET);
+    assert.ok(html.includes('*bold* #h1'), 'the #/* cell text appears LITERALLY in the grid');
+    assert.ok(!/<em>|<strong>|<h1/.test(html), 'the #/* cell text is NOT markdown-parsed (opaque-to-consumer end to end)');
+    console.log('PASS: #313/2 — dataset bytes reach the table parser as CSV cells, never markdown (opaque end to end)');
+  }
+
+  // 16. an explicit format on the table also works (<table csv src="@d1" />).
+  {
+    const html = renderDoc('<section | S>\n\n<table csv src="@d1" />', DATASET);
+    assert.match(html, /<th>name<\/th>/, 'explicit-format table-from-dataset renders the grid too');
+    console.log('PASS: #313/2 — <table csv src="@d1"> (explicit format) renders the grid');
+  }
+
+  // 17. F2.1 CLOSED — a bad @id is a VISIBLE error for BOTH consumers (the table no longer fails silently).
+  {
+    const t = renderDoc('<section | S>\n\n<table src="@nope" />', '');
+    assert.match(t, /__asset-error|asset-error/, 'table @nope → a visible __asset-error (not silent-empty)');
+    assert.ok(t.includes('nope'), 'the table error names the bad ref');
+    const f = renderDoc('<section | S>\n\n<fig src="@nope" | cap>', '');
+    assert.match(f, /__asset-error|asset-error/, 'fig @nope → a visible __asset-error (unchanged)');
+    console.log('PASS: #313/2 — F2.1 closed: an unresolved @id is a visible __asset-error for BOTH <table> and <fig>');
+  }
+
+  // 18. cross-kind misuse is a visible error too: a <fig> referencing a dataset, and a <table> referencing
+  //     an embedded image — each through the SAME __asset-error path.
+  {
+    const f = renderDoc('<section | S>\n\n<fig src="@d1" />', DATASET);
+    assert.match(f, /asset-error/, 'a <fig> referencing a <dataset> → visible error (data is not an image)');
+    const t = renderDoc('<section | S>\n\n<table src="@img" />', '\n<data>\n<fig #img png>PNGB64</fig>\n</data>');
+    assert.match(t, /asset-error/, 'a <table> referencing an embedded image → visible error (image is not tabular)');
+    console.log('PASS: #313/2 — cross-kind misuse (fig→dataset, table→image) → visible __asset-error');
+  }
+
+  // 19. REGRESSION — a non-@ table is untouched: an inline <table csv | …> renders identically.
+  {
+    const html = renderDoc('<section | S>\n\n<table csv |\nx,y\n3,4>', '');
+    assert.match(html, /<th>x<\/th>/, 'inline <table csv | …> still renders its grid (the non-@ path is untouched)');
+    assert.match(html, /<td>4<\/td>/, 'inline table body unchanged');
+    console.log('PASS: #313/2 — inline <table csv | …> (non-@) is untouched');
   }
 }

@@ -91,24 +91,31 @@ The neutral hand-off, in three steps that no consumer-type branch may contaminat
    `<table>` → a parsed grid; `<code>` → verbatim highlighted text; `<dataset>` placed-as-data → its
    consumer's reading; a future `<plot>` → a chart. Each consumer owns its interpretation.
 
-**Reusable vs fig-only today** (the audit's F2.2 / F2.3, confirmed against code):
+**The split (#313 slice 2, built).** Resolution is neutral + per-consumer, in the one resolution pass
+(`asset-load.js`, `enscribeAssetResolution`), before numbering:
 
-- *Reusable / already general:* the asset registry (`buildAssetIndex` → `file.data.enscribeAssets`) and
-  the `@`-prefix lookup. These are consumer-agnostic in shape and are the parts to keep.
-- *Fig-only, to neutralize:* the declaration **harvest** only collects `<fig>` declarations inside
-  `<data>` (`asset-load.js`: `if (!isEnscribeTag(child, 'fig')) return true`), and the **resolution**
-  runs only for `<fig>` nodes (`if (isEnscribeTag(node, 'fig')) resolveFig(...)`) and bakes the image
-  `data:` URI in. Under this principle the **rewrite becomes per-consumer** (each consuming element
-  interprets) and the **resolver becomes neutral** (id → bytes, no media assumption).
+- **`resolveAssetReference(src, assets)` — the neutral hand-off.** For a `src` starting with `@` it
+  returns the raw store entry + status: `{ ref, id, found, entry }` (or `null` for a non-`@` src). It
+  makes **no media assumption** — no `data:` URI, no `<img>`, no grid, no parse. `entry` is the raw,
+  uninterpreted record: `{ format, base64 }` (embedded image asset) | `{ src }` (external asset) |
+  `{ format, content }` (dataset). The reusable parts the audit named (F2.2) — the registry
+  (`buildAssetIndex` → `file.data.enscribeAssets`) and the `@`-prefix lookup — ARE this function.
+- **Each consumer interprets the entry.** `resolveFig` builds the fig's image (external → path; embedded
+  → `data:<mime>;base64,…`), **byte-identical** to before — the image construction (the F2.3 fig-specific
+  rewrite) MOVED out of the resolver into the fig consumer. `resolveTableSrc` hands a dataset's opaque
+  bytes to the table node as inline content (supplying the dataset's format hint when the table named
+  none), so the table handler parses them with its EXISTING CSV/TSV/JSON parser — the table owns its
+  parse, unchanged. A future `<plot>` / `<code src="@id">` is a trivial new branch: same
+  `resolveAssetReference`, its own interpretation.
 
-**All `@id` errors are visible, for every consumer.** Today an unresolved `@id` is a visible
-`__asset-error` *only* for `<fig>`; `<table src="@id">` resolves nothing — the `@id` is never routed
-through the error path and the failure is **silent** (the audit's F2.1: the table handler treats `src`
-as a file path, so `src="@id"` neither resolves nor reports). The spec rule: **an unresolved `@id` is
-always a visible error, for every consumer** — the neutral resolver owns the not-found/`unsupported`
-diagnostic uniformly, so no consumer can fail silently. (The visible-error shape itself — inline block
-naming the reference, never a broken `<img src="@…">` — is the existing `__asset-error` model
-generalized.)
+**All `@id` errors are visible, for every consumer (F2.1 — closed).** Before, an unresolved `@id` was a
+visible `__asset-error` *only* for `<fig>`; `<table src="@id">` treated `src` as a file path, so an
+`@id` neither resolved nor reported — a **silent** failure. Now every consumer routes its unresolved id,
+*and* its own wrong-kind misuse (a `<fig>` pointed at a dataset; a `<table>` pointed at an image),
+through the **same** `assetError` → `__asset-error` path (the inline block naming the reference, never a
+broken `<img src="@…">` / a silent-empty table). The neutral resolver returns the not-found *signal*
+uniformly; each consumer renders that — and its own kind mismatch — the same way, before numbering (so
+an errored use-site is never counted).
 
 ### Piece 3 — the opacity ↔ round-trip invariant (a standing RULE)
 
@@ -149,15 +156,19 @@ Each consumer owns its **JATS projection** too, exactly as it owns its HTML inte
 Derived from the principle (the audit's recommended order, justified): one neutral hand-off, opacity
 first, interpretation per consumer, packaging last.
 
-0. **This spec** — the governing principle + the owned home (this note). *No code.*
+0. **This spec** — the governing principle + the owned home (this note). *No code.* **(DONE.)**
 1. **`<dataset>` opaque** — add the element to the `<data>` content model on a non-`default` (opaque)
-   handler. Routes to the existing opaque lane; smallest first step.
+   handler. Routes to the existing opaque lane; smallest first step. **(DONE — generic opaque marker +
+   a `format` kwarg read at harvest; harvested beside the asset registry; renders nothing.)**
 2. **Neutralize `@id` resolution + route all errors visible** — make resolution consumer-agnostic
    (id → opaque bytes), move the image-shaped rewrite out to the `<fig>` consumer, and make every
    consumer's unresolved `@id` a visible error (closes the `<table src="@id">` silent-fail, F2.1).
+   **(DONE — `resolveAssetReference` neutral; `resolveFig` / `resolveTableSrc` per-consumer;
+   `<table src="@id">` renders a dataset as a grid; F2.1 closed. See the split, above.)**
 3. **Per-consumer interpretation, incl. JATS** — each consuming element interprets the handed-off bytes
-   (HTML render + JATS projection). `<fig>`→`<graphic>` is already done; `<table>` / `<code>` /
-   `<dataset>` consumers gain theirs; the `<dataset>`→JATS projection question (Piece 4) is answered here.
+   (HTML render + JATS projection). `<fig>`→`<graphic>` is done and `<table src="@id">` renders a grid
+   (slice 2); the `<dataset>`→JATS projection question (Piece 4) is still open for the JATS slice; a
+   `<code src="@id">` / `<plot>` consumer is a trivial future caller of `resolveAssetReference`.
 4. **Binary packaging** — greenfield, last (out of scope for the early slices).
 
 **[#330] parallelizes.** #330 is an independent parser fix for mixed-content whitespace; it **cannot**

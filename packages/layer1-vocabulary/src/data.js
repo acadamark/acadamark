@@ -6708,7 +6708,7 @@ const _table = Object.freeze({
           "notes": "Short-form caption as a kwarg string. Renders as <caption> inside\nthe table element. When numbered, a \"Table N.\" label span is\nprepended. Long-form caption (<caption | ...> nested tag) is deferred.\n",
         },
         "src": {
-          "notes": "Path to an external data file. Relative to the document's assets\ndirectory (configurable via the assetsDir interpreter option).\nThe content handler reads the file at interpretation time.\n",
+          "notes": "Where the table's data comes from. Either a path to an external data\nfile (relative to the document's assets directory, configurable via the\nassetsDir interpreter option; read at interpretation time), OR an @id\nreference (#313 slice 2) that pulls a stored <dataset> declared in\n<data> — e.g. <table src=\"@sales\"> renders the <dataset #sales csv | …>\nas a grid (the dataset's format hint applies when the table names no\nformat word). The opaque bytes go straight from the store to the table\nparser. An unresolved/wrong-kind @id is a visible asset-error (never a\nsilently-empty table).\n",
         },
         "type": {
           "maps_to": {
