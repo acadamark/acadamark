@@ -221,40 +221,70 @@ export function buildAssetIndex(tree, file) {
 }
 
 /**
- * Resolve one <fig> whose src is an @id asset reference, in place. `adopted` is
- * the set of asset ids already claimed by an earlier placement this run.
+ * Consumer-AGNOSTIC `@id` resolution (#313 slice 2 — data-store.md Piece 2, step 1). THE
+ * neutral hand-off: given a use-site `src`, look up an `@id` reference in the merged store
+ * and return the stored entry (or a not-found signal). It makes NO media assumption — no
+ * `data:` URI, no `<img>`, no grid, no parse. Each CONSUMER interprets what it gets back
+ * (`<fig>` → an image; `<table>` → a parsed grid; a future `<plot>`/`<code src>` → its own
+ * reading). fig and table both call this; the interpretation lives in each consumer, not here.
+ *
+ *   - `src` not an `@`-ref   → null  (the caller keeps its own non-@ path, e.g. a file src)
+ *   - `@id` not in the store → { ref, id, found: false, entry: null }
+ *   - `@id` found            → { ref, id, found: true, entry }
+ *     `entry` is the raw, UNINTERPRETED store entry:
+ *       { format, base64 } embedded image asset | { src } external asset | { format, content } dataset.
+ *
+ * @param {*} src - the use-site `src` (only a string starting with `@` is an asset reference)
+ * @param {Map<string,object>|null} assets - file.data.enscribeAssets
+ * @returns {{ ref: string, id: string, found: boolean, entry: object|null }|null}
+ */
+export function resolveAssetReference(src, assets) {
+  if (typeof src !== 'string' || !src.startsWith('@')) return null;
+  const id = src.slice(1);
+  const entry = assets?.get(id) ?? null;
+  return { ref: `@${id}`, id, found: entry != null, entry };
+}
+
+/**
+ * The `<fig>` CONSUMER's interpretation of an `@id` reference, in place. Calls the neutral
+ * resolveAssetReference, then builds its OWN image from the bytes: external → the path;
+ * embedded → a `data:<mime>;base64,…` URI. A reference to a <dataset> (tabular data, not an
+ * image) is a visible error. **Byte-identical to the pre-split fig output for every asset
+ * case** — the data: URI / path construction MOVED here from the resolver; the result is
+ * unchanged. `adopted` is the set of asset ids already claimed by an earlier placement.
  */
 function resolveFig(node, assets, adopted) {
-  const src = node.kwargs?.src;
-  if (typeof src !== 'string' || !src.startsWith('@')) return;  // not an asset reference
+  const r = resolveAssetReference(node.kwargs?.src, assets);
+  if (r == null) return;                                        // not an asset reference — untouched
+  const { id, ref, found, entry } = r;
 
-  const id = src.slice(1);
-  const ref = `@${id}`;
-  const asset = assets?.get(id) ?? null;
-
-  if (!asset) {
+  if (!found) {
     assetError(node, ref, `no asset declared with id "${id}"`);
     return;
   }
 
-  if (asset.src != null) {
+  if (entry.src != null) {
     // External asset: the declared (assembly-rebased) path goes straight into the
     // <img src>. External is format-agnostic — the type follows from the path.
-    node.kwargs.src = asset.src;
+    node.kwargs.src = entry.src;
+  } else if (entry.content != null) {
+    // A <dataset> (opaque tabular data) — a figure cannot render data as an image.
+    assetError(node, ref, `"${id}" is a <dataset> (data, not an image) — reference it from a <table src="@${id}">, not a <fig>`);
+    return;
   } else {
-    // Embedded asset: rewrite src to a data: URI built from the format flag.
-    const mime = asset.format ? FORMAT_MIME[asset.format] : null;
+    // Embedded image asset: rewrite src to a data: URI built from the format flag.
+    const mime = entry.format ? FORMAT_MIME[entry.format] : null;
     if (!mime) {
-      assetError(node, ref, asset.format
-        ? `unsupported embedded-asset format "${asset.format}" (supported: ${Object.keys(FORMAT_MIME).join(', ')})`
+      assetError(node, ref, entry.format
+        ? `unsupported embedded-asset format "${entry.format}" (supported: ${Object.keys(FORMAT_MIME).join(', ')})`
         : `embedded asset "${id}" has no format flag (e.g. png)`);
       return;
     }
-    if (!asset.base64) {
+    if (!entry.base64) {
       assetError(node, ref, `embedded asset "${id}" has no base64 payload`);
       return;
     }
-    node.kwargs.src = `data:${mime};base64,${asset.base64}`;
+    node.kwargs.src = `data:${mime};base64,${entry.base64}`;
   }
 
   // Adopt the asset id onto the FIRST placement that has no id of its own; each
@@ -269,10 +299,58 @@ function resolveFig(node, assets, adopted) {
 }
 
 /**
- * Unified plugin: resolve body <fig src="@id"> references against the asset
- * store built by buildAssetIndex. Runs before numbering so the placed figure
- * registers under the adopted id. Figures without an @-src are untouched
- * (existing output is byte-identical).
+ * The `<table src="@id">` CONSUMER's resolution (#313 slice 2 — the second consumer of the
+ * neutral hand-off). Calls resolveAssetReference, then HANDS OFF the opaque bytes to the
+ * table node so the table handler parses them with its EXISTING CSV/TSV/JSON/… parser — the
+ * table owns the PARSE (its interpretation is unchanged; we only deliver the bytes). A
+ * dataset's bytes become the table's inline content (with the dataset's format hint when the
+ * table named no format word); an external asset becomes a file `src` the handler reads as
+ * before. A not-found id — or an embedded IMAGE asset (not tabular) — is the SAME visible
+ * `__asset-error` a bad <fig> ref gets (F2.1 closed: the table no longer fails silently). A
+ * non-`@` `src` (a real file path) and an inline `<table | …>` are untouched.
+ *
+ * The bytes go straight from the store to the table parser, in-tree — never serialized then
+ * re-parsed (the round-trip invariant, data-store.md Piece 3).
+ */
+function resolveTableSrc(node, assets) {
+  const r = resolveAssetReference(node.kwargs?.src, assets);
+  if (r == null) return;                                        // not an @-ref — a file path / inline, untouched
+  const { id, ref, found, entry } = r;
+
+  if (!found) {
+    assetError(node, ref, `no data declared with id "${id}"`);
+    return;
+  }
+
+  if (entry.content != null) {
+    // A <dataset>: hand its opaque bytes to the table as inline content, and supply the
+    // dataset's format hint when the table named no format word (`<table src="@id">`).
+    node.content = entry.content;
+    if (node.kwargs) delete node.kwargs.src;
+    if ((node.positional == null || node.positional.length === 0) && entry.format) {
+      node.positional = [entry.format];
+    }
+  } else if (entry.src != null) {
+    // An external asset that is a data file: resolve the @id to its path; the table
+    // handler reads it through its existing file-path branch.
+    node.kwargs.src = entry.src;
+  } else {
+    // An embedded image asset is not tabular data.
+    assetError(node, ref, `"${id}" is an embedded image asset (not tabular data) — reference it from a <fig src="@${id}">, not a <table>`);
+  }
+}
+
+/**
+ * The `@id` RESOLUTION PASS (#313 slice 2): resolve body `@id` references against the store
+ * built by buildAssetIndex, dispatching each use-site to its CONSUMER. Both consumers call
+ * the one neutral resolveAssetReference and then interpret what they get:
+ *   - `<fig src="@id">`   → resolveFig (image: data: URI / path; a dataset ref → visible error)
+ *   - `<table src="@id">` → resolveTableSrc (hand the bytes to the table parser; a bad/non-tabular
+ *      ref → the SAME visible __asset-error — F2.1 closed)
+ * Runs BEFORE numbering, so a placed figure registers under its adopted id and an errored ref
+ * is turned into a non-numbered __asset-error (never counted). Use-sites without an `@`-src are
+ * untouched (a non-@ table `src` is a file path; output is byte-identical). A future `<plot>` /
+ * `<code src="@id">` is a trivial new branch here — same resolveAssetReference, its own interpret.
  *
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
@@ -285,6 +363,7 @@ export function enscribeAssetResolution() {
       for (const node of nodes ?? []) {
         if (!node || typeof node !== 'object') continue;
         if (isEnscribeTag(node, 'fig')) resolveFig(node, assets, adopted);
+        else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets);
         if (isEnscribeTag(node) && Array.isArray(node.content)) walk(node.content);
         if (Array.isArray(node.children)) walk(node.children);
       }
