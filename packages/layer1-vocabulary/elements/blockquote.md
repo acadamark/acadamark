@@ -25,7 +25,6 @@ enscribe_attributes:
         Optional classification of the quotation's role. Affects styling
         and may affect JATS export.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

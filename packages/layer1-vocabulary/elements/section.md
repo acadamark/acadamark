@@ -43,7 +43,7 @@ enscribe_attributes:
         notes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp
         reads node.booleans.unnumbered in runSync, and the unnumbered attribute also
         renders on the element.
-  type: structured
+content:
   shape:
     - element: section-title
       required: false

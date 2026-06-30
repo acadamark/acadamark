@@ -5,12 +5,16 @@
 // paragraph's `children` array (the prose-bearing inline content), so e.g.
 // `<em | text>` renders as `<em>text</em>` and not `<em><p>text</p></em>`.
 //
-// The *gate* — when to apply this unwrapping — is per-caller:
-// `interpret-plugin.js#convertContent` gates by `vocab.content.type === 'prose'`
-// (vocab-driven); `figure.js#buildCaptionHastNodes` applies it unconditionally
-// for figcaption content. The DRY audit (G13 / Bin C.2) noted that the
-// different gates are legitimate and a shared "default gate" would fit
-// neither caller — so this helper is the unwrap *operation* only.
+// The *gate* — WHEN to unwrap — is decided UPSTREAM, not here and NOT by any
+// `content.type` label (that field was dissolved — the real authority is the
+// content model). The parse-time central unwrap (`parser/recursive-content.js`
+// `extractFromRoot`) KEEPS a single paragraph for a flow tagname (`FLOW_TAGNAMES`,
+// derived from `content.shape.contains`) and unwraps everything else (#326). By
+// the time `interpret-plugin.js#convertContent` runs, phrasing elements already
+// arrive unwrapped and flow elements already wrapped, so it does NOT re-decide
+// (re-unwrapping would undo the flow wrap). This helper is the unwrap *operation*
+// only — its remaining direct caller is `interpreter/lib/parse-inline.js`, which
+// unwraps a freshly parsed inline fragment destined for a known phrasing slot.
 
 /**
  * Unwrap a single-paragraph content array.

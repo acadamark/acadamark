@@ -12,7 +12,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: structured
   shape:
     contains: [bibliography, note-list, book-part, data, config]
 content_handler: default

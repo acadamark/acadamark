@@ -12,7 +12,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: structured
   shape:
     contains: [book-part]
 content_handler: default

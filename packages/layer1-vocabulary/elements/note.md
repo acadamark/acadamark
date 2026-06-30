@@ -37,7 +37,6 @@ enscribe_attributes:
       notes: |
         Optional classification. Most notes are substantive (authorial commentary).
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

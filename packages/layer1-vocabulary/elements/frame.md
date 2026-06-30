@@ -53,7 +53,6 @@ enscribe_attributes:
         frameable-border-<name> modifier class (document names it, theme
         defines it — #58; see frameable.md).
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

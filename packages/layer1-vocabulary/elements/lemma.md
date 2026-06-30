@@ -24,7 +24,6 @@ enscribe_attributes:
         Whether this lemma participates in the propositional theorem-
         family shared counter. Default true; -numbered suppresses.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

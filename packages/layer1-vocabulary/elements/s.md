@@ -15,7 +15,6 @@ enscribe_attributes:
       maps_to: data-strikethrough-type
       values: [outdated, retracted, deleted, other]
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

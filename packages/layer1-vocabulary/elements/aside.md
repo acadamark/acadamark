@@ -47,7 +47,6 @@ enscribe_attributes:
         visual box is the point of a callout / sidebar. Use -border to
         suppress the outline.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

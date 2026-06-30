@@ -30,7 +30,6 @@ enscribe_attributes:
         (default) to number; -numbered to suppress. Can also be
         written as numbered=true / numbered=false.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

@@ -73,7 +73,6 @@ enscribe_attributes:
       notes: |
         Optional semantic classification. Affects styling and JATS export.
 content:
-  type: opaque-or-structured
   notes: |
     When a format positional is present (csv, tsv, json, yaml, md), pipe
     content is an opaque data string parsed by the corresponding parser.

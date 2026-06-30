@@ -154,7 +154,24 @@ clearer named seam; share one when behavior is genuinely identical and sharing s
    pipeline is recognize -> process -> format.
 
 ## Punch-list (current-state corrections — for the audit/refactor, NOT part of the taxonomy)
-Surfaced by measurement; to apply when specs are conformed to this taxonomy: `section` missing its content
-declaration; `sub-section`/`sub-sub-section` declaring inline content (should be block); `marginnote` as
+Surfaced by measurement; to apply when specs are conformed to this taxonomy.
+
+**Done:**
+- **`content.type` dissolved (A3).** The redundant descriptive label is gone from all element frontmatter:
+  the type IS the processor, not a label to name and branch on. Confirmed read by no runtime code (the lone
+  reference was a stale comment, corrected); its three jobs were already sourced by the real authorities —
+  descend/hold by `getContentHandler`/`LANGUAGES` (`isOpaqueContent`), flow-vs-phrasing by `FLOW_TAGNAMES`
+  (derived from `content.shape.contains`), containment by `content.shape`. The 162 vocabulary examples
+  render byte-identical, proving the field was dead.
+- **`section` content declaration resolved (A3).** `section` had its content model (`shape`) mis-nested
+  under `enscribe_attributes` (no top-level `content:` block), so it never reached the vocab. Re-nested under
+  a proper `content:` block (an array shape `FLOW_TAGNAMES` correctly ignores) — behavior-neutral.
+
+**Still open** (corrections to the current code, not statements of the taxonomy):
+`sub-section`/`sub-sub-section` declaring inline content (should be block); `marginnote` as
 sugar-for-`<note position=margin>` (not a distinct element); `span` removal (no Enscribe essence); the
-code-handler inconsistency. These are corrections to the current code, not statements of the taxonomy.
+code-handler inconsistency (`code-block`/`inline-code` are dispatch keys with non-HTML `html_output.element`
+values). **Surfaced by A3, deferred** (cross-taxonomy / apparatus decisions): `nav`/`nav-group`/`item` (all
+`category: navigation`) carry the SAME mis-nested content model as `section` did — but the semantic taxonomy
+classifies them as UI apparatus, not authored content, so whether they should have a content model at all is
+a designer decision; left untouched rather than force one.

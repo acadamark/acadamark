@@ -44,7 +44,6 @@ enscribe_attributes:
         the +form into the kwarg surface so the schema renderer's
         attribute mapping fires uniformly.
 content:
-  type: structured
   shape:
     - element: name
       required: false

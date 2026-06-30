@@ -15,7 +15,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: opaque
   notes: |
     Author writes pure environment body (each case on its own line,
     terminated by `\\`, with `&` separating value from condition). The

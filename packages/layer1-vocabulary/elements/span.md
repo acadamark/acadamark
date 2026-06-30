@@ -18,7 +18,6 @@ enscribe_attributes:
     title:
       maps_to: title
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

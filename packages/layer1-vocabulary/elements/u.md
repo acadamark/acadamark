@@ -15,7 +15,6 @@ enscribe_attributes:
       maps_to: data-underline-type
       values: [misspelling, proper-name, editorial-correction, other]
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

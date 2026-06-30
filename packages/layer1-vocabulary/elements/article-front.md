@@ -12,7 +12,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: structured
   shape:
     contains: [meta, article-title, article-subtitle, author, abstract, data, config]
 content_handler: default

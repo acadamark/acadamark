@@ -25,7 +25,6 @@ enscribe_attributes:
         lemma, definition counters), matching amsthm's conventional
         "example" theorem-style family. Default true.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

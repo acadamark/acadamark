@@ -15,7 +15,6 @@ enscribe_attributes:
       maps_to: data-bold-type
       values: [keyword, product-name, lead, offset, other]
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

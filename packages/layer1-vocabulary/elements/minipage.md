@@ -49,7 +49,6 @@ enscribe_attributes:
         selects a named look (accent / thick / dashed / subtle) and implies the
         border on (#58; see frameable.md).
 content:
-  type: opaque
   becomes: sealed-subdocument
   notes: |
     The pipe content is the minipage's body — a SEALED sub-document. It is held

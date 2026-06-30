@@ -17,7 +17,6 @@ enscribe_attributes:
         The programming language of the code. Maps to a class like
         "language-python" for syntax highlighting via shiki/prism.
 content:
-  type: opaque
   becomes: text-content
   notes: |
     Code content is preserved verbatim. No markdown idioms or enscribe

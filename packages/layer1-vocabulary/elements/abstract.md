@@ -25,7 +25,6 @@ enscribe_attributes:
         Optional documentation of the journal's word limit for this
         abstract. Informational only; does not enforce.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

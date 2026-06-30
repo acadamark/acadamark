@@ -36,7 +36,6 @@ enscribe_attributes:
         the next numbered sibling continues unbroken. See
         notes/specs/toc-and-numbering.md. Authored as +unnumbered.
 content:
-  type: structured
   shape:
     - element: sub-section-title
       required: false

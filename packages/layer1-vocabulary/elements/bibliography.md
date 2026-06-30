@@ -44,7 +44,6 @@ enscribe_attributes:
         includes all registered entries; "hybrid" includes cited entries with a
         separate "Further Reading" section.
 content:
-  type: structured
   shape:
     - element: bib-entry
       required: false

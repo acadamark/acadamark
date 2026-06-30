@@ -26,7 +26,6 @@ enscribe_attributes:
         theorem it proves, not from a counter). An author who wants
         numbering can opt-in per instance with +numbered.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

@@ -15,7 +15,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: opaque
   notes: |
     Author writes pure environment body (each line `lhs & op & rhs`,
     terminated by `\\`). The handler wraps in

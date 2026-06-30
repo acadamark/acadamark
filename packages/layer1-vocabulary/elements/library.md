@@ -51,7 +51,6 @@ enscribe_attributes:
         URL source needs an async render (the CLI render command / the browser
         renderAsync); a synchronous render flags it.
 content:
-  type: opaque
   becomes: 'parsed entries (registered in citation system)'
   notes: |
     Content is preserved verbatim and parsed by a format-specific parser.
