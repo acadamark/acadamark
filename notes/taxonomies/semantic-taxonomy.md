@@ -77,7 +77,7 @@ The author steps aside with their *own* secondary voice. Out-of-flow; degree var
 mildly, an aside more fully) but the act is one: a tangent in the author's voice.
 - `note`, `aside`, `note-list`, `endnotes` (block-prose - default)
 - `details` / `summary` (an aside the reader can expand — block-prose - default)
-- `marginnote` -> **sugar for `<note position=margin>`, NOT a distinct element** (do not classify separately)
+- `marginnote` — a **distinct element**: an *unnumbered* margin aside, authored in place, never collected/numbered/relocated (the Tufte "margin note"). Distinct from a *numbered* `<note position=margin>` (which is a collected, numbered, back-referenced note rendered in the margin). Peer to `note`, not sugar for it.
 
 ### 4. Quotation & sourcing — external material, and pointing at sources
 Words/works *not* the author's own, brought in and attributed. Quotation is the *prose* member (still
@@ -156,8 +156,7 @@ Containers and regions that organize the work but carry no discourse of their ow
   is not an authorial act.
 - **Mapping -> folded into exhibit.** Definition lists/glossaries are a *kind* of exhibit (supporting info,
   often a table), not a separate family.
-- **`span` -> flag for review/removal.** Appears in the vocabulary but may have snuck in from HTML with no
-  Enscribe semantic role; unassigned pending that decision.
+- **`span` -> a deliberate html-native passthrough** (`is_html_native: true`), not an accidental sneak-in. Whether an explicit HTML escape-hatch element *should* exist in the vocabulary is a **design question** (keep as an escape hatch, or decide its fate deliberately) — not drift to delete.
 
 ## Bridge points for the processing pass (where the two taxonomies diverge — examine first)
 - **`inline-code`** in family 6: in-flow *and* DSL-owned — but this is now *expected* (notation is DSL-owned
