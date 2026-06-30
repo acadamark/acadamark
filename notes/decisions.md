@@ -280,6 +280,33 @@ rebuilds it on push — the standard pattern. *(Process as much as design; may i
 `notes/coding-conventions.md`.)*
 
 
+## Reference standards: guide, don't gate
+
+JATS, TEI, and Scholarly HTML are Enscribe's **reference standards** for scholarly document structure. They
+*guide* Layer 1's design — they are the accumulated wisdom of how scholarly documents are modeled, so Enscribe
+consults them when designing elements and aims to translate cleanly to them. They sit **above** output-
+convenience formats (LaTeX, Quarto, docx, epub — which inform nothing about Layer 1's *shape*; they are export
+conveniences, not structural standards) and **alongside each other** as established serialization schemes.
+
+**They guide; they do not gate.** Compliance is desirable, not required at each step. When forward progress
+requires Layer 1 to diverge from a reference standard, Enscribe **diverges, files an issue to restore
+compliance later, and proceeds.** Divergence is a tracked, deferrable debt — never a blocker on internal
+evolution. The standards shape *where Layer 1 is going*; they never gate *whether the next step can be taken*.
+
+The distinction is two switches, not one dial: **guidance ON** (design-binding — the standards shape the
+target), **gating OFF** (timing-advisory — never blocks a step). This preserves the interop positioning
+("Enscribe documents translate cleanly to JATS and TEI") without taxing development velocity.
+
+Consequences:
+- The taxonomies and per-element specs do **not** owe a JATS/TEI projection per element. Serialization to a
+  reference standard is a downstream translation that consumes the HTML-shaped Layer 1 (see #147: Layer 1 is
+  HTML-shaped; standards are consulted and exported-to, never shaping). Per-element interop projection lives
+  in the **interop cluster** (JATS, TEI, Scholarly HTML, the SPAR ontology mappings, CSL), planned together,
+  designed HTML-shape-first.
+- JATS-specific work (e.g. `<dataset>` -> JATS, #313 slice 3) is **not** a completion blocker for its epic; it
+  is an interop-cluster item, designed alongside TEI.
+
+
 ## Not a decision — recorded for accuracy
 
 **Citations are not website-broken.** Investigated this session: real citations (with a `<library>`)

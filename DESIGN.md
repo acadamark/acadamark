@@ -43,6 +43,8 @@ Source files carry the `.emd` extension — the canonical short form — with `.
 
 Two relationships matter, and they are not the same. Layer 2 and Layer 1 are a **lossless round-trip**: they are one document in two notations — the shorthand is simply a faster way to type the canonical form, and any Layer 1 document can be written back as shorthand. JATS, by contrast, sits outside that loop: Layer 1 **exports** to JATS as a first-class, clean operation (this is enscribe's bridge to professional scholarly publishing), while JATS **import** into Layer 1 is supported but acknowledged-lossy — a one-way conversion that applies necessary simplifications, not a faithful reconstruction.
 
+> Note: "first-class" here predates the "reference standards: guide, don't gate" decision (`notes/decisions.md`); JATS is now positioned alongside TEI / Scholarly HTML as a reference standard, not a first-class gate. The architecture prose will be reconciled with the interop-cluster work.
+
 Everything below is the *how*. The working principles in `notes/specs/principles.md`, the delegation rules in `notes/specs/idioms.md`, and the Layer 1 vocabulary specs are implementations of what this summary states; when a design decision is in question, it should trace back to here.
 
 ## The problem
