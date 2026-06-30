@@ -20,7 +20,7 @@ enscribe_attributes:
         body is authored in the master after the `<item | Title>` marker (peer-closed
         by the next entry, the `<section | Title>` model). The website render (S2)
         loads the child; S1 records the `src` as a reference only.
-  type: structured
+content:
   shape:
     - element: body
       required: false

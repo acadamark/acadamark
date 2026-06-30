@@ -10,7 +10,7 @@ enscribe_attributes:
     maps_to: id
   classes:
     maps_to: class
-  type: structured
+content:
   shape:
     - element: item
       required: false
