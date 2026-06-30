@@ -17,7 +17,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

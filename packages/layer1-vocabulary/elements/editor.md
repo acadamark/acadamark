@@ -22,7 +22,6 @@ enscribe_attributes:
       values: [editor, co-editor, series-editor, volume-editor, guest-editor, other]
       default: editor
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

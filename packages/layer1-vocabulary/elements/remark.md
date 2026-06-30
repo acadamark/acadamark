@@ -28,7 +28,6 @@ enscribe_attributes:
         opt-in per instance with +numbered, but most usage relies on
         the default.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

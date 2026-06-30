@@ -19,7 +19,6 @@ enscribe_attributes:
         rendering (scene breaks render as blank space; ornamental breaks
         render with decorative characters or images).
 content:
-  type: none
   notes: |
     The hr element is void; it cannot contain content.
 content_handler: default

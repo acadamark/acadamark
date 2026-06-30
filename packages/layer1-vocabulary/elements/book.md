@@ -25,7 +25,6 @@ enscribe_attributes:
         per-note `placement` kwarg plus `note-scope` (a book defaults to
         `note-scope=chapter`), not this attribute. See <note>.
 content:
-  type: structured
   shape:
     - element: book-front
       required: false

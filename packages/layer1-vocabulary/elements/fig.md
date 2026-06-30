@@ -104,7 +104,6 @@ enscribe_attributes:
         can draw the outline box per the frameable convention. Off by
         default.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: figcaption

@@ -17,7 +17,6 @@ enscribe_attributes:
         URL of the source being quoted. Same as <blockquote>'s cite
         attribute but for inline quotations.
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

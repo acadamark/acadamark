@@ -25,7 +25,6 @@ enscribe_attributes:
         propositional theorem-family counter), matching amsthm's
         conventional "definition" theorem-style family. Default true.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

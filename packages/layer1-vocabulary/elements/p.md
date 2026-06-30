@@ -19,7 +19,6 @@ enscribe_attributes:
         styling (lead paragraphs render larger; abstract paragraphs styled
         distinctly).
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

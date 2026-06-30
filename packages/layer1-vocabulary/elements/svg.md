@@ -47,7 +47,6 @@ enscribe_attributes:
         The frameable surface. When +border is set, the rendered
         <svg> wrapper gains the `frameable-border` class.
 content:
-  type: opaque
   becomes: raw-svg-source
   notes: |
     The pipe content is the SVG source — pass-through to the rendered

@@ -42,7 +42,6 @@ enscribe_attributes:
         containing `>` or spaces must use the `href="..."` kwarg (there is no
         quoted-positional form).
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

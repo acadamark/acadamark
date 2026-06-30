@@ -24,7 +24,6 @@ enscribe_attributes:
         Whether this corollary participates in the propositional
         theorem-family shared counter. Default true.
 content:
-  type: prose
   shape:
     contains: [block]
   becomes: children

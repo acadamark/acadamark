@@ -25,7 +25,6 @@ enscribe_attributes:
         Optional hint about how the date should be parsed and formatted.
         Default is iso (YYYY-MM-DD).
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

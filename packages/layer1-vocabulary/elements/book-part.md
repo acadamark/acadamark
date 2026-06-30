@@ -55,7 +55,6 @@ enscribe_attributes:
         unnumbered. (Front-matter and non-appendix back-matter are already unnumbered
         by region.) See notes/specs/toc-and-numbering.md. Authored as +unnumbered.
 content:
-  type: structured
   shape:
     - element: meta
       required: false

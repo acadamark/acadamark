@@ -70,7 +70,6 @@ const _a = Object.freeze({
       ],
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -142,7 +141,6 @@ const _abbr = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -215,7 +213,6 @@ const _abstract = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -273,7 +270,6 @@ const _affiliation = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -325,7 +321,6 @@ const _align = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "Author writes pure environment body (each line `lhs & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. (KaTeX\nsupports the `aligned` environment for inline-into-disp-mode\ncontexts; the `align` LaTeX environment proper is a top-level\ndocument env that KaTeX does not support standalone. Using\n`aligned` inside KaTeX's displayMode produces the equivalent\nvisual output.)\n",
     },
     "content_handler": "align",
@@ -376,7 +371,6 @@ const _article_back = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": {
         "contains": [
           "bibliography",
@@ -414,7 +408,6 @@ const _article_body = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": {
         "contains": [
           "block",
@@ -449,7 +442,6 @@ const _article_front = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": {
         "contains": [
           "meta",
@@ -489,7 +481,6 @@ const _article_subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -523,7 +514,6 @@ const _article_title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -580,7 +570,6 @@ const _article = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "article-front",
@@ -688,7 +677,6 @@ const _aside = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -769,7 +757,6 @@ const _author = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "name",
@@ -861,7 +848,6 @@ const _b = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -934,7 +920,6 @@ const _bib_entry = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "author",
@@ -1070,7 +1055,6 @@ const _bibliography = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "bib-entry",
@@ -1144,7 +1128,6 @@ const _blockquote = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -1210,7 +1193,6 @@ const _book_back = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": {
         "contains": [
           "bibliography",
@@ -1248,7 +1230,6 @@ const _book_body = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": {
         "contains": [
           "book-part",
@@ -1282,7 +1263,6 @@ const _book_front = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": {
         "contains": [
           "meta",
@@ -1323,7 +1303,6 @@ const _book_part_subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -1357,7 +1336,6 @@ const _book_part_title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -1464,7 +1442,6 @@ const _book_part = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "meta",
@@ -1605,7 +1582,6 @@ const _book_subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -1639,7 +1615,6 @@ const _book_title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -1696,7 +1671,6 @@ const _book = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "book-front",
@@ -1768,7 +1742,6 @@ const _caption = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -1808,7 +1781,6 @@ const _cases = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "Author writes pure environment body (each case on its own line,\nterminated by `\\\\`, with `&` separating value from condition). The\nhandler wraps in `\\begin{cases}...\\end{cases}` before passing to\nKaTeX.\n",
     },
     "content_handler": "cases",
@@ -1901,7 +1873,6 @@ const _cite = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -1990,7 +1961,6 @@ const _code_block = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "The pipe content is verbatim code source. No markdown idioms or enscribe\nconstructs are interpreted inside the code block. Newlines are preserved.\n",
     },
     "shorthand_examples": [
@@ -2043,7 +2013,6 @@ const _code = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "becomes": "text-content",
       "notes": "Code content is preserved verbatim. No markdown idioms or enscribe\nconstructs are interpreted inside <code> elements.\n",
     },
@@ -2109,7 +2078,6 @@ const _config = Object.freeze({
       },
     },
     "content": {
-      "type": "none",
       "notes": "<config> takes no child-element content. Its authoring form is kwargs\n(the flat config register documented in the kwargs block above), and it\nrenders as an empty <config></config>. Structured config is settled (#134)\nto be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX — NOT a tree of child tags; that structured register is future and\nunbuilt. An earlier `type: structured` plus a child-element `shape` list\n(output-format, citation-style, numbering-style, note-position, stylesheet,\ntheme) modeled the rejected child-tag form and was removed in #167. See\nDESIGN.md \"Configuration and metadata are data\". (The `category:` field is\nleft unchanged here pending the taxonomy discussion in #166.)\n",
     },
     "content_handler": "default",
@@ -2176,7 +2144,6 @@ const _corollary = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -2229,7 +2196,6 @@ const _data = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "library",
@@ -2336,7 +2302,6 @@ const _date = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -2396,7 +2361,6 @@ const _dd = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -2462,7 +2426,6 @@ const _definition = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -2526,7 +2489,6 @@ const _details = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "summary",
@@ -2607,7 +2569,6 @@ const _diagram = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "Author writes the engine's diagram source verbatim. Enscribe preserves\nthe content unmodified inside the wrapper element; the engine's library\n(loaded from CDN at view time, or run at build time) parses the source.\n",
     },
     "content_handler": "diagram",
@@ -2664,7 +2625,6 @@ const _display_math = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
     },
     "content_handler": "math-display",
@@ -2705,7 +2665,6 @@ const _dl = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "dt",
@@ -2769,7 +2728,6 @@ const _doi = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -2823,7 +2781,6 @@ const _dt = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -2905,7 +2862,6 @@ const _editor = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -2953,7 +2909,6 @@ const _em = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -3010,7 +2965,6 @@ const _email = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -3058,7 +3012,6 @@ const _endnotes = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "note",
@@ -3112,7 +3065,6 @@ const _eqnarray = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "Author writes pure environment body (each line `lhs & op & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. KaTeX\ndoes not implement the LaTeX `eqnarray` environment standalone;\n`aligned` is the supported KaTeX equivalent and renders the same\nmulti-line-equation visual output. `<eqnarray>` exists alongside\n`<align>` for LaTeX-source compatibility: an author copying\n`\\begin{eqnarray}...\\end{eqnarray}` source from a LaTeX document\nhas a target enscribe tag whose name matches.\n",
     },
     "content_handler": "eqnarray",
@@ -3177,7 +3129,6 @@ const _example = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -3289,7 +3240,6 @@ const _fig = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -3398,7 +3348,6 @@ const _frame = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -3463,7 +3412,6 @@ const _glossary_entry = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "dt",
@@ -3521,7 +3469,6 @@ const _glossary = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "glossary-entry",
@@ -3583,7 +3530,6 @@ const _hr = Object.freeze({
       },
     },
     "content": {
-      "type": "none",
       "notes": "The hr element is void; it cannot contain content.\n",
     },
     "content_handler": "default",
@@ -3646,7 +3592,6 @@ const _i = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -3703,7 +3648,6 @@ const _inline_code = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "The pipe content is verbatim code source. No markdown idioms or enscribe\nconstructs are interpreted inside inline code.\n",
     },
     "shorthand_examples": [
@@ -3748,7 +3692,6 @@ const _inline_math = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
     },
     "content_handler": "math",
@@ -3840,7 +3783,6 @@ const _kbd = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -3891,7 +3833,6 @@ const _keywords = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -3942,7 +3883,6 @@ const _lang = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -4008,7 +3948,6 @@ const _lemma = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -4099,7 +4038,6 @@ const _library = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "becomes": "parsed entries (registered in citation system)",
       "notes": "Content is preserved verbatim and parsed by a format-specific parser.\nNo enscribe interpretation of the content. Authors typically copy\nthe content directly from a reference manager (Zotero, JabRef, etc.)\nor a text editor.\n",
     },
@@ -4160,7 +4098,6 @@ const _license = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -4216,7 +4153,6 @@ const _marginnote = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -4269,7 +4205,6 @@ const _math = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "The content is LaTeX math source. It is passed directly to KaTeX\n(displayMode: true) as a string; not parsed as prose. The author is\nresponsible for valid LaTeX math syntax.\n",
     },
     "content_handler": "math",
@@ -4319,7 +4254,6 @@ const _matrix = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "notes": "Author writes pure environment body (rows separated by `\\\\`, cells\nseparated by `&`). The handler wraps in `\\begin{matrix}...\\end{matrix}`\nbefore passing to KaTeX (wrap-inside convention; see DESIGN.md and\nan earlier STATUS milestone).\n",
     },
     "content_handler": "matrix",
@@ -4418,7 +4352,6 @@ const _meta = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "title",
@@ -4530,7 +4463,6 @@ const _minipage = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "becomes": "sealed-subdocument",
       "notes": "The pipe content is the minipage's body — a SEALED sub-document. It is held\nopaque (the raw source string) at parse time, so the main pipeline never\ndescends into it: the body's floats do not consume document counters, its\nlabels never enter the document registry, and its footnotes do not bubble to\nthe document. The body is processed in its OWN pipeline run with its OWN\nregistry (the deferred phase), producing resolved Layer 1 that is spliced\ninto the <figure> shell. Recursive content parsing applies INSIDE that\nsealed run, so the full enscribe vocabulary works in the body — including a\nnested <minipage>. External pulls (@src / <data>) are disallowed inside a\nminipage (a visible error, not a silent drop).\n",
     },
@@ -4584,7 +4516,6 @@ const _name = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -4752,7 +4683,6 @@ const _note_list = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "note",
@@ -4838,7 +4768,6 @@ const _note = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -4897,7 +4826,6 @@ const _orcid = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -4951,7 +4879,6 @@ const _output = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5013,7 +4940,6 @@ const _p = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5081,7 +5007,6 @@ const _proof = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -5151,7 +5076,6 @@ const _proposition = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -5219,7 +5143,6 @@ const _publication_date = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5278,7 +5201,6 @@ const _q = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5384,7 +5306,6 @@ const _ref = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5468,7 +5389,6 @@ const _remark = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -5533,7 +5453,6 @@ const _s = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5582,7 +5501,6 @@ const _samp = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5634,7 +5552,6 @@ const _section_subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5668,7 +5585,6 @@ const _section_title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5746,7 +5662,8 @@ const _section = Object.freeze({
           "notes": "Skip this section's number, regardless of number-depth (#218). The heading\nis OUTSIDE the numbered sequence — it gets no number AND does not advance the\ncounter, so the next numbered sibling continues unbroken (the \\\\section* /\nQuarto .unnumbered behavior); its subtree is unnumbered too. Numbering is\nconfig-driven (<config number-sections=true>); see\nnotes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp\nreads node.booleans.unnumbered in runSync, and the unnumbered attribute also\nrenders on the element.\n",
         },
       },
-      "type": "structured",
+    },
+    "content": {
       "shape": [
         {
           "element": "section-title",
@@ -5840,7 +5757,6 @@ const _span = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5892,7 +5808,6 @@ const _strong = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5948,7 +5863,6 @@ const _sub_section_subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -5982,7 +5896,6 @@ const _sub_section_title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6061,7 +5974,6 @@ const _sub_section = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "sub-section-title",
@@ -6139,7 +6051,6 @@ const _sub_sub_section_subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6173,7 +6084,6 @@ const _sub_sub_section_title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6251,7 +6161,6 @@ const _sub_sub_section = Object.freeze({
       },
     },
     "content": {
-      "type": "structured",
       "shape": [
         {
           "element": "sub-sub-section-title",
@@ -6328,7 +6237,6 @@ const _sub = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6383,7 +6291,6 @@ const _subject = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6434,7 +6341,6 @@ const _subtitle = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6478,7 +6384,6 @@ const _summary = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6529,7 +6434,6 @@ const _sup = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6616,7 +6520,6 @@ const _svg = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque",
       "becomes": "raw-svg-source",
       "notes": "The pipe content is the SVG source — pass-through to the rendered\n<svg> element. Treated as opaque (not re-parsed by the recursive\ncontent step) because SVG is its own XML language and the parser\nhas no business interpreting it.\n",
     },
@@ -6727,7 +6630,6 @@ const _table = Object.freeze({
       },
     },
     "content": {
-      "type": "opaque-or-structured",
       "notes": "When a format positional is present (csv, tsv, json, yaml, md), pipe\ncontent is an opaque data string parsed by the corresponding parser.\nWhen no format is present, content is treated as raw HTML (escape-hatch).\nThe long-form structural path (<table>...<tr>...</table>) is handled by\nthe same handler with recursive cell content; this path is partially\nimplemented and may produce basic results.\nThe JATS importer reuses this no-format path for complex (colspan / rowspan /\nmulti-row-header) tables it can't express as a flat enscribe table (#106): it\nkeeps the grid as an HTML layout but stamps `_htmlTable` with each cell's\nconverted, resolvable inline (formula → math, xref → ref/cite, fn → note), so\nthe handler renders the grid with resolved cells rather than the raw passthrough.\n",
     },
     "content_handler": "table",
@@ -6780,7 +6682,6 @@ const _term = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6849,7 +6750,6 @@ const _theorem = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "block",
@@ -6905,7 +6805,6 @@ const _title = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -6974,7 +6873,6 @@ const _u = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -7022,7 +6920,6 @@ const _var = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",
@@ -7073,7 +6970,6 @@ const _version = Object.freeze({
       },
     },
     "content": {
-      "type": "prose",
       "shape": {
         "contains": [
           "inline",

@@ -20,7 +20,6 @@ enscribe_attributes:
         subjects). Identifies the controlled vocabulary the subject
         value is drawn from.
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

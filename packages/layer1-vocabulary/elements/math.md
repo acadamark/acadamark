@@ -17,7 +17,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: opaque
   notes: |
     The content is LaTeX math source. It is passed directly to KaTeX
     (displayMode: true) as a string; not parsed as prose. The author is

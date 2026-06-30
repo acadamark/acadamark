@@ -17,7 +17,6 @@ enscribe_attributes:
   classes:
     maps_to: class
 content:
-  type: structured
   shape:
     - element: note
       required: false

@@ -29,7 +29,6 @@ enscribe_attributes:
         The bibliography entry type. Determines required and optional
         child elements, and how the entry renders in the bibliography.
 content:
-  type: structured
   shape:
     - element: author
       required: false

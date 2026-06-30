@@ -36,7 +36,6 @@ enscribe_attributes:
         sibling-caption layout). When the diagram participates in figure
         numbering the caption carries a "Figure N." label prefix.
 content:
-  type: opaque
   notes: |
     Author writes the engine's diagram source verbatim. Enscribe preserves
     the content unmodified inside the wrapper element; the engine's library

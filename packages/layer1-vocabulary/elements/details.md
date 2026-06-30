@@ -19,7 +19,6 @@ enscribe_attributes:
         is expanded by default. Either +open or open=true form works;
         absence (or -open / open=false) renders collapsed.
 content:
-  type: structured
   shape:
     - element: summary
       required: false

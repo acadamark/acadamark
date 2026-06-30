@@ -18,7 +18,6 @@ enscribe_attributes:
         Optional classification of the italic's role. Useful for
         accessibility tools and stylesheet targeting.
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

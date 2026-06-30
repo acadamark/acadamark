@@ -22,7 +22,6 @@ enscribe_attributes:
         added to the numbered counter. The config key number-equations=false
         suppresses all equations unless overridden per-element with +numbered.
 content:
-  type: opaque
   notes: |
     The pipe content is LaTeX math source. It is passed directly to KaTeX
     as a string; it is not parsed as prose. The author is responsible for

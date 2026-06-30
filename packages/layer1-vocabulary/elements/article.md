@@ -26,7 +26,6 @@ enscribe_attributes:
         (per-note end/foot/side; per-section or per-chapter) is the per-note
         `placement` kwarg plus `note-scope`, not this attribute — see <note>.
 content:
-  type: structured
   shape:
     - element: article-front
       required: false

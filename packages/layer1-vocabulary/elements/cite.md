@@ -55,7 +55,6 @@ enscribe_attributes:
         Override the document-level citation style for this citation.
         "default" uses the document-level <citation-style> from <config>.
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

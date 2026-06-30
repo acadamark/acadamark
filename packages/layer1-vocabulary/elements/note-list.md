@@ -23,7 +23,6 @@ enscribe_attributes:
       values: [end-notes, chapter-notes, footnotes-collected, other]
       default: end-notes
 content:
-  type: structured
   shape:
     - element: note
       required: false

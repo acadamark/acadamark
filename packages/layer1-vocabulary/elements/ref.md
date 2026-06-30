@@ -76,7 +76,6 @@ enscribe_attributes:
         recovered; deliberately set aside until that intent is
         articulated. Future work, not a current feature.
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

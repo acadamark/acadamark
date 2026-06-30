@@ -19,7 +19,6 @@ enscribe_attributes:
     notes: |
       Added to <code> alongside any language class.
 content:
-  type: opaque
   notes: |
     The pipe content is verbatim code source. No markdown idioms or enscribe
     constructs are interpreted inside the code block. Newlines are preserved.

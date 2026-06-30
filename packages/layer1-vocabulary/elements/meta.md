@@ -74,7 +74,6 @@ enscribe_attributes:
         form. Slugs are unique site-wide. Descriptive metadata, like icon; ignored by
         article/book documents read on their own.
 content:
-  type: structured
   shape:
     - element: title
       required: false

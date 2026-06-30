@@ -19,7 +19,6 @@ enscribe_attributes:
         recommended on first use of an abbreviation; optional on
         subsequent uses if the expansion is already in scope.
 content:
-  type: prose
   shape:
     contains: [inline]
   becomes: children

@@ -55,7 +55,6 @@ enscribe_attributes:
       is replaced by the body element `<library src>` (see library.md /
       bibliography.md). See DESIGN.md "Configuration and metadata are data".
 content:
-  type: none
   notes: |
     <config> takes no child-element content. Its authoring form is kwargs
     (the flat config register documented in the kwargs block above), and it
