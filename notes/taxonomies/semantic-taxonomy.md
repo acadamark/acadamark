@@ -32,8 +32,10 @@ therefore addressed, numbered, captioned. "Frameable"/"interruptor" failed: they
 
 ### Scope: authored content, not generated apparatus
 The semantic taxonomy classifies *content the author writes*. **Generated navigation/UI apparatus** — a
-table of contents, a nav bar, next/prev controls (`nav`, `nav-group`) — is **not** in it: it is derived
-*over* the document, not an authorial act *in* it. UI/apparatus is a separate concern.
+rendered table of contents, a nav bar, next/prev controls — is **not** in it: it is derived *over* the
+document, not an authorial act *in* it. (The *authored* `<nav>`/`<nav-group>`/`<item>` tree, by contrast, IS
+content — structural scaffolding, family 9; only the chrome generated from it is apparatus.) UI/apparatus is a
+separate concern.
 
 ### Known bridges (where semantic != processing — named, not hidden)
 - **In-flow vs out-of-flow is a PROCESSING axis, not a semantic class.** "Inline" felt semantic but was
@@ -140,13 +142,16 @@ Statements *about* the work (title, authorship, provenance, configuration), not 
 Containers and regions that organize the work but carry no discourse of their own.
 - containers: `article`, `book`, `book-part` (document-containers - default)
 - regions: `article-front/body/back`, `book-front/body/back` (structural-regions - default)
+- website collection: `nav`, `nav-group`, `item` — the authored page set + grouping + order, the skeleton at the *collection (website)* scale (peer to the document-scale containers/regions; navigation - default). The navbar/sidebar/ToC rendered *from* this tree is apparatus, not this.
 - `hr` (a structural divider - default)
 
 ---
 
 ## Not in the semantic taxonomy (resolved this pass)
-- **`nav`, `nav-group`, table-of-contents -> UI/apparatus**, not authored content. Generated *over* the
-  document. Separate concern.
+- **Rendered navigation -> UI apparatus** (the generated navbar/sidebar/ToC, derived over the document).
+  But the **authored `<nav>`/`<nav-group>`/`<item>` tree IS content** — structural scaffolding (family 9) at
+  the website/collection scale: the authored declaration of the page set, grouping, and order (a website's
+  skeleton, peer to article/book/regions). The chrome generated FROM it is the apparatus.
 - **Generated glyphs -> apparatus**, not authored content: a callout's type-icon (the warn/info glyph a
   callout *type* renders) and a task-list checkbox rendered from item state are *derived*, not placed by the
   author. (An author-placed deliberate glyph — an emoji, a checkmark typed as content — IS authored: emoji

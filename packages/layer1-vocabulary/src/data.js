@@ -3738,7 +3738,8 @@ const _item = Object.freeze({
           "notes": "For an EXTERNAL page: the child `.emd` file that supplies the page body. The\npipe gives the menu label and overrides the child's own title, exactly as\n`<section src | Title>` does in an article. Omitted for an INLINE page, whose\nbody is authored in the master after the `<item | Title>` marker (peer-closed\nby the next entry, the `<section | Title>` model). The website render (S2)\nloads the child; S1 records the `src` as a reference only.\n",
         },
       },
-      "type": "structured",
+    },
+    "content": {
       "shape": [
         {
           "element": "body",
@@ -4572,7 +4573,8 @@ const _nav_group = Object.freeze({
           "notes": "The group's display label — its heading in the top bar (a dropdown) and the\nsidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a `<nav-group>`\nis a long-form container (neither `|` nor `/`), so the label cannot ride the\npipe slot the way a page's title does.\n",
         },
       },
-      "type": "structured",
+    },
+    "content": {
       "shape": [
         {
           "element": "item",
@@ -4615,7 +4617,8 @@ const _nav = Object.freeze({
           "html": "class",
         },
       },
-      "type": "structured",
+    },
+    "content": {
       "shape": [
         {
           "element": "item",

@@ -18,7 +18,7 @@ enscribe_attributes:
         sidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a `<nav-group>`
         is a long-form container (neither `|` nor `/`), so the label cannot ride the
         pipe slot the way a page's title does.
-  type: structured
+content:
   shape:
     - element: item
       required: false
