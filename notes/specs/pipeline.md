@@ -247,8 +247,9 @@ including the mixed-content (escape-errors) path.
 A sequence of mdast-transform plugins runs in order: document-type resolution
 (`enscribeDocTypeResolve`, #200 — resolves the document class and stamps `<meta
 type>` so the structural plugins can branch on it), then the normalization pass,
-then configuration discovery, then the structural plugins (book structuring,
-article structuring, section nesting, and list structuring), then the semantic
+then configuration discovery, then the structural plugins (website structuring, book structuring,
+article structuring, section nesting, and list structuring), then the minipage
+guard (#115; a no-op except on a sealed minipage sub-run), then the semantic
 plugins (citation index, the opt-in table-cell passes — table-cell-parse and
 html-table-cells, the `<data>` asset index and asset resolution (#190), notes,
 numbering, apply-numbers, ref-resolution, cite-resolution, note-placement,
@@ -816,10 +817,12 @@ to have run before it.
 | `remarkRecursiveContent` | `remarkEnscribe` (string content set) | `node.content` as `Node[]` |
 | `enscribeNormalizeToCanonical` | `remarkRecursiveContent` (both outer and inner parses complete) | every authored form coerced to canonical Layer 1 nodes — delegated-parser nodes, sigils, shorthands (book-part + DSL), and kwarg lifts |
 | `enscribeConfigDiscovery` | `enscribeNormalizeToCanonical` | `file.data.enscribeConfig` |
+| `enscribeWebsiteStructuring` | `enscribeConfigDiscovery` | website nav model on `file.data` for `<meta type=website>` (#246); no `<article>`/`<book>` wrapper; byte-identical no-op otherwise; runs first of the three structurers |
 | `enscribeBookStructuring` | `enscribeConfigDiscovery` | book structure (`<book>` front/body/back) for `<meta type=book\|book-part>`; no-op otherwise; runs before article-structuring |
 | `enscribeArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `enscribeSectionNesting` | `enscribeArticleStructuring` | nested section tree |
 | `enscribeListStructuring` | `enscribeSectionNesting` | `<list>` / `<li>` markers lowered to `ul` / `ol` / `li` (#137) |
+| `enscribeMinipageGuard` | `enscribeNormalizeToCanonical` | forbidden `@src` / `<data>` external pulls inside a sealed minipage sub-run neutralized to a visible `__asset-error` (#115); no-op on every normal document; runs before the citation / asset index passes |
 | `buildCitationIndex` | `enscribeConfigDiscovery` | `file.data.enscribeCitations` |
 | `enscribeTableCellParse` | `buildCitationIndex` | DATA-format table cells parsed as inline markup when opted in (#21/#105); before notes/numbering/refs |
 | `enscribeHtmlTableCells` | `enscribeTableCellParse` | inline content re-resolved in raw-HTML (`_htmlTable`) cells from a JATS import (#108) |
