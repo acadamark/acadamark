@@ -30,9 +30,11 @@ recording it in the spec.
 | `README.md` | Front door | The pitch. No tracking detail. |
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/decisions.md` | Spec (strategic) | Product-shape / strategic design decisions — the target default views and the cross-cutting choices that steer them. The tier above `DESIGN.md`'s engineering rationale; subsystem specs defer up to it. |
+| `notes/taxonomies/*.md` (`semantic-taxonomy.md`, `document-taxonomy.md`, `proposed-processing-taxonomy.md`) | Spec (conceptual tier) | A conceptual tier that drives the subsystem specs — the semantic / document / processing taxonomies the `notes/specs/` files conform to. Sibling to `DESIGN.md`'s conceptual framing. |
 | `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
-| `notes/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
-| `notes/code-review.md` | Governance/Spec (process) | The deep code-review method — the method behind release-audit reconciliation #1. |
+| `notes/audits/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
+| `notes/audits/code-review.md` | Governance/Spec (process) | The deep code-review method — the method behind release-audit reconciliation #1. |
+| `notes/audits/deep-drift-audit-design.md` | Governance/Spec (process) | The deep-drift-audit method — how to run a whole-repo, read-only, verify-against-code, report-only three-way (code ⇄ spec ⇄ taxonomy) drift audit. |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
 | `docs-site/sources/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Layer 1 Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
@@ -41,7 +43,7 @@ recording it in the spec.
 | `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
 
-The live documentation lives in three places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `ROADMAP.md`) at the repository root; specs in `notes/specs/` (with the release-audit process spec alongside them at `notes/release-audits.md`); the historical record in `notes/archive/`. Open work lives in GitHub Issues, not in a repo file. Anything outside those documentation locations is code or does not belong in the repo's documentation surface.
+The live documentation lives in a few places: governance and status docs (`README.md`, `DESIGN.md`, `STATUS.md`, `CONTRIBUTING.md`, `CLAUDE.md`, `ROADMAP.md`) at the repository root; the conceptual taxonomies in `notes/taxonomies/`; the subsystem specs in `notes/specs/`; the audit-method docs in `notes/audits/`; the historical record in `notes/archive/`. Open work lives in GitHub Issues, not in a repo file. Anything outside those documentation locations is code or does not belong in the repo's documentation surface.
 
 ## The spec tier — DESIGN.md and notes/specs/
 
@@ -86,10 +88,16 @@ Each subsystem's blueprint:
   well-rendered output), `notes/specs/render-parity.md` (the live/static
   one-engine invariant — byte-identity on matched options, and what is
   scoped out of it), and `notes/specs/sidenotes.md` (the margin render mode for
-  footnotes/notes — an HTML projection, not new vocabulary).
+  footnotes/notes — an HTML projection, not new vocabulary). The rendered
+  navigation chrome — computed products, never source (Rule 2) — is specified in
+  `notes/specs/toc-and-numbering.md` (the generated contents listing and heading
+  numbering, for any document) and `notes/specs/book-navigation.md` (a book's
+  chapter rail, prev/next links, cover, and pagination unit).
 - **Layer 1 vocabulary** — `notes/specs/layer1-naming.md` (the four naming
   rules), `notes/specs/shape-tokens.md` (content-shape machinery),
   `notes/specs/frameable.md` (the out-of-flow frameable element family),
+  `notes/specs/minipage.md` (the `<minipage>` sealed frameable — a sub-document
+  processed in its own pipeline run with its own registry, #115),
   `notes/specs/lists.md` (the `<list>` / `<li>` marker model), and
   `notes/specs/appendices.md` (the `<appendix>` element's article + book
   projections). The per-element vocabulary entries live separately in
@@ -99,6 +107,22 @@ Each subsystem's blueprint:
 - **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
   processor-delegation principle) and `notes/specs/principles.md`
   (always-renders, parser-knows-nothing-about-meaning, etc.).
+- **Document composition & delivery** — `notes/specs/website.md` (the website
+  document class — a multi-page site assembled from a master document, each page
+  itself natively an article or a book; the third document class alongside
+  article and book), `notes/specs/spec-internal-links.md` (page-slug identity and
+  the `<a {slug}>` internal-link form — identity vs nav position), and
+  `notes/specs/delivery-modes.md` (how a rendered `.emd` is packaged and reaches
+  a reader — static / live / single-file — owning delivery shape, not render
+  content). `website.md` sits inside the multi-file frame
+  `notes/specs/master-document.md` provides (below).
+- **Data store** — `notes/specs/data-store.md` (the build-time `<data>` / `@id`
+  store — opaque storage, consumer-agnostic `@id` resolution, per-consumer
+  interpretation; the #313 design of record), with its two deferred siblings
+  `notes/specs/runtime-data-store.md` (a client-side runtime store — re-read
+  after load + single-copy dedup; additive, unbuilt) and
+  `notes/specs/shared-registry-store.md` (persistence of the merged registry
+  across parallel / incremental / live renders; deferred).
 - **Extension blueprints (designed; unbuilt unless noted)** —
   `notes/specs/master-document.md` (the multi-file assembler — article-level
   assembly with cross-file numbering/refs is **built** (#190) and renders live
@@ -196,7 +220,7 @@ The coherence check gates a slice; the release audit gates a `.x.0` milestone �
 
 **The cadence.** A `.x.0` ships features; the following `.x.5` is a consolidation pass that resolves the audit's findings and ships no new features. `.x.5` is therefore finite by construction — its scope is exactly what the `.x.0`-close audit surfaced.
 
-**The audit itself** — the five reconciliations and how to run each — is specified in `notes/release-audits.md`.
+**The audit itself** — the five reconciliations and how to run each — is specified in `notes/audits/release-audits.md`.
 
 ## Maintenance
 
