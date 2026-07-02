@@ -37,6 +37,7 @@ export const ENSCRIBE_ASSETS             = 'enscribeAssets';
 export const ENSCRIBE_LOADED_SOURCES     = 'enscribeLoadedSources';
 export const ENSCRIBE_NOTES_PENDING      = 'enscribeNotesPending';
 export const ENSCRIBE_NUMBERING_PENDING  = 'enscribeNumberingPending';
+export const ENSCRIBE_COUNTER_RESET_SCOPE = 'enscribeCounterResetScope';
 // Lazy live book rendering, L1 (#204): the harvested cross-reference registry —
 // a Map(anchor -> { number, title, type }) read off the numbered tree + the
 // numbering registry (ENSCRIBE_REGISTRY) by harvestCrossRefRegistry(). It is a

@@ -92,7 +92,7 @@ noted. "Set by" / "Read by" name the plugins (see the roster for their sources).
 | `enscribeRegistry` | registry object | first `ensureRegistry(file)` call (read-through variants seeded for minipage / site runs) | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution`, `harvestCrossRefRegistry` |
 | `enscribeNotesPending` | array of `{ node, entry }` | `enscribeNotes` | `enscribeNotePlacement` |
 | `enscribeNumberingPending` | array of `{ node, entry }` | `enscribeNumbering` | `enscribeApplyNumbers` |
-| `enscribeCounterResetScope` | scope string (`'none'` default) | `enscribeNumbering` | `enscribeApplyNumbers` |
+| `enscribeCounterResetScope` (`ENSCRIBE_COUNTER_RESET_SCOPE`) | scope string (`'none'` default) | `enscribeNumbering` | `enscribeApplyNumbers` |
 | `enscribeCrossRefRegistry` | `Map<anchor, { number, title, type }>` | `harvestCrossRefRegistry` (#204, master-document render) | a read-only product — runtime consumers read the harvester's return value |
 | `enscribeMinipageSubrun` | boolean flag | the minipage deferred phase, on the child VFile (#115) | `enscribeMinipageGuard` |
 | `enscribeMinipageDepth` | number (nesting depth) | the minipage deferred phase, on the child VFile (#115) | the minipage deferred phase |

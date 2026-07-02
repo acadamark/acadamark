@@ -34,7 +34,7 @@
 import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
 import { ensureRegistry } from '../../core/registry.js';
 import { discover } from '../../core/walkers/discover.js';
-import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING } from '../../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING, ENSCRIBE_COUNTER_RESET_SCOPE } from '../../core/file-data-keys.js';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
@@ -316,7 +316,7 @@ export function enscribeNumbering() {
 
     if (file?.data) {
       file.data[ENSCRIBE_NUMBERING_PENDING] = pending;
-      file.data.enscribeCounterResetScope = scope;
+      file.data[ENSCRIBE_COUNTER_RESET_SCOPE] = scope;
     }
   };
 }
@@ -451,7 +451,7 @@ function walkWithScope(nodes, visitors, scope) {
  */
 export function fillNumbering(file) {
   const pending = file?.data?.[ENSCRIBE_NUMBERING_PENDING] ?? [];
-  const scope = file?.data?.enscribeCounterResetScope ?? 'none';
+  const scope = file?.data?.[ENSCRIBE_COUNTER_RESET_SCOPE] ?? 'none';
 
   if (scope === 'none') {
     for (const { node, entry } of pending) {
