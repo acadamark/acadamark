@@ -37,9 +37,10 @@ So **a semantic class is usually also a processing class** — and a place where
 signal: either a benign **named bridge** (a presentation or processing convention) or **drift** (an
 unprincipled special case off the semantic grain). The gap between the two taxonomies is the anti-drift
 instrument. Crucially, a divergence is *allowed*: one processing class legitimately serves several
-semantic families (the same handler processes a theorem and a remark), and the taxonomy's job is to
-**name which families a class serves**, so a ninth tag bolted onto that handler that fits none of them
-shows up as drift.
+semantic families (the prose processor serves prose, asides, quotations, and metadata alike), and the
+taxonomy's job is to **name which families a class serves**, so a tag bolted onto that class that fits
+none of them shows up as drift. The converse is equally allowed and equally named: one **semantic**
+family may span several **processing** classes — see family 6.
 
 ### Naming discipline (the "exhibit" standard)
 A good semantic-class name (1) is a word you'd actually **reach for**; (2) names the **authorial act**,
@@ -132,9 +133,6 @@ comment. Out-of-flow; degree varies, but the act is one.
   it is `<note position=margin>` (kept, if at all, only as an authoring alias, never as a distinct act).
 - `aside`, `note-list`, `endnotes` — the boxed aside and the collected-note containers.
 - `details` / `summary` — an aside the reader can expand.
-- `example`, `remark` — illustration and tangential comment: **aside by act**, moved here from the old
-  theorem grouping. (They are *processed* by the formal-statement handler and may be numbered/referenced;
-  that shared processing is a **named bridge**, not evidence they are formal statements.)
 
 ### 4. Quotation & sourcing — others' words, and pointing at sources
 The author engages material and targets beyond their own assertions. Two sub-acts:
@@ -154,28 +152,34 @@ numbered / captioned" property pulled out to the addressing axis (it is derived 
 set-addressed, not part of the definition).
 - visual / tabular / data exhibits: `fig`, `table`, `diagram`, `svg`, `frame`, `caption` (the exhibit's
   label).
-- `dl` / `dt` / `dd` — a **mapping exhibit** (term → meaning pairs shown set apart). Its *structure* is
-  the **table addressing primitive in its degenerate one-column form** (document taxonomy); that
-  structural fact lives there, and the *act* (exhibiting a set of mappings) lives here — a clean bridge,
-  not a contradiction.
 - `minipage` — an exhibit by use ("an elaborate aside"), processed as a **sealed sub-document**: held
   opaque at parse, then re-run through the default/Enscribe pipeline in a deferred phase — **neither
   plain-default nor DSL-owned** (the processing taxonomy's "the processor the lookup returns is Enscribe;
   the sealing is the consequence"). A **named bridge** (exhibit semantics, Enscribe-as-sealed-processor),
   not an open question.
 
-The **theorem family has left this family** (→ family 6). `glossary` / `glossary-entry` also leave: a
-glossary is *definitions collected for lookup* — set-addressed apparatus you navigate into, closer to a
-store than to an exhibited artifact (see family 7 and the Open questions).
+The **theorem family has left this family** (→ family 6). So do the **definitional structures**: `dl` /
+`dt` / `dd` and `glossary` / `glossary-entry` (→ family 6). A definition list is a list of definitions and
+a glossary is a collection of them, and a definition is a formal statement — so they group with the formal
+statements, not with exhibited artifacts.
 
 ### 6. Formal statements — labeled formal units asserted in the argument
 The author states a **discrete, labeled formal unit that is part of the argument itself** — you read a
 theorem or an algorithm as load-bearing discourse, not as external material you point *at*. This is the
 new family that the old "theorem family" was hiding by grouping tags on their shared handler. Defined by
-act, **not** by being numbered:
+act, **not** by being numbered. The unifying idea: **you define things in order to make formal
+statements** — a definition, an example, and a counterexample are formal-reasoning objects, so they
+belong here with the theorems they serve, not filed as asides or exhibits.
 - assertions of a labeled formal claim: `theorem`, `lemma`, `corollary`, `proposition`, `definition`.
 - justification: `proof` (discharges an assertion's obligation).
 - specification of a formal procedure: `algorithm`.
+- illustration of a formal claim: `example`, `remark` — an example (or counterexample) is core to logical
+  reasoning; it exhibits or tests a formal statement rather than digressing from it, so it is a member
+  here, not a family-3 aside.
+- **definitional structures**: `dl` / `dt` / `dd` (a **definition list** — Enscribe's `<dl>` is a list of
+  *definitions*, not a general key–value list) and `glossary` / `glossary-entry` (a **collection of
+  definitions**). A definition is a formal statement, so a list or collection of definitions lives here;
+  that `<dl>` is *definitional* (not an arbitrary mapping) is the premise that places it in this family.
 
 On the formality spine, a formal statement sits **between prose and notation**: its content *composes*
 prose and notation, packaged as a labeled unit — which is exactly why it feels like it lives on the
@@ -183,9 +187,13 @@ gradient prose → formal statement → notation. It is in-flow discourse (unlik
 pointed at); the display-math / large-code case crosses the out-of-flow line by the length bridge, not by
 changing act.
 
-*(Processing note: one handler still serves theorem/lemma/…/proof/algorithm **and** the family-3
-example/remark. The taxonomy now records that this processing class serves two semantic families — a
-named bridge — so a new tag on that handler is checked against both.)*
+*(Processing note — one **semantic** family, several **processing** classes. The formal-statement handler
+serves `theorem`/`lemma`/…/`proof`/`algorithm` **and** `example`/`remark`; the definitional structures
+(`dl`/`dt`/`dd`, `glossary`/`glossary-entry`) are default-processed **block-prose**. A single semantic
+family legitimately spanning several processing classes is the two-taxonomy principle working — the
+inverse of one class serving several families — not drift. Placement here is by **act**; how each member
+is processed is recorded separately in the processing taxonomy and is deliberately unchanged by this
+classification.)*
 
 ### 7. Notation — foreign formal-language content (open-ended)
 *Not prose.* Content in a different formal/special language — mathematical notation, a programming
@@ -219,6 +227,11 @@ Statements *about* the work (title, authorship, provenance, configuration), not 
   `publication-date`, `license`, `version`, `keywords`, `subject`, `lang`, `abstract`.
 - `config` (options), `meta` (the metadata container).
 
+`abstract` **stays here** and is the one member carrying **full running prose** (paragraphs), not a short
+scalar value — but it is metadata by act: a summary *about* the work, not part of its discourse. Being
+prose-carrying, it may be **serialized differently for citation** (e.g. lifted into citation metadata)
+than the scalar fields around it — a processing/serialization detail, not a reason to reclassify the act.
+
 ### 10. Structural scaffolding — the document's skeleton
 Containers and regions that organize the work but carry no discourse of their own.
 - containers: `article`, `book`, `book-part`.
@@ -251,15 +264,9 @@ Containers and regions that organize the work but carry no discourse of their ow
   default/Enscribe sub-run), neither plain-default nor DSL-owned. A **resolved named bridge** (exhibit
   semantics + Enscribe-as-sealed-processor), consistent with the processing taxonomy — not an open "drift?"
   question. (The earlier "default-processed" wording was factually wrong at parse time; corrected here.)
-- **example / remark** — **aside** by act (family 3), served by the **formal-statement processing
-  handler**. A confirmed named bridge (one processing class, two semantic families).
 - **technical-register marks (`kbd`/`samp`/`var`/`output`)** — emphasis-and-marking by act, but
   notation-adjacent; confirm they stay default-processed and are not quietly routed to a DSL.
 
 ## Open questions
-- **`glossary` / `glossary-entry`** — a glossary is definitions *collected for lookup*: set-addressed
-  apparatus you navigate into (near the store, family 7), while a single mathematical `definition` is a
-  formal statement (family 6) and an inline `dl` is a mapping exhibit (family 5). Confirm the split, and
-  whether `glossary` at book-part scale is simply a structural region (family 10).
 - **`term`** — marking (family 2) with a reference role (family 4). Confirm whether the reference role is
   strong enough to move it, or whether it stays a marking element that *may* link.
