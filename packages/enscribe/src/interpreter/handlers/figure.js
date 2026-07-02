@@ -15,7 +15,7 @@
 // new child-tag form.
 //
 // Schema-mapped attributes (align, width, type) flow through the same
-// `buildProperties` helper used by the schema dispatcher.
+// `aggregateHtmlProps(mapAttributes(...))` pair the schema dispatcher uses.
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';

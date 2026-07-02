@@ -48,7 +48,7 @@
  * validateChildren — the frameable-lift mechanism only handles the lift
  * itself, NOT kwarg validation (frameable elements accept other kwargs
  * outside of this lift list; those are governed by per-element vocab
- * schemas and the schema dispatcher's `buildProperties`, not by this
+ * schemas and the schema dispatcher's `aggregateHtmlProps(mapAttributes(...))`, not by this
  * registry).
  */
 // Every frameable lifts the same two kwargs; one shared read-only Set (#255) rather

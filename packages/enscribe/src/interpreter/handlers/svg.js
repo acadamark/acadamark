@@ -35,8 +35,8 @@ export function svgHandler(state, node, vocab) {
   const source = typeof node.content === 'string' ? node.content : '';
   const { captionHast, titleHast } = extractFrameableChildren(state, node);
 
-  // Build the inner <svg> element. Use buildProperties for schema-mapped
-  // attributes (viewBox, width, height — all declared in svg.md).
+  // Build the inner <svg> element. Use aggregateHtmlProps(mapAttributes(...))
+  // for schema-mapped attributes (viewBox, width, height — all declared in svg.md).
   const svgProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   // The author-supplied SVG source goes into the <svg> as a `raw` hast
   // node (svg-as-XML pass-through). hast-to-html will emit it verbatim.
