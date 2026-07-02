@@ -63,7 +63,6 @@ content:
     automatically-rendered citation text. Most citations have no content
     (the resolver generates the rendered text from the bibliography entry
     and the citation style).
-content_handler: default
 jats_counterpart:
   element: 'xref ref-type="bibr"'
   attributes:

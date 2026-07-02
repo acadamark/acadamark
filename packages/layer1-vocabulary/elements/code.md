@@ -21,7 +21,6 @@ content:
   notes: |
     Code content is preserved verbatim. No markdown idioms or enscribe
     constructs are interpreted inside <code> elements.
-content_handler: code
 jats_counterpart:
   element: monospace
   notes: |

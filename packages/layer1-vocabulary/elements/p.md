@@ -22,7 +22,6 @@ content:
   shape:
     contains: [inline]
   becomes: children
-content_handler: default
 jats_counterpart:
   element: p
   notes: |

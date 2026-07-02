@@ -28,7 +28,6 @@ content:
   notes: |
     Same content model as <author>. Simple form (pipe content as name)
     or structured form (explicit child elements).
-content_handler: default
 jats_counterpart:
   element: 'contrib contrib-type="editor"'
 shorthand_examples:

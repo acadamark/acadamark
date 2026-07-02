@@ -25,7 +25,6 @@ content:
     - element: body
       required: false
       contains: [inline, block]
-content_handler: default
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeWebsiteStructuring

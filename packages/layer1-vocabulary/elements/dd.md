@@ -18,7 +18,6 @@ content:
     The description / definition of the preceding <dt> term. Prose
     content; may contain inline markup and block content (paragraphs,
     nested lists, etc.). Multi-paragraph descriptions are valid.
-content_handler: default
 jats_counterpart:
   element: def
   notes: |

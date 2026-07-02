@@ -28,7 +28,6 @@ content:
     patterns). Parser-level validation of the alternation / pairing
     is not performed (always-renders posture); the intended structure
     is documented here and demonstrated by fixtures.
-content_handler: default
 jats_counterpart:
   element: def-list
   notes: |

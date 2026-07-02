@@ -22,7 +22,6 @@ content:
     The affiliation as text — typically institution, department, city,
     country. Free-form short prose; inline elements (e.g. <i type=other>
     for italicized institution names) work normally.
-content_handler: default
 jats_counterpart:
   element: aff
   notes: |

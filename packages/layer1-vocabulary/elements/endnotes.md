@@ -24,7 +24,6 @@ content:
       notes: |
         When the block is rendered the collected notes appear here. Authors do not
         write these directly — the note-placement plugin populates the block.
-content_handler: default
 jats_counterpart:
   element: fn-group
   notes: |

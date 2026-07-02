@@ -68,7 +68,6 @@ content:
       required: false
       contains: [section, sub-section, p, figure, aside, blockquote, table, book-part]
       notes: 'Body content sits as direct children of <book-part> after <meta>.'
-content_handler: default
 title_extraction: true
 jats_counterpart:
   element: book-part

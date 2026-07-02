@@ -19,7 +19,6 @@ content:
     ID with hyphens (e.g. "0000-0002-1825-0097"); URL form
     ("https://orcid.org/0000-0002-1825-0097") is also accepted but the
     bare form is preferred — tooling can construct the URL when needed.
-content_handler: default
 jats_counterpart:
   element: contrib-id
   attributes:

@@ -14,7 +14,6 @@ enscribe_attributes:
 content:
   shape:
     contains: [inline]
-content_handler: default
 interpreter_strategy: schema
 ---
 

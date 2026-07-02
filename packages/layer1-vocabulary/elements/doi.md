@@ -17,7 +17,6 @@ content:
   notes: |
     The DOI value, as text. Typically the bare DOI string (e.g.
     "10.1234/example.2024") rather than a URL form.
-content_handler: default
 jats_counterpart:
   element: 'article-id'
   attributes:

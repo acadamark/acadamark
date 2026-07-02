@@ -21,7 +21,6 @@ content:
     The content is LaTeX math source. It is passed directly to KaTeX
     (displayMode: true) as a string; not parsed as prose. The author is
     responsible for valid LaTeX math syntax.
-content_handler: math
 jats_counterpart:
   element: disp-formula
   notes: |

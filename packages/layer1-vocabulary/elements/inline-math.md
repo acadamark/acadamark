@@ -15,7 +15,6 @@ content:
     The pipe content is LaTeX math source. It is passed directly to KaTeX
     as a string; it is not parsed as prose. The author is responsible for
     valid LaTeX math syntax.
-content_handler: math
 shorthand_examples:
   - source: 'The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.'
     layer1_html: '<p>The identity <inline-math><span class="katex">…</span></inline-math> holds for right triangles.</p>'

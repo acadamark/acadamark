@@ -52,7 +52,6 @@ content:
         When the bibliography is rendered (auto-generated), entries appear
         as children. Authors don't typically write these directly — the
         bibliography assembly plugin populates the element.
-content_handler: default
 jats_counterpart:
   element: ref-list
   notes: |

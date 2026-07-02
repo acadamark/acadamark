@@ -40,7 +40,6 @@ content:
     Author writes the engine's diagram source verbatim. Enscribe preserves
     the content unmodified inside the wrapper element; the engine's library
     (loaded from CDN at view time, or run at build time) parses the source.
-content_handler: diagram
 jats_counterpart:
   element: '(no direct JATS counterpart; exported as <fig specific-use="enscribe-dsl-<engine>"> with the verbatim source in <preformat preformat-type="<engine>-source">)'
   notes: |

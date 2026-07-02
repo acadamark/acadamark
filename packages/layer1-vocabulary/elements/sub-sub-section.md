@@ -49,7 +49,6 @@ content:
         Sub-sub-sections do not contain further nested section levels. Depth
         bottoms out at three. Documents requiring deeper nesting should
         reorganize their structure or extend the depth ladder explicitly.
-content_handler: default
 title_extraction: true
 jats_counterpart:
   element: sec

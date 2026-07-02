@@ -24,7 +24,6 @@ content:
     document env that KaTeX does not support standalone. Using
     `aligned` inside KaTeX's displayMode produces the equivalent
     visual output.)
-content_handler: align
 jats_counterpart:
   element: disp-formula
   notes: |

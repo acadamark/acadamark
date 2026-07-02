@@ -33,7 +33,6 @@ content:
       required: false
       multiple: true
       notes: 'Opaque data store (#313 slice 1): <dataset #id format=csv | a,b\n1,2> (or a leading-positional format, <dataset #id csv | …>) holds a CSV/TSV/JSON/… payload as OPAQUE bytes under its id — never markdown-parsed, so a #/*/_ in the payload passes through untouched. Pure storage: a consumer (<table src="@id">, a future <plot>) interprets the bytes; <dataset> itself renders nothing (invisible, like <library>). Harvested into the project data store keyed by id (+ the optional format hint), project-wide merged. Consumer-side interpretation is slice 2; see notes/specs/data-store.md Piece 1.'
-content_handler: default
 jats_counterpart:
   element: 'no direct equivalent'
   notes: |

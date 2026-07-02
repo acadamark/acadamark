@@ -25,7 +25,6 @@ content:
     The publication date as text. ISO 8601 (YYYY-MM-DD) is preferred
     for machine readability; free-form dates ("March 15, 2024",
     "Spring 2024") are accepted.
-content_handler: default
 jats_counterpart:
   element: pub-date
   notes: |

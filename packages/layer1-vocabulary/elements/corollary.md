@@ -27,7 +27,6 @@ content:
   shape:
     contains: [block]
   becomes: children
-content_handler: default
 jats_counterpart:
   element: statement
   attributes:

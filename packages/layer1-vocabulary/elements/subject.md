@@ -27,7 +27,6 @@ content:
     The subject classifier as text — either a free-form topic ("ecology
     of large mammals") or a controlled-vocabulary identifier ("Q57.32")
     when the scheme kwarg names the vocabulary.
-content_handler: default
 jats_counterpart:
   element: subject
   notes: |

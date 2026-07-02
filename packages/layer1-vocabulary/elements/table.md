@@ -85,7 +85,6 @@ content:
     keeps the grid as an HTML layout but stamps `_htmlTable` with each cell's
     converted, resolvable inline (formula → math, xref → ref/cite, fn → note), so
     the handler renders the grid with resolved cells rather than the raw passthrough.
-content_handler: table
 jats_counterpart:
   element: table-wrap
   attributes:

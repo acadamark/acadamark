@@ -19,7 +19,6 @@ content:
     (Ctrl+C), or a short sequence. Inline elements within <kbd> are
     permitted but unusual; nested <kbd> is the conventional way to
     distinguish individual keys in a chord.
-content_handler: default
 jats_counterpart:
   element: '(no direct JATS counterpart; HTML-native)'
   notes: |

@@ -78,7 +78,6 @@ const _a = Object.freeze({
       "becomes": "children",
       "notes": "Link text. The visible label for the link.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "ext-link",
       "attributes": {
@@ -149,7 +148,6 @@ const _abbr = Object.freeze({
       "becomes": "children",
       "notes": "The abbreviation as text — typically a short uppercase token\n(DOI, DOM, NASA, CSS, CRISPR). Inline elements may appear in the\ncontent though this is unusual.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "abbrev",
       "notes": "JATS uses <abbrev> with the expansion typically supplied either\nas the content of a child <def> element or as the title-like\nattribute, depending on the JATS version. The exporter maps\nenscribe's title kwarg to the JATS form the target schema expects.\n",
@@ -221,7 +219,6 @@ const _abstract = Object.freeze({
       "becomes": "children",
       "notes": "Abstract content. Single-paragraph or multi-paragraph. Structured\nabstracts may contain explicit sub-section elements.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "abstract",
       "attributes": {
@@ -278,7 +275,6 @@ const _affiliation = Object.freeze({
       "becomes": "children",
       "notes": "The affiliation as text — typically institution, department, city,\ncountry. Free-form short prose; inline elements (e.g. <i type=other>\nfor italicized institution names) work normally.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "aff",
       "notes": "JATS uses <aff> inside <contrib> (the JATS counterpart of <author>).\nMultiple authors sharing an affiliation reference it by id via\n<xref ref-type=\"aff\" rid=\"...\">; the exporter generates the xref\nstructure from enscribe's affiliation ids.\n",
@@ -323,7 +319,6 @@ const _align = Object.freeze({
     "content": {
       "notes": "Author writes pure environment body (each line `lhs & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. (KaTeX\nsupports the `aligned` environment for inline-into-disp-mode\ncontexts; the `align` LaTeX environment proper is a top-level\ndocument env that KaTeX does not support standalone. Using\n`aligned` inside KaTeX's displayMode produces the equivalent\nvisual output.)\n",
     },
-    "content_handler": "align",
     "jats_counterpart": {
       "element": "disp-formula",
       "notes": "JATS does not have a dedicated `<align>` element. The LaTeX math\nenvironment maps to JATS `<disp-formula>` with `<tex-math>`\ncarrying the wrapped LaTeX source.\n",
@@ -381,7 +376,6 @@ const _article_back = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "article-back.md",
   });
@@ -415,7 +409,6 @@ const _article_body = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "article-body.md",
   });
@@ -454,7 +447,6 @@ const _article_front = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "article-front.md",
   });
@@ -487,7 +479,6 @@ const _article_subtitle = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "article-subtitle.md",
   });
@@ -520,7 +511,6 @@ const _article_title = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "article-title.md",
   });
@@ -585,7 +575,6 @@ const _article = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "title_extraction": true,
     "jats_counterpart": {
       "element": "article",
@@ -684,7 +673,6 @@ const _aside = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "boxed-text",
       "notes": "All <aside> variants map to JATS <boxed-text>. The exporter sets\ncontent-type based on the type kwarg (e.g., type=note becomes\n<boxed-text content-type=\"note\">). Default (no type) maps to\n<boxed-text content-type=\"aside\">. JATS <notes> is reserved for\ndocument-level collected footnotes — see <note-list>, not <aside>.\n",
@@ -782,7 +770,6 @@ const _author = Object.freeze({
       ],
       "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\n@enscribejs/enscribe/core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "contrib contrib-type=\"author\"",
       "notes": "JATS uses <contrib contrib-type=\"author\"> for authors. The structural\nJATS form uses <name><given-names>...</given-names><surname>...</surname></name>\ninside <contrib>. Enscribe's <name> is a single unparsed string\nmatching JATS's <string-name>; the exporter elects to emit\n<string-name> verbatim or decompose it into <surname>/<given-names>\nper the target schema's requirements. <affiliation>, <orcid>,\n<email> map to JATS <aff>, <contrib-id contrib-id-type=\"orcid\">,\nand <email> respectively. +corresponding becomes corresp=\"yes\" on\nthe <contrib> element.\n",
@@ -855,7 +842,6 @@ const _b = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "bold",
       "attributes": {
@@ -977,7 +963,6 @@ const _bib_entry = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "ref (containing element-citation or mixed-citation)",
       "notes": "JATS uses <ref id=\"...\"> as the bibliography entry container,\nwith structured content as <element-citation> (when fully structured)\nor <mixed-citation> (when partially structured).\n",
@@ -1064,7 +1049,6 @@ const _bibliography = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "ref-list",
       "notes": "JATS uses <ref-list> as the bibliography container, with <ref>\nchildren for each entry. Direct mapping.\n",
@@ -1135,7 +1119,6 @@ const _blockquote = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "disp-quote or epigraph",
       "notes": "JATS uses <disp-quote> for displayed quotations in the main flow and\n<epigraph> for opening epigraphs. The exporter dispatches based on type:\ntype=epigraph maps to <epigraph>; everything else to <disp-quote>.\n",
@@ -1203,7 +1186,6 @@ const _book_back = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-back.md",
   });
@@ -1236,7 +1218,6 @@ const _book_body = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-body.md",
   });
@@ -1276,7 +1257,6 @@ const _book_front = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-front.md",
   });
@@ -1309,7 +1289,6 @@ const _book_part_subtitle = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-part-subtitle.md",
   });
@@ -1342,7 +1321,6 @@ const _book_part_title = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-part-title.md",
   });
@@ -1470,7 +1448,6 @@ const _book_part = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "title_extraction": true,
     "jats_counterpart": {
       "element": "book-part",
@@ -1588,7 +1565,6 @@ const _book_subtitle = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-subtitle.md",
   });
@@ -1621,7 +1597,6 @@ const _book_title = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "book-title.md",
   });
@@ -1686,7 +1661,6 @@ const _book = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "title_extraction": true,
     "jats_counterpart": {
       "element": "book",
@@ -1750,7 +1724,6 @@ const _caption = Object.freeze({
       "becomes": "children",
       "notes": "A caption is flow content: it can hold one or several paragraphs (and\nblock content). Per the single-paragraph wrapping rule\n(notes/specs/shape-tokens.md \"Content model and single-paragraph\nwrapping\"), `contains: [block]` classifies it as flow, so a\nsingle-paragraph caption WRAPS in `<p>` — identical to the\nmulti-paragraph case, and identical across both authoring forms (the\n`<caption>` child tag and the legacy pipe-content-as-caption fallback),\nwhich both route through the one parse-time content-model gate.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "caption",
       "notes": "JATS models a float caption as <caption> (containing <title>? and\n<p>+), inside <fig> / <table-wrap>. The flow content model here matches\nJATS's <p>-bearing caption.\n",
@@ -1783,7 +1756,6 @@ const _cases = Object.freeze({
     "content": {
       "notes": "Author writes pure environment body (each case on its own line,\nterminated by `\\\\`, with `&` separating value from condition). The\nhandler wraps in `\\begin{cases}...\\end{cases}` before passing to\nKaTeX.\n",
     },
-    "content_handler": "cases",
     "jats_counterpart": {
       "element": "disp-formula",
       "notes": "JATS does not have a dedicated `<cases>` element. The LaTeX math\nenvironment maps to JATS `<disp-formula>` with `<tex-math>`\ncarrying the wrapped LaTeX source.\n",
@@ -1881,7 +1853,6 @@ const _cite = Object.freeze({
       "becomes": "children",
       "notes": "Content inside <cite> is optional. When present, it overrides the\nautomatically-rendered citation text. Most citations have no content\n(the resolver generates the rendered text from the bibliography entry\nand the citation style).\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "xref ref-type=\"bibr\"",
       "attributes": {
@@ -2016,7 +1987,6 @@ const _code = Object.freeze({
       "becomes": "text-content",
       "notes": "Code content is preserved verbatim. No markdown idioms or enscribe\nconstructs are interpreted inside <code> elements.\n",
     },
-    "content_handler": "code",
     "jats_counterpart": {
       "element": "monospace",
       "notes": "JATS uses <monospace> for inline code-like content. For block-level\ncode, JATS uses <code> wrapped in <preformat>. Enscribe's inline\n<code> maps to JATS <monospace>.\n",
@@ -2080,7 +2050,6 @@ const _config = Object.freeze({
     "content": {
       "notes": "<config> takes no child-element content. Its authoring form is kwargs\n(the flat config register documented in the kwargs block above), and it\nrenders as an empty <config></config>. Structured config is settled (#134)\nto be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX — NOT a tree of child tags; that structured register is future and\nunbuilt. An earlier `type: structured` plus a child-element `shape` list\n(output-format, citation-style, numbering-style, note-position, stylesheet,\ntheme) modeled the rejected child-tag form and was removed in #167. See\nDESIGN.md \"Configuration and metadata are data\". (The `category:` field is\nleft unchanged here pending the taxonomy discussion in #166.)\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "no direct equivalent",
       "notes": "JATS doesn't have a single configuration element. Most configuration\nis handled at the publication-system level, not in JATS. Enscribe's\n<config> is decomposed at JATS export — relevant settings affect how\nthe export is generated; they don't appear in JATS output.\n",
@@ -2151,7 +2120,6 @@ const _corollary = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -2223,7 +2191,6 @@ const _data = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "no direct equivalent",
       "notes": "JATS doesn't have a single resource-block element. Enscribe's <data>\nis decomposed at JATS export: <library> entries are merged into\n<ref-list>; <bib-entry> entries become <ref> elements; embedded image\ndata becomes <graphic> with embedded data; etc. The <data> wrapper\nitself does not appear in JATS output.\n",
@@ -2310,7 +2277,6 @@ const _date = Object.freeze({
       "becomes": "children",
       "notes": "The date value, typically as text. Common formats:\n- ISO 8601: 2024-03-15 (default).\n- With time: 2024-03-15T14:30:00Z.\n- Free-form: \"March 15, 2024\" or \"Spring 2024\".\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "pub-date or date (in history)",
       "notes": "JATS uses <pub-date> for publication dates. Other date types\n(submission, acceptance, revision) appear inside <history> as\n<date date-type=\"...\">. The exporter dispatches based on the type\nkwarg value.\n",
@@ -2369,7 +2335,6 @@ const _dd = Object.freeze({
       "becomes": "children",
       "notes": "The description / definition of the preceding <dt> term. Prose\ncontent; may contain inline markup and block content (paragraphs,\nnested lists, etc.). Multi-paragraph descriptions are valid.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "def",
       "notes": "JATS uses <def> inside <def-item> inside <def-list>. Direct\none-to-one mapping at the definition-text level; the JATS exporter\nwraps the <dt>/<dd> pair in <def-item> at export.\n",
@@ -2433,7 +2398,6 @@ const _definition = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -2508,7 +2472,6 @@ const _details = Object.freeze({
       ],
       "notes": "A <details> typically begins with a <summary> (the visible heading\nof the disclosure) and is followed by the body content that the\nsummary controls. The body is arbitrary block content; the spec's\nshape marks it as __block__ rather than enumerating allowed\nelements (the body is genuinely open, parallel to <aside>'s prose\ncontent).\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; HTML-native)",
       "notes": "JATS has no disclosure/collapsible primitive. <details> is an\nHTML-native presentation construct for interactive disclosure of\ncontent. Recorded honestly as having no JATS counterpart, per the\n<lang> / <kbd> precedent. At JATS export the exporter must decide\nwhether to flatten <details> (always-include the body) or drop it;\nthe default expectation is to flatten — the body content is\ndocument-meaningful and should reach the JATS output regardless of\nthe HTML-side interactive disclosure.\n",
@@ -2571,7 +2534,6 @@ const _diagram = Object.freeze({
     "content": {
       "notes": "Author writes the engine's diagram source verbatim. Enscribe preserves\nthe content unmodified inside the wrapper element; the engine's library\n(loaded from CDN at view time, or run at build time) parses the source.\n",
     },
-    "content_handler": "diagram",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; exported as <fig specific-use=\"enscribe-dsl-<engine>\"> with the verbatim source in <preformat preformat-type=\"<engine>-source\">)",
       "notes": "JATS has no diagram-source counterpart. The JATS exporter emits a\n`<fig>` carrying an `<alt-text>` and the verbatim source in a\n`<preformat>` element; a downstream pre-render pass may replace it with\nthe rendered `<graphic>`. The engine is read from the format-word\npositional.\n",
@@ -2627,7 +2589,6 @@ const _display_math = Object.freeze({
     "content": {
       "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
     },
-    "content_handler": "math-display",
     "shorthand_examples": [
       {
         "source": "<$$ \\sum_{i=1}^{n} x_i = X $$>",
@@ -2686,7 +2647,6 @@ const _dl = Object.freeze({
       ],
       "notes": "A definition list alternates <dt> (term) and <dd> (description)\nchildren. The spec declares both as multiple+optional because a\nwell-formed <dl> may pair one term with several descriptions, or\nseveral terms with one shared description (HTML5 permits both\npatterns). Parser-level validation of the alternation / pairing\nis not performed (always-renders posture); the intended structure\nis documented here and demonstrated by fixtures.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "def-list",
       "notes": "JATS uses <def-list> for definition lists, with <def-item> wrapping\neach term/definition pair: <def-list><def-item><term/><def/>\n</def-item>...</def-list>. Enscribe's <dl> follows HTML's flatter\npattern (alternating <dt>/<dd> siblings); the JATS exporter groups\nadjacent <dt>/<dd> pairs into <def-item> wrappers at export.\n",
@@ -2736,7 +2696,6 @@ const _doi = Object.freeze({
       "becomes": "children",
       "notes": "The DOI value, as text. Typically the bare DOI string (e.g.\n\"10.1234/example.2024\") rather than a URL form.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "article-id",
       "attributes": {
@@ -2789,7 +2748,6 @@ const _dt = Object.freeze({
       "becomes": "children",
       "notes": "The term being defined. Typically short — a word or phrase — but\nmay contain inline markup (emphasis, code, math) where useful.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "term",
       "notes": "JATS uses <term> inside <def-item> inside <def-list>. Direct\none-to-one mapping at the term-text level; the JATS exporter\nwraps the <dt>/<dd> pair in <def-item> at export.\n",
@@ -2870,7 +2828,6 @@ const _editor = Object.freeze({
       "becomes": "children",
       "notes": "Same content model as <author>. Simple form (pipe content as name)\nor structured form (explicit child elements).\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "contrib contrib-type=\"editor\"",
     },
@@ -2916,7 +2873,6 @@ const _em = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "italic",
       "attributes": {
@@ -2973,7 +2929,6 @@ const _email = Object.freeze({
       "becomes": "children",
       "notes": "The email address as text (e.g. \"jane@example.org\"). No special\nparsing — the value passes through verbatim.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "email",
       "notes": "JATS uses <email> inside <contrib> for author contact email.\nDirect one-to-one mapping.\n",
@@ -3021,7 +2976,6 @@ const _endnotes = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "fn-group",
       "notes": "The collected end-notes map to a JATS <fn-group>. Per-chapter <endnotes> are an\nHTML display concern; JATS keeps its existing single note handling.\n",
@@ -3067,7 +3021,6 @@ const _eqnarray = Object.freeze({
     "content": {
       "notes": "Author writes pure environment body (each line `lhs & op & rhs`,\nterminated by `\\\\`). The handler wraps in\n`\\begin{aligned}...\\end{aligned}` before passing to KaTeX. KaTeX\ndoes not implement the LaTeX `eqnarray` environment standalone;\n`aligned` is the supported KaTeX equivalent and renders the same\nmulti-line-equation visual output. `<eqnarray>` exists alongside\n`<align>` for LaTeX-source compatibility: an author copying\n`\\begin{eqnarray}...\\end{eqnarray}` source from a LaTeX document\nhas a target enscribe tag whose name matches.\n",
     },
-    "content_handler": "eqnarray",
     "jats_counterpart": {
       "element": "disp-formula",
       "notes": "JATS does not have a dedicated `<eqnarray>` element. Maps to JATS\n`<disp-formula>` with `<tex-math>` carrying the wrapped LaTeX\nsource.\n",
@@ -3136,7 +3089,6 @@ const _example = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -3248,7 +3200,6 @@ const _fig = Object.freeze({
       "becomes": "figcaption",
       "notes": "The pipe content becomes a <figcaption> child of the figure. When\nthe figure has an src kwarg, the figcaption appears alongside the\nauto-generated <img>. When no src is present, the figcaption appears\nalongside whatever the author placed inside the figure (a table,\na code block, an equation, etc.).\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "fig",
       "attributes": {
@@ -3356,7 +3307,6 @@ const _frame = Object.freeze({
       "becomes": "children",
       "notes": "The pipe content is the frame's body. Prose (paragraphs, inline,\nembedded elements) — same content model as <aside> or <section>.\nRecursive content parsing applies.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "boxed-text",
       "attributes": {},
@@ -3432,7 +3382,6 @@ const _glossary_entry = Object.freeze({
       ],
       "notes": "A single glossary entry holds one term and its definition, reusing\nthe <dt>/<dd> child shapes of <dl>. Multiple <dd> children are\npermitted for one term (HTML5 pattern); a missing <dt> or <dd> is\nnot enforced at parser time (always-renders posture).\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "def-item",
       "notes": "JATS uses <def-item> inside <glossary> (or inside <def-list>) to\nwrap a term/definition pair. Enscribe's <glossary-entry> maps\ndirectly to JATS <def-item> — the envelope around the <term>/<def>\npair. (JATS does not have a separate \"glossary-entry\" name; the\npairing structure is provided by <def-item>.)\n",
@@ -3478,7 +3427,6 @@ const _glossary = Object.freeze({
       ],
       "notes": "A glossary holds a sequence of <glossary-entry> children, each a\npaired term and definition. Distinct from <dl> (which uses raw\nalternating <dt>/<dd> children with flexible pairing) — a glossary\nhas a fixed entry-pair shape and is referenceable as a unit.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "glossary",
       "notes": "JATS has a <glossary> element. Enscribe's <glossary> maps directly,\nwith children mapping per <glossary-entry>'s entry. JATS's <glossary>\ncan also wrap a <def-list>; the exporter chooses the structure based\non whether the source uses <glossary> or <dl>.\n",
@@ -3532,7 +3480,6 @@ const _hr = Object.freeze({
     "content": {
       "notes": "The hr element is void; it cannot contain content.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "hr",
       "notes": "JATS has no direct equivalent. The closest is using <break-quote-content>\nfor similar visual effects, or simply relying on document structure.\nFor enscribe-to-JATS export, hr elements are typically replaced with\na structural break (an empty paragraph or visual marker) since JATS\nprefers explicit semantic structure over thematic breaks.\n",
@@ -3599,7 +3546,6 @@ const _i = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "italic",
       "attributes": {
@@ -3694,7 +3640,6 @@ const _inline_math = Object.freeze({
     "content": {
       "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
     },
-    "content_handler": "math",
     "shorthand_examples": [
       {
         "source": "The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.",
@@ -3751,7 +3696,6 @@ const _item = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
@@ -3792,7 +3736,6 @@ const _kbd = Object.freeze({
       "becomes": "children",
       "notes": "The keyboard input as text — typically a single key, a chord\n(Ctrl+C), or a short sequence. Inline elements within <kbd> are\npermitted but unusual; nested <kbd> is the conventional way to\ndistinguish individual keys in a chord.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; HTML-native)",
       "notes": "JATS has no dedicated element for keyboard input — the closest\nis <named-content content-type=\"...\"> with a chosen content-type,\nor simply emitting the text as inline prose. The exporter chooses\nper the target schema variant; the default is to emit the kbd\ncontent as inline text with no special JATS markup. This is a\nconscious tradeoff: <kbd> is a presentation concern for technical\ndocumentation, not a scholarly-content concern JATS models.\n",
@@ -3842,7 +3785,6 @@ const _keywords = Object.freeze({
       "becomes": "children",
       "notes": "Comma-separated keyword list as text, OR a structured list of\nindividual <keyword> child elements. The simpler comma-separated\nform is preferred for ergonomics; the structured form is useful\nwhen individual keywords need ids or other attributes for\ncross-referencing.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "kwd-group",
       "notes": "JATS uses <kwd-group> containing <kwd> elements, inside\n<article-meta>. Comma-separated enscribe content splits on\ncommas at export time; structured <keyword> children map\ndirectly to <kwd>. Multiple <kwd-group> elements (each with a\nkwd-group-type attribute) are allowed in JATS for multi-language\nkeyword sets — enscribe does not currently model that distinction\nat the authoring layer.\n",
@@ -3892,7 +3834,6 @@ const _lang = Object.freeze({
       "becomes": "children",
       "notes": "The document's primary language, typically as a BCP 47 / ISO 639-1\nlanguage tag (e.g. \"en\", \"en-US\", \"fr\", \"ja\"). Free-form language\nnames (\"English\", \"French\") are accepted but the tag form is\npreferred for machine readability.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct element; maps to xml:lang attribute)",
       "notes": "JATS does not have a dedicated <lang> element. Language is expressed\nvia the xml:lang attribute, typically on the <article> root or on\n<title-group> for language-specific titles. The exporter reads the\nvalue from <meta>'s <lang> and emits it as an xml:lang attribute on\nthe appropriate JATS container — there is no <lang> element in the\nJATS output. Verified: JATS 1.3 uses xml:lang on the root element\nrather than a child element for the document's primary language.\n",
@@ -3957,7 +3898,6 @@ const _lemma = Object.freeze({
       "becomes": "children",
       "notes": "Body content directly (no internal element parts), per the\ntheorem-family convention.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -4042,7 +3982,6 @@ const _library = Object.freeze({
       "becomes": "parsed entries (registered in citation system)",
       "notes": "Content is preserved verbatim and parsed by a format-specific parser.\nNo enscribe interpretation of the content. Authors typically copy\nthe content directly from a reference manager (Zotero, JabRef, etc.)\nor a text editor.\n",
     },
-    "content_handler": "library",
     "jats_counterpart": {
       "element": "no direct equivalent (entries lift into ref-list)",
       "notes": "JATS doesn't have an opaque-source equivalent. Library entries\nare parsed at processing time and merged into the citation registry.\nAt JATS export, the registered entries appear in <ref-list> as\n<ref> elements (whether they came from <library>, <bib-entry>, or\nexternal file). The <library> element itself doesn't appear in\nJATS output.\n",
@@ -4107,7 +4046,6 @@ const _license = Object.freeze({
       "becomes": "children",
       "notes": "The license name or short identifier (e.g. \"CC BY 4.0\",\n\"MIT License\", \"All rights reserved\"). The optional href kwarg\ncarries the canonical URL of the license terms.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "license",
       "attributes": {
@@ -4161,7 +4099,6 @@ const _marginnote = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "boxed-text",
       "attributes": {
@@ -4208,7 +4145,6 @@ const _math = Object.freeze({
     "content": {
       "notes": "The content is LaTeX math source. It is passed directly to KaTeX\n(displayMode: true) as a string; not parsed as prose. The author is\nresponsible for valid LaTeX math syntax.\n",
     },
-    "content_handler": "math",
     "jats_counterpart": {
       "element": "disp-formula",
       "notes": "JATS `<disp-formula>` wraps a displayed equation, same as the\ncounterpart for `<display-math>` (the `<$$>` sigil). The two surfaces\nare semantic synonyms in enscribe; both map to JATS\n`<disp-formula>`.\n",
@@ -4257,7 +4193,6 @@ const _matrix = Object.freeze({
     "content": {
       "notes": "Author writes pure environment body (rows separated by `\\\\`, cells\nseparated by `&`). The handler wraps in `\\begin{matrix}...\\end{matrix}`\nbefore passing to KaTeX (wrap-inside convention; see DESIGN.md and\nan earlier STATUS milestone).\n",
     },
-    "content_handler": "matrix",
     "jats_counterpart": {
       "element": "disp-formula",
       "notes": "JATS does not have a dedicated `<matrix>` element. The LaTeX math\nenvironment (after the handler wraps it) maps to JATS\n`<disp-formula>` with `<tex-math>` carrying the wrapped LaTeX\nsource. The exporter decides whether to also emit MathML.\n",
@@ -4390,7 +4325,6 @@ const _meta = Object.freeze({
       ],
       "notes": "The structured-child content above is one of two equivalent authoring\nforms for <meta>. The other is the kwarg form: <meta title=\"...\"\nauthor=\"...\" doi=\"...\">. The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the META_KWARGS\nallowlist (title / subtitle / author / date / doi / license / lang /\nversion / keywords). Unknown kwargs are dropped with a diagnostic;\n<config>-shaped kwargs (e.g. citation-style) on <meta> get a\n\"did you mean <config>?\" misuse hint.\n\nNOTE on <abstract>: an <abstract> tag is the *its own element*, not\na child of <meta> — descriptive but distinct from descriptive\nmetadata. The vocabulary entry for <abstract> is not yet written\n(filed as a finding in GitHub Issues). Until that entry exists,\ndocuments that include an abstract should author it as <abstract>\noutside <meta>; in <meta>, the key 'abstract' is NOT in the\nallowlist and would be dropped with a diagnostic.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "article-meta, book-meta, or book-part-meta",
       "notes": "The JATS mapping depends on the document type (driven by <meta>'s\ntype kwarg, or by the surrounding container if <meta> is nested):\n  type=article (or default) → <article-meta> inside <front>\n  type=book → <book-meta> inside <book-front>\n  type=book-part → <book-part-meta> inside <book-part>\nAt Layer 1 the element is always <meta>; the exporter constructs\nthe type-specific JATS container and the surrounding region wrappers\n(<front>, <book-front>, <book-part>) at export time.\n",
@@ -4467,7 +4401,6 @@ const _minipage = Object.freeze({
       "becomes": "sealed-subdocument",
       "notes": "The pipe content is the minipage's body — a SEALED sub-document. It is held\nopaque (the raw source string) at parse time, so the main pipeline never\ndescends into it: the body's floats do not consume document counters, its\nlabels never enter the document registry, and its footnotes do not bubble to\nthe document. The body is processed in its OWN pipeline run with its OWN\nregistry (the deferred phase), producing resolved Layer 1 that is spliced\ninto the <figure> shell. Recursive content parsing applies INSIDE that\nsealed run, so the full enscribe vocabulary works in the body — including a\nnested <minipage>. External pulls (@src / <data>) are disallowed inside a\nminipage (a visible error, not a silent drop).\n",
     },
-    "content_handler": "opaque",
     "jats_counterpart": {
       "element": "boxed-text",
       "attributes": {},
@@ -4525,7 +4458,6 @@ const _name = Object.freeze({
       "becomes": "children",
       "notes": "The author's name as a single string (e.g. \"Jane Goodall\"). No\nsurname/given-name decomposition at Layer 1 — the value passes\nthrough verbatim. The JATS exporter is the boundary that splits\na Western-style name into <surname>/<given-names> if required by\nthe target JATS schema; cultures with non-Western name ordering\n(surname-first, mononym) are preserved as-is at Layer 1 and\ntreated specially at export.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "string-name",
       "notes": "JATS uses <string-name> inside <name> as the \"unparsed name\"\nform — the full name string when the document does not commit to\na surname/given-names split. JATS's structured <name> wraps\n<surname>/<given-names>; <string-name> is the unparsed sibling.\nEnscribe's <name> matches <string-name> directly because Layer 1\npreserves the author-written form without imposing a name-model.\nThe exporter chooses between emitting <string-name> verbatim or\nparsing it into <surname>/<given-names> per the target schema's\nrequirements.\n",
@@ -4586,7 +4518,6 @@ const _nav_group = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
@@ -4638,7 +4569,6 @@ const _nav = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "related_plugins": [
       {
@@ -4695,7 +4625,6 @@ const _note_list = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "fn-group",
       "notes": "JATS uses <fn-group> as the container for collected footnotes.\nThe mapping is direct.\n",
@@ -4778,7 +4707,6 @@ const _note = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "jats_counterpart": {
       "element": "fn",
@@ -4837,7 +4765,6 @@ const _orcid = Object.freeze({
       "becomes": "children",
       "notes": "The ORCID identifier as text. The canonical form is the bare 16-digit\nID with hyphens (e.g. \"0000-0002-1825-0097\"); URL form\n(\"https://orcid.org/0000-0002-1825-0097\") is also accepted but the\nbare form is preferred — tooling can construct the URL when needed.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "contrib-id",
       "attributes": {
@@ -4890,7 +4817,6 @@ const _output = Object.freeze({
       "becomes": "children",
       "notes": "The result of a calculation as text — typically a single value\nor short result fragment.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; HTML-native)",
       "notes": "JATS has no dedicated element for calculation results. The\nexporter emits the content as inline text with no special JATS\nmarkup. The same situation as the other programming-related\nHTML-native inline elements (<kbd>, <var>, <samp>); recorded\nhonestly per the <lang>  precedent.\n",
@@ -4950,7 +4876,6 @@ const _p = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "p",
       "notes": "Direct mapping to JATS <p>. JATS does not have paragraph type\nclassifications natively; the data-paragraph-type attribute is\npreserved as an HTML data attribute but does not appear in JATS export.\n",
@@ -5018,7 +4943,6 @@ const _proof = Object.freeze({
       "becomes": "children",
       "notes": "The proof body — paragraphs, math, lists, etc. The closing QED\nsymbol is rendered by the Phase-2 handler at the end of the\nbody, not authored explicitly.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -5086,7 +5010,6 @@ const _proposition = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -5154,7 +5077,6 @@ const _publication_date = Object.freeze({
       "becomes": "children",
       "notes": "The publication date as text. ISO 8601 (YYYY-MM-DD) is preferred\nfor machine readability; free-form dates (\"March 15, 2024\",\n\"Spring 2024\") are accepted.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "pub-date",
       "notes": "JATS uses <pub-date> inside <article-meta> for the publication\ndate. The exporter parses ISO-format dates into structured\n<year>/<month>/<day> children; free-form dates pass through as\ntext content.\n",
@@ -5211,7 +5133,6 @@ const _q = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "inline-quote or just text with quotation marks",
       "notes": "JATS doesn't have a dedicated inline-quotation element. The exporter\ntypically emits the quoted text wrapped in literal quotation marks\n(Unicode left/right double quotes) rather than a JATS element.\n",
@@ -5317,7 +5238,6 @@ const _ref = Object.freeze({
       "becomes": "children",
       "notes": "Optional override for the rendered cross-reference text. Most refs\nhave no content; the resolver generates the text automatically.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "xref ref-type=\"...\"",
       "notes": "JATS uses <xref> with ref-type indicating the kind of target\n(fig, table, sec, equation, fn, etc.). Enscribe's <ref> maps\nto <xref> with the appropriate ref-type derived from the target.\n",
@@ -5399,7 +5319,6 @@ const _remark = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -5463,7 +5382,6 @@ const _s = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "strike",
       "notes": "JATS uses <strike> for strikethrough text.\n",
@@ -5512,7 +5430,6 @@ const _samp = Object.freeze({
       "becomes": "children",
       "notes": "The sample output as text — typically a literal value, message,\nor short fragment a program would produce.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; HTML-native)",
       "notes": "JATS has no dedicated element for sample output. The exporter\nemits the content as inline text with no special JATS markup.\nThe same situation as the other programming-related HTML-native\ninline elements (<kbd>, <var>, <output>); recorded honestly per\nthe <lang> precedent.\n",
@@ -5561,7 +5478,6 @@ const _section_subtitle = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "section-subtitle.md",
   });
@@ -5594,7 +5510,6 @@ const _section_title = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "section-title.md",
   });
@@ -5692,7 +5607,6 @@ const _section = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "title_extraction": true,
     "jats_counterpart": {
       "element": "sec",
@@ -5767,7 +5681,6 @@ const _span = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "styled-content",
       "notes": "JATS uses <styled-content> for generic styled inline content.\nThe class attribute maps to JATS's style-type attribute.\n",
@@ -5818,7 +5731,6 @@ const _strong = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "bold",
       "attributes": {
@@ -5872,7 +5784,6 @@ const _sub_section_subtitle = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "sub-section-subtitle.md",
   });
@@ -5905,7 +5816,6 @@ const _sub_section_title = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "sub-section-title.md",
   });
@@ -6002,7 +5912,6 @@ const _sub_section = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "title_extraction": true,
     "jats_counterpart": {
       "element": "sec",
@@ -6060,7 +5969,6 @@ const _sub_sub_section_subtitle = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "sub-sub-section-subtitle.md",
   });
@@ -6093,7 +6001,6 @@ const _sub_sub_section_title = Object.freeze({
         ],
       },
     },
-    "content_handler": "default",
     "interpreter_strategy": "schema",
     "_sourceFile": "sub-sub-section-title.md",
   });
@@ -6189,7 +6096,6 @@ const _sub_sub_section = Object.freeze({
         },
       ],
     },
-    "content_handler": "default",
     "title_extraction": true,
     "jats_counterpart": {
       "element": "sec",
@@ -6247,7 +6153,6 @@ const _sub = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "sub",
     },
@@ -6302,7 +6207,6 @@ const _subject = Object.freeze({
       "becomes": "children",
       "notes": "The subject classifier as text — either a free-form topic (\"ecology\nof large mammals\") or a controlled-vocabulary identifier (\"Q57.32\")\nwhen the scheme kwarg names the vocabulary.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "subject",
       "notes": "JATS uses <subj-group><subject>VALUE</subject></subj-group> inside\n<article-meta> to record document subjects. The exporter wraps\n<subject> in the appropriate <subj-group>, optionally setting\nsubj-group-type from the scheme kwarg. Multiple <subject> elements\nare allowed for documents with multiple subject classifications.\n",
@@ -6351,7 +6255,6 @@ const _subtitle = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "subtitle",
       "notes": "JATS uses <subtitle> inside <title-group> (for articles) or\n<book-title-group> (for books).\n",
@@ -6395,7 +6298,6 @@ const _summary = Object.freeze({
       "becomes": "children",
       "notes": "The visible heading of the parent <details> disclosure. Typically\nshort — a phrase — but may contain inline markup.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; HTML-native)",
       "notes": "Like its parent <details>, <summary> has no JATS counterpart. At\nJATS export the <summary>'s text typically becomes the heading\nportion of whatever flattened structure the exporter chooses for\nthe parent <details> (e.g., a <sec>'s <title>).\n",
@@ -6444,7 +6346,6 @@ const _sup = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "sup",
     },
@@ -6526,7 +6427,6 @@ const _svg = Object.freeze({
       "becomes": "raw-svg-source",
       "notes": "The pipe content is the SVG source — pass-through to the rendered\n<svg> element. Treated as opaque (not re-parsed by the recursive\ncontent step) because SVG is its own XML language and the parser\nhas no business interpreting it.\n",
     },
-    "content_handler": "opaque",
     "jats_counterpart": {
       "element": "graphic",
       "attributes": {},
@@ -6635,7 +6535,6 @@ const _table = Object.freeze({
     "content": {
       "notes": "When a format positional is present (csv, tsv, json, yaml, md), pipe\ncontent is an opaque data string parsed by the corresponding parser.\nWhen no format is present, content is treated as raw HTML (escape-hatch).\nThe long-form structural path (<table>...<tr>...</table>) is handled by\nthe same handler with recursive cell content; this path is partially\nimplemented and may produce basic results.\nThe JATS importer reuses this no-format path for complex (colspan / rowspan /\nmulti-row-header) tables it can't express as a flat enscribe table (#106): it\nkeeps the grid as an HTML layout but stamps `_htmlTable` with each cell's\nconverted, resolvable inline (formula → math, xref → ref/cite, fn → note), so\nthe handler renders the grid with resolved cells rather than the raw passthrough.\n",
     },
-    "content_handler": "table",
     "jats_counterpart": {
       "element": "table-wrap",
       "attributes": {
@@ -6693,7 +6592,6 @@ const _term = Object.freeze({
       "becomes": "children",
       "notes": "The term being introduced — typically a noun phrase, italicized or\nvisually distinguished in the rendered output.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "named-content",
       "attributes": {
@@ -6761,7 +6659,6 @@ const _theorem = Object.freeze({
       "becomes": "children",
       "notes": "The theorem's body is paragraphs and inline content directly —\nno internal element parts (no <theorem-statement> wrapper). The\nLaTeX amsthm and JATS prior-art both place body content directly\ninside the theorem container.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "statement",
       "attributes": {
@@ -6816,7 +6713,6 @@ const _title = Object.freeze({
       "becomes": "children",
       "notes": "The title text. Inline elements work normally: <em>, <strong>,\n<i> for foreign words, <math> for mathematical content in titles.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "article-title or book-title (inside title-group inside article-meta or book-meta)",
       "notes": "JATS represents document titles via <article-title> inside <title-group>\ninside <article-meta>, or via <book-title> inside <book-meta>. Enscribe's\nmetadata <title> gets promoted to the appropriate JATS structure at\nexport time based on the surrounding container.\n",
@@ -6883,7 +6779,6 @@ const _u = Object.freeze({
       },
       "becomes": "children",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "underline",
       "notes": "JATS uses <underline> for underlined text. The element exists but\nis rarely used in scholarly publishing because underline conventionally\nindicates hyperlinks in modern web rendering.\n",
@@ -6931,7 +6826,6 @@ const _var = Object.freeze({
       "becomes": "children",
       "notes": "The variable name as text — typically a single short identifier\n(x, n, foo, threshold). Inline elements within <var> are permitted\nbut unusual.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct JATS counterpart; HTML-native)",
       "notes": "JATS has no dedicated element for variable names in prose — for\nmathematical variables, the typical JATS pattern is to use <italic>\nor to embed in <mml:math> for proper mathematics markup. For\nprogramming-language variable references, the exporter emits the\ncontent as inline text with no special JATS markup. This is a\nconscious tradeoff: <var> is an HTML / technical-prose convention,\nnot a scholarly-content concern JATS models.\n",
@@ -6981,7 +6875,6 @@ const _version = Object.freeze({
       "becomes": "children",
       "notes": "The document's version, as a free-form string. Common forms:\nsemantic version (\"1.0.0\", \"2.3.1\"), date-based (\"2024.03.15\"),\nrevision label (\"v2\", \"rev 3\", \"draft\"), or any other versioning\nscheme the author uses.\n",
     },
-    "content_handler": "default",
     "jats_counterpart": {
       "element": "(no direct standard element; uncertain — may map to article-version or custom-meta)",
       "notes": "JATS does not have a single canonical version element. JATS 1.3+\nintroduced <article-version> in some extensions (e.g. for preprint\nmetadata) but it is not universally present in the core schema. A\nsafe fallback is <custom-meta meta-name=\"version\">VALUE</custom-meta>\ninside <article-meta>. The exporter should prefer <article-version>\nwhen targeting a schema variant that supports it, and fall back to\n<custom-meta> otherwise. Uncertainty recorded here per the\napparatus-tag reconciliation slice's directive to not guess.\n",

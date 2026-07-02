@@ -29,7 +29,6 @@ content:
     multi-paragraph case, and identical across both authoring forms (the
     `<caption>` child tag and the legacy pipe-content-as-caption fallback),
     which both route through the one parse-time content-model gate.
-content_handler: default
 jats_counterpart:
   element: caption
   notes: |

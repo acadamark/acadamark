@@ -65,10 +65,10 @@ exists and is load-bearing today:
 
 - `recursive-content.js` walks `enscribeTag` nodes and **skips any node whose `contentHandler !==
   'default'`** (the `return SKIP` guard) — so a non-`default` handler's content is never re-mixed.
-- Several elements already ride this lane: `code` (`content_handler: code`), `diagram`
-  (`content_handler: diagram`), `library` (the BibTeX/CSL payload, `content_handler: library`), `table`
-  (`content_handler: table` — "never recursively-parsed"), and the literal `opaque` handler used by
-  `svg` and `minipage`.
+- Several elements already ride this lane — their `getContentHandler` (in `dsl-registry`) is
+  non-`default`, so `recursive-content` holds their body opaque: `code`, `diagram`, `library` (the
+  BibTeX/CSL payload), `table` ("never recursively-parsed"), and `svg` / `minipage` (held opaque, then
+  rendered by their own `handler_module`).
 
 So `<dataset>`'s store behavior is specified by **choosing a non-`default` (opaque) handler** and
 adding the element to the `<data>` content model — the opaque guarantee then falls out of the existing

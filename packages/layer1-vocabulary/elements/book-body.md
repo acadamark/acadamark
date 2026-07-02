@@ -14,7 +14,6 @@ enscribe_attributes:
 content:
   shape:
     contains: [book-part]
-content_handler: default
 interpreter_strategy: schema
 ---
 

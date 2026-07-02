@@ -14,7 +14,6 @@ enscribe_attributes:
 content:
   shape:
     contains: [block, section]
-content_handler: default
 interpreter_strategy: schema
 ---
 

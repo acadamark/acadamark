@@ -14,7 +14,6 @@ enscribe_attributes:
 content:
   shape:
     contains: [bibliography, note-list, book-part, data, config]
-content_handler: default
 interpreter_strategy: schema
 ---
 

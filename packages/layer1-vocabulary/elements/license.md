@@ -23,7 +23,6 @@ content:
     The license name or short identifier (e.g. "CC BY 4.0",
     "MIT License", "All rights reserved"). The optional href kwarg
     carries the canonical URL of the license terms.
-content_handler: default
 jats_counterpart:
   element: 'license'
   attributes:

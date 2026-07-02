@@ -20,7 +20,6 @@ content:
   shape:
     contains: [inline]
   becomes: children
-content_handler: default
 jats_counterpart:
   element: 'inline-quote or just text with quotation marks'
   notes: |

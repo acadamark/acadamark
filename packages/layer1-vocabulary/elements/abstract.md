@@ -31,7 +31,6 @@ content:
   notes: |
     Abstract content. Single-paragraph or multi-paragraph. Structured
     abstracts may contain explicit sub-section elements.
-content_handler: default
 jats_counterpart:
   element: abstract
   attributes:

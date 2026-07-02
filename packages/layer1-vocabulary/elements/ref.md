@@ -82,7 +82,6 @@ content:
   notes: |
     Optional override for the rendered cross-reference text. Most refs
     have no content; the resolver generates the text automatically.
-content_handler: default
 jats_counterpart:
   element: 'xref ref-type="..."'
   notes: |

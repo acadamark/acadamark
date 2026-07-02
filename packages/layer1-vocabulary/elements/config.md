@@ -67,7 +67,6 @@ content:
     theme) modeled the rejected child-tag form and was removed in #167. See
     DESIGN.md "Configuration and metadata are data". (The `category:` field is
     left unchanged here pending the taxonomy discussion in #166.)
-content_handler: default
 jats_counterpart:
   element: 'no direct equivalent'
   notes: |

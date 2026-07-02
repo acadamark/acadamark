@@ -14,7 +14,6 @@ enscribe_attributes:
 content:
   shape:
     contains: [meta, book-title, book-subtitle, author, editor, book-part, data, config]
-content_handler: default
 interpreter_strategy: schema
 ---
 

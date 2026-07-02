@@ -57,7 +57,6 @@ content:
     No enscribe interpretation of the content. Authors typically copy
     the content directly from a reference manager (Zotero, JabRef, etc.)
     or a text editor.
-content_handler: library
 jats_counterpart:
   element: 'no direct equivalent (entries lift into ref-list)'
   notes: |

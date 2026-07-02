@@ -28,7 +28,6 @@ content:
   shape:
     contains: [block]
   becomes: children
-content_handler: default
 jats_counterpart:
   element: 'disp-quote or epigraph'
   notes: |

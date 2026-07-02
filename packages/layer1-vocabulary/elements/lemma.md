@@ -30,7 +30,6 @@ content:
   notes: |
     Body content directly (no internal element parts), per the
     theorem-family convention.
-content_handler: default
 jats_counterpart:
   element: statement
   attributes:

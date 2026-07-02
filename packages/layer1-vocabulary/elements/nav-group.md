@@ -23,7 +23,6 @@ content:
     - element: item
       required: false
       contains: [item, nav-group]
-content_handler: default
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeWebsiteStructuring

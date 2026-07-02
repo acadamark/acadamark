@@ -20,7 +20,6 @@ content:
     form is preferred for ergonomics; the structured form is useful
     when individual keywords need ids or other attributes for
     cross-referencing.
-content_handler: default
 jats_counterpart:
   element: 'kwd-group'
   notes: |

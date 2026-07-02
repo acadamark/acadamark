@@ -32,7 +32,6 @@ content:
       required: false
     - element: book-back
       required: false
-content_handler: default
 title_extraction: true
 jats_counterpart:
   element: book

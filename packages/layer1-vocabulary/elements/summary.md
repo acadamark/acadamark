@@ -17,7 +17,6 @@ content:
   notes: |
     The visible heading of the parent <details> disclosure. Typically
     short — a phrase — but may contain inline markup.
-content_handler: default
 jats_counterpart:
   element: '(no direct JATS counterpart; HTML-native)'
   notes: |

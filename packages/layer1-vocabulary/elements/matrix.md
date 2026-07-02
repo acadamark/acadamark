@@ -20,7 +20,6 @@ content:
     separated by `&`). The handler wraps in `\begin{matrix}...\end{matrix}`
     before passing to KaTeX (wrap-inside convention; see DESIGN.md and
     an earlier STATUS milestone).
-content_handler: matrix
 jats_counterpart:
   element: disp-formula
   notes: |

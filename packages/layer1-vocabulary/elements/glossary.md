@@ -20,7 +20,6 @@ content:
     paired term and definition. Distinct from <dl> (which uses raw
     alternating <dt>/<dd> children with flexible pairing) — a glossary
     has a fixed entry-pair shape and is referenceable as a unit.
-content_handler: default
 jats_counterpart:
   element: glossary
   notes: |

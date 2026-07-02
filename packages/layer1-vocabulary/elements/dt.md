@@ -17,7 +17,6 @@ content:
   notes: |
     The term being defined. Typically short — a word or phrase — but
     may contain inline markup (emphasis, code, math) where useful.
-content_handler: default
 jats_counterpart:
   element: term
   notes: |
