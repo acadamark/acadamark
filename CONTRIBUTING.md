@@ -31,7 +31,7 @@ recording it in the spec.
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/decisions.md` | Spec (strategic) | Product-shape / strategic design decisions — the target default views and the cross-cutting choices that steer them. The tier above `DESIGN.md`'s engineering rationale; subsystem specs defer up to it. |
 | `notes/taxonomies/*.md` (`semantic-taxonomy.md`, `document-taxonomy.md`, `proposed-processing-taxonomy.md`) | Spec (conceptual tier) | A conceptual tier that drives the subsystem specs — the semantic / document / processing taxonomies the `notes/specs/` files conform to. Sibling to `DESIGN.md`'s conceptual framing. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `pipeline-contract.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/audits/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
 | `notes/audits/code-review.md` | Governance/Spec (process) | The deep code-review method — the method behind release-audit reconciliation #1. |
 | `notes/audits/deep-drift-audit-design.md` | Governance/Spec (process) | The deep-drift-audit method — how to run a whole-repo, read-only, verify-against-code, report-only three-way (code ⇄ spec ⇄ taxonomy) drift audit. |
@@ -81,8 +81,10 @@ Each subsystem's blueprint:
   registers the reader interprets).
 - **Interpreter / pipeline** — `notes/specs/interpreter.md` (interpreter
   architecture: dispatch, handlers, schema, asset injection) and
-  `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow),
-  with `notes/specs/core.md` (the inward-pointing, `fs`-free shared foundation
+  `notes/specs/pipeline.md` (stage ordering, plugin dependencies, data flow), and
+  `notes/specs/pipeline-contract.md` (the single source for the three tables the
+  two share — the plugin roster, the `file.data` namespace, and the internal node
+  types), with `notes/specs/core.md` (the inward-pointing, `fs`-free shared foundation
   the package is built on), `notes/specs/format-words.md` (the host/format-word
   "kind" convention), `notes/specs/render-quality.md` (the standard for
   well-rendered output), `notes/specs/render-parity.md` (the live/static
