@@ -186,11 +186,11 @@ Tracked as issues, not open questions):
   (`category: inline-formatting`; renders `<aside class="enscribe-marginnote">`) with its own independent
   branch in `detectAssets` (`interpreter/index.js`). Collapse it into `<note position=margin>` (or keep only
   as a pure authoring alias). Tracked: #333.
-- **`span` leaves the vocabulary.** The semantic taxonomy says `<span>` is not a vocabulary element (no
-  authorial act); whether any non-Enscribe HTML survives is a **processing policy** (a future
-  `<html-passthrough>` switch), not a vocabulary question. The code still carries `span.md`
-  (`is_html_native: true`). Remove it from the vocabulary and settle the passthrough policy separately.
-  Tracked: #334.
+- **`span` is not in the vocabulary (removed in #334).** The semantic taxonomy says `<span>` is not a
+  vocabulary element (no authorial act); whether any non-Enscribe HTML survives is a **processing policy**
+  (a future `<html-passthrough>` switch), not a vocabulary question. `span.md` has been removed — an
+  authored `<span>` now echoes as escaped literal text like any unknown tag; the passthrough policy stays a
+  separate, still-deferred question.
 
 **Still open** (a genuine current-code correction, not yet decided):
 - the code-handler inconsistency: `code-block` / `inline-code` declare non-HTML `html_output.element` values

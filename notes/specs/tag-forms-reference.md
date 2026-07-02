@@ -160,7 +160,6 @@ parsed table data, DSL diagram source, or inline SVG.
 | `<s>` | ✓ | — | ✓ | Strikethrough. |
 | `<sub>` | ✓ | — | ✓ | Subscript. |
 | `<sup>` | ✓ | — | ✓ | Superscript. |
-| `<span>` | ✓ | — | ✓ | Generic inline wrapper. |
 | `<q>` | ✓ | — | ✓ | Inline quote. |
 | `<abbr>` | ✓ | — | ✓ | Abbreviation; `title` kwarg for expansion. |
 | `<term>` | ✓ | — | ✓ | Vocabulary term. |

@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/layer1-vocabulary/elements/*.md` by
 // `packages/layer1-vocabulary/build/generate-data-module.js`.
-// Source files: 109 vocabulary entries.
+// Source files: 108 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -5640,69 +5640,6 @@ const _section = Object.freeze({
     "_sourceFile": "section.md",
   });
 
-const _span = Object.freeze({
-    "semantic_role": "span",
-    "category": "inline-formatting",
-    "html_output": {
-      "element": "span",
-      "is_html_native": true,
-      "default_attributes": {},
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-      "kwargs": {
-        "style": {
-          "maps_to": {
-            "html": "style",
-          },
-          "notes": "Inline CSS styles. Use sparingly; classes are usually preferable.\n",
-        },
-        "title": {
-          "maps_to": {
-            "html": "title",
-          },
-        },
-      },
-    },
-    "content": {
-      "shape": {
-        "contains": [
-          "inline",
-        ],
-      },
-      "becomes": "children",
-    },
-    "jats_counterpart": {
-      "element": "styled-content",
-      "notes": "JATS uses <styled-content> for generic styled inline content.\nThe class attribute maps to JATS's style-type attribute.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "Some text <span .highlight | with highlighting> here.",
-        "layer1_html": "<p>Some text <span class=\"highlight\">with highlighting</span> here.</p>",
-      },
-      {
-        "source": "Text with <span #key-phrase | a marked phrase> for reference.",
-        "layer1_html": "<p>Text with <span id=\"key-phrase\">a marked phrase</span> for reference.</p>",
-      },
-      {
-        "source": "A <span .gloss title=\"ancient Greek for word\" | logos> appears here.",
-        "layer1_html": "<p>A <span class=\"gloss\" title=\"ancient Greek for word\">logos</span> appears here.</p>",
-      },
-    ],
-    "interpreter_strategy": "schema",
-    "_sourceFile": "span.md",
-  });
-
 const _strong = Object.freeze({
     "semantic_role": "strong",
     "category": "inline-formatting",
@@ -6984,7 +6921,6 @@ export const VOCABULARY = Object.freeze({
   "section-subtitle": _section_subtitle,
   "section-title": _section_title,
   "section": _section,
-  "span": _span,
   "strong": _strong,
   "sub-section-subtitle": _sub_section_subtitle,
   "sub-section-title": _sub_section_title,
