@@ -88,9 +88,11 @@ function check(label, cond) {
 // - 2026-06-26: #326 — `caption.md` added (the frameable caption surface, classified flow so
 //   both authoring forms — the `<caption>` child tag and the legacy pipe-content-as-caption —
 //   wrap a single paragraph identically through the one content-model gate). Net: 108 → 109 primary.
+// - 2026-07-02: #334 — `span.md` removed (`<span>` leaves the vocabulary; an authored `<span>` now
+//   echoes as escaped literal text like any unknown tag). Net: 109 → 108 primary.
 check(
-  `VOCABULARY has 111 entries (109 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 111,
+  `VOCABULARY has 110 entries (108 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 110,
 );
 
 // Build-time loader has nothing to report in normal state.

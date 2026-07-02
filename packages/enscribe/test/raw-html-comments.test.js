@@ -116,8 +116,11 @@ export function run() {
   {
     const html = render('A <em | emphasis> and <span | spanned> here');
     assert.ok(html.includes('<em>emphasis</em>'), 'vocabulary <em> still renders');
-    assert.ok(html.includes('<span>spanned</span>'), 'vocabulary <span> still renders');
-    console.log('PASS: vocabulary tags still render (no regression)');
+    // #334: <span> was removed from the vocabulary — it now echoes its pipe-form
+    // syntax literally (escaped), like any unknown tag, rather than rendering.
+    assert.ok(html.includes(`${LT}span | spanned>`), '<span> (removed #334) echoes literally');
+    assert.ok(!html.includes('<span>spanned</span>'), 'no real <span> element is emitted');
+    console.log('PASS: <em> renders; <span> echoes literally (#334)');
   }
 
   // ── Issue 3: HTML comments stripped ────────────────────────────────────────
