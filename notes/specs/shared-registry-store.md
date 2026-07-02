@@ -63,6 +63,7 @@ interface so the registry shape is identical whether it is read from web storage
 
 - `notes/specs/master-document.md`, § cross-references — the cross-reference ownership registry this
   would persist.
-- `plugins/library-load.js` (`buildCitationIndex`) and `plugins/asset-load.js` (`buildAssetIndex`) —
-  the in-memory registries this store would back.
+- `packages/enscribe/src/interpreter/plugins/library-load.js` (`buildCitationIndex`) and
+  `packages/enscribe/src/interpreter/plugins/asset-load.js` (`buildAssetIndex`) — the in-memory
+  registries this store would back.
 - #190 — the assembler merge that centralized the registry data in the first place.
