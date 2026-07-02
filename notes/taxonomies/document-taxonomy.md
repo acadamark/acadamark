@@ -25,8 +25,8 @@ A part is identified by one of exactly three things:
 2. **Table** — position by *two* named coordinates (row-key × column-key). You need two keys to name a
    part (cell). A calendar (day × week), a spreadsheet, a data table. A **definition list is a degenerate
    table** (key → value: a one-column table addressed by the term-key — which is why `<dl>` reads as
-   table-like, and why the semantic taxonomy places `<dl>`'s *structure* here while its *act* stays in
-   Exhibit).
+   table-like, and why the semantic taxonomy places `<dl>`'s *structure* here while its *act* is a
+   **formal statement**, family 6 — a definition list is a list of definitions).
 3. **Set / graph** — *no* positional order; a part is addressed by **identity** and *navigated*, not
    sequenced. "The page about pricing," "the asset with this id," "the figure this reference points at."
    Addressed by name / link / id.
@@ -58,8 +58,8 @@ Because addressing is scale-invariant, its element-scale face lands *inside* the
 as a **property those families carry, never as a family of its own**:
 - **sequence** at element scale → `<list>` items (peer-enumerated; "enumeration" is a display convention,
   not a semantic act — the list element is real, the *family* is not).
-- **table** at element scale → `<table>` and its degenerate `<dl>` (structure here; the exhibit act in
-  the semantic taxonomy).
+- **table** at element scale → `<table>` and its degenerate `<dl>` (structure here; the *act* is a formal
+  statement, semantic family 6).
 - **set / identity** at element scale → the reference act (`cite`/`ref`/`a`, semantic family 4) and the
   store act (`data`/`library`/`dataset`, semantic family 7) — pointer and held sides.
 
@@ -155,5 +155,6 @@ A "type" is a point in (level × addressing × display × processing-time). It i
 - **Table-addressing at collection scale** — the grid cell is empty (no "collection that is a table of
   documents"). Does one exist (a matrix of linked docs?), or is table-addressing element/document-only?
 - **`glossary` as element-scale set addressing** — a glossary is definitions *navigated by term*: a
-  set-addressed store of meanings. Confirm the semantic taxonomy's placement of `glossary` near the store
-  (family 7) against this, and whether book-part `glossary` is simply a structural region.
+  set/identity-addressed store of meanings (this taxonomy). Its **semantic act** is settled separately as a
+  *collection of definitions* — **formal statements, family 6** (#335) — a clean act-vs-addressing split,
+  not a contradiction. Open only: whether book-part `glossary` is *also* a structural region (family 10).
