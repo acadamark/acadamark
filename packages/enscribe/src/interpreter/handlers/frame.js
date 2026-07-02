@@ -46,7 +46,7 @@ export function frameHandler(state, node, vocab) {
 
   const wrapperProps = aggregateHtmlProps(mapAttributes(node, vocab, 'html', htmlEmit));
   // Add data-frame-type if the type kwarg passed through (schema mapping
-  // sets it for us via buildProperties, since frame.md declares
+  // sets it for us via aggregateHtmlProps(mapAttributes(...)), since frame.md declares
   // `type: maps_to: data-frame-type`).
 
   return renderFrameable({

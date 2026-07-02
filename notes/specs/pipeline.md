@@ -219,11 +219,11 @@ multiple. The content-model property and the wrapping rule are defined in
 `notes/specs/shape-tokens.md` §"Content model and single-paragraph wrapping";
 the interpreter consumer is `notes/specs/interpreter.md` §6.2.
 
-> **Status (#326).** The current implementation unwraps by paragraph *count* for
-> all prose content (correct for phrasing, wrong for flow — a single-paragraph
-> `<abstract>` renders bare); gating the unwrap on the content model is the
-> `#326` follow-up. This describes the target rule; the behavior is unchanged by
-> the spec slice.
+> **Status (#326) — landed.** The unwrap is gated on the element's content model
+> (via `FLOW_TAGNAMES`, derived from `content.shape.contains`), not the paragraph
+> count: phrasing unwraps a single paragraph, flow keeps the `<p>` (so a
+> single-paragraph `<abstract>` renders wrapped). The flow goldens were
+> re-baselined to the wrapped render when the gate landed.
 
 **Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
 are converted to `enscribeParseError` nodes with `subtype: 'max-recursion-depth'`.
@@ -247,8 +247,9 @@ including the mixed-content (escape-errors) path.
 A sequence of mdast-transform plugins runs in order: document-type resolution
 (`enscribeDocTypeResolve`, #200 — resolves the document class and stamps `<meta
 type>` so the structural plugins can branch on it), then the normalization pass,
-then configuration discovery, then the structural plugins (book structuring,
-article structuring, section nesting, and list structuring), then the semantic
+then configuration discovery, then the structural plugins (website structuring, book structuring,
+article structuring, section nesting, and list structuring), then the minipage
+guard (#115; a no-op except on a sealed minipage sub-run), then the semantic
 plugins (citation index, the opt-in table-cell passes — table-cell-parse and
 html-table-cells, the `<data>` asset index and asset resolution (#190), notes,
 numbering, apply-numbers, ref-resolution, cite-resolution, note-placement,
@@ -655,7 +656,7 @@ instead of raw `<ref>`/`<cite>` tags.
 **Output:** `<note>` nodes replaced by `__note-marker` nodes; a `__note-list`
 node containing `__note-list-item` nodes prepended to `article-back.content`.
 
-**Tree walk:** Uses `walkReplace()` from `lib/walk-replace.js`.
+**Tree walk:** Uses `walkReplace()` from `core/walkers/walk-replace.js`.
 
 **Dependencies:** `enscribeCiteResolution` (step 4.8; note content must be
 resolved), `enscribeApplyNumbers` (step 4.6.5; `entry.number` must be set).
@@ -816,10 +817,12 @@ to have run before it.
 | `remarkRecursiveContent` | `remarkEnscribe` (string content set) | `node.content` as `Node[]` |
 | `enscribeNormalizeToCanonical` | `remarkRecursiveContent` (both outer and inner parses complete) | every authored form coerced to canonical Layer 1 nodes — delegated-parser nodes, sigils, shorthands (book-part + DSL), and kwarg lifts |
 | `enscribeConfigDiscovery` | `enscribeNormalizeToCanonical` | `file.data.enscribeConfig` |
+| `enscribeWebsiteStructuring` | `enscribeConfigDiscovery` | website nav model on `file.data` for `<meta type=website>` (#246); no `<article>`/`<book>` wrapper; byte-identical no-op otherwise; runs first of the three structurers |
 | `enscribeBookStructuring` | `enscribeConfigDiscovery` | book structure (`<book>` front/body/back) for `<meta type=book\|book-part>`; no-op otherwise; runs before article-structuring |
 | `enscribeArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
 | `enscribeSectionNesting` | `enscribeArticleStructuring` | nested section tree |
 | `enscribeListStructuring` | `enscribeSectionNesting` | `<list>` / `<li>` markers lowered to `ul` / `ol` / `li` (#137) |
+| `enscribeMinipageGuard` | `enscribeNormalizeToCanonical` | forbidden `@src` / `<data>` external pulls inside a sealed minipage sub-run neutralized to a visible `__asset-error` (#115); no-op on every normal document; runs before the citation / asset index passes |
 | `buildCitationIndex` | `enscribeConfigDiscovery` | `file.data.enscribeCitations` |
 | `enscribeTableCellParse` | `buildCitationIndex` | DATA-format table cells parsed as inline markup when opted in (#21/#105); before notes/numbering/refs |
 | `enscribeHtmlTableCells` | `enscribeTableCellParse` | inline content re-resolved in raw-HTML (`_htmlTable`) cells from a JATS import (#108) |
@@ -880,7 +883,7 @@ now references the font and KaTeX CDNs. Set `embedResources: true` to restore th
 prior self-contained output, or set `documentFontsCss`/`katexCss` individually
 (they override `embedResources`). DSL libraries (`dslMode`) and hover-preview
 (`hoverPreviewMode`) are *not* driven by `embedResources` and keep their prior
-defaults (`'skip'` and `'inline'`); the browser entry (`src/browser.js`) sets
+defaults (`'skip'` and `'inline'`); the browser entry (`src/interpreter/browser.js`) sets
 them to `'live-link'` and `'link'` independently.
 
 ### 9.2 Document-level config
@@ -953,7 +956,6 @@ inner parse "emphasized" → paragraph([text("emphasized")])
 **Stage 4 (toHast, schema dispatch for `em`):**
 ```
 vocab.html_output.element = 'em'
-vocab.content.type = 'prose'
 convertContent: content is [text("emphasized")] (already inline, no para unwrap needed)
 → { type: 'element', tagName: 'em', properties: {}, children: [text("emphasized")] }
 ```
@@ -1136,7 +1138,7 @@ individually) for self-contained HTML that needs no network to render. See
 
 ### 12.3 Body fonts
 
-`patchKatexFontUrls()` is in `src/assets/font-loader.js`. The same file also
+`patchKatexFontUrls()` is in `src/interpreter/assets/font-loader.js`. The same file also
 exports `getDocumentFontsCss()` (Inter + Source Code Pro as base64-encoded
 `@font-face` declarations) and `DOCUMENT_FONTS_CDN_URL` (a Google Fonts `css2`
 request for the same families). `index.js` prepends one of them to the document
@@ -1188,7 +1190,7 @@ confirms them — not via INTERNAL_REGISTRY (see `interpreter.md` §5.1–5.2).
 ## 14. Client-side rendering (browser library)
 
 Layer 1 documents render in the browser with no build step, via the browser
-entry `src/browser.js`. It exports `render(source, options)`
+entry `src/interpreter/browser.js`. It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
 which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
 browser-safe defaults (external fonts / KaTeX CSS, linked third-party
@@ -1220,7 +1222,7 @@ ESM module and an IIFE global (`window.enscribe`); see `tsup.config.js`.
 The Node-only asset paths (font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads)
 are dead code under the browser defaults, but their `fs` / `path` / `url` /
 `module` imports must still resolve for the bundle to build and load. esbuild's
-`alias` redirects each to a throwing stub (`src/assets/node-builtin-stub.js`):
+`alias` redirects each to a throwing stub (`src/interpreter/assets/node-builtin-stub.js`):
 the import resolves to a harmless binding, and a violated "never called in the
 browser" invariant surfaces as a loud, specific error rather than silent
 corruption. The alias is keyed in **both** specifier forms — `fs` and `node:fs`,
@@ -1230,7 +1232,7 @@ the `node:` form reach the alias requires `removeNodeProtocol: false` in the tsu
 config, because tsup otherwise externalizes `node:`-prefixed specifiers before
 esbuild consults `alias` (an earlier change made the aliasing symmetric and
 retired the earlier bare-only convention; the mechanism is documented in
-`tsup.config.js` and `src/assets/node-builtin-stub.js`). The
+`tsup.config.js` and `src/interpreter/assets/node-builtin-stub.js`). The
 `test/bundle-load.test.js` smoke test is the runtime backstop: it builds the IIFE
 bundle and loads it in a browser-like context (jsdom), failing if the bundle
 throws at evaluation — the exact class of defect (a top-level `__require("fs")`)

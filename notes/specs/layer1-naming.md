@@ -77,7 +77,7 @@ The rule is binding, not advisory. Before specifying a new Layer 1 element:
 3. Adopt JATS attribute conventions where they're sensible. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references. Enscribe may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
 4. Document any deliberate divergences in the spec for that element, with rationale.
 
-This rule means that as the Layer 1 vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Enscribe's JATS export plugin (`rehype-enscribe-to-jats`) becomes a mostly-mechanical transform rather than a deep restructuring.
+This rule means that as the Layer 1 vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Enscribe's JATS exporter (the `enscribeToJats` function) becomes a mostly-mechanical transform rather than a deep restructuring.
 
 JATS also includes elements enscribe may not need (`<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting, etc.). Don't add them speculatively. Add elements when authors actually need them.
 

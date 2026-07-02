@@ -546,7 +546,7 @@ function liftStructuredKwargs(node, file) {
   // node.booleans; key=true / key=false kwarg forms arrive in node.kwargs.
   // For any key declared in spec.booleanKwargs, promote node.booleans[key]
   // into node.kwargs so the canonical Layer 1 home is uniformly node.kwargs
-  // (which is what the schema's buildProperties iterates). Without this,
+  // (which is what the schema's aggregateHtmlProps(mapAttributes(...)) iterates). Without this,
   // the +form would not render to an HTML attribute through the schema
   // dispatcher (booleans are read only by per-tag handlers, not the schema
   // dispatch). Performed before the kwarg loop so the boolean-promoted key
@@ -662,7 +662,7 @@ function liftStructuredKwargs(node, file) {
 // converts to a child tag of the same name carrying the kwarg's value as a
 // single text node. Other kwargs pass through unchanged — frameables don't
 // have a strict kwarg allowlist (per-element vocab schemas govern those via
-// schema dispatch's buildProperties); this lift only touches the lifted
+// schema dispatch's aggregateHtmlProps(mapAttributes(...))); this lift only touches the lifted
 // subset.
 //
 // Author-written child-tag form (e.g. <fig><caption>...</caption></fig>)

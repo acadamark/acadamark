@@ -20,7 +20,6 @@ A paragraph contains inline content only:
 
 ```yaml
 content:
-  type: prose
   shape:
     contains: [inline]
 ```
@@ -29,7 +28,6 @@ A section contains block-level body content plus nested sub-sections:
 
 ```yaml
 content:
-  type: structured
   shape:
     - element: section-title
       required: false
@@ -41,7 +39,6 @@ A list item contains both inline content (most items) and block content (multi-p
 
 ```yaml
 content:
-  type: prose
   shape:
     contains: [inline, block]
 ```
@@ -91,15 +88,14 @@ multi.
 This keeps the content model **unified**: the same `shape.contains` array that classifies the ~27+8
 structural elements expresses the prose elements' content model too — there is no second, parallel
 axis. The list-item case is already encoded this way: `<item>` carries `contains: [inline, block]`
-(tight/loose) today. The prescription for the prose-bearing elements that currently carry only
-`content.type: prose` with no `contains` (the `abstract`/`date` gap: their `content` blocks are
-byte-identical, differing only in human `notes:` text, so the model cannot today answer "is a `<p>`
-valid here") is to **add the `shape.contains` token that states their content model** —
-`[inline]` for phrasing, `[block]` for flow, `[inline, block]` for tight/loose — so the wrapping
-decision reads one field. *(Implemented in #326: every `content.type: prose` element now carries
-`content.shape.contains`; the parse-time gate `recursive-content.js#extractFromRoot` consumes it —
-flow keeps the single `<p>`, phrasing unwraps; the flow goldens were re-baselined to the wrapped
-render.)*
+(tight/loose) today. The prose-bearing elements that once carried only a prose content-type label with no
+`contains` (the `abstract`/`date` gap: their `content` blocks were byte-identical, differing only in
+human `notes:` text, so the model could not answer "is a `<p>` valid here") now **carry the
+`shape.contains` token that states their content model** — `[inline]` for phrasing, `[block]` for
+flow, `[inline, block]` for tight/loose — so the wrapping decision reads one field. *(Landed in #326:
+every prose-bearing element now carries `content.shape.contains`; the parse-time gate
+`recursive-content.js#extractFromRoot` consumes it — flow keeps the single `<p>`, phrasing unwraps;
+the flow goldens were re-baselined to the wrapped render.)*
 
 > **Reading note — content model vs. source position (RESOLVED).** This section reads `contains` as
 > *what the element holds* (its content model — the axis the `#326` wrapping decision needs). The
@@ -113,7 +109,7 @@ render.)*
 
 ### Finalized classification (maintainer-ratified, implemented in #326)
 
-Every `content.type: prose` element, classified by `<p>`-validity and encoded as
+Every prose-bearing element, classified by `<p>`-validity and encoded as
 `content.shape.contains`. **The prose content model is a binary: flow or phrasing — there are NO prose
 tight/loose members** (the only tight/loose element is the structural `<item>`). The interpreter gate
 consumes this directly; the goldens are re-baselined to match.
@@ -136,11 +132,12 @@ consumes this directly; the goldens are re-baselined to match.
 - *(`aside`/`blockquote`/etc. unwrapped a single paragraph before #326; under this model they wrap — that behavior change is what #326 landed.)*
 
 **No prose tight/loose.** `<item>` keeps `content.shape.contains: [inline, block]` (the encoded
-exemplar of tight/loose) but it is structural navigation, not `content.type: prose`.
+exemplar of tight/loose) but it is structural navigation (`category: navigation`), not a
+prose-bearing element.
 
-**Out of scope of this prose table (not `content.type: prose`):**
-- `dl`, `glossary`, `glossary-entry` — `content.type: structured` (containers); their single-paragraph `<dd>` children wrap because `dd` is flow, but the containers themselves carry no prose content model.
-- `item` — `content.type` absent (navigation); `[inline, block]` tight/loose, encoded already.
+**Out of scope of this prose table (not prose-bearing elements):**
+- `dl`, `glossary`, `glossary-entry` — containers whose `content.shape` is a nested sub-element list (no top-level `contains`); their single-paragraph `<dd>` children wrap because `dd` is flow, but the containers themselves carry no prose content model.
+- `item` — `category: navigation`; `content.shape.contains: [inline, block]` tight/loose, encoded already.
 - `caption` — the frameable caption surface; **`caption.md` classifies it `[block]` (flow)** (#326). A
   single-paragraph caption WRAPS in `<p>`, identical across all three authoring forms — the `<caption | …>`
   child tag, the legacy `<fig … | caption>` pipe-content, and the `caption="…"` kwarg — because all three

@@ -172,7 +172,7 @@ Issues, decided there, not here.
 
 ## Related references
 
-- `notes/specs/spec_lift-lower-round-trip.md` — the round-trip correctness model
+- `notes/specs/lift-lower-round-trip.md` — the round-trip correctness model
   Quarto interchange follows.
 - `notes/specs/master-document.md` — the project model Quarto projects map onto.
 - `packages/layer1-vocabulary/elements/config.md` — the `<config>` / data-block
