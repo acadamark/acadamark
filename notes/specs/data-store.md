@@ -43,11 +43,10 @@ The interpretation — a `data:` URI for an image, a parsed grid for a table, ve
 lives in **each consuming element**, not in the resolver. This is *less* code and *less* divergence,
 not more: **one neutral hand-off + N consumers**, not one resolver carrying a branch per type.
 
-> The current resolution is **fig-shaped**: it bakes the image consumer's `data:` URI into the
-> resolver itself (`packages/enscribe/src/interpreter/plugins/asset-load.js`, `enscribeAssetResolution`
-> rewrites a body `<fig>`'s `@`-src to `data:<mime>;base64,…`). The principled generalization is to make
-> resolution **neutral** and move interpretation to the consumer. Named here as the known gap to close
-> in #313 (slice 2), not as already-done.
+> Resolution was originally **fig-shaped**: it baked the image consumer's `data:` URI into the
+> resolver itself. #313 slice 2 made the principled generalization real — resolution is now **neutral**
+> (`resolveAssetReference` returns the raw store entry) and interpretation lives in the consumer
+> (`resolveFig` builds the `data:` URI; `resolveTableSrc` hands opaque bytes to the table). See §Piece 2.
 
 ---
 
@@ -78,7 +77,7 @@ carry a `format` hint as metadata, still without interpreting the bytes) is a sl
 call; either way the bytes stay opaque.
 
 `<dataset>` is a **storage host**, parallel to `<library>` (a foreign-format payload read by a
-consumer, not an enscribe-native field record) — see `data.md` §"storage host on the language axis".
+consumer, not an enscribe-native field record) — see `elements/data.md` §"storage host on the language axis".
 It is already named as a future child of `<data>` (`elements/data.md`, content shape).
 
 ### Piece 2 — consumer-agnostic `@id` resolution
@@ -204,9 +203,8 @@ is stated here and echoed in runtime-data-store.md §"The model".
 - `notes/specs/runtime-data-store.md`, `notes/specs/shared-registry-store.md` — the deferred siblings.
 - `packages/layer1-vocabulary/elements/data.md` — the `<data>` storage host (and `<dataset>` as a
   future child of its content model).
-- `packages/enscribe/src/interpreter/plugins/asset-load.js` — the current fig-shaped resolver (the
-  thing slice 2 neutralizes). NOTE: its header comment still reads "Only JATS `<graphic>` export remains
-  (slice 4)" — stale (the export is done); a code-touching slice should correct it.
+- `packages/enscribe/src/interpreter/plugins/asset-load.js` — the resolver (neutralized in slice 2:
+  `resolveAssetReference` is the neutral hand-off; `resolveFig` / `resolveTableSrc` interpret per consumer).
 - `packages/enscribe/src/parser/recursive-content.js` — the `contentHandler !== 'default'` skip that
   makes the opaque lane opaque.
 - `packages/cli/src/jats-export/index.js` (`emitFigureJats`) — the shipped `<fig>`→`<graphic>` projection.
