@@ -166,12 +166,33 @@ Surfaced by measurement; to apply when specs are conformed to this taxonomy.
 - **`section` content declaration resolved (A3).** `section` had its content model (`shape`) mis-nested
   under `enscribe_attributes` (no top-level `content:` block), so it never reached the vocab. Re-nested under
   a proper `content:` block (an array shape `FLOW_TAGNAMES` correctly ignores) — behavior-neutral.
+- **`sub-section` / `sub-sub-section` content declaration resolved (A3, `ab859ed`).** The same fix as
+  `section`, landed in the same commit: both now carry an **array** `content.shape` (`*-title`/`*-subtitle`
+  `[inline]` + a `body` slot `contains: [block, section]`), so `content.shape.contains` is `undefined` and
+  `FLOW_TAGNAMES` correctly ignores them (their content is declared children, not a single prose body). The
+  earlier "declaring inline content (should be block)" was already discharged by A3. Verified against current
+  code (frontmatter + generated `data.js` + the `FLOW_TAGNAMES` derivation in `content-model.js`).
+- **`nav` / `nav-group` / `item` content models given (nav-scaffolding, `f7fdf7d`).** The formerly-deferred
+  question "should they have a content model at all?" is resolved: `nav` and `nav-group` carry
+  `contains: [item, nav-group]`, `item` carries `[inline, block]` (array shapes, so also outside
+  `FLOW_TAGNAMES`). The semantic taxonomy classifies the **authored** `nav`/`nav-group`/`item` tree as
+  **content** — structural scaffolding (family 10) — with only the chrome *generated from* it counting as
+  apparatus; so they are authored elements that legitimately carry a content model.
 
-**Still open** (corrections to the current code, not statements of the taxonomy):
-`sub-section`/`sub-sub-section` declaring inline content (should be block); `marginnote` as
-sugar-for-`<note position=margin>` (not a distinct element); `span` removal (no Enscribe essence); the
-code-handler inconsistency (`code-block`/`inline-code` are dispatch keys with non-HTML `html_output.element`
-values). **Surfaced by A3, deferred** (cross-taxonomy / apparatus decisions): `nav`/`nav-group`/`item` (all
-`category: navigation`) carry the SAME mis-nested content model as `section` did — but the semantic taxonomy
-classifies them as UI apparatus, not authored content, so whether they should have a content model at all is
-a designer decision; left untouched rather than force one.
+**Decided — code lags the taxonomy** (the taxonomy has settled the direction; the code has not yet caught up.
+Tracked as issues, not open questions):
+- **`marginnote` → `<note position=margin>`.** The semantic taxonomy says there is no distinct `<marginnote>`
+  act — a margin note is a `note`, positioned. The code still has a distinct `marginnote.md` element
+  (`category: inline-formatting`; renders `<aside class="enscribe-marginnote">`) with its own independent
+  branch in `detectAssets` (`interpreter/index.js`). Collapse it into `<note position=margin>` (or keep only
+  as a pure authoring alias). Tracked: #333.
+- **`span` leaves the vocabulary.** The semantic taxonomy says `<span>` is not a vocabulary element (no
+  authorial act); whether any non-Enscribe HTML survives is a **processing policy** (a future
+  `<html-passthrough>` switch), not a vocabulary question. The code still carries `span.md`
+  (`is_html_native: true`). Remove it from the vocabulary and settle the passthrough policy separately.
+  Tracked: #334.
+
+**Still open** (a genuine current-code correction, not yet decided):
+- the code-handler inconsistency: `code-block` / `inline-code` declare non-HTML `html_output.element` values
+  (`code-block` / `inline-code`) as **dispatch keys** while `is_html_native: false` and the handlers emit
+  `<pre><code>` / `<code>`. Deferred to the HTML-shaped migration (#147-adjacent).
