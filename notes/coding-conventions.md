@@ -31,7 +31,7 @@ When you derive a set from a source, **bind them with a load-time equality asser
 that fails loud at load or test converts a future audit finding into a build-time error.
 
 ## 4 · Fit-check before each commit (the audit's lens, applied early)
-Before committing, ask the three architectural-fit questions from `code-review.md`:
+Before committing, ask the three architectural-fit questions from `notes/audits/code-review.md`:
 - Am I duplicating something that already has a home?
 - Am I adding a special-case branch the general mechanism could handle if adjusted?
 - Am I placing logic at a stage chosen for convenience rather than where the concept belongs?

@@ -18,7 +18,7 @@ From `raw.githubusercontent.com/enscribejs/enscribe/main/`:
 (`raw.githubusercontent.com` isn't rate-limited; the GitHub API is — Ariel uploads issue JSON or tree listings when the API is needed.)
 
 ## Read by task type — on demand
-- **Auditing / reconciliation** → `notes/release-audits.md` (the five-reconciliation process) + `notes/code-review.md` (the code-review method).
+- **Auditing / reconciliation** → `notes/audits/release-audits.md` (the five-reconciliation process) + `notes/audits/code-review.md` (the code-review method).
 - **Authoring a build/fix CC prompt** → `notes/coding-conventions.md` (the canonical-homes map + the fit-check CC must apply before committing).
 - **Deep work in a subsystem** → the *one* relevant `notes/specs/<x>.md`. The specs are large; use CONTRIBUTING's doc index to pick the right one — don't read them all.
 
