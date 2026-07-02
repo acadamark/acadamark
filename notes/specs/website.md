@@ -252,6 +252,6 @@ and never halt rendering. The one boundary is structural rather than content: a 
 `packages/cli/src/static-website.js` (the static build, fs reader) and
 `packages/enscribe/src/interpreter/browser.js` `mountLiveWebsite` (the live SPA, fetch reader).
 `master-document/live-website.js`'s `buildWebsiteTree` flatten was deleted by #320 (the file now holds
-only the nav-model flattener + the `?page=` not-found view); `cli/test/website-xref.test.js` proves
+only the nav-model flattener + the `?page=` not-found view); `packages/cli/test/website-xref.test.js` proves
 static≡live directly over the real composition path. These are non-normative pointers; the model above
 is the blueprint.*

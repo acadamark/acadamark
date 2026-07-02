@@ -656,7 +656,7 @@ instead of raw `<ref>`/`<cite>` tags.
 **Output:** `<note>` nodes replaced by `__note-marker` nodes; a `__note-list`
 node containing `__note-list-item` nodes prepended to `article-back.content`.
 
-**Tree walk:** Uses `walkReplace()` from `lib/walk-replace.js`.
+**Tree walk:** Uses `walkReplace()` from `core/walkers/walk-replace.js`.
 
 **Dependencies:** `enscribeCiteResolution` (step 4.8; note content must be
 resolved), `enscribeApplyNumbers` (step 4.6.5; `entry.number` must be set).
@@ -883,7 +883,7 @@ now references the font and KaTeX CDNs. Set `embedResources: true` to restore th
 prior self-contained output, or set `documentFontsCss`/`katexCss` individually
 (they override `embedResources`). DSL libraries (`dslMode`) and hover-preview
 (`hoverPreviewMode`) are *not* driven by `embedResources` and keep their prior
-defaults (`'skip'` and `'inline'`); the browser entry (`src/browser.js`) sets
+defaults (`'skip'` and `'inline'`); the browser entry (`src/interpreter/browser.js`) sets
 them to `'live-link'` and `'link'` independently.
 
 ### 9.2 Document-level config
@@ -1138,7 +1138,7 @@ individually) for self-contained HTML that needs no network to render. See
 
 ### 12.3 Body fonts
 
-`patchKatexFontUrls()` is in `src/assets/font-loader.js`. The same file also
+`patchKatexFontUrls()` is in `src/interpreter/assets/font-loader.js`. The same file also
 exports `getDocumentFontsCss()` (Inter + Source Code Pro as base64-encoded
 `@font-face` declarations) and `DOCUMENT_FONTS_CDN_URL` (a Google Fonts `css2`
 request for the same families). `index.js` prepends one of them to the document
@@ -1190,7 +1190,7 @@ confirms them — not via INTERNAL_REGISTRY (see `interpreter.md` §5.1–5.2).
 ## 14. Client-side rendering (browser library)
 
 Layer 1 documents render in the browser with no build step, via the browser
-entry `src/browser.js`. It exports `render(source, options)`
+entry `src/interpreter/browser.js`. It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
 which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
 browser-safe defaults (external fonts / KaTeX CSS, linked third-party
@@ -1222,7 +1222,7 @@ ESM module and an IIFE global (`window.enscribe`); see `tsup.config.js`.
 The Node-only asset paths (font / KaTeX inlining, `.bib` / CSV / DSL `fs` reads)
 are dead code under the browser defaults, but their `fs` / `path` / `url` /
 `module` imports must still resolve for the bundle to build and load. esbuild's
-`alias` redirects each to a throwing stub (`src/assets/node-builtin-stub.js`):
+`alias` redirects each to a throwing stub (`src/interpreter/assets/node-builtin-stub.js`):
 the import resolves to a harmless binding, and a violated "never called in the
 browser" invariant surfaces as a loud, specific error rather than silent
 corruption. The alias is keyed in **both** specifier forms — `fs` and `node:fs`,
@@ -1232,7 +1232,7 @@ the `node:` form reach the alias requires `removeNodeProtocol: false` in the tsu
 config, because tsup otherwise externalizes `node:`-prefixed specifiers before
 esbuild consults `alias` (an earlier change made the aliasing symmetric and
 retired the earlier bare-only convention; the mechanism is documented in
-`tsup.config.js` and `src/assets/node-builtin-stub.js`). The
+`tsup.config.js` and `src/interpreter/assets/node-builtin-stub.js`). The
 `test/bundle-load.test.js` smoke test is the runtime backstop: it builds the IIFE
 bundle and loads it in a browser-like context (jsdom), failing if the bundle
 throws at evaluation — the exact class of defect (a top-level `__require("fs")`)

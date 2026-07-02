@@ -326,7 +326,7 @@ and inner parses have completed and all delegated-parser nodes are present)
 and before `enscribeConfigDiscovery` (no structural plugin ever sees an
 `inlineMath` / `math` / `table` node).
 
-**Tree walk:** Uses `walkNormalize()` from `lib/walk-normalize.js` — a
+**Tree walk:** Uses `walkNormalize()` from `core/walkers/walk-normalize.js` — a
 pre-order DFS that replaces matching nodes in place (the whole `table`
 subtree is replaced before its inline children are visited, so cell
 contents are read directly off the original `remark-gfm` nodes during
@@ -770,7 +770,7 @@ to claim a numbered slot. Sequential numbers are assigned when
 `registry.numberRegistry()` runs in `enscribeApplyNumbers` (step 8). The
 registry is shared across plugins via `file.data.enscribeRegistry`.
 
-**Tree walk:** Uses `discover()` from `lib/discover.js` — a read-only pre-order
+**Tree walk:** Uses `discover()` from `core/walkers/discover.js` — a read-only pre-order
 DFS that recurses into `enscribeTag.content` arrays (skipping opaque-content
 nodes) and mdast `.children` arrays.
 
@@ -837,7 +837,7 @@ potential lookup), but receive `number: null` and `numbered: false`.
 Entries whose id contains `:` are indexed in the cross-type label index for
 cross-reference lookup.
 
-**Tree walk:** Uses `discover()` from `lib/discover.js` (same shared walker as
+**Tree walk:** Uses `discover()` from `core/walkers/discover.js` (same shared walker as
 `enscribeNotes`).
 
 ---
@@ -1013,7 +1013,7 @@ The `content` of each `__note-list-item` is the original `<note>` content
 When a document uses more than one placement mode, the class on `<note-list>`
 falls back to `notes` (neutral).
 
-**Tree walk:** Uses `walkReplace()` from `lib/walk-replace.js` to splice
+**Tree walk:** Uses `walkReplace()` from `core/walkers/walk-replace.js` to splice
 `__note-marker` nodes in place of the found `<note>` nodes.
 
 ---
@@ -1535,7 +1535,7 @@ markup citation-js produces (e.g., `<i>` for journal names).
 
 ## 8. The registry
 
-**Source:** `packages/enscribe/src/interpreter/lib/registry.js`
+**Source:** `packages/enscribe/src/core/registry.js`
 
 The registry is a per-document numbering and label-lookup service. It is
 created per-document by `createRegistry()` and attached to the unified `VFile`
@@ -1686,7 +1686,7 @@ The default is `embedResources ? 'inline' : 'link'` (external-by-default since a
 
 "Patched" means the font-relative URLs in the raw KaTeX CSS (e.g.,
 `url(fonts/KaTeX_Main-Regular.woff2)`) are replaced with base64 data URIs
-by `patchKatexFontUrls()` in `src/assets/font-loader.js`. This makes the
+by `patchKatexFontUrls()` in `src/interpreter/assets/font-loader.js`. This makes the
 CSS fully self-contained; documents render correctly from `file://` URLs and
 in offline environments.
 
@@ -1856,7 +1856,7 @@ require network access to the relevant CDN; `'skip'` modes expect the consumer
 to provide the assets. Since an earlier change the document-fonts and KaTeX
 defaults are external (`'link'`) — set `embedResources: true` to restore
 self-contained output (`pipeline.md` §9.1 carries the migration note). The
-browser entry (`src/browser.js`) ships these tuned for the client:
+browser entry (`src/interpreter/browser.js`) ships these tuned for the client:
 `embedResources:false`, `hoverPreviewMode:'link'`, `dslMode:'live-link'`.
 
 ---
@@ -1942,20 +1942,23 @@ packages/enscribe/src/interpreter/
     ref.js                      refMarkerHandler, refErrorHandler
     cite.js                     citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler
   lib/
-    registry.js                 createRegistry(); ensureRegistry()
     host-accept-sets.js         HOST_ACCEPT_SETS; hostAcceptsLanguage(host, lang) — consulted by the gate as format-word validation (#85)
     shorthand-expansions.js     createShorthandRegistry() — the gate's shared expansion map
     ast-helpers.js              isEnscribeTag(), sectionDepth(), findTag(), extractPlainText()
     bool-kwarg.js               readBoolKwarg()
     strict-mode.js              resolveStrictMode (step 0c, #36); detectStrictMode, disableMarkdownIdioms, flagStrictText
-    discover.js                 discover() — shared read-only pre-order DFS walker
-    walk-replace.js             walkReplace() — shared in-place node replacement walker
-    walk-normalize.js           walkNormalize() — pre-order DFS used by the gate
     errors.js                   warnUnknownTag(), warnHandlerError(), ...
   assets/
     font-loader.js              patchKatexFontUrls(); getDocumentFontsCss()
     hover-preview.css           CSS for Tippy-based hover previews
     hover-preview.js            JS init for Tippy-based hover previews
+
+packages/enscribe/src/core/                     (shared inward dependency; reached by the interpreter)
+  registry.js                   createRegistry(); ensureRegistry()
+  walkers/
+    discover.js                 discover() — shared read-only pre-order DFS walker
+    walk-replace.js             walkReplace() — shared in-place node replacement walker
+    walk-normalize.js           walkNormalize() — pre-order DFS used by the gate
 
 packages/enscribe/src/parser/
   recursive-content.js          remarkRecursiveContent (used by interpreter)

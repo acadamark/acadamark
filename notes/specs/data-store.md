@@ -141,7 +141,7 @@ Each consumer owns its **JATS projection** too, exactly as it owns its HTML inte
   `<graphic xlink:href="…">` — a `data:<mime>;base64,…` URI for an embedded asset, or the rebased path
   for an external one — DTD-valid for JATS Archiving 1.3 and BITS 2.0. This is **shipped and
   behaviorally confirmed** (`packages/cli/src/jats-export/index.js`, `emitFigureJats`; tests
-  `cli/test/jats-export.test.js` doc58 embedded-png/svg/external + `embedded-asset.test.js`, all
+  `packages/cli/test/jats-export.test.js` doc58 embedded-png/svg/external + `embedded-asset.test.js`, all
   DTD-validated). The earlier "remaining slice" claim in `elements/data.md` / `elements/fig.md` is
   stale and is corrected by this slice.
 - **`<dataset>` → ? (OPEN QUESTION).** What a stored dataset projects to in JATS is an open design

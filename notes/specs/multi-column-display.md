@@ -215,7 +215,7 @@ not in this spec.
 
 - `packages/layer1-vocabulary/elements/config.md` — the configuration
   element that carries column settings.
-- `packages/layer1-vocabulary/elements/figure.md` — figures that may
+- `packages/layer1-vocabulary/elements/fig.md` — figures that may
   span columns.
 - CSS Multi-column Layout: https://www.w3.org/TR/css-multicol-1/
 - LaTeX `multicol` package documentation.

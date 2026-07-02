@@ -2,7 +2,7 @@
 
 This document specifies the enscribe shorthand syntax precisely enough for a parser implementation. It defines what valid source looks like, how the parser tokenizes and structures it, and what the parser does *not* do (which is the interpreter's job).
 
-This is the syntactic ground truth. Other notes in this directory (`shorthand-tag-processing.md`, `figures.md`, `tables.md`, etc.) are illustrative — they show *what* tags are useful and *how* they should be interpreted, but this document defines the underlying syntax those tags are written in.
+This is the syntactic ground truth. Other notes in this directory are illustrative — they show *what* tags are useful and *how* they should be interpreted, but this document defines the underlying syntax those tags are written in.
 
 ## Scope
 
