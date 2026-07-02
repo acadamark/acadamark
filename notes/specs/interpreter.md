@@ -1872,7 +1872,10 @@ To add a new vocabulary element handled by schema dispatch:
      element: new-element
    interpreter_strategy: schema
    content:
-     type: prose   # or block, or mixed
+     shape:
+       contains: [inline]   # or [block]
+     becomes: children
+   content_handler: default
    ```
 2. The element is immediately available in the next pipeline run. No code
    changes required.
