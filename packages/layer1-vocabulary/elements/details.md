@@ -34,7 +34,6 @@ content:
     shape marks it as __block__ rather than enumerating allowed
     elements (the body is genuinely open, parallel to <aside>'s prose
     content).
-content_handler: default
 jats_counterpart:
   element: '(no direct JATS counterpart; HTML-native)'
   notes: |

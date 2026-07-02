@@ -14,7 +14,6 @@ enscribe_attributes:
 content:
   shape:
     contains: [meta, article-title, article-subtitle, author, abstract, data, config]
-content_handler: default
 interpreter_strategy: schema
 ---
 

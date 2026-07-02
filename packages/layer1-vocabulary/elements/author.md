@@ -67,7 +67,6 @@ content:
 
     An unrecognized child tag inside <author> produces an informative
     diagnostic (warn, not error — the always-renders pattern).
-content_handler: default
 jats_counterpart:
   element: 'contrib contrib-type="author"'
   notes: |

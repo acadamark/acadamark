@@ -47,7 +47,6 @@ content:
   becomes: children
   notes: |
     Link text. The visible label for the link.
-content_handler: default
 jats_counterpart:
   element: ext-link
   attributes:

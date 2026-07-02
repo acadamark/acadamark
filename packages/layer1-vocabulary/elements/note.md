@@ -40,7 +40,6 @@ content:
   shape:
     contains: [block]
   becomes: children
-content_handler: default
 interpreter_strategy: schema
 jats_counterpart:
   element: fn

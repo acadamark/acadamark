@@ -21,7 +21,6 @@ enscribe_attributes:
 content:
   notes: |
     The hr element is void; it cannot contain content.
-content_handler: default
 jats_counterpart:
   element: hr
   notes: |

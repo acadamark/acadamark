@@ -32,7 +32,6 @@ content:
         They are placed there by the enscribeNotePlacement plugin
         based on each note's placement (end/foot) and the document's
         note-scope.
-content_handler: default
 jats_counterpart:
   element: fn-group
   notes: |

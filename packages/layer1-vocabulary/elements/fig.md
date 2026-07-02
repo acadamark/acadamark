@@ -113,7 +113,6 @@ content:
     auto-generated <img>. When no src is present, the figcaption appears
     alongside whatever the author placed inside the figure (a table,
     a code block, an equation, etc.).
-content_handler: default
 jats_counterpart:
   element: fig
   attributes:

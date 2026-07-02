@@ -19,7 +19,6 @@ content:
     language tag (e.g. "en", "en-US", "fr", "ja"). Free-form language
     names ("English", "French") are accepted but the tag form is
     preferred for machine readability.
-content_handler: default
 jats_counterpart:
   element: '(no direct element; maps to xml:lang attribute)'
   notes: |

@@ -38,7 +38,6 @@ content:
     no internal element parts (no <theorem-statement> wrapper). The
     LaTeX amsthm and JATS prior-art both place body content directly
     inside the theorem container.
-content_handler: default
 jats_counterpart:
   element: statement
   attributes:

@@ -26,7 +26,6 @@ content:
     The abbreviation as text — typically a short uppercase token
     (DOI, DOM, NASA, CSS, CRISPR). Inline elements may appear in the
     content though this is unusual.
-content_handler: default
 jats_counterpart:
   element: abbrev
   notes: |

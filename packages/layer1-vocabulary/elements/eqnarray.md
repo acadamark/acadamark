@@ -25,7 +25,6 @@ content:
     `<align>` for LaTeX-source compatibility: an author copying
     `\begin{eqnarray}...\end{eqnarray}` source from a LaTeX document
     has a target enscribe tag whose name matches.
-content_handler: eqnarray
 jats_counterpart:
   element: disp-formula
   notes: |

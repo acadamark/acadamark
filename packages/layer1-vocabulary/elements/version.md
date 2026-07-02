@@ -19,7 +19,6 @@ content:
     semantic version ("1.0.0", "2.3.1"), date-based ("2024.03.15"),
     revision label ("v2", "rev 3", "draft"), or any other versioning
     scheme the author uses.
-content_handler: default
 jats_counterpart:
   element: '(no direct standard element; uncertain — may map to article-version or custom-meta)'
   notes: |

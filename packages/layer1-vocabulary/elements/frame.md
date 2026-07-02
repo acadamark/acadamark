@@ -60,7 +60,6 @@ content:
     The pipe content is the frame's body. Prose (paragraphs, inline,
     embedded elements) — same content model as <aside> or <section>.
     Recursive content parsing applies.
-content_handler: default
 jats_counterpart:
   element: boxed-text
   attributes: {}

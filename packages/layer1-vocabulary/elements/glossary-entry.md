@@ -24,7 +24,6 @@ content:
     the <dt>/<dd> child shapes of <dl>. Multiple <dd> children are
     permitted for one term (HTML5 pattern); a missing <dt> or <dd> is
     not enforced at parser time (always-renders posture).
-content_handler: default
 jats_counterpart:
   element: def-item
   notes: |

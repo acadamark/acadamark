@@ -18,7 +18,6 @@ content:
     The variable name as text — typically a single short identifier
     (x, n, foo, threshold). Inline elements within <var> are permitted
     but unusual.
-content_handler: default
 jats_counterpart:
   element: '(no direct JATS counterpart; HTML-native)'
   notes: |

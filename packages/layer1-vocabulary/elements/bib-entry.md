@@ -62,7 +62,6 @@ content:
       required: false
     - element: url
       required: false
-content_handler: default
 jats_counterpart:
   element: 'ref (containing element-citation or mixed-citation)'
   notes: |

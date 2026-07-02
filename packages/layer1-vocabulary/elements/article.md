@@ -33,7 +33,6 @@ content:
       required: false
     - element: article-back
       required: false
-content_handler: default
 title_extraction: true
 jats_counterpart:
   element: article

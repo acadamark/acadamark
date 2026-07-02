@@ -435,8 +435,8 @@ function liftDelete(node) {
 }
 
 function liftInlineCode(node) {
-  // inline-code is opaque (the code text is the verbatim content); the
-  // vocabulary entry says contentHandler 'code'.
+  // inline-code is opaque (the code text is the verbatim content); its
+  // contentHandler comes from getContentHandler (dsl-registry).
   return makeOpaqueTag('inline-code', node.value ?? '', {
     contentHandler: getContentHandler('inline-code'),
   });

@@ -17,7 +17,6 @@ content:
   notes: |
     The sample output as text — typically a literal value, message,
     or short fragment a program would produce.
-content_handler: default
 jats_counterpart:
   element: '(no direct JATS counterpart; HTML-native)'
   notes: |

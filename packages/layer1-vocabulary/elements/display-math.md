@@ -26,7 +26,6 @@ content:
     The pipe content is LaTeX math source. It is passed directly to KaTeX
     as a string; it is not parsed as prose. The author is responsible for
     valid LaTeX math syntax.
-content_handler: math-display
 shorthand_examples:
   - source: '<$$ \sum_{i=1}^{n} x_i = X $$>'
     layer1_html: '<display-math><span class="katex-display">…</span><span class="equation-number">(1)</span></display-math>'

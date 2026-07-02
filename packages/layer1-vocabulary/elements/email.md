@@ -17,7 +17,6 @@ content:
   notes: |
     The email address as text (e.g. "jane@example.org"). No special
     parsing — the value passes through verbatim.
-content_handler: default
 jats_counterpart:
   element: email
   notes: |

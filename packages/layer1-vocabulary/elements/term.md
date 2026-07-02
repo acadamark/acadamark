@@ -20,7 +20,6 @@ content:
   notes: |
     The term being introduced — typically a noun phrase, italicized or
     visually distinguished in the rendered output.
-content_handler: default
 jats_counterpart:
   element: named-content
   attributes:

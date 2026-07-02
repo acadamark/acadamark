@@ -46,7 +46,6 @@ content:
     - element: body
       required: false
       contains: [block, section]
-content_handler: default
 title_extraction: true
 jats_counterpart:
   element: sec

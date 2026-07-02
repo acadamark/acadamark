@@ -109,7 +109,6 @@ content:
     documents that include an abstract should author it as <abstract>
     outside <meta>; in <meta>, the key 'abstract' is NOT in the
     allowlist and would be dropped with a diagnostic.
-content_handler: default
 jats_counterpart:
   element: 'article-meta, book-meta, or book-part-meta'
   notes: |

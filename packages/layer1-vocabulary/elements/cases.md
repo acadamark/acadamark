@@ -20,7 +20,6 @@ content:
     terminated by `\\`, with `&` separating value from condition). The
     handler wraps in `\begin{cases}...\end{cases}` before passing to
     KaTeX.
-content_handler: cases
 jats_counterpart:
   element: disp-formula
   notes: |

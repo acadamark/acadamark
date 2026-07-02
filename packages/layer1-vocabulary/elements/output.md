@@ -17,7 +17,6 @@ content:
   notes: |
     The result of a calculation as text — typically a single value
     or short result fragment.
-content_handler: default
 jats_counterpart:
   element: '(no direct JATS counterpart; HTML-native)'
   notes: |

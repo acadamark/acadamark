@@ -61,7 +61,6 @@ content:
     sealed run, so the full enscribe vocabulary works in the body — including a
     nested <minipage>. External pulls (@src / <data>) are disallowed inside a
     minipage (a visible error, not a silent drop).
-content_handler: opaque
 jats_counterpart:
   element: boxed-text
   attributes: {}

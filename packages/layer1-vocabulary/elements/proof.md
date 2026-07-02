@@ -33,7 +33,6 @@ content:
     The proof body — paragraphs, math, lists, etc. The closing QED
     symbol is rendered by the Phase-2 handler at the end of the
     body, not authored explicitly.
-content_handler: default
 jats_counterpart:
   element: statement
   attributes:

@@ -27,7 +27,7 @@ element semantically supports. The general three-form grammar
 
 **Disclaimer:** the matrix below is inferred from each vocab entry's
 content model (`content.shape` / `content.becomes`), its
-content-handler dispatch (`content_handler`), and the typical
+content-handler dispatch (`getContentHandler` / `dsl-registry`), and the typical
 authoring patterns recorded in the vocab's `shorthand_examples`. The parser itself
 accepts all three forms for any named tag at the grammar level (per
 `DESIGN.md` §"Tag forms" and the "All tag forms work for every tag"

@@ -53,7 +53,6 @@ content:
     <svg> element. Treated as opaque (not re-parsed by the recursive
     content step) because SVG is its own XML language and the parser
     has no business interpreting it.
-content_handler: opaque
 jats_counterpart:
   element: graphic
   attributes: {}

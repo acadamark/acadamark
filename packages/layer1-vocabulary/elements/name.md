@@ -22,7 +22,6 @@ content:
     the target JATS schema; cultures with non-Western name ordering
     (surname-first, mononym) are preserved as-is at Layer 1 and
     treated specially at export.
-content_handler: default
 jats_counterpart:
   element: string-name
   notes: |
