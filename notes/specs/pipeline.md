@@ -808,34 +808,10 @@ in a host page, or used as a standalone body content block.
 
 ## 8. Plugin ordering and dependencies
 
-The table below summarizes which plugins produce what, and what each one needs
-to have run before it.
-
-| Plugin | Must run after | Produces |
-|--------|---------------|---------|
-| `resolveStrictMode` | `remarkEnscribe` (needs the source) | `file.data.enscribeStrictMode`; off the loosest rung, re-parses via the sigil / canonical processors (#36) |
-| `remarkRecursiveContent` | `remarkEnscribe` (string content set) | `node.content` as `Node[]` |
-| `enscribeNormalizeToCanonical` | `remarkRecursiveContent` (both outer and inner parses complete) | every authored form coerced to canonical Layer 1 nodes — delegated-parser nodes, sigils, shorthands (book-part + DSL), and kwarg lifts |
-| `enscribeConfigDiscovery` | `enscribeNormalizeToCanonical` | `file.data.enscribeConfig` |
-| `enscribeWebsiteStructuring` | `enscribeConfigDiscovery` | website nav model on `file.data` for `<meta type=website>` (#246); no `<article>`/`<book>` wrapper; byte-identical no-op otherwise; runs first of the three structurers |
-| `enscribeBookStructuring` | `enscribeConfigDiscovery` | book structure (`<book>` front/body/back) for `<meta type=book\|book-part>`; no-op otherwise; runs before article-structuring |
-| `enscribeArticleStructuring` | `remarkRecursiveContent` | article structure nodes; `<data>` at root |
-| `enscribeSectionNesting` | `enscribeArticleStructuring` | nested section tree |
-| `enscribeListStructuring` | `enscribeSectionNesting` | `<list>` / `<li>` markers lowered to `ul` / `ol` / `li` (#137) |
-| `enscribeMinipageGuard` | `enscribeNormalizeToCanonical` | forbidden `@src` / `<data>` external pulls inside a sealed minipage sub-run neutralized to a visible `__asset-error` (#115); no-op on every normal document; runs before the citation / asset index passes |
-| `buildCitationIndex` | `enscribeConfigDiscovery` | `file.data.enscribeCitations` |
-| `enscribeTableCellParse` | `buildCitationIndex` | DATA-format table cells parsed as inline markup when opted in (#21/#105); before notes/numbering/refs |
-| `enscribeHtmlTableCells` | `enscribeTableCellParse` | inline content re-resolved in raw-HTML (`_htmlTable`) cells from a JATS import (#108) |
-| `enscribeNotes` | `remarkRecursiveContent`, `enscribeSectionNesting` | `file.data.enscribeNotesPending`; registry note slots |
-| `enscribeNumbering` | `enscribeNotes` | `file.data.enscribeNumberingPending`; `node.registryType` |
-| `enscribeApplyNumbers` | `enscribeNotes`, `enscribeNumbering` | `node.computedNumber`; label index entries |
-| `enscribeRefResolution` | `enscribeApplyNumbers` | `__ref-marker`, `__ref-error` |
-| `enscribeCiteResolution` | `buildCitationIndex` | `__cite-marker`, `__cite-error`, `citations.order` |
-| `enscribeNotePlacement` | `enscribeCiteResolution`, `enscribeApplyNumbers` | `__note-marker`, `__note-list`, `__note-list-item` |
-| `enscribeBibliography` | `enscribeCiteResolution` | `__bibliography` |
-| compiler (toHast) | all mdast transforms | hast tree |
-| asset injection | compiler | CSS/JS nodes prepended to hast |
-| serialization | asset injection | HTML string |
+The full plugin roster — each plugin's dependency ("must run after") and what it
+produces — is the **plugin roster** in `notes/specs/pipeline-contract.md` (the
+single source, verified against `index.js`). The load-bearing ordering
+constraints are called out below.
 
 **Critical ordering constraints:**
 
@@ -1087,18 +1063,9 @@ Here is some text.<note | This is an endnote.> More text.
 
 ## 11. The `file.data` namespace
 
-The unified `VFile` is the shared data bus between plugins. `file.data` fields
-set during a pipeline run:
-
-| field | type | set by | read by |
-|-------|------|--------|----------|
-| `file.data.enscribeConfig` | `Map<string, string>` | `enscribeConfigDiscovery` | `buildCitationIndex`, `enscribeNumbering`, `enscribeRefResolution` |
-| `file.data.enscribeStrictMode` | `'off' \| 'sigil' \| 'canonical'` | `resolveStrictMode` (#36) | `remarkRecursiveContent`, the compiler (`index.js`) |
-| `file.data.enscribeRegistry` | registry object | first `ensureRegistry(file)` call | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution` |
-| `file.data.enscribeCitations` | `{ cite, order, style }` | `buildCitationIndex` | `enscribeCiteResolution`, `enscribeBibliography` |
-| `file.data.enscribeLoadedSources` | `Map<string, string>` | the caller (browser / CLI) via `processSync` data (#133) | `buildCitationIndex` |
-| `file.data.enscribeNotesPending` | array of `{ node, entry }` | `enscribeNotes` | `enscribeNotePlacement` |
-| `file.data.enscribeNumberingPending` | array of `{ node, entry }` | `enscribeNumbering` | `enscribeApplyNumbers` |
+The unified `VFile` is the shared data bus between plugins. The full `file.data`
+field table — type, set-by, read-by — is the **`file.data` namespace** in
+`notes/specs/pipeline-contract.md`.
 
 All three are initialized as needed:
 - `enscribeConfig` is set to a new `Map` even if the document has no `<config>`
@@ -1167,17 +1134,8 @@ Several internal node types (`__*` tagnames) are created by structural plugins
 and rendered by INTERNAL_REGISTRY handlers. They are not vocabulary elements
 and cannot be authored directly.
 
-| created by | tagname | rendered as |
-|-----------|---------|-------------|
-| `enscribeNotePlacement` | `__note-marker` | `<sup>` with link |
-| `enscribeNotePlacement` | `__note-list` | `<note-list><ol>` |
-| `enscribeNotePlacement` | `__note-list-item` | `<li>` |
-| `enscribeRefResolution` | `__ref-marker` | `<a class="ref">` |
-| `enscribeRefResolution` | `__ref-error` | `<a class="ref-error">` |
-| `enscribeCiteResolution` | `__cite-marker` | `<cite class="cite">` |
-| `enscribeCiteResolution` | `__cite-error` | `<cite class="cite-error">` |
-| `enscribeBibliography` | `__bibliography` | `<bibliography>` |
-| `buildCitationIndex` | `__library-error` | `<div class="enscribe-library-error" role="alert">` (#133 — a `<library src>` that could not load) |
+The full internal-node table — each `__*` type, its producing plugin, and rendered
+output — is the **internal node types** table in `notes/specs/pipeline-contract.md`.
 
 The `data` and `library` tagnames (author-written) render as `null` (suppressed):
 their content has been consumed by `buildCitationIndex`. As real vocabulary tags

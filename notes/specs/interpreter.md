@@ -75,45 +75,11 @@ render the bibliography.
 custom `enscribeTag` handler; inject CSS and JavaScript assets conditionally;
 format the hast tree for readable indentation; serialize to HTML.
 
-The plugin registration order in `enscribeInterpreter` is:
-
-```
-0a. remarkMath                  (parser extension on outer processor)
-0b. remarkGfm                   (parser extension on outer processor)
-0c. resolveStrictMode           (#36 — selects the strict-mode register and, off
-                                 the loosest rung, re-parses via the sigil /
-                                 canonical processors; see notes/specs/strict-mode.md)
-    inner processor: remarkParse + remarkEnscribe + remarkMath + remarkGfm
-1.   remarkRecursiveContent     (Phase 2 — content parsing; takes inner processor)
-1.4. enscribeDocTypeResolve     (Phase 0 — #200 — resolves the document class and
-                                 stamps <meta type> so the structural plugins branch on it)
-1.5. enscribeNormalizeToCanonical (Phase 0 — normalize delegated-parser nodes
-                                 to canonical enscribeTag nodes)
-2.  enscribeConfigDiscovery    (Phase 1 — discovery)
-2.5. enscribeBookStructuring    (Phase 2 — structural; runs before article-structuring
-                                 and wraps <meta type=book|book-part> documents; §3.3.5)
-3.  enscribeArticleStructuring (Phase 2 — structural)
-4.  enscribeSectionNesting     (Phase 2 — structural)
-4.5. enscribeListStructuring    (Phase 2 — structural; #137 — lowers <list>/<li> markers
-                                 to ul/ol/li; see notes/specs/lists.md)
-5.  buildCitationIndex          (Phase 3 — citation index-build; called via anonymous plugin)
-5.5. enscribeTableCellParse     (Phase 3 — #21/#105 — opt-in parse of DATA-format table
-                                 cells as inline markup; before notes/numbering/refs)
-5.6. enscribeHtmlTableCells     (Phase 3 — #108 — re-resolves inline content in raw-HTML
-                                 (_htmlTable) cells produced by a JATS import)
-5.7. buildAssetIndex            (Phase 3 — #190 — collects <data>-declared <fig #id …>
-                                 assets into a keyed store; via anonymous plugin)
-5.8. enscribeAssetResolution    (Phase 3 — #190 — rewrites a body <fig src="@id" /> to the
-                                 resolved data: URI / external path; before notes/numbering)
-6.  enscribeNotes              (Phase 3 — notes; register-only)
-7.  enscribeNumbering          (Phase 3 — numbering; register-only)
-8.  enscribeApplyNumbers       (Phase 3 — apply display numbers; anonymous plugin)
-9.  enscribeRefResolution      (Phase 3 — cross-refs)
-10. enscribeCiteResolution     (Phase 3 — citations)
-11. enscribeNotePlacement      (Phase 3 — note placement; runs after cite-resolution)
-12. enscribeBibliography       (Phase 3 — citations)
-    compiler: toHast → rehypeFormat → toHtml
-```
+The plugin registration order in `enscribeInterpreter` — the full ordered
+**plugin roster** (one row per wired plugin with its phase, source, purpose, and
+`file.data` output) — is the single source in `notes/specs/pipeline-contract.md`,
+verified against `index.js`. This section does not restate it; the ordering
+rationale and the centralized-walker design property below are what it keeps.
 
 Note that `remarkRecursiveContent` (step 1) runs before
 `enscribeNormalizeToCanonical` (step 1.5). This is correct: normalization
@@ -1178,17 +1144,9 @@ The `INTERNAL_REGISTRY` is a `Map<string, fn>` of nodes created by structural
 plugins. These nodes do not have vocabulary entries and must be dispatched
 before the vocabulary lookup.
 
-| tagname | handler | rendered output |
-|---------|---------|----------------|
-| `__note-marker` | `noteMarkerHandler` | `<sup id="noteref-N" data-note-id="ID"><a href="#ID">N</a></sup>` |
-| `__note-list` | `noteListHandler` | `<note-list class="..."><ol>...</ol></note-list>` |
-| `__note-list-item` | `noteListItemHandler` | `<li id="ID">...</li>` |
-| `__ref-marker` | `refMarkerHandler` | `<a href="#ID" class="ref">TEXT</a>` |
-| `__ref-error` | `refErrorHandler` | `<a href="#ID" class="ref-error">??ref: ID??</a>` |
-| `__cite-marker` | `citeMarkerHandler` | `<cite class="cite" data-keys="...">FORMATTED HTML</cite>` |
-| `__cite-error` | `citeErrorHandler` | `<cite class="cite-error" data-keys="...">??cite: KEY??</cite>` |
-| `__bibliography` | `bibliographyHandler` | `<bibliography>HEADING + BIB HTML</bibliography>` |
-| `__library-error` | `libraryErrorHandler` | `<div class="enscribe-library-error" role="alert">...</div>` (#133 — a `<library src>` that could not load; created by `library-load.js`) |
+The full internal-node registry — each `__*` type, its producing plugin, handler,
+and rendered output — is the **internal node types** table in
+`notes/specs/pipeline-contract.md`.
 
 **SUPPRESSED_APPARATUS.** Separately, `<data>` and `<library>` are **real
 vocabulary tags** (they have `data.md` / `library.md` entries) whose rendered body
@@ -1592,15 +1550,8 @@ type-agnostic.
 
 Plugins communicate via `file.data`. Fields set during a pipeline run:
 
-| field | set by | read by |
-|-------|--------|---------|
-| `file.data.enscribeConfig` | `enscribeConfigDiscovery` | `buildCitationIndex`, `enscribeNumbering`, `enscribeRefResolution` |
-| `file.data.enscribeStrictMode` | `resolveStrictMode` (#36) | `remarkRecursiveContent`, the compiler (`index.js`) |
-| `file.data.enscribeRegistry` | first `ensureRegistry(file)` call | `enscribeNotes`, `enscribeNumbering`, `enscribeApplyNumbers`, `enscribeRefResolution` |
-| `file.data.enscribeCitations` | `buildCitationIndex` | `enscribeCiteResolution`, `enscribeBibliography` |
-| `file.data.enscribeLoadedSources` | the caller (browser / CLI) via `processSync` data (#133 — pre-loaded `<library src>` content) | `buildCitationIndex` |
-| `file.data.enscribeNotesPending` | `enscribeNotes` | `enscribeNotePlacement` |
-| `file.data.enscribeNumberingPending` | `enscribeNumbering` | `enscribeApplyNumbers` |
+The full `file.data` field table — type, set-by, read-by — is the
+**`file.data` namespace** in `notes/specs/pipeline-contract.md`.
 
 ---
 
