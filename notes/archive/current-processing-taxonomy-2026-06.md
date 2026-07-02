@@ -1,3 +1,5 @@
+> **Archived June-2026 snapshot** — a pre-A3 measurement of the code as it then stood; superseded by [`proposed-processing-taxonomy.md`](../taxonomies/proposed-processing-taxonomy.md). Its forward-looking `content.type` conclusion was empirically overturned by A3 (the field was dead). Kept for provenance only; do not reason from it.
+
 # Processing taxonomy — Part I: the measured "is" (from code, no overlay)
 
 This is the pure measurement of **how elements are ACTUALLY processed today**, extracted from the element

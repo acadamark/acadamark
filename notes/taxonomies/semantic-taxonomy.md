@@ -158,8 +158,11 @@ set-addressed, not part of the definition).
   the **table addressing primitive in its degenerate one-column form** (document taxonomy); that
   structural fact lives there, and the *act* (exhibiting a set of mappings) lives here — a clean bridge,
   not a contradiction.
-- `minipage` — an exhibit by use ("an elaborate aside") but **default-processed** (not DSL-owned) — a
-  **bridge point** to examine in the processing pass.
+- `minipage` — an exhibit by use ("an elaborate aside"), processed as a **sealed sub-document**: held
+  opaque at parse, then re-run through the default/Enscribe pipeline in a deferred phase — **neither
+  plain-default nor DSL-owned** (the processing taxonomy's "the processor the lookup returns is Enscribe;
+  the sealing is the consequence"). A **named bridge** (exhibit semantics, Enscribe-as-sealed-processor),
+  not an open question.
 
 The **theorem family has left this family** (→ family 6). `glossary` / `glossary-entry` also leave: a
 glossary is *definitions collected for lookup* — set-addressed apparatus you navigate into, closer to a
@@ -244,8 +247,10 @@ Containers and regions that organize the work but carry no discourse of their ow
   (document taxonomy), but "enumeration" is not an authorial act.
 
 ## Bridge points for the processing pass (examine first)
-- **`minipage`** — exhibit by use, **default-processed** (not DSL) — a real divergence within the exhibit
-  family. Named bridge or drift? Resolve in the processing pass.
+- **`minipage`** — exhibit by use; processed as a **sealed sub-document** (opaque at parse → deferred
+  default/Enscribe sub-run), neither plain-default nor DSL-owned. A **resolved named bridge** (exhibit
+  semantics + Enscribe-as-sealed-processor), consistent with the processing taxonomy — not an open "drift?"
+  question. (The earlier "default-processed" wording was factually wrong at parse time; corrected here.)
 - **example / remark** — **aside** by act (family 3), served by the **formal-statement processing
   handler**. A confirmed named bridge (one processing class, two semantic families).
 - **technical-register marks (`kbd`/`samp`/`var`/`output`)** — emphasis-and-marking by act, but
