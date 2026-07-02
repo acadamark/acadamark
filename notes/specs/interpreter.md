@@ -233,17 +233,14 @@ So `<em | emphasized>` (phrasing) produces an inline children array containing
 just the text node `"emphasized"` — not a paragraph wrapper — while
 `<abstract | one sentence>` (flow) keeps `<p>one sentence</p>`.
 
-> **Implementation status (#326).** The current code does *not* yet read the
-> content model: `extractFromRoot` / `convertContent` (§6.2) unwrap by paragraph
-> **count** — a single-paragraph body is unwrapped for *every* prose element.
-> That is correct for phrasing but wrong for flow: a single-paragraph
-> `<abstract>` currently renders bare (`<abstract>text</abstract>`) instead of
-> wrapped. Encoding the content model on the prose elements (the `contains`
-> token) and gating the unwrap on it — then re-baselining the goldens — is the
-> `#326` **follow-up implementation slice**. Until it lands, the `#304`
-> example-render check keeps the affected single-paragraph `<abstract>` examples
-> FLAGGED. This section states the target rule; the behavior is unchanged by the
-> spec slice that wrote it.
+> **Implementation status (#326) — landed.** The content model *is* read, at
+> parse time: `extractFromRoot` / `applyContentModel` (in
+> `parser/recursive-content.js`) gate the unwrap on the element's `contains`
+> token via `FLOW_TAGNAMES`. A single-paragraph body is unwrapped only for
+> **phrasing** elements; **flow** elements keep the `<p>`, so a single-paragraph
+> `<abstract>` renders wrapped (`<abstract><p>text</p></abstract>`), matching the
+> multi-paragraph case. The flow goldens were re-baselined to the wrapped render
+> when the gate landed.
 
 **Mixed content:** When the parser's escape processing has produced a
 `(string | enscribeParseError)[]` array for `node.content`, each string
@@ -1326,37 +1323,35 @@ target it maps:
 1. If `node.isOpaqueContent` → return `[]` (content is raw data; not mdast).
 2. If `node.content` is not an array → return `[]` (unparsed content; not
    expected after `remarkRecursiveContent` but guarded defensively).
-3. If `vocab.content.type === 'prose'` and `content.length === 1` and
-   `content[0].type === 'paragraph'` → use `content[0].children` directly
-   (paragraph unwrap).
-4. Otherwise → use `content` directly.
-5. In all cases: `nodes.flatMap(child => state.one(child, node))`.
+3. Otherwise → convert `node.content` as-is via `convertChildren`
+   (`content.flatMap(child => state.one(child, node))`, dropping any child that
+   lowers to nothing).
 
-The paragraph unwrap handles the case where pipe text was re-parsed into a
-single-paragraph wrapper. For **phrasing** elements like `<em>`, `<strong>`,
-and `<section-title>`, the content is inline-only and the paragraph wrapper
-would produce invalid output (`<em><p>text</p></em>` instead of
-`<em>text</em>`); unwrapping is required for correctness.
+`convertContent` does **not** decide single-paragraph unwrapping. That decision
+was already made upstream, at parse time, by the content-model gate in
+`parser/recursive-content.js` (`processNodes` computes
+`keepParagraph = FLOW_TAGNAMES.has(tagname)`; `extractFromRoot` /
+`applyContentModel` apply it). So by the time `convertContent` runs, **phrasing**
+elements like `<em>`, `<strong>`, and `<section-title>` have already had their
+single-paragraph wrapper removed — the content is inline-only, and the wrapper
+would otherwise have produced invalid output (`<em><p>text</p></em>` instead of
+`<em>text</em>`) — while **flow** elements already carry their `<p>`. Re-deciding
+here would undo the flow wrap.
 
-> **Content-model gate (#326) — target vs. current.** Step 3 above is the
-> **current** rule: it keys on the paragraph *count* (`content.length === 1`)
-> for *every* `content.type: 'prose'` element. The **correct** rule keys on the
-> element's content model (`notes/specs/shape-tokens.md`): unwrap only for
-> **phrasing** elements; **flow** elements (e.g. `<abstract>`, `<aside>`,
-> `<blockquote>`) keep the `<p>` wrapper even for a single paragraph; **tight/
-> loose** elements (`<item>`) unwrap a single paragraph (tight) but wrap
-> multiple (loose). Today, because step 3 is count-based, a single-paragraph
-> *flow* element such as `<abstract>` is wrongly unwrapped to bare text — the
-> `#326` defect. Encoding the content model and replacing step 3's
-> `content.type === 'prose'` test with a "is this element phrasing (or
-> tight, single-paragraph)?" test is the `#326` follow-up implementation slice;
-> the seam is the parse-time central unwrap (`recursive-content.js`'s
-> `extractFromRoot`). `<aside>` is flow and therefore moves from the unwrap set
-> to the wrap set when the gate lands.
+> **Content-model gate (#326) — landed.** The single-paragraph wrapping
+> decision keys on the element's **content model**, not the paragraph count. It
+> is made at parse time in `parser/recursive-content.js`: **phrasing** elements
+> unwrap a single paragraph to inline children; **flow** elements (e.g.
+> `<abstract>`, `<aside>`, `<blockquote>`) keep the `<p>` even for a single
+> paragraph; **tight/loose** elements (`<item>`) unwrap a single paragraph
+> (tight) but wrap multiple (loose). `FLOW_TAGNAMES` is derived from
+> `content.shape.contains` (`src/interpreter/lib/content-model.js`); the former
+> `content.type` field was dissolved. The rule and its rationale live in
+> `notes/specs/shape-tokens.md` §"Content model and single-paragraph wrapping".
 
-Multi-paragraph content (e.g., a `<blockquote>` with two paragraphs in its
-pipe content) is not unwrapped on either rule. The paragraphs appear as block
-children of the blockquote element.
+Multi-paragraph content (e.g., a `<blockquote>` with two paragraphs in its pipe
+content) is never unwrapped: the paragraphs appear as block children of the
+blockquote element.
 
 ---
 

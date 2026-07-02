@@ -26,9 +26,9 @@ element semantically supports. The general three-form grammar
 | — | Unsupported (semantically meaningless for the element, or rejected by the parser/handler). |
 
 **Disclaimer:** the matrix below is inferred from each vocab entry's
-`content.type` (`prose` / `opaque` / `structured` / `none`), its
-content-handler dispatch, and the typical authoring patterns
-recorded in the vocab's `shorthand_examples`. The parser itself
+content model (`content.shape` / `content.becomes`), its
+content-handler dispatch (`content_handler`), and the typical
+authoring patterns recorded in the vocab's `shorthand_examples`. The parser itself
 accepts all three forms for any named tag at the grammar level (per
 `DESIGN.md` §"Tag forms" and the "All tag forms work for every tag"
 direction); this reference documents the *semantic* fit per element.

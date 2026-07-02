@@ -219,11 +219,11 @@ multiple. The content-model property and the wrapping rule are defined in
 `notes/specs/shape-tokens.md` §"Content model and single-paragraph wrapping";
 the interpreter consumer is `notes/specs/interpreter.md` §6.2.
 
-> **Status (#326).** The current implementation unwraps by paragraph *count* for
-> all prose content (correct for phrasing, wrong for flow — a single-paragraph
-> `<abstract>` renders bare); gating the unwrap on the content model is the
-> `#326` follow-up. This describes the target rule; the behavior is unchanged by
-> the spec slice.
+> **Status (#326) — landed.** The unwrap is gated on the element's content model
+> (via `FLOW_TAGNAMES`, derived from `content.shape.contains`), not the paragraph
+> count: phrasing unwraps a single paragraph, flow keeps the `<p>` (so a
+> single-paragraph `<abstract>` renders wrapped). The flow goldens were
+> re-baselined to the wrapped render when the gate landed.
 
 **Depth limit:** Maximum recursion depth is 10. Nodes that would exceed this
 are converted to `enscribeParseError` nodes with `subtype: 'max-recursion-depth'`.
@@ -953,7 +953,6 @@ inner parse "emphasized" → paragraph([text("emphasized")])
 **Stage 4 (toHast, schema dispatch for `em`):**
 ```
 vocab.html_output.element = 'em'
-vocab.content.type = 'prose'
 convertContent: content is [text("emphasized")] (already inline, no para unwrap needed)
 → { type: 'element', tagName: 'em', properties: {}, children: [text("emphasized")] }
 ```
