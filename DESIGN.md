@@ -101,7 +101,7 @@ Two principles govern enscribe's relationship to JATS:
 
 **JATS as reference vocabulary.** When Layer 1 needs to define a new element, the JATS tag library is the first reference. Enscribe adopts JATS naming and conventions where they're sensible, recognizing that JATS is XML and enscribe is HTML — so exact transcription isn't always right, but the design decisions usually transfer. The goal is to avoid inventing worse versions of decisions JATS already got right. (See `notes/specs/layer1-naming.md` for the binding rule.)
 
-**JATS as first-class export target.** Enscribe Layer 1 HTML compiles to JATS XML via the `rehype-enscribe-to-jats` plugin. This makes enscribe documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
+**JATS as first-class export target.** Enscribe Layer 1 HTML compiles to JATS XML via the CLI's `enscribeToJats` exporter. This makes enscribe documents submittable to journals and ingestable by the scholarly publishing ecosystem (PubMed, CrossRef, archival systems) without requiring Pandoc as a runtime dependency or hand-conversion. The pitch is not "academic markdown for the web" but "academic markdown for the web that can submit to journals."
 
 JATS import is the weaker, deliberately lossy direction. A JATS document can be converted *into* Layer 1, but the conversion applies necessary simplifications — JATS's vocabulary is far larger than Layer 1's, and constructs with no Layer 1 equivalent are reduced rather than faithfully preserved. Import is a useful on-ramp from the existing scholarly corpus; it is not a round-trip guarantee. The only lossless round-trip in the system is between Layer 2 shorthand and Layer 1, because those two are the same document in two notations.
 
@@ -548,9 +548,9 @@ The parser-substrate decision had three candidates: continue the original regex 
 
 The unified ecosystem is what enscribe uses. The project's surface area shrinks dramatically because most of what enscribe needs already exists as plugins. The "rediscovering the wheel" motto applies directly: unified is the wheel.
 
-### The JATS export plugin
+### The JATS exporter
 
-`rehype-enscribe-to-jats` takes a Layer 1 hast tree and produces JATS XML. Most mappings are 1:1 element renames; a minority require restructuring. For example, enscribe's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but enscribe's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The enscribe-to-JATS mapping table is the heart of the plugin, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes enscribe a credible scholarly-publishing target rather than just "another web markdown."
+The `enscribeToJats` exporter takes the structured Layer 1 mdast tree (before the hast compile) and produces JATS XML by direct string assembly. Most mappings are 1:1 element renames; a minority require restructuring. For example, enscribe's flat-then-nested section model maps cleanly onto JATS's recursive `<sec>` model, but enscribe's `<article-title>` plus `<article-subtitle>` becomes JATS's `<title-group>` containing `<article-title>` and `<subtitle>`. Required JATS metadata is padded with sensible defaults or explicit author-provided values from a `<meta>` block. The enscribe-to-JATS mapping table is the heart of the exporter, and it is small — a few dozen entries — because the Layer 1 vocabulary is itself small. This is what makes enscribe a credible scholarly-publishing target rather than just "another web markdown."
 
 ### Package structure
 
