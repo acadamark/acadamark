@@ -158,7 +158,7 @@ accounted for as one of three dispositions.
 | Specified — author & meta | `author`, `name` | §4 |
 | Specified — block prose | `blockquote`, `hr`, `list` | §6 |
 | Specified — inline prose | `em`, `strong` | §7 |
-| Specified — frameables | `fig`(`figure`), `img`, `table`, `csv`, `tsv`, `svg`, `frame`, `aside` (boxed prose) | §8 |
+| Specified — frameables | `fig`(`figure`), `img`, `table`, `csv`, `tsv`, `svg`, `frame`, `aside` (boxed prose), `caption` (frameable caption surface), `minipage` (sealed boxed frameable) | §8 |
 | Specified — external DSLs | `mermaid`, `abc` | §9 |
 | Specified — math | `inline-math`, `display-math`, `math`, `align`, `cases`, `matrix`, `eqnarray` | §10 |
 | Specified — theorem family | `theorem`, `lemma`, `corollary`, `proposition`, `definition`, `example`, `remark`, `proof` | §11 |
@@ -169,6 +169,8 @@ accounted for as one of three dispositions.
 | Generic-implicit (block) | `p`, `details`, `summary`, `dl`, `dt`, `dd` | §6.2 |
 | Generic-implicit (inline) | `b`, `i`, `u`, `s`, `sub`, `sup`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, `code` | §7.2 |
 | No-output | `meta`, `config`, `data`, `library`, `bib-entry` | §4.3, §14 |
+| No-output — footnote placement | `endnotes` | §13 |
+| No-output — website navigation | `nav`, `nav-group`, `item` | §15.5 |
 | Specified with deferred presentation | `affiliation`, `orcid`, `email`, `date`, `publication-date`, `doi`, `license`, `lang`, `keywords`, `subject`, `version`, `editor`, `abstract`, `term`, `glossary`, `glossary-entry`, `code-block`, `inline-code` | §4.4, §6.3, §7.3 |
 
 The "deferred presentation" row names elements the pipeline emits correctly (or

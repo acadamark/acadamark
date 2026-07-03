@@ -693,6 +693,10 @@
       "area": "RQ-TOC",
       "disposition": "specified"
     },
+    "caption": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
     "cases": {
       "area": "RQ-MATH",
       "disposition": "specified"
@@ -769,6 +773,10 @@
       "area": "RQ-META",
       "disposition": "deferred-presentation"
     },
+    "endnotes": {
+      "area": "RQ-NOTE",
+      "disposition": "no-output"
+    },
     "eqnarray": {
       "area": "RQ-MATH",
       "disposition": "specified"
@@ -817,6 +825,10 @@
       "area": "RQ-MATH",
       "disposition": "specified"
     },
+    "item": {
+      "area": "RQ-TOC",
+      "disposition": "no-output"
+    },
     "kbd": {
       "area": "RQ-INL",
       "disposition": "generic-implicit"
@@ -861,9 +873,21 @@
       "area": "RQ-META",
       "disposition": "no-output"
     },
+    "minipage": {
+      "area": "RQ-FRM",
+      "disposition": "specified"
+    },
     "name": {
       "area": "RQ-META",
       "disposition": "specified"
+    },
+    "nav": {
+      "area": "RQ-TOC",
+      "disposition": "no-output"
+    },
+    "nav-group": {
+      "area": "RQ-TOC",
+      "disposition": "no-output"
     },
     "note": {
       "area": "RQ-NOTE",
