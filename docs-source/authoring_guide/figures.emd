@@ -25,6 +25,8 @@ Class, .wide
 <sub-section | Notes>
 
 Figures are numbered "Figure N." by default and can be cross-referenced by id. A stored asset is declared once — `<fig #fig:logo png>…base64…</fig>` — and placed anywhere with `<fig src="@fig:logo" />`.
+
+In the live single-page site, all pages draw figure assets from one shared set of filenames. Give **distinct images distinct filenames** — two different images that share a filename will collide, and one will stand in for both. Reusing the *same* image under one filename across pages is fine and intended: the pages simply share the single file.
 </section>
 
 <section #sec:diagrams | Diagrams>
