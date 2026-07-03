@@ -28,25 +28,10 @@ import { htmlEmit, aggregateHtmlProps } from './lib/html-emit.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 // Suppressed apparatus — derived from the apparatus set (the single source — F13).
 import { SUPPRESSED_APPARATUS } from './lib/apparatus-allowlists.js';
-import { figureHandler } from './handlers/figure.js';
-import { mathHandler } from './handlers/math.js';
-import { codeHandler } from './handlers/code.js';
-import { codeBlockHandler } from './handlers/code-block.js';
-import { inlineCodeHandler } from './handlers/inline-code.js';
-import { tableHandler } from './handlers/table.js';
-// `<csv>` / `<tsv>` retired to gate shorthands → `<table csv>` / `<table tsv>`
-// (#22 slice 3); the table handler parses both via its format positional, so no
-// standalone csv/tsv handler is dispatched.
-// `<diagram>` host (#22 slice 3): the diagram handler delegates to the
-// per-engine mermaid/abc render handlers by the format-word positional. The
-// legacy <mermaid>/<abc> tags are now gate shorthands → <diagram mermaid|abc>,
-// so no mermaid/abc tagname reaches this dispatcher — only `diagram`.
-import { diagramHandler } from './handlers/diagram.js';
-import { svgHandler } from './handlers/svg.js';
-import { frameHandler } from './handlers/frame.js';
-import { asideHandler } from './handlers/aside.js';
-import { minipageHandler } from './handlers/minipage.js';
-import { theoremFamilyHandler } from './handlers/theorem.js';
+// HANDLER_REGISTRY (the host/role dispatch table) is derived from its registration
+// records in ./handler-registrations.js (#341) — a SEPARATE table from the DSL
+// registry. The 13 handler imports it wires live there now, not here.
+import { HANDLER_REGISTRY } from './handler-registrations.js';
 import {
   noteMarkerHandler,
   noteListHandler,
@@ -55,7 +40,6 @@ import {
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler } from './handlers/cite.js';
 import { assetErrorHandler } from './handlers/asset.js';
-import { aHandler } from './handlers/a.js';
 import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
 // gate (interpreter/plugins/normalize-to-canonical.js) rewrites
@@ -94,25 +78,6 @@ const INTERNAL_REGISTRY = new Map([
 // dispatch sites use. The Map is shared across all pipeline invocations
 // in the same process; safe because VOCABULARY is frozen and read-only.
 const vocabulary = new Map(Object.entries(VOCABULARY));
-
-// Maps handler_module values (as declared in vocabulary entries) to the
-// actual handler functions. Each entry has a matching `handler_module`
-// declaration in `layer1-vocabulary/elements/<tag>.md`.
-const HANDLER_REGISTRY = new Map([
-  ['./handlers/a.js', aHandler],
-  ['./handlers/figure.js', figureHandler],
-  ['./handlers/math.js', mathHandler],
-  ['./handlers/code.js', codeHandler],
-  ['./handlers/code-block.js', codeBlockHandler],
-  ['./handlers/inline-code.js', inlineCodeHandler],
-  ['./handlers/table.js', tableHandler],
-  ['./handlers/diagram.js', diagramHandler],
-  ['./handlers/svg.js', svgHandler],
-  ['./handlers/frame.js', frameHandler],
-  ['./handlers/aside.js', asideHandler],
-  ['./handlers/minipage.js', minipageHandler],
-  ['./handlers/theorem.js', theoremFamilyHandler],
-]);
 
 /**
  * Factory that produces a custom handler for the 'enscribeTag' node type.
