@@ -52,3 +52,44 @@ committed**), the slice is not done until that report exists, and **the session 
 worktree or deletes a branch** — that is Ariel's step, taken after the work is verified. Do not
 restate or fork those rules here; if they seem to conflict with anything, follow `session-start.md`
 and flag the conflict.
+
+## 7 · Root-cause over compensation
+
+Prefer fixing a problem where it originates over adding downstream code whose **only justification** is to
+correct an earlier stage's mistake. When stage A produces the *wrong* thing and stage B exists to undo or redo
+that mistake, that pair is a **design smell** — the two layers can drift out of sync, a new case can slip past
+B, and reasoning requires holding both the mistake and its correction in mind at once. Fix A; delete B.
+
+**The discriminator is WHY, not SHAPE.** "Code that reverses an earlier step" is a shape, and not every
+reversal is a smell — banning the shape would break legitimate pipelines and create a different drift. The
+actual test is a single question:
+
+> **Can you justify the earlier stage's output on its own terms, without reference to the later one?**
+> - **No** — the earlier output is only explicable as "wrong, but a later stage fixes it" → **compensation
+>   smell.** Fix it at the source.
+> - **Yes** — both stages have an independent reason to exist → **not compensation.** Leave it. It's a
+>   pipeline, not a mistake-and-patch.
+
+**Legitimately NOT this smell (do not "fix" these):**
+- **Reversible-by-design round-trips** — escape→transport→unescape, normalize→store→denormalize-for-target,
+  serialize→deserialize. Neither end is a mistake; the round-trip *is* the design.
+- **Distinct jobs that merely resemble undo** — if A's output is correct for A's purpose and B transforms it
+  further for B's own purpose, that's two correct jobs. (Test: state A's job without mentioning B. If you can,
+  it's fine.)
+- **Root fix genuinely out of reach** — e.g. a third-party parser's fixed behavior. The compensation is then
+  the correct response; it's a *tolerated stopgap*, not a defect — but **label it** (a comment naming what it
+  compensates for and why the root fix was deferred) and flag it for the compensating-layer audit
+  (`notes/audits/`) so it's tracked as debt.
+
+**The tell (a lead, not a verdict):** code that *restores / re-adds / re-inserts / puts back / undoes* what a
+prior stage removed (or strips what a prior stage wrongly added). The seam-whitespace restore in
+`recursive-content.js` (#330) is the canonical smell — the fragment re-parse trims a *meaningful* space (wrong
+on its own terms) and a later block re-inserts it. Whitespace is the most common instance; the pattern is
+general. But apply the WHY test before treating any tell as a defect.
+
+**Self-limiting clause:** the goal is not to eliminate all reversal. Over-aggressively removing legitimate
+two-pass processing is itself a drift this rule does not want. When the earlier stage's output is independently
+correct, the "reversal" is a pipeline stage — leave it. This rule targets *mistake-and-patch*, nothing wider.
+
+This is the same instinct as §"single-source homes" and §"guard new single-sources": push the codebase to do
+the right thing *by construction* — but only where the earlier stage is genuinely doing the wrong thing.
