@@ -9,7 +9,7 @@
 <preface | About this Handbook>
 This preface sits in the book's front matter and introduces the handbook.
 
-<!-- cell: book-part/kwarg:book-part-type -->
+<!-- cell: book-part/kwarg:type -->
 <chapter | Counting Elephants>
 Aerial transects remain the standard method. See <ref @fig:transect> for the
 grid layout; in a book it resolves to a chapter-scoped number.
