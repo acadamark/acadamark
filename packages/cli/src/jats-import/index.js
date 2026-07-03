@@ -1177,6 +1177,13 @@ function convertBlock(node, depth) {
     // — frameable.md scopes the import to content-type ↔ type.)
     case 'boxed-text': {
       const contentType = node.attributes['content-type'];
+      // #333: a margin note round-trips to <note position=margin>. Element → position;
+      // numbering is independent, so the <label> is dropped (enscribe recomputes the
+      // number), NOT read as "unnumbered".
+      if (contentType === 'marginnote') {
+        const body = convertBlocks(node.children.filter((c) => c.name !== 'label' && c.name !== 'caption'), depth);
+        return makeTag('note', body, { id: node.attributes.id || null, kwargs: { position: 'margin' } });
+      }
       const kwargs = (contentType && contentType !== 'aside') ? { type: contentType } : {};
       return makeTag('aside', convertBlocks(node.children.filter((c) => c.name !== 'label' && c.name !== 'caption'), depth), { kwargs });
     }
@@ -1286,6 +1293,15 @@ function convertInline(children) {
     if (c.name === 'inline-formula') { out.push(convertFormula(c, /* display */ false)); continue; }
     // A <disp-formula> nested in inline content (uncommon) still becomes display-math.
     if (c.name === 'disp-formula') { out.push(convertFormula(c, /* display */ true)); continue; }
+    // #333: an inline JATS margin note (<boxed-text content-type="marginnote"> at the
+    // authored position, the shape enscribeToJats emits) → <note position=margin>.
+    // Element → position; the <label> is dropped (numbering is independent — enscribe
+    // recomputes it — so it is not read back as "unnumbered").
+    if (c.name === 'boxed-text' && c.attributes['content-type'] === 'marginnote') {
+      const body = convertBlocks(c.children.filter((ch) => ch.name !== 'label' && ch.name !== 'caption'), 99);
+      out.push(makeTag('note', body, { id: c.attributes.id || null, kwargs: { position: 'margin' } }));
+      continue;
+    }
     // Unknown inline wrapper: keep its text content, drop the wrapper.
     noteDropped(c.name);
     out.push(...convertInline(c.children));

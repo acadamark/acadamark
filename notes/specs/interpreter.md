@@ -1567,9 +1567,9 @@ does not use its feature, so a default document stays byte-identical.
    legacy build-passed `toc`), plus the contents-listing CSS only when a config
    listing was rendered. Returns the `tocType` / `configTocShape` the book
    scripts gate on.
-2. **`injectMarginLayout`** — the #33 margin column: `MARGIN_CSS` + margin layout
-   when `note-position=margin` relocates numbered notes, or ≥1 `<marginnote>` is
-   present.
+2. **`injectMarginLayout`** — the #33 / #333 margin column: `MARGIN_CSS` + margin
+   layout when a note is relocated into the margin — the document `note-position=margin`
+   relocating every numbered note, or a per-note `<note position=margin>`.
 3. **`injectStrictFlag`** — the #36 strict-mode flag CSS, only on a non-`off` rung
    (`sigil`/`canonical`).
 4. **`injectBookScripts`** — the book reading-interface scripts in their

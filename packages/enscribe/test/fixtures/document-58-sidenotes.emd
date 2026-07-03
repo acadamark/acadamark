@@ -11,6 +11,6 @@ With `note-position=margin`, a numbered note renders as a *side note*: its body 
 
 A second numbered note shows side notes stacking down the margin column.<note | A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.> Each keeps its number.
 
-<section | Side notes and margin notes share the margin>
+<section | One note type, positioned in the margin>
 
-Side notes and margin notes occupy the same margin column.<marginnote | This is an unnumbered margin note. It shares the margin with the numbered side notes above — the column is established whenever either is present.> An unnumbered `<marginnote>` sits in the same margin as the numbered side notes.
+Every note here is a margin note because the document sets `note-position=margin`. A single note can also opt in on its own with `position=margin`, independent of the document default.<note position=margin | Whether the whole document sets note-position=margin or a single note sets position=margin, a margin note is the same numbered note, projected into the one margin column.> There is one note type with three positions: foot, end, margin.

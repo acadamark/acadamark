@@ -237,38 +237,6 @@ Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 
 </section>
 
-<section #l1-marginnote | `<marginnote>`>
-
-<sub-section | Specification>
-
-`category` `inline-formatting` · Layer 1 `<aside>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
-
-*No kwargs or boolean flags.*
-
-Produced by: canonical `<marginnote>`.
-
-<sub-section | Examples>
-
-<code #code:l1-marginnote-1>
-The result holds.<marginnote | A caveat, set in the margin.>
-</code>
-
-<minipage #mp:l1-marginnote-1>
-The result holds.<marginnote | A caveat, set in the margin.>
-</minipage>
-
-*An unnumbered margin aside, authored in place. Unlike a numbered &lt;note&gt;, it is not collected, numbered, or relocated — it renders where written and floats into the margin column (note-position is irrelevant to it).*
-
-<code #code:l1-marginnote-2>
-<marginnote #m1 | A margin note with an id.>
-</code>
-
-<minipage #mp:l1-marginnote-2>
-<marginnote #m1 | A margin note with an id.>
-</minipage>
-
-</section>
-
 <section #l1-output | `<output>`>
 
 <sub-section | Specification>

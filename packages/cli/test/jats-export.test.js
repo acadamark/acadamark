@@ -1019,22 +1019,36 @@ ${dateXml}
   validateWithXmllint('doc100-appendices', jats);
 }
 
-// ─── #33 part 2: <marginnote> → <boxed-text content-type="marginnote"> ──────
+// ─── #333: position drives the JATS element — a footnote → <fn>, a margin note ─
+//          → <boxed-text content-type="marginnote">; both round-trip (element →
+//          position, NOT numbering — numbering is independent).
 {
   const src = [
-    '<meta type=article>', '<title | Marginnote Test>', '</meta>', '',
+    '<meta type=article>', '<title | Margin note Test>', '</meta>', '',
     '# Intro', '',
-    'A claim that needs a remark.<marginnote #m1 | An aside set in the margin.> It holds.',
+    'A claim<note | A footnote body.>. A remark.<note #m1 position=margin | An aside set in the margin.> It holds.',
   ].join('\n');
   const proc = buildEnscribePipeline();
-  const tree = proc.runSync(proc.parse(src));
-  const jats = enscribeToJats(tree);
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
 
-  check('doc-marginnote: <boxed-text content-type="marginnote"> emitted',
-    /<boxed-text id="m1" content-type="marginnote"><p>An aside set in the margin\.<\/p><\/boxed-text>/.test(jats));
-  check('doc-marginnote: emitted at the authored position (inside the paragraph)',
-    /A claim that needs a remark\.<boxed-text/.test(jats));
-  validateWithXmllint('doc-marginnote', jats);
+  check('doc-margin-note: position=margin → <boxed-text content-type="marginnote"> (number rides as a label)',
+    /<boxed-text id="m1" content-type="marginnote"><label>2<\/label><p>An aside set in the margin\.<\/p><\/boxed-text>/.test(jats));
+  check('doc-margin-note: the margin note is emitted at the authored position, not in the fn-group',
+    /A remark\.<boxed-text/.test(jats) && !/<fn-group[\s\S]*content-type="marginnote"/.test(jats));
+  check('doc-margin-note: a foot/end note is still a <fn>',
+    /<fn id="note-1">\s*<label>1<\/label>\s*<p>A footnote body\.<\/p>\s*<\/fn>/.test(jats));
+  validateWithXmllint('doc-margin-note', jats);
+
+  // Round-trip JATS → enscribe: the footnote reads back as <note>; the margin note
+  // as <note position=margin>. Element → position; numbering is NOT inferred.
+  const back = importJats(jats);
+  const notes = [];
+  (function walk(n){ if(!n||typeof n!=='object')return; if(n.tagname==='note')notes.push(n); for(const c of n.children??[])walk(c); for(const c of n.content??[])walk(c); })(back);
+  check('doc-margin-note round-trip: two notes recovered', notes.length === 2);
+  check('doc-margin-note round-trip: the footnote → <note> (default position)',
+    notes.some((n) => !n.kwargs?.position && !n.kwargs?.placement));
+  check('doc-margin-note round-trip: the margin note → <note position=margin>',
+    notes.some((n) => n.kwargs?.position === 'margin'));
 }
 
 // ─── Integration: doc-58 <data> asset export (#190 slice 4) ───────────────

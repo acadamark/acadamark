@@ -25,7 +25,7 @@
 //      (class "footnotes") and inject it at the end of that section's
 //      content. Section-collected foot-notes are removed from the residual
 //      set so they don't also appear in <article-back>.
-//   5. Build the residual __note-list (end + side + any foot-notes outside
+//   5. Build the residual __note-list (end + margin + any foot-notes outside
 //      top-level sections) and inject it into <article-back>, prepended
 //      before any existing back-matter. If the residual set is empty, no
 //      article-back list is emitted (don't emit empty lists).
@@ -228,7 +228,7 @@ function makeNoteListItem({ node: noteNode, entry }) {
   const number = entry.number;
   const refId = entry.refId; // computed once in enscribeNotePlacement; see the stamp loop there
   const placement = notePlacement(noteNode);
-  const sidenote = placement === 'side';
+  const sidenote = placement === 'margin';
   return makeInternalMarker('__note-list-item', {
     id: noteId,
     kwargs: { number, refId, sidenote },
@@ -335,13 +335,13 @@ export function enscribeNotePlacement() {
     // Split pending into per-unit buckets + residual. Which placements
     // collect per-unit depends on scope:
     //   - 'section' scope (article default): only placement=foot collects
-    //     per-section; everything else (end / side / foot outside any
+    //     per-section; everything else (end / margin / foot outside any
     //     section) goes to residual. Preserves slice 7001aaa behavior.
     //   - 'chapter' scope (book default): both placement=foot AND
     //     placement=end collect per-book-part (the chapter-end convention
     //     book.md L17-20 anticipated; per `note-position: chapter-end`).
-    //     placement=side still stays inline (it's a margin note, not a
-    //     list entry).
+    //     placement=margin goes to residual too — its content is projected
+    //     into the margin column from the residual list (#333).
     //   - 'document' scope: no per-unit collection — all collect to
     //     back-matter as residual.
     const unitBuckets = new Map(); // unit → pending entries (in document order)

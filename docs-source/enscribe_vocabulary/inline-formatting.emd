@@ -243,36 +243,6 @@ Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 
 </section>
 
-<section #sh-marginnote | `<marginnote>`>
-
-<sub-section | General Usage>
-
-Semantic role: *marginnote*. Compiles to Layer 1 `<aside>`.
-
-Registers:
-
-- Canonical: `<marginnote>`
-
-<code #code:sh-marginnote-1>
-The result holds.<marginnote | A caveat, set in the margin.>
-</code>
-
-<minipage #mp:sh-marginnote-1>
-The result holds.<marginnote | A caveat, set in the margin.>
-</minipage>
-
-*An unnumbered margin aside, authored in place. Unlike a numbered &lt;note&gt;, it is not collected, numbered, or relocated — it renders where written and floats into the margin column (note-position is irrelevant to it).*
-
-<code #code:sh-marginnote-2>
-<marginnote #m1 | A margin note with an id.>
-</code>
-
-<minipage #mp:sh-marginnote-2>
-<marginnote #m1 | A margin note with an id.>
-</minipage>
-
-</section>
-
 <section #sh-output | `<output>`>
 
 <sub-section | General Usage>

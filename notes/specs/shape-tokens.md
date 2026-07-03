@@ -115,7 +115,7 @@ tight/loose members** (the only tight/loose element is the structural `<item>`).
 consumes this directly; the goldens are re-baselined to match.
 
 **phrasing → unwrap** (`content.shape.contains: [inline]`):
-- *inline-formatting:* `a`, `abbr`, `b`, `em`, `i`, `kbd`, `marginnote`, `output`, `q`, `s`, `samp`, `strong`, `sub`, `sup`, `term`, `u`, `var`
+- *inline-formatting:* `a`, `abbr`, `b`, `em`, `i`, `kbd`, `output`, `q`, `s`, `samp`, `strong`, `sub`, `sup`, `term`, `u`, `var`
 - *citations (render inline):* `cite`, `ref`
 - *metadata leaf values:* `date`, `name`, `affiliation`, `email`, `orcid`, `doi`, `lang`, `license`, `keywords`, `editor`, `subject`, `title`, `subtitle`, `version`, `publication-date`
 - *titles/subtitles (already carried `[inline]`):* `article-title`, `article-subtitle`, `section-title`, `section-subtitle`, `sub-section-title`, `sub-section-subtitle`, `sub-sub-section-title`, `sub-sub-section-subtitle`, `book-title`, `book-subtitle`, `book-part-title`, `book-part-subtitle`

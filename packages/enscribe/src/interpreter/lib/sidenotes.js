@@ -39,12 +39,17 @@ function hasClass(node, name) {
  * is the <li>'s children minus the trailing back-reference link (which has no
  * place in the margin copy).
  */
-function collectNotes(node, map) {
+function collectNotes(node, map, all) {
   if (node.type === 'element' && node.tagName === 'note-list') {
     for (const ol of node.children ?? []) {
       if (ol.type !== 'element' || ol.tagName !== 'ol') continue;
       for (const li of ol.children ?? []) {
         if (li.type !== 'element' || li.tagName !== 'li' || !li.properties?.id) continue;
+        // Per-note margin (#333): when not projecting every note (doc default is
+        // not note-position=margin), relocate only the margin notes — the ones
+        // flagged sidenote-fallback (placement=margin). When `all`, the document
+        // note-position=margin relocates every numbered note regardless.
+        if (!all && !hasClass(li, 'sidenote-fallback')) continue;
         const content = (li.children ?? [])
           .filter((c) => !(c.type === 'element' && c.tagName === 'a' && hasClass(c, 'note-backref')))
           .map(clone);
@@ -53,7 +58,7 @@ function collectNotes(node, map) {
     }
     return; // note-lists do not nest
   }
-  for (const c of node.children ?? []) collectNotes(c, map);
+  for (const c of node.children ?? []) collectNotes(c, map, all);
 }
 
 /**
@@ -81,14 +86,13 @@ function injectSpans(node, map) {
 
 /**
  * Mark the document's layout wrapper as a margin layout
- * (`.enscribe-layout--margin`) — the shared column used by BOTH sidenotes and
- * marginnotes (#33). If applyToc already wrapped the document element, add the
- * class to that wrapper (so a ToC + margin content co-mark one wrapper);
- * otherwise wrap the document element (article/book) the same way applyToc does.
+ * (`.enscribe-layout--margin`) — the shared column the margin notes float into
+ * (#33). If applyToc already wrapped the document element, add the class to that
+ * wrapper (so a ToC + margin content co-mark one wrapper); otherwise wrap the
+ * document element (article/book) the same way applyToc does.
  *
- * Exported and factored out of relocation (#33 part 2) so the compiler can
- * establish the margin column for a marginnote-present document independent of
- * any note relocation.
+ * Exported and factored out of relocation so the caller marks the layout once,
+ * after applySidenotes reports that at least one note moved into the column.
  */
 export function markMarginLayout(hast) {
   const kids = hast.children ?? [];
@@ -110,19 +114,25 @@ export function markMarginLayout(hast) {
 }
 
 /**
- * Relocate numbered-note content into the margin (sidenote mode): inject a margin
- * <span> beside each marker. Returns true if any note was relocated.
+ * Relocate numbered-note content into the margin: inject a margin <span> beside
+ * each marker. Returns true if any note was relocated.
  *
- * Does NOT mark the layout — the caller calls markMarginLayout when EITHER
- * sidenotes relocated OR a marginnote is present, so the shared margin column is
- * established for both (#33 part 2 factored the marking out of relocation).
+ * `all` selects the scope (#333): when true (document note-position=margin) every
+ * numbered note is relocated; when false only the margin notes (placement=margin,
+ * flagged sidenote-fallback) are — so a per-note `<note position=margin>` lands in
+ * the margin even on a default (bottom) document.
+ *
+ * Does NOT mark the layout — the caller calls markMarginLayout when this returns
+ * true, establishing the shared margin column (#33 part 2 factored the marking out
+ * of relocation).
  *
  * @param {import('hast').Root} hast
- * @returns {boolean} true if any note was relocated (false → no notes, no-op)
+ * @param {{ all?: boolean }} [opts]
+ * @returns {boolean} true if any note was relocated (false → nothing to relocate)
  */
-export function applySidenotes(hast) {
+export function applySidenotes(hast, { all = false } = {}) {
   const notes = new Map();
-  collectNotes(hast, notes);
+  collectNotes(hast, notes, all);
   if (notes.size === 0) return false;
   injectSpans(hast, notes);
   return true;

@@ -191,10 +191,10 @@ import { TABLE_TAGS } from './lib/table-constants.js';
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc, readTocConfig, applyConfigToc } from './lib/toc.js';
 import { readConfigBool } from './lib/config-helpers.js';
-// #33: the margin column. applySidenotes (part 1) relocates numbered-note content
-// into the margin when note-position=margin; markMarginLayout establishes the
-// shared margin layout, factored out so it also fires for a <marginnote>-present
-// document (part 2). The mdast tree (and thus JATS) is untouched. MARGIN_CSS is
+// #33 / #333: the margin column. applySidenotes relocates margin-note content into
+// the margin — every numbered note when note-position=margin, or just the per-note
+// `<note position=margin>` otherwise; markMarginLayout establishes the shared margin
+// layout when anything was relocated. The mdast tree (and thus JATS) is untouched. MARGIN_CSS is
 // injected only when the margin is actually used, so default output — and the
 // existing fixtures — stay byte-identical.
 import { applySidenotes, markMarginLayout } from './lib/sidenotes.js';
@@ -327,7 +327,6 @@ function detectAssets(root) {
     notes: false,
     refLinks: false,
     citeLinks: false,
-    marginnote: false,
     dslNames: new Set(),
   };
   (function walk(node) {
@@ -342,10 +341,6 @@ function detectAssets(root) {
         found.refLinks = true;
       } else if (tag === 'cite' && Array.isArray(props.className) && props.className.includes('cite')) {
         found.citeLinks = true;
-      } else if (tag === 'aside' && Array.isArray(props.className) && props.className.includes('enscribe-marginnote')) {
-        // #33 part 2: a <marginnote> renders to <aside class="enscribe-marginnote">.
-        // Its presence (independent of note-position) requires the margin column.
-        found.marginnote = true;
       }
       // A DSL contract marker rides on a container element; collect it
       // independently of the tag-name checks above (a node is never both).
@@ -863,14 +858,17 @@ export function enscribeInterpreter(options = {}) {
     return { tocType, configTocShape };
   }
 
-  // #33 the margin column. Two independent triggers: note-position=margin (relocate
-  // numbered notes; the `notePosition` option wins over <config note-position>), or ≥1
-  // <marginnote> present. markMarginLayout + MARGIN_CSS only when one fires → a default
-  // document adds nothing. Display-only (the mdast tree / JATS export is unchanged).
+  // #33 / #333 the margin column. Two triggers, one path: the document
+  // note-position=margin (the `notePosition` option wins over <config note-position>)
+  // relocates every numbered note; a per-note `<note position=margin>` relocates just
+  // that note. applySidenotes projects both (all when the doc default is margin, else
+  // only the margin notes) and reports whether anything moved into the column;
+  // markMarginLayout + MARGIN_CSS fire only then → a default document adds nothing.
+  // Display-only (the mdast tree / JATS export is unchanged).
   function injectMarginLayout(hast, assets, configMap) {
     const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
-    const relocatedSidenotes = notePosition === 'margin' && applySidenotes(hast);
-    if (relocatedSidenotes || assets.marginnote) {
+    const relocated = applySidenotes(hast, { all: notePosition === 'margin' });
+    if (relocated) {
       markMarginLayout(hast);
       hast.children.unshift(makeStyleElement(MARGIN_CSS));
     }

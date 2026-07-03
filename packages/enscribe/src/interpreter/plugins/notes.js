@@ -14,14 +14,18 @@
 //                      end / side notes there). Implemented by Phase 2
 //                      slice (formerly PG-1, 2026-05-27); see
 //                      note-placement.js for the per-section collection.
-//   'side'           — collect in <note-list class="notes"> in article-back,
-//                      with <li class="sidenote-fallback">. The marker stays
-//                      inline. Theme JS/CSS can extract and reposition these.
-//                      DEPRECATED: inline <span class="sidenote"> rendering
-//                      removed. Future themes provide margin positioning.
+//   'margin'         — a margin note (#333). Numbered and collected like any
+//                      note into <note-list class="notes"> in article-back, with
+//                      <li class="sidenote-fallback"> as the below-breakpoint
+//                      fallback; its content is ALSO projected into the margin
+//                      column beside its marker (applySidenotes), per-note and
+//                      independent of the document note-position default. `side`
+//                      is a legacy alias for `margin` (a sidenote is a numbered
+//                      margin note); the former <marginnote> element is now just
+//                      <note position=margin>.
 //
-// All placements produce an inline marker and a collected list item. No
-// placement produces inline side-content (`__note-side` is removed).
+// All placements produce an inline marker and a collected list item. Numbering is
+// independent of position: every note is numbered here regardless of placement.
 //
 // This plugin (enscribeNotes) is register-only:
 //   - Uses discover() to walk the tree and register each <note> via registry.assign()
@@ -48,11 +52,14 @@ import { ENSCRIBE_NOTES_PENDING } from '../../core/file-data-keys.js';
  * Exported so enscribeNotePlacement (note-placement.js) can use it too.
  *
  * @param {object} node - enscribeTag with tagname 'note'
- * @returns {'end'|'foot'|'side'}
+ * @returns {'end'|'foot'|'margin'}
  */
 export function notePlacement(node) {
   const p = node.kwargs?.placement ?? node.kwargs?.position ?? 'end';
-  if (p === 'side' || p === 'foot') return p;
+  // #333: one note type, three positions — foot, end, margin. `side` is a legacy
+  // alias for `margin` (a sidenote is a numbered margin note).
+  if (p === 'side' || p === 'margin') return 'margin';
+  if (p === 'foot') return 'foot';
   return 'end';
 }
 

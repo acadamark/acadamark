@@ -30,20 +30,18 @@ For v1, CSS float places each note in the margin near its marker. **Precise top-
 - **Markers / numbering** — the existing footnote markers and numbering, reused as-is.
 - **JATS / semantics** — a sidenote exports identically to a footnote; the margin placement is display-only and never reaches the archival channel.
 
-## Marginnotes — `<marginnote>` (part 2)
+## Margin notes — `<note position=margin>` (#333)
 
-A **marginnote** is a distinct construct from the numbered notes above: an **unnumbered aside authored in place**, set in the margin. It is *not* a variant of numbered notes — the numbering / bottom-list collection / sidenote-relocation machinery never touches it.
+A **margin note** is a note positioned in the margin — one note type, three positions (`foot`, `end`, `margin`), not a separate element. The former `<marginnote>` element was collapsed into `<note position=margin>` (#333); numbering is independent of position.
 
-- **Construct.** `<marginnote | body>` — a canonical inline-form tag (the same `<tag | body>` finder as `<a URL | text>`; args before the pipe, body after). Canonical-only: no sigil and no markdown idiom, so it is inherently strict-safe (always interprets; nothing to ban under #36). Optional `#id`; body is inline content. ("marginnote" is not a CommonMark HTML-block name, so no grammar surgery — a normal vocab entry, keyed by its authoring tagname even though it renders to a shared element.)
-- **Render.** In place as `<aside class="enscribe-marginnote">body</aside>` — no relocation pass (the body is already where it is authored). It floats into the **shared margin column** above the breakpoint and falls back to an inline-block aside below it. The margin column is established whenever a marginnote is present, **independent of `note-position`**.
-- **JATS.** → `<boxed-text content-type="marginnote">…</boxed-text>` (JATS's sidebar/aside element; the `content-type` marks identity for round-trip). The inline body is wrapped in a `<p>` (boxed-text takes block content).
-- **Uncounted.** Not registered as a note: numbering, the bottom list, and the numbered-note JATS are byte-identical whether or not a marginnote is present.
+- **Construct.** `<note position=margin | body>` (equivalently `placement=margin`; `side` is a legacy alias). A margin note is a `<note>` like any other — numbered, collected, cross-referenceable.
+- **Render.** Numbered and collected like any note (a `sidenote-fallback` list item is the below-breakpoint fallback), with its content **also** projected into the margin column beside its marker as a `<span class="enscribe-sidenote">` — per-note, independent of `note-position`. Above the breakpoint the margin copy floats into the gutter; below it, the copy hides and the bottom `<note-list>` shows.
+- **JATS.** Position drives the element: `position=margin` → `<boxed-text content-type="marginnote">` at the marker position (the number rides as a `<label>`); `end`/`foot` → `<fn>`. Both round-trip (element → position; numbering is independent). See `note.md`.
 
-The margin column (`.enscribe-layout--margin`) is shared by sidenotes and marginnotes; a document establishes it if it relocates notes (`note-position=margin`) **or** contains a `<marginnote>`. Its CSS is injected only then, so a non-margin document is byte-identical.
+The margin column (`.enscribe-layout--margin`) is shared by the document-level `note-position=margin` projection (every note) and per-note margin notes; a document establishes it whenever `applySidenotes` relocated at least one note into the column. Its CSS is injected only then, so a non-margin document is byte-identical.
 
 ## Deferred
 
-- Precise JS top-alignment of each note (or marginnote) to its marker.
+- Precise JS top-alignment of each margin note to its marker.
 - A tap-to-expand inline mobile mode (instead of the bottom-footnote fallback).
-- Multi-paragraph marginnote bodies and marginnote labels.
 - Pixel-tuning the combined ToC + margin layout (it lays out without overlap today; precise spacing is a refinement).

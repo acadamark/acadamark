@@ -1506,18 +1506,11 @@ note-list li {
   }
 })();
 </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
-<style>/* Margin column (#33) — shared by sidenotes and marginnotes; injected only when used. */
+<style>/* Margin column (#33) — margin notes relocated beside their markers; injected only when used. */
 
 /* ── Default / narrow (the mobile fallback) ────────────────────────────────── */
-/* A relocated sidenote hides (the bottom note-list shows instead); a marginnote
-   has no list to fall back to, so it renders inline as a block aside. */
+/* The relocated margin copy hides here; the bottom note-list shows instead. */
 .enscribe-sidenote { display: none; }
-.enscribe-marginnote {
-  display: inline-block;
-  font-size: var(--enscribe-text-sm);
-  line-height: var(--enscribe-line-height-tight);
-  color: var(--enscribe-text-secondary);
-}
 
 @media (min-width: 900px) {
   /* Relax the body cap so body + margin gutter can be wider (mirrors the ToC
@@ -1537,9 +1530,8 @@ note-list li {
     margin-right: calc(var(--enscribe-space-12) + 18rem);
   }
 
-  /* Both kinds of margin content float into the right gutter, near their anchor. */
-  .enscribe-layout--margin .enscribe-sidenote,
-  .enscribe-layout--margin .enscribe-marginnote {
+  /* The margin copy floats into the right gutter, near its anchor. */
+  .enscribe-layout--margin .enscribe-sidenote {
     display: block;
     float: right;
     clear: right;
@@ -1552,7 +1544,7 @@ note-list li {
     text-indent: 0;
   }
 
-  /* The sidenote number, carried verbatim from the bottom-list <sup>. */
+  /* The note number, carried verbatim from the bottom-list <sup>. */
   .enscribe-layout--margin .enscribe-sidenote > sup {
     font-family: var(--enscribe-font-sans);
     font-size: var(--enscribe-text-xs);
@@ -1577,8 +1569,7 @@ note-list li {
      third track, so the floats use the column-gap offset, not the single-layout
      negative margin against the body. */
   .enscribe-layout--toc.enscribe-layout--margin .enscribe-body { margin-right: 0; }
-  .enscribe-layout--toc.enscribe-layout--margin .enscribe-sidenote,
-  .enscribe-layout--toc.enscribe-layout--margin .enscribe-marginnote {
+  .enscribe-layout--toc.enscribe-layout--margin .enscribe-sidenote {
     margin-right: calc(-1 * (18rem + var(--enscribe-space-12)));
   }
 }
@@ -1599,20 +1590,21 @@ note-list li {
           <p>A second numbered note shows side notes stacking down the margin column.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup><span class="enscribe-sidenote"><sup>2</sup><p>A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.</p></span>Each keeps its number.</p>
         </section>
         <section>
-          <section-title>Side notes and margin notes share the margin</section-title>
-          <p>Side notes and margin notes occupy the same margin column.
-            <aside class="enscribe-marginnote">This is an unnumbered margin note. It shares the margin with the numbered side notes above — the column is established whenever either is present.</aside>An unnumbered <code>&#x3C;marginnote></code> sits in the same margin as the numbered side notes.
-          </p>
+          <section-title>One note type, positioned in the margin</section-title>
+          <p>Every note here is a margin note because the document sets <code>note-position=margin</code>. A single note can also opt in on its own with <code>position=margin</code>, independent of the document default.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup><span class="enscribe-sidenote"><sup>3</sup><p>Whether the whole document sets note-position=margin or a single note sets position=margin, a margin note is the same numbered note, projected into the one margin column.</p></span>There is one note type with three positions: foot, end, margin.</p>
         </section>
       </article-body>
       <article-back>
-        <note-list class="endnotes">
+        <note-list class="notes">
           <ol>
             <li id="note-1"><sup>1</sup>
               <p>This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin.</p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
             </li>
             <li id="note-2"><sup>2</sup>
               <p>A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.</p><a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
+            </li>
+            <li id="note-3" class="sidenote-fallback"><sup>3</sup>
+              <p>Whether the whole document sets note-position=margin or a single note sets position=margin, a margin note is the same numbered note, projected into the one margin column.</p><a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
             </li>
           </ol>
         </note-list>
