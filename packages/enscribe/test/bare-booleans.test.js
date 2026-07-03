@@ -2,7 +2,7 @@
 //
 // A BARE attribute name (no `=value`, no `+`/`-`) means boolean `true` — but only for a name that is
 // a KNOWN boolean: a vocab `booleans:` name on an element (`unlisted`, `unnumbered`), or a boolean
-// `<config>` kwarg (`toc`, `number-sections`). Bare is the canonical HTML / Layer 1 spelling, so it
+// `<config>` kwarg (`toc`, `number-sections`). Bare is the canonical HTML / eHTML spelling, so it
 // renders byte-identically to the `+name` / `name=true` forms. A bare name that is NOT a known boolean
 // stays unrecognized (so a typo never becomes a phantom boolean; a bare valued kwarg is inert). It is a
 // PARSE-level promotion (in the shared gate), so static and live see the same booleans.

@@ -34,6 +34,6 @@ register — so x^{2} and a_{i} still render as superscript and subscript.
 <section | The round-trip guarantee>
 
 Because a canonical document uses only the canonical register, it round-trips
-Layer 1 to shorthand and back losslessly: there is no ambiguous markdown heading
+eHTML to shorthand and back losslessly: there is no ambiguous markdown heading
 for the serializer to guess at. The sigil rung — markdown off, sigils live —
 shares this property; only the default off mode is lossy by design.

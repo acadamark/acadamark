@@ -98,7 +98,7 @@ enscribe import-jats paper.xml --emd           # → canonical .emd source
 ```
 
 Import is **incremental and deliberately lossy** (JATS's vocabulary is far larger
-than Layer 1's). Today it maps document structure (article/front/body/sections,
+than eHTML's). Today it maps document structure (article/front/body/sections,
 paragraphs, lists, block quotes), inline formatting (bold, italic, underline,
 strike, monospace, super/subscript, links), citations & bibliography
 (`<xref ref-type="bibr">` → `<cite>`, `<ref-list>` → a BibTeX `<library>` plus a

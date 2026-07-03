@@ -34,15 +34,15 @@ Every other document system ships a compiler you run at a command line or inside
 
 ## What enscribe is, in two layers
 
-**Layer 1 — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is `<ul>`/`<ol>`/`<li>`); a class plus `data-*` carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
+**Enscribe HTML (eHTML) — Semantic HTML for academic publishing.** A defined set of HTML elements, custom elements, and `data-*` attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is `<ul>`/`<ol>`/`<li>`); a class plus `data-*` carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.
 
-**Layer 2 — Authoring shorthand.** A compact syntax that translates losslessly into Layer 1 HTML. It comes in two registers:
+**The Enscribe shorthand — the authoring syntax.** A compact syntax that translates losslessly into eHTML. It comes in two registers:
 
 - *Markdown-like shorthand* for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.
 
 - *Tag shorthand* for anything that needs attributes, identifiers, or academic semantics. The form is `<tag #id .class attr=value | content>` — attributes first, then a pipe, then content — read as "tag with these attributes containing this content." Tags don't require explicit closing — like LaTeX's `\section{}`, a new peer-level tag implicitly ends the previous one.
 
-Both registers compile to the same Layer 1 HTML.
+Both registers compile to the same eHTML.
 
 ## A taste
 
@@ -65,7 +65,7 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 ## Status
 
-**enscribe v0.4.0 is released.** The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool. (v0.3.5 — the v0.3.0-close consolidation pass — shipped between.)
+**enscribe v0.4.0 is released.** The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool. (v0.3.5 — the v0.3.0-close consolidation pass — shipped between.)
 
 The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for the capability checklist (what works today), [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/`](notes/specs/) for the architecture. A full documentation site — guides, an authoring reference, and an in-browser playground — is authored in [`docs-source/`](docs-source/) and built (static + live) into [`site/`](site/) via `npm run build:site-all`.
 
@@ -73,7 +73,7 @@ Found a bug, or want a feature? Open an issue at [github.com/enscribejs/enscribe
 
 ## Install
 
-enscribe ships as three npm packages: **`@enscribejs/enscribe`** (the library — the Layer 1 vocabulary, the shorthand parser, and the interpreter), **`@enscribejs/cli`** (the `enscribe` command), and **`@enscribejs/layer1-vocabulary`** (the vocabulary definitions, as data).
+enscribe ships as three npm packages: **`@enscribejs/enscribe`** (the library — the eHTML vocabulary, the shorthand parser, and the interpreter), **`@enscribejs/cli`** (the `enscribe` command), and **`@enscribejs/ehtml`** (the vocabulary definitions, as data).
 
 ```sh
 # The library, for use in a Node or browser project:
@@ -94,8 +94,8 @@ The project has accumulated enough documentation that knowing where to start mat
 
 Enscribe's purpose, in four parts:
 
-1. **Specify** a complete vocabulary of HTML conventions for academic publishing (Layer 1).
-2. **Author** that vocabulary efficiently via a uniform shorthand (Layer 2).
+1. **Specify** a complete vocabulary of HTML conventions for academic publishing (eHTML).
+2. **Author** that vocabulary efficiently via a uniform shorthand (the Enscribe shorthand).
 3. **Build** the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.
 4. **Demonstrate** that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from enscribe source through HTML to PDF and other formats using only off-the-shelf tools downstream.
 

@@ -3,13 +3,13 @@
 
 <section | Convergence of kwarg and child-tag <meta> forms>
 
-The two authoring forms of `<meta>` must produce the same Layer 1 child-tag
+The two authoring forms of `<meta>` must produce the same eHTML child-tag
 shape. The `<meta>` above uses the kwarg form; the gate lifts each
 allowlisted kwarg to a corresponding child tag. The result is the same as
 authoring with explicit `<title>` and `<author>` child tags.
 
 This fixture exercises only the META allowlist keys that have existing
-Layer 1 vocabulary entries (title, author, date, subtitle). The other
+eHTML vocabulary entries (title, author, date, subtitle). The other
 allowlist entries (doi, license, lang, version, keywords) lift correctly
 but their target vocabulary entries are not yet defined — filed as a
 finding for a separate vocabulary item, parallel to the missing

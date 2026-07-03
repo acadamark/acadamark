@@ -1,4 +1,4 @@
-// @enscribejs/cli — Layer 1 → JATS XML.
+// @enscribejs/cli — eHTML → JATS XML.
 //
 // Phase 5 slice 5a (2026-05-29): foundation slice. Implements minimal
 // article export: article scaffolding (article wrapper + title-group +
@@ -10,7 +10,7 @@
 // CONSUMES: the post-stage-3 mdast tree produced by
 // `enscribe/interpreter`'s structural plugins (per Phase 5 Phase 0
 // findings Q1.5 — post-stage-3 is the right input because the tree is
-// already structured as (HTML-shaped) Layer 1 — ready for JATS
+// already structured as (HTML-shaped) eHTML — ready for JATS
 // export — after `enscribeArticleStructuring` /
 // `enscribeBookStructuring` + section nesting). The slice 5a entry
 // point `enscribeToJats` accepts a tree (mdast root) + options and
@@ -32,7 +32,7 @@
 // Phase 0 findings Q1.3 recommendation: widest validator support,
 // most permissive tag set).
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
 import { parseColonId } from '@enscribejs/enscribe/core/colon-id';
 // `formatScopedNumber` (render-quality bug-fix arc, JATS analog of slice
@@ -1702,7 +1702,7 @@ function emitSection(secNode, indent) {
 
 // ─── Inline emission ──────────────────────────────────────────────────────
 
-// Enscribe Layer 1 inline element → JATS inline element.
+// Enscribe eHTML inline element → JATS inline element.
 const INLINE_MAP = {
   'i': 'italic', 'em': 'italic',
   'b': 'bold',   'strong': 'bold',

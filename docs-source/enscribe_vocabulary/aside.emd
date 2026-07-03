@@ -4,7 +4,7 @@ Content set beside the main flow — notes, boxed asides, and the expandable dis
 
 <sub-section | General Usage>
 
-Semantic role: *aside*. Compiles to Layer 1 `<aside>`.
+Semantic role: *aside*. Compiles to eHTML `<aside>`.
 
 Registers:
 
@@ -60,7 +60,7 @@ It can contain multiple paragraphs and other content like
 
 <sub-section | General Usage>
 
-Semantic role: *note*. Compiles to Layer 1 `<note>`.
+Semantic role: *note*. Compiles to eHTML `<note>`.
 
 Registers:
 
@@ -104,7 +104,7 @@ A definition<note placement=side | Inline-adjacent note.>.
 
 <sub-section | General Usage>
 
-Semantic role: *note-list*. Compiles to Layer 1 `<note-list>`.
+Semantic role: *note-list*. Compiles to eHTML `<note-list>`.
 
 Registers:
 
@@ -124,7 +124,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *endnotes*. Compiles to Layer 1 `<endnotes>`.
+Semantic role: *endnotes*. Compiles to eHTML `<endnotes>`.
 
 A placement marker: write `<endnotes>` where you want the document's collected end-notes to appear, and the note-placement plugin replaces it with the collected end-notes block (which renders as a `<note-list>`). It is the end-note counterpart to letting foot-notes collect at the page. Author it once, typically near the end of the document; the notes themselves are authored inline with `<note>`.
 
@@ -158,7 +158,7 @@ The claim holds<note | A note collected at the end.>.
 
 <sub-section | General Usage>
 
-Semantic role: *details*. Compiles to Layer 1 `<details>`.
+Semantic role: *details*. Compiles to eHTML `<details>`.
 
 Registers:
 
@@ -210,7 +210,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *summary*. Compiles to Layer 1 `<summary>`.
+Semantic role: *summary*. Compiles to eHTML `<summary>`.
 
 Registers:
 

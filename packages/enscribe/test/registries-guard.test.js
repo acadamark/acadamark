@@ -19,7 +19,7 @@
 //                      no registry entry) automatically.
 
 import assert from 'node:assert/strict';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { DSL_REGISTRATIONS } from '../src/core/dsl-registrations.js';
 import { getContentHandler } from '../src/core/dsl-registry.js';
 import { getDsl, getRegisteredDsls } from '../src/interpreter/dsl/registry.js';

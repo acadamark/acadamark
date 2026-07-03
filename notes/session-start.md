@@ -54,10 +54,10 @@ This governs (1) where a slice report is written and (2) when a worktree is remo
 **"Done with the slice" = all of:** code committed (to the branch, or merged per the merge rule) · report at `~/enscribe-reports/slice-report-<task>.md` (not committed, not in the worktree) · push left for Ariel · worktree left intact.
 
 ## How to reason in-grain
-- **Two layers:** Layer 1 = canonical semantic vocabulary (archival, JATS-exportable); Layer 2 = authoring shorthand.
+- **Two forms:** eHTML = canonical semantic vocabulary (archival, JATS-exportable); the Enscribe shorthand = authoring syntax.
 - **Rule 2:** render outputs (ToC, numbering, nav, chapter rail) are *products computed from structure + config*, never source nodes.
 - **Render parity:** live ≡ static, byte-identical on matched options — the project's spine.
-- **Small changes:** new vocab = a `.md` in `layer1-vocabulary/elements/`, never a parser edit; a new authored form = one registry entry; migrations = N small byte-identity-gated slices.
+- **Small changes:** new vocab = a `.md` in `ehtml/elements/`, never a parser edit; a new authored form = one registry entry; migrations = N small byte-identity-gated slices.
 - **Judicious coding:** reuse single-sources, guard them with load-time assertions, apply the `coding-conventions.md` fit-check.
 
 ## Where Ariel's judgment overrides this

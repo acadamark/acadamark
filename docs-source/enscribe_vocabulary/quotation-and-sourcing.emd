@@ -4,7 +4,7 @@ Quoting, citing, and pointing — block and inline quotations, citations, cross-
 
 <sub-section | General Usage>
 
-Semantic role: *blockquote*. Compiles to Layer 1 `<blockquote>`.
+Semantic role: *blockquote*. Compiles to eHTML `<blockquote>`.
 
 Registers:
 
@@ -20,7 +20,7 @@ Registers:
 <quote | A short quotation.>
 </minipage>
 
-*The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at Layer 1.*
+*The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at eHTML.*
 
 <code #code:sh-blockquote-2>
 <quote cite=https://example.com/source |
@@ -51,12 +51,12 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 </minipage>
 
 <code #code:sh-blockquote-4>
-<blockquote | Same as <quote> but using the explicit Layer 1 name.>
+<blockquote | Same as <quote> but using the explicit eHTML name.>
 </code>
 
 *Render pending — the example source has an unescaped `<…>` tag-mention the parser consumes into an empty nested element (issue #277).*
 
-*Authors can also write &lt;blockquote&gt; directly. Both forms produce the same Layer 1 output.*
+*Authors can also write &lt;blockquote&gt; directly. Both forms produce the same eHTML output.*
 
 <sub-section | Arguments>
 
@@ -71,7 +71,7 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 
 <sub-section | General Usage>
 
-Semantic role: *q*. Compiles to Layer 1 `<q>`.
+Semantic role: *q*. Compiles to eHTML `<q>`.
 
 Registers:
 
@@ -107,7 +107,7 @@ The phrase <q cite=https://example.com | to be or not to be> is iconic.
 
 <sub-section | General Usage>
 
-Semantic role: *cite*. Compiles to Layer 1 `<cite>`.
+Semantic role: *cite*. Compiles to eHTML `<cite>`.
 
 Registers:
 
@@ -171,7 +171,7 @@ A specific work <cite goodall2024 style=footnote>.
 
 <sub-section | General Usage>
 
-Semantic role: *ref*. Compiles to Layer 1 `<ref>`.
+Semantic role: *ref*. Compiles to eHTML `<ref>`.
 
 Registers:
 
@@ -218,7 +218,7 @@ As shown in <ref #eqn:model>.
 
 <sub-section | General Usage>
 
-Semantic role: *a*. Compiles to Layer 1 `<a>`.
+Semantic role: *a*. Compiles to eHTML `<a>`.
 
 Registers:
 
@@ -275,7 +275,7 @@ See <a https://example.com/docs | the documentation>.
 
 <sub-section | General Usage>
 
-Semantic role: *doi*. Compiles to Layer 1 `<doi>`.
+Semantic role: *doi*. Compiles to eHTML `<doi>`.
 
 A Digital Object Identifier. Author the bare DOI string (not a URL) as the content. It appears in two places: as a child of `<meta>` it is the document's own DOI; inside a bibliography entry it is the cited work's DOI. On the HTML surface it renders as a `https://doi.org/…` hyperlink.
 

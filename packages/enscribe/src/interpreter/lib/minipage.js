@@ -3,7 +3,7 @@
 // The deferred phase (an inline pass in index.js, between apply-numbers and
 // ref-resolution) runs each minipage's held body through its OWN pipeline run
 // with its OWN VFile — hence its own registry, the seal — and stamps the
-// resolved Layer 1 mdast onto `node.minipageResolved` for the handler to splice.
+// resolved eHTML mdast onto `node.minipageResolved` for the handler to splice.
 // These are the pure helpers it uses; the sub-run itself lives in index.js
 // because it needs that module's buildEnscribePipeline (passed in to avoid a
 // circular import).

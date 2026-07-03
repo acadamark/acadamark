@@ -60,9 +60,9 @@ ghc-prompt-*.md
 # `git status` should always show them as part of the project, and any
 # `.gitignore` change here that quietly starts matching them is a bug:
 #
-#   packages/layer1-vocabulary/src/data.js
-#     The Layer 1 vocabulary data module, generated from elements/*.md by
-#     packages/layer1-vocabulary/build/generate-data-module.js. Committed per
+#   packages/ehtml/src/data.js
+#     The eHTML vocabulary data module, generated from elements/*.md by
+#     packages/ehtml/build/generate-data-module.js. Committed per
 #     the Slice 4 Phase 0's Option-A ruling (committed + pretest
 #     regenerate-and-diff staleness guard). See notes/specs/core.md.
 #
@@ -75,7 +75,7 @@ ghc-prompt-*.md
 # *.Zone.Identifier) and do not match either path. If you add a broader
 # pattern below — anything matching `**/*.js` or `**/generated/**` or `**/src/data.*` —
 # add an explicit unignore here so the deliberate files stay tracked, e.g.:
-#   !packages/layer1-vocabulary/src/data.js
+#   !packages/ehtml/src/data.js
 #   !packages/enscribe/src/parser/generated/parser.js
 .claude/worktrees/
 *:Zone.Identifier

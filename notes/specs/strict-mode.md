@@ -46,11 +46,11 @@ Would-be-shorthand text is wrapped in a visible marker (a span with a class that
 
 ## A free property: lossless round-trip
 
-Because turning a register off loses no expressiveness, a `sigil` or `canonical` document uses only the registers above the floor — which round-trip Layer 1 ↔ shorthand cleanly. The lossy round-trip element was the ambiguous markdown `#` (a serialized `<section>` could have been authored `# H` or `<section>`); a register-banned document has none, so it serializes back losslessly. **`enscribe lift` honors the document's `strict-mode`**: a `sigil`/`canonical` document is re-parsed with the matching register(s) off, so its literal `# H` / `*x*` / `<# H #>` stays literal text through the round-trip. An `off` document keeps the markdown-on parse — lossy by design, and that is accepted; round-trip is only ever expected for sigil/canonical/Layer-1 documents.
+Because turning a register off loses no expressiveness, a `sigil` or `canonical` document uses only the registers above the floor — which round-trip eHTML ↔ shorthand cleanly. The lossy round-trip element was the ambiguous markdown `#` (a serialized `<section>` could have been authored `# H` or `<section>`); a register-banned document has none, so it serializes back losslessly. **`enscribe lift` honors the document's `strict-mode`**: a `sigil`/`canonical` document is re-parsed with the matching register(s) off, so its literal `# H` / `*x*` / `<# H #>` stays literal text through the round-trip. An `off` document keeps the markdown-on parse — lossy by design, and that is accepted; round-trip is only ever expected for sigil/canonical/eHTML documents.
 
 ## Where it lives in the pipeline
 
-This is purely a Layer 2 → Layer 1 *interpretation* setting — it changes how shorthand is read, nothing downstream. Layer 1 and JATS export are unaffected by the mode.
+This is purely an Enscribe shorthand → eHTML *interpretation* setting — it changes how shorthand is read, nothing downstream. eHTML and JATS export are unaffected by the mode.
 
 ## Scope: document-level now, project-level via #72
 

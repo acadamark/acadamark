@@ -106,7 +106,7 @@ export function figureHandler(state, node, vocab) {
   return renderFrameable({
     kind: 'fig',
     bodyHast,
-    wrapperEl: 'figure',  // HTML5-native; the canonical Layer 1 name is <fig>
+    wrapperEl: 'figure',  // HTML5-native; the canonical eHTML name is <fig>
                            // but the rendered HTML uses <figure>.
     wrapperProps,
     captionHast,

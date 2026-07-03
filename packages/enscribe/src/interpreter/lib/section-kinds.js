@@ -1,6 +1,6 @@
 // Single source of truth for the section tagname family.
 //
-// Layer 1 has exactly three section depths. Every place that asks "is this a
+// eHTML has exactly three section depths. Every place that asks "is this a
 // section?", "what depth is it?", or "which tagname sits at depth N?" derives
 // from the one frozen array here — so adding a depth (or wiring the vocab
 // `category` field per the later F14 slice) is a single edit, not a hunt across

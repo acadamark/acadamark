@@ -1,6 +1,6 @@
 # Multi-column display
 
-Multi-column display is a render-mode concern: the Layer 1 structure of
+Multi-column display is a render-mode concern: the eHTML structure of
 the document is column-agnostic, and a downstream render-mode lowering
 produces the CSS (or typeset directives) that implement column flow.
 This document describes the intended mechanism. (Whether it is built is
@@ -85,8 +85,8 @@ or for code blocks that do not fit in narrow columns.
 
 ## Render-mode lowering
 
-Multi-column display is a render-mode concern, not a Layer 1 vocabulary
-concern. The Layer 1 structure stays the same regardless of column count;
+Multi-column display is a render-mode concern, not an eHTML vocabulary
+concern. The eHTML structure stays the same regardless of column count;
 the render mode produces the directives that implement the columns.
 
 - **HTML output:** CSS `column-count` on a container that carries the
@@ -213,9 +213,9 @@ not in this spec.
 
 ## Related references
 
-- `packages/layer1-vocabulary/elements/config.md` — the configuration
+- `packages/ehtml/elements/config.md` — the configuration
   element that carries column settings.
-- `packages/layer1-vocabulary/elements/fig.md` — figures that may
+- `packages/ehtml/elements/fig.md` — figures that may
   span columns.
 - CSS Multi-column Layout: https://www.w3.org/TR/css-multicol-1/
 - LaTeX `multicol` package documentation.

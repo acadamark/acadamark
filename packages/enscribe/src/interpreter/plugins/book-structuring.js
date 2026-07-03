@@ -1,7 +1,7 @@
 // Phase 4 slice 4a — Book structuring plugin.
 //
 // Reads the top-level mdast content of a book document and wraps it in the
-// Layer 1 book structure: <book> > <book-front> + <book-body> + <book-back>.
+// eHTML book structure: <book> > <book-front> + <book-body> + <book-back>.
 // Book-parts (<chapter>, <part>, <appendix>, etc., already lifted to
 // <book-part book-part-type="..."> by the vocab's shorthand_expansions) are
 // routed into the appropriate region based on their book-part-type.
@@ -47,7 +47,7 @@ import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
 // derives its chapter-counter gate from the same book-regions sets (F4).
 import { BOOK_PART_FRONT_TYPES, BOOK_PART_BACK_TYPES } from '../lib/book-regions.js';
 import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 
 // The full BITS book-part-type set (book-front ∪ book-body ∪ book-back), used to validate
 // an author-supplied `<meta type=book-part book-part-type=…>` (#176). DERIVED from the vocab

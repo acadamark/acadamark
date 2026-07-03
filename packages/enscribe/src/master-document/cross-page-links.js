@@ -22,7 +22,7 @@
 //     compiler already holds, JUST BEFORE serialization (interpreter/index.js compileToHtml, gated on
 //     file.data[ENSCRIBE_PAGE_LINK_RESOLVER]) — so it needs NO HTML re-parse. The previous form ran on
 //     the SERIALIZED string and so HAD to re-parse with parse5 (hast-util-from-html) to walk the labels;
-//     that re-parse was both a browser-bundle hazard (#25) and a Layer-1 byte hazard (parse5 drops the
+//     that re-parse was both a browser-bundle hazard (#25) and an eHTML byte hazard (parse5 drops the
 //     VOID `<meta>…</meta>` close tag, and #117 custom-element indentation does not survive a
 //     parse→serialize round-trip). Walking the tree upstream of serialization removes the re-parse
 //     entirely and lets ONE mechanism serve both the static and live surfaces (the URL scheme is the

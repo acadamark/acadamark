@@ -1,6 +1,6 @@
 // Enscribe-inline-aware HTML formatting (#117).
 //
-// The rendered Layer 1 HTML is pretty-printed for readable view-source by rehype-format,
+// The rendered eHTML is pretty-printed for readable view-source by rehype-format,
 // which indents block structure and leaves whitespace-sensitive contexts (`<pre>`/`<code>`/
 // `<textarea>`, and inline runs) alone. ONE correctness gap: rehype-format classifies
 // inline-vs-block via `hast-util-phrasing`, whose "inline" set is a FIXED list of HTML

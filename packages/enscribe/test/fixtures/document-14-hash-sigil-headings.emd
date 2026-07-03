@@ -6,7 +6,7 @@
 <# Plain hash-sigil section #>
 
 This top-level section is authored with the `<#>` sigil form rather than the
-named `<section>` form. It should produce a Layer 1 `<section>` element with a
+named `<section>` form. It should produce an eHTML `<section>` element with a
 proper `<section-title>`, not an unknown-element span.
 
 <# #sec:intro | Hash-sigil section with id #>

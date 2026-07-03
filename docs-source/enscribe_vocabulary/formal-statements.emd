@@ -4,7 +4,7 @@ Formal statements — theorems and their kin, their proofs, and the definitional
 
 <sub-section | General Usage>
 
-Semantic role: *theorem*. Compiles to Layer 1 `<theorem>`.
+Semantic role: *theorem*. Compiles to eHTML `<theorem>`.
 
 Registers:
 
@@ -49,7 +49,7 @@ is right-angled.
 
 <sub-section | General Usage>
 
-Semantic role: *lemma*. Compiles to Layer 1 `<lemma>`.
+Semantic role: *lemma*. Compiles to eHTML `<lemma>`.
 
 Registers:
 
@@ -90,7 +90,7 @@ an upper bound contains a maximal element.
 
 <sub-section | General Usage>
 
-Semantic role: *corollary*. Compiles to Layer 1 `<corollary>`.
+Semantic role: *corollary*. Compiles to eHTML `<corollary>`.
 
 Registers:
 
@@ -129,7 +129,7 @@ Any continuous function on a closed interval is bounded.
 
 <sub-section | General Usage>
 
-Semantic role: *proposition*. Compiles to Layer 1 `<proposition>`.
+Semantic role: *proposition*. Compiles to eHTML `<proposition>`.
 
 Registers:
 
@@ -170,7 +170,7 @@ $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
 
 <sub-section | General Usage>
 
-Semantic role: *definition*. Compiles to Layer 1 `<definition>`.
+Semantic role: *definition*. Compiles to eHTML `<definition>`.
 
 Registers:
 
@@ -211,7 +211,7 @@ $\cdot$ satisfying associativity, identity, and inverses.
 
 <sub-section | General Usage>
 
-Semantic role: *example*. Compiles to Layer 1 `<example>`.
+Semantic role: *example*. Compiles to eHTML `<example>`.
 
 Registers:
 
@@ -254,7 +254,7 @@ integer has an additive inverse.
 
 <sub-section | General Usage>
 
-Semantic role: *remark*. Compiles to Layer 1 `<remark>`.
+Semantic role: *remark*. Compiles to eHTML `<remark>`.
 
 Registers:
 
@@ -295,7 +295,7 @@ the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
 
 <sub-section | General Usage>
 
-Semantic role: *proof*. Compiles to Layer 1 `<proof>`.
+Semantic role: *proof*. Compiles to eHTML `<proof>`.
 
 Registers:
 
@@ -348,7 +348,7 @@ The argument follows from the preceding lemma.
 
 <sub-section | General Usage>
 
-Semantic role: *dl*. Compiles to Layer 1 `<dl>`.
+Semantic role: *dl*. Compiles to eHTML `<dl>`.
 
 Registers:
 
@@ -358,10 +358,10 @@ Registers:
 <dl>
   <dt | enscribe>
   <dd | An academic publishing system built on HTML+CSS+JS.>
-  <dt | Layer 1>
+  <dt | eHTML>
   <dd | The canonical semantic HTML vocabulary.>
-  <dt | Layer 2>
-  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+  <dt | Enscribe shorthand>
+  <dd | The shorthand authoring syntax that compiles to eHTML.>
 </dl>
 </code>
 
@@ -369,10 +369,10 @@ Registers:
 <dl>
   <dt | enscribe>
   <dd | An academic publishing system built on HTML+CSS+JS.>
-  <dt | Layer 1>
+  <dt | eHTML>
   <dd | The canonical semantic HTML vocabulary.>
-  <dt | Layer 2>
-  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+  <dt | Enscribe shorthand>
+  <dd | The shorthand authoring syntax that compiles to eHTML.>
 </dl>
 </minipage>
 
@@ -402,7 +402,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *dt*. Compiles to Layer 1 `<dt>`.
+Semantic role: *dt*. Compiles to eHTML `<dt>`.
 
 Registers:
 
@@ -434,7 +434,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *dd*. Compiles to Layer 1 `<dd>`.
+Semantic role: *dd*. Compiles to eHTML `<dd>`.
 
 Registers:
 
@@ -474,7 +474,7 @@ The second paragraph of the definition.
 
 <sub-section | General Usage>
 
-Semantic role: *glossary*. Compiles to Layer 1 `<glossary>`.
+Semantic role: *glossary*. Compiles to eHTML `<glossary>`.
 
 Registers:
 
@@ -487,7 +487,7 @@ Registers:
     <dd | An academic publishing system built on HTML+CSS+JS.>
   </glossary-entry>
   <glossary-entry>
-    <dt | Layer 1>
+    <dt | eHTML>
     <dd | The canonical semantic HTML vocabulary.>
   </glossary-entry>
 </glossary>
@@ -503,7 +503,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *glossary-entry*. Compiles to Layer 1 `<glossary-entry>`.
+Semantic role: *glossary-entry*. Compiles to eHTML `<glossary-entry>`.
 
 Registers:
 

@@ -1,0 +1,859 @@
+The document's front-matter declarations — the metadata elements, including the context-resolved title and subtitle variants that a render or import produces.
+
+<section #l1-meta | `<meta>`>
+
+<sub-section | Specification>
+
+`category` `structured-data-containers` · eHTML `<meta>` · JATS `<article-meta, book-meta, or book-part-meta>` · `content` `structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which eHTML wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
+| `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` | For a single-file book-part (type=book-part) only: sets the book-part-type on the generated `<book-part>` wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always "chapter". Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive `<meta>` field). Default "chapter" when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the `<chapter>` / `<appendix>` / … shorthand instead. |
+| `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is `<meta>`'s title — there is no in-header `<icon>`/`<title>` tag. |
+
+Produced by: canonical `<meta>`.
+
+<sub-section | Examples>
+
+<code #code:l1-meta-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins.
+</code>
+
+<minipage #mp:l1-meta-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins.
+</minipage>
+
+*Author writes &lt;meta type=article&gt; at the top with no &lt;article&gt; wrapper. The structural plugin reads type=article and generates: - the &lt;article&gt; container - &lt;article-front&gt; wrapping the original &lt;meta&gt; - &lt;article-body&gt; wrapping the section content &lt;title&gt; is promoted to &lt;article-title&gt; as the first child of &lt;meta&gt;. &lt;meta&gt; itself survives in the output, inside &lt;article-front&gt;.*
+
+<code #code:l1-meta-2>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+</code>
+
+<minipage #mp:l1-meta-2>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+</minipage>
+
+*type=book generates the book-shaped wrapper instead. Changing the single kwarg switches the entire output structure. Each book-part contains its own &lt;meta&gt; with &lt;book-part-title&gt;; no &lt;book-part-meta&gt; wrapper.*
+
+</section>
+
+<section #l1-config | `<config>`>
+
+<sub-section | Specification>
+
+`category` `configuration` · eHTML `<config>` · JATS `<no direct equivalent>` · `content` `none`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `notes` | kwarg |  |  |
+
+Produced by: canonical `<config>`.
+
+<sub-section | Examples>
+
+<code #code:l1-config-1>
+<config citation-style=author-year number-sections=true />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*The authoring form for &lt;config&gt; is kwargs. Settings are read at the discovery pass into the configuration registry; the element itself produces no body output (it renders as an empty &lt;config&gt;).*
+
+<code #code:l1-config-2>
+<config number-figures=true number-tables=true show-source=true />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*More operational options, all from the live kwarg allowlist (citation-style, number-sections, number-figures, number-tables, number-equations, show-source, parse-data-tables, ref-prefix-).*
+
+</section>
+
+<section #l1-title | `<title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<title>` · JATS `<article-title or book-title (inside title-group inside article-meta or book-meta)>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<title>`.
+
+<sub-section | Examples>
+
+<code #code:l1-title-1>
+<meta>
+  <title | The Effect of Elephants on Climate>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Inside &lt;article&gt;, &lt;title&gt; in &lt;meta&gt; becomes &lt;article-title&gt;.*
+
+<code #code:l1-title-2>
+<book>
+  <meta>
+    <title | A Comprehensive Guide>
+  </meta>
+</book>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Inside &lt;book&gt;, &lt;title&gt; in &lt;meta&gt; becomes &lt;book-title&gt;.*
+
+<code #code:l1-title-3>
+<meta>
+  <title | The role of <i type=taxonomic | Loxodonta africana> in ecosystem dynamics>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Titles can contain inline elements. The recursive content parsing handles nested constructs.*
+
+</section>
+
+<section #l1-subtitle | `<subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<subtitle>` · JATS `<subtitle>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<subtitle>`.
+
+<sub-section | Examples>
+
+<code #code:l1-subtitle-1>
+<meta>
+  <title | The Effect of Elephants on Climate>
+  <subtitle | A Multi-Year Field Study in Tanzania>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+</section>
+
+<section #l1-article-title | `<article-title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<article-title>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-article-subtitle | `<article-subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<article-subtitle>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-title | `<book-title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<book-title>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-subtitle | `<book-subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<book-subtitle>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-part-title | `<book-part-title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<book-part-title>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-book-part-subtitle | `<book-part-subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<book-part-subtitle>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-section-title | `<section-title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<section-title>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-section-subtitle | `<section-subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<section-subtitle>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-sub-section-title | `<sub-section-title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<sub-section-title>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-sub-section-subtitle | `<sub-section-subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<sub-section-subtitle>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-sub-sub-section-title | `<sub-sub-section-title>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<sub-sub-section-title>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-sub-sub-section-subtitle | `<sub-sub-section-subtitle>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<sub-sub-section-subtitle>` · `content` `prose`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-abstract | `<abstract>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<abstract>` · JATS `<abstract>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `unstructured` `structured` `graphical` `executive-summary` `other` | Distinguishes abstract types. Structured abstracts have explicit sub-section headings (Background, Methods, Results, Conclusion); unstructured abstracts are flowing prose. |
+| `word-limit` | kwarg |  | Optional documentation of the journal's word limit for this abstract. Informational only; does not enforce. |
+
+Produced by: canonical `<abstract>`.
+
+<sub-section | Examples>
+
+<code #code:l1-abstract-1>
+<abstract |
+This paper presents new evidence that elephant populations
+significantly affect regional climate patterns through their
+role in shaping vegetation and carbon storage.
+>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Unstructured abstract (the default). Single paragraph of summary prose.*
+
+<code #code:l1-abstract-2>
+<abstract type=structured |
+**Background:** Elephant populations have declined significantly.
+
+**Methods:** We surveyed 50 forest sites over 10 years.
+
+**Results:** Decline correlates with vegetation loss.
+
+**Conclusion:** Conservation efforts are essential.
+>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Structured abstract using markdown bold for section headings. Common in medical and scientific journals. The structure is visible in the rendered output via the bold prefixes.*
+
+<code #code:l1-abstract-3>
+<abstract word-limit=250 |
+This paper presents...
+>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+</section>
+
+<section #l1-keywords | `<keywords>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<keywords>` · JATS `<kwd-group>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<keywords>`.
+
+<sub-section | Examples>
+
+<code #code:l1-keywords-1>
+<meta>
+  <keywords | elephants, conservation, climate, carbon storage>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Comma-separated keyword list — the simpler and more common authoring form. The exporter splits on commas when emitting JATS.*
+
+<code #code:l1-keywords-2>
+<meta keywords="elephants, conservation, climate" />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Kwarg-form authoring lifts to the child-tag form at the gate.*
+
+</section>
+
+<section #l1-subject | `<subject>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<subject>` · JATS `<subject>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `scheme` | kwarg |  | Optional classification scheme this subject belongs to (e.g. "MSC2020" for the AMS Mathematics Subject Classification, "ACM" for ACM Computing Classification, "MeSH" for biomedical subjects). Identifies the controlled vocabulary the subject value is drawn from. |
+
+Produced by: canonical `<subject>`.
+
+<sub-section | Examples>
+
+<code #code:l1-subject-1>
+<meta>
+  <subject | Ecology of large mammals>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Free-form subject. Common for general-interest documents.*
+
+<code #code:l1-subject-2>
+<meta>
+  <subject scheme=MSC2020 | 92D40>
+  <subject scheme=MSC2020 | 92D25>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Multiple subjects from a controlled vocabulary. The scheme identifies the classification system; the JATS exporter generates the appropriate &lt;subj-group subj-group-type="..."&gt; wrapper.*
+
+</section>
+
+<section #l1-author | `<author>`>
+
+<sub-section | Specification>
+
+`category` `structured-data-containers` · eHTML `<author>` · JATS `<contrib contrib-type="author">` · `content` `structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | The author's name. Authored as a kwarg, lifted at the normalize-to-canonical gate to a <name> child tag. Equivalent to authoring <name \| ...> inside the <author>'s child-tag form. |
+| `affiliation` | kwarg |  | Author's institutional affiliation. Lifts to <affiliation>. |
+| `orcid` | kwarg |  | Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to <orcid>. |
+| `email` | kwarg |  | Author's contact email address. Lifts to <email>. |
+| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical eHTML <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical eHTML node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
+
+Produced by: canonical `<author>`.
+
+<sub-section | Examples>
+
+<code #code:l1-author-1>
+<author | Jane Goodall>
+</code>
+
+<minipage #mp:l1-author-1>
+<author | Jane Goodall>
+</minipage>
+
+*Backward-compatible casual form (carried forward from before the structured-interface reconciliation). The pipe content sits as text content of &lt;author&gt;; it is NOT lifted to a &lt;name&gt; child — authors who want the structured shape use the kwarg form below or the child-tag form. JATS export reads the name string either way.*
+
+<code #code:l1-author-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+</code>
+
+<minipage #mp:l1-author-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+</minipage>
+
+*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &lt;author&gt;.*
+
+<code #code:l1-author-3>
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+  <email | jane@example.com>
+</author>
+</code>
+
+<minipage #mp:l1-author-3>
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+  <email | jane@example.com>
+</author>
+</minipage>
+
+*Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.*
+
+<code #code:l1-author-4>
+<meta>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <author +corresponding | Charles Darwin>
+</meta>
+</code>
+
+<minipage #mp:l1-author-4>
+<meta>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <author +corresponding | Charles Darwin>
+</meta>
+</minipage>
+
+*Multiple authors are sibling &lt;author&gt; elements inside &lt;meta&gt;. The third is the corresponding author. JATS export groups them as &lt;contrib-group&gt;.*
+
+</section>
+
+<section #l1-editor | `<editor>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<editor>` · JATS `<contrib contrib-type="editor">` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `affiliation` | kwarg |  |  |
+| `orcid` | kwarg |  |  |
+| `email` | kwarg |  |  |
+| `role` | kwarg | `editor` `co-editor` `series-editor` `volume-editor` `guest-editor` `other` |  |
+
+Produced by: canonical `<editor>`.
+
+<sub-section | Examples>
+
+<code #code:l1-editor-1>
+<editor | The Editor>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+<code #code:l1-editor-2>
+<editor role=series-editor affiliation="Cambridge University" | Jane Goodall>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+</section>
+
+<section #l1-name | `<name>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<name>` · JATS `<string-name>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<name>`.
+
+<sub-section | Examples>
+
+<code #code:l1-name-1>
+<author>
+  <name | Jane Goodall>
+</author>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*The common case. Pipe content becomes the name string.*
+
+<code #code:l1-name-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" +corresponding>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Kwarg form of &lt;author&gt;. The `name` kwarg lifts to a &lt;name&gt; child tag at the normalize-to-canonical gate, parallel to &lt;meta&gt;'s kwarg-to-child-tag lift. The `+corresponding` boolean stays as a kwarg/attribute on the canonical eHTML &lt;author&gt; (it is a scalar marker, not a structured field).*
+
+</section>
+
+<section #l1-affiliation | `<affiliation>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<affiliation>` · JATS `<aff>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<affiliation>`.
+
+<sub-section | Examples>
+
+<code #code:l1-affiliation-1>
+<author>
+  <name | Jane Goodall>
+  <affiliation | Anthropic>
+</author>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Simple author affiliation. The affiliation sits as a sub-element of &lt;author&gt;, parallel to other rich-author-metadata elements (&lt;orcid&gt;, &lt;email&gt;).*
+
+<code #code:l1-affiliation-2>
+<author>
+  <name | Jane Goodall>
+  <affiliation #aff1 | Anthropic, San Francisco, USA>
+</author>
+<author>
+  <name | David Attenborough>
+  <affiliation #aff1 />
+</author>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Shared affiliation. The id on the first affiliation lets subsequent authors reference the same one by id via a self-closing tag. JATS exporter generates the appropriate &lt;xref ref-type="aff" rid="aff1"&gt; structure.*
+
+</section>
+
+<section #l1-orcid | `<orcid>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<orcid>` · JATS `<contrib-id>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<orcid>`.
+
+<sub-section | Examples>
+
+<code #code:l1-orcid-1>
+<author>
+  <name | Jane Goodall>
+  <orcid | 0000-0002-1825-0097>
+</author>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Bare 16-digit ORCID — the canonical form.*
+
+<code #code:l1-orcid-2>
+<author>
+  <name | Jane Goodall>
+  <orcid | https://orcid.org/0000-0002-1825-0097>
+</author>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*URL form is accepted but bare form is preferred.*
+
+</section>
+
+<section #l1-email | `<email>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<email>` · JATS `<email>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<email>`.
+
+<sub-section | Examples>
+
+<code #code:l1-email-1>
+<author>
+  <name | Jane Goodall>
+  <email | jane@example.org>
+</author>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Author contact email. Common in journal article metadata for the corresponding author (see also the +corresponding boolean kwarg on &lt;author&gt;).*
+
+</section>
+
+<section #l1-date | `<date>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<date>` · JATS `<pub-date or date (in history)>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `publication` `submission` `acceptance` `revision` `retraction` `embargo` `other` | Distinguishes different kinds of dates. The default (publication) is the date the document was published. |
+| `format` | kwarg | `iso` `ymd` `ymd-time` `mdy` `dmy` `custom` | Optional hint about how the date should be parsed and formatted. Default is iso (YYYY-MM-DD). |
+
+Produced by: canonical `<date>`.
+
+<sub-section | Examples>
+
+<code #code:l1-date-1>
+<date | 2024-03-15>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Simple publication date. The type defaults to "publication" when not specified.*
+
+<code #code:l1-date-2>
+<date type=submission | 2023-11-01>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+<code #code:l1-date-3>
+<meta>
+  <date type=submission | 2023-11-01>
+  <date type=acceptance | 2024-02-10>
+  <date type=publication | 2024-03-15>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Multiple dates of different types. The publication date is the primary; submission, acceptance, etc., go in JATS history.*
+
+<code #code:l1-date-4>
+<date | March 15, 2024>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Free-form date format. Acceptable but ISO 8601 is preferred for machine readability and for predictable JATS export.*
+
+</section>
+
+<section #l1-publication-date | `<publication-date>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<publication-date>` · JATS `<pub-date>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `format` | kwarg | `iso` `ymd` `ymd-time` `mdy` `dmy` `custom` | Optional hint about how the date should be parsed and formatted. Default is iso (YYYY-MM-DD). Same set as <date>'s format kwarg. |
+
+Produced by: canonical `<publication-date>`.
+
+<sub-section | Examples>
+
+<code #code:l1-publication-date-1>
+<meta>
+  <publication-date | 2024-03-15>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*ISO 8601 publication date — the preferred form.*
+
+<code #code:l1-publication-date-2>
+<meta>
+  <publication-date | March 15, 2024>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Free-form publication date. Acceptable but ISO 8601 is preferred for predictable JATS export and machine readability.*
+
+</section>
+
+<section #l1-license | `<license>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<license>` · JATS `<license>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `href` | kwarg |  | Optional URL of the license terms (e.g. https://creativecommons.org/licenses/by/4.0/). |
+
+Produced by: canonical `<license>`.
+
+<sub-section | Examples>
+
+<code #code:l1-license-1>
+<meta>
+  <license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*License name with canonical URL.*
+
+<code #code:l1-license-2>
+<meta license="MIT License" />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Kwarg-form authoring (license name only) lifts to the child-tag form at the normalize-to-canonical gate.*
+
+</section>
+
+<section #l1-lang | `<lang>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<lang>` · JATS `<(no direct element; maps to xml:lang attribute)>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<lang>`.
+
+<sub-section | Examples>
+
+<code #code:l1-lang-1>
+<meta>
+  <lang | en-US>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*BCP 47 language tag. The eHTML form preserves the value as a child element of &lt;meta&gt;; downstream consumers (the JATS exporter, the render-mode lowering) project it where each format expects.*
+
+<code #code:l1-lang-2>
+<meta lang="fr" />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Kwarg-form authoring lifts to the child-tag form at the gate.*
+
+</section>
+
+<section #l1-version | `<version>`>
+
+<sub-section | Specification>
+
+`category` `metadata` · eHTML `<version>` · JATS `<(no direct standard element; uncertain — may map to article-version or custom-meta)>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<version>`.
+
+<sub-section | Examples>
+
+<code #code:l1-version-1>
+<meta>
+  <version | 1.0.0>
+</meta>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Semantic version. Other formats are equally valid as a free-form string.*
+
+<code #code:l1-version-2>
+<meta version="draft-2" />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*Kwarg-form authoring lifts to the child-tag form at the gate.*
+
+</section>

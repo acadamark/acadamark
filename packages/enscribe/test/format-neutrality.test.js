@@ -1,6 +1,6 @@
 // View-source formatting — visual neutrality (#117).
 //
-// The rendered Layer 1 HTML is pretty-printed for readable view-source (rehype-format,
+// The rendered eHTML is pretty-printed for readable view-source (rehype-format,
 // wrapped enscribe-inline-aware: lib/format-html.js). The HARD constraint is that formatting
 // changes ONLY the source text, never the rendering. This gate proves that:
 //

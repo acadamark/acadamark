@@ -16,7 +16,7 @@
 //   - whether to wrap the body in a LaTeX environment (envs → yes; sigils
 //     and <math> long-form → no)
 //   - which wrapper element to emit (matches the source tagname, so each
-//     tag retains its source-intent in the Layer 1 output)
+//     tag retains its source-intent in the eHTML output)
 //
 // Wrap-inside convention for the env tags (Phase 2 slice 2b, Q2): authors
 // write pure environment body (`<matrix>1 & 2 \\ 3 & 4</matrix>`); the
@@ -104,7 +104,7 @@ function stripPositions(nodes) {
 //
 // The wrapper element emitted by the handler matches the source tagname
 // (not derived from this spec) — that's what keeps `<matrix>` distinct from
-// `<align>` in the rendered Layer 1 output.
+// `<align>` in the rendered eHTML output.
 //
 // `<align>` and `<eqnarray>` both map to KaTeX's `aligned` environment
 // (KaTeX doesn't implement the top-level LaTeX `align` / `eqnarray` envs).

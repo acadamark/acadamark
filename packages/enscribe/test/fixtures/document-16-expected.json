@@ -358,7 +358,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "After the normalize-to-canonical gate runs, all three sections must produce\nthe structurally identical Layer 1 ",
+                      "value": "After the normalize-to-canonical gate runs, all three sections must produce\nthe structurally identical eHTML ",
                       "position": {
                         "start": {
                           "line": 19,
@@ -367,8 +367,8 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 36,
-                          "offset": 588
+                          "column": 34,
+                          "offset": 586
                         }
                       }
                     },
@@ -389,13 +389,13 @@
                       "position": {
                         "start": {
                           "line": 20,
-                          "column": 47,
-                          "offset": 599
+                          "column": 45,
+                          "offset": 597
                         },
                         "end": {
                           "line": 23,
                           "column": 20,
-                          "offset": 793
+                          "offset": 791
                         }
                       }
                     }
@@ -409,7 +409,7 @@
                     "end": {
                       "line": 23,
                       "column": 20,
-                      "offset": 793
+                      "offset": 791
                     }
                   }
                 }
@@ -429,7 +429,7 @@
     "end": {
       "line": 24,
       "column": 1,
-      "offset": 794
+      "offset": 792
     }
   }
 }

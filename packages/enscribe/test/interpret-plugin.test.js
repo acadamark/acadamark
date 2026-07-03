@@ -162,7 +162,7 @@ export function run() {
     console.log('PASS: interpret-plugin: <meta type=article> → data-document-type');
   }
 
-  // --- <blockquote> (explicit Layer 1 name) ---
+  // --- <blockquote> (explicit eHTML name) ---
   // <blockquote> is FLOW (#326): its single paragraph keeps its <p> (the gate
   // kept it; convertContent passes it through), matching the multi-paragraph case.
   {

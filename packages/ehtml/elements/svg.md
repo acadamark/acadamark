@@ -1,0 +1,168 @@
+---
+semantic_role: svg
+category: frameables
+semantic_family: exhibit
+html_output:
+  element: svg
+  is_html_native: true
+  default_attributes: {}
+enscribe_attributes:
+  id:
+    maps_to: id
+  classes:
+    maps_to: class
+  kwargs:
+    width:
+      maps_to: width
+      notes: |
+        SVG width attribute. CSS length or unitless number. Maps directly
+        to the rendered <svg> element's width attribute.
+    height:
+      maps_to: height
+      notes: |
+        SVG height attribute. Same shape as width.
+    viewBox:
+      maps_to: viewBox
+      notes: |
+        SVG viewBox attribute. Defines the coordinate system. Passes
+        through to the rendered <svg> element.
+    caption:
+      handled_by: handler
+      notes: |
+        Optional caption text rendered in a sibling <figcaption>.
+        The caption= kwarg lifts to a <caption> child tag at the
+        normalize-to-canonical gate, matching the frameable convention.
+  booleans:
+    numbered:
+      handled_by: handler
+      default: true
+      notes: |
+        Whether this SVG participates in the document-wide figure
+        sequence (shares the `figure` counter with <fig>, <mermaid>,
+        <abc>). Use +numbered (default) to number, -numbered to
+        suppress.
+    border:
+      handled_by: handler
+      default: false
+      notes: |
+        The frameable surface. When +border is set, the rendered
+        <svg> wrapper gains the `frameable-border` class.
+content:
+  becomes: raw-svg-source
+  notes: |
+    The pipe content is the SVG source — pass-through to the rendered
+    <svg> element. Treated as opaque (not re-parsed by the recursive
+    content step) because SVG is its own XML language and the parser
+    has no business interpreting it.
+jats_counterpart:
+  element: graphic
+  attributes: {}
+  notes: |
+    JATS uses <graphic> for embedded images (raster or vector). Inline
+    SVG has no external resource path, so enscribe embeds it as a base64
+    data URI on the graphic's xlink:href —
+    <graphic xlink:href="data:image/svg+xml;base64,…"/> — carrying the
+    full SVG losslessly in a single self-contained XML file (consistent
+    with the HTML path's embedResources). This is DTD-valid (xlink:href
+    is CDATA) and needs no resource-packaging mechanism. A captioned or
+    numbered <svg> wraps in <fig>…</fig>, with the number as <label> and
+    the caption as <caption>. (#86.)
+shorthand_examples:
+  - source: |
+      <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
+        <circle cx="50" cy="50" r="40" fill="blue" />
+      >
+    ehtml: |
+      <svg viewBox="0 0 100 100" width="200" height="200">
+        <circle cx="50" cy="50" r="40" fill="blue" />
+      </svg>
+    notes: |
+      A lone inline SVG. `<svg>` is numbered by default (it shares the
+      figure counter), so `-numbered` is what opts out of framing for a
+      purely inline graphic. The source is opaque pipe content; the
+      attributes pass through to the rendered <svg> element.
+  - source: |
+      <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
+        <circle cx="50" cy="50" r="40" />
+      >
+    ehtml: '<figure><svg id="fig:diagram" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"></svg><figcaption><span class="figure-label">Figure 1.</span> A simple circle</figcaption></figure>'
+    notes: |
+      Captioned and numbered → framed by the ordinary frameable rule: the
+      handler wraps the <svg> in a <figure> with the <figcaption> as a
+      sibling inside the wrapper (figcaption is not a valid child of <svg>).
+      Shares the figure counter with <fig>; `<ref @fig:diagram>` resolves
+      to "Figure N".
+interpreter_strategy: handler
+handler_module: ./handlers/svg.js
+handler_responsibilities:
+  - Emit the <svg> element with the standard SVG attributes (width, height, viewBox).
+  - Preserve the pipe-content SVG source verbatim as the rendered <svg>'s inner content.
+  - When +border is set, add `frameable-border` to the class list.
+  - When captioned or numbered, frame the <svg> by wrapping it in a <figure> with the <figcaption> as a sibling inside the wrapper (figcaption is not a valid child of <svg>); the figcaption carries the "Figure N." label prefix and any caption text. A bare <svg -numbered> with no caption renders as a lone <svg>.
+---
+
+# `<svg>`
+
+Inline SVG embedded in the document. A member of the frameable class — captionable, numberable, optionally bordered.
+
+`<svg>` lets an author embed vector graphics directly without going through `<fig>`'s image-via-src path. The pipe content is the SVG XML source, treated as opaque (the parser does not interpret it).
+
+## Semantic intent
+
+SVG is a first-class web image format and a frequent academic-publishing need (diagrams, scientific plots, custom illustrations). `<svg>` provides a direct authoring surface for SVG that integrates with enscribe's frameable infrastructure for numbering and captioning.
+
+The rendered output is HTML-native `<svg>` (which browsers handle natively). For JATS export, the SVG content lifts to `<graphic>` with appropriate referencing.
+
+## Frameable membership
+
+`<svg>` is a member of the frameable class — and it is the **canonical home for framed inline SVG**. It shares the figure counter with `<fig>`, `<mermaid>`, `<abc>`. The shared frameable surface attributes apply: `id`, `caption`, `border`, `numbered`. A captioned or numbered `<svg>` is framed by the ordinary frameable rule — wrapped in a `<figure>` with the `<figcaption>` inside, matching `<fig>`. A bare `<svg -numbered>` with no caption stays a lone `<svg>`.
+
+There is **no `<fig svg>` form**: a `(svg, fig)` format-word path would be a redundant second route to the same framed inline SVG that `<svg>`-as-frameable already provides, so it was retired (#81). Inline SVG goes through `<svg>`.
+
+## Why a handler
+
+The handler is needed because:
+
+- The pipe content is opaque SVG source, not parsed as enscribe.
+- The frameable caption rendering needs to emit a `<figcaption>` sibling when numbered or captioned.
+- The `+border` flag adds the `frameable-border` class.
+
+## Authoring patterns
+
+**Inline SVG.**
+
+```
+<svg viewBox="0 0 100 100" width=200 height=200 |
+  <circle cx="50" cy="50" r="40" fill="blue" />
+>
+```
+
+**Captioned SVG (frameable).**
+
+```
+<svg #fig:phase-diagram caption="Water's phase diagram" |
+  <!-- ... SVG source ... -->
+>
+```
+
+The id enables `<ref @fig:phase-diagram>` cross-references resolving to "Figure N".
+
+## Attributes
+
+- `width`, `height`, `viewBox` — standard SVG attributes; pass through to the rendered element.
+- `caption` — optional caption text. Frames the SVG: the `<svg>` is wrapped in a `<figure>` with the caption in a `<figcaption>` inside.
+- `+border` — the frameable surface; adds `frameable-border` class.
+- `+numbered` / `-numbered` — participates in the figure counter by default.
+
+## JATS mapping
+
+| enscribe | JATS |
+|-----------|------|
+| `<svg>` | `<graphic xlink:href="data:image/svg+xml;base64,…"/>` (the SVG embedded losslessly as a data URI) |
+| Captioned / numbered `<svg>` | `<fig><label>N</label><caption>…</caption><graphic xlink:href="data:…"/></fig>` |
+
+## See also
+
+- [`<fig>`](fig.md) — image figures via src.
+- [`<frame>`](frame.md) — generic frameable wrapper.
+- [`<diagram>`](diagram.md) — diagrams via the Mermaid DSL (`<diagram mermaid>`) and music notation via the abc DSL (`<diagram abc>`).

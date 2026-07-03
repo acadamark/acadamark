@@ -19,7 +19,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 ## Authoring — what a `.emd` document can express
 
 - [x] Three authoring registers: canonical tags, sigil shorthands, markdown idioms
-- [x] Tagged shorthand — `<tag #id .class attr=value +flag -flag | content>`. A **bare** attribute name that is a *known* boolean (an element's vocab boolean, or a boolean `<config>` kwarg) also means `true` — `<config toc>` ≡ `<config toc=true>`, `<section unlisted>` ≡ `<section +unlisted>` ([#219](https://github.com/enscribejs/enscribe/issues/219)) — the canonical HTML / Layer 1 spelling; a bare *unknown* name stays unrecognized (no phantom boolean), and bare resolves only for boolean kwargs (a valued kwarg like `toc-depth` still needs `=value`). Promoted in the shared gate, so static and live agree
+- [x] Tagged shorthand — `<tag #id .class attr=value +flag -flag | content>`. A **bare** attribute name that is a *known* boolean (an element's vocab boolean, or a boolean `<config>` kwarg) also means `true` — `<config toc>` ≡ `<config toc=true>`, `<section unlisted>` ≡ `<section +unlisted>` ([#219](https://github.com/enscribejs/enscribe/issues/219)) — the canonical HTML / eHTML spelling; a bare *unknown* name stays unrecognized (no phantom boolean), and bare resolves only for boolean kwargs (a valued kwarg like `toc-depth` still needs `=value`). Promoted in the shared gate, so static and live agree
 - [x] Sigil tags — sections `<# #>`, inline/display math `<$ $>` `<$$ $$>`, code `` <` `> `` `` <``` ```> ``
 - [x] Same-line long form — `<b>bold</b>` and `<tag>…</tag>` for every vocabulary tag
 - [x] Self-closing form `<tag />`
@@ -47,7 +47,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Links with a positional URL (`<a url | text>`)
 - [x] Book structure — chapters, parts, front/back matter
 - [x] Lists — the `<list>` / `<list ordered>` construct with **open item markers**: `<li>` (canonical), the `<->` / `<*>` sigils (strict-safe), and the `-` / `*` markdown idiom. An item's content is the flow that follows its marker (peer-closed by the next marker or `</list>`), so items hold multiple paragraphs and nested `<list>`s with no indentation. `marker=` (→ CSS `list-style-type`), `start`, and `reversed` are supported. Lowers to standard `<ul>` / `<ol>` + `<li>`, inheriting the HTML render and the JATS `<list>` mapping.
-- [x] Strict mode — the strictness register switch (#36): `<config strict-mode=off|sigil|canonical>` (or the `strictMode` render option, which wins). Each value names the loosest register still interpreted. `sigil` turns the markdown register off — `*`, `#`, `-`, `>`, `` ` ``, `$…$` pass through literal everywhere, including inside tag pipe bodies, with no escaping — while canonical tags and sigils stay live, and would-be-markdown text is flagged. `canonical` turns markdown **and** sigils off (`<# #>` / `<$ $>` / `<->` / `<*>` literal too), leaving only the canonical named-tag register — the canonical `<li>` and the `^{}`/`_{}` shortcuts stay live — and flags would-be-markdown **and** would-be-sigil text. The flag CSS is injected only for a non-`off` rung. `off` (default) is the unchanged single parse → byte-identical. Native inferences (blank-line→paragraph, section nesting) stay on in all states; Layer 1 / JATS are unaffected, and `enscribe lift` honors the mode so `sigil`/`canonical` documents round-trip losslessly. Mechanism: parse off, then re-parse with the register(s) disabled (markdown via micromark `disable`; sigils via the sigil-less `enscribeSyntax` variant)
+- [x] Strict mode — the strictness register switch (#36): `<config strict-mode=off|sigil|canonical>` (or the `strictMode` render option, which wins). Each value names the loosest register still interpreted. `sigil` turns the markdown register off — `*`, `#`, `-`, `>`, `` ` ``, `$…$` pass through literal everywhere, including inside tag pipe bodies, with no escaping — while canonical tags and sigils stay live, and would-be-markdown text is flagged. `canonical` turns markdown **and** sigils off (`<# #>` / `<$ $>` / `<->` / `<*>` literal too), leaving only the canonical named-tag register — the canonical `<li>` and the `^{}`/`_{}` shortcuts stay live — and flags would-be-markdown **and** would-be-sigil text. The flag CSS is injected only for a non-`off` rung. `off` (default) is the unchanged single parse → byte-identical. Native inferences (blank-line→paragraph, section nesting) stay on in all states; eHTML / JATS are unaffected, and `enscribe lift` honors the mode so `sigil`/`canonical` documents round-trip losslessly. Mechanism: parse off, then re-parse with the register(s) disabled (markdown via micromark `disable`; sigils via the sigil-less `enscribeSyntax` variant)
 - [ ] `<html-passthrough>` — needs a spec first
 - [x] Multi-file source, article level — a master document (`<meta>` / structure / `<data>` / `<config>`) assembles `<section src>` child files into one article (design of record: `notes/specs/master-document.md`; epic [#190](https://github.com/enscribejs/enscribe/issues/190)). `enscribe build` parses the master → loads + parses each child → assembles in document order → renders as one article, with **numbering and cross-references resolved across files**: figures and sections number continuously through the assembled document, and a `<ref>` resolves to its target wherever it lives across the children (an unresolved ref renders a visible marker, not a crash). The browser renders the same assembly live via `renderMasterAsync` ([#194](https://github.com/enscribejs/enscribe/issues/194)): it pre-fetches each `<section src>` child against the document base URL, then runs the same assembler — a failed child fetch renders a visible inline error (always-renders)
 - [x] Multi-file source, book level — a `<meta type=book>` master assembles book-part `src` children (`<chapter src>`, `<preface src>`, `<appendix src>`, …) into one `<book>` with front/body/back regions, the same way the article master assembles `<section src>` (epic [#190](https://github.com/enscribejs/enscribe/issues/190)). The assembler is document-class-agnostic — it imposes no wrapper; it passes the master's `<meta>` through and the pipeline structures the assembled tree per `<meta type>`, so an assembled multi-file book is the same tree a single-file book produces. Parts route by type (preface→front, chapters→body, appendix→back); per-chapter figure/section numbering and cross-chapter `<ref>`s resolve over the one assembled tree (chapter 2's first figure is 2.1, a chapter-2 ref to a chapter-1 figure resolves to 1.1); the assembled book exports DTD-valid BITS. Live (`renderMasterAsync`) and static (CLI `build`) render byte-identically — and the static `build` now publishes a book as **separate per-chapter pages by default** (the publishing row below; `--single-page` for the whole book in one file)
@@ -112,19 +112,19 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Design article (architecture and rationale)
 - [x] Quickstart guide (interactive in-browser playground)
 - [x] Authoring Guide (with rendered demonstrations)
-- [x] Layer 1 Vocabulary Reference (MDN-style, element by element)
-- [x] Authoring coverage gallery (the completeness surface — every construct a user can write: each vocab element generated from its entries, plus a curated non-vocabulary supplement for Layer-2 constructs with no vocab entry, e.g. `<list>`; source beside rendered output, with loud GAP markers) (#143)
+- [x] eHTML Vocabulary Reference (MDN-style, element by element)
+- [x] Authoring coverage gallery (the completeness surface — every construct a user can write: each vocab element generated from its entries, plus a curated non-vocabulary supplement for Enscribe-shorthand constructs with no vocab entry, e.g. `<list>`; source beside rendered output, with loud GAP markers) (#143)
 - [x] JATS-relationship article
 - [x] Imported-article demonstration page (a real published paper, via `import-jats`)
-- [x] Shorthand + Layer 1 reference catalogs (generated from the shorthand tag-forms source and the vocab `elements/*.md` — every form/element listed, never hand-maintained) (#236)
+- [x] Shorthand + eHTML reference catalogs (generated from the shorthand tag-forms source and the vocab `elements/*.md` — every form/element listed, never hand-maintained) (#236)
 - [x] Rendering guide — the three orthogonal axes (rendering · file-structure · editing), a yes/no render-choice flowchart, and the generated `<config>` option grid (one row per `CONFIG_KWARGS` key, guarded in lockstep so it cannot drift from what the engine accepts) (#239)
-- [x] Vocabulary intros — the two curated register introductions (Enscribe Shorthand · Layer 1): the conceptual idea plus a few featured constructs rendered live from the vocab source (the guarded `FEATURED_*` lists, so they can't drift), each linking into its comprehensive catalog. The Layer 1 intro shows each construct's shorthand → canonical `layer1_html` → live render (#241)
+- [x] Vocabulary intros — the two curated register introductions (Enscribe Shorthand · eHTML): the conceptual idea plus a few featured constructs rendered live from the vocab source (the guarded `FEATURED_*` lists, so they can't drift), each linking into its comprehensive catalog. The eHTML intro shows each construct's shorthand → canonical `ehtml` → live render (#241)
 - [x] Static + live site build (`npm run build:site-all`: `docs-source/` → `site/` static, `site/live/` live)
 
 ## Packaging & infrastructure
 
 - [x] Monorepo with npm-workspace linking
-- [x] Three published packages — `@enscribejs/enscribe` (Layer 1 core + shorthand parser + interpreter), `@enscribejs/cli` (the `enscribe` command + JATS export/import + pandoc bridge), and `@enscribejs/layer1-vocabulary`
+- [x] Three published packages — `@enscribejs/enscribe` (eHTML core + shorthand parser + interpreter), `@enscribejs/cli` (the `enscribe` command + JATS export/import + pandoc bridge), and `@enscribejs/ehtml`
 - [x] `@enscribejs/enscribe/core` — the inward-pointing shared foundation (`fs`-free, browser-safe); the parser (`@enscribejs/enscribe/parser`) and interpreter are sibling subtrees of the same package
 - [x] Coordinated v0.2.0 versioning; MIT license; publish-ready package metadata
 - [x] Test suites across the packages (parser, interpreter, core, JATS export/import, CLI, vocabulary)
@@ -144,7 +144,7 @@ the **live app-shell render** + the **live book/article edit loop** (preview-onl
 #194), the **`<data>` asset registry** (embedded + external + every media type +
 duplicate placement + cross-file merge + JATS `<graphic>` export, #190),
 **`<library src>` live-loading** (#197), the **docs catalog** (coverage gallery
-+ generated Layer-1 reference, #236 / #239 / #241), and the **website document
++ generated eHTML reference, #236 / #239 / #241), and the **website document
 type** ([#246](https://github.com/enscribejs/enscribe/issues/246)) — `<meta type=website>`
 composes a multi-page site (a static dir-per-page build and a live `?page=` SPA),
 each page rendering natively as an article or book with cross-page references
@@ -154,9 +154,9 @@ renders rich documents (lists, strict mode, sidenotes + margin notes, article
 appendices, external `<library src>` citation sources, the authoring coverage
 gallery, plus the v0.3.x markup-in-table-cells / section numbering / smart
 typography / callouts and the v0.2.x base), converts to and from JATS — framed as
-an export translation from an HTML-shaped Layer 1 (the decided direction; lists
+an export translation from an HTML-shaped eHTML (the decided direction; lists
 were the inaugural migrated element group and figures the second, with the
-remaining groups still rendering as custom Layer 1 elements) — ships a client-side
+remaining groups still rendering as custom eHTML elements) — ships a client-side
 browser library and the `enscribe` CLI, and is published to npm as three scoped
 packages. Open work is tracked in
 [GitHub Issues](https://github.com/enscribejs/enscribe/issues) by milestone and

@@ -1,6 +1,6 @@
 # Render-mode lowering
 
-Render mode is an optional, downstream lowering of canonical Layer 1 to
+Render mode is an optional, downstream lowering of canonical eHTML to
 plain HTML — `<section-title>` → `<h1>`, `<article-front>` → `<header>`,
 and so on — producing output that displays in a browser without
 enscribe's stylesheet. It is the third rung of the display ladder
@@ -12,7 +12,7 @@ STATUS question, and the open work is tracked in
 [GitHub issue #40](https://github.com/enscribejs/enscribe/issues/40)
 (milestone in `ROADMAP.md`). Nothing here is emitted by the current
 pipeline. This spec gathers design that previously lived scattered
-across `article.md`, `book.md`, `layer1-naming.md`, and an issue
+across `article.md`, `book.md`, `ehtml-naming.md`, and an issue
 comment; it relocates that design unchanged — it does not extend it.
 The two genuinely-open decisions (§"Open decisions") are recorded here
 but **settled only when the render-mode machinery is built**, under #40.
@@ -21,12 +21,12 @@ but **settled only when the render-mode machinery is built**, under #40.
 
 ## Two compilation targets
 
-Enscribe Layer 1 is the canonical, archival representation:
-custom-element-rich, semantically explicit, lossless. But Layer 1 is not
+Enscribe eHTML is the canonical, archival representation:
+custom-element-rich, semantically explicit, lossless. But eHTML is not
 the only useful output — for browser display without custom CSS, a
 *render-mode* lowering is also useful.
 
-**Semantic mode** (the default) preserves Layer 1 elements:
+**Semantic mode** (the default) preserves eHTML elements:
 
 ```html
 <section>
@@ -68,7 +68,7 @@ removes wrappers where they don't add value at the rendering layer.
 
 ### Article structure
 
-| Layer 1 element | Render-mode lowering |
+| eHTML element | Render-mode lowering |
 |----------------|----------------------|
 | `<article>` | `<article>` (unchanged) |
 | `<article-front>` | `<header>` |
@@ -79,7 +79,7 @@ removes wrappers where they don't add value at the rendering layer.
 
 ### Book structure
 
-| Layer 1 element | Render-mode lowering |
+| eHTML element | Render-mode lowering |
 |----------------|----------------------|
 | `<book>` | `<article>` |
 | `<book-front>` | `<header>` |
@@ -91,7 +91,7 @@ removes wrappers where they don't add value at the rendering layer.
 
 ### Title and section hierarchy
 
-| Layer 1 element | Render-mode lowering |
+| eHTML element | Render-mode lowering |
 |-----------------------------|----------------------|
 | `<article-title>` | `<h1>` (top-level) |
 | `<article-subtitle>` | `<p class="subtitle">` or `<h2 class="subtitle">` (see §"Open decisions") |
@@ -134,8 +134,8 @@ titles, arguing for `<p class="subtitle">`.
 - `notes/specs/render-quality.md` §0.2 — render mode is explicitly out
   of scope for the current render-quality predicates (it "gets its own
   predicates when it lands").
-- `notes/specs/layer1-naming.md` — the canonical-vs-render-mode
-  rationale for Layer 1 naming (semantic mode is canonical; render mode
+- `notes/specs/ehtml-naming.md` — the canonical-vs-render-mode
+  rationale for eHTML naming (semantic mode is canonical; render mode
   is the downstream display target).
 - Element docs `article.md` / `book.md` point here for their
   render-mode lowering.

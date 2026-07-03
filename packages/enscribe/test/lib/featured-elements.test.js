@@ -1,18 +1,18 @@
-// Guard (#241): the curated FEATURED_SHORTHAND / FEATURED_LAYER1 lists stay in
+// Guard (#241): the curated FEATURED_SHORTHAND / FEATURED_EHTML lists stay in
 // lockstep with the vocabulary. The docs site's Vocabulary intros render each featured
 // tagname's example FROM the vocab source, so a list entry that names a removed,
 // renamed, aliased, or example-less element would ship a broken/empty intro cell.
 // This test fails — naming the offending tag — on any of those.
 
 import assert from 'node:assert/strict';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
-import { FEATURED_SHORTHAND, FEATURED_LAYER1 } from '../../src/interpreter/lib/featured-elements.js';
+import { VOCABULARY } from '@enscribejs/ehtml';
+import { FEATURED_SHORTHAND, FEATURED_EHTML } from '../../src/interpreter/lib/featured-elements.js';
 
 // A tag is CANONICAL when it is the stem of its own source .md file; a shorthand
 // alias (e.g. `figure` → fig.md) shares the spec object but a different key.
 const canonicalName = (spec) => String(spec?._sourceFile ?? '').split('/').pop().replace(/\.md$/, '');
 
-function checkList(name, list, { requireLayer1Html }) {
+function checkList(name, list, { requireEhtml }) {
   // No duplicates.
   assert.equal(new Set(list).size, list.length, `${name}: duplicate tagname in the featured list`);
 
@@ -20,7 +20,7 @@ function checkList(name, list, { requireLayer1Html }) {
     const spec = VOCABULARY[tag];
     // (1) Resolves to a real vocab element.
     assert.ok(spec, `${name}: featured tag '${tag}' is not a vocabulary element — it would render as a broken intro cell.`);
-    // (2) Canonical (not a shorthand alias), so the heading reads the Layer 1 element name.
+    // (2) Canonical (not a shorthand alias), so the heading reads the eHTML element name.
     assert.equal(
       canonicalName(spec), tag,
       `${name}: featured tag '${tag}' is an alias of '${canonicalName(spec)}' — feature the canonical tagname.`,
@@ -36,20 +36,20 @@ function checkList(name, list, { requireLayer1Html }) {
       !spec['requires-context'],
       `${name}: featured tag '${tag}' requires '${spec['requires-context']}' context — it renders empty on the intro; pick a context-free construct.`,
     );
-    // (5) Layer 1 list only: the intro DISPLAYS the canonical layer1_html expansion.
-    if (requireLayer1Html) {
+    // (5) eHTML list only: the intro DISPLAYS the canonical ehtml expansion.
+    if (requireEhtml) {
       assert.ok(
-        typeof ex.layer1_html === 'string' && ex.layer1_html.trim(),
-        `${name}: featured tag '${tag}' has no shorthand_examples[0].layer1_html — the Layer 1 intro's expansion column would be empty.`,
+        typeof ex.ehtml === 'string' && ex.ehtml.trim(),
+        `${name}: featured tag '${tag}' has no shorthand_examples[0].ehtml — the eHTML intro's expansion column would be empty.`,
       );
     }
   }
 }
 
 export function run() {
-  checkList('FEATURED_SHORTHAND', FEATURED_SHORTHAND, { requireLayer1Html: false });
-  checkList('FEATURED_LAYER1', FEATURED_LAYER1, { requireLayer1Html: true });
+  checkList('FEATURED_SHORTHAND', FEATURED_SHORTHAND, { requireEhtml: false });
+  checkList('FEATURED_EHTML', FEATURED_EHTML, { requireEhtml: true });
   console.log(
-    `PASS: featured-elements — ${FEATURED_SHORTHAND.length} shorthand + ${FEATURED_LAYER1.length} Layer 1 featured tags resolve, canonical, with usable examples`,
+    `PASS: featured-elements — ${FEATURED_SHORTHAND.length} shorthand + ${FEATURED_EHTML.length} eHTML featured tags resolve, canonical, with usable examples`,
   );
 }

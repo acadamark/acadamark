@@ -25,7 +25,7 @@ the hooks removed. It treats drift as the disease (descriptions diverging from c
 ## CALIBRATION — what is NOT drift (so the audit doesn't false-positive)
 The codebase may be mid-migration and deliberately divergent in places. Each audit slice MUST carry these, or it
 will flood false positives on things Ariel has *chosen*:
-1. **Custom-element-shaped ≠ drift.** Layer 1 migrates to HTML-shaped group-by-group. "This element is
+1. **Custom-element-shaped ≠ drift.** eHTML migrates to HTML-shaped group-by-group. "This element is
    custom-element-shaped" is **un-migrated**, not drifted. Flag only if it contradicts a *completed* migration.
 2. **Not-JATS/TEI-compliant ≠ drift.** Reference standards **guide, don't gate** (`notes/decisions.md`): Enscribe
    may diverge, file an issue, proceed. A divergence WITH a tracked issue is **tracked debt**, not drift. Flag

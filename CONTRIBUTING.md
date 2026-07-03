@@ -31,14 +31,14 @@ recording it in the spec.
 | `DESIGN.md` | Spec | Design rationale; the layer model; design directions. |
 | `notes/decisions.md` | Spec (strategic) | Product-shape / strategic design decisions — the target default views and the cross-cutting choices that steer them. The tier above `DESIGN.md`'s engineering rationale; subsystem specs defer up to it. |
 | `notes/taxonomies/*.md` (`semantic-taxonomy.md`, `document-taxonomy.md`, `proposed-processing-taxonomy.md`) | Spec (conceptual tier) | A conceptual tier that drives the subsystem specs — the semantic / document / processing taxonomies the `notes/specs/` files conform to. Sibling to `DESIGN.md`'s conceptual framing. |
-| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `pipeline-contract.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `layer1-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
+| `notes/specs/*.md` (`interpreter.md`, `pipeline.md`, `pipeline-contract.md`, `core.md`, `shorthand-syntax.md`, `escape-rules-spec.md`, `multiline-spec.md`, `recursive-content-spec.md`, `strict-mode.md`, `tag-forms-reference.md`, `idioms.md`, `principles.md`, `ehtml-naming.md`, `shape-tokens.md`, `frameable.md`, `appendices.md`, `format-words.md`, `render-quality.md`, `render-parity.md`, `sidenotes.md`, `lift-lower-round-trip.md`, `master-document.md`, `multi-column-display.md`, `render-mode.md`, `lists.md`, `interchange.md`, `book-navigation.md`, `toc-and-numbering.md`) | Spec | Their subject — the intended design, present-tense, built and unbuilt alike. |
 | `notes/audits/release-audits.md` | Spec | The release-audit procedure — the five reconciliations and how each is run. A process spec; see "The release audit." |
 | `notes/audits/code-review.md` | Governance/Spec (process) | The deep code-review method — the method behind release-audit reconciliation #1. |
 | `notes/audits/deep-drift-audit-design.md` | Governance/Spec (process) | The deep-drift-audit method — how to run a whole-repo, read-only, verify-against-code, report-only three-way (code ⇄ spec ⇄ taxonomy) drift audit. |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
-| `docs-source/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Layer 1 Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
-| Coverage gallery (`docs-site/gen-gallery.js` + `gallery-non-vocab.js`) | Completeness | The project's *completeness* surface and authoring catalog. **Inclusion rule: every construct an author writes, and only those** — "would an author ever write this?" Vocab elements via their `shorthand_examples`, plus the curated non-vocabulary supplement (`gallery-non-vocab.js`, for Layer-2 constructs like `<list>` with no vocab entry). **Generated output an author never writes is excluded** (`authoring: output-only`, e.g. `<note-list>` — notes auto-collect into it). A new construct isn't done until it has a gallery cell; a non-authored output element must not appear. |
+| `docs-source/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Enscribe HTML (eHTML) Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
+| Coverage gallery (`docs-site/gen-gallery.js` + `gallery-non-vocab.js`) | Completeness | The project's *completeness* surface and authoring catalog. **Inclusion rule: every construct an author writes, and only those** — "would an author ever write this?" Vocab elements via their `shorthand_examples`, plus the curated non-vocabulary supplement (`gallery-non-vocab.js`, for Enscribe shorthand constructs like `<list>` with no vocab entry). **Generated output an author never writes is excluded** (`authoring: output-only`, e.g. `<note-list>` — notes auto-collect into it). A new construct isn't done until it has a gallery cell; a non-authored output element must not appear. |
 | GitHub Issues | Open work | ALL open work — bugs, enhancements, features, open questions — grouped by milestone and label. The home for open-work detail. (Not a repo file.) |
 | `CONTRIBUTING.md` | Governance | This system. |
 | `CLAUDE.md` | Governance | Collaboration conventions for AI sessions. |
@@ -95,7 +95,7 @@ Each subsystem's blueprint:
   `notes/specs/toc-and-numbering.md` (the generated contents listing and heading
   numbering, for any document) and `notes/specs/book-navigation.md` (a book's
   chapter rail, prev/next links, cover, and pagination unit).
-- **Layer 1 vocabulary** — `notes/specs/layer1-naming.md` (the four naming
+- **eHTML vocabulary** — `notes/specs/ehtml-naming.md` (the four naming
   rules), `notes/specs/shape-tokens.md` (content-shape machinery),
   `notes/specs/frameable.md` (the out-of-flow frameable element family),
   `notes/specs/minipage.md` (the `<minipage>` sealed frameable — a sub-document
@@ -103,7 +103,7 @@ Each subsystem's blueprint:
   `notes/specs/lists.md` (the `<list>` / `<li>` marker model), and
   `notes/specs/appendices.md` (the `<appendix>` element's article + book
   projections). The per-element vocabulary entries live separately in
-  `packages/layer1-vocabulary/elements/` with `SPEC.md` alongside.
+  `packages/ehtml/elements/` with `SPEC.md` alongside.
 - **Round-trip transforms** — `notes/specs/lift-lower-round-trip.md`
   (the correctness model for the `lift` / `lower` register transforms).
 - **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
@@ -163,8 +163,8 @@ For specific subsystems, read the spec for that subsystem under `notes/specs/`: 
 parser specs together (`shorthand-syntax.md`, `escape-rules-spec.md`,
 `multiline-spec.md`, `recursive-content-spec.md`); the interpreter spec
 (`interpreter.md` and `pipeline.md`); the vocabulary spec
-(`packages/layer1-vocabulary/SPEC.md` and the per-element entries); the naming
-rules (`layer1-naming.md`); the shape-token machinery (`shape-tokens.md`).
+(`packages/ehtml/SPEC.md` and the per-element entries); the naming
+rules (`ehtml-naming.md`); the shape-token machinery (`shape-tokens.md`).
 
 Open work — [GitHub Issues](https://github.com/enscribejs/enscribe/issues).
 Working conventions for AI sessions — `CLAUDE.md`.
@@ -193,10 +193,10 @@ slice is not done until code and documentation agree.
 >
 > 4. **User docs.** Did this slice ship or change a *user-facing* feature or add a
 >    new authoring construct? It is not done until a docs-site page covers it (the
->    Authoring Guide / Quickstart / Layer 1 Reference, as fits), a test fixture
+>    Authoring Guide / Quickstart / eHTML Reference, as fits), a test fixture
 >    demonstrates it, **and** the coverage **gallery** has a cell for every
 >    construct it adds — a vocab element via its `shorthand_examples`, a
->    non-vocabulary construct (Layer-2 authoring with no vocab entry) via the
+>    non-vocabulary construct (Enscribe shorthand authoring with no vocab entry) via the
 >    curated `docs-site/gallery-non-vocab.js` supplement. The gallery is the
 >    project's *completeness* surface: every construct a user can write is on it.
 >    Code and tests with no docs page, no demonstrating fixture, or no gallery
@@ -208,7 +208,7 @@ slice is not done until code and documentation agree.
 >    explicitly — a silent skip and a deliberate "nothing needed" must not look
 >    the same.
 
-**Generated-artifact freshness — applies whenever a slice touches a generated-artifact source.** Several `notes/specs/` files and all `elements/*.md` frontmatter are *build inputs* to committed, guarded artifacts (`packages/enscribe/test/coverage/spec-data.generated.json`, `packages/layer1-vocabulary/src/data.js`). A `notes/specs/` edit is therefore **not** automatically inert: a slice that touches one is not done until the artifact is regenerated and **both** package suites (`packages/layer1-vocabulary` *and* `packages/enscribe`) are green — the spec→artifact mapping crosses package boundaries, so running only the package you think you touched is insufficient. The exact source→artifact map and the regenerate commands live in `CLAUDE.md` §"Generated artifacts and their sources." This rule exists because the six points above did not, on their own, prevent a stale `spec-data.generated.json` from reaching `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)).
+**Generated-artifact freshness — applies whenever a slice touches a generated-artifact source.** Several `notes/specs/` files and all `elements/*.md` frontmatter are *build inputs* to committed, guarded artifacts (`packages/enscribe/test/coverage/spec-data.generated.json`, `packages/ehtml/src/data.js`). A `notes/specs/` edit is therefore **not** automatically inert: a slice that touches one is not done until the artifact is regenerated and **both** package suites (`packages/ehtml` *and* `packages/enscribe`) are green — the spec→artifact mapping crosses package boundaries, so running only the package you think you touched is insufficient. The exact source→artifact map and the regenerate commands live in `CLAUDE.md` §"Generated artifacts and their sources." This rule exists because the six points above did not, on their own, prevent a stale `spec-data.generated.json` from reaching `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)).
 
 **Render-path parity — applies whenever a slice touches the render path.** Live (in-browser) and static (CLI) rendering are one engine, and must produce byte-identical output on matched options. A change to either entry point — the CLI build path or the browser `render*` façade — or to any shared pipeline stage both run must preserve this; do not touch one render path without the other. The standing parity test ([#193](https://github.com/enscribejs/enscribe/issues/193)) renders a representative corpus both ways and asserts byte-identity on matched options, gating render-path changes automatically once it lands. "Matched options" is load-bearing: the live and static *defaults* differ by design — resource link-vs-inline, DSL runtime-vs-baked — and those packaging differences are deliberately outside the byte-parity claim. The invariant, and exactly what is in and out of it, is specified in `notes/specs/render-parity.md` (rationale: `DESIGN.md`'s "Live and static rendering are one engine" direction); the per-mode render predicates that legitimately diverge live in `notes/specs/render-quality.md`, which this rule must not be read to contradict.
 

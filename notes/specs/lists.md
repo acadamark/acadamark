@@ -1,4 +1,4 @@
-# Lists — `<list>` / `<li>`  (marker model, HTML-shaped Layer 1)
+# Lists — `<list>` / `<li>`  (marker model, HTML-shaped eHTML)
 
 ## Shape
 Lists work like sections: a marker, then content after it. `<li>` marks an item; the
@@ -6,9 +6,9 @@ item's content is everything after `<li>` until the next item marker, a nested `
 or `</list>`. No pipe, no wrapper — items aren't bounded by `>`. That is what makes
 nesting clean.
 
-Authoring: `<list>` / `<li>`. Layer 1: HTML (`ul` / `ol` / `li`). Render: identity.
+Authoring: `<list>` / `<li>`. eHTML: HTML (`ul` / `ol` / `li`). Render: identity.
 
-## Item markers — three registers, one Layer 1
+## Item markers — three registers, one eHTML
 - Canonical: `<li>`
 - Sigil: `<->` or `<*>`  (interchangeable, like markdown's two bullet chars)
 - Markdown: `-` or `*`
@@ -38,12 +38,12 @@ literally (an unknown tag).
 A `<list>…</list>` inside an item. The nested list belongs to that item; the next outer
 `<li>` resumes the outer list.
 
-## Layer 1 / export
+## eHTML / export
 Lowers to `ul`/`ol` + `li` (render is identity). JATS export translates to
 `<list list-type>` / `<list-item>`.
 
 ## Round-trip
-`<list>`/`<li>` ↔ Layer 1 ↔ sigil markers, lossless. Markdown `-`/`*` is the lossy register.
+`<list>`/`<li>` ↔ eHTML ↔ sigil markers, lossless. Markdown `-`/`*` is the lossy register.
 
 ## Strict-mode
 - `off`: `<li>`, `<->`/`<*>`, and `-`/`*` all author.

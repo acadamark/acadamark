@@ -1,6 +1,6 @@
 // Phase 2 — Article structuring plugin.
 //
-// Reads the top-level mdast content and wraps it in the Layer 1 article
+// Reads the top-level mdast content and wraps it in the eHTML article
 // structure: <article> > <article-front> + <article-body> + <article-back>.
 //
 // Document type detection (via <meta type=...>):

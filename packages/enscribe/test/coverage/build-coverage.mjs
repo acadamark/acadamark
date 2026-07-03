@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
-import { VOCABULARY } from '../../../layer1-vocabulary/src/index.js';
+import { VOCABULARY } from '../../../ehtml/src/index.js';
 import { TAGNAME_TO_SIGIL } from '../../src/core/tagname-sigil-map.js';
 import {
   DISPOSITION, FORMS, FORM_NAMES, GENERATED, PREDICATES, AREAS,

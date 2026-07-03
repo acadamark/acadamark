@@ -37,7 +37,7 @@ export function run() {
     console.log('PASS: <list> + <li> markers → <ul>/<li>');
   }
 
-  // ── all registers (<li>, <->, <*>, `-`, `*`) → identical Layer 1 ────────────
+  // ── all registers (<li>, <->, <*>, `-`, `*`) → identical eHTML ────────────
   {
     const li        = render('<list>\n<li> a\n<li> b\n</list>');
     const dash       = render('<list>\n<-> a\n<-> b\n</list>');
@@ -49,7 +49,7 @@ export function run() {
     assert.strictEqual(listOf(star), listOf(li), '<*> sigil ≡ <li>');
     assert.strictEqual(listOf(idiom), listOf(li), '`-` idiom ≡ <li>');
     assert.strictEqual(listOf(starIdiom), listOf(li), '`*` idiom ≡ <li>');
-    console.log('PASS: <li> / <-> / <*> / `-` / `*` all lower to identical Layer 1');
+    console.log('PASS: <li> / <-> / <*> / `-` / `*` all lower to identical eHTML');
   }
 
   // ── <list ordered> → <ol> ──────────────────────────────────────────────────

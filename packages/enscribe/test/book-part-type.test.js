@@ -10,7 +10,7 @@
 
 import assert from 'node:assert/strict';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 
 const render = (src) => {
   const file = buildEnscribePipeline({}).processSync(src);

@@ -20,7 +20,7 @@ The `enscribe` package is organized around a small **`src/core/`** folder that
 every output-producing folder depends on. The dependency graph points
 **inward**: `core/` depends on nothing else internal; the parser
 (`src/parser/`) and the interpreter (`src/interpreter/`) depend on it. The
-`@enscribejs/layer1-vocabulary` package is a separate leaf that depends on
+`@enscribejs/ehtml` package is a separate leaf that depends on
 nothing internal and is consumed (alongside `core`) by the interpreter; the
 `@enscribejs/cli` package (JATS export/import, the pandoc bridge) consumes the
 `enscribe` package through its public exports.
@@ -48,12 +48,12 @@ resolved.
    └──────────────────┘     └────────────────────┘
                                       ▲
                                       │
-            @enscribejs/layer1-vocabulary  (separate package:
+            @enscribejs/ehtml  (separate package:
                                             generated data + build script)
 
             @enscribejs/cli  (separate package: JATS export/import +
                               pandoc bridge; consumes the enscribe
-                              package's exports + layer1-vocabulary)
+                              package's exports + ehtml)
 ```
 
 Edges (consumer → dependency):
@@ -63,12 +63,12 @@ Edges (consumer → dependency):
 - `src/interpreter/` → `src/core/` (uses everything in core);
   `src/interpreter/` → `src/parser/` (legitimate parser→interpreter stage
   edge: imports `recursive-content` and the parser's unified-plugin glue);
-  `src/interpreter/` → `@enscribejs/layer1-vocabulary` (imports the generated
+  `src/interpreter/` → `@enscribejs/ehtml` (imports the generated
   `VOCABULARY` data module).
 - `@enscribejs/cli` (JATS export/import + pandoc bridge) → the `enscribe`
-  package's exports + `@enscribejs/layer1-vocabulary`. The JATS export consumes
-  Layer 1 hast/mdast, not the interpreter's HTML.
-- `@enscribejs/layer1-vocabulary` → nothing internal (leaf).
+  package's exports + `@enscribejs/ehtml`. The JATS export consumes
+  eHTML hast/mdast, not the interpreter's HTML.
+- `@enscribejs/ehtml` → nothing internal (leaf).
 - `src/core/` → nothing else internal (leaf within the package).
 
 No cycles. No sideways edges between the parser and interpreter folders except
@@ -109,7 +109,7 @@ list:
 ### Build-time-only code
 
 The Peggy grammar compiler (`build/compile-grammar.js`) and the vocabulary
-generator (`@enscribejs/layer1-vocabulary`'s `build/generate-data-module.js`)
+generator (`@enscribejs/ehtml`'s `build/generate-data-module.js`)
 both use `fs`/`path` and heavy build-time dependencies. They live on the build
 side of the seam. Their outputs — the generated Peggy parser and the generated
 vocabulary `data.js` — ship.
@@ -157,9 +157,9 @@ BUILD TIME (Node-only; runs during build; output ships)
 ═══════════════════════════════════════════════════════════════════════════
   • build/compile-grammar.js
        reads grammar/enscribe.peggy → writes src/parser/generated/parser.js
-  • @enscribejs/layer1-vocabulary build/generate-data-module.js
+  • @enscribejs/ehtml build/generate-data-module.js
        reads elements/*.md → writes src/data.js
-  • @enscribejs/layer1-vocabulary build/check-data-fresh.js
+  • @enscribejs/ehtml build/check-data-fresh.js
        pretest staleness guard (regenerate-and-diff)
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -175,8 +175,8 @@ RUN TIME, BROWSER-SAFE (ships in the client-side bundle)
   ✓ src/interpreter/interpret-plugin.js
   ✓ src/interpreter/dsl/registry.js                     (DSL asset-emit registry; no Node built-ins after the node-assets split)
   ✓ src/interpreter/browser.js                          (the render/renderInto browser façade)
-  ✓ @enscribejs/layer1-vocabulary src/data.js           (the generated data module)
-  ✓ @enscribejs/layer1-vocabulary src/index.js          (re-exports)
+  ✓ @enscribejs/ehtml src/data.js           (the generated data module)
+  ✓ @enscribejs/ehtml src/index.js          (re-exports)
 
 ═══════════════════════════════════════════════════════════════════════════
 RUN TIME, SERVER-OR-BUILD-ONLY (server-side rendering today; replaced

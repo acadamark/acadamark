@@ -754,7 +754,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "value": "A depth-4 heading exceeds Layer 1's three section levels. It is ",
+                      "value": "A depth-4 heading exceeds eHTML's three section levels. It is ",
                       "position": {
                         "start": {
                           "line": 30,
@@ -763,8 +763,8 @@
                         },
                         "end": {
                           "line": 30,
-                          "column": 65,
-                          "offset": 954
+                          "column": 63,
+                          "offset": 952
                         }
                       }
                     },
@@ -779,13 +779,13 @@
                           "position": {
                             "start": {
                               "line": 30,
-                              "column": 67,
-                              "offset": 956
+                              "column": 65,
+                              "offset": 954
                             },
                             "end": {
                               "line": 30,
-                              "column": 70,
-                              "offset": 959
+                              "column": 68,
+                              "offset": 957
                             }
                           }
                         }
@@ -797,13 +797,13 @@
                       "position": {
                         "start": {
                           "line": 30,
-                          "column": 72,
-                          "offset": 961
+                          "column": 70,
+                          "offset": 959
                         },
                         "end": {
                           "line": 31,
                           "column": 25,
-                          "offset": 986
+                          "offset": 984
                         }
                       }
                     },
@@ -819,12 +819,12 @@
                             "start": {
                               "line": 31,
                               "column": 27,
-                              "offset": 988
+                              "offset": 986
                             },
                             "end": {
                               "line": 31,
                               "column": 30,
-                              "offset": 991
+                              "offset": 989
                             }
                           }
                         }
@@ -837,12 +837,12 @@
                         "start": {
                           "line": 31,
                           "column": 32,
-                          "offset": 993
+                          "offset": 991
                         },
                         "end": {
                           "line": 31,
                           "column": 43,
-                          "offset": 1004
+                          "offset": 1002
                         }
                       }
                     },
@@ -864,12 +864,12 @@
                         "start": {
                           "line": 31,
                           "column": 48,
-                          "offset": 1009
+                          "offset": 1007
                         },
                         "end": {
                           "line": 32,
                           "column": 9,
-                          "offset": 1042
+                          "offset": 1040
                         }
                       }
                     },
@@ -891,12 +891,12 @@
                         "start": {
                           "line": 32,
                           "column": 15,
-                          "offset": 1048
+                          "offset": 1046
                         },
                         "end": {
                           "line": 32,
                           "column": 63,
-                          "offset": 1096
+                          "offset": 1094
                         }
                       }
                     }
@@ -910,7 +910,7 @@
                     "end": {
                       "line": 32,
                       "column": 63,
-                      "offset": 1096
+                      "offset": 1094
                     }
                   }
                 },
@@ -926,12 +926,12 @@
                         "start": {
                           "line": 34,
                           "column": 7,
-                          "offset": 1104
+                          "offset": 1102
                         },
                         "end": {
                           "line": 34,
                           "column": 41,
-                          "offset": 1138
+                          "offset": 1136
                         }
                       }
                     },
@@ -960,12 +960,12 @@
                         "start": {
                           "line": 36,
                           "column": 1,
-                          "offset": 1146
+                          "offset": 1144
                         },
                         "end": {
                           "line": 36,
                           "column": 27,
-                          "offset": 1172
+                          "offset": 1170
                         }
                       }
                     }
@@ -974,12 +974,12 @@
                     "start": {
                       "line": 36,
                       "column": 1,
-                      "offset": 1146
+                      "offset": 1144
                     },
                     "end": {
                       "line": 36,
                       "column": 27,
-                      "offset": 1172
+                      "offset": 1170
                     }
                   }
                 },
@@ -995,12 +995,12 @@
                         "start": {
                           "line": 38,
                           "column": 8,
-                          "offset": 1181
+                          "offset": 1179
                         },
                         "end": {
                           "line": 38,
                           "column": 42,
-                          "offset": 1215
+                          "offset": 1213
                         }
                       }
                     },
@@ -1029,12 +1029,12 @@
                         "start": {
                           "line": 40,
                           "column": 1,
-                          "offset": 1223
+                          "offset": 1221
                         },
                         "end": {
                           "line": 40,
                           "column": 16,
-                          "offset": 1238
+                          "offset": 1236
                         }
                       }
                     }
@@ -1043,12 +1043,12 @@
                     "start": {
                       "line": 40,
                       "column": 1,
-                      "offset": 1223
+                      "offset": 1221
                     },
                     "end": {
                       "line": 40,
                       "column": 16,
-                      "offset": 1238
+                      "offset": 1236
                     }
                   }
                 }
@@ -1071,12 +1071,12 @@
                         "start": {
                           "line": 42,
                           "column": 3,
-                          "offset": 1242
+                          "offset": 1240
                         },
                         "end": {
                           "line": 42,
                           "column": 40,
-                          "offset": 1279
+                          "offset": 1277
                         }
                       }
                     }
@@ -1236,7 +1236,7 @@
     "end": {
       "line": 52,
       "column": 1,
-      "offset": 1521
+      "offset": 1519
     }
   }
 }

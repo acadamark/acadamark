@@ -10,7 +10,7 @@ Vocabulary entries classify the content an element accepts using three abstract 
 - **`block`** — content that produces a block-level visual unit, breaking the line and occupying its own vertical region (paragraphs, asides and blockquotes, figures, tables, lists, collected note lists and bibliographies).
 - **`section`** — content that establishes or contains structural divisions: the `<section>` / `<sub-section>` / `<sub-sub-section>` depth ladder, and `<book-part>`.
 
-These three categories are exhaustive for the Layer 1 vocabulary: every authored element belongs to one of them, determined by where it appears in source and how it renders. **The per-element classification lives in each element's vocabulary entry (`content.shape`), which is its source of truth** — this document defines what the tokens *mean*, not which elements carry which token.
+These three categories are exhaustive for the eHTML vocabulary: every authored element belongs to one of them, determined by where it appears in source and how it renders. **The per-element classification lives in each element's vocabulary entry (`content.shape`), which is its source of truth** — this document defines what the tokens *mean*, not which elements carry which token.
 
 ## Using the tokens in vocabulary entries
 
@@ -52,7 +52,7 @@ An element's token reflects **where it appears in source and what placement cons
 - `<note>` is classified `inline` because its source position is inline (the marker sits in prose), even though the note's *displayed* body is block-level.
 - Asides and blockquotes are always `block`, even when their content is short.
 
-Some Layer 1 elements appear only as outputs of the structural pipeline (`<article-front>`, `<section-title>`, `<book-part-title>`, …) and carry no `inline`/`block`/`section` classification: they sit in fixed positions within their parent containers rather than as siblings in a flexible content model.
+Some eHTML elements appear only as outputs of the structural pipeline (`<article-front>`, `<section-title>`, `<book-part-title>`, …) and carry no `inline`/`block`/`section` classification: they sit in fixed positions within their parent containers rather than as siblings in a flexible content model.
 
 ## Why three tokens
 
@@ -153,8 +153,8 @@ the content model is its own property (`content.shape.contains`), not derived fr
 
 ## Related references
 
-- `packages/layer1-vocabulary/SPEC.md` — the vocabulary specification.
-- `packages/layer1-vocabulary/elements/` — the individual entries, each declaring its own `content.shape`.
+- `packages/ehtml/SPEC.md` — the vocabulary specification.
+- `packages/ehtml/elements/` — the individual entries, each declaring its own `content.shape`.
 - `DESIGN.md` — the layer model and the vocabulary's place in it.
 - `notes/specs/interpreter.md` §6.2 — `convertContent`, the interpreter consumer of this content-model
   (the single-paragraph wrapping decision).

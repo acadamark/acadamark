@@ -3,7 +3,7 @@
 The settled strategic and product-shape decisions: the target user-facing
 experience and the cross-cutting choices that steer it. This is the tier above
 `DESIGN.md` — `DESIGN.md` holds the engineering rationale (the layer model, the
-pipeline, the JATS relationship); this file holds the product-shape decisions
+pipeline, the interoperability model — JATS, TEI, EPUB, Scholarly HTML); this file holds the product-shape decisions
 those mechanics serve. Subsystem specs defer up to here for *what experience the
 mechanics build toward*, and hold the mechanics themselves.
 
@@ -73,8 +73,8 @@ already under everyone's fingertips — the browser. No separate word processor,
 tool is required to author or view an Enscribe document.
 
 This is why the live and edit-in-place modes are first-class, not add-ons. A document can be opened in the
-browser, edited as `.emd`, and — with the planned TiddlyWiki-style save — written back to a `.emd` file or a
-Layer 1 HTML file, on a server or the user's own disk. The browser is the editor, the renderer, and the
+browser, edited as `.emd`, and — with the planned TiddlyWiki-style save — written back to a `.emd` file or an
+eHTML file, on a server or the user's own disk. The browser is the editor, the renderer, and the
 viewer at once.
 
 The render / serve / edit matrix below is the practical form of this premise: each way of authoring,
@@ -91,8 +91,8 @@ the docs-site rendering guide; this is the decision of what the axes are and whi
 - **`.emd` shorthand**, rendered by Enscribe — the normal path.
 - **Import** from another format: JATS, or anything pandoc handles (LaTeX, Quarto `.qmd`, Markdown, DOCX,
   RST, Org, Typst, Jupyter, HTML, EPUB, ODT). Import emits rendered HTML, or canonical `.emd`.
-- **Layer 1 is the rendered output, not an input.** It is browser-native HTML, so it can be authored or
-  edited by hand in principle and will display — but the tools do not accept Layer 1 as a render input.
+- **eHTML is the rendered output, not an input.** It is browser-native HTML, so it can be authored or
+  edited by hand in principle and will display — but the tools do not accept eHTML as a render input.
 
 ### Render mode — when and where source becomes display HTML
 
@@ -132,7 +132,7 @@ multiply identical bytes across the whole site (tens of pages); linking shared a
 default.
 
 ### Save — keeping edits
-- The **TiddlyWiki-style save** — edit `.emd` in the browser and write it back to a `.emd` or Layer 1 file,
+- The **TiddlyWiki-style save** — edit `.emd` in the browser and write it back to a `.emd` or eHTML file,
   on disk or a server — is the planned forward feature. Today the editor is **preview-only**: edits are not
   persisted, and no finished file yet carries its own source for re-opening.
 
@@ -209,7 +209,7 @@ trees) and lets the same page appear anywhere in the menu without moving on disk
 
 **Static URLs are path-style, from nav position.** The static build writes each page at its nav-path
 location and addresses it with a pretty trailing-slash URL mirroring the menu hierarchy
-(`/references/layer-1/export/`). This requires an HTTP server (the trailing slash resolves to
+(`/references/eHTML/export/`). This requires an HTTP server (the trailing slash resolves to
 `index.html` via the host's directory index; `file://` will not). The live SPA keeps its client-side
 `?page=slug` routing; the path-style form is the static projection. The cost — moving a page in the
 nav changes its public URL — is accepted in exchange for `<nav>` being the one structure authority; in-
@@ -283,15 +283,15 @@ rebuilds it on push — the standard pattern. *(Process as much as design; may i
 ## Reference standards: guide, don't gate
 
 JATS, TEI, and Scholarly HTML are Enscribe's **reference standards** for scholarly document structure. They
-*guide* Layer 1's design — they are the accumulated wisdom of how scholarly documents are modeled, so Enscribe
+*guide* eHTML's design — they are the accumulated wisdom of how scholarly documents are modeled, so Enscribe
 consults them when designing elements and aims to translate cleanly to them. They sit **above** output-
-convenience formats (LaTeX, Quarto, docx, epub — which inform nothing about Layer 1's *shape*; they are export
+convenience formats (LaTeX, Quarto, docx, epub — which inform nothing about eHTML's *shape*; they are export
 conveniences, not structural standards) and **alongside each other** as established serialization schemes.
 
 **They guide; they do not gate.** Compliance is desirable, not required at each step. When forward progress
-requires Layer 1 to diverge from a reference standard, Enscribe **diverges, files an issue to restore
+requires eHTML to diverge from a reference standard, Enscribe **diverges, files an issue to restore
 compliance later, and proceeds.** Divergence is a tracked, deferrable debt — never a blocker on internal
-evolution. The standards shape *where Layer 1 is going*; they never gate *whether the next step can be taken*.
+evolution. The standards shape *where eHTML is going*; they never gate *whether the next step can be taken*.
 
 The distinction is two switches, not one dial: **guidance ON** (design-binding — the standards shape the
 target), **gating OFF** (timing-advisory — never blocks a step). This preserves the interop positioning
@@ -299,12 +299,33 @@ target), **gating OFF** (timing-advisory — never blocks a step). This preserve
 
 Consequences:
 - The taxonomies and per-element specs do **not** owe a JATS/TEI projection per element. Serialization to a
-  reference standard is a downstream translation that consumes the HTML-shaped Layer 1 (see #147: Layer 1 is
+  reference standard is a downstream translation that consumes the HTML-shaped eHTML (see #147: eHTML is
   HTML-shaped; standards are consulted and exported-to, never shaping). Per-element interop projection lives
   in the **interop cluster** (JATS, TEI, Scholarly HTML, the SPAR ontology mappings, CSL), planned together,
   designed HTML-shape-first.
 - JATS-specific work (e.g. `<dataset>` -> JATS, #313 slice 3) is **not** a completion blocker for its epic; it
   is an interop-cluster item, designed alongside TEI.
+
+
+## eHTML is the primary artifact; JATS is one export among several
+
+**eHTML is a primary rich-document HTML vocabulary — a genuinely useful artifact in its own right, not a
+display target for JATS or a projection of it.** A finished eHTML document is browser-native, self-resolving
+(see *eHTML resolves its own dynamic elements*), and readable on its own terms; it does not owe its existence
+or its value to any downstream schema. This extends *Reference standards: guide, don't gate* above, sharpening
+its framing: the reference standards guide eHTML's *shape*, but eHTML is the thing being designed, not a
+rendering of one of them.
+
+**JATS is one interchange/export target among several — TEI, EPUB, and Scholarly HTML sit on equal footing
+with it.** JATS is not the anchor and not the bridge to scholarly publishing; it is one destination in a set
+of equally-positioned ones. It stays accurate and important — it is the most mature scholarly-interchange
+schema and the best-developed export today — but it is not privileged above the others in how Enscribe frames
+its interoperability.
+
+**Interoperability is high priority, but not first-class.** Translating cleanly to the reference standards
+matters and is designed for (the interop cluster: JATS, TEI, Scholarly HTML, CSL, SPAR); it never gates
+internal evolution and never ranks above eHTML being a good HTML vocabulary in its own right. Guidance ON,
+gating OFF, and no single export schema at the center.
 
 
 ## Contributor model — `author` and `editor` are one structured type (#338)
@@ -340,7 +361,7 @@ structured contributors) remains deferred for BOTH author and editor** — autho
 
 ---
 
-## eHTML resolves its own dynamic elements — at build AND at load (one resolver, two entry points)
+## Enscribe HTML (eHTML) resolves its own dynamic elements — at build AND at load (one resolver, two entry points)
 
 **Status — decided, not yet implemented.** An audit + scoping pass is queued (after the #328 rename and the
 current issue batch) to determine what it takes; this records the target and the shape.

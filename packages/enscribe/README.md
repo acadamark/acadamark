@@ -1,8 +1,8 @@
 # enscribe
 
-The headline Enscribe library: the Layer 1 **core** foundation, the shorthand
+The headline Enscribe library: the eHTML **core** foundation, the shorthand
 **parser** (a remark plugin), and the **interpreter** that compiles `enscribeTag`
-mdast nodes into a self-contained Layer 1 HTML string. (Formerly published as
+mdast nodes into a self-contained eHTML string. (Formerly published as
 three packages — `@enscribejs/core`, `@enscribejs/remark`, and
 `@enscribejs/interpreter` — now consolidated here.)
 
@@ -18,7 +18,7 @@ three packages — `@enscribejs/core`, `@enscribejs/remark`, and
   (e.g. `@enscribejs/enscribe/core/tag`, `@enscribejs/enscribe/core/map-attributes`).
 - `@enscribejs/enscribe/browser` — the browser façade bundle (`render` / `renderInto` /
   `executeAssets`), built by `npm run build:lib`.
-- `@enscribejs/enscribe/default.css` — the Layer 1 display stylesheet (for browser viewing;
+- `@enscribejs/enscribe/default.css` — the eHTML display stylesheet (for browser viewing;
   it is not emitted by the interpreter).
 
 ## Usage (Node)

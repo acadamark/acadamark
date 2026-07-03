@@ -1,0 +1,522 @@
+Formal statements — theorems and kin, proofs, and the definitional structures.
+
+<section #l1-theorem | `<theorem>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<theorem>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the theorem's label (the "(Pythagoras)" half of "Theorem 1.2 (Pythagoras)"). Honored by the Phase-2 theorem handler at label-rendering time; until that handler lands, the kwarg flows through to the rendered HTML as `data-name="..."` via schema dispatch. LaTeX amsthm precedent: `\begin{theorem}[Pythagoras]`. |
+| `+numbered` | boolean | default `true` | Whether this theorem participates in the theorem-family shared counter (see "Numbering" below). Use +numbered (default) to number; -numbered to suppress. Can also be written as numbered=true / numbered=false. |
+
+Produced by: canonical `<theorem>`.
+
+<sub-section | Examples>
+
+<code #code:l1-theorem-1>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</code>
+
+<minipage #mp:l1-theorem-1>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</minipage>
+
+*Short-form with pipe content. The body is parsed normally.*
+
+<code #code:l1-theorem-2>
+<theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+</theorem>
+</code>
+
+<minipage #mp:l1-theorem-2>
+<theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+</theorem>
+</minipage>
+
+*Long-form with the optional name kwarg. Cross-referenceable via id (the "thm:" colon-prefix convention is consistent with "fig:", "eqn:", "sec:" elsewhere in enscribe). The name kwarg lifts to `data-name`; the Phase-2 handler will render it as the "(Pythagoras)" suffix to the label "Theorem N".*
+
+</section>
+
+<section #l1-lemma | `<lemma>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<lemma>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the lemma's label, parallel to <theorem>'s `name` kwarg. Honored by the Phase-2 handler. |
+| `+numbered` | boolean | default `true` | Whether this lemma participates in the propositional theorem- family shared counter. Default true; -numbered suppresses. |
+
+Produced by: canonical `<lemma>`.
+
+<sub-section | Examples>
+
+<code #code:l1-lemma-1>
+<lemma | Every continuous function on a compact set attains its maximum.>
+</code>
+
+<minipage #mp:l1-lemma-1>
+<lemma | Every continuous function on a compact set attains its maximum.>
+</minipage>
+
+<code #code:l1-lemma-2>
+<lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+</lemma>
+</code>
+
+<minipage #mp:l1-lemma-2>
+<lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+</lemma>
+</minipage>
+
+</section>
+
+<section #l1-corollary | `<corollary>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<corollary>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the corollary's label, parallel to <theorem>'s `name` kwarg. |
+| `+numbered` | boolean | default `true` | Whether this corollary participates in the propositional theorem-family shared counter. Default true. |
+
+Produced by: canonical `<corollary>`.
+
+<sub-section | Examples>
+
+<code #code:l1-corollary-1>
+<corollary | Every prime greater than 2 is odd.>
+</code>
+
+<minipage #mp:l1-corollary-1>
+<corollary | Every prime greater than 2 is odd.>
+</minipage>
+
+<code #code:l1-corollary-2>
+<corollary #cor:bounded>
+Any continuous function on a closed interval is bounded.
+</corollary>
+</code>
+
+<minipage #mp:l1-corollary-2>
+<corollary #cor:bounded>
+Any continuous function on a closed interval is bounded.
+</corollary>
+</minipage>
+
+</section>
+
+<section #l1-proposition | `<proposition>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<proposition>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the proposition's label. |
+| `+numbered` | boolean | default `true` | Whether this proposition participates in the propositional theorem-family shared counter. Default true. |
+
+Produced by: canonical `<proposition>`.
+
+<sub-section | Examples>
+
+<code #code:l1-proposition-1>
+<proposition | The sum of two even integers is even.>
+</code>
+
+<minipage #mp:l1-proposition-1>
+<proposition | The sum of two even integers is even.>
+</minipage>
+
+<code #code:l1-proposition-2>
+<proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+</proposition>
+</code>
+
+<minipage #mp:l1-proposition-2>
+<proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+</proposition>
+</minipage>
+
+</section>
+
+<section #l1-definition | `<definition>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<definition>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the definition's label. |
+| `+numbered` | boolean | default `true` | Whether this definition participates in the definition counter. <definition> runs on its own counter (separate from the propositional theorem-family counter), matching amsthm's conventional "definition" theorem-style family. Default true. |
+
+Produced by: canonical `<definition>`.
+
+<sub-section | Examples>
+
+<code #code:l1-definition-1>
+<definition | A *group* is a set with an associative binary operation, identity, and inverses.>
+</code>
+
+<minipage #mp:l1-definition-1>
+<definition | A *group* is a set with an associative binary operation, identity, and inverses.>
+</minipage>
+
+<code #code:l1-definition-2>
+<definition name="Group" #def:group>
+A *group* is a set $G$ together with a binary operation
+$\cdot$ satisfying associativity, identity, and inverses.
+</definition>
+</code>
+
+<minipage #mp:l1-definition-2>
+<definition name="Group" #def:group>
+A *group* is a set $G$ together with a binary operation
+$\cdot$ satisfying associativity, identity, and inverses.
+</definition>
+</minipage>
+
+</section>
+
+<section #l1-example | `<example>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<example>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the example's label. |
+| `+numbered` | boolean | default `true` | Whether this example participates in the example counter. <example> runs on its own counter (separate from theorem, lemma, definition counters), matching amsthm's conventional "example" theorem-style family. Default true. |
+
+Produced by: canonical `<example>`.
+
+<sub-section | Examples>
+
+<code #code:l1-example-1>
+<example | The integers under addition form a group.>
+</code>
+
+<minipage #mp:l1-example-1>
+<example | The integers under addition form a group.>
+</minipage>
+
+<code #code:l1-example-2>
+<example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+</example>
+</code>
+
+<minipage #mp:l1-example-2>
+<example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+</example>
+</minipage>
+
+</section>
+
+<section #l1-remark | `<remark>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<remark>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the remark's label. Honored by the Phase-2 handler even though <remark> is unnumbered (a named remark may render as "Remark (Name):" without a number). |
+| `+numbered` | boolean | default `false` | Whether this remark is numbered. Default false — <remark> is conventionally unnumbered (the "remark" theorem-style family in amsthm is unnumbered). An author who wants numbering can opt-in per instance with +numbered, but most usage relies on the default. |
+
+Produced by: canonical `<remark>`.
+
+<sub-section | Examples>
+
+<code #code:l1-remark-1>
+<remark | The converse does not hold in general.>
+</code>
+
+<minipage #mp:l1-remark-1>
+<remark | The converse does not hold in general.>
+</minipage>
+
+<code #code:l1-remark-2>
+<remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+</remark>
+</code>
+
+<minipage #mp:l1-remark-2>
+<remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+</remark>
+</minipage>
+
+</section>
+
+<section #l1-proof | `<proof>`>
+
+<sub-section | Specification>
+
+`category` `theorem-family` · eHTML `<proof>` · JATS `<statement>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix — e.g. "Proof (of Theorem 1.2)" or "Proof (sketch)". Honored by the Phase-2 handler. |
+| `+numbered` | boolean | default `false` | Whether this proof is numbered. Default false — proofs are conventionally unnumbered (a proof's identity comes from the theorem it proves, not from a counter). An author who wants numbering can opt-in per instance with +numbered. |
+
+Produced by: canonical `<proof>`.
+
+<sub-section | Examples>
+
+<code #code:l1-proof-1>
+<theorem | The sum of two even integers is even.>
+
+<proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+</proof>
+</code>
+
+<minipage #mp:l1-proof-1>
+<theorem | The sum of two even integers is even.>
+
+<proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+</proof>
+</minipage>
+
+*The canonical pattern: &lt;theorem&gt; followed by sibling &lt;proof&gt;. The proof is NOT nested inside the theorem.*
+
+<code #code:l1-proof-2>
+<proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+</proof>
+</code>
+
+<minipage #mp:l1-proof-2>
+<proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+</proof>
+</minipage>
+
+*Optional `name` kwarg lets the proof identify what it proves (useful when the proof is separated from its theorem by intervening text).*
+
+</section>
+
+<section #l1-dl | `<dl>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<dl>` · JATS `<def-list>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<dl>`.
+
+<sub-section | Examples>
+
+<code #code:l1-dl-1>
+<dl>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+  <dt | eHTML>
+  <dd | The canonical semantic HTML vocabulary.>
+  <dt | Enscribe shorthand>
+  <dd | The shorthand authoring syntax that compiles to eHTML.>
+</dl>
+</code>
+
+<minipage #mp:l1-dl-1>
+<dl>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+  <dt | eHTML>
+  <dd | The canonical semantic HTML vocabulary.>
+  <dt | Enscribe shorthand>
+  <dd | The shorthand authoring syntax that compiles to eHTML.>
+</dl>
+</minipage>
+
+*Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural authoring pattern.*
+
+<code #code:l1-dl-2>
+<dl .compact>
+  <dt | term-1>
+  <dd | First definition of term-1.>
+  <dd | Second definition of term-1.>
+</dl>
+</code>
+
+<minipage #mp:l1-dl-2>
+<dl .compact>
+  <dt | term-1>
+  <dd | First definition of term-1.>
+  <dd | Second definition of term-1.>
+</dl>
+</minipage>
+
+*One term with multiple definitions — a valid HTML pattern.*
+
+</section>
+
+<section #l1-dt | `<dt>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<dt>` · JATS `<term>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<dt>`.
+
+<sub-section | Examples>
+
+<code #code:l1-dt-1>
+<dt | enscribe>
+</code>
+
+<minipage #mp:l1-dt-1>
+<dt | enscribe>
+</minipage>
+
+*A definition-list term. Appears as a child of &lt;dl&gt;.*
+
+<code #code:l1-dt-2>
+<dt | <code | strict-mode>>
+</code>
+
+<minipage #mp:l1-dt-2>
+<dt | <code | strict-mode>>
+</minipage>
+
+*Inline markup in a term. The recursive-content pass parses the pipe content normally.*
+
+</section>
+
+<section #l1-dd | `<dd>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<dd>` · JATS `<def>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<dd>`.
+
+<sub-section | Examples>
+
+<code #code:l1-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+</code>
+
+<minipage #mp:l1-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+</minipage>
+
+*A definition-list description. Appears as a child of &lt;dl&gt;, following the term it defines.*
+
+<code #code:l1-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
+</code>
+
+<minipage #mp:l1-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
+</minipage>
+
+*Multi-paragraph descriptions are valid — the pipe content's paragraph structure is preserved.*
+
+</section>
+
+<section #l1-glossary | `<glossary>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<glossary>` · JATS `<glossary>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<glossary>`.
+
+<sub-section | Examples>
+
+<code #code:l1-glossary-1>
+<glossary #project-terms>
+  <glossary-entry>
+    <dt | enscribe>
+    <dd | An academic publishing system built on HTML+CSS+JS.>
+  </glossary-entry>
+  <glossary-entry>
+    <dt | eHTML>
+    <dd | The canonical semantic HTML vocabulary.>
+  </glossary-entry>
+</glossary>
+</code>
+
+*Render pending — indented long-form closing tag not recognised → tag-error (issue #276).*
+
+*A glossary with two entries. Each &lt;glossary-entry&gt; uses &lt;dt&gt;/&lt;dd&gt; for its term and definition (the same shapes &lt;dl&gt; uses), wrapped in the entry's own envelope for cross-reference / styling.*
+
+</section>
+
+<section #l1-glossary-entry | `<glossary-entry>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<glossary-entry>` · JATS `<def-item>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<glossary-entry>`.
+
+<sub-section | Examples>
+
+<code #code:l1-glossary-entry-1>
+<glossary-entry #term:enscribe>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+</glossary-entry>
+</code>
+
+<minipage #mp:l1-glossary-entry-1>
+<glossary-entry #term:enscribe>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+</glossary-entry>
+</minipage>
+
+*A single glossary entry. The id uses the "term:" colon-prefix convention so cross-references like &lt;ref @term:enscribe&gt; can resolve into the entry.*
+
+</section>

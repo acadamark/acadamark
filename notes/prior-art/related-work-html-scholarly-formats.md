@@ -43,15 +43,15 @@ of superiority — each project made coherent choices for its goals.
 
 | | **Enscribe** | **Scholarly HTML** | **RASH** |
 |---|---|---|---|
-| **Authoring story** | **A shorthand language** (Layer 2): markdown idioms + tag shorthand `<tag #id .class attr=val \| content>`, three registers, compiling losslessly to the vocabulary | None of its own — you hand-write the HTML, or a separate tool targets it (e.g. a DOCX style) | You write the (subset) HTML directly; conversion tools exist (from/to LaTeX, DOCX, ODT via the Framework) |
+| **Authoring story** | **A shorthand language** (the Enscribe shorthand): markdown idioms + tag shorthand `<tag #id .class attr=val \| content>`, three registers, compiling losslessly to the vocabulary | None of its own — you hand-write the HTML, or a separate tool targets it (e.g. a DOCX style) | You write the (subset) HTML directly; conversion tools exist (from/to LaTeX, DOCX, ODT via the Framework) |
 | **Hand-writing HTML required?** | No — the shorthand is the intended authoring surface | Yes (or external tooling) | Yes (it *is* the HTML, just constrained) |
 | **Tooling** | `enscribe` CLI, browser library, live editable site, JATS import/export | Reference prose; validation aspirational | RASH Framework: conversion + extraction + validation tools ("ROCS" online service) |
 
 ## Where Enscribe is distinctive
 
 1. **It addresses authoring head-on.** Scholarly HTML and RASH both leave you writing HTML
-   (constrained or annotated) by hand, or relying on external converters. Enscribe's Layer 2
-   shorthand is the differentiator: a compact syntax that compiles to the vocabulary, so the
+   (constrained or annotated) by hand, or relying on external converters. Enscribe's shorthand
+   is the differentiator: a compact syntax that compiles to the vocabulary, so the
    author never hand-writes the verbose HTML. This is the gap both prior efforts explicitly
    left open (RASH's own evaluation flagged HTML's authoring friction for "less technically
    savvy users").

@@ -32,7 +32,7 @@
 // HANDLER SHAPE: prepend label span + non-breaking-space-equivalent
 // (regular space) to the converted body content, emit as the custom
 // element matching the source tagname (preserves the source-intent
-// distinction — `<theorem>` vs `<lemma>` vs etc. in the Layer 1 output).
+// distinction — `<theorem>` vs `<lemma>` vs etc. in the eHTML output).
 
 import { mapAttributes } from '../../core/map-attributes.js';
 import { htmlEmit, aggregateHtmlProps } from '../lib/html-emit.js';

@@ -4,7 +4,7 @@
 // the inner open, not the outer, so the inner group + every page inside it survive in the nav
 // model. Before the fix the first </nav-group> closed the OUTER group and the inner group (with
 // its pages) was orphaned into a tag-error and dropped — so the two-level nav path
-// spec-internal-links.md specifies (`references/layer-1/export/`) was not expressible.
+// spec-internal-links.md specifies (`references/eHTML/export/`) was not expressible.
 //
 // The fix has two parts in src/parser/syntax.js, both extending the EXISTING same-name-nestable
 // mechanism (no parallel path):
@@ -32,18 +32,18 @@ export function run() {
   // ── #292: the spec's two-level path — group inside group (CONSECUTIVE openers, no item between) ──
   {
     const [refs] = navEntries(
-      '<nav>\n<nav-group title="References">\n<nav-group title="Layer 1">\n' +
+      '<nav>\n<nav-group title="References">\n<nav-group title="eHTML">\n' +
       '<item src="export" | Export>\n</nav-group>\n</nav-group>\n</nav>',
     );
     assert.equal(refs.kind, 'group');
     assert.equal(refs.title, 'References');
-    assert.equal(refs.children.length, 1, 'References nests the Layer 1 group (was dropped pre-#292)');
+    assert.equal(refs.children.length, 1, 'References nests the eHTML group (was dropped pre-#292)');
     const [layer1] = refs.children;
     assert.equal(layer1.kind, 'group');
-    assert.equal(layer1.title, 'Layer 1', 'the inner group survives — group-in-group with no item between');
+    assert.equal(layer1.title, 'eHTML', 'the inner group survives — group-in-group with no item between');
     assert.deepEqual(layer1.children.map((c) => ({ t: c.title, s: c.slug })), [{ t: 'Export', s: 'export' }],
-      'the deepest group keeps its page — the `references/layer-1/export/` path is now expressible');
-    console.log('PASS: nested <nav-group> (group-in-group) depth-counts — references > layer-1 > export (#292)');
+      'the deepest group keeps its page — the `references/eHTML/export/` path is now expressible');
+    console.log('PASS: nested <nav-group> (group-in-group) depth-counts — references > eHTML > export (#292)');
   }
 
   // ── a nested group with an item BEFORE it, plus a sibling AFTER the nested groups ──

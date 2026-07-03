@@ -2,7 +2,7 @@
 
 ## What it is
 A LaTeX-style minipage: a box holding self-contained, recursively-processed content that returns
-Layer 1. Outwardly it is an ordinary **frameable** (caption, title, numbering — on by default since #272,
+eHTML. Outwardly it is an ordinary **frameable** (caption, title, numbering — on by default since #272,
 its own `minipage` counter — label, ref-prefix, the `<figure>` wrapper) — so it is itself
 cross-referenceable like any float. Inwardly its content is a
 **sealed sub-document**: processed in its own pipeline run with its own registry.
@@ -43,8 +43,8 @@ treats the finished minipage as an opaque black box carrying exactly one outward
    at parse time, so every main-pass walk skips it for free.
 2. **Deferred phase** (after the parent registry is complete): for each minipage, run the sealed sub-interpret
    on its body with read-through access to the parent registry; it does its own structure / numbering / notes
-   / ref-resolution internally; produces resolved Layer 1 (resolved mdast).
-3. **Splice** the resolved Layer 1 onto the frameable node (a side-channel field), and the compile-time
+   / ref-resolution internally; produces resolved eHTML (resolved mdast).
+3. **Splice** the resolved eHTML onto the frameable node (a side-channel field), and the compile-time
    handler renders it inside the `<figure>` shell.
 4. Parent ref-resolution runs over the main tree, seeing each minipage as a resolved black box.
 

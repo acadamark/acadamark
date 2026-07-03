@@ -29,7 +29,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
 
 /**
- * Default theme CSS for Layer 1 custom elements.
+ * Default theme CSS for eHTML custom elements.
  * Read from src/interpreter/assets/default.css so there is a single source of truth.
  *
  * NOTE: This CSS is shell-only. It is not emitted by the interpreter.

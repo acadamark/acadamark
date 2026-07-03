@@ -18,13 +18,13 @@ JATS — the **Journal Article Tag Suite** — is a NISO standard (<a href="http
 
 The crucial thing to understand is *what JATS is for*. It is an **archival and interchange** format, not an authoring one. A JATS document is not something a person writes by hand — it is verbose, attribute-heavy XML that a *machine* emits and another machine reads. It also has no native display: a JATS file needs a stylesheet or a viewer to become a readable page. JATS answers "how do we deposit, exchange, and preserve this article?" — never "how do I write it?"
 
-JATS is also *vast*. Two decades of refinement have given it well over two hundred elements, many for cases a given article never touches, and it is built for completeness rather than for writing or display. Enscribe does not try to mirror all of it. Layer 1 — Enscribe's canonical form — is a small, *displayable, authorable* HTML vocabulary, on the order of thirty elements covering what most articles actually use, chosen so that what is present *translates* cleanly outward. That is the trade that makes a direct export possible: a smaller, HTML-shaped vocabulary that maps cleanly to JATS at every point of contact, with the export carrying the translation.
+JATS is also *vast*. Two decades of refinement have given it well over two hundred elements, many for cases a given article never touches, and it is built for completeness rather than for writing or display. Enscribe does not try to mirror all of it. eHTML — Enscribe's canonical form — is a small, *displayable, authorable* HTML vocabulary, on the order of thirty elements covering what most articles actually use, chosen so that what is present *translates* cleanly outward. That is the trade that makes a direct export possible: a smaller, HTML-shaped vocabulary that maps cleanly to JATS at every point of contact, with the export carrying the translation.
 
 That gap is the whole point of contact with Enscribe. Enscribe is an authoring layer; JATS is a deposit target. The interesting question is how cleanly the one reaches the other.
 
 <# What Enscribe's JATS export does #>
 
-Enscribe's canonical form — Layer 1, the semantic-HTML representation every
+Enscribe's canonical form — eHTML, the semantic-HTML representation every
 Enscribe document compiles to — is deliberately shaped to be JATS-aligned (see
 the <a design | Design article> for why). Because the vocabulary was
 designed against the JATS tag set, the export is mostly a set of one-to-one
@@ -37,8 +37,8 @@ plausible to the eye.
 
 What maps cleanly — that is, structure-for-structure, no information lost:
 
-<table #tab:map csv caption="How Enscribe's Layer 1 elements map to JATS." |
-Enscribe (Layer 1),JATS
+<table #tab:map csv caption="How Enscribe's eHTML elements map to JATS." |
+Enscribe (eHTML),JATS
 sections / sub-sections,nested <sec> with <title>
 bold / italic / inline code,<bold> / <italic> / <monospace>
 title / subtitle / authors,<article-title> / <subtitle> / <contrib><string-name>
@@ -81,10 +81,10 @@ import-jats` command brings a JATS article into Enscribe — rendered HTML, or
 canonical `.emd` source.
 
 Import is deliberately the weaker direction: JATS's vocabulary is far larger than
-Layer 1's, so it is acknowledged-lossy — a one-way conversion that applies
+eHTML's, so it is acknowledged-lossy — a one-way conversion that applies
 necessary simplifications, useful as an on-ramp from the existing literature, not
 a faithful reconstruction. (The only lossless round trip in Enscribe is between
-its shorthand and Layer 1, which are the same document in two notations.) The
+its shorthand and eHTML, which are the same document in two notations.) The
 importer maps what maps — structure, inline formatting, math, citations, figures,
 tables, cross-references, footnotes, and the theorem family — preserves
 reader-facing apparatus such as abstracts, keywords, and acknowledgments, and
@@ -195,7 +195,7 @@ back into Enscribe (lossily, as an on-ramp from the literature). Both halves of
 the bridge — your work *into* the scholarly record, and the record back *into*
 Enscribe — work today.
 
-For how Layer 1 is shaped to make this possible, read the
+For how eHTML is shaped to make this possible, read the
 <a design | Design article>; to write your first document, start with
 the <a try-it | Quickstart>.
 

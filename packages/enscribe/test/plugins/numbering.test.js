@@ -8,7 +8,7 @@ import { makeTag } from '../../src/core/tag.js';
 
 function makeDisplayMath(id = null, booleans = {}, kwargs = {}) {
   return {
-    // Post-normalize-to-canonical gate: tagname is the canonical Layer 1
+    // Post-normalize-to-canonical gate: tagname is the canonical eHTML
     // vocabulary key ('display-math'), not the sigil token ('$$').
     type: 'enscribeTag',
     tagname: 'display-math',

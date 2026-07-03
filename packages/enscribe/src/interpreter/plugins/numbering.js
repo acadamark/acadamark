@@ -31,7 +31,7 @@
 // fillNumbering(file) (exported):
 //   - Reads enscribeNumberingPending and sets node.computedNumber from entry.number
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { ensureRegistry } from '../../core/registry.js';
 import { discover } from '../../core/walkers/discover.js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING, ENSCRIBE_COUNTER_RESET_SCOPE } from '../../core/file-data-keys.js';
@@ -43,7 +43,7 @@ import { resolveConfigEnum } from '../lib/config-helpers.js';
 
 // Maps the canonical post-gate tagname to the registry type used for display
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
-// are rewritten to canonical Layer 1 names before this plugin runs, so the
+// are rewritten to canonical eHTML names before this plugin runs, so the
 // keys here are the canonical names ('display-math', not '$$').
 //
 // SHARED-COUNTER CONVENTION: when several tagnames map to the same
