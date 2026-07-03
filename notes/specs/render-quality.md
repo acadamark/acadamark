@@ -167,7 +167,7 @@ accounted for as one of three dispositions.
 | Specified — bibliography | `bibliography`, `bib-entry` | §14 |
 | Specified — book | `book`, `book-front/body/back`, `book-part`, `book-title`, `book-subtitle`, `book-part-title`, `book-part-subtitle` | §15 |
 | Generic-implicit (block) | `p`, `details`, `summary`, `dl`, `dt`, `dd` | §6.2 |
-| Generic-implicit (inline) | `b`, `i`, `u`, `s`, `sub`, `sup`, `span`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, `code` | §7.2 |
+| Generic-implicit (inline) | `b`, `i`, `u`, `s`, `sub`, `sup`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, `code` | §7.2 |
 | No-output | `meta`, `config`, `data`, `library`, `bib-entry` | §4.3, §14 |
 | Specified with deferred presentation | `affiliation`, `orcid`, `email`, `date`, `publication-date`, `doi`, `license`, `lang`, `keywords`, `subject`, `version`, `editor`, `abstract`, `term`, `glossary`, `glossary-entry`, `code-block`, `inline-code` | §4.4, §6.3, §7.3 |
 
@@ -367,7 +367,7 @@ for the admonition types; see §8, `RQ-FRM-S7`.)
 
 ### 7.2 Generic-implicit inline elements
 
-**`RQ-INL-M2`** — `b`, `i`, `u`, `s`, `sub`, `sup`, `span`, `q`, `abbr`, `kbd`,
+**`RQ-INL-M2`** — `b`, `i`, `u`, `s`, `sub`, `sup`, `q`, `abbr`, `kbd`,
 `var`, `samp`, `output`, and inline `code` pass through as HTML-native tags. The
 browser default rendering is correct for these (italic `<var>`, monospace
 `<kbd>`/`<samp>`, quotation marks for `<q>`); `data-*` attributes are preserved.

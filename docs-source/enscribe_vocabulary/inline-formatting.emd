@@ -402,44 +402,9 @@ Set <var | threshold> to <samp | 0.05>.
 
 <section #sh-span | `<span>`>
 
-<sub-section | General Usage>
+`<span>` is no longer an Enscribe element. An author-typed `<span>` is treated like any other unknown tag: it prints **literally**, exactly as typed. `<span | text>` appears on the page as the characters `<span | text>`, not as a compiled element.
 
-Semantic role: *span*. Compiles to Layer 1 `<span>`.
-
-Registers:
-
-- Canonical: `<span>`
-
-<code #code:sh-span-1>
-Some text <span .highlight | with highlighting> here.
-</code>
-
-<minipage #mp:sh-span-1>
-Some text <span .highlight | with highlighting> here.
-</minipage>
-
-<code #code:sh-span-2>
-Text with <span #key-phrase | a marked phrase> for reference.
-</code>
-
-<minipage #mp:sh-span-2>
-Text with <span #key-phrase | a marked phrase> for reference.
-</minipage>
-
-<code #code:sh-span-3>
-A <span .gloss title="ancient Greek for word" | logos> appears here.
-</code>
-
-<minipage #mp:sh-span-3>
-A <span .gloss title="ancient Greek for word" | logos> appears here.
-</minipage>
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `style` | kwarg |  | Inline CSS styles. Use sparingly; classes are usually preferable. |
-| `title` | kwarg |  |  |
+For styled or marked inline text, use the semantic inline element that fits the meaning instead — `<em>`, `<strong>`, `<i>`, `<b>`, `<u>`, `<s>`, `<sub>`, `<sup>`, `<q>`, `<abbr>`, `<kbd>`, `<var>`, `<samp>`, `<output>`, `<code>`, `<term>`, or `<cite>` (each documented above). Each carries its own meaning and class hooks, so it styles cleanly without a generic wrapper.
 
 </section>
 

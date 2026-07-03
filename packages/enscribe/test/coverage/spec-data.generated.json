@@ -161,7 +161,7 @@
       "id": "RQ-INL-M2",
       "area": "RQ-INL",
       "kind": "M",
-      "asserts": "`b`, `i`, `u`, `s`, `sub`, `sup`, `span`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, and inline `code` pass through as HTML-native tags. The browser default rendering is correct for these (italic `<var>`, monospace `<kbd>`/`<samp>`, quotation marks for `<q>`); `data-*` attributes are preserved. `code` additionally receives dedicated monospace/background styling (§ shared with code blocks)."
+      "asserts": "`b`, `i`, `u`, `s`, `sub`, `sup`, `q`, `abbr`, `kbd`, `var`, `samp`, `output`, and inline `code` pass through as HTML-native tags. The browser default rendering is correct for these (italic `<var>`, monospace `<kbd>`/`<samp>`, quotation marks for `<q>`); `data-*` attributes are preserved. `code` additionally receives dedicated monospace/background styling (§ shared with code blocks)."
     },
     {
       "id": "RQ-FRM-M1",
@@ -932,10 +932,6 @@
     "section-title": {
       "area": "RQ-DOC",
       "disposition": "specified"
-    },
-    "span": {
-      "area": "RQ-INL",
-      "disposition": "generic-implicit"
     },
     "strong": {
       "area": "RQ-INL",
