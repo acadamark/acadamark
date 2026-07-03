@@ -207,12 +207,14 @@ function emitArticleMetaChildren(metaNode, indent) {
   const titleNode    = content.find(c => isEnscribeTag(c, 'article-title'));
   const subtitleNode = content.find(c => isEnscribeTag(c, 'article-subtitle'));
   const authorNodes  = content.filter(c => isEnscribeTag(c, 'author'));
+  const editorNodes  = content.filter(c => isEnscribeTag(c, 'editor'));
   const abstractNode = content.find(c => isEnscribeTag(c, 'abstract'));
   const dateNode     = content.find(c => isEnscribeTag(c, 'date'));
   const otherChildren = content.filter(c =>
     !isEnscribeTag(c, 'article-title') &&
     !isEnscribeTag(c, 'article-subtitle') &&
     !isEnscribeTag(c, 'author') &&
+    !isEnscribeTag(c, 'editor') &&
     !isEnscribeTag(c, 'abstract') &&
     !isEnscribeTag(c, 'date')
   );
@@ -228,11 +230,23 @@ function emitArticleMetaChildren(metaNode, indent) {
     out += `${pad}  <subtitle>${emitInlines(subtitleNode.content)}</subtitle>\n`;
   }
   out += `${pad}</title-group>\n`;
-  if (authorNodes.length > 0) {
+  // #338: authors and editors are one structured contributor type, emitted in a
+  // single <contrib-group> (authors first, then editors, per JATS convention).
+  // An editor's `role` kwarg becomes its contrib-type (role=series-editor ->
+  // contrib-type="series-editor"; default "editor"). Name via <string-name>,
+  // mirroring the author emit — structured aff/contrib-id export is deferred for
+  // both authors and editors (see #338).
+  if (authorNodes.length > 0 || editorNodes.length > 0) {
     out += `${pad}<contrib-group>\n`;
     for (const author of authorNodes) {
       out += `${pad}  <contrib contrib-type="author">\n`;
       out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
+      out += `${pad}  </contrib>\n`;
+    }
+    for (const editor of editorNodes) {
+      const role = (editor.kwargs && editor.kwargs.role) || 'editor';
+      out += `${pad}  <contrib contrib-type="${escapeXmlAttr(role)}">\n`;
+      out += `${pad}    <string-name>${escapeXmlText(extractText(editor.content))}</string-name>\n`;
       out += `${pad}  </contrib>\n`;
     }
     out += `${pad}</contrib-group>\n`;
@@ -617,10 +631,12 @@ function emitBookMetaChildren(metaNode, indent) {
   const titleNode    = content.find(c => isEnscribeTag(c, 'book-title'));
   const subtitleNode = content.find(c => isEnscribeTag(c, 'book-subtitle'));
   const authorNodes  = content.filter(c => isEnscribeTag(c, 'author'));
+  const editorNodes  = content.filter(c => isEnscribeTag(c, 'editor'));
   const otherChildren = content.filter(c =>
     !isEnscribeTag(c, 'book-title') &&
     !isEnscribeTag(c, 'book-subtitle') &&
-    !isEnscribeTag(c, 'author')
+    !isEnscribeTag(c, 'author') &&
+    !isEnscribeTag(c, 'editor')
   );
 
   let out = '';
@@ -634,11 +650,18 @@ function emitBookMetaChildren(metaNode, indent) {
     }
     out += `${pad}</book-title-group>\n`;
   }
-  if (authorNodes.length > 0) {
+  // #338: authors + editors in one <contrib-group> (see emitArticleMetaChildren).
+  if (authorNodes.length > 0 || editorNodes.length > 0) {
     out += `${pad}<contrib-group>\n`;
     for (const author of authorNodes) {
       out += `${pad}  <contrib contrib-type="author">\n`;
       out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
+      out += `${pad}  </contrib>\n`;
+    }
+    for (const editor of editorNodes) {
+      const role = (editor.kwargs && editor.kwargs.role) || 'editor';
+      out += `${pad}  <contrib contrib-type="${escapeXmlAttr(role)}">\n`;
+      out += `${pad}    <string-name>${escapeXmlText(extractText(editor.content))}</string-name>\n`;
       out += `${pad}  </contrib>\n`;
     }
     out += `${pad}</contrib-group>\n`;
