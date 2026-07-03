@@ -18,3 +18,8 @@ The variable x^{y_{1}} demonstrates nested super- and subscript in flowing text.
 
 <section | Mixed prose and tag usage>
 In the body, iron-56 can be written ^{56}Fe. Inside a tag: <aside | the isotope ^{56}Fe is stable>.
+
+<section | Sigil at a paragraph boundary in a tag body>
+<aside | The mass-energy relation is written E=mc^{2}
+
+^{56}Fe is the most stable isotope, so a sigil may open a paragraph too.>
