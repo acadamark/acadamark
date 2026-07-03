@@ -900,7 +900,7 @@ const NORMALIZATIONS = [
 
   // ─── Group A2: structured-element + <config> kwarg lift ───────────────
   //
-  // For any structured-element tag (today: <meta>, <author>; registered in
+  // For any structured-element tag (today: <meta>, <author>, <editor>; registered in
   // @enscribejs/enscribe/core/structured-elements.js): allowlisted kwargs lift to
   // child tags per the per-tag spec, with the lift-time misuse-feedback
   // hints. Layer 1 carries the child-tag form.

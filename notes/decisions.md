@@ -328,9 +328,15 @@ unified to that shape; its current flat `data-*` attribute mapping (`data-affili
 string, so field-level structure is enough today; a full CSL/JATS `given`/`family` split is a separate, later
 question, not part of this decision.
 
-**Status.** Recorded as the design; the **code change** — unify `editor`'s frontmatter from `data-*` maps to
-`lifts_to_child`, and make the JATS `<contrib contrib-type="editor">` round-trip cleanly — is a deferred,
-output-changing slice tracked in **#338**. This decision does not itself change behavior.
+**Status — implemented (#338).** `<editor>` is unified to `<author>`'s structured contributor model: added to
+the `STRUCTURED_ELEMENTS` registry (the real lift authority — the frontmatter `lifts_to_child` alone is
+documentary), so `name`/`affiliation`/`orcid`/`email` lift to child tags; `role` stays a scalar that maps to
+the `data-role` attribute (the earlier `data-editor-role` flat mapping is retired). JATS export emits
+`<contrib contrib-type="ROLE">` in the `contrib-group` alongside authors, and import distinguishes
+`contrib-type` back to `<author>`/`<editor>` — round-trip verified, DTD-valid. Name-level parity with author's
+JATS export; **full structured-children JATS export (`<aff>`/`<contrib-id>`, and clean `<string-name>` for
+structured contributors) remains deferred for BOTH author and editor** — author's `extractText`-based
+`<string-name>` concatenates a structured contributor's fields, a pre-existing limitation editor now shares.
 
 
 ## Not a decision — recorded for accuracy

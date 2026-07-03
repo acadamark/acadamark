@@ -2802,7 +2802,7 @@ const _dt = Object.freeze({
 
 const _editor = Object.freeze({
     "semantic_role": "editor",
-    "category": "metadata",
+    "category": "structured-data-containers",
     "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "editor",
@@ -2821,24 +2821,25 @@ const _editor = Object.freeze({
         },
       },
       "kwargs": {
+        "name": {
+          "lifts_to_child": "name",
+          "notes": "The editor's name. Authored as a kwarg, lifted at the\nnormalize-to-canonical gate to a <name> child tag. Equivalent\nto authoring <name | ...> inside the <editor>'s child-tag form.\n",
+        },
         "affiliation": {
-          "maps_to": {
-            "html": "data-affiliation",
-          },
+          "lifts_to_child": "affiliation",
+          "notes": "Editor's institutional affiliation. Lifts to <affiliation>.\n",
         },
         "orcid": {
-          "maps_to": {
-            "html": "data-orcid",
-          },
+          "lifts_to_child": "orcid",
+          "notes": "Editor's ORCID identifier. Lifts to <orcid>.\n",
         },
         "email": {
-          "maps_to": {
-            "html": "data-email",
-          },
+          "lifts_to_child": "email",
+          "notes": "Editor's contact email address. Lifts to <email>.\n",
         },
         "role": {
           "maps_to": {
-            "html": "data-editor-role",
+            "html": "data-role",
           },
           "values": [
             "editor",
@@ -2849,29 +2850,50 @@ const _editor = Object.freeze({
             "other",
           ],
           "default": "editor",
+          "notes": "The editorial role — the one field that distinguishes an\n<editor> from an <author>. Both are the same structured\ncontributor type (see notes/decisions.md \"Contributor model\",\n#338); the role is the differentiating label. A scalar: it\nstays a kwarg/attribute on the canonical Layer 1 <editor> and is\nNOT lifted to a child tag. Maps to data-role in HTML; JATS\nexport uses it as the <contrib contrib-type=\"...\"> value.\n",
         },
       },
     },
     "content": {
-      "shape": {
-        "contains": [
-          "inline",
-        ],
-      },
-      "becomes": "children",
-      "notes": "Same content model as <author>. Simple form (pipe content as name)\nor structured form (explicit child elements).\n",
+      "shape": [
+        {
+          "element": "name",
+          "required": false,
+          "contains": [
+            "inline",
+          ],
+        },
+        {
+          "element": "affiliation",
+          "required": false,
+          "multiple": true,
+        },
+        {
+          "element": "orcid",
+          "required": false,
+        },
+        {
+          "element": "email",
+          "required": false,
+          "multiple": true,
+        },
+      ],
+      "notes": "<editor> is a structured-data-container tag, unified to <author>'s\nshape (#338): one structured contributor type, differentiated only by\nthe role label. It accepts two equivalent authoring forms — kwargs\n(scalar fields) and child tags (structured fields). The\nnormalize-to-canonical gate lifts the kwarg form (name / affiliation /\norcid / email) to the canonical child-tag form; role stays a scalar\nattribute. The name is a single <name> child — no given/family split\n(a separate, later question, per the decision).\n",
     },
     "jats_counterpart": {
       "element": "contrib contrib-type=\"editor\"",
+      "notes": "JATS uses <contrib contrib-type=\"editor\"> for editors, mirroring\n<author>'s <contrib contrib-type=\"author\">. The role kwarg becomes\nthe contrib-type value (role=series-editor -> contrib-type=\"series-editor\").\nEnscribe's <name> is a single unparsed string; the exporter emits it\nas <string-name> (mirroring author's name-only contributor export).\n<affiliation>, <orcid>, <email> children have the same JATS\ncounterparts as author's (<aff>, <contrib-id contrib-id-type=\"orcid\">,\n<email>).\n",
     },
     "shorthand_examples": [
       {
         "source": "<editor | The Editor>",
         "layer1_html": "<editor>The Editor</editor>",
+        "notes": "Casual form — the pipe content is the editor's name (text content,\nnot lifted to a <name> child), mirroring <author | ...>.\n",
       },
       {
-        "source": "<editor role=series-editor affiliation=\"Cambridge University\" | Jane Goodall>",
-        "layer1_html": "<editor data-editor-role=\"series-editor\" data-affiliation=\"Cambridge University\">Jane Goodall</editor>",
+        "source": "<editor role=series-editor name=\"Jane Goodall\" affiliation=\"Cambridge University\" />",
+        "layer1_html": "<editor data-role=\"series-editor\"><name>Jane Goodall</name><affiliation>Cambridge University</affiliation></editor>",
+        "notes": "Kwarg form. name / affiliation / orcid / email lift to child tags at\nthe gate (unified to <author>'s shape, #338); role stays a scalar\nattribute (data-role) — the one field that differs from <author>.\n",
       },
     ],
     "interpreter_strategy": "schema",

@@ -242,9 +242,24 @@ function buildMeta(front) {
 
   const contribGroup = childEl(am, 'contrib-group');
   if (contribGroup) {
+    // #338: contrib-type distinguishes author from editor (and the editor's
+    // editorial role). contrib-type="author" -> <author>; an editorial-role
+    // value -> <editor role=...> (role omitted when it is the default
+    // "editor"), so an exported editor round-trips back to <editor>.
+    const EDITOR_ROLES = new Set(['editor', 'co-editor', 'series-editor', 'volume-editor', 'guest-editor', 'other']);
     for (const contrib of childrenEls(contribGroup, 'contrib')) {
       const name = contribName(contrib);
-      if (name) children.push(makeTag('author', [{ type: 'text', value: name }]));
+      if (!name) continue;
+      const ctype = contrib.attributes['contrib-type'] || 'author';
+      if (EDITOR_ROLES.has(ctype)) {
+        children.push(
+          ctype === 'editor'
+            ? makeTag('editor', [{ type: 'text', value: name }])
+            : makeTag('editor', [{ type: 'text', value: name }], { kwargs: { role: ctype } }),
+        );
+      } else {
+        children.push(makeTag('author', [{ type: 'text', value: name }]));
+      }
     }
   }
 

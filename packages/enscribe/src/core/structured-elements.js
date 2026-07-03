@@ -143,6 +143,28 @@ export const STRUCTURED_ELEMENTS = new Map([
       misusePartnerTag: null,
     },
   ],
+
+  // ── <editor> ─────────────────────────────────────────────────────────────
+  //
+  // #338: <editor> is unified to <author>'s structured contributor shape —
+  // one contributor type, differentiated only by the editorial `role`. Same
+  // lifted fields as <author> (name / affiliation / orcid / email → child
+  // tags). `role` is accepted-but-NOT-lifted (a scalar label, the one field
+  // that distinguishes an editor from an author): it stays a kwarg on the
+  // canonical node and maps to the `data-role` attribute via the schema.
+  // Editor's earlier flat data-* mapping was the drift; retired here. See
+  // notes/decisions.md "Contributor model" and editor.md.
+  [
+    'editor',
+    {
+      acceptedKwargs: new Set(['name', 'affiliation', 'orcid', 'email', 'role']),
+      liftedKwargs: new Set(['name', 'affiliation', 'orcid', 'email']),
+      booleanKwargs: new Set(),
+      childAllowlist: new Set(['name', 'affiliation', 'orcid', 'email']),
+      validateChildren: true,
+      misusePartnerTag: null,
+    },
+  ],
 ]);
 
 /**
@@ -174,4 +196,4 @@ export function getStructuredSpec(tagname) {
 // (`LANGUAGES` / `getContentHandler`) is now a pure handler-dispatch list for
 // DSLs; STRUCTURED_ELEMENTS is the
 // kwarg/child-tag interface registry for structured-data-containers
-// (`<meta>`, `<author>`). The two registries are independent.
+// (`<meta>`, `<author>`, `<editor>`). The two registries are independent.
