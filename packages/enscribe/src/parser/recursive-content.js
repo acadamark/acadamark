@@ -167,6 +167,13 @@ function assembleMixedContent(content, processor) {
       run = null
     }
   }
+  // Place one collapsed seam space onto the open run, merging into a trailing text node
+  // when present (else a lone space node) so no adjacent-text-node split is introduced.
+  const appendSeamSpace = (r) => {
+    const last = r[r.length - 1]
+    if (last && last.type === 'text') last.value += ' '
+    else r.push({ type: 'text', value: ' ' })
+  }
   for (let idx = 0; idx < content.length; idx += 1) {
     const item = content[idx]
     if (typeof item !== 'string') {
@@ -175,49 +182,59 @@ function assembleMixedContent(content, processor) {
       run.push(item)
       continue
     }
-    // SEAM WHITESPACE (#330): processor.parse() drops a fragment's leading/trailing
-    // whitespace (a markdown paragraph carries no edge whitespace). That trim is correct
-    // at a paragraph / body edge, but it also eats a MEANINGFUL space where a fragment
-    // abuts a resolved inline node (`x ^{2}` → the space before <sup>, `1^{st} law` → the
-    // space after it). Restore one collapsed space at a node SEAM only:
-    //   - leading  — when inline content already precedes this fragment in the open run
-    //                (a true seam, not a paragraph / body start);
-    //   - trailing — when a resolved node follows it (a true seam, not a paragraph / body end).
-    // A fragment's INTERNAL whitespace and the paragraph / body edges are left exactly as
-    // markdown leaves them, so the trim's legitimate intent is preserved — only the
-    // collateral seam loss is undone. General by construction: it keys on the seam, not on
-    // the sigil, so ANY mixed-array node (sigil today; future inline fragments) is covered.
-    //
-    // BLANK LINE vs SEAM SPACE (#330 sweep): markdown trims a fragment's edge whitespace
-    // whether that whitespace is a lone space / soft break (a collapsed seam, restore it)
-    // or a BLANK LINE (a paragraph break, which must NOT become a space). When a resolved
-    // node abuts a blank-line edge — `E^{2}\n\nnext` (leading) or `foo\n\n^{2}` (trailing)
-    // — the node is the tail / head of its OWN paragraph, so we CLOSE the run at the break
-    // instead of restoring a seam space; otherwise the two paragraphs merge into one.
-    const leadBreak = /^[ \t]*\r?\n[ \t]*\r?\n/.test(item)
-    const trailBreak = /\r?\n[ \t]*\r?\n[ \t]*$/.test(item)
-    const lead = /^\s/.test(item) && !leadBreak && run != null && run.length > 0
-    const trail = /\s$/.test(item) && !trailBreak
-      && idx + 1 < content.length && typeof content[idx + 1] !== 'string'
-    // A fragment that OPENS with a paragraph break closes the preceding node's run (that
-    // node ended its own paragraph); this fragment's content then starts a fresh one.
+    // SEAM WHITESPACE — ROOT FIX (#348, retiring the #330 reconstruction). A string
+    // fragment abuts resolved inline nodes at a SEAM, and its MEANINGFUL edge whitespace
+    // (the space in `x ^{2}` / `1^{st} law`) sits right at that seam. `processor.parse`
+    // parses each fragment as a paragraph and correctly trims paragraph-edge whitespace —
+    // which is right for a paragraph but would swallow the seam space. So we EXTRACT the
+    // fragment's edge whitespace HERE, before the parse, and place it explicitly across the
+    // seam: the parser only ever sees the fragment CORE, never a meaningful space to lose,
+    // so there is nothing to reconstruct afterwards (no transform-then-reverse). Rules, by
+    // construction:
+    //   - a BLANK-LINE edge is a paragraph break, not a seam space — it closes the run;
+    //   - a lone space / soft break is a SEAM space only when a resolved node abuts that
+    //     edge (leading: content already precedes in the run; trailing: a node follows) —
+    //     otherwise it is a paragraph / body edge and stays trimmed;
+    //   - the core (fragment minus its edge whitespace) is what the parser receives.
+    // Keyed on the seam, not the sigil, so any mixed-array node is covered.
+    const nextIsNode = idx + 1 < content.length && typeof content[idx + 1] !== 'string'
+    const leadWs = /^\s+/.exec(item)?.[0] ?? ''
+    const rest = item.slice(leadWs.length)
+    const trailWs = /\s+$/.exec(rest)?.[0] ?? ''
+    const core = rest.slice(0, rest.length - trailWs.length)
+    const leadBreak = /\r?\n[ \t]*\r?\n/.test(leadWs)
+    const trailBreak = /\r?\n[ \t]*\r?\n/.test(trailWs)
+    // A leading paragraph break ends the preceding node's paragraph.
     if (leadBreak) closeRun()
-    const parsed = processor.parse(item).children
+    // A seam space survives only when a resolved node abuts that edge.
+    const leadSeam = !leadBreak && leadWs !== '' && run != null && run.length > 0
+    const trailSeam = !trailBreak && trailWs !== '' && nextIsNode
+
+    if (core === '') {
+      // A whitespace-only fragment has no content to parse — it is purely the seam between
+      // two nodes. A blank line closes the run; otherwise one collapsed seam space rides
+      // across to the following node (a body-edge space, with no open run, is dropped).
+      if (trailBreak) closeRun()
+      else if (nextIsNode && run && run.length && !leadBreak) appendSeamSpace(run)
+      continue
+    }
+
+    const parsed = processor.parse(core).children
     for (let i = 0; i < parsed.length; i += 1) {
       const block = parsed[i]
       if (block.type === 'paragraph') {
         // continue (or open) the inline run with this paragraph's inline children
         if (!run) run = []
-        // restore the leading seam space on the FIRST paragraph only (a later paragraph
-        // begins after a hard break — its edge stays trimmed, as markdown leaves it).
-        // Merge into the first text child to avoid an adjacent-text-node split.
-        if (i === 0 && lead) {
+        // place the leading seam space on the FIRST paragraph only (a later paragraph
+        // begins after an internal blank line — a real edge). Merge into the first text
+        // child so no adjacent-text-node split is introduced.
+        if (i === 0 && leadSeam) {
           const first = block.children[0]
           if (first && first.type === 'text') first.value = ` ${first.value}`
           else block.children.unshift({ type: 'text', value: ' ' })
         }
         run.push(...block.children)
-        // a paragraph that is not the last parsed block ends at a hard break
+        // a paragraph that is not the last parsed block ends at an internal blank line
         if (i < parsed.length - 1) closeRun()
       } else {
         // a non-paragraph block (rare in inline pipe context) — flush + emit as-is
@@ -225,17 +242,10 @@ function assembleMixedContent(content, processor) {
         blocks.push(block)
       }
     }
-    // A fragment that CLOSES with a paragraph break ends this run before the following
-    // node, so that node opens its own paragraph (no trailing seam space). Otherwise
-    // restore the trailing seam space onto the still-open run (a resolved node follows it),
-    // merging into the run's trailing text node when present (else push a lone space node).
-    if (trailBreak) {
-      closeRun()
-    } else if (trail && run && run.length) {
-      const last = run[run.length - 1]
-      if (last.type === 'text') last.value += ' '
-      else run.push({ type: 'text', value: ' ' })
-    }
+
+    // Place the trailing seam space onto the still-open run (a resolved node follows).
+    if (trailBreak) closeRun()
+    else if (trailSeam && run && run.length) appendSeamSpace(run)
   }
   closeRun()
   return blocks
