@@ -1051,6 +1051,57 @@ ${dateXml}
     notes.some((n) => n.kwargs?.position === 'margin'));
 }
 
+// ─── Integration: doc-59 structured contributors (#349) ───────────────────
+// A casual + a structured author, and a casual + a structured editor. Structured
+// contributors emit a NAME-ONLY <string-name> plus <contrib-id>/<aff> (not a
+// concatenation of all descendant text); casual ones are unchanged. Both roles
+// round-trip back to the child-tag form.
+{
+  const src = readFileSync(join(FIXTURES_DIR, 'document-59-jats-structured-contributors.emd'), 'utf8');
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const jats = enscribeToJats(proc.runSync(proc.parse(src)));
+
+  const snapshotPath = join(FIXTURES_DIR, 'document-59-jats-structured-contributors.xml');
+  if (UPDATE_SNAPSHOTS || !existsSync(snapshotPath)) {
+    writeFileSync(snapshotPath, jats, 'utf8');
+    console.log('  (wrote snapshot: document-59-jats-structured-contributors.xml)');
+  } else {
+    check('integration doc59: JATS snapshot matches', jats === readFileSync(snapshotPath, 'utf8'));
+  }
+
+  // Casual contributors — <string-name> only, unchanged.
+  check('doc59: casual author → name-only <string-name>',
+    jats.includes('<string-name>Ada Lovelace</string-name>'));
+  check('doc59: casual editor → <contrib contrib-type="editor"> name-only',
+    /<contrib contrib-type="editor">\s*<string-name>Grace Hopper<\/string-name>\s*<\/contrib>/.test(jats));
+  // Structured author — NAME-ONLY string-name (not "Jane GoodallCambridge…"), + contrib-id + aff.
+  check('doc59: structured author <string-name> is the NAME ONLY',
+    jats.includes('<string-name>Jane Goodall</string-name>') && !jats.includes('Jane GoodallCambridge'));
+  check('doc59: structured author orcid → <contrib-id contrib-id-type="orcid">',
+    jats.includes('<contrib-id contrib-id-type="orcid">0000-0001-2345-6789</contrib-id>'));
+  check('doc59: structured author affiliation → <aff>',
+    jats.includes('<aff>Cambridge University</aff>'));
+  // Structured editor — role → contrib-type, name-only, aff.
+  check('doc59: structured editor → contrib-type="series-editor" + name-only + <aff>',
+    /<contrib contrib-type="series-editor">\s*<string-name>Alan Turing<\/string-name>\s*<aff>Manchester<\/aff>\s*<\/contrib>/.test(jats));
+
+  validateWithXmllint('doc59', jats);
+
+  // Round-trip — structured contributors reconstruct to the child-tag form; casual stay text.
+  const back = importJats(jats);
+  const contribs = [];
+  (function walk(n){ if(!n||typeof n!=='object')return; if(n.tagname==='author'||n.tagname==='editor')contribs.push(n); for(const c of n.children??[])walk(c); for(const c of n.content??[])walk(c); })(back);
+  const kidTags = (n) => (n.content ?? n.children ?? []).filter((c)=>c&&c.tagname).map((c)=>c.tagname);
+  check('doc59 round-trip: 2 authors + 2 editors recovered',
+    contribs.filter((c)=>c.tagname==='author').length===2 && contribs.filter((c)=>c.tagname==='editor').length===2);
+  check('doc59 round-trip: structured author → <name>/<affiliation>/<orcid> children',
+    contribs.some((c)=>c.tagname==='author' && ['name','affiliation','orcid'].every((t)=>kidTags(c).includes(t))));
+  check('doc59 round-trip: structured editor → role=series-editor + <name>/<affiliation>',
+    contribs.some((c)=>c.tagname==='editor' && c.kwargs?.role==='series-editor' && ['name','affiliation'].every((t)=>kidTags(c).includes(t))));
+  check('doc59 round-trip: casual author stays text (no child tags)',
+    contribs.some((c)=>c.tagname==='author' && kidTags(c).length===0));
+}
+
 // ─── Integration: doc-58 <data> asset export (#190 slice 4) ───────────────
 // The JATS exporter consumes the same shared canonical tree that
 // enscribeAssetResolution already rewrote (interpreter step 5.8), so a body

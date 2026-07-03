@@ -1,0 +1,9 @@
+<meta type=article>
+  <title | Structured Contributors>
+  <author | Ada Lovelace>
+  <author name="Jane Goodall" affiliation="Cambridge University" orcid="0000-0001-2345-6789" />
+  <editor | Grace Hopper>
+  <editor role=series-editor name="Alan Turing" affiliation="Manchester" />
+</meta>
+<section | Body>
+The front matter exercises casual and structured contributors of both roles.

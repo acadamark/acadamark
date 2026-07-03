@@ -193,6 +193,50 @@ function emitFront(frontNode) {
   return `  <front>\n    <article-meta>\n${emitArticleMetaChildren(meta, 6)}    </article-meta>\n  </front>\n`;
 }
 
+// #349: a contributor's <string-name> is the NAME ONLY — never extractText of the
+// whole node (which concatenates a structured contributor's lifted fields onto the
+// name). Prefer the <name> child; otherwise the node's own text, excluding the other
+// lifted structured children (affiliation / orcid / email), which emit separately.
+function contribStringName(node) {
+  const content = Array.isArray(node.content) ? node.content : [];
+  const nameChild = content.find((c) => isEnscribeTag(c, 'name'));
+  if (nameChild) return extractText(nameChild.content);
+  const STRUCTURED = new Set(['affiliation', 'orcid', 'email']);
+  const nameContent = content.filter((c) => !(isEnscribeTagNode(c) && STRUCTURED.has(c.tagname)));
+  return extractText(nameContent);
+}
+
+// #349: emit one JATS <contrib> for a contributor (author or editor). Structured
+// contributors' lifted children become proper JATS: <orcid> -> <contrib-id
+// contrib-id-type="orcid">, <affiliation> -> <aff>, <email> -> <email>; the name is
+// <string-name> (name only). Casual contributors (text-only) emit just <string-name>,
+// byte-identical to before. Shared by author + editor at every meta site so they stay
+// symmetric. `pad` is the <contrib-group>'s indent (contrib sits at pad+2).
+function emitContrib(node, contribType, pad) {
+  const content = Array.isArray(node.content) ? node.content : [];
+  const orcidNode = content.find((c) => isEnscribeTag(c, 'orcid'));
+  const affNodes = content.filter((c) => isEnscribeTag(c, 'affiliation'));
+  const emailNodes = content.filter((c) => isEnscribeTag(c, 'email'));
+  let out = `${pad}  <contrib contrib-type="${escapeXmlAttr(contribType)}">\n`;
+  if (orcidNode) {
+    out += `${pad}    <contrib-id contrib-id-type="orcid">${escapeXmlText(extractText(orcidNode.content))}</contrib-id>\n`;
+  }
+  out += `${pad}    <string-name>${escapeXmlText(contribStringName(node))}</string-name>\n`;
+  for (const aff of affNodes) {
+    out += `${pad}    <aff>${escapeXmlText(extractText(aff.content))}</aff>\n`;
+  }
+  for (const email of emailNodes) {
+    out += `${pad}    <email>${escapeXmlText(extractText(email.content))}</email>\n`;
+  }
+  out += `${pad}  </contrib>\n`;
+  return out;
+}
+
+// #349: an editor's contrib-type is its editorial `role` (default "editor").
+function editorContribType(node) {
+  return (node.kwargs && node.kwargs.role) || 'editor';
+}
+
 function emitArticleMetaChildren(metaNode, indent) {
   // Group title and subtitle into <title-group>; emit author lifted to
   // <contrib-group>; abstract directly; other lifted children as their
@@ -238,17 +282,8 @@ function emitArticleMetaChildren(metaNode, indent) {
   // both authors and editors (see #338).
   if (authorNodes.length > 0 || editorNodes.length > 0) {
     out += `${pad}<contrib-group>\n`;
-    for (const author of authorNodes) {
-      out += `${pad}  <contrib contrib-type="author">\n`;
-      out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
-      out += `${pad}  </contrib>\n`;
-    }
-    for (const editor of editorNodes) {
-      const role = (editor.kwargs && editor.kwargs.role) || 'editor';
-      out += `${pad}  <contrib contrib-type="${escapeXmlAttr(role)}">\n`;
-      out += `${pad}    <string-name>${escapeXmlText(extractText(editor.content))}</string-name>\n`;
-      out += `${pad}  </contrib>\n`;
-    }
+    for (const author of authorNodes) out += emitContrib(author, 'author', pad);
+    for (const editor of editorNodes) out += emitContrib(editor, editorContribType(editor), pad);
     out += `${pad}</contrib-group>\n`;
   }
   // #107: <date> needs its own handler — the generic vocab path used the vocab's
@@ -653,17 +688,8 @@ function emitBookMetaChildren(metaNode, indent) {
   // #338: authors + editors in one <contrib-group> (see emitArticleMetaChildren).
   if (authorNodes.length > 0 || editorNodes.length > 0) {
     out += `${pad}<contrib-group>\n`;
-    for (const author of authorNodes) {
-      out += `${pad}  <contrib contrib-type="author">\n`;
-      out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
-      out += `${pad}  </contrib>\n`;
-    }
-    for (const editor of editorNodes) {
-      const role = (editor.kwargs && editor.kwargs.role) || 'editor';
-      out += `${pad}  <contrib contrib-type="${escapeXmlAttr(role)}">\n`;
-      out += `${pad}    <string-name>${escapeXmlText(extractText(editor.content))}</string-name>\n`;
-      out += `${pad}  </contrib>\n`;
-    }
+    for (const author of authorNodes) out += emitContrib(author, 'author', pad);
+    for (const editor of editorNodes) out += emitContrib(editor, editorContribType(editor), pad);
     out += `${pad}</contrib-group>\n`;
   }
   // Other lifted children (publisher, doi, isbn, etc.) — best-effort
@@ -720,11 +746,7 @@ function emitBookPartMetaChildren(metaNode, indent) {
   }
   if (authorNodes.length > 0) {
     out += `${pad}<contrib-group>\n`;
-    for (const author of authorNodes) {
-      out += `${pad}  <contrib contrib-type="author">\n`;
-      out += `${pad}    <string-name>${escapeXmlText(extractText(author.content))}</string-name>\n`;
-      out += `${pad}  </contrib>\n`;
-    }
+    for (const author of authorNodes) out += emitContrib(author, 'author', pad);
     out += `${pad}</contrib-group>\n`;
   }
   return out;
