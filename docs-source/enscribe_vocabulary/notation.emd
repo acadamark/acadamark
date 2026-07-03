@@ -1,0 +1,313 @@
+Notation — mathematics and code, inline and displayed.
+
+<section #sh-inline-math | `<inline-math>`>
+
+<sub-section | General Usage>
+
+Semantic role: *inline-math*. Compiles to Layer 1 `<inline-math>`.
+
+Registers:
+
+- Canonical: `<inline-math>`
+- Sigil: `<$ … $>`
+
+<code #code:sh-inline-math-1>
+The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+</code>
+
+<minipage #mp:sh-inline-math-1>
+The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+</minipage>
+
+*The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no attributes — id and classes are not supported for inline math.*
+
+</section>
+
+<section #sh-display-math | `<display-math>`>
+
+<sub-section | General Usage>
+
+Semantic role: *display-math*. Compiles to Layer 1 `<display-math>`.
+
+Registers:
+
+- Canonical: `<display-math>`
+- Sigil: `<$$ … $$>`
+
+<code #code:sh-display-math-1>
+<$$ \sum_{i=1}^{n} x_i = X $$>
+</code>
+
+<minipage #mp:sh-display-math-1>
+<$$ \sum_{i=1}^{n} x_i = X $$>
+</minipage>
+
+*The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line; numbered by default (the equation number is appended after the KaTeX output).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `+numbered` | boolean | default `true` | Whether this equation participates in the document-wide numbered sequence. Use +numbered (default) to number, -numbered to suppress. Can also be written as numbered=true / numbered=false. When suppressed, the equation renders without a number and is not added to the numbered counter. The config key number-equations=false suppresses all equations unless overridden per-element with +numbered. |
+
+</section>
+
+<section #sh-math | `<math>`>
+
+<sub-section | General Usage>
+
+Semantic role: *math*. Compiles to Layer 1 `<math>`.
+
+Registers:
+
+- Canonical: `<math>`
+
+<code #code:sh-math-1>
+<math>
+E = mc^2
+</math>
+</code>
+
+<minipage #mp:sh-math-1>
+<math>
+E = mc^2
+</math>
+</minipage>
+
+*Long-form `&lt;math&gt;` block. Semantically equivalent to the `&lt;$$ E = mc^2 $$&gt;` display-math sigil — both render block-level LaTeX math via KaTeX. Use the long-form when the source is multi-line or when explicit tag bounds aid readability; use the sigil for brevity.*
+
+</section>
+
+<section #sh-align | `<align>`>
+
+<sub-section | General Usage>
+
+Semantic role: *align*. Compiles to Layer 1 `<align>`.
+
+Registers:
+
+- Canonical: `<align>`
+
+<code #code:sh-align-1>
+<align>
+x^2 + y^2 &= z^2 \\
+a + b &= c
+</align>
+</code>
+
+<minipage #mp:sh-align-1>
+<align>
+x^2 + y^2 &= z^2 \\
+a + b &= c
+</align>
+</minipage>
+
+*Two aligned equations. The `&` marks the alignment column (here, the `=` sign). Handler wraps in `\begin{aligned}...\end{aligned}` (KaTeX-compatible variant of LaTeX's `align`).*
+
+</section>
+
+<section #sh-eqnarray | `<eqnarray>`>
+
+<sub-section | General Usage>
+
+Semantic role: *eqnarray*. Compiles to Layer 1 `<eqnarray>`.
+
+Registers:
+
+- Canonical: `<eqnarray>`
+
+<code #code:sh-eqnarray-1>
+<eqnarray>
+f(x) &=& x^2 \\
+g(x) &=& 2x
+</eqnarray>
+</code>
+
+<minipage #mp:sh-eqnarray-1>
+<eqnarray>
+f(x) &=& x^2 \\
+g(x) &=& 2x
+</eqnarray>
+</minipage>
+
+*Two equations rendered via KaTeX's `aligned` env (the supported equivalent of LaTeX's `eqnarray`).*
+
+</section>
+
+<section #sh-cases | `<cases>`>
+
+<sub-section | General Usage>
+
+Semantic role: *cases*. Compiles to Layer 1 `<cases>`.
+
+Registers:
+
+- Canonical: `<cases>`
+
+<code #code:sh-cases-1>
+<cases>
+x^2 & \text{if } x \ge 0 \\
+-x^2 & \text{if } x < 0
+</cases>
+</code>
+
+<minipage #mp:sh-cases-1>
+<cases>
+x^2 & \text{if } x \ge 0 \\
+-x^2 & \text{if } x < 0
+</cases>
+</minipage>
+
+*A two-case piecewise definition. Handler wraps in `\begin{cases}...\end{cases}`.*
+
+</section>
+
+<section #sh-matrix | `<matrix>`>
+
+<sub-section | General Usage>
+
+Semantic role: *matrix*. Compiles to Layer 1 `<matrix>`.
+
+Registers:
+
+- Canonical: `<matrix>`
+
+<code #code:sh-matrix-1>
+<matrix>
+1 & 2 \\
+3 & 4
+</matrix>
+</code>
+
+<minipage #mp:sh-matrix-1>
+<matrix>
+1 & 2 \\
+3 & 4
+</matrix>
+</minipage>
+
+*A 2×2 matrix. The handler wraps the body in `\begin{matrix}...\end{matrix}` before KaTeX renders.*
+
+</section>
+
+<section #sh-inline-code | `<inline-code>`>
+
+<sub-section | General Usage>
+
+Semantic role: *inline-code*. Compiles to Layer 1 `<inline-code>`.
+
+Registers:
+
+- Canonical: `<inline-code>`
+- Sigil: `<` … `>`
+- Markdown: ``…``
+
+<code #code:sh-inline-code-1>
+Assign with <` x = 1 `> at the top of the function.
+</code>
+
+<minipage #mp:sh-inline-code-1>
+Assign with <` x = 1 `> at the top of the function.
+</minipage>
+
+*The single-backtick sigil. With no pipe, the whole body is opaque code content rendered as &lt;code&gt; (the same output as a markdown backtick span).*
+
+<code #code:sh-inline-code-2>
+Call <` python | factorial(n) `> to recurse.
+</code>
+
+<minipage #mp:sh-inline-code-2>
+Call <` python | factorial(n) `> to recurse.
+</minipage>
+
+*The first positional token before the pipe is the language, emitted as a `language-X` class on the &lt;code&gt; (discoverable by highlighters; the interpreter applies no highlighting itself).*
+
+</section>
+
+<section #sh-code | `<code>`>
+
+<sub-section | General Usage>
+
+Semantic role: *code*. Compiles to Layer 1 `<code>`.
+
+Registers:
+
+- Canonical: `<code>`
+
+<code #code:sh-code-1>
+The function is `factorial`.
+</code>
+
+<minipage #mp:sh-code-1>
+The function is `factorial`.
+</minipage>
+
+*Plain markdown backticks produce inline &lt;code&gt;. The most common authoring path.*
+
+<code #code:sh-code-2>
+Use `<`code`>` for inline code.
+</code>
+
+<minipage #mp:sh-code-2>
+Use `<`code`>` for inline code.
+</minipage>
+
+*The enscribe sigil form. Equivalent to plain markdown backticks but supports attributes.*
+
+<code #code:sh-code-3>
+<code language=python | def hello(): print("hi")>
+</code>
+
+<minipage #mp:sh-code-3>
+<code language=python | def hello(): print("hi")>
+</minipage>
+
+<code #code:sh-code-4>
+<code #factorial-impl language=python | def factorial(n):>
+</code>
+
+<minipage #mp:sh-code-4>
+<code #factorial-impl language=python | def factorial(n):>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `language` | kwarg |  | The programming language of the code. Maps to a class like "language-python" for syntax highlighting via shiki/prism. |
+
+</section>
+
+<section #sh-code-block | `<code-block>`>
+
+<sub-section | General Usage>
+
+Semantic role: *code-block*. Compiles to Layer 1 `<code-block>`.
+
+Registers:
+
+- Canonical: `<code-block>`
+- Sigil: `<``` … ``` >`
+- Markdown: ````…````
+
+<code #code:sh-code-block-1>
+<``` python | print("hello, world") ```>
+</code>
+
+<minipage #mp:sh-code-block-1>
+<``` python | print("hello, world") ```>
+</minipage>
+
+*The triple-backtick sigil. The first positional token is the language (emitted as a `language-X` class on the &lt;code&gt;); the pipe separates it from the verbatim, newline-preserving content.*
+
+<code #code:sh-code-block-2>
+<``` this is all content ```>
+</code>
+
+<minipage #mp:sh-code-block-2>
+<``` this is all content ```>
+</minipage>
+
+*The no-pipe form: the entire body is opaque content with no language extraction.*
+
+</section>

@@ -8,17 +8,15 @@
 
 <config number-tables=false />
 
-<chapter src="sections.emd" | Sections>
-<chapter src="block-prose.emd" | Block prose>
-<chapter src="inline-formatting.emd" | Inline formatting>
-<chapter src="code.emd" | Code>
-<chapter src="frameables.emd" | Frameables>
-<chapter src="math.emd" | Math>
-<chapter src="theorem-family.emd" | Theorem family>
-<chapter src="citations-and-references.emd" | Citations & references>
-<chapter src="structured-data-containers.emd" | Structured-data containers>
-<chapter src="storage-hosts.emd" | Storage hosts>
-<chapter src="configuration.emd" | Configuration>
-<chapter src="navigation.emd" | Navigation>
-<chapter src="showcase.emd" | Showcase>
+<chapter src="primary-prose.emd" | Primary prose>
+<chapter src="emphasis-and-marking.emd" | Emphasis & marking>
+<chapter src="aside.emd" | Aside>
+<chapter src="quotation-and-sourcing.emd" | Quotation & sourcing>
+<chapter src="exhibit.emd" | Exhibit>
+<chapter src="formal-statements.emd" | Formal statements>
+<chapter src="notation.emd" | Notation>
+<chapter src="stores.emd" | Stores>
+<chapter src="declarations-and-metadata.emd" | Declarations & metadata>
+<chapter src="structural-scaffolding.emd" | Structural scaffolding>
 
+<chapter src="showcase.emd" | Showcase>

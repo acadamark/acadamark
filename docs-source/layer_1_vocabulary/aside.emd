@@ -1,0 +1,207 @@
+Content set beside the main flow — notes, note containers, boxed asides, and disclosure.
+
+<section #l1-aside | `<aside>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<aside>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `note` `sidebar` `callout` `warning` `tip` `info` `caution` | Optional classification of the aside's role. Affects rendering (callouts get visual emphasis; sidebars get layout treatment). Maps to JATS via boxed-text content-type at export. |
+| `title` | kwarg |  | Optional title rendered at the top of the aside (the frameable title-top convention, #31). Lifts to a <title> child tag at the normalize-to-canonical gate; the child form is equivalent. |
+| `caption` | kwarg |  | Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the "Box N." label folded in when numbered. Lifts to a `<caption>` child tag at the gate. |
+| `+numbered` | boolean | default `false` | Whether this aside is numbered. **Off by default** (boxed prose is usually a one-off callout). When +numbered, the aside counts in its OWN "Box N" series (the `box` counter / ref-prefix `box`), not the figure counter. |
+| `+border` | boolean | default `true` | Frameable surface (#31). **On by default for boxed prose** — the visual box is the point of a callout / sidebar. Use -border to suppress the outline. |
+
+Produced by: canonical `<aside>`.
+
+<sub-section | Examples>
+
+<code #code:l1-aside-1>
+<aside | A side note about the elephant.>
+</code>
+
+<minipage #mp:l1-aside-1>
+<aside | A side note about the elephant.>
+</minipage>
+
+<code #code:l1-aside-2>
+<aside type=warning .important | Be careful here.>
+</code>
+
+<minipage #mp:l1-aside-2>
+<aside type=warning .important | Be careful here.>
+</minipage>
+
+<code #code:l1-aside-3>
+<aside type=callout |
+This is a multi-line callout.
+
+It can contain multiple paragraphs and other content like
+<strong | emphasis> and inline references.
+>
+</code>
+
+<minipage #mp:l1-aside-3>
+<aside type=callout |
+This is a multi-line callout.
+
+It can contain multiple paragraphs and other content like
+<strong | emphasis> and inline references.
+>
+</minipage>
+
+</section>
+
+<section #l1-note | `<note>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<note>` · JATS `<fn>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `placement` | kwarg | `end` `foot` `side` | Determines where the note content is collected. "end" collects at article-back; "foot" collects at article-back (distinguished from "end" by CSS class on the note-list); "side" renders the content inline-adjacent to the marker. Document-wide default is "end". |
+| `position` | kwarg | `end` `foot` `side` | Legacy alias for "placement" (same values, same data-note-placement output). Retained for backwards compatibility; "placement" is preferred for new documents. |
+| `type` | kwarg | `substantive` `technical` `editorial` `translator` `other` | Optional classification. Most notes are substantive (authorial commentary). |
+
+Produced by: canonical `<note>`.
+
+<sub-section | Examples>
+
+<code #code:l1-note-1>
+Some text<note | A substantive note about the text.>.
+</code>
+
+<minipage #mp:l1-note-1>
+Some text<note | A substantive note about the text.>.
+</minipage>
+
+<code #code:l1-note-2>
+A claim<note placement=foot | A footnote.>.
+</code>
+
+<minipage #mp:l1-note-2>
+A claim<note placement=foot | A footnote.>.
+</minipage>
+
+<code #code:l1-note-3>
+A definition<note placement=side | Inline-adjacent note.>.
+</code>
+
+<minipage #mp:l1-note-3>
+A definition<note placement=side | Inline-adjacent note.>.
+</minipage>
+
+</section>
+
+<section #l1-note-list | `<note-list>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<note-list>` · JATS `<fn-group>` · `content` `structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `end-notes` `chapter-notes` `footnotes-collected` `other` |  |
+
+Produced by: canonical `<note-list>`.
+
+</section>
+
+<section #l1-endnotes | `<endnotes>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<endnotes>` · JATS `<fn-group>` · `content` `structured`
+
+*No kwargs or boolean flags.*
+
+Produced by: *structural — emitted by the compiler, not authored directly*.
+
+</section>
+
+<section #l1-details | `<details>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<details>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `open` | kwarg | `true` `false` | HTML's open attribute on <details>. When present, the disclosure is expanded by default. Either +open or open=true form works; absence (or -open / open=false) renders collapsed. |
+
+Produced by: canonical `<details>`.
+
+<sub-section | Examples>
+
+<code #code:l1-details-1>
+<details>
+  <summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+</details>
+</code>
+
+<minipage #mp:l1-details-1>
+<details>
+  <summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+</details>
+</minipage>
+
+*The canonical shape: a &lt;summary&gt; for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.*
+
+<code #code:l1-details-2>
+<details +open>
+  <summary | Always-expanded section>
+  This disclosure is expanded by default.
+</details>
+</code>
+
+<minipage #mp:l1-details-2>
+<details +open>
+  <summary | Always-expanded section>
+  This disclosure is expanded by default.
+</details>
+</minipage>
+
+*The +open boolean kwarg expands the disclosure by default. Maps to HTML's standard open attribute.*
+
+</section>
+
+<section #l1-summary | `<summary>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · Layer 1 `<summary>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<summary>`.
+
+<sub-section | Examples>
+
+<code #code:l1-summary-1>
+<summary | More background>
+</code>
+
+<minipage #mp:l1-summary-1>
+<summary | More background>
+</minipage>
+
+*The visible heading of a &lt;details&gt; disclosure. Appears as a child of &lt;details&gt;.*
+
+<code #code:l1-summary-2>
+<summary | Click to reveal the <em | hidden> details>
+</code>
+
+<minipage #mp:l1-summary-2>
+<summary | Click to reveal the <em | hidden> details>
+</minipage>
+
+*Inline markup in a summary. The recursive-content pass parses the pipe content normally.*
+
+</section>

@@ -1,0 +1,404 @@
+Exhibited artifacts — figures, tables, diagrams, framing surfaces, and captions.
+
+<section #l1-fig | `<fig>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<fig>` · JATS `<fig>` · `content` `prose` → `<figcaption>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `src` | kwarg |  | URL of an image to embed. The handler generates an `<img>` child element from this kwarg. When src is present, the figure renders as an image with a caption. Asset reference (#190): when src is `@id` it pulls in an asset declared inside `<data>`, either embedded — `<fig #id png>base64</fig>` (the format flag is one of png, jpg, jpeg, svg, gif, webp) — or external — `<fig #id src="path" />`. An embedded reference resolves to a `data:<mime>;base64,…` URI; an external one resolves to the declared path (rebased master-relative for a cross-file child) as a plain `<img src="path">`. The placed figure adopts the id, so it numbers and cross-references (`<ref @id>`) as that id; the `<data>` declaration itself renders nothing. Re-placing one asset is legitimate — each `<fig src="@id" />` renders and numbers, but only the first adopts the id (the cross-reference anchor); give a later placement its own `#id` to reference it. An unresolved `@id`, or an embedded format outside the list above, renders a visible asset-error rather than a broken image. Assets merge project-wide across an assembled document; the same id declared in two `<data>` blocks is last-wins with a visible collision flag. (JATS `<graphic>` export of assets is the remaining slice.) |
+| `alt` | kwarg |  | Alt text for the generated `<img>` when src is present. Recommended for accessibility but not required: when alt is not specified, the handler falls back to the figcaption text. Ignored when src is absent. |
+| `align` | kwarg | `left` `right` `center` `full-width` | How the figure is positioned in the document flow. Affects rendering only; not exported to JATS. |
+| `width` | kwarg |  | Suggested rendered width. Can be a CSS length (e.g., "300px", "50%") or a relative value. |
+| `type` | kwarg | `image` `table` `code` `equation` `diagram` `multi-part` `other` | Optional classification of the figure's content. Maps to JATS fig content-type or to wrapping element choices. |
+| `caption` | kwarg |  | Optional caption text. The `caption=` kwarg lifts to a `<caption>` child tag at the normalize-to-canonical gate (caption-as-content) — the same way `<meta>` / `<author>` kwargs lift to their child tags — so a `<caption>` child can equivalently be authored directly. The figure handler also still accepts the legacy figure-as-pipe-caption form: when no `<caption>` child is present, the pipe content becomes the caption. (`title=` lifts to a `<title>` child the same way.) |
+| `+numbered` | boolean | default `true` | Whether this figure participates in the document-wide figure sequence. Use +numbered (default) to number, -numbered to suppress. Can also be written as numbered=true / numbered=false. The config key number-figures=false suppresses all figures unless overridden per-element with +numbered. |
+| `+border` | boolean | default `false` | The frameable surface. When +border is set, the rendered <figure> gains the `frameable-border` class so theme stylesheets can draw the outline box per the frameable convention. Off by default. |
+
+Produced by: canonical `<fig>` · alias `<figure>`.
+
+<sub-section | Examples>
+
+<code #code:l1-fig-1>
+<fig src=elephant.jpg | An adult African elephant.>
+</code>
+
+<minipage #mp:l1-fig-1>
+<fig src=elephant.jpg | An adult African elephant.>
+</minipage>
+
+*The simplest case. The src kwarg generates the &lt;img&gt;; the pipe content generates the figcaption. The alt text defaults to the figcaption text when not specified explicitly. The Layer 1 element is HTML-native &lt;figure&gt; (not the custom-element &lt;fig&gt;) because the HTML rendering surface is the HTML5 native element while the enscribe canonical name follows JATS's shorter &lt;fig&gt;.*
+
+<code #code:l1-fig-2>
+<figure src=elephant.jpg | An adult African elephant.>
+</code>
+
+<minipage #mp:l1-fig-2>
+<figure src=elephant.jpg | An adult African elephant.>
+</minipage>
+
+*`&lt;figure&gt;` is the authoring alias. The normalize-to-canonical gate rewrites the tagname to `fig` early; the rendered output is the same.*
+
+<code #code:l1-fig-3>
+<fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.>
+</code>
+
+<minipage #mp:l1-fig-3>
+<fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.>
+</minipage>
+
+*The `id` enables cross-referencing with `&lt;ref @elephant&gt;` (or the canonical `&lt;ref @fig:elephant&gt;` colon-prefix form). Numbered by default; the figcaption gets a "Figure N." label span prepended.*
+
+<code #code:l1-fig-4>
+<fig #revenue-table type=table |
+<table>
+  <tr><th>Quarter</th><th>Revenue</th></tr>
+  <tr><td>Q1</td><td>$100M</td></tr>
+  <tr><td>Q2</td><td>$120M</td></tr>
+</table>
+Quarterly revenue for fiscal year 2024.
+>
+</code>
+
+<minipage #mp:l1-fig-4>
+<fig #revenue-table type=table |
+<table>
+  <tr><th>Quarter</th><th>Revenue</th></tr>
+  <tr><td>Q1</td><td>$100M</td></tr>
+  <tr><td>Q2</td><td>$120M</td></tr>
+</table>
+Quarterly revenue for fiscal year 2024.
+>
+</minipage>
+
+*A figure without src. The content (a table) is preserved as-is; the trailing line becomes the figcaption. Author convention is to put the caption text on its own line at the end of the content.*
+
+</section>
+
+<section #l1-table | `<table>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<table>` · JATS `<table-wrap>` · `content` `opaque-or-structured`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `parse-columns` | kwarg |  | #21: comma-separated list of column names (by header) whose cells parse as Enscribe inline markup, leaving the other columns literal — the common mixed case (a prose column among data columns). Adds the named columns on top of the parse-text / config decision. Headerless tables can't match by name, so use +parse-text there. A parsed column parses in HTML AND JATS; the stored data payload is never mutated (a display directive on the table). |
+| `caption` | kwarg |  | Short-form caption as a kwarg string. Renders as `<caption>` inside the table element. When numbered, a "Table N." label span is prepended. Long-form caption (`<caption \| ...>` nested tag) is deferred. |
+| `src` | kwarg |  | Path to an external data file. Relative to the document's assets directory (configurable via the assetsDir interpreter option). The content handler reads the file at interpretation time. |
+| `type` | kwarg | `data` `layout` `comparison` `schedule` `results` `other` | Optional semantic classification. Affects styling and JATS export. |
+| `+headers` | boolean | default `true` | Whether the first row of the data is a header row. Default true. Use -headers to suppress thead generation; rows render as tbody only. |
+| `+numbered` | boolean | default `true` | Whether this table is counted in the numbered table sequence and receives a "Table N." label prefix in its caption. |
+| `+parse-text` | boolean | default `false` | #21: whether ALL cells of a DATA-format table parse as Enscribe inline markup. Default false (data-format cells are literal — the safe baseline). +parse-text parses every cell; -parse-text forces literal, overriding a document-wide <config parse-data-tables=true> default. Markdown/pipe tables always parse and ignore this. Resolved by the table-cell-parse plugin (precedence: this attribute > config default > literal baseline). |
+
+Produced by: canonical `<table>`.
+
+<sub-section | Examples>
+
+<code #code:l1-table-1>
+| Name | Price |
+|------|-------|
+| foo  | 1     |
+| bar  | 2     |
+</code>
+
+<minipage #mp:l1-table-1>
+| Name | Price |
+|------|-------|
+| foo  | 1     |
+| bar  | 2     |
+</minipage>
+
+*Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.*
+
+<code #code:l1-table-2>
+<csv | name,price
+foo,1
+bar,2
+>
+</code>
+
+<minipage #mp:l1-table-2>
+<csv | name,price
+foo,1
+bar,2
+>
+</minipage>
+
+*The `&lt;csv&gt;` shorthand lowers to `&lt;table csv&gt;` (the standalone `&lt;csv&gt;` / `&lt;tsv&gt;` tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler's csv engine. `&lt;csv | ... &gt;` and the qualifying form `&lt;table csv | ... &gt;` converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying `&lt;table json | ... &gt;` form — there is no standalone `&lt;json&gt;` shorthand. See the `&lt;csv&gt;` vocabulary entry for engine attributes (header control, alignment, etc.).*
+
+<code #code:l1-table-3>
+<table #revenue type=results>
+  <caption | Quarterly revenue>
+  <tr><th>Quarter</th><th>Revenue</th></tr>
+  <tr><td>Q1</td><td>$100M</td></tr>
+  <tr><td>Q2</td><td>$120M</td></tr>
+</table>
+</code>
+
+<minipage #mp:l1-table-3>
+<table #revenue type=results>
+  <caption | Quarterly revenue>
+  <tr><th>Quarter</th><th>Revenue</th></tr>
+  <tr><td>Q1</td><td>$100M</td></tr>
+  <tr><td>Q2</td><td>$120M</td></tr>
+</table>
+</minipage>
+
+*Explicit table with cells, used when fine control over structure or attributes is needed.*
+
+</section>
+
+<section #l1-caption | `<caption>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<caption>` · JATS `<caption>` · `content` `prose` → `<children>`
+
+*No kwargs or boolean flags.*
+
+Produced by: canonical `<caption>`; the `caption=` kwarg on a frameable; a figure's pipe content (all lift to the same `<caption>` child at the normalize-to-canonical gate).
+
+<sub-section | Examples>
+
+<code #code:l1-caption-1>
+<table>
+  <caption | Annual rainfall by region, 2020–2024.>
+
+  | region | mm |
+  |---|---|
+  | Congo basin | 1600 |
+</table>
+</code>
+
+<minipage #mp:l1-caption-1>
+<table>
+  <caption | Annual rainfall by region, 2020–2024.>
+
+  | region | mm |
+  |---|---|
+  | Congo basin | 1600 |
+</table>
+</minipage>
+
+*A caption is a child of a frameable — a figure, table, diagram, or boxed aside. The frameable handler consumes it and renders the descriptive text with the exhibit, folding in the "Table N." / "Figure N." label when the frameable is numbered.*
+
+</section>
+
+<section #l1-diagram | `<diagram>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<diagram>` · JATS `<(no direct JATS counterpart; exported as <fig specific-use="enscribe-dsl-<engine>"> with the verbatim source in <preformat preformat-type="<engine>-source">)>` · `content` `opaque`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `caption` | kwarg |  | Optional caption text. When present the handler emits a `<figcaption>` sibling after the rendered diagram (the external-DSL sibling-caption layout). When the diagram participates in figure numbering the caption carries a "Figure N." label prefix. |
+
+Produced by: canonical `<diagram>`.
+
+<sub-section | Examples>
+
+<code #code:l1-diagram-1>
+<diagram mermaid>
+graph LR
+  A[Start] --> B{Decision}
+  B -->|yes| C[OK]
+  B -->|no| D[Stop]
+</diagram>
+</code>
+
+<minipage #mp:l1-diagram-1>
+<diagram mermaid>
+graph LR
+  A[Start] --> B{Decision}
+  B -->|yes| C[OK]
+  B -->|no| D[Stop]
+</diagram>
+</minipage>
+
+*The `mermaid` format word selects the Mermaid engine. The handler emits the same `&lt;pre class="mermaid" data-enscribe-dsl="mermaid"&gt;` contract as the legacy `&lt;mermaid&gt;` shorthand expands to.*
+
+<code #code:l1-diagram-2>
+<diagram abc>
+X:1
+T:Scale
+K:C
+CDEFGABc
+</diagram>
+</code>
+
+<minipage #mp:l1-diagram-2>
+<diagram abc>
+X:1
+T:Scale
+K:C
+CDEFGABc
+</diagram>
+</minipage>
+
+*The `abc` format word selects the abcjs engine.*
+
+</section>
+
+<section #l1-svg | `<svg>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<svg>` · JATS `<graphic>` · `content` `opaque` → `<raw-svg-source>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `width` | kwarg |  | SVG width attribute. CSS length or unitless number. Maps directly to the rendered <svg> element's width attribute. |
+| `height` | kwarg |  | SVG height attribute. Same shape as width. |
+| `viewBox` | kwarg |  | SVG viewBox attribute. Defines the coordinate system. Passes through to the rendered <svg> element. |
+| `caption` | kwarg |  | Optional caption text rendered in a sibling `<figcaption>`. The caption= kwarg lifts to a `<caption>` child tag at the normalize-to-canonical gate, matching the frameable convention. |
+| `+numbered` | boolean | default `true` | Whether this SVG participates in the document-wide figure sequence (shares the `figure` counter with <fig>, <mermaid>, <abc>). Use +numbered (default) to number, -numbered to suppress. |
+| `+border` | boolean | default `false` | The frameable surface. When +border is set, the rendered <svg> wrapper gains the `frameable-border` class. |
+
+Produced by: canonical `<svg>`.
+
+<sub-section | Examples>
+
+<code #code:l1-svg-1>
+<svg -numbered viewBox="0 0 100 100" width=200 height=200 |
+  <circle cx="50" cy="50" r="40" fill="blue" />
+>
+</code>
+
+<minipage #mp:l1-svg-1>
+<svg -numbered viewBox="0 0 100 100" width=200 height=200 |
+  <circle cx="50" cy="50" r="40" fill="blue" />
+>
+</minipage>
+
+*A lone inline SVG. `&lt;svg&gt;` is numbered by default (it shares the figure counter), so `-numbered` is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &lt;svg&gt; element.*
+
+<code #code:l1-svg-2>
+<svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
+  <circle cx="50" cy="50" r="40" />
+>
+</code>
+
+<minipage #mp:l1-svg-2>
+<svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
+  <circle cx="50" cy="50" r="40" />
+>
+</minipage>
+
+*Captioned and numbered → framed by the ordinary frameable rule: the handler wraps the &lt;svg&gt; in a &lt;figure&gt; with the &lt;figcaption&gt; as a sibling inside the wrapper (figcaption is not a valid child of &lt;svg&gt;). Shares the figure counter with &lt;fig&gt;; `&lt;ref @fig:diagram&gt;` resolves to "Figure N".*
+
+</section>
+
+<section #l1-frame | `<frame>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<frame>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `title` | kwarg |  | Optional title rendered at the top of the frame (the frameable title-top convention), as a title= kwarg or a <title> child tag. |
+| `caption` | kwarg |  | Optional caption text rendered at the bottom of the frame (the frameable caption-bottom convention). The caption= kwarg lifts to a `<caption>` child tag at the gate. |
+| `type` | kwarg |  | Optional classification of what the frame contains (note, warning, tip, theorem-block, etc.), preserved as the data-frame-type attribute. Since <frame> renders as <figure class="frameable-border"> (not a custom <frame> element), authors target it with the rendered figure — figure[data-frame-type="note"] { … } — not a ".frame" selector. |
+| `+numbered` | boolean | default `false` | Whether this frame participates in the document-wide figure sequence. **Off by default for frame** (unlike <fig>/<svg>/etc.) because a generic frame is typically a sidebar / callout / annotation, not a numbered float. Use +numbered to opt in. |
+| `+border` | boolean | default `true` | The frameable surface. **On by default for frame** (unlike <fig>/<svg>/etc.) because the whole point of the generic <frame> element is the visual frame. Use -border to suppress the outline and just use the frame as a semantic grouping wrapper. border=<name> selects a named look (accent / thick / dashed / subtle) and implies the border on; the look renders as a frameable-border-<name> modifier class (document names it, theme defines it — #58; see frameable.md). |
+
+Produced by: canonical `<frame>`.
+
+<sub-section | Examples>
+
+<code #code:l1-frame-1>
+<frame | A short callout.>
+</code>
+
+<minipage #mp:l1-frame-1>
+<frame | A short callout.>
+</minipage>
+
+*The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `frame` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;frame&gt;, so the class appears automatically.*
+
+<code #code:l1-frame-2>
+<frame type=note title="Important" |
+Make sure to read this carefully.
+>
+</code>
+
+<minipage #mp:l1-frame-2>
+<frame type=note title="Important" |
+Make sure to read this carefully.
+>
+</minipage>
+
+*With a title rendered at the top.*
+
+<code #code:l1-frame-3>
+<frame #fig:method-box +numbered caption="Workflow steps" |
+1. Collect data.
+2. Clean.
+3. Model.
+>
+</code>
+
+<minipage #mp:l1-frame-3>
+<frame #fig:method-box +numbered caption="Workflow steps" |
+1. Collect data.
+2. Clean.
+3. Model.
+>
+</minipage>
+
+*Numbered frame, opted in via +numbered. Shares the figure counter with &lt;fig&gt;/&lt;svg&gt;/&lt;mermaid&gt;/&lt;abc&gt;.*
+
+</section>
+
+<section #l1-minipage | `<minipage>`>
+
+<sub-section | Specification>
+
+`category` `frameables` · Layer 1 `<minipage>` · JATS `<boxed-text>` · `content` `opaque` → `<sealed-subdocument>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `title` | kwarg |  | Optional title rendered at the top of the minipage (the frameable title-top convention). Authored as a title= kwarg. Because the body is opaque (a sealed sub-document), the kwarg stays a kwarg — it is not lifted to a <title> child tag the way it is for prose frameables; a <title> written inside the pipe would be part of the sealed body, not the box's outward title. Same opaque-frameable convention as <svg>/<table>/<csv>. |
+| `caption` | kwarg |  | Optional caption rendered at the bottom of the minipage (the frameable caption-bottom convention), with the "Minipage N." label folded in when numbered. Authored as a caption= kwarg (kwarg-only, for the same opaque-body reason as title). |
+| `+numbered` | boolean | default `false` | Whether this minipage is numbered. **Off by default** (most minipages are layout boxes, not cross-referenced floats). When +numbered, the minipage counts in its OWN "Minipage N" series (the `minipage` counter, config key number-minipages, ref-prefix `mp`) — NOT the figure counter. A sealed sub-document is distinct from a figure, and its private body numbering must not touch the document's figure sequence (#115). |
+| `+border` | boolean | default `true` | The frameable surface. **On by default for minipage** — the visual box is the point (a minipage sets its sealed content apart, like <frame>). Use -border to suppress the outline and keep only the seal. border=<name> selects a named look (accent / thick / dashed / subtle) and implies the border on (#58; see frameable.md). |
+
+Produced by: canonical `<minipage>`.
+
+<sub-section | Examples>
+
+<code #code:l1-minipage-1>
+<minipage | Two panels side by side.>
+</code>
+
+<minipage #mp:l1-minipage-1>
+<minipage | Two panels side by side.>
+</minipage>
+
+*The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `minipage` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;minipage&gt;, so the class appears automatically. The body renders as sealed Layer 1.*
+
+<code #code:l1-minipage-2>
+<minipage #mp:compare +numbered caption="Side-by-side comparison" |
+A figure here counts privately.
+
+<fig #fig:left src="left.png" | Left panel.>
+<fig #fig:right src="right.png" | Right panel.>
+>
+</code>
+
+<minipage #mp:l1-minipage-2>
+<minipage #mp:compare +numbered caption="Side-by-side comparison" |
+A figure here counts privately.
+
+<fig #fig:left src="left.png" | Left panel.>
+<fig #fig:right src="right.png" | Right panel.>
+>
+</minipage>
+
+*Numbered minipage, opted in via +numbered. It counts in its own "Minipage N" series — `&lt;ref @mp:compare&gt;` resolves to "minipage 1". The two inner figures number 1 and 2 in the minipage's PRIVATE figure counter, NOT the document's: a document &lt;fig&gt; elsewhere is unaffected, and an outside `&lt;ref @fig:left&gt;` is a normal not-found ref-error (the seal forbids inbound references to the body).*
+
+</section>

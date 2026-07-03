@@ -1,0 +1,114 @@
+The running text of a document — paragraphs, and the block-level list construct that enumerates within prose.
+
+<section #sh-p | `<p>`>
+
+<sub-section | General Usage>
+
+Semantic role: *p*. Compiles to Layer 1 `<p>`.
+
+Registers:
+
+- Canonical: `<p>`
+
+<code #code:sh-p-1>
+<p | A simple paragraph.>
+</code>
+
+<minipage #mp:sh-p-1>
+<p | A simple paragraph.>
+</minipage>
+
+<code #code:sh-p-2>
+A paragraph written without explicit tags.
+</code>
+
+<minipage #mp:sh-p-2>
+A paragraph written without explicit tags.
+</minipage>
+
+*In most cases, paragraphs do not need to be written with explicit tags. Plain markdown handles paragraph separation: blank lines delineate paragraphs. The explicit &lt;p&gt; form is used when attributes (id, classes, type) are needed.*
+
+<code #code:sh-p-3>
+<p type=lead | The opening paragraph of an article.>
+</code>
+
+<minipage #mp:sh-p-3>
+<p type=lead | The opening paragraph of an article.>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `normal` `lead` `intro` `abstract` `summary` `other` | Optional classification of the paragraph's role. Mostly used for styling (lead paragraphs render larger; abstract paragraphs styled distinctly). |
+
+</section>
+
+<section #sh-list | `<list>` / `<li>`>
+
+<sub-section | General Usage>
+
+Semantic role: *list* / *item*. Compiles to Layer 1 HTML `<ul>` / `<ol>` + `<li>`.
+
+A list works like a section: a marker, then content after it. `<li>` marks an item; the item's content is everything after the marker until the next item, a nested `<list>`, or `</list>` — there is no pipe and no closing `>` on an item, which is what keeps nesting clean. An item's content can be several paragraphs; a single-paragraph item stays bare while a multi-paragraph item wraps (the tight/loose content model).
+
+An item marker has three interchangeable registers — the canonical `<li>`, the sigils `<->` / `<*>`, and the markdown `-` / `*` — all marking an item the same way. Markers are recognized only at the start of a line; an inline `<-` in prose (an arrow, R's assignment) is never claimed.
+
+Registers:
+
+- Canonical: `<li>`
+- Sigil: `<->` or `<*>`
+- Markdown: `-` or `*`
+
+<code #code:sh-list-1>
+<list>
+<li> Fit the model.
+<li> Compute residuals.
+<li> Inspect their distribution.
+</list>
+</code>
+
+<minipage #mp:sh-list-1>
+<list>
+<li> Fit the model.
+<li> Compute residuals.
+<li> Inspect their distribution.
+</list>
+</minipage>
+
+*Unordered list. `<list>` lowers to `<ul>`; each `<li>` to an `<li>`.*
+
+<code #code:sh-list-2>
+<list ordered start=2>
+<-> Fit the model.
+<-> Compute residuals, then discuss.
+
+  A second paragraph belongs to the same item — no indentation is required.
+</list>
+</code>
+
+<minipage #mp:sh-list-2>
+<list ordered start=2>
+<-> Fit the model.
+<-> Compute residuals, then discuss.
+
+  A second paragraph belongs to the same item — no indentation is required.
+</list>
+</minipage>
+
+*`ordered` makes it an `<ol>`; the sigil `<->` marks items. The second item is multi-paragraph, so it wraps.*
+
+<sub-section | Arguments>
+
+Arguments sit on the `<list>` container; `<li>` takes none.
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `ordered` | boolean | default `false` | Ordered vs unordered is the element: `<list>` → `<ul>`; `<list ordered>` → `<ol>`. |
+| `marker` | kwarg | `decimal` `lower-roman` `upper-alpha` `disc` … | Sets the CSS `list-style-type`, passed straight through. An unknown value falls back to the default and is flagged. |
+| `start` | kwarg | integer | First number of an ordered list. |
+| `reversed` | boolean | default `false` | Counts an ordered list down instead of up. |
+
+A `<list>…</list>` inside an item nests; the next outer `<li>` resumes the outer list. JATS export translates to `<list list-type>` / `<list-item>`. (Lists are a document-taxonomy enumeration construct — sequence-addressed rather than a semantic family; they appear here among the block-level content an author writes.)
+
+</section>
