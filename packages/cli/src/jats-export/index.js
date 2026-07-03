@@ -96,10 +96,33 @@ const UNTITLED_TITLE = 'Untitled';
  * @param {string} [opts.lang='en'] - default xml:lang on the root.
  * @returns {string} JATS XML serialization.
  */
+// #333: margin notes (position=margin) project to JATS <boxed-text
+// content-type="marginnote"> at their marker position, NOT to <fn>. Their body
+// lives in the collected __note-list-item; this document-level map (id → item),
+// built at entry, lets the inline __note-marker emit the boxed-text and lets
+// emitFnGroupJats skip the item (a margin note is not a footnote). Position drives
+// the element; numbering is independent (the display number rides along as a label).
+let marginNotesById = new Map();
+
+function collectMarginNotes(tree) {
+  const map = new Map();
+  (function walk(node) {
+    if (!node || typeof node !== 'object') return;
+    if (isEnscribeTag(node, '__note-list-item') && node.kwargs?.sidenote === true && node.id) {
+      map.set(node.id, node);
+    }
+    for (const c of node.children ?? []) walk(c);
+    if (Array.isArray(node.content)) for (const c of node.content) walk(c);
+  })(tree);
+  return map;
+}
+
 export function enscribeToJats(tree, opts = {}) {
   const articleType = opts.articleType ?? 'research-article';
   const bookType    = opts.bookType    ?? 'book';
   const lang        = opts.lang        ?? 'en';
+
+  marginNotesById = collectMarginNotes(tree);
 
   // #246: a website (<meta type=website>) has NO JATS/BITS projection — a site isn't a scholarly
   // document. Refuse here so the rule holds for EVERY caller (not just the CLI's doExportJats
@@ -1543,9 +1566,15 @@ function emitFnGroupJats(node, indent) {
   const contentType = fnGroupContentType(node.classes);
   const ct = contentType ? ` content-type="${contentType}"` : '';
   const items = Array.isArray(node.content) ? node.content : [];
+  // #333: margin notes (kwargs.sidenote) emit inline as <boxed-text> at their
+  // marker (a margin note is not a footnote), so they are skipped here. A note-list
+  // of only margin notes yields no <fn-group>.
+  const fnItems = items.filter(
+    (item) => isEnscribeTag(item, '__note-list-item') && item.kwargs?.sidenote !== true,
+  );
+  if (fnItems.length === 0) return '';
   let out = `${pad}<fn-group${ct}>\n`;
-  for (const item of items) {
-    if (!isEnscribeTag(item, '__note-list-item')) continue;
+  for (const item of fnItems) {
     out += emitFnJats(item, indent + 2);
   }
   out += `${pad}</fn-group>\n`;
@@ -1560,9 +1589,6 @@ function emitFnGroupJats(node, indent) {
  *   - `kwargs.number` — the display number assigned by the registry
  *   - `kwargs.refId`  — the back-reference id (`noteref-N`) that points
  *                       at the marker location
- *   - `kwargs.sidenote` — true for side notes (no list emission in HTML;
- *                         in JATS we still emit a `<fn>` but flag with
- *                         specific-use)
  *   - `content`       — the resolved note body (mdast)
  *
  * JATS shape: `<fn id="..."><label>N</label><p>body</p></fn>`. The
@@ -1575,9 +1601,7 @@ function emitFnJats(node, indent) {
   const pad = ' '.repeat(indent);
   const id = node.id ? ` id="${escapeXmlAttr(node.id)}"` : '';
   const number = node.kwargs?.number ?? null;
-  const sidenote = node.kwargs?.sidenote === true;
-  const specific = sidenote ? ` specific-use="sidenote"` : '';
-  let out = `${pad}<fn${id}${specific}>\n`;
+  let out = `${pad}<fn${id}>\n`;
   if (number != null) {
     out += `${pad}  <label>${escapeXmlText(String(number))}</label>\n`;
   }
@@ -1690,17 +1714,20 @@ function emitInlines(children) {
         const noteId = child.kwargs?.noteId ?? '';
         const number = child.kwargs?.number ?? '';
         const refId  = child.kwargs?.refId  ?? '';
+        // #333: a margin note (position=margin) is a JATS margin note, not a
+        // footnote. Emit <boxed-text content-type="marginnote"> inline at the
+        // marker, carrying the note body from its collected list-item (skipped in
+        // the fn-group). The display number rides along as a <label> — numbering
+        // is independent of position, so the element does not imply un/numbered.
+        const marginItem = marginNotesById.get(noteId);
+        if (marginItem) {
+          const mid = noteId ? ` id="${escapeXmlAttr(noteId)}"` : '';
+          const label = number !== '' ? `<label>${escapeXmlText(String(number))}</label>` : '';
+          out += `<boxed-text${mid} content-type="marginnote">${label}${emitBodyChildren(marginItem.content, 0).trim()}</boxed-text>`;
+          continue;
+        }
         out += `<xref ref-type="fn" id="${escapeXmlAttr(refId)}" ` +
                `rid="${escapeXmlAttr(noteId)}">${escapeXmlText(String(number))}</xref>`;
-        continue;
-      }
-      // #33 part 2: <marginnote> — an unnumbered margin aside, authored inline.
-      // Maps to JATS <boxed-text content-type="marginnote">; the inline body is
-      // wrapped in a <p> (boxed-text takes block content). Emitted at the authored
-      // position inside the surrounding <p> (JATS <p> admits <boxed-text>).
-      if (child.tagname === 'marginnote') {
-        const mid = child.id ? ` id="${escapeXmlAttr(child.id)}"` : '';
-        out += `<boxed-text${mid} content-type="marginnote"><p>${emitInlines(child.content)}</p></boxed-text>`;
         continue;
       }
       // <a> → JATS link. An external href maps to <ext-link>; an internal

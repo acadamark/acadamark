@@ -1506,18 +1506,11 @@ note-list li {
   }
 })();
 </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
-<style>/* Margin column (#33) — shared by sidenotes and marginnotes; injected only when used. */
+<style>/* Margin column (#33) — margin notes relocated beside their markers; injected only when used. */
 
 /* ── Default / narrow (the mobile fallback) ────────────────────────────────── */
-/* A relocated sidenote hides (the bottom note-list shows instead); a marginnote
-   has no list to fall back to, so it renders inline as a block aside. */
+/* The relocated margin copy hides here; the bottom note-list shows instead. */
 .enscribe-sidenote { display: none; }
-.enscribe-marginnote {
-  display: inline-block;
-  font-size: var(--enscribe-text-sm);
-  line-height: var(--enscribe-line-height-tight);
-  color: var(--enscribe-text-secondary);
-}
 
 @media (min-width: 900px) {
   /* Relax the body cap so body + margin gutter can be wider (mirrors the ToC
@@ -1537,9 +1530,8 @@ note-list li {
     margin-right: calc(var(--enscribe-space-12) + 18rem);
   }
 
-  /* Both kinds of margin content float into the right gutter, near their anchor. */
-  .enscribe-layout--margin .enscribe-sidenote,
-  .enscribe-layout--margin .enscribe-marginnote {
+  /* The margin copy floats into the right gutter, near its anchor. */
+  .enscribe-layout--margin .enscribe-sidenote {
     display: block;
     float: right;
     clear: right;
@@ -1552,7 +1544,7 @@ note-list li {
     text-indent: 0;
   }
 
-  /* The sidenote number, carried verbatim from the bottom-list <sup>. */
+  /* The note number, carried verbatim from the bottom-list <sup>. */
   .enscribe-layout--margin .enscribe-sidenote > sup {
     font-family: var(--enscribe-font-sans);
     font-size: var(--enscribe-text-xs);
@@ -1577,8 +1569,7 @@ note-list li {
      third track, so the floats use the column-gap offset, not the single-layout
      negative margin against the body. */
   .enscribe-layout--toc.enscribe-layout--margin .enscribe-body { margin-right: 0; }
-  .enscribe-layout--toc.enscribe-layout--margin .enscribe-sidenote,
-  .enscribe-layout--toc.enscribe-layout--margin .enscribe-marginnote {
+  .enscribe-layout--toc.enscribe-layout--margin .enscribe-sidenote {
     margin-right: calc(-1 * (18rem + var(--enscribe-space-12)));
   }
 }
@@ -1594,27 +1585,34 @@ note-list li {
       </article-front>
       <article-body>
         <section>
-          <section-title>Margin notes in the page margin</section-title>
-          <p>A margin note is an unnumbered aside set in the page margin, authored in place.
-            <aside class="enscribe-marginnote">A margin note floats into the margin beside the text — no number, no back-reference, and never collected into a list.</aside>It is the Tufte-style “margin note”, distinct from a numbered footnote.
-          </p>
-          <p>The body of a margin note takes normal inline interpretation.
-            <aside class="enscribe-marginnote">Inline markup works here: <i>emphasis</i>, <code>code</code>, and other inline elements all interpret normally.</aside>So emphasis, code, citations, and cross-references all work inside it.
-          </p>
-          <p>A margin note is independent of <code>note-position</code>: it always renders in the margin. A numbered footnote, by contrast, collects to the foot of the document in the default mode.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> The two are deliberately different constructs.</p>
+          <section-title>Notes in the page margin</section-title>
+          <p>A margin note is a note positioned in the page margin — <code>&#x3C;note position=margin></code>.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup><span class="enscribe-sidenote"><sup>1</sup><p>A margin note is numbered and collected like any note; its content is also projected into the margin beside its marker.</p></span>It renders like any other note: one note type, three positions (foot, end, margin).</p>
+          <p>The body of a margin note takes normal inline interpretation.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup><span class="enscribe-sidenote"><sup>2</sup><p>Inline markup works here: <i>emphasis</i>, <code>code</code>, and other inline elements all interpret normally.</p></span>So emphasis, code, citations, and cross-references all work inside it.</p>
+          <p>Position is a per-note choice, independent of the document <code>note-position</code> default. A footnote collects to the foot of the document instead.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup> The two differ only in position; both are numbered notes.</p>
+          <note-list class="footnotes">
+            <ol>
+              <li id="note-3"><sup>3</sup>
+                <p>This is an ordinary footnote — position=foot, numbered and collected at the foot of the document.</p><a href="#noteref-3" class="note-backref" aria-label="back to text">↩</a>
+              </li>
+            </ol>
+          </note-list>
         </section>
         <section>
           <section-title>On narrow screens</section-title>
-          <p>Below the margin breakpoint (a narrow window) there is no margin to float into, so a margin note falls back to an inline-block aside in the running text.
-            <aside class="enscribe-marginnote">Resize the window narrow to see this margin note fall back inline.</aside>The text stays readable either way.
-          </p>
+          <p>Below the margin breakpoint (a narrow window) there is no margin to float into, so the projected margin copy hides and the note shows in the bottom note-list instead.<sup id="noteref-4" data-note-id="note-4"><a href="#note-4">4</a></sup><span class="enscribe-sidenote"><sup>4</sup><p>Resize the window narrow to see this margin note fall back to the bottom list.</p></span>The text stays readable either way.</p>
         </section>
       </article-body>
       <article-back>
-        <note-list class="endnotes">
+        <note-list class="notes">
           <ol>
-            <li id="note-1"><sup>1</sup>
-              <p>This is an ordinary numbered footnote — numbered, collected, and placed at the foot of the document. The margin notes above are none of those.</p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
+            <li id="note-1" class="sidenote-fallback"><sup>1</sup>
+              <p>A margin note is numbered and collected like any note; its content is also projected into the margin beside its marker.</p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>
+            </li>
+            <li id="note-2" class="sidenote-fallback"><sup>2</sup>
+              <p>Inline markup works here: <i>emphasis</i>, <code>code</code>, and other inline elements all interpret normally.</p><a href="#noteref-2" class="note-backref" aria-label="back to text">↩</a>
+            </li>
+            <li id="note-4" class="sidenote-fallback"><sup>4</sup>
+              <p>Resize the window narrow to see this margin note fall back to the bottom list.</p><a href="#noteref-4" class="note-backref" aria-label="back to text">↩</a>
             </li>
           </ol>
         </note-list>

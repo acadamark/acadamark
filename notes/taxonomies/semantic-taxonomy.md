@@ -129,7 +129,7 @@ comment. Out-of-flow; degree varies, but the act is one.
   `margin` (beside the text). The *marker* (a number, a symbol, or — in the margin — spatial adjacency)
   is one way to make the association; the margin's unnumbered look is *derived from position* (adjacency
   substitutes for the marker), not an independent element. There is no distinct `<marginnote>` element —
-  it is `<note position=margin>` (kept, if at all, only as an authoring alias, never as a distinct act).
+  it is `<note position=margin>` (collapsed in #333; one note type, three positions).
 - `aside`, `note-list`, `endnotes` — the boxed aside and the collected-note containers.
 - `details` / `summary` — an aside the reader can expand.
 - `example`, `remark` — illustration and tangential comment: **aside by act**, moved here from the old

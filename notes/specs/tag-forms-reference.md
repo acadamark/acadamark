@@ -167,7 +167,6 @@ parsed table data, DSL diagram source, or inline SVG.
 | `<var>` | ✓ | — | ✓ | Variable. |
 | `<samp>` | ✓ | — | ✓ | Sample output. |
 | `<output>` | ✓ | — | ✓ | Form output / computed result. |
-| `<marginnote>` | ✓ | — | — | Unnumbered margin aside authored in place (`<marginnote \| body>`); renders `<aside class="enscribe-marginnote">` floated into the page margin (#33). Body is **inline content** today; multi-paragraph (long-form) marginnote bodies are deferred — see `sidenotes.md` §Deferred. |
 
 ### Citations and cross-references
 

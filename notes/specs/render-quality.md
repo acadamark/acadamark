@@ -163,7 +163,7 @@ accounted for as one of three dispositions.
 | Specified — math | `inline-math`, `display-math`, `math`, `align`, `cases`, `matrix`, `eqnarray` | §10 |
 | Specified — theorem family | `theorem`, `lemma`, `corollary`, `proposition`, `definition`, `example`, `remark`, `proof` | §11 |
 | Specified — refs & cites | `ref`, `cite`, `a` | §12 |
-| Specified — footnotes | `note`, `note-list`, `marginnote` | §13 |
+| Specified — footnotes | `note`, `note-list` | §13 |
 | Specified — bibliography | `bibliography`, `bib-entry` | §14 |
 | Specified — book | `book`, `book-front/body/back`, `book-part`, `book-title`, `book-subtitle`, `book-part-title`, `book-part-subtitle` | §15 |
 | Generic-implicit (block) | `p`, `details`, `summary`, `dl`, `dt`, `dd` | §6.2 |
@@ -878,10 +878,10 @@ rendered body is copied into a `<span class="enscribe-sidenote">` after its
 in-text marker and floated into a margin column (the document element is marked
 `.enscribe-layout--margin`); the note tree, markers, numbering, and JATS are
 unchanged, and the bottom `<note-list>` is retained as the below-breakpoint
-fallback. `<marginnote | body>` is the unnumbered counterpart — an
-`<aside class="enscribe-marginnote">` authored in place, floated into the same
-margin column, never numbered or collected. The margin CSS is injected only when
-the margin is used, so default output is byte-identical.
+fallback. A per-note `<note position=margin>` places a single note in the margin
+the same way, independent of the document `note-position` default (#333). The
+margin CSS is injected only when the margin is used, so default output is
+byte-identical.
 
 **Out of spec.** True per-section placement of `foot` notes at the bottom of
 each section (current behaviour aggregates into one back-matter list).

@@ -50,7 +50,7 @@ import { run as runArticleAppendices } from './article-appendices.test.js';
 import { run as runBookPartType } from './book-part-type.test.js';
 import { run as runLongFormAtref } from './long-form-atref.test.js';
 import { run as runIdentifierAt } from './identifier-at.test.js';
-import { run as runMarginnote } from './marginnote.test.js';
+import { run as runNoteMargin } from './note-margin.test.js';
 import { run as runLibrarySrc } from './library-src.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
 import { run as runConfigOptions } from './config-options.test.js';
@@ -139,7 +139,7 @@ const suites = [
   ['book-part-type',               runBookPartType],
   ['long-form-atref',              runLongFormAtref],
   ['identifier-at',                runIdentifierAt],
-  ['marginnote',                   runMarginnote],
+  ['note-margin',                  runNoteMargin],
   ['library-src',                  runLibrarySrc],
   ['strict-mode',                  runStrictMode],
   ['lib/chapter-nav',              runChapterNav],

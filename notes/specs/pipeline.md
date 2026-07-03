@@ -742,8 +742,9 @@ document → byte-identical). In call order:
 1. **ToC** — table-of-contents nav (#218 config listing or the legacy `toc`
    option) + the contents-listing CSS when a config listing rendered; yields the
    `tocType` / `configTocShape` the book scripts gate on.
-2. **Margin layout** — `MARGIN_CSS` + margin column (#33) when
-   `note-position=margin` relocates notes, or a `<marginnote>` is present.
+2. **Margin layout** — `MARGIN_CSS` + margin column (#33 / #333) when a note is
+   relocated into the margin: `note-position=margin` (every note) or a per-note
+   `<note position=margin>`.
 3. **Strict-mode flag** — the #36 flag CSS, only on a non-`off` rung
    (`sigil`/`canonical`).
 4. **Book scripts** — chapter-nav (opt-in, book ToC) → on-this-page (book right

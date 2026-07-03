@@ -181,11 +181,12 @@ Surfaced by measurement; to apply when specs are conformed to this taxonomy.
 
 **Decided — code lags the taxonomy** (the taxonomy has settled the direction; the code has not yet caught up.
 Tracked as issues, not open questions):
-- **`marginnote` → `<note position=margin>`.** The semantic taxonomy says there is no distinct `<marginnote>`
-  act — a margin note is a `note`, positioned. The code still has a distinct `marginnote.md` element
-  (`category: inline-formatting`; renders `<aside class="enscribe-marginnote">`) with its own independent
-  branch in `detectAssets` (`interpreter/index.js`). Collapse it into `<note position=margin>` (or keep only
-  as a pure authoring alias). Tracked: #333.
+- **`marginnote` → `<note position=margin>` (#333, done).** The semantic taxonomy says there is no distinct
+  `<marginnote>` act — a margin note is a `note`, positioned. `marginnote.md` and its special-cases (the
+  `enscribe-marginnote` aside, the `detectAssets` branch, the margin CSS, the standalone JATS emitter) have
+  been removed; a margin note is now `<note position=margin>` — numbered and collected like any note, its
+  content also projected into the margin. One note type, three positions (foot, end, margin); numbering is
+  independent of position.
 - **`span` is not in the vocabulary (removed in #334).** The semantic taxonomy says `<span>` is not a
   vocabulary element (no authorial act); whether any non-Enscribe HTML survives is a **processing policy**
   (a future `<html-passthrough>` switch), not a vocabulary question. `span.md` has been removed — an

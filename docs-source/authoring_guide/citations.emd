@@ -53,16 +53,16 @@ The `#` sigil *declares* an id (`<fig #fig:scatter>`); the `@` sigil *references
 
 <sub-section | General Usage>
 
-A note attaches a comment to the text. `<note>` becomes a numbered footnote collected at the foot of the document; `<marginnote>` sets the comment beside the text in the margin.
+A note attaches a comment to the text — one note type with three positions. `<note>` (position `foot`/`end`) becomes a numbered footnote collected at the foot of the document; `<note position=margin>` places the same numbered note beside the text in the margin.
 
 <code #code:notes-basic>
 The result holds in general<note | With the usual regularity assumptions.>. A lighter
-aside can sit in the margin instead.<marginnote | Margins suit short, glanceable remarks.>
+note can sit in the margin instead.<note position=margin | Margins suit short, glanceable remarks.>
 </code>
 
 <minipage #mp:notes-basic>
 The result holds in general<note | With the usual regularity assumptions.>. A lighter
-aside can sit in the margin instead.<marginnote | Margins suit short, glanceable remarks.>
+note can sit in the margin instead.<note position=margin | Margins suit short, glanceable remarks.>
 </minipage>
 
 <sub-section | Notes>
