@@ -6,14 +6,14 @@
 </author>
 </meta>
 
-<chapter src="authoring-guide.emd" | Section Headings>
 <chapter src="block-level.emd" | Block-Level Content>
 <chapter src="inline-formatting.emd" | Inline Formatting>
-<chapter src="code.emd" | Code>
-<chapter src="tables.emd" | Tables>
-<chapter src="figures.emd" | Figures & Frameables>
-<chapter src="math.emd" | Mathematics>
-<chapter src="theorems.emd" | Theorem Environments>
 <chapter src="citations.emd" | Citations, Notes & Cross-References>
+<chapter src="figures.emd" | Figures & Frameables>
+<chapter src="tables.emd" | Tables>
+<chapter src="theorems.emd" | Theorem Environments>
+<chapter src="math.emd" | Mathematics>
+<chapter src="code.emd" | Code>
+<chapter src="authoring-guide.emd" | Section Headings>
 
 <appendix src="appendices.emd" | Appendices>

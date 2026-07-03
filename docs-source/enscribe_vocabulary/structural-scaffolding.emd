@@ -1,3 +1,5 @@
+The document skeleton an author writes — sections, navigation, and the horizontal rule.
+
 <section #sh-section | `<section>`>
 
 <sub-section | General Usage>
@@ -175,3 +177,97 @@ Sensitivity tests were performed.
 
 </section>
 
+<section #sh-nav | `<nav>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation*. Compiles to Layer 1 `<nav>`.
+
+Registers:
+
+- Canonical: `<nav>`
+
+*No standalone example — see the registers above and the related constructs in this chapter.*
+
+</section>
+
+<section #sh-nav-group | `<nav-group>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation-group*. Compiles to Layer 1 `<nav-group>`.
+
+Registers:
+
+- Canonical: `<nav-group>`
+
+*No standalone example — see the registers above and the related constructs in this chapter.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `title` | kwarg |  | The group's display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a `<nav-group>` is a long-form container (neither `\|` nor `/`), so the label cannot ride the pipe slot the way a page's title does. |
+
+</section>
+
+<section #sh-item | `<item>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation-item*. Compiles to Layer 1 `<item>`.
+
+Registers:
+
+- Canonical: `<item>`
+
+*No standalone example — see the registers above and the related constructs in this chapter.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `src` | kwarg |  | For an EXTERNAL page: the child `.emd` file that supplies the page body. The pipe gives the menu label and overrides the child's own title, exactly as `<section src \| Title>` does in an article. Omitted for an INLINE page, whose body is authored in the master after the `<item \| Title>` marker (peer-closed by the next entry, the `<section \| Title>` model). The website render (S2) loads the child; S1 records the `src` as a reference only. |
+
+</section>
+
+<section #sh-hr | `<hr>`>
+
+<sub-section | General Usage>
+
+Semantic role: *hr*. Compiles to Layer 1 `<hr>`.
+
+Registers:
+
+- Canonical: `<hr>`
+- Markdown: `---`
+
+<code #code:sh-hr-1>
+<hr>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<code #code:sh-hr-2>
+<hr type=scene-break>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<code #code:sh-hr-3>
+<p | First paragraph.>
+
+<hr type=ornamental>
+
+<p | Second paragraph after a thematic break.>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `scene-break` `section-break` `ornamental` `decorative` `other` | Optional classification of the thematic break's role. Affects rendering (scene breaks render as blank space; ornamental breaks render with decorative characters or images). |
+
+</section>

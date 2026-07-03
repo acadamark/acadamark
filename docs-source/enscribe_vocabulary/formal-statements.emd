@@ -1,0 +1,528 @@
+Formal statements — theorems and their kin, their proofs, and the definitional structures (definition lists and glossaries).
+
+<section #sh-theorem | `<theorem>`>
+
+<sub-section | General Usage>
+
+Semantic role: *theorem*. Compiles to Layer 1 `<theorem>`.
+
+Registers:
+
+- Canonical: `<theorem>`
+
+<code #code:sh-theorem-1>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</code>
+
+<minipage #mp:sh-theorem-1>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</minipage>
+
+*Short-form with pipe content. The body is parsed normally.*
+
+<code #code:sh-theorem-2>
+<theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+</theorem>
+</code>
+
+<minipage #mp:sh-theorem-2>
+<theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+</theorem>
+</minipage>
+
+*Long-form with the optional name kwarg. Cross-referenceable via id (the "thm:" colon-prefix convention is consistent with "fig:", "eqn:", "sec:" elsewhere in enscribe). The name kwarg lifts to `data-name`; the Phase-2 handler will render it as the "(Pythagoras)" suffix to the label "Theorem N".*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the theorem's label (the "(Pythagoras)" half of "Theorem 1.2 (Pythagoras)"). Honored by the Phase-2 theorem handler at label-rendering time; until that handler lands, the kwarg flows through to the rendered HTML as `data-name="..."` via schema dispatch. LaTeX amsthm precedent: `\begin{theorem}[Pythagoras]`. |
+| `+numbered` | boolean | default `true` | Whether this theorem participates in the theorem-family shared counter (see "Numbering" below). Use +numbered (default) to number; -numbered to suppress. Can also be written as numbered=true / numbered=false. |
+
+</section>
+
+<section #sh-lemma | `<lemma>`>
+
+<sub-section | General Usage>
+
+Semantic role: *lemma*. Compiles to Layer 1 `<lemma>`.
+
+Registers:
+
+- Canonical: `<lemma>`
+
+<code #code:sh-lemma-1>
+<lemma | Every continuous function on a compact set attains its maximum.>
+</code>
+
+<minipage #mp:sh-lemma-1>
+<lemma | Every continuous function on a compact set attains its maximum.>
+</minipage>
+
+<code #code:sh-lemma-2>
+<lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+</lemma>
+</code>
+
+<minipage #mp:sh-lemma-2>
+<lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+</lemma>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the lemma's label, parallel to <theorem>'s `name` kwarg. Honored by the Phase-2 handler. |
+| `+numbered` | boolean | default `true` | Whether this lemma participates in the propositional theorem- family shared counter. Default true; -numbered suppresses. |
+
+</section>
+
+<section #sh-corollary | `<corollary>`>
+
+<sub-section | General Usage>
+
+Semantic role: *corollary*. Compiles to Layer 1 `<corollary>`.
+
+Registers:
+
+- Canonical: `<corollary>`
+
+<code #code:sh-corollary-1>
+<corollary | Every prime greater than 2 is odd.>
+</code>
+
+<minipage #mp:sh-corollary-1>
+<corollary | Every prime greater than 2 is odd.>
+</minipage>
+
+<code #code:sh-corollary-2>
+<corollary #cor:bounded>
+Any continuous function on a closed interval is bounded.
+</corollary>
+</code>
+
+<minipage #mp:sh-corollary-2>
+<corollary #cor:bounded>
+Any continuous function on a closed interval is bounded.
+</corollary>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the corollary's label, parallel to <theorem>'s `name` kwarg. |
+| `+numbered` | boolean | default `true` | Whether this corollary participates in the propositional theorem-family shared counter. Default true. |
+
+</section>
+
+<section #sh-proposition | `<proposition>`>
+
+<sub-section | General Usage>
+
+Semantic role: *proposition*. Compiles to Layer 1 `<proposition>`.
+
+Registers:
+
+- Canonical: `<proposition>`
+
+<code #code:sh-proposition-1>
+<proposition | The sum of two even integers is even.>
+</code>
+
+<minipage #mp:sh-proposition-1>
+<proposition | The sum of two even integers is even.>
+</minipage>
+
+<code #code:sh-proposition-2>
+<proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+</proposition>
+</code>
+
+<minipage #mp:sh-proposition-2>
+<proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+</proposition>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the proposition's label. |
+| `+numbered` | boolean | default `true` | Whether this proposition participates in the propositional theorem-family shared counter. Default true. |
+
+</section>
+
+<section #sh-definition | `<definition>`>
+
+<sub-section | General Usage>
+
+Semantic role: *definition*. Compiles to Layer 1 `<definition>`.
+
+Registers:
+
+- Canonical: `<definition>`
+
+<code #code:sh-definition-1>
+<definition | A *group* is a set with an associative binary operation, identity, and inverses.>
+</code>
+
+<minipage #mp:sh-definition-1>
+<definition | A *group* is a set with an associative binary operation, identity, and inverses.>
+</minipage>
+
+<code #code:sh-definition-2>
+<definition name="Group" #def:group>
+A *group* is a set $G$ together with a binary operation
+$\cdot$ satisfying associativity, identity, and inverses.
+</definition>
+</code>
+
+<minipage #mp:sh-definition-2>
+<definition name="Group" #def:group>
+A *group* is a set $G$ together with a binary operation
+$\cdot$ satisfying associativity, identity, and inverses.
+</definition>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the definition's label. |
+| `+numbered` | boolean | default `true` | Whether this definition participates in the definition counter. <definition> runs on its own counter (separate from the propositional theorem-family counter), matching amsthm's conventional "definition" theorem-style family. Default true. |
+
+</section>
+
+<section #sh-example | `<example>`>
+
+<sub-section | General Usage>
+
+Semantic role: *example*. Compiles to Layer 1 `<example>`.
+
+Registers:
+
+- Canonical: `<example>`
+
+<code #code:sh-example-1>
+<example | The integers under addition form a group.>
+</code>
+
+<minipage #mp:sh-example-1>
+<example | The integers under addition form a group.>
+</minipage>
+
+<code #code:sh-example-2>
+<example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+</example>
+</code>
+
+<minipage #mp:sh-example-2>
+<example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+</example>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the example's label. |
+| `+numbered` | boolean | default `true` | Whether this example participates in the example counter. <example> runs on its own counter (separate from theorem, lemma, definition counters), matching amsthm's conventional "example" theorem-style family. Default true. |
+
+</section>
+
+<section #sh-remark | `<remark>`>
+
+<sub-section | General Usage>
+
+Semantic role: *remark*. Compiles to Layer 1 `<remark>`.
+
+Registers:
+
+- Canonical: `<remark>`
+
+<code #code:sh-remark-1>
+<remark | The converse does not hold in general.>
+</code>
+
+<minipage #mp:sh-remark-1>
+<remark | The converse does not hold in general.>
+</minipage>
+
+<code #code:sh-remark-2>
+<remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+</remark>
+</code>
+
+<minipage #mp:sh-remark-2>
+<remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+</remark>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the remark's label. Honored by the Phase-2 handler even though <remark> is unnumbered (a named remark may render as "Remark (Name):" without a number). |
+| `+numbered` | boolean | default `false` | Whether this remark is numbered. Default false — <remark> is conventionally unnumbered (the "remark" theorem-style family in amsthm is unnumbered). An author who wants numbering can opt-in per instance with +numbered, but most usage relies on the default. |
+
+</section>
+
+<section #sh-proof | `<proof>`>
+
+<sub-section | General Usage>
+
+Semantic role: *proof*. Compiles to Layer 1 `<proof>`.
+
+Registers:
+
+- Canonical: `<proof>`
+
+<code #code:sh-proof-1>
+<theorem | The sum of two even integers is even.>
+
+<proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+</proof>
+</code>
+
+<minipage #mp:sh-proof-1>
+<theorem | The sum of two even integers is even.>
+
+<proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+</proof>
+</minipage>
+
+*The canonical pattern: &lt;theorem&gt; followed by sibling &lt;proof&gt;. The proof is NOT nested inside the theorem.*
+
+<code #code:sh-proof-2>
+<proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+</proof>
+</code>
+
+<minipage #mp:sh-proof-2>
+<proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+</proof>
+</minipage>
+
+*Optional `name` kwarg lets the proof identify what it proves (useful when the proof is separated from its theorem by intervening text).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix — e.g. "Proof (of Theorem 1.2)" or "Proof (sketch)". Honored by the Phase-2 handler. |
+| `+numbered` | boolean | default `false` | Whether this proof is numbered. Default false — proofs are conventionally unnumbered (a proof's identity comes from the theorem it proves, not from a counter). An author who wants numbering can opt-in per instance with +numbered. |
+
+</section>
+
+<section #sh-dl | `<dl>`>
+
+<sub-section | General Usage>
+
+Semantic role: *dl*. Compiles to Layer 1 `<dl>`.
+
+Registers:
+
+- Canonical: `<dl>`
+
+<code #code:sh-dl-1>
+<dl>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+  <dt | Layer 1>
+  <dd | The canonical semantic HTML vocabulary.>
+  <dt | Layer 2>
+  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+</dl>
+</code>
+
+<minipage #mp:sh-dl-1>
+<dl>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+  <dt | Layer 1>
+  <dd | The canonical semantic HTML vocabulary.>
+  <dt | Layer 2>
+  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+</dl>
+</minipage>
+
+*Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural authoring pattern.*
+
+<code #code:sh-dl-2>
+<dl .compact>
+  <dt | term-1>
+  <dd | First definition of term-1.>
+  <dd | Second definition of term-1.>
+</dl>
+</code>
+
+<minipage #mp:sh-dl-2>
+<dl .compact>
+  <dt | term-1>
+  <dd | First definition of term-1.>
+  <dd | Second definition of term-1.>
+</dl>
+</minipage>
+
+*One term with multiple definitions — a valid HTML pattern.*
+
+</section>
+
+<section #sh-dt | `<dt>`>
+
+<sub-section | General Usage>
+
+Semantic role: *dt*. Compiles to Layer 1 `<dt>`.
+
+Registers:
+
+- Canonical: `<dt>`
+
+<code #code:sh-dt-1>
+<dt | enscribe>
+</code>
+
+<minipage #mp:sh-dt-1>
+<dt | enscribe>
+</minipage>
+
+*A definition-list term. Appears as a child of &lt;dl&gt;.*
+
+<code #code:sh-dt-2>
+<dt | <code | strict-mode>>
+</code>
+
+<minipage #mp:sh-dt-2>
+<dt | <code | strict-mode>>
+</minipage>
+
+*Inline markup in a term. The recursive-content pass parses the pipe content normally.*
+
+</section>
+
+<section #sh-dd | `<dd>`>
+
+<sub-section | General Usage>
+
+Semantic role: *dd*. Compiles to Layer 1 `<dd>`.
+
+Registers:
+
+- Canonical: `<dd>`
+
+<code #code:sh-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+</code>
+
+<minipage #mp:sh-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
+</minipage>
+
+*A definition-list description. Appears as a child of &lt;dl&gt;, following the term it defines.*
+
+<code #code:sh-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
+</code>
+
+<minipage #mp:sh-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
+</minipage>
+
+*Multi-paragraph descriptions are valid — the pipe content's paragraph structure is preserved.*
+
+</section>
+
+<section #sh-glossary | `<glossary>`>
+
+<sub-section | General Usage>
+
+Semantic role: *glossary*. Compiles to Layer 1 `<glossary>`.
+
+Registers:
+
+- Canonical: `<glossary>`
+
+<code #code:sh-glossary-1>
+<glossary #project-terms>
+  <glossary-entry>
+    <dt | enscribe>
+    <dd | An academic publishing system built on HTML+CSS+JS.>
+  </glossary-entry>
+  <glossary-entry>
+    <dt | Layer 1>
+    <dd | The canonical semantic HTML vocabulary.>
+  </glossary-entry>
+</glossary>
+</code>
+
+*Render pending — indented long-form closing tag not recognised → tag-error (issue #276).*
+
+*A glossary with two entries. Each &lt;glossary-entry&gt; uses &lt;dt&gt;/&lt;dd&gt; for its term and definition (the same shapes &lt;dl&gt; uses), wrapped in the entry's own envelope for cross-reference / styling.*
+
+</section>
+
+<section #sh-glossary-entry | `<glossary-entry>`>
+
+<sub-section | General Usage>
+
+Semantic role: *glossary-entry*. Compiles to Layer 1 `<glossary-entry>`.
+
+Registers:
+
+- Canonical: `<glossary-entry>`
+
+<code #code:sh-glossary-entry-1>
+<glossary-entry #term:enscribe>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+</glossary-entry>
+</code>
+
+<minipage #mp:sh-glossary-entry-1>
+<glossary-entry #term:enscribe>
+  <dt | enscribe>
+  <dd | An academic publishing system built on HTML+CSS+JS.>
+</glossary-entry>
+</minipage>
+
+*A single glossary entry. The id uses the "term:" colon-prefix convention so cross-references like &lt;ref @term:enscribe&gt; can resolve into the entry.*
+
+</section>

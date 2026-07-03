@@ -1,3 +1,5 @@
+Held content — data stores and reference libraries.
+
 <section #l1-data | `<data>`>
 
 <sub-section | Specification>
@@ -108,4 +110,3 @@ Produced by: canonical `<library>`.
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 
 </section>
-
