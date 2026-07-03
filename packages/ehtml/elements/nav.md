@@ -34,7 +34,7 @@ A website's navigation tree (#246). A `<meta type=website>` master declares one 
 
 ## How it is consumed
 
-`enscribeWebsiteStructuring` walks this tree and records an ordered model on `file.data` (the page/group tree, with a `?page=` slug per page). The live website render (S2) builds the top bar (the tree's top level) and the automatic sidebar (the whole tree, via the shared #226 list builder) from that model. This element def makes `<nav>`/`<item>`/`<nav-group>` first-class vocabulary (recognized, no unknown-tag diagnostic); the chrome rendering is the website render's job, not a direct Layer 1 lowering.
+`enscribeWebsiteStructuring` walks this tree and records an ordered model on `file.data` (the page/group tree, with a `?page=` slug per page). The live website render (S2) builds the top bar (the tree's top level) and the automatic sidebar (the whole tree, via the shared #226 list builder) from that model. This element def makes `<nav>`/`<item>`/`<nav-group>` first-class vocabulary (recognized, no unknown-tag diagnostic); the chrome rendering is the website render's job, not a direct eHTML lowering.
 
 ## See also
 

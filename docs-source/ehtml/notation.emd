@@ -4,7 +4,7 @@ Notation — mathematics and code, inline and displayed.
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<inline-math>` · JATS `<inline-formula>` · `content` `opaque`
+`category` `math` · eHTML `<inline-math>` · JATS `<inline-formula>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -28,7 +28,7 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<display-math>` · JATS `<disp-formula>` · `content` `opaque`
+`category` `math` · eHTML `<display-math>` · JATS `<disp-formula>` · `content` `opaque`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -54,7 +54,7 @@ Produced by: canonical `<display-math>` · sigil `<$$ … $$>`.
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<math>` · JATS `<disp-formula>` · `content` `opaque`
+`category` `math` · eHTML `<math>` · JATS `<disp-formula>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -82,7 +82,7 @@ E = mc^2
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<align>` · JATS `<disp-formula>` · `content` `opaque`
+`category` `math` · eHTML `<align>` · JATS `<disp-formula>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -112,7 +112,7 @@ a + b &= c
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<eqnarray>` · JATS `<disp-formula>` · `content` `opaque`
+`category` `math` · eHTML `<eqnarray>` · JATS `<disp-formula>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -142,7 +142,7 @@ g(x) &=& 2x
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<cases>` · JATS `<disp-formula>` · `content` `opaque`
+`category` `math` · eHTML `<cases>` · JATS `<disp-formula>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -172,7 +172,7 @@ x^2 & \text{if } x \ge 0 \\
 
 <sub-section | Specification>
 
-`category` `math` · Layer 1 `<matrix>` · JATS `<disp-formula>` · `content` `opaque`
+`category` `math` · eHTML `<matrix>` · JATS `<disp-formula>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -202,7 +202,7 @@ Produced by: canonical `<matrix>`.
 
 <sub-section | Specification>
 
-`category` `code` · Layer 1 `<inline-code>` · JATS `<monospace>` · `content` `opaque`
+`category` `code` · eHTML `<inline-code>` · JATS `<monospace>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 
@@ -236,7 +236,7 @@ Call <` python | factorial(n) `> to recurse.
 
 <sub-section | Specification>
 
-`category` `code` · Layer 1 `<code>` · JATS `<monospace>` · `content` `opaque` → `<text-content>`
+`category` `code` · eHTML `<code>` · JATS `<monospace>` · `content` `opaque` → `<text-content>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -288,7 +288,7 @@ Use `<`code`>` for inline code.
 
 <sub-section | Specification>
 
-`category` `code` · Layer 1 `<code-block>` · JATS `<code>` · `content` `opaque`
+`category` `code` · eHTML `<code-block>` · JATS `<code>` · `content` `opaque`
 
 *No kwargs or boolean flags.*
 

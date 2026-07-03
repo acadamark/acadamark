@@ -519,7 +519,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {boolean} [options.chapterNav] Opt-in single-chapter PAGING view (Slice C made the one-scroll reading interface the book default). When `true`, a book rendered with a ToC also gets the progressive-enhancement paging script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults OFF — the default book + ToC renders as one scrolling document with chapter-navigation chrome (left chapter rail, per-chapter prev/next, right "on this page" rail). Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).
  * @param {boolean} [options.smartTypography=true] Smart typography (#54): curly quotes, en/em dashes, and ellipses in prose display output. A display-projection on the HTML side only — never the canonical AST / `.emd` / JATS. `false` disables it.
- * @param {'off'|'sigil'|'canonical'} [options.strictMode='off'] Strictness register switch (#36). Each value names the loosest register still interpreted. 'off' (default) interprets all three registers — today's behavior, byte-identical. 'sigil' turns the markdown register off: `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters (no escaping) while canonical tags and sigils stay live everywhere, including inside tag pipe bodies; would-be-markdown text is flagged with a visible lint. 'canonical' turns markdown AND sigils off (`<# #>`, `<$ $>`, `<->`, `<*>` also literal), leaving only canonical named tags — the canonical `<li>` and the `^{}`/`_{}` shortcuts stay live; would-be-markdown and would-be-sigil text is flagged. The flag CSS is injected only for a non-`off` rung. Native inferences (blank-line→paragraph, section nesting) stay on in all states. Layer 1 / JATS are unaffected. Also settable per-document via `<config strict-mode=…>`; the option wins.
+ * @param {'off'|'sigil'|'canonical'} [options.strictMode='off'] Strictness register switch (#36). Each value names the loosest register still interpreted. 'off' (default) interprets all three registers — today's behavior, byte-identical. 'sigil' turns the markdown register off: `*`, `#`, `-`, `>`, `` ` ``, `[](…)`, `$…$` pass through as literal characters (no escaping) while canonical tags and sigils stay live everywhere, including inside tag pipe bodies; would-be-markdown text is flagged with a visible lint. 'canonical' turns markdown AND sigils off (`<# #>`, `<$ $>`, `<->`, `<*>` also literal), leaving only canonical named tags — the canonical `<li>` and the `^{}`/`_{}` shortcuts stay live; would-be-markdown and would-be-sigil text is flagged. The flag CSS is injected only for a non-`off` rung. Native inferences (blank-line→paragraph, section nesting) stay on in all states. eHTML / JATS are unaffected. Also settable per-document via `<config strict-mode=…>`; the option wins.
  */
 export function enscribeInterpreter(options = {}) {
   // embedResources is the global embed/external switch for the two resources
@@ -609,10 +609,10 @@ export function enscribeInterpreter(options = {}) {
   // 1.5. The normalize-to-canonical gate. Runs after step 1 so both outer
   //      and inner processor runs have completed. Runs before step 2 so no
   //      structural plugin sees a non-canonical form. Coerces every
-  //      authored form to canonical Layer 1 shape: sigil tagnames rewritten
+  //      authored form to canonical eHTML shape: sigil tagnames rewritten
   //      via the tagname↔sigil cipher (lift direction); bare markdown
   //      headings normalized to sections (depths 1-3) or passed through as
-  //      <hN> (depths 4-6); inline mdast forms lifted to canonical Layer 1
+  //      <hN> (depths 4-6); inline mdast forms lifted to canonical eHTML
   //      inline elements. See plugins/normalize-to-canonical.js and
   //      DESIGN.md §"The single gate".
   //
@@ -729,7 +729,7 @@ export function enscribeInterpreter(options = {}) {
   //    body in its OWN pipeline run with its OWN VFile (fresh file.data ⇒ fresh
   //    registry via ensureRegistry — the seal). The sub-run resolves the body's
   //    own numbering / notes / refs / cites internally and we splice the resolved
-  //    Layer 1 mdast onto node.minipageResolved for the compile-time handler.
+  //    eHTML mdast onto node.minipageResolved for the compile-time handler.
   //
   //    Runs BEFORE step 9 so the parent's ref-resolution then walks past each
   //    minipage as an opaque black box (its body, still the raw string on
@@ -1112,7 +1112,7 @@ export function buildEnscribePipeline(options = {}) {
  * Lift a source document to its canonical-form mdast tree: parse + recursive
  * content + the normalize-to-canonical gate, and nothing after. The result is a
  * tree where markdown/sigil authored forms have been coerced to canonical
- * Layer 1 `enscribeTag` nodes, but BEFORE the structural plugins restructure it
+ * eHTML `enscribeTag` nodes, but BEFORE the structural plugins restructure it
  * — sections are not yet nested, and refs/cites/notes are not yet resolved (so
  * `<ref>`/`<cite>`/`<note>` remain as authorable tags). This is the input the
  * `enscribe lift` CLI command serializes back to canonical source.

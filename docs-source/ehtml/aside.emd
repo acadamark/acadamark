@@ -4,7 +4,7 @@ Content set beside the main flow — notes, note containers, boxed asides, and d
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<aside>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<aside>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -58,7 +58,7 @@ It can contain multiple paragraphs and other content like
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<note>` · JATS `<fn>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<note>` · JATS `<fn>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -100,7 +100,7 @@ A definition<note placement=side | Inline-adjacent note.>.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<note-list>` · JATS `<fn-group>` · `content` `structured`
+`category` `block-prose` · eHTML `<note-list>` · JATS `<fn-group>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -114,7 +114,7 @@ Produced by: canonical `<note-list>`.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<endnotes>` · JATS `<fn-group>` · `content` `structured`
+`category` `block-prose` · eHTML `<endnotes>` · JATS `<fn-group>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -126,7 +126,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<details>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `structured`
+`category` `block-prose` · eHTML `<details>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -176,7 +176,7 @@ Produced by: canonical `<details>`.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<summary>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<summary>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 

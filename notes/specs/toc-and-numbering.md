@@ -87,27 +87,27 @@ the `+flag` boolean shorthand (`<section +unlisted | …>`); the two are equival
 boolean parses as `true` ([#219](https://github.com/enscribejs/enscribe/issues/219)); a bare unknown
 name stays unrecognized, so a typo never becomes a phantom boolean.
 
-## Layer 1 form
+## eHTML form
 
-`<config>` is itself a Layer 1 vocabulary element (the configuration container, kwargs-only), so these
-settings do not expand into other elements the way the sectioning shorthands do — the Layer 2 kwargs
+`<config>` is itself an eHTML vocabulary element (the configuration container, kwargs-only), so these
+settings do not expand into other elements the way the sectioning shorthands do — the Enscribe shorthand kwargs
 map one-to-one onto canonical HTML attributes on the same `<config>` element:
 
 ```
-Layer 2:  <config toc number-sections toc-depth=2 number-depth=3>
-Layer 1:  <config toc number-sections toc-depth="2" number-depth="3">
+Enscribe shorthand:  <config toc number-sections toc-depth=2 number-depth=3>
+eHTML:  <config toc number-sections toc-depth="2" number-depth="3">
 ```
 
-Two consequences for the Layer 1 reference:
+Two consequences for the eHTML reference:
 
 - The per-heading overrides are **not** config — `unlisted`/`unnumbered` are boolean attributes on the
   sectioning elements themselves (`<section unnumbered>`, `<book-part type="appendix" unlisted>`). So
   this touches two vocabulary entries: `<config>` gains the contents/numbering attributes, and the
   sectioning elements gain the two override booleans.
-- Layer 1 stays **declarative** — it never holds the materialized contents listing or the stamped
+- eHTML stays **declarative** — it never holds the materialized contents listing or the stamped
   section numbers. Those are computable from the config plus the heading tree, so by Rule 2 they stay
   out of the source; the render generates the listing and stamps the numbers (the same destructive pass
-  that resolves refs). With auto-top placement there is no contents node in Layer 1 at all; the renderer
+  that resolves refs). With auto-top placement there is no contents node in eHTML at all; the renderer
   inserts the listing.
 
 ## Scope and links
@@ -151,6 +151,6 @@ contents listing (the un-glue path). Gate-tested in `packages/enscribe/test/conf
 (+ `document-65`). Authoring: `<config number-sections number-depth=2>` (the boolean kwarg bare, the
 valued one `=`) and `<section unnumbered>` / `+unnumbered` — bare known booleans parse since #219.
 
-*Spec note for whoever wires this:* the user-facing docs (the authoring guide and the Layer 1
+*Spec note for whoever wires this:* the user-facing docs (the authoring guide and the eHTML
 reference) should describe these settings by role and link back here for the authoritative list,
 rather than duplicating the tables (Rule 2) — deferred to the docs-adoption slice.

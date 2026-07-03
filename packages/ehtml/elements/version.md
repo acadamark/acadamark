@@ -59,7 +59,7 @@ The document's version. A free-form string carrying whatever versioning conventi
 
 ## Semantic intent
 
-`<version>` records the document's version. Versioning is increasingly common in scholarly publishing — preprints have version numbers as authors revise; living documents (datasets, software documentation, evolving research summaries) are updated over time; even traditionally-published articles sometimes carry revision metadata. The element gives that information a Layer 1 home.
+`<version>` records the document's version. Versioning is increasingly common in scholarly publishing — preprints have version numbers as authors revise; living documents (datasets, software documentation, evolving research summaries) are updated over time; even traditionally-published articles sometimes carry revision metadata. The element gives that information an eHTML home.
 
 ## Authoring
 

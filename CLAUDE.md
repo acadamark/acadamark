@@ -10,8 +10,8 @@ enscribe's documentation operates under the system defined in `CONTRIBUTING.md` 
 
 Enscribe is an academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top. The project has two main layers:
 
-- **Layer 1** is a vocabulary of semantic HTML elements for academic content (articles, books, chapters, sections, floats, citations, cross-references, notes, etc.). The Layer 1 spec is the canonical, archival representation of a document.
-- **Layer 2** is the shorthand authoring syntax — a uniform tag form `<tag #id .class attr=value | content>` that compiles to Layer 1 HTML, plus selected markdown idioms accepted as shortcuts.
+- **Enscribe HTML (eHTML)** is a vocabulary of semantic HTML elements for academic content (articles, books, chapters, sections, floats, citations, cross-references, notes, etc.). The eHTML spec is the canonical, archival representation of a document.
+- **The Enscribe shorthand** is the authoring syntax — a uniform tag form `<tag #id .class attr=value | content>` that compiles to eHTML, plus selected markdown idioms accepted as shortcuts.
 
 The project is built as a set of plugins on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype). The shorthand parser uses a hybrid approach: a micromark extension finds tag boundaries in the source stream, and a Peggy grammar parses the internals of each tag.
 
@@ -20,7 +20,7 @@ The relevant docs are:
 - `DESIGN.md` — design rationale.
 - `STATUS.md` — current state, what's done, what's next.
 - `ROADMAP.md` — the release plan and targets. Open work lives in GitHub Issues (by milestone and label).
-- `notes/specs/layer1-naming.md` — Layer 1 vocabulary rules.
+- `notes/specs/ehtml-naming.md` — eHTML vocabulary rules.
 - `notes/specs/shorthand-syntax.md` — parser specification.
 - `notes/specs/idioms.md` — delegation principle (enscribe hands off to existing parsers wherever possible).
 - `notes/specs/recursive-content-spec.md` — recursive parsing of named-tag content.

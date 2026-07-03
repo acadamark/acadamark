@@ -128,7 +128,7 @@ highlighting/visibility is the interactivity scoped out here.
 - **byte-identical** here is the *cross-mode render invariant*. It is distinct
   from the **byte-identical** *vocabulary-migration* invariant (`DESIGN.md`, the
   vocabulary-boundary principle), which holds the HTML *and* JATS output steady
-  across a Layer 1 element rename. Same word, different invariant.
+  across an eHTML element rename. Same word, different invariant.
 
 ## Audit — it holds today
 

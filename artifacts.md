@@ -9,10 +9,10 @@ Homepage          ← sourced from the README (single-source)
 Design            ← "Under the Hood": how the browser-as-engine works
 Vocabulary        ← the two registers, introduced (curated, light, a few examples)
   ├─ Enscribe Shorthand
-  └─ Layer 1
+  └─ eHTML
 Documentation     ← comprehensive, GENERATED from the vocab source
   ├─ Shorthand catalog   (catalog + full documentation + inline examples)
-  ├─ Layer 1 catalog     (catalog + full documentation + inline examples)
+  ├─ eHTML catalog     (catalog + full documentation + inline examples)
   ├─ Rendering guide     (the option grid below + decision prose)
   └─ JATS export         (+ imported-articles listing at its foot)
 Try It            ← downloadable, self-contained editor + engine
@@ -20,7 +20,7 @@ Try It            ← downloadable, self-contained editor + engine
 
 **Per-page layout:** left sidebar = this menu; main column = content; right rail = the config-driven on-this-page ToC (`<config toc toc-location=right>`), with a stable `id` anchor on every element/option entry so the future search (#138) can jump to it.
 
-**Content map (where the old nine pages went — nothing lost):** Home → Homepage (from README); Design → Design/Under the Hood; Quickstart → Try It (downloadable); Authoring Guide (the monolith) dissolves — workflow prose into the catalogs' "full documentation", render/config part into the Rendering guide, gentle intro into Vocabulary; Layer 1 Reference → replaced by the generated Layer 1 catalog; Book Build → folds into the catalogs' "full documentation"; Gallery → dissolves into the catalogs (examples inline per element); JATS → JATS export; Demos → dissolves into the JATS page (imported-articles list at its foot).
+**Content map (where the old nine pages went — nothing lost):** Home → Homepage (from README); Design → Design/Under the Hood; Quickstart → Try It (downloadable); Authoring Guide (the monolith) dissolves — workflow prose into the catalogs' "full documentation", render/config part into the Rendering guide, gentle intro into Vocabulary; eHTML Reference → replaced by the generated eHTML catalog; Book Build → folds into the catalogs' "full documentation"; Gallery → dissolves into the catalogs (examples inline per element); JATS → JATS export; Demos → dissolves into the JATS page (imported-articles list at its foot).
 
 ## 2. Usage / build / render options grid
 

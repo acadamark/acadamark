@@ -4,7 +4,7 @@ Marking words and phrases inside prose — emphasis, and the small typographic a
 
 <sub-section | General Usage>
 
-Semantic role: *strong*. Compiles to Layer 1 `<strong>`.
+Semantic role: *strong*. Compiles to eHTML `<strong>`.
 
 Registers:
 
@@ -42,7 +42,7 @@ This is **strongly emphasized** content.
 
 <sub-section | General Usage>
 
-Semantic role: *em*. Compiles to Layer 1 `<em>`.
+Semantic role: *em*. Compiles to eHTML `<em>`.
 
 Registers:
 
@@ -82,7 +82,7 @@ This has *emphasized* content.
 
 <sub-section | General Usage>
 
-Semantic role: *b*. Compiles to Layer 1 `<b>`.
+Semantic role: *b*. Compiles to eHTML `<b>`.
 
 Registers:
 
@@ -117,7 +117,7 @@ Use <b type=product-name | Acrobat> to read the file.
 
 <sub-section | General Usage>
 
-Semantic role: *i*. Compiles to Layer 1 `<i>`.
+Semantic role: *i*. Compiles to eHTML `<i>`.
 
 Registers:
 
@@ -160,7 +160,7 @@ The technical term <i type=technical | mitochondria> refers to organelles.
 
 <sub-section | General Usage>
 
-Semantic role: *u*. Compiles to Layer 1 `<u>`.
+Semantic role: *u*. Compiles to eHTML `<u>`.
 
 Registers:
 
@@ -194,7 +194,7 @@ The Chinese name <u type=proper-name | 王明> appears here.
 
 <sub-section | General Usage>
 
-Semantic role: *s*. Compiles to Layer 1 `<s>`.
+Semantic role: *s*. Compiles to eHTML `<s>`.
 
 Registers:
 
@@ -231,7 +231,7 @@ The claim <s type=retracted | was unsupported> has been corrected.
 
 <sub-section | General Usage>
 
-Semantic role: *sub*. Compiles to Layer 1 `<sub>`.
+Semantic role: *sub*. Compiles to eHTML `<sub>`.
 
 Registers:
 
@@ -259,7 +259,7 @@ The vector x<sub | i> represents the i-th component.
 
 <sub-section | General Usage>
 
-Semantic role: *sup*. Compiles to Layer 1 `<sup>`.
+Semantic role: *sup*. Compiles to eHTML `<sup>`.
 
 Registers:
 
@@ -295,7 +295,7 @@ The isotope <sup | 12>C is abundant.
 
 <sub-section | General Usage>
 
-Semantic role: *abbr*. Compiles to Layer 1 `<abbr>`.
+Semantic role: *abbr*. Compiles to eHTML `<abbr>`.
 
 Registers:
 
@@ -333,7 +333,7 @@ Using <abbr | CSS> selectors.
 
 <sub-section | General Usage>
 
-Semantic role: *var*. Compiles to Layer 1 `<var>`.
+Semantic role: *var*. Compiles to eHTML `<var>`.
 
 Registers:
 
@@ -365,7 +365,7 @@ Set <var | threshold> to <samp | 0.05>.
 
 <sub-section | General Usage>
 
-Semantic role: *samp*. Compiles to Layer 1 `<samp>`.
+Semantic role: *samp*. Compiles to eHTML `<samp>`.
 
 Registers:
 
@@ -397,7 +397,7 @@ Set <var | threshold> to <samp | 0.05>.
 
 <sub-section | General Usage>
 
-Semantic role: *kbd*. Compiles to Layer 1 `<kbd>`.
+Semantic role: *kbd*. Compiles to eHTML `<kbd>`.
 
 Registers:
 
@@ -429,7 +429,7 @@ Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 
 <sub-section | General Usage>
 
-Semantic role: *output*. Compiles to Layer 1 `<output>`.
+Semantic role: *output*. Compiles to eHTML `<output>`.
 
 Registers:
 
@@ -451,7 +451,7 @@ The function returns <output | 42> for the test input.
 
 <sub-section | General Usage>
 
-Semantic role: *term*. Compiles to Layer 1 `<term>`.
+Semantic role: *term*. Compiles to eHTML `<term>`.
 
 Registers:
 

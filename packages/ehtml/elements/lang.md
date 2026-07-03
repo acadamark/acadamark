@@ -40,7 +40,7 @@ shorthand_examples:
         <lang>en-US</lang>
       </meta>
     notes: |
-      BCP 47 language tag. The Layer 1 form preserves the value as a
+      BCP 47 language tag. The eHTML form preserves the value as a
       child element of <meta>; downstream consumers (the JATS exporter,
       the render-mode lowering) project it where each format expects.
   - source: '<meta lang="fr" />'
@@ -61,7 +61,7 @@ The document's primary language. Carries a language tag (preferably BCP 47 / ISO
 
 `<lang>` records the document's primary language. Used by HTML's `<html lang="…">` attribute (for accessibility tools, browser hyphenation, search engines), JATS's `xml:lang` attribute, and any other format that distinguishes languages.
 
-Enscribe records language as a Layer 1 *element* rather than an attribute because the apparatus-tag architecture treats `<meta>` content as structured child elements. Downstream lowerings project the value to whatever attribute or element the target format uses.
+Enscribe records language as an eHTML *element* rather than an attribute because the apparatus-tag architecture treats `<meta>` content as structured child elements. Downstream lowerings project the value to whatever attribute or element the target format uses.
 
 ## Authoring
 

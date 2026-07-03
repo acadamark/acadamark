@@ -12,8 +12,8 @@ For *how* the interpreter produces this output — the plugin chain, the handler
 dispatch, the exact emission sites — see `notes/specs/interpreter.md`. For the
 vocabulary of elements being rendered, see `packages/ehtml/SPEC.md`
 and the per-element entries under `packages/ehtml/elements/`. For
-the design rationale behind treating Layer 1 + CSS as the canonical display
-target, see the "Layer 1 is canonical; display is a downstream ladder" section
+the design rationale behind treating eHTML + CSS as the canonical display
+target, see the "eHTML is canonical; display is a downstream ladder" section
 of `DESIGN.md`.
 
 ---
@@ -25,12 +25,12 @@ of `DESIGN.md`.
 Enscribe's display model (`DESIGN.md`, the display-ladder section) is a ladder
 of three targets:
 
-1. **Layer 1 + CSS, no JavaScript.** Custom Layer 1 elements rendered directly
+1. **eHTML + CSS, no JavaScript.** Custom eHTML elements rendered directly
    by the browser as generic boxes, given structure and typography by a
    stylesheet. This is the default and reaches further than people expect: a
    `<section-title>` given block display and heading-sized type *is* a heading,
    visually.
-2. **Layer 1 + CSS + conditionally-injected JavaScript.** For affordances CSS
+2. **eHTML + CSS + conditionally-injected JavaScript.** For affordances CSS
    cannot provide — hover previews for citations and cross-references. The
    interpreter injects this bundle only when a document contains notes, refs,
    or cites.
@@ -38,7 +38,7 @@ of three targets:
    and so on, for consumers that cannot accept custom elements.
 
 **This document specifies targets 1 and 2** — the current default output of the
-interpreter: custom-element-rich Layer 1 HTML, the bundled
+interpreter: custom-element-rich eHTML, the bundled
 `packages/enscribe/src/interpreter/assets/default.css` theme, and the
 conditional hover-preview assets. The class vocabulary referenced throughout is
 the vocabulary that `default.css` defines.
@@ -93,7 +93,7 @@ predicates below assert rendered structure and classes; this paragraph records
 that the *serialization* underneath them carries no rendering significance, so a
 predicate holds identically whether checked against the pretty-printed output or
 a minified one. (Inlined third-party machinery — the hover-preview / KaTeX / DSL
-`<script>`/`<style>` blobs — is left verbatim by design; it is not Layer 1
+`<script>`/`<style>` blobs — is left verbatim by design; it is not eHTML
 output and is not reformatted.)
 
 ---
@@ -138,7 +138,7 @@ the relevant **Out of spec** heading.
 
 ## 2. Coverage map
 
-This section is the completeness check: every Layer 1 vocabulary element is
+This section is the completeness check: every eHTML vocabulary element is
 accounted for as one of three dispositions.
 
 - **Specified** — the element has dedicated predicates in §§3–14 below.
@@ -193,7 +193,7 @@ explicit deferrals.
 ## 3. Document structure (article) — `RQ-DOC`
 
 **What it is.** A `<meta type=article>` (or untyped) document is wrapped by the
-structuring plugins into the Layer 1 article skeleton.
+structuring plugins into the eHTML article skeleton.
 
 **Intended rendering.** The three regions read as distinct zones of the page:
 front-matter (title block) set off above the body, back-matter (notes,
@@ -289,7 +289,7 @@ title block. The `<meta>` container itself is invisible (it only groups).
 
 **Out of spec — deferred presentation.** The pipeline emits the secondary meta
 fields (`affiliation`, `email`, `orcid`, `date`, `publication-date`, `doi`,
-`license`, `keywords`, `subject`, `version`, `editor`) as their Layer 1
+`license`, `keywords`, `subject`, `version`, `editor`) as their eHTML
 elements, but the default theme provides **no dedicated rule** for them and no
 link behaviour (an `<email>` is not rendered as a `mailto:` anchor; a `<doi>` or
 `<orcid>` is not rendered as a hyperlink). Under `meta { display: contents }`
@@ -934,7 +934,7 @@ multi-key citation ordering nuances.
 
 ## 15. Book documents — `RQ-BOOK`
 
-**What it is.** A `<meta type=book>` document is wrapped into the Layer 1 book
+**What it is.** A `<meta type=book>` document is wrapped into the eHTML book
 skeleton, with book-parts (chapters, parts, appendices, …) routed into front /
 body / back by type. Books differ from articles in four rendering-relevant ways:
 chapter-title prominence, per-chapter counter resets, chapter-prefixed

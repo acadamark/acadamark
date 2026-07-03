@@ -1,7 +1,7 @@
 // The normalize-to-canonical gate.
 //
 // This module is the single early pipeline stage that coerces every
-// authored form to its canonical Layer 1 shape. After this stage runs, no
+// authored form to its canonical eHTML shape. After this stage runs, no
 // downstream structural, semantic, or interpreter plugin handles a
 // non-canonical form — every node has its canonical tagname / type / shape.
 //
@@ -24,7 +24,7 @@
 //   Group A — Sigil tagname rewrite (the tagname↔sigil cipher, lift
 //     direction): an enscribeTag whose tagname is a sigil token
 //     ('#'/'##'/'###'/'$'/'$$'/'`'/'```') has its tagname rewritten to the
-//     canonical Layer 1 vocabulary name (section/sub-section/.../inline-math/
+//     canonical eHTML vocabulary name (section/sub-section/.../inline-math/
 //     display-math/inline-code/code-block). Uniformly across section sigils
 //     and math/code sigils. After group A, no downstream node carries a
 //     sigil tagname.
@@ -32,13 +32,13 @@
 //   Group B — Bare markdown heading → section. mdast `heading` of depth
 //     1/2/3 becomes a canonical section / sub-section / sub-sub-section
 //     enscribeTag. Depths 4/5/6 pass through as literal HTML <hN> elements
-//     (a named, narrow exception to Layer 1's otherwise-closed vocabulary;
+//     (a named, narrow exception to eHTML's otherwise-closed vocabulary;
 //     see DESIGN.md §"The <h4>–<h6> exception") with an informative
 //     diagnostic.
 //
 //   Group C — Recursive inline lift. mdast inline forms (emphasis, strong,
 //     delete, inlineCode, link, image, break, raw html) are lifted to their
-//     canonical Layer 1 elements. linkReference, imageReference, and
+//     canonical eHTML elements. linkReference, imageReference, and
 //     footnoteReference are unsupported authoring forms and pass through
 //     unchanged (with a diagnostic where useful).
 //
@@ -351,7 +351,7 @@ export function gfmTableToParsedCellsTag(node, file) {
 // via its extractTitleContent helper (which unwraps the single paragraph).
 //
 // Depths 4-6 are passed through as a literal HTML <hN> element with an
-// informative diagnostic (a named, narrow exception to Layer 1's
+// informative diagnostic (a named, narrow exception to eHTML's
 // otherwise-closed vocabulary — see DESIGN.md §"The <h4>–<h6> exception").
 
 function headingToSection(node) {
@@ -385,7 +385,7 @@ function headingToPassThroughHN(node, file) {
   // by group C (the walker recurses into children).
   if (file && typeof file.message === 'function') {
     file.message(
-      `heading depth ${node.depth} exceeds Layer 1's three section levels; ` +
+      `heading depth ${node.depth} exceeds eHTML's three section levels; ` +
       `passed through as <h${node.depth}>`,
       node,
       'normalize-to-canonical:heading-depth-out-of-range',
@@ -498,7 +498,7 @@ function liftHardBreak(_node) {
 function liftRawHtml(node, file) {
   if (file && typeof file.message === 'function') {
     file.message(
-      'raw HTML passed through; Layer 1 round-trip not guaranteed for this fragment',
+      'raw HTML passed through; eHTML round-trip not guaranteed for this fragment',
       node,
       'normalize-to-canonical:raw-html-passthrough',
     );
@@ -511,7 +511,7 @@ function liftRawHtml(node, file) {
 // Per DESIGN.md §"Structured-data-container tags", a structured-element tag
 // (registered in @enscribejs/enscribe/core/structured-elements.js — today: <meta>,
 // <author>) accepts two authoring forms: kwargs and child tags. Both produce
-// the same Layer 1 child-tag canonical shape. The lift here converts the
+// the same eHTML child-tag canonical shape. The lift here converts the
 // kwarg form to the child-tag form per the per-tag spec, so downstream
 // consumers see one shape.
 //
@@ -545,7 +545,7 @@ function liftStructuredKwargs(node, file) {
   // Boolean-kwarg surface unification: +key / -key forms arrive in
   // node.booleans; key=true / key=false kwarg forms arrive in node.kwargs.
   // For any key declared in spec.booleanKwargs, promote node.booleans[key]
-  // into node.kwargs so the canonical Layer 1 home is uniformly node.kwargs
+  // into node.kwargs so the canonical eHTML home is uniformly node.kwargs
   // (which is what the schema's aggregateHtmlProps(mapAttributes(...)) iterates). Without this,
   // the +form would not render to an HTML attribute through the schema
   // dispatcher (booleans are read only by per-tag handlers, not the schema
@@ -780,7 +780,7 @@ const NORMALIZATIONS = [
   //
   // remark-math: inline math
   // remark-math produces: { type: 'inlineMath', value: '<LaTeX string>' }
-  // Canonical target: enscribeTag with the canonical Layer 1 tagname
+  // Canonical target: enscribeTag with the canonical eHTML tagname
   //   'inline-math' (NOT the sigil token '$' — produce the canonical name
   //   directly so the walker does not need a separate sigil-rewrite pass).
   {
@@ -817,7 +817,7 @@ const NORMALIZATIONS = [
   //
   // An authored sigil-form tag (e.g. <# heading #>, <$ x $>) reaches this
   // stage as an enscribeTag whose tagname is the literal sigil token.
-  // Rewrite to the canonical Layer 1 vocabulary name so no downstream stage
+  // Rewrite to the canonical eHTML vocabulary name so no downstream stage
   // sees a sigil tagname. Uniform across section sigils and math/code
   // sigils.
   {
@@ -903,7 +903,7 @@ const NORMALIZATIONS = [
   // For any structured-element tag (today: <meta>, <author>, <editor>; registered in
   // @enscribejs/enscribe/core/structured-elements.js): allowlisted kwargs lift to
   // child tags per the per-tag spec, with the lift-time misuse-feedback
-  // hints. Layer 1 carries the child-tag form.
+  // hints. eHTML carries the child-tag form.
   // For <config>: allowlisted kwargs stay as kwargs (the existing
   // config-discovery shape), with the misuse-feedback hint when a
   // <meta>-shaped kwarg appears on <config>. <config> is not a structured
@@ -957,7 +957,7 @@ const NORMALIZATIONS = [
 
   // ─── Group C: recursive inline lift ───────────────────────────────────
   //
-  // mdast inline forms → canonical Layer 1 inline elements. The walker
+  // mdast inline forms → canonical eHTML inline elements. The walker
   // recurses into mdast children so these fire wherever the inline appears
   // (inside a heading, inside an aside's content, inside a paragraph).
   { predicate: (node) => node.type === 'emphasis',    normalize: liftEmphasis    },
@@ -1042,7 +1042,7 @@ function validateHostAcceptSet(node, file) {
  * Unified mdast-transform plugin — the normalize-to-canonical gate.
  *
  * Runs once over the tree, coercing every authored form to its canonical
- * Layer 1 shape. After this stage no downstream stage handles a non-
+ * eHTML shape. After this stage no downstream stage handles a non-
  * canonical form.
  *
  * Exported under two names: `enscribeNormalizeToCanonical` is the new
@@ -1055,7 +1055,7 @@ function validateHostAcceptSet(node, file) {
 //
 // The parser parses a bare attribute name (no `=value`, no `+`/`-` sigil) as a POSITIONAL
 // — `<config toc>` → positional ['toc']; `<section unlisted>` → positional ['unlisted'].
-// Bare is the canonical HTML / Layer 1 spelling of a boolean attribute (`<config toc>`),
+// Bare is the canonical HTML / eHTML spelling of a boolean attribute (`<config toc>`),
 // so this promotes a bare positional that is a KNOWN boolean to the same `true` the +/=true
 // forms produce, byte-identically:
 //   - on `<config>`: a BOOLEAN config kwarg (isBooleanConfigKwarg, from the typed CONFIG_KWARGS Map — `toc`, `number-sections`,
@@ -1073,7 +1073,7 @@ function validateHostAcceptSet(node, file) {
 // which tags are configuration.
 //
 // This makes a DELIBERATE reuse explicit, not incidental: a `<config>` setting rides
-// `node.kwargs` — the canonical Layer 1 attribute home, the SAME surface every element
+// `node.kwargs` — the canonical eHTML attribute home, the SAME surface every element
 // attribute uses — distinguished from an element boolean (which rides `node.booleans`)
 // ONLY by this category check, which is the guard. `<config>` is intentionally NOT given
 // a separate storage structure; the kwarg surface IS the attribute home (F2 was resolved

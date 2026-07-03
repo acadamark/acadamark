@@ -4,7 +4,7 @@ Exhibited artifacts — figures, tables, diagrams, framing surfaces, and caption
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<fig>` · JATS `<fig>` · `content` `prose` → `<figcaption>`
+`category` `frameables` · eHTML `<fig>` · JATS `<fig>` · `content` `prose` → `<figcaption>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -29,7 +29,7 @@ Produced by: canonical `<fig>` · alias `<figure>`.
 <fig src=elephant.jpg | An adult African elephant.>
 </minipage>
 
-*The simplest case. The src kwarg generates the &lt;img&gt;; the pipe content generates the figcaption. The alt text defaults to the figcaption text when not specified explicitly. The Layer 1 element is HTML-native &lt;figure&gt; (not the custom-element &lt;fig&gt;) because the HTML rendering surface is the HTML5 native element while the enscribe canonical name follows JATS's shorter &lt;fig&gt;.*
+*The simplest case. The src kwarg generates the &lt;img&gt;; the pipe content generates the figcaption. The alt text defaults to the figcaption text when not specified explicitly. The eHTML element is HTML-native &lt;figure&gt; (not the custom-element &lt;fig&gt;) because the HTML rendering surface is the HTML5 native element while the enscribe canonical name follows JATS's shorter &lt;fig&gt;.*
 
 <code #code:l1-fig-2>
 <figure src=elephant.jpg | An adult African elephant.>
@@ -81,7 +81,7 @@ Quarterly revenue for fiscal year 2024.
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<table>` · JATS `<table-wrap>` · `content` `opaque-or-structured`
+`category` `frameables` · eHTML `<table>` · JATS `<table-wrap>` · `content` `opaque-or-structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -155,7 +155,7 @@ bar,2
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<caption>` · JATS `<caption>` · `content` `prose` → `<children>`
+`category` `frameables` · eHTML `<caption>` · JATS `<caption>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -191,7 +191,7 @@ Produced by: canonical `<caption>`; the `caption=` kwarg on a frameable; a figur
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<diagram>` · JATS `<(no direct JATS counterpart; exported as <fig specific-use="enscribe-dsl-<engine>"> with the verbatim source in <preformat preformat-type="<engine>-source">)>` · `content` `opaque`
+`category` `frameables` · eHTML `<diagram>` · JATS `<(no direct JATS counterpart; exported as <fig specific-use="enscribe-dsl-<engine>"> with the verbatim source in <preformat preformat-type="<engine>-source">)>` · `content` `opaque`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -247,7 +247,7 @@ CDEFGABc
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<svg>` · JATS `<graphic>` · `content` `opaque` → `<raw-svg-source>`
+`category` `frameables` · eHTML `<svg>` · JATS `<graphic>` · `content` `opaque` → `<raw-svg-source>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -296,7 +296,7 @@ Produced by: canonical `<svg>`.
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<frame>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
+`category` `frameables` · eHTML `<frame>` · JATS `<boxed-text>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -358,7 +358,7 @@ Make sure to read this carefully.
 
 <sub-section | Specification>
 
-`category` `frameables` · Layer 1 `<minipage>` · JATS `<boxed-text>` · `content` `opaque` → `<sealed-subdocument>`
+`category` `frameables` · eHTML `<minipage>` · JATS `<boxed-text>` · `content` `opaque` → `<sealed-subdocument>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -379,7 +379,7 @@ Produced by: canonical `<minipage>`.
 <minipage | Two panels side by side.>
 </minipage>
 
-*The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `minipage` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;minipage&gt;, so the class appears automatically. The body renders as sealed Layer 1.*
+*The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `minipage` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;minipage&gt;, so the class appears automatically. The body renders as sealed eHTML.*
 
 <code #code:l1-minipage-2>
 <minipage #mp:compare +numbered caption="Side-by-side comparison" |

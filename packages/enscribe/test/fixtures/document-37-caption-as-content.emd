@@ -9,7 +9,7 @@ Phase 3 slice 3c implements caption-as-content (Option A from the
 Phase 0 findings): `<caption>` is a child tag position on every
 frameable element, with the `caption=` kwarg lifting to child-tag
 form at the normalize-to-canonical gate. Both authoring forms produce
-the same Layer 1 AST.
+the same eHTML AST.
 
 A figure with the canonical child-tag caption form, exercising
 formatted content (emphasis, **bold**) — impossible with the

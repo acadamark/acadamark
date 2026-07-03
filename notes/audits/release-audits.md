@@ -39,7 +39,7 @@ discipline — is specified in `code-review.md`.
 ## 2 · Specs ⇄ code
 
 Every subsystem spec must describe what the code actually does — emitted HTML and JATS, the
-Layer 1 vocabulary, the accepted idioms, the error-node shapes. This is the milestone-level
+eHTML vocabulary, the accepted idioms, the error-node shapes. This is the milestone-level
 backstop to the per-slice coherence check: it catches **cross-slice drift** and specs that
 several slices touched without any single slice owning the reconciliation.
 

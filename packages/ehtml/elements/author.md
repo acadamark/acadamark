@@ -37,11 +37,11 @@ enscribe_attributes:
       notes: |
         Marks this author as the corresponding author (JATS
         contrib corresp="yes"). A scalar marker — stays as a kwarg/
-        attribute on the canonical Layer 1 <author>; never lifted to
+        attribute on the canonical eHTML <author>; never lifted to
         a child tag. Both surface forms are accepted: +corresponding
         (boolean shorthand) and corresponding=true (explicit kwarg)
         both normalize to a `corresponding="true"` attribute on the
-        canonical Layer 1 node. The structured-element gate promotes
+        canonical eHTML node. The structured-element gate promotes
         the +form into the kwarg surface so the schema renderer's
         attribute mapping fires uniformly.
 content:
@@ -63,7 +63,7 @@ content:
     equivalent authoring forms: kwargs (scalar fields) and child tags
     (structured fields). The normalize-to-canonical gate lifts the
     kwarg form to the canonical child-tag form per the spec in
-    @enscribejs/enscribe/core/structured-elements.js. The Layer 1 canonical
+    @enscribejs/enscribe/core/structured-elements.js. The eHTML canonical
     shape carries child tags plus the +corresponding boolean kwarg.
 
     An unrecognized child tag inside <author> produces an informative
@@ -96,7 +96,7 @@ shorthand_examples:
     notes: |
       Kwarg form. Each lifted kwarg becomes a child tag at the gate;
       +corresponding stays as a boolean kwarg on the canonical
-      Layer 1 <author>.
+      eHTML <author>.
   - source: |
       <author +corresponding>
         <name | Jane Goodall>
@@ -106,8 +106,8 @@ shorthand_examples:
       </author>
     ehtml: '<author corresponding><name>Jane Goodall</name><affiliation>Cambridge University</affiliation><orcid>0000-0001-2345-6789</orcid><email><a href="mailto:jane@example.com">jane@example.com</a></email></author>'
     notes: |
-      Child-tag form. The canonical Layer 1 shape. Both this form and
-      the equivalent kwarg form above produce the same Layer 1 output.
+      Child-tag form. The canonical eHTML shape. Both this form and
+      the equivalent kwarg form above produce the same eHTML output.
   - source: |
       <meta>
         <author | Jane Goodall>
@@ -124,7 +124,7 @@ interpreter_strategy: schema
 
 # `<author>`
 
-A document author. `<author>` is a structured-data-container tag — it accepts both a kwarg form and a child-tag form, both reducing to the same Layer 1 child-tag shape.
+A document author. `<author>` is a structured-data-container tag — it accepts both a kwarg form and a child-tag form, both reducing to the same eHTML child-tag shape.
 
 ## Semantic intent
 
@@ -138,7 +138,7 @@ The element is the canonical home for structured author metadata: the author's n
 
 ## Why structured
 
-`<author>` was previously documented as a flat element (the author's name as the only content, with scholarly metadata deferred to the JATS export boundary). That stance was superseded — structured author data is a Layer 1 obligation the alpha release ships, not a JATS-export concession. The shared structured-element infrastructure (see `DESIGN.md` §"Structured-data-container tags" and the `@enscribejs/enscribe/core/structured-elements.js` registry) gives `<author>` the same kwarg/child-tag duality `<meta>` has.
+`<author>` was previously documented as a flat element (the author's name as the only content, with scholarly metadata deferred to the JATS export boundary). That stance was superseded — structured author data is an eHTML obligation the alpha release ships, not a JATS-export concession. The shared structured-element infrastructure (see `DESIGN.md` §"Structured-data-container tags" and the `@enscribejs/enscribe/core/structured-elements.js` registry) gives `<author>` the same kwarg/child-tag duality `<meta>` has.
 
 ## Authoring patterns
 
@@ -156,11 +156,11 @@ The pipe content sits as text content of `<author>`. This is the casual form car
 <author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
 ```
 
-Each lifted kwarg becomes a child tag at the gate. `+corresponding` is a boolean kwarg — a scalar marker — and stays as a kwarg on the canonical Layer 1 `<author>` (it is not lifted to a child tag).
+Each lifted kwarg becomes a child tag at the gate. `+corresponding` is a boolean kwarg — a scalar marker — and stays as a kwarg on the canonical eHTML `<author>` (it is not lifted to a child tag).
 
 **The self-closing `/>` is required for the kwarg form.** `<author>` is long-form-eligible (so the child-tag form below parses), which means the parser otherwise treats `<author …>` (no pipe, no `/`) as a long-form opener and scans forward for `</author>`. `/>` disambiguates — same constraint `<table />` follows for the same reason. Authors who prefer to be explicit can use `<author kwargs></author>` (long-form with empty body) as an alternative.
 
-**Child-tag form (the canonical Layer 1 shape).**
+**Child-tag form (the canonical eHTML shape).**
 
 ```
 <author +corresponding>

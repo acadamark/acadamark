@@ -4,7 +4,7 @@ Held content — data stores and reference libraries.
 
 <sub-section | Specification>
 
-`category` `storage-hosts` · Layer 1 `<data>` · JATS `<no direct equivalent>` · `content` `structured`
+`category` `storage-hosts` · eHTML `<data>` · JATS `<no direct equivalent>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -59,7 +59,7 @@ lock nut,#LN-06,210>
 
 <sub-section | Specification>
 
-`category` `storage-hosts` · Layer 1 `<library>` · JATS `<no direct equivalent (entries lift into ref-list)>` · `content` `opaque` → `<parsed entries (registered in citation system)>`
+`category` `storage-hosts` · eHTML `<library>` · JATS `<no direct equivalent (entries lift into ref-list)>` · `content` `opaque` → `<parsed entries (registered in citation system)>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|

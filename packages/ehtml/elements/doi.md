@@ -73,7 +73,7 @@ or:
 <meta doi="10.1234/example.2024" />
 ```
 
-Both produce the same Layer 1 child-tag structure. Use the kwarg form for compactness in simple cases; use the child-tag form when authoring multiple metadata fields in a structured block.
+Both produce the same eHTML child-tag structure. Use the kwarg form for compactness in simple cases; use the child-tag form when authoring multiple metadata fields in a structured block.
 
 ## Authoring conventions
 

@@ -1,10 +1,10 @@
 # Enscribe Idioms and the Delegation Principle
 
-Enscribe contributes the parts no existing parser owns: the tagged shorthand, the Layer 1 vocabulary, and the JATS bridge. Everything else is delegated. But "delegated" is precise, and this document defines it precisely — because there is a line running through the middle of delegation, and getting that line right is what keeps enscribe from either reinventing wheels or ceding its own vocabulary.
+Enscribe contributes the parts no existing parser owns: the tagged shorthand, the eHTML vocabulary, and the JATS bridge. Everything else is delegated. But "delegated" is precise, and this document defines it precisely — because there is a line running through the middle of delegation, and getting that line right is what keeps enscribe from either reinventing wheels or ceding its own vocabulary.
 
 ## Position
 
-Enscribe is not markdown plus extensions. It is a Layer 1 HTML conventions system. Markdown is accepted as a shortcut idiom because it is familiar and the parsers already exist, but it is not the foundation.
+Enscribe is not markdown plus extensions. It is an eHTML conventions system. Markdown is accepted as a shortcut idiom because it is familiar and the parsers already exist, but it is not the foundation.
 
 Wherever an existing parser can do work enscribe would otherwise need to do, enscribe delegates that *work*. Enscribe does not reimplement remark's tokenizers — finding `$x$` in a stream of text, recognizing `# Heading`, tokenizing `` `code` `` — because that work is hard, remark already does it well, and rebuilding it would be reinventing a working wheel.
 
@@ -94,5 +94,5 @@ Under the normalization model, strict mode is simple to characterize: it is the 
 
 - `notes/specs/recursive-content-spec.md` — design of the recursive-content plugin that turns string content into homogeneous `Node[]` content.
 - `notes/specs/shorthand-syntax.md` — the shorthand syntax specification, including the resolved decision that named-tag content is homogeneous `Node[]` after recursive parsing.
-- `notes/specs/layer1-naming.md` — Layer 1 naming conventions and the rule about deferring to HTML where HTML is sufficient (which is the static-vocabulary counterpart to this document's parser-delegation principle).
+- `notes/specs/ehtml-naming.md` — eHTML naming conventions and the rule about deferring to HTML where HTML is sufficient (which is the static-vocabulary counterpart to this document's parser-delegation principle).
 - `DESIGN.md` — the "Markdown forms are shorthand for the canonical enscribe form" design direction, which states this principle at the design-rationale level.

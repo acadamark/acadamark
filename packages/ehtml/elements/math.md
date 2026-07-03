@@ -61,7 +61,7 @@ Block-level mathematical notation, long-form syntax. Semantically equivalent to 
 
 - The math source is multi-line and the explicit tag bounds aid readability.
 - The author prefers the named-tag form over the sigil for stylistic consistency.
-- A CSS/export pipeline needs to distinguish long-form `<math>` from sigil `<display-math>` (Layer 1 keeps them as separate elements; downstream styling can target either).
+- A CSS/export pipeline needs to distinguish long-form `<math>` from sigil `<display-math>` (eHTML keeps them as separate elements; downstream styling can target either).
 
 The sigil form `<$$ ... $$>` is the more compact authoring shape and remains the recommended default.
 

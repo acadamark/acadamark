@@ -39,7 +39,7 @@ parts you don't.
 <# Sections come in three forms #>
 
 A heading can be written three ways, and all three compile to the *same* thing —
-a Layer 1 `<section>` wrapping a `<section-title>`:
+an eHTML `<section>` wrapping a `<section-title>`:
 
 ```
 <# Methods #>           — sigil form: the fewest keystrokes
@@ -65,7 +65,7 @@ point back to it, by adding `#name` before a pipe:
 `<# #sec:forms | Sections come in three forms #>`. The three forms are not three
 parsers racing each other.<note | The Markdown heading is a *lossy* convenience:
 it lifts into the canonical section but has nowhere to put an id, so converting
-Layer 1 back to shorthand emits the canonical form, never the `#`. The sigil and
+eHTML back to shorthand emits the canonical form, never the `#`. The sigil and
 canonical forms are co-equal and round-trip without loss — a distinction this
 guide's own headings rely on.> Their trade-offs are laid out in <ref @tab:layers>
 below.
@@ -137,7 +137,7 @@ produced <ref @tab:layers>:
 
 ```
 <table #tab:layers csv caption="..." |
-Form,Keystrokes,Carries an id,Round-trips from Layer 1
+Form,Keystrokes,Carries an id,Round-trips from eHTML
 Canonical,most,yes,yes
 ...
 >
@@ -147,8 +147,8 @@ The first line is the header; each line after it is a row. The `caption`
 attribute is rendered below the table, and the table number is added for you.
 Rendered, it is:
 
-<table #tab:layers csv caption="The three authoring forms compared. All three compile to identical Layer 1 HTML, so the choice between them is ergonomic, not semantic." |
-Form,Keystrokes,Carries an id,Round-trips from Layer 1
+<table #tab:layers csv caption="The three authoring forms compared. All three compile to identical eHTML, so the choice between them is ergonomic, not semantic." |
+Form,Keystrokes,Carries an id,Round-trips from eHTML
 Canonical,most,yes,yes
 Sigil,fewest,yes,yes
 Markdown,few,no,no — lossy
@@ -166,7 +166,7 @@ and the rest share this one *frameable* capability, so they all behave the same
 way: caption below, number folded in, an optional border. The image source can be
 a local path or a URL:
 
-<figure #fig:pipeline src="https://picsum.photos/seed/enscribe/720/360" | The Enscribe pipeline in one breath — shorthand is parsed, *lifted* to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)>
+<figure #fig:pipeline src="https://picsum.photos/seed/enscribe/720/360" | The Enscribe pipeline in one breath — shorthand is parsed, *lifted* to canonical eHTML, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)>
 
 Because the figure carries an id, prose elsewhere can point at it by name rather
 than by a number you would otherwise have to keep correct by hand: see
@@ -215,7 +215,7 @@ statements their own numbered, styled blocks, each on its own counter. A
 `<definition>` is the plainest member, and this guide has been leaning on one term
 that earns it:
 
-<definition name="Layer 1" #def:layer1 | *Layer 1* is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as `<section>`, `<fig>`, and `<cite>` that record what each piece of content *is*, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.>
+<definition name="eHTML" #def:layer1 | *eHTML* is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as `<section>`, `<fig>`, and `<cite>` that record what each piece of content *is*, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.>
 
 <# What you've built #>
 
@@ -230,10 +230,10 @@ writing, in a single source file you can read, edit, and archive.
 
 <# Where to go next #>
 
-For the architecture behind the two-layer model — why Layer 1 is canonical, how
+For the architecture behind the two-layer model — why eHTML is canonical, how
 the shorthand lifts to it, and where JATS fits — read the
 <a design | Design article>. The **Authoring Guide**, covering every element in
-depth, and the **Layer 1 Reference**, cataloguing the output vocabulary, are the
+depth, and the **eHTML Reference**, cataloguing the output vocabulary, are the
 next documents to land on this site. Until then, the best next step is the one
 right beside this text: keep editing, and watch what changes.
 

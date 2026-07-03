@@ -17,7 +17,7 @@ The third section is authored as a bare markdown `#` heading with the same
 title (no id — the bare-markdown form has no surface for one).
 
 After the normalize-to-canonical gate runs, all three sections must produce
-the structurally identical Layer 1 `<section>` node — same tagname, same
+the structurally identical eHTML `<section>` node — same tagname, same
 section-title shape, same title text — modulo the absence of an id on the
 bare-markdown form. This is the convergence proof the section-form ladder
 closure depends on.

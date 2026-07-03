@@ -4,11 +4,11 @@ The document's front-matter declarations — the metadata elements, including th
 
 <sub-section | Specification>
 
-`category` `structured-data-containers` · Layer 1 `<meta>` · JATS `<article-meta, book-meta, or book-part-meta>` · `content` `structured`
+`category` `structured-data-containers` · eHTML `<meta>` · JATS `<article-meta, book-meta, or book-part-meta>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which Layer 1 wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
+| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which eHTML wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
 | `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` | For a single-file book-part (type=book-part) only: sets the book-part-type on the generated `<book-part>` wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always "chapter". Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive `<meta>` field). Default "chapter" when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the `<chapter>` / `<appendix>` / … shorthand instead. |
 | `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is `<meta>`'s title — there is no in-header `<icon>`/`<title>` tag. |
 
@@ -68,7 +68,7 @@ Content.
 
 <sub-section | Specification>
 
-`category` `configuration` · Layer 1 `<config>` · JATS `<no direct equivalent>` · `content` `none`
+`category` `configuration` · eHTML `<config>` · JATS `<no direct equivalent>` · `content` `none`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -100,7 +100,7 @@ Produced by: canonical `<config>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<title>` · JATS `<article-title or book-title (inside title-group inside article-meta or book-meta)>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<title>` · JATS `<article-title or book-title (inside title-group inside article-meta or book-meta)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -146,7 +146,7 @@ Produced by: canonical `<title>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<subtitle>` · JATS `<subtitle>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<subtitle>` · JATS `<subtitle>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -169,7 +169,7 @@ Produced by: canonical `<subtitle>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<article-title>` · `content` `prose`
+`category` `metadata` · eHTML `<article-title>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -181,7 +181,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<article-subtitle>` · `content` `prose`
+`category` `metadata` · eHTML `<article-subtitle>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -193,7 +193,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<book-title>` · `content` `prose`
+`category` `metadata` · eHTML `<book-title>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -205,7 +205,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<book-subtitle>` · `content` `prose`
+`category` `metadata` · eHTML `<book-subtitle>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -217,7 +217,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<book-part-title>` · `content` `prose`
+`category` `metadata` · eHTML `<book-part-title>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -229,7 +229,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<book-part-subtitle>` · `content` `prose`
+`category` `metadata` · eHTML `<book-part-subtitle>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -241,7 +241,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<section-title>` · `content` `prose`
+`category` `metadata` · eHTML `<section-title>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -253,7 +253,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<section-subtitle>` · `content` `prose`
+`category` `metadata` · eHTML `<section-subtitle>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -265,7 +265,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<sub-section-title>` · `content` `prose`
+`category` `metadata` · eHTML `<sub-section-title>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -277,7 +277,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<sub-section-subtitle>` · `content` `prose`
+`category` `metadata` · eHTML `<sub-section-subtitle>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -289,7 +289,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<sub-sub-section-title>` · `content` `prose`
+`category` `metadata` · eHTML `<sub-sub-section-title>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -301,7 +301,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<sub-sub-section-subtitle>` · `content` `prose`
+`category` `metadata` · eHTML `<sub-sub-section-subtitle>` · `content` `prose`
 
 *No kwargs or boolean flags.*
 
@@ -313,7 +313,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<abstract>` · JATS `<abstract>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<abstract>` · JATS `<abstract>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -366,7 +366,7 @@ This paper presents...
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<keywords>` · JATS `<kwd-group>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<keywords>` · JATS `<kwd-group>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -398,7 +398,7 @@ Produced by: canonical `<keywords>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<subject>` · JATS `<subject>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<subject>` · JATS `<subject>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -435,7 +435,7 @@ Produced by: canonical `<subject>`.
 
 <sub-section | Specification>
 
-`category` `structured-data-containers` · Layer 1 `<author>` · JATS `<contrib contrib-type="author">` · `content` `structured`
+`category` `structured-data-containers` · eHTML `<author>` · JATS `<contrib contrib-type="author">` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -443,7 +443,7 @@ Produced by: canonical `<subject>`.
 | `affiliation` | kwarg |  | Author's institutional affiliation. Lifts to <affiliation>. |
 | `orcid` | kwarg |  | Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to <orcid>. |
 | `email` | kwarg |  | Author's contact email address. Lifts to <email>. |
-| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical Layer 1 <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical Layer 1 node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
+| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical eHTML <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical eHTML node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
 
 Produced by: canonical `<author>`.
 
@@ -467,7 +467,7 @@ Produced by: canonical `<author>`.
 <author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
 </minipage>
 
-*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical Layer 1 &lt;author&gt;.*
+*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &lt;author&gt;.*
 
 <code #code:l1-author-3>
 <author +corresponding>
@@ -487,7 +487,7 @@ Produced by: canonical `<author>`.
 </author>
 </minipage>
 
-*Child-tag form. The canonical Layer 1 shape. Both this form and the equivalent kwarg form above produce the same Layer 1 output.*
+*Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.*
 
 <code #code:l1-author-4>
 <meta>
@@ -513,7 +513,7 @@ Produced by: canonical `<author>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<editor>` · JATS `<contrib contrib-type="editor">` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<editor>` · JATS `<contrib contrib-type="editor">` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -544,7 +544,7 @@ Produced by: canonical `<editor>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<name>` · JATS `<string-name>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<name>` · JATS `<string-name>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -568,7 +568,7 @@ Produced by: canonical `<name>`.
 
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 
-*Kwarg form of &lt;author&gt;. The `name` kwarg lifts to a &lt;name&gt; child tag at the normalize-to-canonical gate, parallel to &lt;meta&gt;'s kwarg-to-child-tag lift. The `+corresponding` boolean stays as a kwarg/attribute on the canonical Layer 1 &lt;author&gt; (it is a scalar marker, not a structured field).*
+*Kwarg form of &lt;author&gt;. The `name` kwarg lifts to a &lt;name&gt; child tag at the normalize-to-canonical gate, parallel to &lt;meta&gt;'s kwarg-to-child-tag lift. The `+corresponding` boolean stays as a kwarg/attribute on the canonical eHTML &lt;author&gt; (it is a scalar marker, not a structured field).*
 
 </section>
 
@@ -576,7 +576,7 @@ Produced by: canonical `<name>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<affiliation>` · JATS `<aff>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<affiliation>` · JATS `<aff>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -616,7 +616,7 @@ Produced by: canonical `<affiliation>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<orcid>` · JATS `<contrib-id>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<orcid>` · JATS `<contrib-id>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -652,7 +652,7 @@ Produced by: canonical `<orcid>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<email>` · JATS `<email>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<email>` · JATS `<email>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -677,7 +677,7 @@ Produced by: canonical `<email>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<date>` · JATS `<pub-date or date (in history)>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<date>` · JATS `<pub-date or date (in history)>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -728,7 +728,7 @@ Produced by: canonical `<date>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<publication-date>` · JATS `<pub-date>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<publication-date>` · JATS `<pub-date>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -764,7 +764,7 @@ Produced by: canonical `<publication-date>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<license>` · JATS `<license>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<license>` · JATS `<license>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -798,7 +798,7 @@ Produced by: canonical `<license>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<lang>` · JATS `<(no direct element; maps to xml:lang attribute)>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<lang>` · JATS `<(no direct element; maps to xml:lang attribute)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -814,7 +814,7 @@ Produced by: canonical `<lang>`.
 
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 
-*BCP 47 language tag. The Layer 1 form preserves the value as a child element of &lt;meta&gt;; downstream consumers (the JATS exporter, the render-mode lowering) project it where each format expects.*
+*BCP 47 language tag. The eHTML form preserves the value as a child element of &lt;meta&gt;; downstream consumers (the JATS exporter, the render-mode lowering) project it where each format expects.*
 
 <code #code:l1-lang-2>
 <meta lang="fr" />
@@ -830,7 +830,7 @@ Produced by: canonical `<lang>`.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<version>` · JATS `<(no direct standard element; uncertain — may map to article-version or custom-meta)>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<version>` · JATS `<(no direct standard element; uncertain — may map to article-version or custom-meta)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 

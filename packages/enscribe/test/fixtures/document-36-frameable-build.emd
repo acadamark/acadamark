@@ -12,7 +12,7 @@ rendering.
 
 <sub-section | The `<fig>` canonical form>
 
-`<fig>` is the canonical Layer 1 name; `<figure>` is an authoring alias
+`<fig>` is the canonical eHTML name; `<figure>` is an authoring alias
 that rewrites to `<fig>` at the normalize-to-canonical gate.
 
 <fig #fig:elephant src=elephant.jpg | An African elephant.>

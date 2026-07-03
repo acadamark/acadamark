@@ -4,7 +4,7 @@ The running text of a document — paragraphs, and the block-level list construc
 
 <sub-section | General Usage>
 
-Semantic role: *p*. Compiles to Layer 1 `<p>`.
+Semantic role: *p*. Compiles to eHTML `<p>`.
 
 Registers:
 
@@ -48,7 +48,7 @@ A paragraph written without explicit tags.
 
 <sub-section | General Usage>
 
-Semantic role: *list* / *item*. Compiles to Layer 1 HTML `<ul>` / `<ol>` + `<li>`.
+Semantic role: *list* / *item*. Compiles to eHTML `<ul>` / `<ol>` + `<li>`.
 
 A list works like a section: a marker, then content after it. `<li>` marks an item; the item's content is everything after the marker until the next item, a nested `<list>`, or `</list>` — there is no pipe and no closing `>` on an item, which is what keeps nesting clean. An item's content can be several paragraphs; a single-paragraph item stays bare while a multi-paragraph item wraps (the tight/loose content model).
 

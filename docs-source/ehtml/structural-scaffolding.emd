@@ -4,7 +4,7 @@ The document skeleton — containers, regions, sections, navigation, and the hor
 
 <sub-section | Specification>
 
-`category` `document-containers` · Layer 1 `<book>` · JATS `<book>` · `content` `structured`
+`category` `document-containers` · eHTML `<book>` · JATS `<book>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -60,7 +60,7 @@ Content.
 
 <sub-section | Specification>
 
-`category` `structural-regions` · Layer 1 `<book-front>` · `content` `structured`
+`category` `structural-regions` · eHTML `<book-front>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -72,7 +72,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `structural-regions` · Layer 1 `<book-body>` · `content` `structured`
+`category` `structural-regions` · eHTML `<book-body>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -84,7 +84,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `structural-regions` · Layer 1 `<book-back>` · `content` `structured`
+`category` `structural-regions` · eHTML `<book-back>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -96,11 +96,11 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `document-containers` · Layer 1 `<book-part>` · JATS `<book-part>` · `content` `structured`
+`category` `document-containers` · eHTML `<book-part>` · JATS `<book-part>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `chapter` `part` `appendix` `preface` `foreword` `introduction` `conclusion` `glossary` `dedication` `afterword` `colophon` `other` | The kind of book-part. Authored as `type` (the prefix is redundant inside a `<book-part>`); renders to the HTML/BITS attribute `book-part-type` (maps_to). Distinct from `<meta type>`, which is the document class. Always present in Layer 1; the shorthand layer typically supplies it via a shorthand element name (e.g., `<chapter>` sets it to "chapter"). |
+| `type` | kwarg | `chapter` `part` `appendix` `preface` `foreword` `introduction` `conclusion` `glossary` `dedication` `afterword` `colophon` `other` | The kind of book-part. Authored as `type` (the prefix is redundant inside a `<book-part>`); renders to the HTML/BITS attribute `book-part-type` (maps_to). Distinct from `<meta type>`, which is the document class. Always present in eHTML; the shorthand layer typically supplies it via a shorthand element name (e.g., `<chapter>` sets it to "chapter"). |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
 | `note-position` | kwarg | `bottom` `margin` | Document-level note render mode (#33): "bottom" / "margin". Collection (the per-note `placement` kwarg and `note-scope`) is a separate axis — see <note>. |
 | `+unlisted` | boolean | default `false` | Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g. a preface or an index chapter that should not appear in the contents. Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted. |
@@ -149,7 +149,7 @@ Notation conventions used in this book.
 
 <sub-section | Specification>
 
-`category` `document-containers` · Layer 1 `<article>` · JATS `<article>` · `content` `structured`
+`category` `document-containers` · eHTML `<article>` · JATS `<article>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -210,7 +210,7 @@ The conclusion.
 
 <sub-section | Specification>
 
-`category` `structural-regions` · Layer 1 `<article-front>` · `content` `structured`
+`category` `structural-regions` · eHTML `<article-front>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -222,7 +222,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `structural-regions` · Layer 1 `<article-body>` · `content` `structured`
+`category` `structural-regions` · eHTML `<article-body>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -234,7 +234,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `structural-regions` · Layer 1 `<article-back>` · `content` `structured`
+`category` `structural-regions` · eHTML `<article-back>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -246,7 +246,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `sections` · Layer 1 `<section>` · JATS `<sec>`
+`category` `sections` · eHTML `<section>` · JATS `<sec>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -309,7 +309,7 @@ Sub-section content.
 
 <sub-section | Specification>
 
-`category` `sections` · Layer 1 `<sub-section>` · JATS `<sec>` · `content` `structured`
+`category` `sections` · eHTML `<sub-section>` · JATS `<sec>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -362,7 +362,7 @@ Sub-section content.
 
 <sub-section | Specification>
 
-`category` `sections` · Layer 1 `<sub-sub-section>` · JATS `<sec>` · `content` `structured`
+`category` `sections` · eHTML `<sub-sub-section>` · JATS `<sec>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -411,7 +411,7 @@ Sensitivity tests were performed.
 
 <sub-section | Specification>
 
-`category` `navigation` · Layer 1 `<nav>`
+`category` `navigation` · eHTML `<nav>`
 
 *No kwargs or boolean flags.*
 
@@ -423,7 +423,7 @@ Produced by: canonical `<nav>`.
 
 <sub-section | Specification>
 
-`category` `navigation` · Layer 1 `<nav-group>`
+`category` `navigation` · eHTML `<nav-group>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -437,7 +437,7 @@ Produced by: canonical `<nav-group>`.
 
 <sub-section | Specification>
 
-`category` `navigation` · Layer 1 `<item>`
+`category` `navigation` · eHTML `<item>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -451,7 +451,7 @@ Produced by: canonical `<item>`.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<hr>` · JATS `<hr>` · `content` `none`
+`category` `block-prose` · eHTML `<hr>` · JATS `<hr>` · `content` `none`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|

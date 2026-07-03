@@ -145,7 +145,7 @@ Notably, a sub-sub-section does not contain further nested section levels.
 
 `<sub-sub-section>` maps to a JATS `<sec>` nested at depth 3 within its grandparent `<sec>`.
 
-| enscribe Layer 1 | JATS |
+| enscribe eHTML | JATS |
 |-------------------|------|
 | `<sub-sub-section>` | `<sec>` (nested at depth 3) |
 | `<sub-sub-section-title>` | `<title>` (inside the depth-3 `<sec>`) |
@@ -181,7 +181,7 @@ In semantic mode, `<sub-sub-section>` and its title elements are preserved.
 
 In render mode:
 
-| Layer 1 element | Render-mode lowering |
+| eHTML element | Render-mode lowering |
 |----------------|----------------------|
 | `<sub-sub-section>` | `<section>` (HTML5's recursive section element) |
 | `<sub-sub-section-title>` | `<h3>` (when nested within sections whose titles lower to `<h1>` and `<h2>`) |

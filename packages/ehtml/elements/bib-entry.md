@@ -79,11 +79,11 @@ related_plugins:
 
 # `<bib-entry>`
 
-The Layer 1 representation of a single bibliography entry. `<bib-entry>` is **generated output**, not an authoring surface: the citation plugins assemble it (and the surrounding `<bibliography>`) from the citation registry, which is populated from BibTeX / CSL-JSON via citation-js. Authors do not write `<bib-entry>` field-by-field; they supply citation data through `<library>` (inline BibTeX / CSL-JSON) or `<library src="…">` (an external file), and citation-js produces the structured entries.
+The eHTML representation of a single bibliography entry. `<bib-entry>` is **generated output**, not an authoring surface: the citation plugins assemble it (and the surrounding `<bibliography>`) from the citation registry, which is populated from BibTeX / CSL-JSON via citation-js. Authors do not write `<bib-entry>` field-by-field; they supply citation data through `<library>` (inline BibTeX / CSL-JSON) or `<library src="…">` (an external file), and citation-js produces the structured entries.
 
 ## Semantic intent
 
-`<bib-entry>` is the structured Layer 1 form of one bibliography entry — the shape citation-js produces after parsing the citation data an author supplied elsewhere. Each entry has an id (the citation key) and a type, plus the fields appropriate to that type. It is emitted into the assembled `<bibliography>`; it is not hand-authored field-by-field.
+`<bib-entry>` is the structured eHTML form of one bibliography entry — the shape citation-js produces after parsing the citation data an author supplied elsewhere. Each entry has an id (the citation key) and a type, plus the fields appropriate to that type. It is emitted into the assembled `<bibliography>`; it is not hand-authored field-by-field.
 
 Authors give the citation system entries through two paths, and citation-js does the rest:
 

@@ -4,7 +4,7 @@ The document skeleton an author writes — sections, navigation, and the horizon
 
 <sub-section | General Usage>
 
-Semantic role: *section*. Compiles to Layer 1 `<section>`.
+Semantic role: *section*. Compiles to eHTML `<section>`.
 
 Registers:
 
@@ -71,7 +71,7 @@ Sub-section content.
 
 <sub-section | General Usage>
 
-Semantic role: *sub-section*. Compiles to Layer 1 `<sub-section>`.
+Semantic role: *sub-section*. Compiles to eHTML `<sub-section>`.
 
 Registers:
 
@@ -128,7 +128,7 @@ Sub-section content.
 
 <sub-section | General Usage>
 
-Semantic role: *sub-sub-section*. Compiles to Layer 1 `<sub-sub-section>`.
+Semantic role: *sub-sub-section*. Compiles to eHTML `<sub-sub-section>`.
 
 Registers:
 
@@ -181,7 +181,7 @@ Sensitivity tests were performed.
 
 <sub-section | General Usage>
 
-Semantic role: *navigation*. Compiles to Layer 1 `<nav>`.
+Semantic role: *navigation*. Compiles to eHTML `<nav>`.
 
 Registers:
 
@@ -195,7 +195,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *navigation-group*. Compiles to Layer 1 `<nav-group>`.
+Semantic role: *navigation-group*. Compiles to eHTML `<nav-group>`.
 
 Registers:
 
@@ -215,7 +215,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *navigation-item*. Compiles to Layer 1 `<item>`.
+Semantic role: *navigation-item*. Compiles to eHTML `<item>`.
 
 Registers:
 
@@ -235,7 +235,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *hr*. Compiles to Layer 1 `<hr>`.
+Semantic role: *hr*. Compiles to eHTML `<hr>`.
 
 Registers:
 

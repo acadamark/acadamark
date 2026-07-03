@@ -24,7 +24,7 @@ enscribe_attributes:
         The kind of book-part. Authored as `type` (the prefix is redundant inside a
         <book-part>); renders to the HTML/BITS attribute `book-part-type` (maps_to).
         Distinct from <meta type>, which is the document class. Always present in
-        Layer 1; the shorthand layer typically supplies it via a shorthand element
+        eHTML; the shorthand layer typically supplies it via a shorthand element
         name (e.g., <chapter> sets it to "chapter").
     numbering-style:
       maps_to: data-numbering-style
@@ -194,13 +194,13 @@ deferred_features:
 
 # `<book-part>`
 
-A book-part is any major division within a book — a chapter, a named part, an appendix, a preface, a glossary. The single Layer 1 element handles all of these via the `book-part-type` attribute.
+A book-part is any major division within a book — a chapter, a named part, an appendix, a preface, a glossary. The single eHTML element handles all of these via the `book-part-type` attribute.
 
 ## Semantic intent
 
 In JATS and in this vocabulary, all major book divisions share the same structural shape: an optional metadata block, a body of content, and possibly recursively nested book-parts. The differences are purely classificatory — captured by the `book-part-type` attribute, not by separate element names.
 
-The shorthand layer provides familiar names for the common types: `<chapter>`, `<part>`, `<appendix>`, `<preface>`, etc. These all expand to `<book-part>` with the appropriate type at Layer 1.
+The shorthand layer provides familiar names for the common types: `<chapter>`, `<part>`, `<appendix>`, `<preface>`, etc. These all expand to `<book-part>` with the appropriate type at eHTML.
 
 ## Title-after-pipe shorthand
 
@@ -263,7 +263,7 @@ Book-parts can contain other book-parts. The most common pattern is parts contai
 Content.
 ```
 
-In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part book-part-type="chapter">`.
+In eHTML, this is `<book-part book-part-type="part">` containing `<book-part book-part-type="chapter">`.
 
 ## Attributes
 
@@ -280,7 +280,7 @@ In Layer 1, this is `<book-part book-part-type="part">` containing `<book-part b
 
 Direct mapping to JATS `<book-part>`. The element name and the recursive structure are preserved exactly; the canonical `type` kwarg emits the BITS/JATS `book-part-type` attribute.
 
-| enscribe Layer 1 | JATS |
+| enscribe eHTML | JATS |
 |-------------------|------|
 | `<book-part>` | `<book-part>` |
 | `type` kwarg | `book-part-type` attribute |
@@ -350,7 +350,7 @@ In semantic mode, `<book-part>` and its attributes are preserved.
 
 In render mode, `<book-part>` is lowered to `<section>` with a class indicating the type:
 
-| Layer 1 | Render-mode lowering |
+| eHTML | Render-mode lowering |
 |---------|----------------------|
 | `<book-part book-part-type="chapter">` | `<section class="chapter">` |
 | `<book-part book-part-type="part">` | `<section class="part">` |
@@ -366,7 +366,7 @@ The single `<book-part>` element with type discriminator was chosen because:
 - It matches JATS exactly, avoiding mapping divergence in the JATS exporter.
 - It captures the structural truth: chapters, parts, appendices, prefaces all have the same shape.
 - The recursive nesting (parts containing chapters) works naturally with a single element type.
-- Adding new book-part types is a vocabulary update, not a new Layer 1 element.
+- Adding new book-part types is a vocabulary update, not a new eHTML element.
 
 The shorthand layer preserves authoring ergonomics. Authors don't write `<book-part type="chapter">`; they write `<chapter | Title>`.
 

@@ -1,7 +1,7 @@
 // Phase 4 slice 4a — Book structuring plugin.
 //
 // Reads the top-level mdast content of a book document and wraps it in the
-// Layer 1 book structure: <book> > <book-front> + <book-body> + <book-back>.
+// eHTML book structure: <book> > <book-front> + <book-body> + <book-back>.
 // Book-parts (<chapter>, <part>, <appendix>, etc., already lifted to
 // <book-part book-part-type="..."> by the vocab's shorthand_expansions) are
 // routed into the appropriate region based on their book-part-type.

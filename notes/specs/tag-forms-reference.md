@@ -1,6 +1,6 @@
 # Tag-forms reference
 
-A per-tag matrix of which syntactic forms each Layer 1 vocabulary
+A per-tag matrix of which syntactic forms each eHTML vocabulary
 element semantically supports. The general three-form grammar
 (pipe form, slash form, long form) is described in `DESIGN.md`
 §"Tag forms"; this document is the per-tag reference.

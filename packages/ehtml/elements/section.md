@@ -175,7 +175,7 @@ The title and subtitle, if present, are the first children of the section. Body 
 
 ## JATS mapping
 
-| enscribe Layer 1 | JATS |
+| enscribe eHTML | JATS |
 |-------------------|------|
 | `<section>` | `<sec>` |
 | `<section-title>` | `<title>` (inside `<sec>`) |
@@ -244,11 +244,11 @@ No `</section>` tags needed. Each new section closes the previous one.
 
 ## Render-mode lowering
 
-In semantic mode, `<section>`, `<section-title>`, and `<section-subtitle>` remain as Layer 1 elements.
+In semantic mode, `<section>`, `<section-title>`, and `<section-subtitle>` remain as eHTML elements.
 
 In render mode:
 
-| Layer 1 element | Render-mode lowering |
+| eHTML element | Render-mode lowering |
 |----------------|----------------------|
 | `<section>` | `<section>` (unchanged; HTML5 native) |
 | `<section-title>` | `<h1>` (when at depth 1; depth determined by document structure) |

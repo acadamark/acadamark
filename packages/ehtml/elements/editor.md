@@ -39,7 +39,7 @@ enscribe_attributes:
         <editor> from an <author>. Both are the same structured
         contributor type (see notes/decisions.md "Contributor model",
         #338); the role is the differentiating label. A scalar: it
-        stays a kwarg/attribute on the canonical Layer 1 <editor> and is
+        stays a kwarg/attribute on the canonical eHTML <editor> and is
         NOT lifted to a child tag. Maps to data-role in HTML; JATS
         export uses it as the <contrib contrib-type="..."> value.
 content:

@@ -1,4 +1,4 @@
-// Build-time generator for the Layer 1 vocabulary data module.
+// Build-time generator for the eHTML vocabulary data module.
 //
 // Walks `packages/ehtml/elements/*.md`, parses the YAML
 // frontmatter of each, and emits a frozen plain-object ES module at

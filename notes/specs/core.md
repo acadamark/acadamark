@@ -67,7 +67,7 @@ Edges (consumer → dependency):
   `VOCABULARY` data module).
 - `@enscribejs/cli` (JATS export/import + pandoc bridge) → the `enscribe`
   package's exports + `@enscribejs/ehtml`. The JATS export consumes
-  Layer 1 hast/mdast, not the interpreter's HTML.
+  eHTML hast/mdast, not the interpreter's HTML.
 - `@enscribejs/ehtml` → nothing internal (leaf).
 - `src/core/` → nothing else internal (leaf within the package).
 

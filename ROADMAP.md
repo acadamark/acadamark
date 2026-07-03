@@ -48,7 +48,7 @@ and Quarto-perfection are post-launch.
 > Reconcile the issue lists below against `gh` milestones — these mirror the
 > tracker and drift if issues move.
 
-- **v0.5.0 — HTML output.** Layer 1 becomes HTML-shaped; the render projection is
+- **v0.5.0 — HTML output.** eHTML becomes HTML-shaped; the render projection is
   the display channel. Draws from the HTML-output epic. (#147, #117)
 - **JATS.** The archival/semantic export translation, hardened — export gaps,
   `enscribe fetch`, and import round-trip. (#136, #118, #119, #142)

@@ -4,7 +4,7 @@ Formal statements — theorems and kin, proofs, and the definitional structures.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<theorem>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<theorem>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -47,7 +47,7 @@ is right-angled.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<lemma>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<lemma>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -86,7 +86,7 @@ an upper bound contains a maximal element.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<corollary>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<corollary>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -123,7 +123,7 @@ Any continuous function on a closed interval is bounded.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<proposition>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<proposition>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -162,7 +162,7 @@ $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<definition>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<definition>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -201,7 +201,7 @@ $\cdot$ satisfying associativity, identity, and inverses.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<example>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<example>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -242,7 +242,7 @@ integer has an additive inverse.
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<remark>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<remark>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -281,7 +281,7 @@ the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
 
 <sub-section | Specification>
 
-`category` `theorem-family` · Layer 1 `<proof>` · JATS `<statement>` · `content` `prose` → `<children>`
+`category` `theorem-family` · eHTML `<proof>` · JATS `<statement>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -332,7 +332,7 @@ The argument follows from the preceding lemma.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<dl>` · JATS `<def-list>` · `content` `structured`
+`category` `block-prose` · eHTML `<dl>` · JATS `<def-list>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -344,10 +344,10 @@ Produced by: canonical `<dl>`.
 <dl>
   <dt | enscribe>
   <dd | An academic publishing system built on HTML+CSS+JS.>
-  <dt | Layer 1>
+  <dt | eHTML>
   <dd | The canonical semantic HTML vocabulary.>
-  <dt | Layer 2>
-  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+  <dt | Enscribe shorthand>
+  <dd | The shorthand authoring syntax that compiles to eHTML.>
 </dl>
 </code>
 
@@ -355,10 +355,10 @@ Produced by: canonical `<dl>`.
 <dl>
   <dt | enscribe>
   <dd | An academic publishing system built on HTML+CSS+JS.>
-  <dt | Layer 1>
+  <dt | eHTML>
   <dd | The canonical semantic HTML vocabulary.>
-  <dt | Layer 2>
-  <dd | The shorthand authoring syntax that compiles to Layer 1.>
+  <dt | Enscribe shorthand>
+  <dd | The shorthand authoring syntax that compiles to eHTML.>
 </dl>
 </minipage>
 
@@ -388,7 +388,7 @@ Produced by: canonical `<dl>`.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<dt>` · JATS `<term>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<dt>` · JATS `<term>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -422,7 +422,7 @@ Produced by: canonical `<dt>`.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<dd>` · JATS `<def>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<dd>` · JATS `<def>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -464,7 +464,7 @@ The second paragraph of the definition.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<glossary>` · JATS `<glossary>` · `content` `structured`
+`category` `block-prose` · eHTML `<glossary>` · JATS `<glossary>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 
@@ -479,7 +479,7 @@ Produced by: canonical `<glossary>`.
     <dd | An academic publishing system built on HTML+CSS+JS.>
   </glossary-entry>
   <glossary-entry>
-    <dt | Layer 1>
+    <dt | eHTML>
     <dd | The canonical semantic HTML vocabulary.>
   </glossary-entry>
 </glossary>
@@ -495,7 +495,7 @@ Produced by: canonical `<glossary>`.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<glossary-entry>` · JATS `<def-item>` · `content` `structured`
+`category` `block-prose` · eHTML `<glossary-entry>` · JATS `<def-item>` · `content` `structured`
 
 *No kwargs or boolean flags.*
 

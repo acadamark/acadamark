@@ -2,7 +2,7 @@
  * The tagname↔sigil map.
  *
  * A single source-of-truth list of [sigil, tagname] pairs relating each
- * sigil-form spelling of a Layer 1 element to its named-tag spelling.
+ * sigil-form spelling of an eHTML element to its named-tag spelling.
  * Both lookup directions are derived from one literal so they cannot
  * drift. A load-time assertion enforces bijection in both directions.
  *

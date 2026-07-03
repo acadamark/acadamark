@@ -68,11 +68,11 @@ content with no language extraction.
 
 ## Relationship to `code.md`
 
-`code.md` is the Layer 1 vocabulary entry for the `<code>` HTML element.
+`code.md` is the eHTML vocabulary entry for the `<code>` HTML element.
 `inline-code.md` is the interpreter dispatch entry for the single-backtick
 sigil. Both ultimately produce `<code>` in HTML; the separation allows the
 sigil dispatch to use a handler while keeping `<code>` as a plain schema
-element for direct Layer 1 authoring.
+element for direct eHTML authoring.
 
 ## Notes
 

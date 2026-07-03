@@ -276,7 +276,7 @@ the inner one (inside `remarkRecursiveContent`) have completed, so every
 delegated-parser node and every pipe-content subtree is present on both surfaces.
 
 **What it does:** The single normalization gate. It coerces *every* authored form
-to its canonical Layer 1 shape, so downstream structural and semantic plugins see
+to its canonical eHTML shape, so downstream structural and semantic plugins see
 exactly one representation per construct. Settled principle: *delegate the lexer,
 own the node identity*.
 
@@ -353,7 +353,7 @@ the tree must be stable).
 
 #### 4.2 enscribeArticleStructuring
 
-**What it does:** Wraps the document in the Layer 1 article structure.
+**What it does:** Wraps the document in the eHTML article structure.
 Partitions root children into front / body / back / root-siblings buckets
 and builds `<article>`, `<article-front>`, `<article-body>`, `<article-back>`.
 
@@ -389,7 +389,7 @@ via its early no-op check and skips silently.
 
 **Source:** `packages/enscribe/src/interpreter/plugins/book-structuring.js`
 
-**Purpose:** Wrap the root children of a book document into the Layer 1
+**Purpose:** Wrap the root children of a book document into the eHTML
 book structure: `<book>` containing `<book-front>`, `<book-body>`, and
 `<book-back>`. Parallel to `enscribeArticleStructuring` for the BITS
 book DTD shape.
@@ -1148,7 +1148,7 @@ confirms them — not via INTERNAL_REGISTRY (see `interpreter.md` §5.1–5.2).
 
 ## 14. Client-side rendering (browser library)
 
-Layer 1 documents render in the browser with no build step, via the browser
+eHTML documents render in the browser with no build step, via the browser
 entry `src/interpreter/browser.js`. It exports `render(source, options)`
 — source string to HTML string — and `renderInto(target, source, options)`,
 which assigns that HTML to an element. Both wrap `buildEnscribePipeline` with
@@ -1221,5 +1221,5 @@ example of the `render → executeAssets` pattern.
   implementations, error handling.
 - `notes/specs/recursive-content-spec.md` — recursive content parsing design.
 - `notes/specs/shorthand-syntax.md` — the authoring syntax at the pipeline input.
-- `notes/specs/layer1-naming.md` — vocabulary element naming rules.
+- `notes/specs/ehtml-naming.md` — vocabulary element naming rules.
 - `ROADMAP.md` and [GitHub Issues](https://github.com/enscribejs/enscribe/issues) — the release plan and future pipeline work (there is no `BUILD.md`; the build sequence lives in the roadmap and Issues).

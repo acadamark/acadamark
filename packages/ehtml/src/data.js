@@ -753,7 +753,7 @@ const _author = Object.freeze({
             "true",
             "false",
           ],
-          "notes": "Marks this author as the corresponding author (JATS\ncontrib corresp=\"yes\"). A scalar marker — stays as a kwarg/\nattribute on the canonical Layer 1 <author>; never lifted to\na child tag. Both surface forms are accepted: +corresponding\n(boolean shorthand) and corresponding=true (explicit kwarg)\nboth normalize to a `corresponding=\"true\"` attribute on the\ncanonical Layer 1 node. The structured-element gate promotes\nthe +form into the kwarg surface so the schema renderer's\nattribute mapping fires uniformly.\n",
+          "notes": "Marks this author as the corresponding author (JATS\ncontrib corresp=\"yes\"). A scalar marker — stays as a kwarg/\nattribute on the canonical eHTML <author>; never lifted to\na child tag. Both surface forms are accepted: +corresponding\n(boolean shorthand) and corresponding=true (explicit kwarg)\nboth normalize to a `corresponding=\"true\"` attribute on the\ncanonical eHTML node. The structured-element gate promotes\nthe +form into the kwarg surface so the schema renderer's\nattribute mapping fires uniformly.\n",
         },
       },
     },
@@ -781,7 +781,7 @@ const _author = Object.freeze({
           "multiple": true,
         },
       ],
-      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\n@enscribejs/enscribe/core/structured-elements.js. The Layer 1 canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
+      "notes": "<author> is a structured-data-container tag (parallel to <meta>;\nsee DESIGN.md §\"Structured-data-container tags\"). It accepts two\nequivalent authoring forms: kwargs (scalar fields) and child tags\n(structured fields). The normalize-to-canonical gate lifts the\nkwarg form to the canonical child-tag form per the spec in\n@enscribejs/enscribe/core/structured-elements.js. The eHTML canonical\nshape carries child tags plus the +corresponding boolean kwarg.\n\nAn unrecognized child tag inside <author> produces an informative\ndiagnostic (warn, not error — the always-renders pattern).\n",
     },
     "jats_counterpart": {
       "element": "contrib contrib-type=\"author\"",
@@ -796,12 +796,12 @@ const _author = Object.freeze({
       {
         "source": "<author name=\"Jane Goodall\" orcid=\"0000-0001-2345-6789\" affiliation=\"Cambridge University\" +corresponding />",
         "ehtml": "<author corresponding><name>Jane Goodall</name><orcid>0000-0001-2345-6789</orcid><affiliation>Cambridge University</affiliation></author>",
-        "notes": "Kwarg form. Each lifted kwarg becomes a child tag at the gate;\n+corresponding stays as a boolean kwarg on the canonical\nLayer 1 <author>.\n",
+        "notes": "Kwarg form. Each lifted kwarg becomes a child tag at the gate;\n+corresponding stays as a boolean kwarg on the canonical\neHTML <author>.\n",
       },
       {
         "source": "<author +corresponding>\n  <name | Jane Goodall>\n  <affiliation | Cambridge University>\n  <orcid | 0000-0001-2345-6789>\n  <email | jane@example.com>\n</author>\n",
         "ehtml": "<author corresponding><name>Jane Goodall</name><affiliation>Cambridge University</affiliation><orcid>0000-0001-2345-6789</orcid><email><a href=\"mailto:jane@example.com\">jane@example.com</a></email></author>",
-        "notes": "Child-tag form. The canonical Layer 1 shape. Both this form and\nthe equivalent kwarg form above produce the same Layer 1 output.\n",
+        "notes": "Child-tag form. The canonical eHTML shape. Both this form and\nthe equivalent kwarg form above produce the same eHTML output.\n",
       },
       {
         "source": "<meta>\n  <author | Jane Goodall>\n  <author | David Attenborough>\n  <author +corresponding | Charles Darwin>\n</meta>\n",
@@ -1144,14 +1144,14 @@ const _blockquote = Object.freeze({
       {
         "shorthand": "quote",
         "expands_to": "blockquote",
-        "notes": "Authoring shortcut. <quote> is the preferred authoring form;\n<blockquote> is the Layer 1 element. The shorthand expands at\nthe interpreter; the rendered HTML uses HTML's native <blockquote>.\n",
+        "notes": "Authoring shortcut. <quote> is the preferred authoring form;\n<blockquote> is the eHTML element. The shorthand expands at\nthe interpreter; the rendered HTML uses HTML's native <blockquote>.\n",
       },
     ],
     "shorthand_examples": [
       {
         "source": "<quote | A short quotation.>",
         "ehtml": "<blockquote><p>A short quotation.</p></blockquote>",
-        "notes": "The <quote> shorthand expands to <blockquote> at Layer 1.\n",
+        "notes": "The <quote> shorthand expands to <blockquote> at eHTML.\n",
       },
       {
         "source": "<quote cite=https://example.com/source |\nA longer quotation that may contain multiple paragraphs.\n\nThe second paragraph of the quotation.\n>\n",
@@ -1162,9 +1162,9 @@ const _blockquote = Object.freeze({
         "ehtml": "<blockquote data-blockquote-type=\"epigraph\">\n  <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>\n</blockquote>\n",
       },
       {
-        "source": "<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>",
-        "ehtml": "<blockquote><p>Same as <code>&#x3C;quote></code> but using the explicit Layer 1 name.</p></blockquote>",
-        "notes": "Authors can also write <blockquote> directly. Both forms produce\nthe same Layer 1 output.\n",
+        "source": "<blockquote | Same as `<quote>` but using the explicit eHTML name.>",
+        "ehtml": "<blockquote><p>Same as <code>&#x3C;quote></code> but using the explicit eHTML name.</p></blockquote>",
+        "notes": "Authors can also write <blockquote> directly. Both forms produce\nthe same eHTML output.\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -1401,7 +1401,7 @@ const _book_part = Object.freeze({
             ],
           },
           "required": true,
-          "notes": "The kind of book-part. Authored as `type` (the prefix is redundant inside a\n<book-part>); renders to the HTML/BITS attribute `book-part-type` (maps_to).\nDistinct from <meta type>, which is the document class. Always present in\nLayer 1; the shorthand layer typically supplies it via a shorthand element\nname (e.g., <chapter> sets it to \"chapter\").\n",
+          "notes": "The kind of book-part. Authored as `type` (the prefix is redundant inside a\n<book-part>); renders to the HTML/BITS attribute `book-part-type` (maps_to).\nDistinct from <meta type>, which is the document class. Always present in\neHTML; the shorthand layer typically supplies it via a shorthand element\nname (e.g., <chapter> sets it to \"chapter\").\n",
         },
         "numbering-style": {
           "maps_to": {
@@ -2683,8 +2683,8 @@ const _dl = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "<dl>\n  <dt | enscribe>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n  <dt | Layer 1>\n  <dd | The canonical semantic HTML vocabulary.>\n  <dt | Layer 2>\n  <dd | The shorthand authoring syntax that compiles to Layer 1.>\n</dl>\n",
-        "ehtml": "<dl>\n  <dt>enscribe</dt>\n  <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>\n  <dt>Layer 1</dt>\n  <dd><p>The canonical semantic HTML vocabulary.</p></dd>\n  <dt>Layer 2</dt>\n  <dd><p>The shorthand authoring syntax that compiles to Layer 1.</p></dd>\n</dl>\n",
+        "source": "<dl>\n  <dt | enscribe>\n  <dd | An academic publishing system built on HTML+CSS+JS.>\n  <dt | eHTML>\n  <dd | The canonical semantic HTML vocabulary.>\n  <dt | Enscribe shorthand>\n  <dd | The shorthand authoring syntax that compiles to eHTML.>\n</dl>\n",
+        "ehtml": "<dl>\n  <dt>enscribe</dt>\n  <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>\n  <dt>eHTML</dt>\n  <dd><p>The canonical semantic HTML vocabulary.</p></dd>\n  <dt>Enscribe shorthand</dt>\n  <dd><p>The shorthand authoring syntax that compiles to eHTML.</p></dd>\n</dl>\n",
         "notes": "Long-form <dl> with short-form <dt>/<dd> children. The natural\nauthoring pattern.\n",
       },
       {
@@ -2850,7 +2850,7 @@ const _editor = Object.freeze({
             "other",
           ],
           "default": "editor",
-          "notes": "The editorial role — the one field that distinguishes an\n<editor> from an <author>. Both are the same structured\ncontributor type (see notes/decisions.md \"Contributor model\",\n#338); the role is the differentiating label. A scalar: it\nstays a kwarg/attribute on the canonical Layer 1 <editor> and is\nNOT lifted to a child tag. Maps to data-role in HTML; JATS\nexport uses it as the <contrib contrib-type=\"...\"> value.\n",
+          "notes": "The editorial role — the one field that distinguishes an\n<editor> from an <author>. Both are the same structured\ncontributor type (see notes/decisions.md \"Contributor model\",\n#338); the role is the differentiating label. A scalar: it\nstays a kwarg/attribute on the canonical eHTML <editor> and is\nNOT lifted to a child tag. Maps to data-role in HTML; JATS\nexport uses it as the <contrib contrib-type=\"...\"> value.\n",
         },
       },
     },
@@ -3179,7 +3179,7 @@ const _fig = Object.freeze({
       "element": "fig",
       "is_html_native": true,
       "default_attributes": {},
-      "notes": "Figures are HTML-shaped at Layer 1 (#147): the rendered Layer 1\nelement is the HTML5-native `<figure>`. The figure handler\n(`handlers/figure.js`) hardcodes its output tagName to `'figure'`,\nso `is_html_native: true` describes that rendered element — the same\nway `<table>` / `<svg>` / `<aside>` are native handler-strategy\nframeables. `html_output.element` retains `fig` as the vocab key\n(the filename stem) and the interpreter's dispatch name: schema-\nstrategy entries derive the output tagName from this field, but\nhandler-strategy entries control the output tagName in the handler,\nso for `<fig>` this field is the keying signal only, not the\nrendered element. `fig` is also the JATS export target (see\n`jats_counterpart` below); `<figure>` is the canonical HTML /\nauthoring name.\n",
+      "notes": "Figures are HTML-shaped at eHTML (#147): the rendered eHTML\nelement is the HTML5-native `<figure>`. The figure handler\n(`handlers/figure.js`) hardcodes its output tagName to `'figure'`,\nso `is_html_native: true` describes that rendered element — the same\nway `<table>` / `<svg>` / `<aside>` are native handler-strategy\nframeables. `html_output.element` retains `fig` as the vocab key\n(the filename stem) and the interpreter's dispatch name: schema-\nstrategy entries derive the output tagName from this field, but\nhandler-strategy entries control the output tagName in the handler,\nso for `<fig>` this field is the keying signal only, not the\nrendered element. `fig` is also the JATS export target (see\n`jats_counterpart` below); `<figure>` is the canonical HTML /\nauthoring name.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -3279,7 +3279,7 @@ const _fig = Object.freeze({
       {
         "source": "<fig src=elephant.jpg | An adult African elephant.>",
         "ehtml": "<figure><img alt=\"An adult African elephant.\" src=\"elephant.jpg\"><figcaption><span class=\"figure-label\">Figure 1.</span><p>An adult African elephant.</p></figcaption></figure>",
-        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly. The Layer 1\nelement is HTML-native <figure> (not the custom-element <fig>)\nbecause the HTML rendering surface is the HTML5 native element\nwhile the enscribe canonical name follows JATS's shorter <fig>.\n",
+        "notes": "The simplest case. The src kwarg generates the <img>; the pipe\ncontent generates the figcaption. The alt text defaults to the\nfigcaption text when not specified explicitly. The eHTML\nelement is HTML-native <figure> (not the custom-element <fig>)\nbecause the HTML rendering surface is the HTML5 native element\nwhile the enscribe canonical name follows JATS's shorter <fig>.\n",
       },
       {
         "source": "<figure src=elephant.jpg | An adult African elephant.>",
@@ -3497,8 +3497,8 @@ const _glossary = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "<glossary #project-terms>\n  <glossary-entry>\n    <dt | enscribe>\n    <dd | An academic publishing system built on HTML+CSS+JS.>\n  </glossary-entry>\n  <glossary-entry>\n    <dt | Layer 1>\n    <dd | The canonical semantic HTML vocabulary.>\n  </glossary-entry>\n</glossary>\n",
-        "ehtml": "<glossary id=\"project-terms\">\n  <glossary-entry>\n    <dt>enscribe</dt>\n    <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>\n  </glossary-entry>\n  <glossary-entry>\n    <dt>Layer 1</dt>\n    <dd><p>The canonical semantic HTML vocabulary.</p></dd>\n  </glossary-entry>\n</glossary>\n",
+        "source": "<glossary #project-terms>\n  <glossary-entry>\n    <dt | enscribe>\n    <dd | An academic publishing system built on HTML+CSS+JS.>\n  </glossary-entry>\n  <glossary-entry>\n    <dt | eHTML>\n    <dd | The canonical semantic HTML vocabulary.>\n  </glossary-entry>\n</glossary>\n",
+        "ehtml": "<glossary id=\"project-terms\">\n  <glossary-entry>\n    <dt>enscribe</dt>\n    <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>\n  </glossary-entry>\n  <glossary-entry>\n    <dt>eHTML</dt>\n    <dd><p>The canonical semantic HTML vocabulary.</p></dd>\n  </glossary-entry>\n</glossary>\n",
         "notes": "A glossary with two entries. Each <glossary-entry> uses <dt>/<dd>\nfor its term and definition (the same shapes <dl> uses), wrapped\nin the entry's own envelope for cross-reference / styling.\n",
       },
     ],
@@ -3914,7 +3914,7 @@ const _lang = Object.freeze({
       {
         "source": "<meta>\n  <lang | en-US>\n</meta>\n",
         "ehtml": "<meta>\n  <lang>en-US</lang>\n</meta>\n",
-        "notes": "BCP 47 language tag. The Layer 1 form preserves the value as a\nchild element of <meta>; downstream consumers (the JATS exporter,\nthe render-mode lowering) project it where each format expects.\n",
+        "notes": "BCP 47 language tag. The eHTML form preserves the value as a\nchild element of <meta>; downstream consumers (the JATS exporter,\nthe render-mode lowering) project it where each format expects.\n",
       },
       {
         "source": "<meta lang=\"fr\" />",
@@ -4276,7 +4276,7 @@ const _meta = Object.freeze({
             "website",
           ],
           "default": "article",
-          "notes": "Declares the document class. Resolved ONCE before structuring by\nenscribeDocTypeResolve: the value is validated against this set, stored on\nfile.data, and an explicitly-set unknown type (a typo, an unbuilt class) is\nreported with a non-fatal diagnostic and falls back to \"article\"\n(always-renders). The structural plugins (enscribeArticleStructuring /\nenscribeBookStructuring) read the resolved class to decide which Layer 1\nwrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\ntype=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav\nmodel on file.data from the master's <nav> (#246). HTML render only — no\nJATS/BITS (a site is not a scholarly document).\nDefault is \"article\" — the most common case. An absent type kwarg is the\nnormal article case: silent default, no diagnostic.\n",
+          "notes": "Declares the document class. Resolved ONCE before structuring by\nenscribeDocTypeResolve: the value is validated against this set, stored on\nfile.data, and an explicitly-set unknown type (a typo, an unbuilt class) is\nreported with a non-fatal diagnostic and falls back to \"article\"\n(always-renders). The structural plugins (enscribeArticleStructuring /\nenscribeBookStructuring) read the resolved class to decide which eHTML\nwrapper to generate around the document:\ntype=article → <article> with <article-front>/<article-body>/<article-back>;\ntype=book → <book> with <book-front>/<book-body>/<book-back>;\ntype=book-part → <book-part> containing <meta> and body content directly\n(no nested front/body/back wrappers).\ntype=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav\nmodel on file.data from the master's <nav> (#246). HTML render only — no\nJATS/BITS (a site is not a scholarly document).\nDefault is \"article\" — the most common case. An absent type kwarg is the\nnormal article case: silent default, no diagnostic.\n",
         },
         "book-part-type": {
           "maps_to": {
@@ -4353,7 +4353,7 @@ const _meta = Object.freeze({
     },
     "jats_counterpart": {
       "element": "article-meta, book-meta, or book-part-meta",
-      "notes": "The JATS mapping depends on the document type (driven by <meta>'s\ntype kwarg, or by the surrounding container if <meta> is nested):\n  type=article (or default) → <article-meta> inside <front>\n  type=book → <book-meta> inside <book-front>\n  type=book-part → <book-part-meta> inside <book-part>\nAt Layer 1 the element is always <meta>; the exporter constructs\nthe type-specific JATS container and the surrounding region wrappers\n(<front>, <book-front>, <book-part>) at export time.\n",
+      "notes": "The JATS mapping depends on the document type (driven by <meta>'s\ntype kwarg, or by the surrounding container if <meta> is nested):\n  type=article (or default) → <article-meta> inside <front>\n  type=book → <book-meta> inside <book-front>\n  type=book-part → <book-part-meta> inside <book-part>\nAt eHTML the element is always <meta>; the exporter constructs\nthe type-specific JATS container and the surrounding region wrappers\n(<front>, <book-front>, <book-part>) at export time.\n",
     },
     "shorthand_examples": [
       {
@@ -4426,18 +4426,18 @@ const _minipage = Object.freeze({
     },
     "content": {
       "becomes": "sealed-subdocument",
-      "notes": "The pipe content is the minipage's body — a SEALED sub-document. It is held\nopaque (the raw source string) at parse time, so the main pipeline never\ndescends into it: the body's floats do not consume document counters, its\nlabels never enter the document registry, and its footnotes do not bubble to\nthe document. The body is processed in its OWN pipeline run with its OWN\nregistry (the deferred phase), producing resolved Layer 1 that is spliced\ninto the <figure> shell. Recursive content parsing applies INSIDE that\nsealed run, so the full enscribe vocabulary works in the body — including a\nnested <minipage>. External pulls (@src / <data>) are disallowed inside a\nminipage (a visible error, not a silent drop).\n",
+      "notes": "The pipe content is the minipage's body — a SEALED sub-document. It is held\nopaque (the raw source string) at parse time, so the main pipeline never\ndescends into it: the body's floats do not consume document counters, its\nlabels never enter the document registry, and its footnotes do not bubble to\nthe document. The body is processed in its OWN pipeline run with its OWN\nregistry (the deferred phase), producing resolved eHTML that is spliced\ninto the <figure> shell. Recursive content parsing applies INSIDE that\nsealed run, so the full enscribe vocabulary works in the body — including a\nnested <minipage>. External pulls (@src / <data>) are disallowed inside a\nminipage (a visible error, not a silent drop).\n",
     },
     "jats_counterpart": {
       "element": "boxed-text",
       "attributes": {},
-      "notes": "JATS <boxed-text> is the closest counterpart — a generic boxed, set-apart\ncontent block — matching <frame>. A numbered minipage wraps in <fig> at\nexport. The sealed body's resolved Layer 1 is the boxed-text content.\n",
+      "notes": "JATS <boxed-text> is the closest counterpart — a generic boxed, set-apart\ncontent block — matching <frame>. A numbered minipage wraps in <fig> at\nexport. The sealed body's resolved eHTML is the boxed-text content.\n",
     },
     "shorthand_examples": [
       {
         "source": "<minipage | Two panels side by side.>",
         "ehtml": "<figure class=\"frameable-border\"><p>Two panels side by side.</p><figcaption><span class=\"minipage-label\">Minipage 1.</span></figcaption></figure>",
-        "notes": "The simplest case. The handler emits a <figure> wrapper (the vocab\nhtml_output.element `minipage` is only the lookup key for handler-strategy\nentries — the handler controls the actual element). +border is default on\nfor <minipage>, so the class appears automatically. The body renders as\nsealed Layer 1.\n",
+        "notes": "The simplest case. The handler emits a <figure> wrapper (the vocab\nhtml_output.element `minipage` is only the lookup key for handler-strategy\nentries — the handler controls the actual element). +border is default on\nfor <minipage>, so the class appears automatically. The body renders as\nsealed eHTML.\n",
       },
       {
         "source": "<minipage #mp:compare caption=\"Side-by-side comparison\" |\nA figure here counts privately.\n\n<fig #fig:left src=\"left.png\" | Left panel.>\n<fig #fig:right src=\"right.png\" | Right panel.>\n>\n",
@@ -4451,7 +4451,7 @@ const _minipage = Object.freeze({
       "Emit the <minipage> wrapper element (a custom element rendered as <figure>; not HTML-native).",
       "Apply `frameable-border` class by default (border flag default true).",
       "Render optional title at the top and optional caption (with \"Minipage N.\" label prefix if numbered) at the bottom.",
-      "Splice the sealed body's resolved Layer 1 (produced by the deferred phase) as the figure body.",
+      "Splice the sealed body's resolved eHTML (produced by the deferred phase) as the figure body.",
     ],
     "_sourceFile": "minipage.md",
   });
@@ -4484,11 +4484,11 @@ const _name = Object.freeze({
         ],
       },
       "becomes": "children",
-      "notes": "The author's name as a single string (e.g. \"Jane Goodall\"). No\nsurname/given-name decomposition at Layer 1 — the value passes\nthrough verbatim. The JATS exporter is the boundary that splits\na Western-style name into <surname>/<given-names> if required by\nthe target JATS schema; cultures with non-Western name ordering\n(surname-first, mononym) are preserved as-is at Layer 1 and\ntreated specially at export.\n",
+      "notes": "The author's name as a single string (e.g. \"Jane Goodall\"). No\nsurname/given-name decomposition at eHTML — the value passes\nthrough verbatim. The JATS exporter is the boundary that splits\na Western-style name into <surname>/<given-names> if required by\nthe target JATS schema; cultures with non-Western name ordering\n(surname-first, mononym) are preserved as-is at eHTML and\ntreated specially at export.\n",
     },
     "jats_counterpart": {
       "element": "string-name",
-      "notes": "JATS uses <string-name> inside <name> as the \"unparsed name\"\nform — the full name string when the document does not commit to\na surname/given-names split. JATS's structured <name> wraps\n<surname>/<given-names>; <string-name> is the unparsed sibling.\nEnscribe's <name> matches <string-name> directly because Layer 1\npreserves the author-written form without imposing a name-model.\nThe exporter chooses between emitting <string-name> verbatim or\nparsing it into <surname>/<given-names> per the target schema's\nrequirements.\n",
+      "notes": "JATS uses <string-name> inside <name> as the \"unparsed name\"\nform — the full name string when the document does not commit to\na surname/given-names split. JATS's structured <name> wraps\n<surname>/<given-names>; <string-name> is the unparsed sibling.\nEnscribe's <name> matches <string-name> directly because eHTML\npreserves the author-written form without imposing a name-model.\nThe exporter chooses between emitting <string-name> verbatim or\nparsing it into <surname>/<given-names> per the target schema's\nrequirements.\n",
     },
     "shorthand_examples": [
       {
@@ -4499,7 +4499,7 @@ const _name = Object.freeze({
       {
         "source": "<author name=\"Jane Goodall\" orcid=\"0000-0001-2345-6789\" +corresponding>",
         "ehtml": "<author corresponding>\n  <name>Jane Goodall</name>\n  <orcid>0000-0001-2345-6789</orcid>\n</author>\n",
-        "notes": "Kwarg form of <author>. The `name` kwarg lifts to a <name> child\ntag at the normalize-to-canonical gate, parallel to <meta>'s\nkwarg-to-child-tag lift. The `+corresponding` boolean stays as\na kwarg/attribute on the canonical Layer 1 <author> (it is a\nscalar marker, not a structured field).\n",
+        "notes": "Kwarg form of <author>. The `name` kwarg lifts to a <name> child\ntag at the normalize-to-canonical gate, parallel to <meta>'s\nkwarg-to-child-tag lift. The `+corresponding` boolean stays as\na kwarg/attribute on the canonical eHTML <author> (it is a\nscalar marker, not a structured field).\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -6684,7 +6684,7 @@ const _title = Object.freeze({
       "element": "title",
       "is_html_native": false,
       "default_attributes": {},
-      "notes": "Enscribe's <title> inside <meta> is a custom element distinct from\nHTML's <title> (which goes in <head> and represents the browser tab title).\nThe render-mode plugin maps enscribe's metadata <title> to HTML's\n<title> in the rendered <head>. The structural plugin promotes\nenscribe's metadata <title> to <article-title> or <book-title> at\nLayer 1 based on the surrounding container.\n",
+      "notes": "Enscribe's <title> inside <meta> is a custom element distinct from\nHTML's <title> (which goes in <head> and represents the browser tab title).\nThe render-mode plugin maps enscribe's metadata <title> to HTML's\n<title> in the rendered <head>. The structural plugin promotes\nenscribe's metadata <title> to <article-title> or <book-title> at\neHTML based on the surrounding container.\n",
     },
     "enscribe_attributes": {
       "id": {

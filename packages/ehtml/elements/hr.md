@@ -91,7 +91,7 @@ JATS has no direct equivalent of `<hr>`. The enscribe-to-JATS exporter handles t
 - Dropping the `<hr>` element if the type is `decorative` (purely visual; not semantically meaningful).
 - Emitting an empty paragraph with a marker class for `scene-break` or `section-break` (preserving the structural intent).
 
-The exporter's behavior is documented in the JATS export plugin; the choice is one of several places enscribe Layer 1 doesn't fully round-trip to JATS without information loss.
+The exporter's behavior is documented in the JATS export plugin; the choice is one of several places enscribe eHTML doesn't fully round-trip to JATS without information loss.
 
 ## Authoring patterns
 

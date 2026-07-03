@@ -21,7 +21,7 @@ Interchange uses two distinct engines, picked per format by a single principle:
 
 - **Pandoc bridge** — for formats enscribe cannot parse natively. Pandoc is the
   universal document converter, with mature readers and writers for LaTeX and
-  DOCX. enscribe maps between **pandoc's AST** and its own Layer-1 model; pandoc
+  DOCX. enscribe maps between **pandoc's AST** and its own eHTML model; pandoc
   does the format parsing. Writing a LaTeX or DOCX parser from scratch would be
   wasted effort — pandoc already did it. enscribe already ships the import half of
   this (`enscribe import`, the pandoc bridge); the export half is the new work.
@@ -44,9 +44,9 @@ reader/writer provides and pandoc structurally cannot. So:
 | LaTeX | yes (lossy) | yes (lossy) | no | pandoc |
 | DOCX | yes (content) | yes (content) | no | pandoc |
 
-## The pandoc-AST ⇄ Layer-1 mapping (LaTeX, DOCX)
+## The pandoc-AST ⇄ eHTML mapping (LaTeX, DOCX)
 
-Pandoc's AST is a tree of Blocks and Inlines. The bridge maps each to a Layer-1
+Pandoc's AST is a tree of Blocks and Inlines. The bridge maps each to an eHTML
 construct, both directions:
 
 - Header → `<section>` (by level); Para → paragraph; CodeBlock → `<code>`;
@@ -92,7 +92,7 @@ have natural enscribe counterparts. The direct engine maps:
   a Quarto project maps onto an enscribe master document almost one-to-one.
 
 The round-trip correctness model mirrors `lift` / `lower`: parse `.qmd` to the
-canonical Layer-1 form, and serialize back so that a directly-authored document
+canonical eHTML form, and serialize back so that a directly-authored document
 survives the trip. Round-trip is expected to be *lossless for the constructs in
 the contract*, not for arbitrary Quarto — see the open forks for the v1 coverage
 line.
@@ -129,7 +129,7 @@ new):
 - `enscribe export <file> --to <quarto|latex|docx>` — `.emd` → the target format.
   Quarto via the direct writer; LaTeX / DOCX via the pandoc bridge.
 
-Both run on the same Layer-1 model as every other enscribe operation, so an
+Both run on the same eHTML model as every other enscribe operation, so an
 imported document is indistinguishable from a hand-authored one once it lands.
 
 ## Relationship to existing subsystems

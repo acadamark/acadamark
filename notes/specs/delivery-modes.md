@@ -3,7 +3,7 @@
 An enscribe document (`.emd`) is authored once and can be *delivered* to a reader in several
 shapes. This spec is the normative map of those shapes. It owns one question only — **how the
 rendered (or renderable) document is packaged and reaches the reader** — and deliberately owns
-nothing about *what* the render contains. The render itself (Layer 1 → HTML, composition,
+nothing about *what* the render contains. The render itself (eHTML → HTML, composition,
 numbering, parity) is owned elsewhere: single-document rendering by `notes/specs/pipeline.md`,
 multi-page composition by `notes/specs/website.md`, the live/static equivalence contract by
 `notes/specs/render-parity.md`, and the optional plain-HTML lowering by

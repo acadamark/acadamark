@@ -13,7 +13,7 @@
 //   - child-tag form: <meta><title>X</title><author>Y</author></meta>
 //                     <author><name>Jane</name><orcid>0000-…</orcid></author>
 //
-// The Layer 1 canonical shape is the child-tag form. The
+// The eHTML canonical shape is the child-tag form. The
 // normalize-to-canonical gate lifts the kwarg form to the canonical child-tag
 // form per the per-tag spec recorded in this registry. The interpreter's
 // `liftStructuredKwargs` (in normalize-to-canonical.js) consumes the specs
@@ -40,7 +40,7 @@
  *   liftedKwargs     Set<string>  — subset of accepted that the gate lifts
  *                                   from kwarg to child-tag form. The rest of
  *                                   accepted stay as kwargs on the canonical
- *                                   Layer 1 node.
+ *                                   eHTML node.
  *   booleanKwargs    Set<string>  — kwargs that are boolean markers (e.g.
  *                                   `+corresponding`); always stay as kwargs;
  *                                   never lifted to child tags. Boolean
@@ -121,13 +121,13 @@ export const STRUCTURED_ELEMENTS = new Map([
   // ── <author> ───────────────────────────────────────────────────────────────
   //
   // New in this slice. Supersedes the earlier "author is flat for alpha"
-  // ruling: <author> now carries structured author data as Layer 1 child
+  // ruling: <author> now carries structured author data as eHTML child
   // tags, with the kwarg form lifting to the child-tag form at the gate.
   //
   // Child elements: <name>, <affiliation>, <orcid>, <email>.
   //
   // Boolean kwarg: +corresponding (a scalar marker — stays a kwarg on the
-  // canonical Layer 1 <author>, does not become a child tag).
+  // canonical eHTML <author>, does not become a child tag).
   //
   // validateChildren: true — <author>'s allowlist is small and well-defined,
   // and this is a fresh interface (no existing fixtures rely on lax behavior).

@@ -65,7 +65,7 @@ a compile step.
 `<config>` blocks; populate `file.data.enscribeConfig`.
 
 **Phase 2 — Structural transformation**: Parse string content into mdast;
-wrap the document in the Layer 1 article structure; nest sections.
+wrap the document in the eHTML article structure; nest sections.
 
 **Phase 3 — Semantic processing**: Load citation libraries; number notes,
 equations, figures, and tables; resolve cross-references and citations;
@@ -229,7 +229,7 @@ and edge cases.
 as a backward-compat alias of the same plugin).
 
 **Purpose:** The single normalization gate — it coerces every *authored* form to
-its canonical Layer 1 shape, so no downstream stage ever sees a non-canonical
+its canonical eHTML shape, so no downstream stage ever sees a non-canonical
 node. Its work spans several rule groups (the full group structure is documented
 in `notes/specs/pipeline.md` §4.0):
 
@@ -345,7 +345,7 @@ Deeply-nested `<config>` blocks (e.g., a `<config>` inside a
 
 **Source:** `packages/enscribe/src/interpreter/plugins/article-structuring.js`
 
-**Purpose:** Wrap the flat list of root children into the Layer 1 article
+**Purpose:** Wrap the flat list of root children into the eHTML article
 structure: `<article>` containing `<article-front>`, `<article-body>`, and
 `<article-back>`.
 
@@ -414,7 +414,7 @@ that disables it).
 **Source:** `packages/enscribe/src/interpreter/plugins/book-structuring.js`
 
 **Purpose:** Parallel to `enscribeArticleStructuring` for book
-documents. Wraps the root children into the Layer 1 book structure
+documents. Wraps the root children into the eHTML book structure
 (`<book>` containing `<book-front>`, `<book-body>`, `<book-back>`)
 per the BITS book DTD shape that the `book.md` / `book-part.md`
 vocab entries declare.
@@ -1090,8 +1090,8 @@ For each node, the handler performs this sequence:
 
 2. **Vocabulary lookup** by `node.tagname` directly. By this point in the
    pipeline, the normalize-to-canonical gate (`plugins/normalize-to-canonical.js`,
-   pipeline step 1.5) has rewritten every sigil tagname to its canonical Layer
-   1 vocabulary name via the tagname↔sigil map's lift direction — sections
+   pipeline step 1.5) has rewritten every sigil tagname to its canonical eHTML
+   vocabulary name via the tagname↔sigil map's lift direction — sections
    (`#`/`##`/`###` → `section`/`sub-section`/`sub-sub-section`), math
    (`$`/`$$` → `inline-math`/`display-math`), and code (`` ` ``/` ``` ` →
    `inline-code`/`code-block`). The runtime sigil translation that previously
@@ -1929,7 +1929,7 @@ packages/ehtml/
   examples.
 - `notes/specs/recursive-content-spec.md` — design of the content re-parsing step.
 - `notes/specs/shorthand-syntax.md` — the authoring syntax the interpreter consumes.
-- `notes/specs/layer1-naming.md` — vocabulary element naming rules.
+- `notes/specs/ehtml-naming.md` — vocabulary element naming rules.
 - `notes/specs/principles.md` — error-recovery philosophy ("documents always render
   to something").
 - `ROADMAP.md` and [GitHub Issues](https://github.com/enscribejs/enscribe/issues) — the release plan and the open/future work (the build sequence lives here, not in a `BUILD.md`).

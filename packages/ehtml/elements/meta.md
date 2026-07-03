@@ -28,13 +28,13 @@ enscribe_attributes:
         file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is
         reported with a non-fatal diagnostic and falls back to "article"
         (always-renders). The structural plugins (enscribeArticleStructuring /
-        enscribeBookStructuring) read the resolved class to decide which Layer 1
+        enscribeBookStructuring) read the resolved class to decide which eHTML
         wrapper to generate around the document:
         type=article → <article> with <article-front>/<article-body>/<article-back>;
         type=book → <book> with <book-front>/<book-body>/<book-back>;
         type=book-part → <book-part> containing <meta> and body content directly
         (no nested front/body/back wrappers).
-        type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav
+        type=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav
         model on file.data from the master's <nav> (#246). HTML render only — no
         JATS/BITS (a site is not a scholarly document).
         Default is "article" — the most common case. An absent type kwarg is the
@@ -118,7 +118,7 @@ jats_counterpart:
       type=article (or default) → <article-meta> inside <front>
       type=book → <book-meta> inside <book-front>
       type=book-part → <book-part-meta> inside <book-part>
-    At Layer 1 the element is always <meta>; the exporter constructs
+    At eHTML the element is always <meta>; the exporter constructs
     the type-specific JATS container and the surrounding region wrappers
     (<front>, <book-front>, <book-part>) at export time.
 shorthand_examples:
@@ -224,7 +224,7 @@ Splitting these concerns into distinct elements keeps `<meta>` reading-friendly 
 
 ## Where `<meta>` appears
 
-`<meta>` is placed at the top of the document. Its `type` kwarg declares the document type; the structural plugin reads this and generates the appropriate Layer 1 wrapper structure around the content.
+`<meta>` is placed at the top of the document. Its `type` kwarg declares the document type; the structural plugin reads this and generates the appropriate eHTML wrapper structure around the content.
 
 The typical authoring path:
 
@@ -290,7 +290,7 @@ or:
 <section | Body>
 ```
 
-Both paths produce identical Layer 1 output (the second is preferred in the meta-driven model). Precedence: `<meta>` wins if both are present. See the "Title precedence" section below for warning behavior.
+Both paths produce identical eHTML output (the second is preferred in the meta-driven model). Precedence: `<meta>` wins if both are present. See the "Title precedence" section below for warning behavior.
 
 ## Title precedence and warnings
 
@@ -308,7 +308,7 @@ When both the container shorthand and `<meta>`'s `<title>` are present, the stru
 
 - `<title>` — document title.
 - `<subtitle>` — document subtitle.
-- `<author>` — author. `<author>` is itself a structured-data-container tag (parallel to `<meta>`): it accepts both a kwarg form (`<author name="…" orcid="…" +corresponding>`) and a child-tag form (`<author><name | …><affiliation | …><orcid | …><email | …></author>`); the kwarg form lifts to the child-tag form at the normalize-to-canonical gate. Layer 1 `<author>` bears child tags plus the `+corresponding` boolean kwarg. Multiple authors are sibling `<author>` elements inside `<meta>`. See [`<author>`](author.md) and `DESIGN.md` §"Structured-data-container tags."
+- `<author>` — author. `<author>` is itself a structured-data-container tag (parallel to `<meta>`): it accepts both a kwarg form (`<author name="…" orcid="…" +corresponding>`) and a child-tag form (`<author><name | …><affiliation | …><orcid | …><email | …></author>`); the kwarg form lifts to the child-tag form at the normalize-to-canonical gate. eHTML `<author>` bears child tags plus the `+corresponding` boolean kwarg. Multiple authors are sibling `<author>` elements inside `<meta>`. See [`<author>`](author.md) and `DESIGN.md` §"Structured-data-container tags."
 - `<editor>` — editor (multiple allowed; common in edited volumes).
 - `<date>` — date (multiple allowed; type kwarg distinguishes publication, submission, etc.).
 - `<doi>`, `<license>`, `<lang>`, `<version>`, `<keywords>` — additional document-descriptive metadata. The kwarg forms (`doi=`, `license=`, etc.) lift to these child tags at the gate; the child-tag forms are authored directly. (Vocabulary entries for the names without existing `.md` files in `packages/ehtml/elements/` are filed as findings in GitHub Issues.)
@@ -350,11 +350,11 @@ Putting these in `<meta>` would clutter the descriptive metadata and confuse the
 
 ## Render-mode lowering
 
-In semantic mode, `<meta>` and its children are preserved as Layer 1 elements.
+In semantic mode, `<meta>` and its children are preserved as eHTML elements.
 
 In render mode (browser display), `<meta>` lowers to HTML `<head>` content:
 
-| Layer 1 in `<meta>` | HTML `<head>` |
+| eHTML in `<meta>` | HTML `<head>` |
 |--------------------|---------------|
 | `<title>` | `<title>` |
 | `<subtitle>` | `<meta name="subtitle" content="...">` |

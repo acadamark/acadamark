@@ -7,7 +7,7 @@ html_output:
   is_html_native: true
   default_attributes: {}
   notes: |
-    Figures are HTML-shaped at Layer 1 (#147): the rendered Layer 1
+    Figures are HTML-shaped at eHTML (#147): the rendered eHTML
     element is the HTML5-native `<figure>`. The figure handler
     (`handlers/figure.js`) hardcodes its output tagName to `'figure'`,
     so `is_html_native: true` describes that rendered element — the same
@@ -144,7 +144,7 @@ shorthand_examples:
     notes: |
       The simplest case. The src kwarg generates the <img>; the pipe
       content generates the figcaption. The alt text defaults to the
-      figcaption text when not specified explicitly. The Layer 1
+      figcaption text when not specified explicitly. The eHTML
       element is HTML-native <figure> (not the custom-element <fig>)
       because the HTML rendering surface is the HTML5 native element
       while the enscribe canonical name follows JATS's shorter <fig>.
@@ -189,7 +189,7 @@ handler_responsibilities:
 
 A figure represents self-contained content referenced from the main flow — typically an image with a caption, but also tables, code blocks, equations, or any other content worthy of being captioned and numbered.
 
-Under the HTML-shaped direction (#147), the canonical Layer 1 element for figures is the HTML-native `<figure>` — figures are the second migrated group after lists. This entry is keyed `fig`: the JATS-aligned name is retained as the vocab key, the interpreter's dispatch name, and the JATS export target, while `<fig>` and `<figure>` are both accepted authoring forms. Both authoring forms normalize to the same Layer 1 AST (the gate rewrites `<figure>` to the `fig` dispatch node) and render to the same HTML-native `<figure>`.
+Under the HTML-shaped direction (#147), the canonical eHTML element for figures is the HTML-native `<figure>` — figures are the second migrated group after lists. This entry is keyed `fig`: the JATS-aligned name is retained as the vocab key, the interpreter's dispatch name, and the JATS export target, while `<fig>` and `<figure>` are both accepted authoring forms. Both authoring forms normalize to the same eHTML AST (the gate rewrites `<figure>` to the `fig` dispatch node) and render to the same HTML-native `<figure>`.
 
 ## Semantic intent
 
@@ -204,7 +204,7 @@ Both cases produce semantically rich HTML that browsers and screen readers handl
 
 ## The `<fig>` / `<figure>` names
 
-`<figure>` is the canonical HTML-native Layer 1 element for figures (#147); `<fig>` is retained as the JATS-aligned name in three roles — the vocabulary key, the interpreter's dispatch name, and the JATS export target — and `<fig>` also stays an accepted authoring shorthand. The two names coexist because:
+`<figure>` is the canonical HTML-native eHTML element for figures (#147); `<fig>` is retained as the JATS-aligned name in three roles — the vocabulary key, the interpreter's dispatch name, and the JATS export target — and `<fig>` also stays an accepted authoring shorthand. The two names coexist because:
 
 - HTML5 uses `<figure>` natively, so it is the natural canonical element under the HTML-shaped direction, and authors coming from HTML type it directly.
 - JATS uses `<fig>` for the same element, so keeping `fig` as the export name and the internal key keeps the export close to pass-through.

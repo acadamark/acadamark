@@ -15,7 +15,7 @@ This fixture proves the `<author>` structured interface. The first two
 
 1. The **kwarg form** — `name`, `orcid`, `affiliation` lift to child
    tags at the gate; `+corresponding` stays as a boolean kwarg on the
-   canonical Layer 1 node. The kwarg form uses self-closing `/>` to
+   canonical eHTML node. The kwarg form uses self-closing `/>` to
    disambiguate from a long-form opener (the same constraint
    `<table />` follows — `<author>` is now long-form-eligible, so a
    kwarg-only `<author …>` with no pipe and no `/` would be claimed
@@ -24,7 +24,7 @@ This fixture proves the `<author>` structured interface. The first two
    `<name>`, `<orcid>`, `<affiliation>` children. Long-form
    `<author>...</author>` is the natural shape here.
 
-Both reduce to equivalent Layer 1 structures (the kwarg-form variant
+Both reduce to equivalent eHTML structures (the kwarg-form variant
 also carries `+corresponding`, which is unique to it as the
 corresponding-author marker).
 

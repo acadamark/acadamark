@@ -124,7 +124,7 @@ export async function run() {
 
   // (Retired with the old docs-site: the GENERATED Documentation catalog block — it imported
   // docs-site/gen-reference.js (buildLayer1Catalog/buildShorthandCatalog) to render the auto-built
-  // Shorthand/Layer-1 catalogs through the website type. Those generators retired with the docs-site
+  // Shorthand/eHTML catalogs through the website type. Those generators retired with the docs-site
   // archival; the new docs site (docs-source/) hand-authors its vocabulary as a book, so there is no
   // generated catalog to exercise here. The mountLiveWebsite parity tests below — the load-bearing
   // #314/#318 coverage — do not use the generators and stand on their own.)

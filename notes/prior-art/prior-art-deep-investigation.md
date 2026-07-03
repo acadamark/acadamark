@@ -271,7 +271,7 @@ Ordered by how much Enscribe should care:
 
 For completeness / the docs:
 
-- **A real authoring language** (Layer 2 shorthand) — both make you write HTML. This is the
+- **A real authoring language** (the Enscribe shorthand) — both make you write HTML. This is the
   whole game and Enscribe owns it.
 - **Books / multi-chapter** with chapter rails, cross-chapter references, per-chapter sources.
 - **A separable reference library** (`<library src>`) vs inline hand-authored bibliographies.

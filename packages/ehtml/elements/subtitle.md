@@ -49,9 +49,9 @@ The document subtitle. Authored inside `<meta>` adjacent to `<title>`.
 
 The subtitle is always written inside `<meta>` adjacent to `<title>`. There is no shorthand on the container element for subtitles (unlike titles, which have the container-pipe shorthand).
 
-## Promotion to Layer 1
+## Promotion to eHTML
 
-Like `<title>`, `<subtitle>` is promoted to a Layer 1 element based on the surrounding container:
+Like `<title>`, `<subtitle>` is promoted to an eHTML element based on the surrounding container:
 
 | Surrounding container | Promotion target |
 |----------------------|------------------|
@@ -64,7 +64,7 @@ Prose, parsed recursively. Inline elements work normally.
 
 ## JATS mapping
 
-| Layer 1 (after promotion) | JATS |
+| eHTML (after promotion) | JATS |
 |---------------------------|------|
 | `<article-subtitle>` | `<subtitle>` (inside `<title-group>`) |
 | `<book-subtitle>` | `<subtitle>` (inside `<book-title-group>`) |

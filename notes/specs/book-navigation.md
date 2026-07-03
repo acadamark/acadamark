@@ -44,15 +44,15 @@ by default, and it preserves the existing book view, which already renders this 
 `chapter` is the implemented unit; `section` and `none` are specified here as the intended range and
 are deferred until built.
 
-## Layer 1 form
+## eHTML form
 
 Like the contents/numbering settings, these are `<config>` kwargs that map one-to-one onto canonical
 HTML attributes on the `<config>` element — `<config chapter-nav page-navigation split-by="chapter">` —
 with no structural expansion.
 
-And the same Rule 2 discipline applies: Layer 1 stays **declarative**. The chapter rail, the prev/next
+And the same Rule 2 discipline applies: eHTML stays **declarative**. The chapter rail, the prev/next
 links, and the cover are all *computable* from the book's structure plus this config, so they are not
-materialized in the source — the render generates the chrome. Layer 1 carries the book's `<book-part>`
+materialized in the source — the render generates the chrome. eHTML carries the book's `<book-part>`
 structure and the `<config>` directives; the navigation is a render product, never a source node.
 
 ## Scope
@@ -71,5 +71,5 @@ book-wide. (Per-page override layering is deferred, as in the contents/numbering
 *Spec note for whoever wires this:* fit the headings to the `notes/specs/` house style and attach
 predicate IDs where behavior is gate-tested (the on-by-default-for-books behavior and the
 `chapter-nav` / `page-navigation` / `cover` toggles are the candidates). The user-facing docs (authoring
-guide + Layer 1 reference) describe these by role and link back here for the authoritative list rather
+guide + eHTML reference) describe these by role and link back here for the authoritative list rather
 than duplicating the table (Rule 2).

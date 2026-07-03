@@ -855,7 +855,7 @@ function makeLongFormTokenizer({ multiLine }) {
         // A SELF_NESTABLE_CONTAINER must depth-count from its FIRST content line, not only
         // from the second onward. A nested opener that immediately follows the outer opener —
         // `<nav-group>` directly inside `<nav-group>` with no item between, the group-in-group
-        // case the `references > layer-1` path (#292) needs — is otherwise consumed as content
+        // case the `references > eHTML` path (#292) needs — is otherwise consumed as content
         // un-counted, so the first inner `</tag>` wrongly closes the outer. Route the first line
         // through the same close/nested-open peek `content` uses below, so depth starts counting
         // at line one. (Identical to the per-line branch in `content`; the non-nestable path above

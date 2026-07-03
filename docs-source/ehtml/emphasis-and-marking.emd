@@ -4,7 +4,7 @@ Inline marks on words and phrases — emphasis and the small typographic and sem
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<strong>` · JATS `<bold>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<strong>` · JATS `<bold>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -44,7 +44,7 @@ This is **strongly emphasized** content.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<em>` · JATS `<italic>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<em>` · JATS `<italic>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -86,7 +86,7 @@ This has *emphasized* content.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<b>` · JATS `<bold>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<b>` · JATS `<bold>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -118,7 +118,7 @@ Use <b type=product-name | Acrobat> to read the file.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<i>` · JATS `<italic>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<i>` · JATS `<italic>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -158,7 +158,7 @@ The technical term <i type=technical | mitochondria> refers to organelles.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<u>` · JATS `<underline>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<u>` · JATS `<underline>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -190,7 +190,7 @@ The Chinese name <u type=proper-name | 王明> appears here.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<s>` · JATS `<strike>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<s>` · JATS `<strike>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -224,7 +224,7 @@ The claim <s type=retracted | was unsupported> has been corrected.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<sub>` · JATS `<sub>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<sub>` · JATS `<sub>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -254,7 +254,7 @@ The vector x<sub | i> represents the i-th component.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<sup>` · JATS `<sup>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<sup>` · JATS `<sup>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -292,7 +292,7 @@ The isotope <sup | 12>C is abundant.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<abbr>` · JATS `<abbrev>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<abbr>` · JATS `<abbrev>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -328,7 +328,7 @@ Using <abbr | CSS> selectors.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<var>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<var>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -362,7 +362,7 @@ Set <var | threshold> to <samp | 0.05>.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<samp>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<samp>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -396,7 +396,7 @@ Set <var | threshold> to <samp | 0.05>.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<kbd>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<kbd>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -430,7 +430,7 @@ Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<output>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<output>` · JATS `<(no direct JATS counterpart; HTML-native)>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -454,7 +454,7 @@ The function returns <output | 42> for the test input.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<term>` · JATS `<named-content>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<term>` · JATS `<named-content>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 

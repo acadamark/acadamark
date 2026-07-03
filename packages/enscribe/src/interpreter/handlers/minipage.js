@@ -6,12 +6,12 @@
 // string held on node.content) — the main pipeline never descends into it, so
 // the body's floats, labels, and footnotes never touch the document. The body
 // is processed in its own pipeline run by the deferred phase
-// (plugins/minipage-deferred.js), which stamps the resolved Layer 1 mdast onto
+// (plugins/minipage-deferred.js), which stamps the resolved eHTML mdast onto
 // `node.minipageResolved`. This handler splices that resolved body into the
 // <figure> shell.
 //
 // Wrapper element: <figure> (kind='minipage' → inside-figure layout in
-// renderFrameable, so the <figcaption> sits inside the <figure>). The Layer 1
+// renderFrameable, so the <figcaption> sits inside the <figure>). The eHTML
 // tagname is `<minipage>` (the vocab key); the handler emits <figure> the same
 // way frame.js does (the html_output.element `minipage` is only the
 // handler-strategy lookup key — the handler controls the actual element).
@@ -41,7 +41,7 @@ export function minipageHandler(state, node, vocab) {
   // only captionHast / titleHast here; the body is the deferred-phase result.
   const { captionHast, titleHast } = extractFrameableChildren(state, node);
 
-  // The sealed body's resolved Layer 1 mdast, stamped by the deferred phase
+  // The sealed body's resolved eHTML mdast, stamped by the deferred phase
   // (plugins/minipage-deferred.js). Absent only if the deferred phase did not
   // run (e.g. an isolated unit test of this handler) — render an empty box then.
   // #267: the sealed body restarts ids per box (auto note-N / noteref-N, author colon-ids), so

@@ -40,13 +40,13 @@ shorthand_expansions:
     expands_to: blockquote
     notes: |
       Authoring shortcut. <quote> is the preferred authoring form;
-      <blockquote> is the Layer 1 element. The shorthand expands at
+      <blockquote> is the eHTML element. The shorthand expands at
       the interpreter; the rendered HTML uses HTML's native <blockquote>.
 shorthand_examples:
   - source: '<quote | A short quotation.>'
     ehtml: '<blockquote><p>A short quotation.</p></blockquote>'
     notes: |
-      The <quote> shorthand expands to <blockquote> at Layer 1.
+      The <quote> shorthand expands to <blockquote> at eHTML.
   - source: |
       <quote cite=https://example.com/source |
       A longer quotation that may contain multiple paragraphs.
@@ -66,11 +66,11 @@ shorthand_examples:
       <blockquote data-blockquote-type="epigraph">
         <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
       </blockquote>
-  - source: '<blockquote | Same as `<quote>` but using the explicit Layer 1 name.>'
-    ehtml: '<blockquote><p>Same as <code>&#x3C;quote></code> but using the explicit Layer 1 name.</p></blockquote>'
+  - source: '<blockquote | Same as `<quote>` but using the explicit eHTML name.>'
+    ehtml: '<blockquote><p>Same as <code>&#x3C;quote></code> but using the explicit eHTML name.</p></blockquote>'
     notes: |
       Authors can also write <blockquote> directly. Both forms produce
-      the same Layer 1 output.
+      the same eHTML output.
 interpreter_strategy: schema
 ---
 
@@ -78,7 +78,7 @@ interpreter_strategy: schema
 
 A blockquote represents an extended quotation set apart from the main text. Block-level quoted material — multiple sentences, paragraphs, or longer passages from another source.
 
-The preferred authoring form is `<quote>`, a shorthand that expands to `<blockquote>` at Layer 1.
+The preferred authoring form is `<quote>`, a shorthand that expands to `<blockquote>` at eHTML.
 
 ## Semantic intent
 
@@ -90,11 +90,11 @@ The `type` kwarg classifies the quotation's role. Different quotation types rend
 
 ## The `<quote>` shorthand
 
-The `<quote>` authoring form is preferred over `<blockquote>` because it's shorter, more familiar, and parallel to the inline `<q>` element. The shorthand expands at the interpreter; Layer 1 uses HTML's native `<blockquote>`.
+The `<quote>` authoring form is preferred over `<blockquote>` because it's shorter, more familiar, and parallel to the inline `<q>` element. The shorthand expands at the interpreter; eHTML uses HTML's native `<blockquote>`.
 
-This pattern matches how `<chapter>`, `<part>`, and `<appendix>` are shorthand expansions for `<book-part>` with type discrimination — the authoring layer prioritizes readable names while Layer 1 stays HTML-aligned.
+This pattern matches how `<chapter>`, `<part>`, and `<appendix>` are shorthand expansions for `<book-part>` with type discrimination — the authoring layer prioritizes readable names while eHTML stays HTML-aligned.
 
-Authors can write either form. Both produce identical Layer 1 output:
+Authors can write either form. Both produce identical eHTML output:
 
 ```
 <quote | A short quotation.>

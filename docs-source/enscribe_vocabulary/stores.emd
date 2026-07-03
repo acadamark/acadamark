@@ -4,7 +4,7 @@ Held content — inline data stores and reference libraries the document draws o
 
 <sub-section | General Usage>
 
-Semantic role: *data*. Compiles to Layer 1 `<data>`.
+Semantic role: *data*. Compiles to eHTML `<data>`.
 
 Registers:
 
@@ -57,7 +57,7 @@ lock nut,#LN-06,210>
 
 <sub-section | General Usage>
 
-Semantic role: *library*. Compiles to Layer 1 `<library>`.
+Semantic role: *library*. Compiles to eHTML `<library>`.
 
 Registers:
 

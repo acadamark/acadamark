@@ -1,7 +1,7 @@
 // Shared inline-cell parser (#21).
 //
 // Parses a raw string (a data-table cell that opted into markup) into canonical
-// Layer 1 inline mdast, through the SAME parse + recursive-content + gate
+// eHTML inline mdast, through the SAME parse + recursive-content + gate
 // assembly the rest of the document uses (the front of the real pipeline, the
 // same steps `liftToCanonicalMdast` opens with) — NOT a forked parser. The
 // result is canonical inline `enscribeTag` / text nodes: `<a>` links, `<i>` /

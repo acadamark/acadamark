@@ -4,7 +4,7 @@ The running text of a document — the paragraph, and the HTML-shaped list eleme
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<p>` · JATS `<p>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<p>` · JATS `<p>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -46,9 +46,9 @@ A paragraph written without explicit tags.
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<ul>` / `<ol>` + `<li>` (HTML-native) · JATS `<list>` / `<list-item>` · `content` `flow` → `<children>`
+`category` `block-prose` · eHTML `<ul>` / `<ol>` + `<li>` (HTML-native) · JATS `<list>` / `<list-item>` · `content` `flow` → `<children>`
 
-Lists are HTML-shaped: the Layer 1 form is the native `<ul>` / `<ol>` + `<li>`, and the render is identity. A document reaches them by any route — a person authoring `<list>` / `<li>` (or the `-` / `*` idiom), a JATS import lowering `<list>`, or another system emitting the HTML directly.
+Lists are HTML-shaped: the eHTML form is the native `<ul>` / `<ol>` + `<li>`, and the render is identity. A document reaches them by any route — a person authoring `<list>` / `<li>` (or the `-` / `*` idiom), a JATS import lowering `<list>`, or another system emitting the HTML directly.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|

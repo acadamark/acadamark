@@ -43,7 +43,7 @@ import { resolveConfigEnum } from '../lib/config-helpers.js';
 
 // Maps the canonical post-gate tagname to the registry type used for display
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
-// are rewritten to canonical Layer 1 names before this plugin runs, so the
+// are rewritten to canonical eHTML names before this plugin runs, so the
 // keys here are the canonical names ('display-math', not '$$').
 //
 // SHARED-COUNTER CONVENTION: when several tagnames map to the same

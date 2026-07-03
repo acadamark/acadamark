@@ -1,14 +1,14 @@
 # ehtml
 
-The Layer 1 semantic-HTML vocabulary for enscribe. A defined set of HTML
+The eHTML semantic-HTML vocabulary for enscribe. A defined set of HTML
 custom elements for academic content: articles, books, chapters, sections,
 floats (figures, tables, equations, listings), citations, cross-references,
-notes, and apparatus. Layer 1 is the archival representation that enscribe's
+notes, and apparatus. eHTML is the archival representation that enscribe's
 shorthand syntax compiles to, and the source format for enscribe's JATS
 export.
 
 The vocabulary is designed to be usable independently of enscribe. Any tool
-that produces conformant Layer 1 HTML can feed into the same JATS export and
+that produces conformant eHTML can feed into the same JATS export and
 rendering pipeline. The shorthand parser is the primary authoring path, not
 the only one.
 
@@ -23,7 +23,7 @@ the only one.
 
 ## Governing rules
 
-The four rules from [`notes/specs/layer1-naming.md`](../../notes/specs/layer1-naming.md)
+The four rules from [`notes/specs/ehtml-naming.md`](../../notes/specs/ehtml-naming.md)
 apply throughout:
 
 1. **Container-role naming.** Custom elements follow `<container-role>`
@@ -41,11 +41,11 @@ apply throughout:
 - [`STATUS.md`](../../STATUS.md) — current project state.
 - [`DESIGN.md`](../../DESIGN.md) — design rationale, JATS relationship,
   scope decisions.
-- [`notes/specs/layer1-naming.md`](../../notes/specs/layer1-naming.md) — the four
+- [`notes/specs/ehtml-naming.md`](../../notes/specs/ehtml-naming.md) — the four
   governing rules.
 - [`notes/specs/shape-tokens.md`](../../notes/specs/shape-tokens.md) — the `inline` /
   `block` / `section` content shape tokens used in per-element entries.
 - [`notes/specs/pipeline.md`](../../notes/specs/pipeline.md) — the structural plugin
-  pipeline that operates on Layer 1 elements.
+  pipeline that operates on eHTML elements.
 - [`notes/specs/interpreter.md`](../../notes/specs/interpreter.md) — handler dispatch
   and schema dispatch that consume vocabulary entries.

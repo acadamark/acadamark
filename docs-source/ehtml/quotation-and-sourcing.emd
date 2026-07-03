@@ -4,7 +4,7 @@ Quotation and sourcing — quotations, citations, cross-references, links, ident
 
 <sub-section | Specification>
 
-`category` `block-prose` · Layer 1 `<blockquote>` · JATS `<disp-quote or epigraph>` · `content` `prose` → `<children>`
+`category` `block-prose` · eHTML `<blockquote>` · JATS `<disp-quote or epigraph>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -23,7 +23,7 @@ Produced by: canonical `<blockquote>` · markdown `> …` · alias `<quote>`.
 <quote | A short quotation.>
 </minipage>
 
-*The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at Layer 1.*
+*The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at eHTML.*
 
 <code #code:l1-blockquote-2>
 <quote cite=https://example.com/source |
@@ -54,12 +54,12 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 </minipage>
 
 <code #code:l1-blockquote-4>
-<blockquote | Same as <quote> but using the explicit Layer 1 name.>
+<blockquote | Same as <quote> but using the explicit eHTML name.>
 </code>
 
 *Render pending — the example source has an unescaped `<…>` tag-mention the parser consumes into an empty nested element (issue #277).*
 
-*Authors can also write &lt;blockquote&gt; directly. Both forms produce the same Layer 1 output.*
+*Authors can also write &lt;blockquote&gt; directly. Both forms produce the same eHTML output.*
 
 </section>
 
@@ -67,7 +67,7 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<q>` · JATS `<inline-quote or just text with quotation marks>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<q>` · JATS `<inline-quote or just text with quotation marks>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -101,7 +101,7 @@ The phrase <q cite=https://example.com | to be or not to be> is iconic.
 
 <sub-section | Specification>
 
-`category` `citations-and-references` · Layer 1 `<cite>` · JATS `<xref ref-type="bibr">` · `content` `prose` → `<children>`
+`category` `citations-and-references` · eHTML `<cite>` · JATS `<xref ref-type="bibr">` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -163,7 +163,7 @@ A specific work <cite goodall2024 style=footnote>.
 
 <sub-section | Specification>
 
-`category` `citations-and-references` · Layer 1 `<ref>` · JATS `<xref ref-type="...">` · `content` `prose` → `<children>`
+`category` `citations-and-references` · eHTML `<ref>` · JATS `<xref ref-type="...">` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -208,7 +208,7 @@ As shown in <ref #eqn:model>.
 
 <sub-section | Specification>
 
-`category` `inline-formatting` · Layer 1 `<a>` · JATS `<ext-link>` · `content` `prose` → `<children>`
+`category` `inline-formatting` · eHTML `<a>` · JATS `<ext-link>` · `content` `prose` → `<children>`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -263,7 +263,7 @@ See <a https://example.com/docs | the documentation>.
 
 <sub-section | Specification>
 
-`category` `metadata` · Layer 1 `<doi>` · JATS `<article-id>` · `content` `prose` → `<children>`
+`category` `metadata` · eHTML `<doi>` · JATS `<article-id>` · `content` `prose` → `<children>`
 
 *No kwargs or boolean flags.*
 
@@ -295,7 +295,7 @@ Produced by: canonical `<doi>`.
 
 <sub-section | Specification>
 
-`category` `citations-and-references` · Layer 1 `<bibliography>` · JATS `<ref-list>` · `content` `structured`
+`category` `citations-and-references` · eHTML `<bibliography>` · JATS `<ref-list>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
@@ -311,7 +311,7 @@ Produced by: *structural — emitted by the compiler, not authored directly*.
 
 <sub-section | Specification>
 
-`category` `citations-and-references` · Layer 1 `<bib-entry>` · JATS `<ref (containing element-citation or mixed-citation)>` · `content` `structured`
+`category` `citations-and-references` · eHTML `<bib-entry>` · JATS `<ref (containing element-citation or mixed-citation)>` · `content` `structured`
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|

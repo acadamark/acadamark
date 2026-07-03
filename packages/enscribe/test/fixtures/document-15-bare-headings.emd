@@ -27,7 +27,7 @@ decided mappings.
 
 #### Depth-4 heading passes through as `<h4>`
 
-A depth-4 heading exceeds Layer 1's three section levels. It is **not**
+A depth-4 heading exceeds eHTML's three section levels. It is **not**
 mapped to a section and **not** mapped to `<b>`. It passes through as a
 literal `<h4>` element with an informative diagnostic emitted.
 

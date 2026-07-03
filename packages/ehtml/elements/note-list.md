@@ -56,11 +56,11 @@ A container for collected notes. Used to gather end-notes, chapter-notes, or oth
 
 `<note-list>` is the structural container that gathers `<note>` elements with a collecting `placement` (`end`/`foot`). `note-scope` chooses where they collect: one list in the back-matter (`document`), one per chapter (`chapter`), or one per section (`section`).
 
-This element is **generated output, never authored** (#129). The `enscribeNotePlacement` plugin builds `<note-list>` from the document's `<note>`s based on their `placement` and the document's `note-scope`; an author never types it. It is documented here as a Layer 1 *output* element — for the JATS mapping and render-mode lowering below — not as an authoring surface. The authoring path is `<note>` (see [`<note>`](note.md)); the collection into `<note-list>` is automatic.
+This element is **generated output, never authored** (#129). The `enscribeNotePlacement` plugin builds `<note-list>` from the document's `<note>`s based on their `placement` and the document's `note-scope`; an author never types it. It is documented here as an eHTML *output* element — for the JATS mapping and render-mode lowering below — not as an authoring surface. The authoring path is `<note>` (see [`<note>`](note.md)); the collection into `<note-list>` is automatic.
 
 ## Why it exists
 
-Even though no author writes `<note-list>`, the element is a real structural part of Layer 1 because:
+Even though no author writes `<note-list>`, the element is a real structural part of eHTML because:
 
 - It needs to appear in the rendered HTML (browsers and JATS export need a container for the collected notes).
 - It needs to be the cross-reference target for note references that resolve to "see end-notes" or similar.

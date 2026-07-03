@@ -466,7 +466,7 @@ export function run() {
   // ── Document 14: Hash-sigil heading dispatch ───────────────────────────────
   // Phase-1 alpha-build slice fixture. Exercises the `<#>` / `<##>` / `<###>`
   // sigil-form headings end-to-end to prove:
-  //   - dispatch: `<# … #>` produces a Layer 1 <section>, not an
+  //   - dispatch: `<# … #>` produces an eHTML <section>, not an
   //     unknown-element span (the sigil-mapping fix added `#`/`##`/`###`
   //     entries to PARSER_TO_VOCAB).
   //   - opacity: prose content inside the heading is recursively parsed
@@ -534,7 +534,7 @@ export function run() {
 
   // ── Document 16: Section-form ladder convergence proof ────────────────────
   // The same section title authored three ways. After the gate, all three
-  // forms must produce structurally identical Layer 1 <section> nodes.
+  // forms must produce structurally identical eHTML <section> nodes.
   // This is the verification the [alpha] "section-form ladder converges"
   // item required, now satisfied by the normalize-to-canonical gate.
   {
@@ -716,7 +716,7 @@ export function run() {
 
   // ── Document 21: <meta> kwarg ↔ child-tag convergence ─────────────────────
   // Validates that <meta> authored with kwargs (title=, author=, doi=)
-  // produces the same Layer 1 child-tag shape as if the author had written
+  // produces the same eHTML child-tag shape as if the author had written
   // explicit <title>, <author>, <doi> children.
   {
     const src = readFileSync(join(FIXTURES_DIR, 'document-21-meta-kwargs-and-children.emd'), 'utf8');
@@ -816,7 +816,7 @@ export function run() {
 
   // ── Document 27: <author> structured-interface reconciliation ──────────────
   // Proves kwarg form and child-tag form of <author> normalize to
-  // equivalent Layer 1 structures, and the unknown-kwarg path warns + drops.
+  // equivalent eHTML structures, and the unknown-kwarg path warns + drops.
   {
     const src = readFileSync(
       join(FIXTURES_DIR, 'document-27-author-structured-interface.emd'),
@@ -866,7 +866,7 @@ export function run() {
     );
 
     // +corresponding becomes the data-corresponding kwarg/attribute on the
-    // canonical Layer 1 node (per the author.md schema's boolean kwarg
+    // canonical eHTML node (per the author.md schema's boolean kwarg
     // declaration). Only author 1 has it.
     assert.ok(
       html.includes('corresponding'),
@@ -938,7 +938,7 @@ export function run() {
     );
 
     // Disclosure: <details> and <summary>; the kwarg-form open=true
-    // renders as the open attribute on the canonical Layer 1 node.
+    // renders as the open attribute on the canonical eHTML node.
     // (The +open boolean form is known not to render via the schema
     // dispatch — buildProperties does not iterate node.booleans;
     // filed as a [post-alpha] backlog item. The fixture uses

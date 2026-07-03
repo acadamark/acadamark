@@ -1,12 +1,12 @@
 {
   "name": "@enscribejs/enscribe",
   "version": "0.4.1",
-  "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax. The headline library: the Layer 1 core foundation, the shorthand parser (remark plugin), and the interpreter that compiles enscribeTag nodes to Layer 1 HTML.",
+  "description": "Academic publishing on HTML+CSS+JS, with a shorthand authoring syntax. The headline library: the eHTML core foundation, the shorthand parser (remark plugin), and the interpreter that compiles enscribeTag nodes to eHTML.",
   "keywords": [
     "enscribe",
     "academic-publishing",
     "semantic-html",
-    "layer1",
+    "ehtml",
     "unified",
     "remark",
     "remark-plugin",

@@ -57,7 +57,7 @@ content:
     descends into it: the body's floats do not consume document counters, its
     labels never enter the document registry, and its footnotes do not bubble to
     the document. The body is processed in its OWN pipeline run with its OWN
-    registry (the deferred phase), producing resolved Layer 1 that is spliced
+    registry (the deferred phase), producing resolved eHTML that is spliced
     into the <figure> shell. Recursive content parsing applies INSIDE that
     sealed run, so the full enscribe vocabulary works in the body — including a
     nested <minipage>. External pulls (@src / <data>) are disallowed inside a
@@ -68,7 +68,7 @@ jats_counterpart:
   notes: |
     JATS <boxed-text> is the closest counterpart — a generic boxed, set-apart
     content block — matching <frame>. A numbered minipage wraps in <fig> at
-    export. The sealed body's resolved Layer 1 is the boxed-text content.
+    export. The sealed body's resolved eHTML is the boxed-text content.
 shorthand_examples:
   - source: '<minipage | Two panels side by side.>'
     ehtml: '<figure class="frameable-border"><p>Two panels side by side.</p><figcaption><span class="minipage-label">Minipage 1.</span></figcaption></figure>'
@@ -77,7 +77,7 @@ shorthand_examples:
       html_output.element `minipage` is only the lookup key for handler-strategy
       entries — the handler controls the actual element). +border is default on
       for <minipage>, so the class appears automatically. The body renders as
-      sealed Layer 1.
+      sealed eHTML.
   - source: |
       <minipage #mp:compare caption="Side-by-side comparison" |
       A figure here counts privately.
@@ -99,7 +99,7 @@ handler_responsibilities:
   - Emit the <minipage> wrapper element (a custom element rendered as <figure>; not HTML-native).
   - Apply `frameable-border` class by default (border flag default true).
   - Render optional title at the top and optional caption (with "Minipage N." label prefix if numbered) at the bottom.
-  - Splice the sealed body's resolved Layer 1 (produced by the deferred phase) as the figure body.
+  - Splice the sealed body's resolved eHTML (produced by the deferred phase) as the figure body.
 ---
 
 # `<minipage>`

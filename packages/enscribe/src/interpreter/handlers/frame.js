@@ -12,7 +12,7 @@
 //   - Calls renderFrameable with kind='frame' (inside-figure layout —
 //     <figcaption> child of the <figure> wrapper)
 //
-// Wrapper element: <figure>. The Layer 1 tagname is `<frame>` (the
+// Wrapper element: <figure>. The eHTML tagname is `<frame>` (the
 // vocab key), and `html_output.element: frame` in frame.md is only
 // the vocab-key signal for handler-strategy entries — the handler
 // controls actual HTML output. Using <figure> here lets the frameable

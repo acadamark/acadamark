@@ -1,6 +1,6 @@
 // Single source for reading the vocab `category` field (audit F14 — the capstone).
 //
-// Every Layer 1 element declares a `category` in VOCABULARY. This module is the ONE place
+// Every eHTML element declares a `category` in VOCABULARY. This module is the ONE place
 // that reads it: it builds a `category → Set(tagnames)` index once at module load and
 // exposes a single query, exactly as doc-type.js is the one place that reads `<meta type>`.
 // Kind-distinctions that ARE a vocab category derive from tagnamesInCategory(); distinctions

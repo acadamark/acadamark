@@ -59,7 +59,7 @@ which stage it serves, so classification and pipeline-position are the same fact
 
 ```
   RECOGNIZE   ->   PROCESS   ->   FORMAT
-  (parse: what     (the handler    (emit Layer-1
+  (parse: what     (the handler    (emit eHTML
    tag is this,     completes the   HTML,
    descend into     picture and     recursively)
    its content      transforms it)
@@ -113,7 +113,7 @@ consequence of "the processor is Enscribe," not a special mechanism. (A foreign 
 sealing: its internals aren't Enscribe and can't leak.)
 
 ### 3. FORMAT
-A **formatter** emits the result as Layer-1 HTML, recursively. Everything becomes Layer-1 at the end, so a
+A **formatter** emits the result as eHTML, recursively. Everything becomes eHTML at the end, so a
 tag's "what it becomes" is just *what its formatter emits* — a property of the formatter, not a separate
 tag-level axis to name and branch on.
 
@@ -123,7 +123,7 @@ tag-level axis to name and branch on.
   run the processor, handle the result.
 - **processors** (process-stage) — transform content of a given language; found via the content-language
   lookup. Prose, ABC, mermaid, math, Enscribe-itself are all entries.
-- **formatters** (format-stage) — emit Layer-1, recursively.
+- **formatters** (format-stage) — emit eHTML, recursively.
 - **loader** — a shared TOOL (not a stage, not a class of its own): fetch external/`@id` content,
   consumer-agnostically, when a handler needs to complete the picture.
 

@@ -406,7 +406,7 @@ This buys three things at once: the grep gate stays green for *every* table (not
 
 ## 4. "Grid is a projection, not source of truth" trades archival fidelity for a clean model
 
-This is the load-bearing decision (§2) and it's in real tension with enscribe's own premise that **Layer 1 is the canonical, archival representation**. If import *normalizes* a publisher's table into facts+projection and the round-trip grid differs (member reordering, span-vs-repeat, dropped presentational quirks), then enscribe is no longer a faithful archive of the *original* — it's a faithful archive of enscribe's *re-interpretation*.
+This is the load-bearing decision (§2) and it's in real tension with enscribe's own premise that **eHTML is the canonical, archival representation**. If import *normalizes* a publisher's table into facts+projection and the round-trip grid differs (member reordering, span-vs-repeat, dropped presentational quirks), then enscribe is no longer a faithful archive of the *original* — it's a faithful archive of enscribe's *re-interpretation*.
 
 That may be an acceptable, even desirable, stance (a cleaner canonical model). But it's a philosophical shift that deserves an explicit, signed-off sentence in the design, because it contradicts the archival framing used elsewhere in the project. "Structurally faithful, not byte-identical" (§5/§8.3) understates it: you're choosing *interpretation over preservation* for tables. Say so out loud.
 
@@ -701,7 +701,7 @@ permits; the literal end preserves the grid as-is. The looseness bites only on
 the import-then-edit path, where a recovered grouping might be edited as if it
 were real data — a documented limitation, not an import flaw.
 
-## 4. Authoring (Layer 2) — the forward direction's primary consumer
+## 4. Authoring (Enscribe shorthand) — the forward direction's primary consumer
 
 The model is settled; the **authoring surface is the open question** (§8).
 Recommended first: **Front-end B — the author writes the grid much as it appears

@@ -12,7 +12,7 @@ html_output:
     The render-mode plugin maps enscribe's metadata <title> to HTML's
     <title> in the rendered <head>. The structural plugin promotes
     enscribe's metadata <title> to <article-title> or <book-title> at
-    Layer 1 based on the surrounding container.
+    eHTML based on the surrounding container.
 enscribe_attributes:
   id:
     maps_to: id
@@ -62,7 +62,7 @@ interpreter_strategy: schema
 
 # `<title>` (in metadata context)
 
-The document title, when authored inside `<meta>`. Promoted to `<article-title>` or `<book-title>` at Layer 1 based on the surrounding container.
+The document title, when authored inside `<meta>`. Promoted to `<article-title>` or `<book-title>` at eHTML based on the surrounding container.
 
 ## Semantic intent
 
@@ -88,11 +88,11 @@ The document title can also be supplied via the container shorthand:
 <article | The Document Title>
 ```
 
-Both paths produce identical Layer 1 output (`<article-title>` in `<article-front>`). See the `<meta>` entry for precedence rules and warning behavior when both are present.
+Both paths produce identical eHTML output (`<article-title>` in `<article-front>`). See the `<meta>` entry for precedence rules and warning behavior when both are present.
 
-## Promotion to Layer 1
+## Promotion to eHTML
 
-The `enscribeArticleStructuring` and `enscribeBookStructuring` plugins promote `<title>` from `<meta>` to the appropriate Layer 1 element:
+The `enscribeArticleStructuring` and `enscribeBookStructuring` plugins promote `<title>` from `<meta>` to the appropriate eHTML element:
 
 | Surrounding container | Promotion target |
 |----------------------|------------------|
@@ -100,7 +100,7 @@ The `enscribeArticleStructuring` and `enscribeBookStructuring` plugins promote `
 | `<book>` | `<book-title>` |
 | `<book-part>` (chapter, etc.) | `<book-part-title>` (rare; chapters typically get titles via shorthand) |
 
-This promotion is mechanical. The metadata authoring vocabulary stays uniform (`<title>` always); the Layer 1 vocabulary diverges to match each container's expected structure.
+This promotion is mechanical. The metadata authoring vocabulary stays uniform (`<title>` always); the eHTML vocabulary diverges to match each container's expected structure.
 
 ## Content
 
@@ -112,7 +112,7 @@ This promotion is mechanical. The metadata authoring vocabulary stays uniform (`
 
 ## JATS mapping
 
-| Layer 1 (after promotion) | JATS |
+| eHTML (after promotion) | JATS |
 |---------------------------|------|
 | `<article-title>` | `<article-title>` (inside `<title-group>` inside `<article-meta>`) |
 | `<book-title>` | `<book-title>` (inside `<book-title-group>` inside `<book-meta>`) |
@@ -126,11 +126,11 @@ In render mode, the title appears in two places:
 - HTML `<head>` `<title>` for the browser tab.
 - Visually displayed in the article header or title page (rendered from `<article-title>` in `<article-front>`).
 
-Both come from the same Layer 1 source.
+Both come from the same eHTML source.
 
 ## See also
 
 - [`<meta>`](meta.md) — the metadata wrapper that holds `<title>`.
 - [`<subtitle>`](subtitle.md) — companion element for subtitles.
-- [`<article-title>`](article-title.md), [`<book-title>`](book-title.md) — Layer 1 elements (rarely authored directly).
+- [`<article-title>`](article-title.md), [`<book-title>`](book-title.md) — eHTML elements (rarely authored directly).
 - [`<article>`](article.md), [`<book>`](book.md) — containers whose shorthand can also supply a title.

@@ -4,7 +4,7 @@ Notation — mathematics and code, inline and displayed.
 
 <sub-section | General Usage>
 
-Semantic role: *inline-math*. Compiles to Layer 1 `<inline-math>`.
+Semantic role: *inline-math*. Compiles to eHTML `<inline-math>`.
 
 Registers:
 
@@ -27,7 +27,7 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 
 <sub-section | General Usage>
 
-Semantic role: *display-math*. Compiles to Layer 1 `<display-math>`.
+Semantic role: *display-math*. Compiles to eHTML `<display-math>`.
 
 Registers:
 
@@ -56,7 +56,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *math*. Compiles to Layer 1 `<math>`.
+Semantic role: *math*. Compiles to eHTML `<math>`.
 
 Registers:
 
@@ -82,7 +82,7 @@ E = mc^2
 
 <sub-section | General Usage>
 
-Semantic role: *align*. Compiles to Layer 1 `<align>`.
+Semantic role: *align*. Compiles to eHTML `<align>`.
 
 Registers:
 
@@ -110,7 +110,7 @@ a + b &= c
 
 <sub-section | General Usage>
 
-Semantic role: *eqnarray*. Compiles to Layer 1 `<eqnarray>`.
+Semantic role: *eqnarray*. Compiles to eHTML `<eqnarray>`.
 
 Registers:
 
@@ -138,7 +138,7 @@ g(x) &=& 2x
 
 <sub-section | General Usage>
 
-Semantic role: *cases*. Compiles to Layer 1 `<cases>`.
+Semantic role: *cases*. Compiles to eHTML `<cases>`.
 
 Registers:
 
@@ -166,7 +166,7 @@ x^2 & \text{if } x \ge 0 \\
 
 <sub-section | General Usage>
 
-Semantic role: *matrix*. Compiles to Layer 1 `<matrix>`.
+Semantic role: *matrix*. Compiles to eHTML `<matrix>`.
 
 Registers:
 
@@ -194,7 +194,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *inline-code*. Compiles to Layer 1 `<inline-code>`.
+Semantic role: *inline-code*. Compiles to eHTML `<inline-code>`.
 
 Registers:
 
@@ -228,7 +228,7 @@ Call <` python | factorial(n) `> to recurse.
 
 <sub-section | General Usage>
 
-Semantic role: *code*. Compiles to Layer 1 `<code>`.
+Semantic role: *code*. Compiles to eHTML `<code>`.
 
 Registers:
 
@@ -282,7 +282,7 @@ Use `<`code`>` for inline code.
 
 <sub-section | General Usage>
 
-Semantic role: *code-block*. Compiles to Layer 1 `<code-block>`.
+Semantic role: *code-block*. Compiles to eHTML `<code-block>`.
 
 Registers:
 

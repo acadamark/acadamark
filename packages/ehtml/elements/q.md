@@ -90,7 +90,7 @@ JATS has no direct equivalent for inline quotations. The exporter typically rend
 | `<q>` | quoted text wrapped in `"..."` (Unicode) |
 | `cite` attribute | not exported (no JATS equivalent for inline quote sources) |
 
-This is one of several places enscribe Layer 1 doesn't fully round-trip to JATS.
+This is one of several places enscribe eHTML doesn't fully round-trip to JATS.
 
 ## Render-mode lowering
 

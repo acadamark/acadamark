@@ -1260,7 +1260,7 @@ body:has(.enscribe-layout--toc) {
         <li>
           The <b>kwarg form</b> — <code>name</code>, <code>orcid</code>, <code>affiliation</code> lift to child
           tags at the gate; <code>+corresponding</code> stays as a boolean kwarg on the
-          canonical Layer 1 node. The kwarg form uses self-closing <code>/></code> to
+          canonical eHTML node. The kwarg form uses self-closing <code>/></code> to
           disambiguate from a long-form opener (the same constraint
           <code>&#x3C;table /></code> follows — <code>&#x3C;author></code> is now long-form-eligible, so a
           kwarg-only <code>&#x3C;author …></code> with no pipe and no <code>/</code> would be claimed
@@ -1273,7 +1273,7 @@ body:has(.enscribe-layout--toc) {
         </li>
       </ol>
       <p>
-        Both reduce to equivalent Layer 1 structures (the kwarg-form variant
+        Both reduce to equivalent eHTML structures (the kwarg-form variant
         also carries <code>+corresponding</code>, which is unique to it as the
         corresponding-author marker).
       </p>

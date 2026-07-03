@@ -42,19 +42,19 @@ shorthand_examples:
       <dl>
         <dt | enscribe>
         <dd | An academic publishing system built on HTML+CSS+JS.>
-        <dt | Layer 1>
+        <dt | eHTML>
         <dd | The canonical semantic HTML vocabulary.>
-        <dt | Layer 2>
-        <dd | The shorthand authoring syntax that compiles to Layer 1.>
+        <dt | Enscribe shorthand>
+        <dd | The shorthand authoring syntax that compiles to eHTML.>
       </dl>
     ehtml: |
       <dl>
         <dt>enscribe</dt>
         <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>
-        <dt>Layer 1</dt>
+        <dt>eHTML</dt>
         <dd><p>The canonical semantic HTML vocabulary.</p></dd>
-        <dt>Layer 2</dt>
-        <dd><p>The shorthand authoring syntax that compiles to Layer 1.</p></dd>
+        <dt>Enscribe shorthand</dt>
+        <dd><p>The shorthand authoring syntax that compiles to eHTML.</p></dd>
       </dl>
     notes: |
       Long-form <dl> with short-form <dt>/<dd> children. The natural
@@ -92,7 +92,7 @@ For glossary-specific content with a heading and multiple cross-referenceable en
 <dl>
   <dt | enscribe>
   <dd | An academic publishing system.>
-  <dt | Layer 1>
+  <dt | eHTML>
   <dd | The canonical semantic HTML vocabulary.>
 </dl>
 ```
@@ -130,4 +130,4 @@ The JATS exporter groups adjacent `<dt>`/`<dd>` pairs from the enscribe source i
 - [`<dt>`](dt.md) — term within a definition list.
 - [`<dd>`](dd.md) — description within a definition list.
 - [`<glossary>`](glossary.md) — for glossary-specific content with cross-referenceable entries.
-- `<ul>` / `<ol>` — unordered / ordered lists, authored via the `<list>` shorthand (a Layer-2 construct with no element page of its own).
+- `<ul>` / `<ol>` — unordered / ordered lists, authored via the `<list>` shorthand (an Enscribe-shorthand construct with no element page of its own).

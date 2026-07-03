@@ -4,7 +4,7 @@ The document's front-matter declarations — the `<meta>` block and the fields a
 
 <sub-section | General Usage>
 
-Semantic role: *meta*. Compiles to Layer 1 `<meta>`.
+Semantic role: *meta*. Compiles to eHTML `<meta>`.
 
 Registers:
 
@@ -60,7 +60,7 @@ Content.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which Layer 1 wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no Layer 1 wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
+| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which eHTML wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
 | `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` | For a single-file book-part (type=book-part) only: sets the book-part-type on the generated `<book-part>` wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always "chapter". Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive `<meta>` field). Default "chapter" when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the `<chapter>` / `<appendix>` / … shorthand instead. |
 | `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is `<meta>`'s title — there is no in-header `<icon>`/`<title>` tag. |
 
@@ -70,7 +70,7 @@ Content.
 
 <sub-section | General Usage>
 
-Semantic role: *config*. Compiles to Layer 1 `<config>`.
+Semantic role: *config*. Compiles to eHTML `<config>`.
 
 Registers:
 
@@ -104,9 +104,9 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *title*. Compiles to Layer 1 `<title>`.
+Semantic role: *title*. Compiles to eHTML `<title>`.
 
-The document (or section) title, authored as a child of `<meta>`. One authored `<title>` resolves to the right Layer 1 element by context: inside an article it is promoted to `<article-title>`, inside a book to `<book-title>`, inside a section's `<meta>` to the matching section-title. You write `<title>`; the compiler picks the variant.
+The document (or section) title, authored as a child of `<meta>`. One authored `<title>` resolves to the right eHTML element by context: inside an article it is promoted to `<article-title>`, inside a book to `<book-title>`, inside a section's `<meta>` to the matching section-title. You write `<title>`; the compiler picks the variant.
 
 Registers:
 
@@ -131,7 +131,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *subtitle*. Compiles to Layer 1 `<subtitle>`.
+Semantic role: *subtitle*. Compiles to eHTML `<subtitle>`.
 
 A secondary title line, authored as a child of `<meta>` alongside `<title>`. Like `<title>`, it resolves to the contextual variant — `<article-subtitle>`, `<book-subtitle>`, or the matching section-subtitle.
 
@@ -158,7 +158,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *abstract*. Compiles to Layer 1 `<abstract>`.
+Semantic role: *abstract*. Compiles to eHTML `<abstract>`.
 
 The document abstract, authored as a child of `<meta>`. Its content is block prose (one or more paragraphs); a structured abstract uses markdown bold for its sub-headings.
 
@@ -191,7 +191,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *keywords*. Compiles to Layer 1 `<keywords>` (JATS `<kwd-group>`).
+Semantic role: *keywords*. Compiles to eHTML `<keywords>` (JATS `<kwd-group>`).
 
 The document's keyword set, authored as a child of `<meta>`. Author the terms as the content; they are the discovery keywords a journal or index lists.
 
@@ -218,7 +218,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *subject*. Compiles to Layer 1 `<subject>`.
+Semantic role: *subject*. Compiles to eHTML `<subject>`.
 
 A subject classification for the document — a discipline, category, or subject-scheme term — authored as a child of `<meta>`. Repeat it for multiple classifications.
 
@@ -248,7 +248,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *author*. Compiles to Layer 1 `<author>`.
+Semantic role: *author*. Compiles to eHTML `<author>`.
 
 Registers:
 
@@ -272,7 +272,7 @@ Registers:
 <author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
 </minipage>
 
-*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical Layer 1 &lt;author&gt;.*
+*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &lt;author&gt;.*
 
 <code #code:sh-author-3>
 <author +corresponding>
@@ -292,7 +292,7 @@ Registers:
 </author>
 </minipage>
 
-*Child-tag form. The canonical Layer 1 shape. Both this form and the equivalent kwarg form above produce the same Layer 1 output.*
+*Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.*
 
 <code #code:sh-author-4>
 <meta>
@@ -320,7 +320,7 @@ Registers:
 | `affiliation` | kwarg |  | Author's institutional affiliation. Lifts to <affiliation>. |
 | `orcid` | kwarg |  | Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to <orcid>. |
 | `email` | kwarg |  | Author's contact email address. Lifts to <email>. |
-| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical Layer 1 <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical Layer 1 node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
+| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical eHTML <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical eHTML node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
 
 </section>
 
@@ -328,7 +328,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *editor*. Compiles to Layer 1 `<editor>`.
+Semantic role: *editor*. Compiles to eHTML `<editor>`.
 
 An editor of the document — a contributor, parallel to `<author>` — authored as a child of `<meta>`. It takes the same surface forms as `<author>`: a casual pipe name, a kwarg form, or the structured child-tag form. Repeat it for multiple editors.
 
@@ -352,7 +352,7 @@ Registers:
 </editor>
 </code>
 
-*Front-matter — shown as source. Like `<author>`, each lifted kwarg becomes a child tag at the gate; the child-tag form is the canonical Layer 1 shape. JATS export groups editors in the `<contrib-group>` with `contrib-type="editor"`.*
+*Front-matter — shown as source. Like `<author>`, each lifted kwarg becomes a child tag at the gate; the child-tag form is the canonical eHTML shape. JATS export groups editors in the `<contrib-group>` with `contrib-type="editor"`.*
 
 <sub-section | Arguments>
 
@@ -370,7 +370,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *date*. Compiles to Layer 1 `<date>`.
+Semantic role: *date*. Compiles to eHTML `<date>`.
 
 A date associated with the document, authored as a child of `<meta>`. Author the date as an ISO string in the content; the `type` kwarg says which date it is (publication, received, accepted, …).
 
@@ -401,7 +401,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *publication-date*. Compiles to Layer 1 `<publication-date>` (JATS `<pub-date>`).
+Semantic role: *publication-date*. Compiles to eHTML `<publication-date>` (JATS `<pub-date>`).
 
 The document's publication date, authored as a child of `<meta>`. It is the explicit, named form of the publication date (equivalent to `<date type=published>`); use it when you want the publication date to read unambiguously in the source.
 
@@ -430,7 +430,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *license*. Compiles to Layer 1 `<license>`.
+Semantic role: *license*. Compiles to eHTML `<license>`.
 
 The document's license, authored as a child of `<meta>`. Author the human-readable license name as the content; the `href` kwarg carries the canonical license URL.
 
@@ -459,7 +459,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *lang*. Compiles to Layer 1 `<lang>`.
+Semantic role: *lang*. Compiles to eHTML `<lang>`.
 
 The document's primary language, authored as a child of `<meta>`. Author a BCP-47 language tag (`en`, `en-GB`, `fr`) as the content. On the HTML surface it becomes the `xml:lang` / `lang` attribute of the document.
 
@@ -486,7 +486,7 @@ Registers:
 
 <sub-section | General Usage>
 
-Semantic role: *version*. Compiles to Layer 1 `<version>`.
+Semantic role: *version*. Compiles to eHTML `<version>`.
 
 A version string for the document, authored as a child of `<meta>`. Useful for preprints and living documents that are revised over time.
 

@@ -32,7 +32,7 @@ With both gaps closed, the always-renders guarantee is fully honored in the curr
 
 ## The delegation principle
 
-Enscribe does not re-implement what existing parsers already do well. Wherever an existing parser can handle work enscribe would otherwise need to do, enscribe delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Enscribe only does novel work — the tagged shorthand and the Layer 1 vocabulary.
+Enscribe does not re-implement what existing parsers already do well. Wherever an existing parser can handle work enscribe would otherwise need to do, enscribe delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Enscribe only does novel work — the tagged shorthand and the eHTML vocabulary.
 
 See `notes/specs/idioms.md` for the full statement of this principle including its two-layer form.
 
@@ -50,7 +50,7 @@ This principle is the counterpart of the always-renders guarantee viewed from th
 
 ## The parser-knows-nothing-about-meaning principle
 
-The shorthand parser produces generic `enscribeTag` nodes. A separate interpretation pass converts those nodes into specific HTML based on tag name and the Layer 1 vocabulary entry for that tag. Parsing and interpretation are kept separate because:
+The shorthand parser produces generic `enscribeTag` nodes. A separate interpretation pass converts those nodes into specific HTML based on tag name and the eHTML vocabulary entry for that tag. Parsing and interpretation are kept separate because:
 
 - New tags can be added without touching the parser.
 - Tag semantics can evolve without parser changes.

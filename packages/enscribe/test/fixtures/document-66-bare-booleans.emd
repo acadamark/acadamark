@@ -6,7 +6,7 @@
 <config toc number-sections />
 
 A bare boolean attribute means `true`, the same as the `=true` / `+flag` forms — and it is the
-canonical HTML / Layer 1 spelling. `<config toc number-sections>` ≡ `<config toc=true
+canonical HTML / eHTML spelling. `<config toc number-sections>` ≡ `<config toc=true
 number-sections=true>`. Only a *known* boolean promotes; a bare typo stays unrecognized.
 
 <section | Introduction>

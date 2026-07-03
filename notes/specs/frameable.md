@@ -1,6 +1,6 @@
 # Frameable elements
 
-A small, named set of Layer 1 elements share one capability: they sit
+A small, named set of eHTML elements share one capability: they sit
 **out of the text flow as a self-contained block**, and may carry an
 optional **title** (top), an optional **caption** (bottom), and an
 optional **border**. This is the semantic role HTML gives `<figure>` —
@@ -28,7 +28,7 @@ and the same rendering behavior — because the capability is shared.
 Authoring a frameable construct does not nest an inner content element
 inside an outer wrapper; the frameable element *is* the construct.
 
-The figure member's canonical Layer 1 element is the HTML-native
+The figure member's canonical eHTML element is the HTML-native
 `<figure>` (figures are HTML-shaped, #147). The name `<fig>` still
 appears below in two roles: the **JATS export target** (the JATS-mapping
 table) and the interpreter's **tagname-keyed mechanisms** (the shared

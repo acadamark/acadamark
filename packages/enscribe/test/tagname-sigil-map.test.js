@@ -1,6 +1,6 @@
 // Unit tests for tagname-sigil-map.
 //
-// The map relates each Layer 1 element's named-tag spelling and its sigil
+// The map relates each eHTML element's named-tag spelling and its sigil
 // spelling. It is a bidirectional cipher (substitution, not transform) and
 // must be a strict bijection — duplicate keys in either direction would
 // silently break round-trip integrity.

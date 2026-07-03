@@ -65,8 +65,8 @@ cue to pin it with `<meta slug=…>`.
 ## Output URLs — path-style, from nav position
 The source tree stays **flat** (one directory per page); the *output* mirrors the nav
 hierarchy. Each page is written at its nav-path location: a page under groups
-"References → Layer 1" with slug `export` is emitted at `references/layer-1/export/index.html`
-and addressed as `/references/layer-1/export/`. Group path segments are the slugified group
+"References → eHTML" with slug `export` is emitted at `references/eHTML/export/index.html`
+and addressed as `/references/eHTML/export/`. Group path segments are the slugified group
 titles; the final segment is the page's slug. URLs end in a trailing slash (`/…/`; the server
 serves `index.html`) — so the site needs an HTTP server, not `file://`.
 

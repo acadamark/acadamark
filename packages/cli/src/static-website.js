@@ -50,7 +50,7 @@ import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from 
 
 /**
  * Walk the nav tree and map each page slug → its OUTPUT nav-path: the slugified titles of the groups
- * it sits under, then the page's own slug (`references/layer-1/export`). The home page (the first nav
+ * it sits under, then the page's own slug (`references/eHTML/export`). The home page (the first nav
  * page) maps to `''` (the dist root). The group nesting is NOT in flattenNavPages's flat list, so this
  * walks the tree directly. Group segments use slugifyPage — the same slugifier website-structuring uses
  * for page slugs (one implementation, no drift).

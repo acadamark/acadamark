@@ -61,7 +61,7 @@ ghc-prompt-*.md
 # `.gitignore` change here that quietly starts matching them is a bug:
 #
 #   packages/ehtml/src/data.js
-#     The Layer 1 vocabulary data module, generated from elements/*.md by
+#     The eHTML vocabulary data module, generated from elements/*.md by
 #     packages/ehtml/build/generate-data-module.js. Committed per
 #     the Slice 4 Phase 0's Option-A ruling (committed + pretest
 #     regenerate-and-diff staleness guard). See notes/specs/core.md.
