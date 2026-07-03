@@ -1,6 +1,7 @@
 ---
 semantic_role: note
 category: block-prose
+semantic_family: aside
 html_output:
   element: note
   is_html_native: false

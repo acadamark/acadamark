@@ -1,6 +1,7 @@
 ---
 semantic_role: bib-entry
 category: citations-and-references
+semantic_family: quotation-and-sourcing
 authoring: generated
 html_output:
   element: bib-entry

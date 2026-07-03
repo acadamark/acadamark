@@ -1,6 +1,7 @@
 ---
 semantic_role: bibliography
 category: citations-and-references
+semantic_family: quotation-and-sourcing
 authoring: generated
 html_output:
   element: bibliography

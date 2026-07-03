@@ -1,6 +1,7 @@
 ---
 semantic_role: note-list
 category: block-prose
+semantic_family: aside
 # Generated output, never authored: notes auto-collect into <note-list> via the
 # enscribeNotePlacement plugin — an author never types it. `output-only` excludes
 # it from the authoring gallery entirely (contrast `authoring: generated`, which

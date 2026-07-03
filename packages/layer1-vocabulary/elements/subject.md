@@ -1,6 +1,7 @@
 ---
 semantic_role: subject
 category: metadata
+semantic_family: declarations-and-metadata
 html_output:
   element: subject
   is_html_native: false

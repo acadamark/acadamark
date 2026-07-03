@@ -1,6 +1,7 @@
 ---
 semantic_role: version
 category: metadata
+semantic_family: declarations-and-metadata
 html_output:
   element: version
   is_html_native: false

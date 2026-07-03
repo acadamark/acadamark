@@ -1,6 +1,7 @@
 ---
 semantic_role: p
 category: block-prose
+semantic_family: primary-prose
 html_output:
   element: p
   is_html_native: true

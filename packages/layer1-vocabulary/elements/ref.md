@@ -1,6 +1,7 @@
 ---
 semantic_role: ref
 category: citations-and-references
+semantic_family: quotation-and-sourcing
 html_output:
   element: ref
   is_html_native: false

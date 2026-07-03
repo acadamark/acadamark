@@ -1,6 +1,7 @@
 ---
 semantic_role: cases
 category: math
+semantic_family: notation
 html_output:
   element: cases
   is_html_native: false

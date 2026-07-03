@@ -1,6 +1,7 @@
 ---
 semantic_role: date
 category: metadata
+semantic_family: declarations-and-metadata
 html_output:
   element: date
   is_html_native: false

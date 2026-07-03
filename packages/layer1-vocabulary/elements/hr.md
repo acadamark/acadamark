@@ -1,6 +1,7 @@
 ---
 semantic_role: hr
 category: block-prose
+semantic_family: structural-scaffolding
 html_output:
   element: hr
   is_html_native: true

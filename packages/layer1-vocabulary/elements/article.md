@@ -1,6 +1,7 @@
 ---
 semantic_role: article
 category: document-containers
+semantic_family: structural-scaffolding
 html_output:
   element: article
   is_html_native: true

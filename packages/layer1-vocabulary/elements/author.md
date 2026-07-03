@@ -1,6 +1,7 @@
 ---
 semantic_role: author
 category: structured-data-containers
+semantic_family: declarations-and-metadata
 html_output:
   element: author
   is_html_native: false

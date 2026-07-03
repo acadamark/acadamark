@@ -1,6 +1,7 @@
 ---
 semantic_role: meta
 category: structured-data-containers
+semantic_family: declarations-and-metadata
 html_output:
   element: meta
   is_html_native: false

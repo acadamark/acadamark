@@ -1,6 +1,7 @@
 ---
 semantic_role: lemma
 category: theorem-family
+semantic_family: formal-statements
 html_output:
   element: lemma
   is_html_native: false

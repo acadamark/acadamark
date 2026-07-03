@@ -1,6 +1,7 @@
 ---
 semantic_role: definition
 category: theorem-family
+semantic_family: formal-statements
 html_output:
   element: definition
   is_html_native: false

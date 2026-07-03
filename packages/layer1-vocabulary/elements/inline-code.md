@@ -1,6 +1,7 @@
 ---
 semantic_role: inline-code
 category: code
+semantic_family: notation
 html_output:
   element: inline-code
   is_html_native: false

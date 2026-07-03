@@ -1,6 +1,7 @@
 ---
 semantic_role: caption
 category: frameables
+semantic_family: exhibit
 html_output:
   element: caption
   is_html_native: true

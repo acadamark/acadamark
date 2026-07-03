@@ -1,6 +1,7 @@
 ---
 semantic_role: code-block
 category: code
+semantic_family: notation
 html_output:
   element: code-block
   is_html_native: false

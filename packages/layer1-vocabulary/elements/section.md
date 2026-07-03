@@ -1,6 +1,7 @@
 ---
 semantic_role: section
 category: sections
+semantic_family: structural-scaffolding
 html_output:
   element: section
   is_html_native: true

@@ -1,6 +1,7 @@
 ---
 semantic_role: example
 category: theorem-family
+semantic_family: formal-statements
 html_output:
   element: example
   is_html_native: false

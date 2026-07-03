@@ -1,6 +1,7 @@
 ---
 semantic_role: inline-math
 category: math
+semantic_family: notation
 html_output:
   element: inline-math
   is_html_native: false

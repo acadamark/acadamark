@@ -1,6 +1,7 @@
 ---
 semantic_role: section-title
 category: metadata
+semantic_family: declarations-and-metadata
 authoring: generated
 html_output:
   element: section-title

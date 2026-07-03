@@ -1,6 +1,7 @@
 ---
 semantic_role: endnotes
 category: block-prose
+semantic_family: aside
 authoring: generated
 html_output:
   element: endnotes

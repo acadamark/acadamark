@@ -1,6 +1,7 @@
 ---
 semantic_role: glossary-entry
 category: block-prose
+semantic_family: formal-statements
 html_output:
   element: glossary-entry
   is_html_native: false

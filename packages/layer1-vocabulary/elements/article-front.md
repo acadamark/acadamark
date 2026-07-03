@@ -1,6 +1,7 @@
 ---
 semantic_role: article-front
 category: structural-regions
+semantic_family: structural-scaffolding
 authoring: generated
 html_output:
   element: article-front

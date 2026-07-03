@@ -1,6 +1,7 @@
 ---
 semantic_role: library
 category: storage-hosts
+semantic_family: stores
 html_output:
   element: library
   is_html_native: false

@@ -1,6 +1,7 @@
 ---
 semantic_role: dl
 category: block-prose
+semantic_family: formal-statements
 html_output:
   element: dl
   is_html_native: true

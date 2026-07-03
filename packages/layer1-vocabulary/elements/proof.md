@@ -1,6 +1,7 @@
 ---
 semantic_role: proof
 category: theorem-family
+semantic_family: formal-statements
 html_output:
   element: proof
   is_html_native: false

@@ -1,6 +1,7 @@
 ---
 semantic_role: dd
 category: block-prose
+semantic_family: formal-statements
 html_output:
   element: dd
   is_html_native: true
