@@ -103,7 +103,7 @@ Each subsystem's blueprint:
   `notes/specs/lists.md` (the `<list>` / `<li>` marker model), and
   `notes/specs/appendices.md` (the `<appendix>` element's article + book
   projections). The per-element vocabulary entries live separately in
-  `packages/layer1-vocabulary/elements/` with `SPEC.md` alongside.
+  `packages/ehtml/elements/` with `SPEC.md` alongside.
 - **Round-trip transforms** — `notes/specs/lift-lower-round-trip.md`
   (the correctness model for the `lift` / `lower` register transforms).
 - **Cross-cutting principles** — `notes/specs/idioms.md` (the lexer- and
@@ -163,7 +163,7 @@ For specific subsystems, read the spec for that subsystem under `notes/specs/`: 
 parser specs together (`shorthand-syntax.md`, `escape-rules-spec.md`,
 `multiline-spec.md`, `recursive-content-spec.md`); the interpreter spec
 (`interpreter.md` and `pipeline.md`); the vocabulary spec
-(`packages/layer1-vocabulary/SPEC.md` and the per-element entries); the naming
+(`packages/ehtml/SPEC.md` and the per-element entries); the naming
 rules (`layer1-naming.md`); the shape-token machinery (`shape-tokens.md`).
 
 Open work — [GitHub Issues](https://github.com/enscribejs/enscribe/issues).
@@ -208,7 +208,7 @@ slice is not done until code and documentation agree.
 >    explicitly — a silent skip and a deliberate "nothing needed" must not look
 >    the same.
 
-**Generated-artifact freshness — applies whenever a slice touches a generated-artifact source.** Several `notes/specs/` files and all `elements/*.md` frontmatter are *build inputs* to committed, guarded artifacts (`packages/enscribe/test/coverage/spec-data.generated.json`, `packages/layer1-vocabulary/src/data.js`). A `notes/specs/` edit is therefore **not** automatically inert: a slice that touches one is not done until the artifact is regenerated and **both** package suites (`packages/layer1-vocabulary` *and* `packages/enscribe`) are green — the spec→artifact mapping crosses package boundaries, so running only the package you think you touched is insufficient. The exact source→artifact map and the regenerate commands live in `CLAUDE.md` §"Generated artifacts and their sources." This rule exists because the six points above did not, on their own, prevent a stale `spec-data.generated.json` from reaching `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)).
+**Generated-artifact freshness — applies whenever a slice touches a generated-artifact source.** Several `notes/specs/` files and all `elements/*.md` frontmatter are *build inputs* to committed, guarded artifacts (`packages/enscribe/test/coverage/spec-data.generated.json`, `packages/ehtml/src/data.js`). A `notes/specs/` edit is therefore **not** automatically inert: a slice that touches one is not done until the artifact is regenerated and **both** package suites (`packages/ehtml` *and* `packages/enscribe`) are green — the spec→artifact mapping crosses package boundaries, so running only the package you think you touched is insufficient. The exact source→artifact map and the regenerate commands live in `CLAUDE.md` §"Generated artifacts and their sources." This rule exists because the six points above did not, on their own, prevent a stale `spec-data.generated.json` from reaching `main` during v0.4.5 ([#182](https://github.com/enscribejs/enscribe/issues/182)).
 
 **Render-path parity — applies whenever a slice touches the render path.** Live (in-browser) and static (CLI) rendering are one engine, and must produce byte-identical output on matched options. A change to either entry point — the CLI build path or the browser `render*` façade — or to any shared pipeline stage both run must preserve this; do not touch one render path without the other. The standing parity test ([#193](https://github.com/enscribejs/enscribe/issues/193)) renders a representative corpus both ways and asserts byte-identity on matched options, gating render-path changes automatically once it lands. "Matched options" is load-bearing: the live and static *defaults* differ by design — resource link-vs-inline, DSL runtime-vs-baked — and those packaging differences are deliberately outside the byte-parity claim. The invariant, and exactly what is in and out of it, is specified in `notes/specs/render-parity.md` (rationale: `DESIGN.md`'s "Live and static rendering are one engine" direction); the per-mode render predicates that legitimately diverge live in `notes/specs/render-quality.md`, which this rule must not be read to contradict.
 

@@ -73,7 +73,7 @@ Found a bug, or want a feature? Open an issue at [github.com/enscribejs/enscribe
 
 ## Install
 
-enscribe ships as three npm packages: **`@enscribejs/enscribe`** (the library — the Layer 1 vocabulary, the shorthand parser, and the interpreter), **`@enscribejs/cli`** (the `enscribe` command), and **`@enscribejs/layer1-vocabulary`** (the vocabulary definitions, as data).
+enscribe ships as three npm packages: **`@enscribejs/enscribe`** (the library — the Layer 1 vocabulary, the shorthand parser, and the interpreter), **`@enscribejs/cli`** (the `enscribe` command), and **`@enscribejs/ehtml`** (the vocabulary definitions, as data).
 
 ```sh
 # The library, for use in a Node or browser project:

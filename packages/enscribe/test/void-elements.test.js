@@ -10,7 +10,7 @@
 import assert from 'node:assert';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
 import { VOID_ELEMENTS } from '../src/parser/syntax.js';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 
 const R = (src) => String(buildEnscribePipeline({}).processSync(src));
 

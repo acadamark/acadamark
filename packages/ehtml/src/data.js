@@ -1,6 +1,6 @@
 // GENERATED — do not edit.
-// Regenerated from `packages/layer1-vocabulary/elements/*.md` by
-// `packages/layer1-vocabulary/build/generate-data-module.js`.
+// Regenerated from `packages/ehtml/elements/*.md` by
+// `packages/ehtml/build/generate-data-module.js`.
 // Source files: 107 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the

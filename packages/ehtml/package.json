@@ -1,22 +1,22 @@
 {
-  "name": "@enscribejs/layer1-vocabulary",
+  "name": "@enscribejs/ehtml",
   "version": "0.4.1",
-  "description": "Layer 1 semantic HTML vocabulary specification for academic publishing. Defines the element set for articles, books, chapters, floats, citations, cross-references, notes, and apparatus.",
+  "description": "Enscribe HTML (eHTML): a primary rich-document HTML vocabulary for academic publishing. Defines the element set for articles, books, chapters, floats, citations, cross-references, notes, and apparatus.",
   "keywords": [
     "enscribe",
+    "ehtml",
     "vocabulary",
     "semantic-html",
     "custom-elements",
     "academic-publishing",
-    "jats",
-    "layer1"
+    "jats"
   ],
   "homepage": "https://github.com/enscribejs/enscribe",
   "bugs": "https://github.com/enscribejs/enscribe/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/enscribejs/enscribe.git",
-    "directory": "packages/layer1-vocabulary"
+    "directory": "packages/ehtml"
   },
   "license": "MIT",
   "author": "Ariel Balter <ariel@arielbalter.com>",

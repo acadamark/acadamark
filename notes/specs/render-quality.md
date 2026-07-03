@@ -10,8 +10,8 @@ judgement about whether something "looks good".
 
 For *how* the interpreter produces this output — the plugin chain, the handler
 dispatch, the exact emission sites — see `notes/specs/interpreter.md`. For the
-vocabulary of elements being rendered, see `packages/layer1-vocabulary/SPEC.md`
-and the per-element entries under `packages/layer1-vocabulary/elements/`. For
+vocabulary of elements being rendered, see `packages/ehtml/SPEC.md`
+and the per-element entries under `packages/ehtml/elements/`. For
 the design rationale behind treating Layer 1 + CSS as the canonical display
 target, see the "Layer 1 is canonical; display is a downstream ladder" section
 of `DESIGN.md`.
@@ -1135,7 +1135,7 @@ the target; the Issues track the distance to it.
   internal-node render table (§5.2), asset injection (§4.2).
 - `notes/specs/pipeline.md` — pipeline ordering: when numbering, ref/cite
   resolution, note placement, and bibliography assembly run.
-- `packages/layer1-vocabulary/SPEC.md` and `elements/` — the vocabulary each
+- `packages/ehtml/SPEC.md` and `elements/` — the vocabulary each
   predicate renders.
 - `packages/enscribe/src/interpreter/assets/default.css` — the class vocabulary
   the `S` predicates are checked against.

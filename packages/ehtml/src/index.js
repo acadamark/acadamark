@@ -1,4 +1,4 @@
-// Public entry for the layer1-vocabulary package.
+// Public entry for the ehtml package.
 //
 // Re-exports the generated vocabulary data module. The data module is
 // generated at build time by `build/generate-data-module.js` from

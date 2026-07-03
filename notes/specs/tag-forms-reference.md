@@ -249,5 +249,5 @@ docs from this reference.
   sense" — the design direction this reference operationalizes.
 - `notes/specs/shorthand-syntax.md` — the parser's three-form
   grammar specification.
-- `packages/layer1-vocabulary/elements/` — per-tag vocab entries
+- `packages/ehtml/elements/` — per-tag vocab entries
   with examples in `shorthand_examples` blocks.

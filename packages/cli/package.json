@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@enscribejs/enscribe": "^0.4.1",
-    "@enscribejs/layer1-vocabulary": "^0.4.1",
+    "@enscribejs/ehtml": "^0.4.1",
     "mathml-to-latex": "^1.5.0",
     "remark-parse": "^11.0.0",
     "saxes": "^6.0.0",

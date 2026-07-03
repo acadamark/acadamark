@@ -9,7 +9,7 @@
 // ness, and the section DEPTH set — a curated subset of the `sections` category, which also
 // contains the section title/subtitle children).
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 
 const CATEGORY_INDEX = new Map();
 for (const [tag, spec] of Object.entries(VOCABULARY)) {

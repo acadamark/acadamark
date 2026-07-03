@@ -201,7 +201,7 @@ is stated here and echoed in runtime-data-store.md §"The model".
 ## See also
 
 - `notes/specs/runtime-data-store.md`, `notes/specs/shared-registry-store.md` — the deferred siblings.
-- `packages/layer1-vocabulary/elements/data.md` — the `<data>` storage host (and `<dataset>` as a
+- `packages/ehtml/elements/data.md` — the `<data>` storage host (and `<dataset>` as a
   future child of its content model).
 - `packages/enscribe/src/interpreter/plugins/asset-load.js` — the resolver (neutralized in slice 2:
   `resolveAssetReference` is the neutral hand-off; `resolveFig` / `resolveTableSrc` interpret per consumer).

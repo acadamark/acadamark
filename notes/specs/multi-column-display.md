@@ -213,9 +213,9 @@ not in this spec.
 
 ## Related references
 
-- `packages/layer1-vocabulary/elements/config.md` — the configuration
+- `packages/ehtml/elements/config.md` — the configuration
   element that carries column settings.
-- `packages/layer1-vocabulary/elements/fig.md` — figures that may
+- `packages/ehtml/elements/fig.md` — figures that may
   span columns.
 - CSS Multi-column Layout: https://www.w3.org/TR/css-multicol-1/
 - LaTeX `multicol` package documentation.

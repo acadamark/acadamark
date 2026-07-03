@@ -23,7 +23,7 @@
 // NOT re-decide the unwrap (doing so would undo the flow wrap).
 
 import { mapAttributes } from '../core/map-attributes.js';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { htmlEmit, aggregateHtmlProps } from './lib/html-emit.js';
 import { warnUnknownTag, warnHandlerError } from './lib/errors.js';
 // Suppressed apparatus — derived from the apparatus set (the single source — F13).

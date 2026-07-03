@@ -32,7 +32,7 @@
 // Phase 0 findings Q1.3 recommendation: widest validator support,
 // most permissive tag set).
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { mapAttributes } from '@enscribejs/enscribe/core/map-attributes';
 import { parseColonId } from '@enscribejs/enscribe/core/colon-id';
 // `formatScopedNumber` (render-quality bug-fix arc, JATS analog of slice

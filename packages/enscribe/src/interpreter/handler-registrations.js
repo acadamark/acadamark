@@ -11,7 +11,7 @@
 // (the vocab key that dispatches to it) paired with its handler function — and
 // HANDLER_REGISTRY is DERIVED from those, so the registry keys are no longer a
 // hand-written Map literal that must be co-edited to match the vocab. The vocab
-// `handler_module` values (layer1-vocabulary/elements/*.md) and these ids share this
+// `handler_module` values (ehtml/elements/*.md) and these ids share this
 // source of truth, kept honest by the load-time guard (registries-guard.js): every
 // `interpreter_strategy: handler` vocab element must resolve to exactly one entry
 // here, and every entry must be claimed by ≥1 vocab element.
@@ -42,7 +42,7 @@ import { minipageHandler } from './handlers/minipage.js';
 import { theoremFamilyHandler } from './handlers/theorem.js';
 
 // One registration record per handler: `handlerModule` (the id declared by the
-// vocab entries in `layer1-vocabulary/elements/<tag>.md`) → `handler` (the fn).
+// vocab entries in `ehtml/elements/<tag>.md`) → `handler` (the fn).
 export const HANDLER_REGISTRATIONS = [
   { handlerModule: './handlers/a.js', handler: aHandler },
   { handlerModule: './handlers/figure.js', handler: figureHandler },

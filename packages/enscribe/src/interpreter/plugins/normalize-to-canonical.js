@@ -70,7 +70,7 @@ import { FLOW_TAGNAMES } from '../lib/content-model.js';
 import { hostAcceptsLanguage, HOST_ACCEPT_SETS } from '../lib/host-accept-sets.js';
 import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
 import { tagnamesInCategory } from '../lib/vocab-categories.js';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 
 // F1/F14: "is this node a <config>?" derives from the vocab `category`, not a hand-coded
 // tagname check — the one place category is read is lib/vocab-categories.js. Parity today:

@@ -1,8 +1,8 @@
 // Build-time generator for the Layer 1 vocabulary data module.
 //
-// Walks `packages/layer1-vocabulary/elements/*.md`, parses the YAML
+// Walks `packages/ehtml/elements/*.md`, parses the YAML
 // frontmatter of each, and emits a frozen plain-object ES module at
-// `packages/layer1-vocabulary/src/data.js` that downstream consumers
+// `packages/ehtml/src/data.js` that downstream consumers
 // (the enscribe interpreter today; the forthcoming JATS exporter
 // tomorrow) import statically. The runtime module has NO dependencies
 // on `fs`, `path`, or `js-yaml` — it ships as pure data.
@@ -26,7 +26,7 @@
 //     build time the developer can and should fix the source file.
 //   - Duplicate key → warn, non-fatal, second-wins (matches loader).
 //
-// Run with: `npm run build` in the `layer1-vocabulary` package.
+// Run with: `npm run build` in the `ehtml` package.
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -101,7 +101,7 @@ function loadVocabularySource(vocabDir) {
     } catch (err) {
       errors.push({ file, error: err });
       throw new Error(
-        `[layer1-vocabulary] YAML parse failed in ${file}: ${err.message?.split('\n')[0] ?? err}\n` +
+        `[ehtml] YAML parse failed in ${file}: ${err.message?.split('\n')[0] ?? err}\n` +
         `Build-time generator fails loudly on malformed YAML — fix the source file and re-run \`npm run build\`.`,
       );
     }
@@ -127,7 +127,7 @@ function loadVocabularySource(vocabDir) {
     const key = file.replace(/\.md$/, '');
     if (entries.has(key)) {
       // eslint-disable-next-line no-console
-      console.warn(`[layer1-vocabulary] duplicate vocabulary key "${key}" in ${file}`);
+      console.warn(`[ehtml] duplicate vocabulary key "${key}" in ${file}`);
     }
     entries.set(key, { ...spec, _sourceFile: file });
   }
@@ -147,7 +147,7 @@ function loadVocabularySource(vocabDir) {
       if (!entries.has(expands_to)) continue;
       if (entries.has(shorthand)) {
         // eslint-disable-next-line no-console
-        console.warn(`[layer1-vocabulary] shorthand alias "${shorthand}" conflicts with existing key`);
+        console.warn(`[ehtml] shorthand alias "${shorthand}" conflicts with existing key`);
         continue;
       }
       aliases.push({ shorthand, expands_to });
@@ -198,8 +198,8 @@ function generate() {
 
   const lines = [];
   lines.push('// GENERATED — do not edit.');
-  lines.push('// Regenerated from `packages/layer1-vocabulary/elements/*.md` by');
-  lines.push('// `packages/layer1-vocabulary/build/generate-data-module.js`.');
+  lines.push('// Regenerated from `packages/ehtml/elements/*.md` by');
+  lines.push('// `packages/ehtml/build/generate-data-module.js`.');
   lines.push(`// Source files: ${entries.size} vocabulary entries.`);
   lines.push('//');
   lines.push('// The generator is build-time-only (it uses `fs` / `js-yaml`); the');
@@ -244,7 +244,7 @@ function generate() {
   const source = lines.join('\n');
   writeFileSync(OUTPUT_PATH, source, 'utf8');
   // eslint-disable-next-line no-console
-  console.log(`[layer1-vocabulary] generated ${OUTPUT_PATH} (${entries.size} entries, ${aliases.length} aliases)`);
+  console.log(`[ehtml] generated ${OUTPUT_PATH} (${entries.size} entries, ${aliases.length} aliases)`);
 }
 
 generate();

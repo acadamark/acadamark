@@ -57,4 +57,4 @@ The shorthand parser produces generic `enscribeTag` nodes. A separate interpreta
 - Alternative interpretations (a different output dialect, a different downstream target) can reuse the parser unchanged.
 - Bugs in interpretation do not cascade into parsing.
 
-This principle is the structural reason new vocabulary entries are added by registering a vocabulary `.md` file under `packages/layer1-vocabulary/elements/`, not by modifying any parser file. The parser is closed for modification when adding ordinary vocabulary; the interpretation layer is open.
+This principle is the structural reason new vocabulary entries are added by registering a vocabulary `.md` file under `packages/ehtml/elements/`, not by modifying any parser file. The parser is closed for modification when adding ordinary vocabulary; the interpretation layer is open.

@@ -153,8 +153,8 @@ the content model is its own property (`content.shape.contains`), not derived fr
 
 ## Related references
 
-- `packages/layer1-vocabulary/SPEC.md` — the vocabulary specification.
-- `packages/layer1-vocabulary/elements/` — the individual entries, each declaring its own `content.shape`.
+- `packages/ehtml/SPEC.md` — the vocabulary specification.
+- `packages/ehtml/elements/` — the individual entries, each declaring its own `content.shape`.
 - `DESIGN.md` — the layer model and the vocabulary's place in it.
 - `notes/specs/interpreter.md` §6.2 — `convertContent`, the interpreter consumer of this content-model
   (the single-paragraph wrapping decision).

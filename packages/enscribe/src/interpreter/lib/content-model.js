@@ -26,7 +26,7 @@
 // is the "holds" reading, which is the one the wrapping decision needs, so
 // `note` is correctly flow here and wraps.
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 
 /**
  * Tagnames whose content model is flow (a <p> is valid inside, a bare inline

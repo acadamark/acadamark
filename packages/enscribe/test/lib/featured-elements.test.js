@@ -5,7 +5,7 @@
 // This test fails — naming the offending tag — on any of those.
 
 import assert from 'node:assert/strict';
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { FEATURED_SHORTHAND, FEATURED_LAYER1 } from '../../src/interpreter/lib/featured-elements.js';
 
 // A tag is CANONICAL when it is the stem of its own source .md file; a shorthand

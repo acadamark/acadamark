@@ -124,7 +124,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 ## Packaging & infrastructure
 
 - [x] Monorepo with npm-workspace linking
-- [x] Three published packages — `@enscribejs/enscribe` (Layer 1 core + shorthand parser + interpreter), `@enscribejs/cli` (the `enscribe` command + JATS export/import + pandoc bridge), and `@enscribejs/layer1-vocabulary`
+- [x] Three published packages — `@enscribejs/enscribe` (Layer 1 core + shorthand parser + interpreter), `@enscribejs/cli` (the `enscribe` command + JATS export/import + pandoc bridge), and `@enscribejs/ehtml`
 - [x] `@enscribejs/enscribe/core` — the inward-pointing shared foundation (`fs`-free, browser-safe); the parser (`@enscribejs/enscribe/parser`) and interpreter are sibling subtrees of the same package
 - [x] Coordinated v0.2.0 versioning; MIT license; publish-ready package metadata
 - [x] Test suites across the packages (parser, interpreter, core, JATS export/import, CLI, vocabulary)

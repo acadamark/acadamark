@@ -20,7 +20,7 @@
 // Body is the default, so a special region type is classified by adding it to the
 // vocab `type.regions` map — the natural and only place to do it.
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { tagnamesInCategory } from './vocab-categories.js';
 
 const TYPE_KWARG = VOCABULARY['book-part']?.enscribe_attributes?.kwargs?.type ?? {};

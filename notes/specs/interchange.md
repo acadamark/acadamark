@@ -175,7 +175,7 @@ Issues, decided there, not here.
 - `notes/specs/lift-lower-round-trip.md` — the round-trip correctness model
   Quarto interchange follows.
 - `notes/specs/master-document.md` — the project model Quarto projects map onto.
-- `packages/layer1-vocabulary/elements/config.md` — the `<config>` / data-block
+- `packages/ehtml/elements/config.md` — the `<config>` / data-block
   surface Quarto frontmatter maps onto.
 - The JATS specs — the native-vs-bridge contrast.
 - Pandoc AST documentation (the `Pandoc` / `Block` / `Inline` types).

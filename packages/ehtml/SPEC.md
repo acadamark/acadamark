@@ -19,7 +19,7 @@ Poems, plays, scripts, and scores are out of scope. They have specialized vocabu
 ## Element list
 
 The vocabulary is enumerated below, with per-element files under
-`packages/layer1-vocabulary/elements/` holding the authoritative spec for
+`packages/ehtml/elements/` holding the authoritative spec for
 each element. The tables below group elements by role. Elements listed
 here without an entry are reserved (their per-element specs are open work
 in the roadmap).

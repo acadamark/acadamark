@@ -31,7 +31,7 @@
 // fillNumbering(file) (exported):
 //   - Reads enscribeNumberingPending and sets node.computedNumber from entry.number
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { ensureRegistry } from '../../core/registry.js';
 import { discover } from '../../core/walkers/discover.js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_NUMBERING_PENDING, ENSCRIBE_COUNTER_RESET_SCOPE } from '../../core/file-data-keys.js';

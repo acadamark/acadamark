@@ -60,7 +60,7 @@
     "demo": "node test/demo.js"
   },
   "dependencies": {
-    "@enscribejs/layer1-vocabulary": "^0.4.1",
+    "@enscribejs/ehtml": "^0.4.1",
     "@popperjs/core": "^2.11.8",
     "abcjs": "^6.6.3",
     "citation-js": "^0.7.22",

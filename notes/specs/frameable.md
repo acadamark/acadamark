@@ -339,7 +339,7 @@ These were the genuinely-undecided points; the #31 build resolved them:
 
 - `DESIGN.md` §"Frameable elements: a shared capability" — the rationale
   and what the shared-capability model supersedes (the umbrella `<figure>`).
-- `packages/layer1-vocabulary/elements/` — `fig.md`, `frame.md`,
+- `packages/ehtml/elements/` — `fig.md`, `frame.md`,
   `aside.md`, `table.md`, `code.md`, `svg.md` (the member vocab entries).
 - `notes/specs/recursive-content-spec.md` — how caption/`<frame>` content
   is recursively parsed.

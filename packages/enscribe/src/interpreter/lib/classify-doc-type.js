@@ -17,7 +17,7 @@
 // class, this fails loud at LOAD rather than silently classifying a class no structuring/dispatch
 // handles.
 
-import { VOCABULARY } from '@enscribejs/layer1-vocabulary';
+import { VOCABULARY } from '@enscribejs/ehtml';
 import { isEnscribeTag } from '../../core/tag.js';
 
 const META_TYPE = VOCABULARY?.meta?.enscribe_attributes?.kwargs?.type ?? {};

@@ -44,7 +44,7 @@ if (result.status !== 0) {
   // Restore (defensively — the generator should not have written if it failed,
   // but be safe).
   writeFileSync(COMMITTED_PATH, committedBefore, 'utf8');
-  console.error('[layer1-vocabulary] generator failed during freshness check:');
+  console.error('[ehtml] generator failed during freshness check:');
   console.error(result.stderr || result.stdout);
   process.exit(1);
 }
@@ -55,12 +55,12 @@ if (committedAfter !== committedBefore) {
   // Restore the original committed bytes so the working tree is unchanged.
   writeFileSync(COMMITTED_PATH, committedBefore, 'utf8');
   console.error('');
-  console.error('[layer1-vocabulary] STALE: src/data.js does not match what');
+  console.error('[ehtml] STALE: src/data.js does not match what');
   console.error('  the generator would produce from the current elements/*.md');
   console.error('  sources. The committed data module has drifted from its');
   console.error('  source files.');
   console.error('');
-  console.error('  To resolve: run `npm run build` in packages/layer1-vocabulary');
+  console.error('  To resolve: run `npm run build` in packages/ehtml');
   console.error('  and commit the updated src/data.js alongside your changes.');
   console.error('');
   process.exit(1);

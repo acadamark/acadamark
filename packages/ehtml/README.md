@@ -1,4 +1,4 @@
-# layer1-vocabulary
+# ehtml
 
 The Layer 1 semantic-HTML vocabulary for enscribe. A defined set of HTML
 custom elements for academic content: articles, books, chapters, sections,
