@@ -1916,18 +1916,7 @@ const _cite = Object.freeze({
         "notes": "Per-citation style override. This citation renders as a footnote\nmarker even if the document-level style is something else.\n",
       },
     ],
-    "interpreter_strategy": "handler",
-    "handler_module": "./handlers/cite.js",
-    "handler_responsibilities": [
-      "Read the citation keys (positional arguments).",
-      "Resolve each key against the citation registry (entries from external file, <library>, <bib-entry>).",
-      "Apply the citation style (document-level or per-citation override).",
-      "Generate the rendered citation marker text.",
-      "Set the data-cite-keys attribute on the output for cross-reference back to source keys.",
-      "Handle locator information (page, chapter, section).",
-      "Handle prefix and suffix text.",
-      "For unresolved keys, render an error marker (e.g., \"[?key]\") that's visible in output.",
-    ],
+    "interpreter_strategy": "schema",
     "related_plugins": [
       {
         "name": "enscribeCiteResolution",
@@ -5288,13 +5277,7 @@ const _ref = Object.freeze({
         "notes": "Unresolved target renders a visible error anchor.\n",
       },
     ],
-    "interpreter_strategy": "handler",
-    "handler_module": "./handlers/ref.js",
-    "handler_responsibilities": [
-      "ref-resolution plugin (runs before hast): resolve <ref> nodes against the shared label index; replace each with __ref-marker (resolved) or __ref-error (unresolved). Only colon-ids are referenceable.",
-      "__ref-marker handler: render an anchor with href=\"#id\", class=\"ref\", and pre-computed text from node.kwargs.text. Text is produced by the ref-resolution plugin using DEFAULT_PREFIXES (\"equation N\", \"figure N\", etc.) or label-tail for unnumbered labeled targets.",
-      "__ref-error handler: render an anchor with href=\"#id\", class=\"ref-error\", and text \"??ref: id??\".",
-    ],
+    "interpreter_strategy": "schema",
     "related_plugins": [
       {
         "name": "enscribeRefResolution",

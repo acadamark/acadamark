@@ -107,21 +107,12 @@ shorthand_examples:
     html_output: '<a href="#eqn:missing" class="ref-error">??ref: eqn:missing??</a>'
     notes: |
       Unresolved target renders a visible error anchor.
-interpreter_strategy: handler
-handler_module: ./handlers/ref.js
-handler_responsibilities:
-  - >-
-    ref-resolution plugin (runs before hast): resolve <ref> nodes against the
-    shared label index; replace each with __ref-marker (resolved) or
-    __ref-error (unresolved). Only colon-ids are referenceable.
-  - >-
-    __ref-marker handler: render an anchor with href="#id", class="ref",
-    and pre-computed text from node.kwargs.text. Text is produced by the
-    ref-resolution plugin using DEFAULT_PREFIXES ("equation N", "figure N",
-    etc.) or label-tail for unnumbered labeled targets.
-  - >-
-    __ref-error handler: render an anchor with href="#id", class="ref-error",
-    and text "??ref: id??".
+# <ref> is resolved by the ref-resolution plugin into an internal marker node
+# (__ref-marker / __ref-error, dispatched via INTERNAL_REGISTRY) — it is NOT
+# dispatched through HANDLER_REGISTRY, so it declares no handler_module. Its
+# strategy is `schema` (the always-renders fallback for a raw, unresolved <ref>),
+# mirroring <note> (#345). The resolver is named in related_plugins below.
+interpreter_strategy: schema
 related_plugins:
   - name: enscribeRefResolution
     runs_after: 'enscribeArticleStructuring, numbering plugins'

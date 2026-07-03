@@ -5,13 +5,11 @@ function, the host/role axis) and the **DSL/processor registry** (content-langua
 language axis). It spans `interpret-plugin.js` (`HANDLER_REGISTRY`), `core/dsl-registry.js` (`LANGUAGES`),
 `interpreter/dsl/registry.js` (`DSL_REGISTRY`), and `lib/host-accept-sets.js` — not any single file.
 
-**Status:** design, for Ariel's review. Becomes `notes/specs/registries.md` on landing.
-
-**Decision on record (Ariel):** both registries become **explicit tables externalized from the handlers**, not
-logic baked into code — **two separate tables, same format**, each with a single source per entry that the code
-derives its indices from, plus a load-time guard. They are **not** merged into one table: the handler axis
-(host/role) and the DSL axis (language) are the two disjoint lookups of the processing taxonomy and DESIGN.md's
-host/language model; merging them would flatten that. Same *pattern*, two *registries*. This spec is the *how*.
+Both registries are **explicit tables externalized from the handlers**, not logic baked into code — **two
+separate tables, same format**, each with a single source per entry that the code derives its indices from,
+plus a load-time guard. They are **not** merged into one table: the handler axis (host/role) and the DSL axis
+(language) are the two disjoint lookups of the processing taxonomy and DESIGN.md's host/language model; merging
+them would flatten that. Same *pattern*, two *registries*.
 
 ## The problem, from the code
 
@@ -41,34 +39,48 @@ the indices stay separate structures with their existing accessors (`getContentH
 `hostAcceptsLanguage`). **Consumers do not change.** This is what makes the refactor low-risk and
 behavior-neutral.
 
-Also unchanged: the ~19 `LANGUAGES` entries that are **not** external-asset DSLs (math/code sigils, matrix/
-cases/align/eqnarray, table, library, dataset, svg, minipage). Those are enscribe-native or storage/opaque
-markers, not `registerDsl` clients. `registerDsl` is for **external-library DSLs** (today: mermaid, abc). The
-spec must not force those 19 into a DSL shape they don't fit.
+Also unchanged: the `LANGUAGES` entries that are **not** external-asset DSLs (math/code sigils, matrix/
+cases/align/eqnarray, table, library, dataset, svg, minipage, csv/tsv, and the diagram host). Those are
+enscribe-native or storage/opaque markers, not `registerDsl` clients. `registerDsl` is for **external-library
+DSLs** (today: mermaid, abc). The spec must not force those into a DSL shape they don't fit.
 
-## The design: one registration record → derived indices
+## The design: one registration seed → derived indices
 
-A single declarative record per external DSL is the source of truth:
+A single declarative **seed** per external DSL is the source of truth. It carries only fs-free DATA (the
+`view`'s two Node-only asset functions and the handler reference are attached at the interpreter layer — see
+"The core/interpreter split" below), and lives in `core/dsl-registrations.js`:
 
 ```
-registerDsl({
+{
   name,                      // 'mermaid' — the key, the data-enscribe-dsl value, the language id
   host,                      // 'diagram' — the host whose accept-set gains `name`
-  handler,                   // reference to the handler (or its module id) — wires HANDLER_REGISTRY dispatch
+  handler,                   // the dispatching handler-module id (documents the handler-axis cross-link)
   opaqueAtParse: true,       // → derives the LANGUAGES entry (parse-time hold)
   view: {                    // → derives the DSL_REGISTRY record (omit for a DSL with no client assets)
     containerTag, contractClass,
-    liveAssets: { bundleLoader, cdnUrl, initScript },
-    staticRenderer, staticClass,   // staticRenderer: null when live-only (the mode resolver's source of truth)
+    liveAssets: { cdnUrl, initScript },   // + bundleLoader, attached at the interpreter layer
+    staticClass,                          // present only for a DSL with a build-time static renderer
+    // staticRenderer is attached at the interpreter layer; null when live-only
   },
-})
+}
 ```
 
-`registerDsl` populates, from that one record: the `LANGUAGES` entry (from `name` + `opaqueAtParse`), the
-`HOST_ACCEPT_SETS` membership (from `host`), the `DSL_REGISTRY` record (from `view`, only if present), and the
-handler dispatch (from `handler`). The built-in DSLs (mermaid, abc) become **seed registrations** — the literal
-Maps become "derived from the seed registrations at module load," exactly the "built-in literal becomes the
-seed" path the code's header predicts.
+The indices are populated from that one seed: the `LANGUAGES` entry (from `name` + `opaqueAtParse`), the
+`HOST_ACCEPT_SETS` membership (from `host`), and the `DSL_REGISTRY` record (from `view`, only if present). The
+built-in DSLs (mermaid, abc) are the **seeds** — the literal Maps become "derived from the seeds at module
+load." The `handler` field documents which handler dispatches the DSL's content (mermaid/abc share the
+`diagram` host handler); it does not mint a HANDLER_REGISTRY entry — that comes from the vocab `handler_module`
+on the handler side.
+
+### The core/interpreter split
+`LANGUAGES` / `getContentHandler` live in `core/` — the inward-pointing, fs-free foundation (`core.md`) that
+imports nothing from `interpreter/`. For the seed to drive the parse-time `LANGUAGES` index it must therefore
+be reachable from core, so the seed carries only DATA and lives in `core/dsl-registrations.js`. The two
+Node-only asset FUNCTIONS (`liveAssets.bundleLoader`, the `readFileSync` bundle loader; `staticRenderer`, the
+jsdom static renderer) cannot live in the fs-free core; they attach at the **interpreter** layer, by name, when
+`interpreter/dsl/registry.js`'s `registerDsl` assembles the `DSL_REGISTRY` record (mirroring the existing
+`registry.js` / `node-assets.js` data-vs-Node-function split). So "one record" means *data authored once in
+core; behavior wired at the interpreter layer* — not one literal object. `registerDsl` stays internal.
 
 ### Derivation, not duplication
 The indices remain the runtime lookups (unchanged accessors), but they are **built by iterating the
@@ -108,39 +120,18 @@ assertions). One guard mechanism serves both registries:
 
 This turns "one place to edit" from a convention into a structural guarantee for both registries.
 
-## Migration sequence (spent once landed — strip to evergreen form at the end)
-
-> **Plan-shaped section.** The steps below describe the one-time transition and are removed when the build
-> lands, leaving the standing description above. The build slice's last step de-time-binds this doc.
-
-
-Because consumers call accessors (`getContentHandler`, `getRegisteredDsls`, `hostAcceptsLanguage`), the change
-happens behind them:
-
-1. **Introduce `registerDsl` + the registration records** for mermaid and abc, deriving the same three index
-   entries they have today. Point the existing Maps' construction at the derivations (or build alongside and
-   assert equality). Accessors unchanged.
-2. **Verify byte-identical**: `#304` 157/157, all three suites green. The derived indices must equal today's
-   literals exactly.
-3. **Delete the now-redundant hand-written literals** for mermaid/abc (their rows in `LANGUAGES`,
-   `DSL_REGISTRY`, `HOST_ACCEPT_SETS['diagram']`), leaving the registrations as sole source. Re-verify
-   byte-identical.
-4. **Add the load-time guard.** Re-verify.
-
-The 19 non-DSL `LANGUAGES` entries stay as they are throughout (they are not `registerDsl` clients); the spec
-should state that boundary explicitly so a future contributor doesn't try to force them through `registerDsl`.
-
-## Open sub-question for the build (flag, don't pre-decide)
+## Deferred: shorthand/gate derivation
 
 Whether `registerDsl` should also derive the **shorthand/gate** registration in `normalize-to-canonical.js`
-(the 4th touch-point) or leave that separate. Deriving it completes "one place"; but it reaches into the
-tagname-rewrite pass, a different subsystem. Recommendation: **scope the first build to the three
-index-derivations (LANGUAGES, DSL_REGISTRY, HOST_ACCEPT_SETS) + the guard**, and treat shorthand-derivation as
-a fast-follow once the core registration is proven. Note it in the build report.
+(the 4th DSL touch-point) or leave it separate is deferred. Deriving it completes "one place"; but it reaches
+into the tagname-rewrite pass, a different subsystem. The built registration covers the three DSL
+index-derivations (LANGUAGES, DSL_REGISTRY, HOST_ACCEPT_SETS) plus the guard; shorthand-derivation is a
+fast-follow, tracked in GitHub Issues.
 
 ## Non-goals
 
 - Not a public/published API this cycle (the `not-in-exports` boundary stays; `registerDsl` is internal until
-  a deliberate API decision). 
-- Not touching the parse-vs-view separation. 
-- Not migrating the 19 native/storage language entries.
+  a deliberate API decision).
+- Not touching the parse-vs-view separation.
+- Not migrating the non-DSL native/storage `LANGUAGES` entries (the sigils, math envs, table, library,
+  dataset, svg, minipage, csv/tsv, and the diagram host) — they are not `registerDsl` clients.

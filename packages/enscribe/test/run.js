@@ -86,6 +86,7 @@ import { run as runEmitShell } from './emit-shell.test.js';
 import { runForTest as runPredicateHarness } from './coverage/predicate-harness.mjs';
 import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runCoverageFresh } from './coverage/coverage-fresh.test.js';
+import { run as runRegistriesGuard } from './registries-guard.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
 
 const suites = [
@@ -173,6 +174,7 @@ const suites = [
   ['coverage/spec-data-drift',     runSpecDataDrift],
   ['coverage/predicate-harness',   runPredicateHarness],
   ['coverage/manifest-fresh',      runCoverageFresh],
+  ['registries-guard',             runRegistriesGuard],
 ];
 
 let failed = 0;

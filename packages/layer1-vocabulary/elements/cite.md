@@ -101,17 +101,12 @@ shorthand_examples:
     notes: |
       Per-citation style override. This citation renders as a footnote
       marker even if the document-level style is something else.
-interpreter_strategy: handler
-handler_module: ./handlers/cite.js
-handler_responsibilities:
-  - Read the citation keys (positional arguments).
-  - Resolve each key against the citation registry (entries from external file, <library>, <bib-entry>).
-  - Apply the citation style (document-level or per-citation override).
-  - Generate the rendered citation marker text.
-  - Set the data-cite-keys attribute on the output for cross-reference back to source keys.
-  - Handle locator information (page, chapter, section).
-  - Handle prefix and suffix text.
-  - For unresolved keys, render an error marker (e.g., "[?key]") that's visible in output.
+# <cite> is resolved by the cite-resolution plugin into an internal marker node
+# (__cite-marker / __cite-error, dispatched via INTERNAL_REGISTRY) — it is NOT
+# dispatched through HANDLER_REGISTRY, so it declares no handler_module. Its
+# strategy is `schema` (the always-renders fallback for a raw, unresolved <cite>),
+# mirroring <note> (#345). The resolver is named in related_plugins below.
+interpreter_strategy: schema
 related_plugins:
   - name: enscribeCiteResolution
     runs_after: 'enscribeLibraryLoad, enscribeArticleStructuring'

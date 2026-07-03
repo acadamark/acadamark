@@ -77,6 +77,8 @@
  *     inline SVG, so a second route would be redundant and would need
  *     positional-conditional opacity that was never built.
  */
+import { deriveDslLanguageEntries } from './dsl-registrations.js';
+
 export const LANGUAGES = new Map([
   // ── Math and code sigils (opaque, embedded language) ─────────────────────
   ['$',   'math'],
@@ -89,8 +91,12 @@ export const LANGUAGES = new Map([
   ['tsv',      'tsv'],
   ['math',     'math'],
   ['code',     'code'],
-  ['mermaid',  'mermaid'],
-  ['abc',      'abc'],
+  // mermaid, abc — the external-library DSLs. Their parse-time entries are DERIVED
+  // from the registration seeds (core/dsl-registrations.js), not hand-written: a
+  // seed held `opaqueAtParse` yields `[name, name]` here (#341). A new external DSL
+  // is a new seed, not a new row. The 18 entries around them are enscribe-native /
+  // storage / opaque markers — NOT registerDsl clients — and stay literal.
+  ...deriveDslLanguageEntries(),
   // `diagram` host (#22 slice 3): a directly-authored `<diagram mermaid | …>`
   // keeps its content opaque at parse time (getContentHandler('diagram') is
   // non-default). The engine (mermaid/abc) is the format-word positional,

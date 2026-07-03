@@ -20,6 +20,7 @@
 // — see `format-words.md` and the svg note in `dsl-registry.js`.
 
 import { TABLE_FORMATS } from '../handlers/table.js';
+import { deriveDslHostMemberships } from '../../core/dsl-registrations.js';
 
 /**
  * Host name → the set of language identifiers it admits. Wired hosts: `table`,
@@ -28,10 +29,11 @@ import { TABLE_FORMATS } from '../handlers/table.js';
  */
 export const HOST_ACCEPT_SETS = new Map([
   ['table', new Set(TABLE_FORMATS)],
-  // #22 slice 3: the diagram host admits the external diagram engines. The set
-  // is open — a new engine (D2, Graphviz, …) is a new entry here + a gate
-  // shorthand, not a new vocabulary element.
-  ['diagram', new Set(['mermaid', 'abc'])],
+  // #22 slice 3: the diagram host admits the external diagram engines. The set is
+  // open — a new engine (D2, Graphviz, …) is a new registration SEED
+  // (core/dsl-registrations.js), which lands here automatically: the `diagram`
+  // membership is DERIVED from the seeds' `host` field (#341), not hand-written.
+  ...deriveDslHostMemberships(),
   // #22 slice 3: the storage hosts (library, and the <data> container that holds
   // <library> blocks) admit the bibliography payload languages. citation-js is
   // the parser; the format word names the language. (Container shape of <data>

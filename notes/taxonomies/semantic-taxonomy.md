@@ -151,7 +151,9 @@ The author engages material and targets beyond their own assertions. Two sub-act
 - **Reference / link** — point *at* an addressed target: `cite`, `ref`, `doi`, `a` (the link). This is
   the **pointer side of set/identity addressing at element scale** (document taxonomy): a citation points
   at a bibliography key, a cross-reference at an `@id`, a link at a URL — one act, one primitive, three
-  targets. Its held counterpart is family 7 (stores).
+  targets. Its held counterpart is family 7 (stores). Its **resolved end** is `bibliography` (the
+  dereferenced source list) and `bib-entry` (a single resolved source): the same reference act as `cite`,
+  fully dereferenced — the pointer followed to the rendered source. (Same family 4, not a new sub-act.)
 
 ### 5. Exhibit — supporting material showcased in isolation
 "A picture says 1000 words": the author *exhibits* something better shown than said, set apart, usually

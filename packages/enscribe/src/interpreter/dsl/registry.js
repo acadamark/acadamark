@@ -25,113 +25,70 @@
 // default the registry calls neither a bundleLoader nor the staticRenderer, so
 // those Node-only bodies never run client-side.
 //
-// SPECULATIVE LIFESPAN (v0.2.0). For v0.1.0 the registry is a static `Map`
-// literal built at module load, exactly like `HANDLER_REGISTRY`: both DSLs are
-// known at build, so a literal Map suffices. There is no runtime
-// `registerDsl(spec)` mutation. v0.2.0 is planned to add a public, setup-time
-// `registerDsl` as a thin additive layer over this same structure (the built-in
-// literal becomes the seed); when that lands, this header note and the
-// not-in-`exports` boundary above are the things to revisit.
+// DERIVED FROM SEEDS (#341). `DSL_REGISTRY` is no longer a hand-written literal:
+// it is built at module load by iterating the fs-free registration seeds
+// (core/dsl-registrations.js) through `registerDsl`, which attaches the Node-only
+// asset functions. The built-in DSLs (mermaid, abc) are the seeds; the four DSL
+// indices (LANGUAGES, DSL_REGISTRY, HOST_ACCEPT_SETS membership) are views over
+// them, so they can no longer drift apart. `registerDsl` stays INTERNAL — a
+// public, setup-time registration API remains a deliberate future decision (the
+// not-in-`exports` boundary above holds). See notes/specs/registries.md.
 
 import { getMermaidJs, getAbcjsJs, renderAbcStatic } from './node-assets.js';
+import { DSL_REGISTRATIONS, MERMAID_CDN_URL, ABCJS_CDN_URL } from '../../core/dsl-registrations.js';
 
-// ─── Pinned CDN URLs ────────────────────────────────────────────────────────
-// Pinned versions for the CDN (live-link) URLs — literals, not require reads, so
-// this module loads in a browser bundle. The live-link URL must match the
-// live-inline bundled version; test/cdn-versions.test.js asserts these equal the
-// installed package versions, so a dependency bump fails loudly here. Same idiom
-// as KATEX_CDN_URL in src/index.js.
-const _mermaidVersion = '10.9.6';
-const _abcjsVersion = '6.6.3';
+// The pinned CDN URLs now live with the registration seeds in
+// core/dsl-registrations.js (the fs-free single source, #341). Re-exported here so
+// existing importers (interpreter/index.js barrel, test/cdn-versions.test.js,
+// test/dsl/registry.test.js) keep their `./dsl/registry.js` import path.
+export { MERMAID_CDN_URL, ABCJS_CDN_URL };
 
-/** jsDelivr URL for the Mermaid UMD bundle, pinned to the installed version. */
-export const MERMAID_CDN_URL = `https://cdn.jsdelivr.net/npm/mermaid@${_mermaidVersion}/dist/mermaid.min.js`;
-/** jsDelivr URL for the abcjs browser bundle, pinned to the installed version. */
-export const ABCJS_CDN_URL = `https://cdn.jsdelivr.net/npm/abcjs@${_abcjsVersion}/dist/abcjs-basic-min.js`;
-
-// ─── Init scripts ─────────────────────────────────────────────────────────────
-// The init JS emitted (inline or alongside a <script src>) so the live library
-// renders the contract markup at view time.
-
-// Mermaid self-registers a DOMContentLoaded handler from `startOnLoad: true` and
-// scans for `class="mermaid"`, so no explicit run() / readiness guard is needed.
-const MERMAID_INIT = `mermaid.initialize({ startOnLoad: true });`;
-
-// abcjs does NOT scan the DOM: the consumer must find each marked element and
-// call ABCJS.renderAbc on its source. The assets are prepended (unshift) ahead
-// of the DSL elements, so this script can run before they parse — hence the
-// readyState guard (the hover-preview.js init pattern). `el.textContent` reads
-// the verbatim source the <pre> container preserves (this is why the M2 fix —
-// abc's <div> → <pre> — is a prerequisite for abc-live: a <div> source is
-// reflowed by the formatter and would feed abcjs corrupted notation).
-const ABCJS_INIT = `(function () {
-  function renderAll() {
-    document.querySelectorAll('[data-enscribe-dsl="abc"]').forEach(function (el) {
-      ABCJS.renderAbc(el, el.textContent);
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderAll);
-  } else {
-    renderAll();
-  }
-})();`;
-
-// ─── Registration records ─────────────────────────────────────────────────────
-// Per-DSL record (see findings §Q1 table):
-//   name           — the data-enscribe-dsl value and the registry key.
-//   containerTag    — must match the handler's wrapperEl (mermaid.js / abc.js).
-//   contractClass   — the scanning class the handler emits.
-//   liveAssets      — { bundleLoader, cdnUrl, initScript } for live mode.
-//   staticRenderer  — (source) => svgString, or null when the DSL has no
-//                     build-time renderer. `null` is the single source of truth
-//                     the mode resolver checks to fail-explicitly on `static`.
-//   staticClass     — class the emit path adds to the inlined <svg> in static
-//                     mode (present only on a DSL that has a staticRenderer).
-//   detector        — optional (hastNode) => boolean; omitted here, so the
-//                     consumer's default detector (keys off `name`) applies.
-//
-// The bundleLoader / staticRenderer functions live in ./node-assets.js (the
-// Node-only split); they are referenced here but invoked only in Node.
-
-const mermaidRegistration = {
-  name: 'mermaid',
-  containerTag: 'pre',
-  contractClass: 'mermaid',
-  liveAssets: {
-    bundleLoader: getMermaidJs,
-    cdnUrl: MERMAID_CDN_URL,
-    initScript: MERMAID_INIT,
-  },
-  // Mermaid is LIVE-ONLY: its only browserless render path needs a headless
-  // browser (see findings §Q2/§Net-effect). `null` is permanent for mermaid.
-  staticRenderer: null,
+// ─── DSL_REGISTRY: derived from the registration seeds (#341) ──────────────────
+// The DSL_REGISTRY record is a VIEW of the core seed: `registerDsl` flattens the
+// seed's `view` block into the runtime record shape consumers read
+// (containerTag, contractClass, liveAssets{bundleLoader, cdnUrl, initScript},
+// staticRenderer, staticClass) and attaches the two Node-only asset functions —
+// the readFileSync `bundleLoader` and the jsdom `staticRenderer` — by name. Those
+// functions cannot live in the fs-free core seed, so they are wired here, at the
+// interpreter layer (mirrors the registry.js / node-assets.js data/function
+// split). `staticClass` is emitted only when the seed declares one (mermaid, being
+// live-only, has neither a staticRenderer nor a staticClass). See
+// notes/specs/registries.md §"The design".
+const NODE_ASSETS = {
+  mermaid: { bundleLoader: getMermaidJs, staticRenderer: null },
+  abc: { bundleLoader: getAbcjsJs, staticRenderer: renderAbcStatic },
 };
 
-const abcRegistration = {
-  name: 'abc',
-  // M2 fix (Slice 1): the handler's wrapperEl moved <div> → <pre> so the source
-  // survives serialization verbatim; this field tracks that change.
-  containerTag: 'pre',
-  contractClass: 'abc',
-  liveAssets: {
-    bundleLoader: getAbcjsJs,
-    cdnUrl: ABCJS_CDN_URL,
-    initScript: ABCJS_INIT,
-  },
-  // Static mode (Slice 2): abc renders to inline SVG at build time via abcjs +
-  // jsdom (renderAbcStatic in node-assets.js) — synchronous, so it runs inside
-  // the synchronous compiler. This realizes the build-time path the M2 fix and
-  // the live-mode work set up.
-  staticRenderer: renderAbcStatic,
-  // Class the emit path adds to the inlined <svg> for styling / hooking.
-  staticClass: 'enscribe-abc-rendered',
-};
+/**
+ * Assemble one DSL_REGISTRY record from a core registration seed, attaching the
+ * seed's Node-only asset functions (looked up by name). Behavior-neutral: the
+ * record it returns is byte-identical to the hand-written literal it replaced.
+ * @param {object} seed a DSL_REGISTRATIONS entry
+ * @returns {object} the runtime DSL registration record
+ */
+function registerDsl(seed) {
+  const assets = NODE_ASSETS[seed.name];
+  if (!assets) {
+    throw new Error(`registerDsl: no Node-only assets registered for DSL '${seed.name}'`);
+  }
+  const record = {
+    name: seed.name,
+    containerTag: seed.view.containerTag,
+    contractClass: seed.view.contractClass,
+    liveAssets: {
+      bundleLoader: assets.bundleLoader,
+      cdnUrl: seed.view.liveAssets.cdnUrl,
+      initScript: seed.view.liveAssets.initScript,
+    },
+    staticRenderer: assets.staticRenderer,
+  };
+  if (seed.view.staticClass !== undefined) record.staticClass = seed.view.staticClass;
+  return record;
+}
 
-const DSL_REGISTRY = new Map([
-  [mermaidRegistration.name, mermaidRegistration],
-  [abcRegistration.name, abcRegistration],
-]);
+const DSL_REGISTRY = new Map(
+  DSL_REGISTRATIONS.map((seed) => [seed.name, registerDsl(seed)]),
+);
 
 /**
  * Look up a single DSL registration by name.
