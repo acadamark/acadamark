@@ -37,7 +37,7 @@ recording it in the spec.
 | `notes/audits/deep-drift-audit-design.md` | Governance/Spec (process) | The deep-drift-audit method — how to run a whole-repo, read-only, verify-against-code, report-only three-way (code ⇄ spec ⇄ taxonomy) drift audit. |
 | `ROADMAP.md` | Roadmap | The high-level plan: the releases the work moves through and what each aims at, plus current position. No per-item detail — individual items live in GitHub Issues. |
 | `STATUS.md` | Status | Capability checklist: what works today, what is planned. No changelog. |
-| `docs-site/sources/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Layer 1 Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
+| `docs-source/*.emd` | User docs | User-facing how-to, rendered to the docs site by `docs-site/build.js`: the Quickstart, the Authoring Guide, and the Layer 1 Reference. Working examples, each demonstrated by a test fixture. The specs hold *intended design*; this tier holds *how-to*. |
 | Coverage gallery (`docs-site/gen-gallery.js` + `gallery-non-vocab.js`) | Completeness | The project's *completeness* surface and authoring catalog. **Inclusion rule: every construct an author writes, and only those** — "would an author ever write this?" Vocab elements via their `shorthand_examples`, plus the curated non-vocabulary supplement (`gallery-non-vocab.js`, for Layer-2 constructs like `<list>` with no vocab entry). **Generated output an author never writes is excluded** (`authoring: output-only`, e.g. `<note-list>` — notes auto-collect into it). A new construct isn't done until it has a gallery cell; a non-authored output element must not appear. |
 | GitHub Issues | Open work | ALL open work — bugs, enhancements, features, open questions — grouped by milestone and label. The home for open-work detail. (Not a repo file.) |
 | `CONTRIBUTING.md` | Governance | This system. |
@@ -138,7 +138,7 @@ Each subsystem's blueprint:
 ## Where each kind of fact lives
 
 - The intended design of any part of the system → its spec.
-- User-facing how-to (the syntax for a feature, worked examples a reader can copy) → the docs site (`docs-site/sources/`), not the specs. The specs hold intended design; the docs site holds how-to, and every feature's how-to has a page there.
+- User-facing how-to (the syntax for a feature, worked examples a reader can copy) → the docs site (`docs-source/`), not the specs. The specs hold intended design; the docs site holds how-to, and every feature's how-to has a page there.
 - Open work of any kind, with detail → [GitHub Issues](https://github.com/enscribejs/enscribe/issues), by milestone and label. Nowhere else.
 - The build sequence and current position → `ROADMAP.md`. Nowhere else.
 - What is true now / what is built → `STATUS.md` checklist.

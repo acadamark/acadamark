@@ -1,19 +1,21 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 359,
-    "fixtures": 55,
+    "cells": 361,
+    "fixtures": 94,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 275,
-    "pass": 66,
-    "deferred": 18
+    "gap": 274,
+    "pass": 63,
+    "deferred": 18,
+    "needs-review": 6
   },
   "byDisposition": {
-    "specified": 315,
-    "generic-implicit": 20,
+    "specified": 312,
+    "generic-implicit": 19,
     "deferred-presentation": 18,
+    "needs-review": 6,
     "no-output": 4,
     "alias": 2
   },
@@ -1137,6 +1139,22 @@
       "status": "gap"
     },
     {
+      "key": "bibliography/form:slash",
+      "element": "bibliography",
+      "behavior": "form:slash",
+      "area": "RQ-BIB",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-BIB-M1",
+        "RQ-BIB-M2",
+        "RQ-BIB-M3",
+        "RQ-BIB-M4",
+        "RQ-BIB-S1"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
       "key": "bibliography/form:long",
       "element": "bibliography",
       "behavior": "form:long",
@@ -1404,9 +1422,9 @@
       "status": "gap"
     },
     {
-      "key": "book-part/kwarg:book-part-type",
+      "key": "book-part/kwarg:type",
       "element": "book-part",
-      "behavior": "kwarg:book-part-type",
+      "behavior": "kwarg:type",
       "area": "RQ-TOC",
       "disposition": "specified",
       "predicates": [
@@ -1414,10 +1432,8 @@
         "RQ-TOC-M2",
         "RQ-TOC-S1"
       ],
-      "coveredBy": [
-        "context/ctx-book-complete.emd"
-      ],
-      "status": "pass"
+      "coveredBy": [],
+      "status": "gap"
     },
     {
       "key": "book-part/kwarg:numbering-style",
@@ -1476,6 +1492,16 @@
       ],
       "coveredBy": [],
       "status": "gap"
+    },
+    {
+      "key": "caption/base",
+      "element": "caption",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
     },
     {
       "key": "cases/base",
@@ -2507,6 +2533,16 @@
         "sweep/swp-meta.emd"
       ],
       "status": "deferred"
+    },
+    {
+      "key": "endnotes/base",
+      "element": "endnotes",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
     },
     {
       "key": "eqnarray/base",
@@ -3849,6 +3885,16 @@
       "status": "gap"
     },
     {
+      "key": "item/base",
+      "element": "item",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
+    },
+    {
       "key": "kbd/blanket",
       "element": "kbd",
       "behavior": "blanket",
@@ -4085,88 +4131,6 @@
         "sweep/swp-block.emd"
       ],
       "status": "pass"
-    },
-    {
-      "key": "marginnote/base",
-      "element": "marginnote",
-      "behavior": "base",
-      "area": "RQ-NOTE",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-NOTE-M1",
-        "RQ-NOTE-M2",
-        "RQ-NOTE-M3",
-        "RQ-NOTE-S1",
-        "RQ-NOTE-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "marginnote/id",
-      "element": "marginnote",
-      "behavior": "id",
-      "area": "RQ-NOTE",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-NOTE-M1",
-        "RQ-NOTE-M2",
-        "RQ-NOTE-M3",
-        "RQ-NOTE-S1",
-        "RQ-NOTE-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "marginnote/class",
-      "element": "marginnote",
-      "behavior": "class",
-      "area": "RQ-NOTE",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-NOTE-M1",
-        "RQ-NOTE-M2",
-        "RQ-NOTE-M3",
-        "RQ-NOTE-S1",
-        "RQ-NOTE-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "marginnote/form:pipe",
-      "element": "marginnote",
-      "behavior": "form:pipe",
-      "area": "RQ-NOTE",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-NOTE-M1",
-        "RQ-NOTE-M2",
-        "RQ-NOTE-M3",
-        "RQ-NOTE-S1",
-        "RQ-NOTE-S2"
-      ],
-      "coveredBy": [
-        "document-57-marginnotes.emd"
-      ],
-      "status": "pass"
-    },
-    {
-      "key": "marginnote/form:long",
-      "element": "marginnote",
-      "behavior": "form:long",
-      "area": "RQ-NOTE",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-NOTE-M1",
-        "RQ-NOTE-M2",
-        "RQ-NOTE-M3",
-        "RQ-NOTE-S1",
-        "RQ-NOTE-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
     },
     {
       "key": "math/base",
@@ -4456,6 +4420,16 @@
       "status": "gap"
     },
     {
+      "key": "minipage/base",
+      "element": "minipage",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
+    },
+    {
       "key": "name/base",
       "element": "name",
       "behavior": "base",
@@ -4529,6 +4503,26 @@
       ],
       "coveredBy": [],
       "status": "gap"
+    },
+    {
+      "key": "nav/base",
+      "element": "nav",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
+    },
+    {
+      "key": "nav-group/base",
+      "element": "nav-group",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
     },
     {
       "key": "note/base",
@@ -5371,22 +5365,6 @@
       "status": "gap"
     },
     {
-      "key": "span/blanket",
-      "element": "span",
-      "behavior": "blanket",
-      "area": "RQ-INL",
-      "disposition": "generic-implicit",
-      "predicates": [
-        "RQ-INL-M1",
-        "RQ-INL-S1",
-        "RQ-INL-M2"
-      ],
-      "coveredBy": [
-        "sweep/swp-inline.emd"
-      ],
-      "status": "pass"
-    },
-    {
       "key": "strong/base",
       "element": "strong",
       "behavior": "base",
@@ -6114,6 +6092,34 @@
       "key": "svg/kwarg:caption",
       "element": "svg",
       "behavior": "kwarg:caption",
+      "area": "RQ-FRM",
+      "disposition": "specified",
+      "predicates": [
+        "RQ-FRM-M1",
+        "RQ-FRM-M2",
+        "RQ-FRM-M3",
+        "RQ-FRM-M4",
+        "RQ-FRM-M5",
+        "RQ-FRM-M6",
+        "RQ-FRM-M7",
+        "RQ-FRM-M8",
+        "RQ-FRM-M9",
+        "RQ-FRM-M10",
+        "RQ-FRM-S1",
+        "RQ-FRM-S2",
+        "RQ-FRM-S3",
+        "RQ-FRM-S4",
+        "RQ-FRM-S5",
+        "RQ-FRM-S6",
+        "RQ-FRM-S7"
+      ],
+      "coveredBy": [],
+      "status": "gap"
+    },
+    {
+      "key": "svg/form:pipe",
+      "element": "svg",
+      "behavior": "form:pipe",
       "area": "RQ-FRM",
       "disposition": "specified",
       "predicates": [
@@ -6984,8 +6990,47 @@
     "document-6-cross-references.emd",
     "document-60-appendix.emd",
     "document-61-library-src.emd",
+    "document-62-config-toc-body.emd",
+    "document-63-config-toc-sidebar.emd",
+    "document-64-config-toc-book.emd",
+    "document-65-config-numbering.emd",
+    "document-66-bare-booleans.emd",
+    "document-67-fig-svg-border.emd",
+    "document-68-numbering-off-book.emd",
+    "document-69-minipage.emd",
     "document-7-tables.emd",
+    "document-70-minipage-outbound.emd",
+    "document-71-toc-frame-skip.emd",
     "document-8-citations.emd",
+    "master/intro.emd",
+    "master/master.emd",
+    "master/methods.emd",
+    "master-bib/intro-bib.emd",
+    "master-bib/master-bib.emd",
+    "master-book/appendix.emd",
+    "master-book/chapter-1.emd",
+    "master-book/chapter-2.emd",
+    "master-book/master-book.emd",
+    "master-book/preface.emd",
+    "master-website/footer.emd",
+    "master-website/guide.emd",
+    "master-website/home.emd",
+    "master-website/master-website.emd",
+    "master-website/num-alpha.emd",
+    "master-website/num-beta.emd",
+    "master-website/numbering-site.emd",
+    "master-website/p314-am1.emd",
+    "master-website/p314-artp.emd",
+    "master-website/p314-atlasp.emd",
+    "master-website/p314-bch1.emd",
+    "master-website/p314-bch2.emd",
+    "master-website/p314-bookp.emd",
+    "master-website/p314-master.emd",
+    "master-website/reference.emd",
+    "master-xref/alpha.emd",
+    "master-xref/beta.emd",
+    "master-xref/gamma.emd",
+    "master-xref/master-xref.emd",
     "sweep/swp-block.emd",
     "sweep/swp-dsl.emd",
     "sweep/swp-inline.emd",
