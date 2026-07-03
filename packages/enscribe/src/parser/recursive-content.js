@@ -187,9 +187,21 @@ function assembleMixedContent(content, processor) {
     // markdown leaves them, so the trim's legitimate intent is preserved — only the
     // collateral seam loss is undone. General by construction: it keys on the seam, not on
     // the sigil, so ANY mixed-array node (sigil today; future inline fragments) is covered.
-    const lead = /^\s/.test(item) && run != null && run.length > 0
-    const trail = /\s$/.test(item)
+    //
+    // BLANK LINE vs SEAM SPACE (#330 sweep): markdown trims a fragment's edge whitespace
+    // whether that whitespace is a lone space / soft break (a collapsed seam, restore it)
+    // or a BLANK LINE (a paragraph break, which must NOT become a space). When a resolved
+    // node abuts a blank-line edge — `E^{2}\n\nnext` (leading) or `foo\n\n^{2}` (trailing)
+    // — the node is the tail / head of its OWN paragraph, so we CLOSE the run at the break
+    // instead of restoring a seam space; otherwise the two paragraphs merge into one.
+    const leadBreak = /^[ \t]*\r?\n[ \t]*\r?\n/.test(item)
+    const trailBreak = /\r?\n[ \t]*\r?\n[ \t]*$/.test(item)
+    const lead = /^\s/.test(item) && !leadBreak && run != null && run.length > 0
+    const trail = /\s$/.test(item) && !trailBreak
       && idx + 1 < content.length && typeof content[idx + 1] !== 'string'
+    // A fragment that OPENS with a paragraph break closes the preceding node's run (that
+    // node ended its own paragraph); this fragment's content then starts a fresh one.
+    if (leadBreak) closeRun()
     const parsed = processor.parse(item).children
     for (let i = 0; i < parsed.length; i += 1) {
       const block = parsed[i]
@@ -213,9 +225,13 @@ function assembleMixedContent(content, processor) {
         blocks.push(block)
       }
     }
-    // restore the trailing seam space onto the still-open run (a resolved node follows it).
-    // Merge into the run's trailing text node when present (else push a lone space node).
-    if (trail && run && run.length) {
+    // A fragment that CLOSES with a paragraph break ends this run before the following
+    // node, so that node opens its own paragraph (no trailing seam space). Otherwise
+    // restore the trailing seam space onto the still-open run (a resolved node follows it),
+    // merging into the run's trailing text node when present (else push a lone space node).
+    if (trailBreak) {
+      closeRun()
+    } else if (trail && run && run.length) {
       const last = run[run.length - 1]
       if (last.type === 'text') last.value += ' '
       else run.push({ type: 'text', value: ' ' })

@@ -937,6 +937,139 @@
                   }
                 }
               ]
+            },
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Sigil at a paragraph boundary in a tag body",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 45,
+                          "offset": 44
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "aside",
+                  "properties": {
+                    "className": [
+                      "frameable-border"
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "The mass-energy relation is written E=mc",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 42,
+                              "offset": 41
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "sup",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "offset": 0
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "sup",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "56",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1,
+                                  "offset": 0
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3,
+                                  "offset": 2
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": "Fe is the most stable isotope, so a sigil may open a paragraph too.",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 1,
+                              "offset": 0
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 68,
+                              "offset": 67
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -950,9 +1083,9 @@
       "offset": 0
     },
     "end": {
-      "line": 21,
+      "line": 26,
       "column": 1,
-      "offset": 738
+      "offset": 924
     }
   }
 }

@@ -450,5 +450,38 @@ function parseInlineShortcut(src, tagname) {
   console.log('PASS RC-22: pipe-body seam whitespace preserved for sigils + escape markers, edges still trimmed (#330)')
 }
 
+// ─── Test RC-23: a paragraph break abutting a resolved node stays a break (#330) ──
+//
+// The #330 sweep case: markdown trims a fragment's edge whitespace whether it is a
+// lone space / soft break (a seam — restore it, RC-22) or a BLANK LINE (a paragraph
+// break — must NOT become a space). When a resolved node abuts a blank-line edge,
+// the node is the tail/head of its OWN paragraph, so the run closes at the break;
+// otherwise the two paragraphs would merge into one with a spurious seam space.
+{
+  const paras = (src) => parseTag(src).content.filter((n) => n.type === 'paragraph')
+
+  // node THEN blank line: the sigil ends paragraph 1; a real 2nd paragraph follows.
+  let p = paras('<aside | first E^{2}\n\nsecond>')
+  assert.equal(p.length, 2, 'RC-23a: a sigil before a blank line does not merge the paragraphs')
+  assert.equal(p[1].children[0].value, 'second', 'RC-23a: 2nd paragraph edge stays trimmed (no seam space)')
+
+  // blank line THEN node: the sigil opens paragraph 2 (and its trailing seam is kept).
+  p = paras('<aside | foo\n\n^{2} bar>')
+  assert.equal(p.length, 2, 'RC-23b: a sigil after a blank line opens a new paragraph, not a seam')
+  assert.equal(p[0].children[p[0].children.length - 1].value, 'foo', 'RC-23b: 1st paragraph stays trimmed')
+
+  // sigils on BOTH sides of the blank line — still two paragraphs.
+  assert.equal(paras('<aside | a^{1}\n\n^{2}b>').length, 2, 'RC-23c: sigils either side of a blank line still split')
+
+  // CONTROL — a SINGLE \n (soft break) after a sigil does NOT split into two paragraphs
+  // (a soft break is a seam space, unchanged by the fix; here it unwraps to one inline run).
+  assert.notEqual(paras('<aside | x E^{2}\nnext>').length, 2, 'RC-23d: a single \\n soft break after a sigil does not split into two paragraphs')
+
+  // CONTROL — a blank line NOT adjacent to a node still splits (the RC-6 baseline holds).
+  assert.equal(paras('<aside | a\n\nb>').length, 2, 'RC-23e: a plain blank line still splits (unchanged)')
+
+  console.log('PASS RC-23: a paragraph break abutting a resolved node stays a break, not a seam space (#330 sweep)')
+}
+
 console.log('\nAll recursive-content tests passed.')
-console.log('\n22/22 recursive-content tests passed.')
+console.log('\n23/23 recursive-content tests passed.')
