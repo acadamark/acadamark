@@ -47,7 +47,7 @@ Three unifications fall out of filling that grid honestly:
   "set-addressed pages."
 - **The store and the reference are two faces of the same element-scale set primitive.** A store *holds*
   content addressed by `@id`; a reference (`<cite>`/`<ref>`/`<a>`) *points at* an addressed target. Held
-  side and pointer side of one primitive — which is why, in the semantic taxonomy, stores (family 7) and
+  side and pointer side of one primitive — which is why, in the semantic taxonomy, stores (family 8) and
   the reference sub-act (family 4) share this addressing property while remaining distinct *acts*.
 
 So the element taxonomy and the document taxonomy are **not two taxonomies** — they are the **same three
@@ -61,7 +61,7 @@ as a **property those families carry, never as a family of its own**:
 - **table** at element scale → `<table>` and its degenerate `<dl>` (structure here; the *act* is a formal
   statement, semantic family 6).
 - **set / identity** at element scale → the reference act (`cite`/`ref`/`a`, semantic family 4) and the
-  store act (`data`/`library`/`dataset`, semantic family 7) — pointer and held sides.
+  store act (`data`/`library`/`dataset`, semantic family 8) — pointer and held sides.
 
 The property that an element is *addressed* (has an `@id` others point at) — and therefore
 *referenceable*, and often *numbered* — is recorded **once, here**, and is the reason the semantic
