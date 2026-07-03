@@ -397,42 +397,9 @@ Set <var | threshold> to <samp | 0.05>.
 
 <section #l1-span | `<span>`>
 
-<sub-section | Specification>
+`<span>` is no longer an Enscribe element. An author-typed `<span>` is treated like any other unknown tag: it prints **literally**, exactly as typed. `<span | text>` appears on the page as the characters `<span | text>`, not as a rendered element.
 
-`category` `inline-formatting` · Layer 1 `<span>` · JATS `<styled-content>` · `content` `prose` → `<children>`
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `style` | kwarg |  | Inline CSS styles. Use sparingly; classes are usually preferable. |
-| `title` | kwarg |  |  |
-
-Produced by: canonical `<span>`.
-
-<sub-section | Examples>
-
-<code #code:l1-span-1>
-Some text <span .highlight | with highlighting> here.
-</code>
-
-<minipage #mp:l1-span-1>
-Some text <span .highlight | with highlighting> here.
-</minipage>
-
-<code #code:l1-span-2>
-Text with <span #key-phrase | a marked phrase> for reference.
-</code>
-
-<minipage #mp:l1-span-2>
-Text with <span #key-phrase | a marked phrase> for reference.
-</minipage>
-
-<code #code:l1-span-3>
-A <span .gloss title="ancient Greek for word" | logos> appears here.
-</code>
-
-<minipage #mp:l1-span-3>
-A <span .gloss title="ancient Greek for word" | logos> appears here.
-</minipage>
+For styled or marked inline text, reach for the semantic inline element that fits the meaning instead — `<em>`, `<strong>`, `<i>`, `<b>`, `<u>`, `<s>`, `<sub>`, `<sup>`, `<q>`, `<abbr>`, `<kbd>`, `<var>`, `<samp>`, `<output>`, `<code>`, `<term>`, or `<cite>` (each documented in this reference). Each carries its own meaning and class hooks, so it styles cleanly without a generic wrapper.
 
 </section>
 

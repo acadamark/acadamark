@@ -113,7 +113,9 @@ const M_CHECKS = {
   'RQ-XREF-M1': (h) => /class="ref"/.test(h),
   'RQ-BOOK-M1': (h) => /<book>/.test(h) && /<book-front/.test(h) && /<book-body/.test(h) && /<book-back/.test(h),
   'RQ-INL-M1': (h) => /<em[\s>]/.test(h) && /<strong[\s>]/.test(h),
-  'RQ-INL-M2': (h) => ['b', 'i', 'u', 's', 'sub', 'sup', 'span', 'q', 'kbd', 'var', 'samp', 'output', 'code']
+  // #334: `span` removed from the vocabulary — an authored <span> now echoes as escaped
+  // literal text (no <span> element), so it is no longer a generic-implicit inline tag.
+  'RQ-INL-M2': (h) => ['b', 'i', 'u', 's', 'sub', 'sup', 'q', 'kbd', 'var', 'samp', 'output', 'code']
     .every((t) => new RegExp(`<${t}[\\s>]`).test(h)),
   'RQ-THM-M1': (h) => /<span class="theorem-label">/.test(h) && /<span class="proof-label">/.test(h),
   'RQ-THM-M2': (h) => /Theorem \d+\./.test(h) && /Theorem \d+ \(Pythagoras\)\./.test(h) && /Remark\./.test(h),
