@@ -1,6 +1,7 @@
 ---
 semantic_role: minipage
 category: frameables
+semantic_family: exhibit
 html_output:
   element: minipage
   is_html_native: false

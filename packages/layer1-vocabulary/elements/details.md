@@ -1,6 +1,7 @@
 ---
 semantic_role: details
 category: block-prose
+semantic_family: aside
 html_output:
   element: details
   is_html_native: true

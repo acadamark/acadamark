@@ -1,6 +1,7 @@
 ---
 semantic_role: matrix
 category: math
+semantic_family: notation
 html_output:
   element: matrix
   is_html_native: false

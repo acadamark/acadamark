@@ -1,6 +1,7 @@
 ---
 semantic_role: abstract
 category: metadata
+semantic_family: declarations-and-metadata
 html_output:
   element: abstract
   is_html_native: false

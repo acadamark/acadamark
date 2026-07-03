@@ -1,6 +1,7 @@
 ---
 semantic_role: eqnarray
 category: math
+semantic_family: notation
 html_output:
   element: eqnarray
   is_html_native: false

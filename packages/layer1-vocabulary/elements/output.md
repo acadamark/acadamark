@@ -1,6 +1,7 @@
 ---
 semantic_role: output
 category: inline-formatting
+semantic_family: emphasis-and-marking
 html_output:
   element: output
   is_html_native: true

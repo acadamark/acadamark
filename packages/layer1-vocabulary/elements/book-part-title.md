@@ -1,6 +1,7 @@
 ---
 semantic_role: book-part-title
 category: metadata
+semantic_family: declarations-and-metadata
 authoring: generated
 html_output:
   element: book-part-title

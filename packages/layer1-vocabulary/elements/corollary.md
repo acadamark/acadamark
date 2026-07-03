@@ -1,6 +1,7 @@
 ---
 semantic_role: corollary
 category: theorem-family
+semantic_family: formal-statements
 html_output:
   element: corollary
   is_html_native: false

@@ -1,6 +1,7 @@
 ---
 semantic_role: name
 category: metadata
+semantic_family: declarations-and-metadata
 html_output:
   element: name
   is_html_native: false

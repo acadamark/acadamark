@@ -1,6 +1,7 @@
 ---
 semantic_role: abbr
 category: inline-formatting
+semantic_family: emphasis-and-marking
 html_output:
   element: abbr
   is_html_native: true

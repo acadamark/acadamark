@@ -1,6 +1,7 @@
 ---
 semantic_role: figure
 category: frameables
+semantic_family: exhibit
 html_output:
   element: fig
   is_html_native: true

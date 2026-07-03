@@ -1,6 +1,7 @@
 ---
 semantic_role: book-back
 category: structural-regions
+semantic_family: structural-scaffolding
 authoring: generated
 html_output:
   element: book-back

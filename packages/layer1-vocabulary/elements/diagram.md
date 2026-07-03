@@ -1,6 +1,7 @@
 ---
 semantic_role: diagram
 category: frameables
+semantic_family: exhibit
 html_output:
   element: diagram
   is_html_native: false

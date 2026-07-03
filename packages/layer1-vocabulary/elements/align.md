@@ -1,6 +1,7 @@
 ---
 semantic_role: align
 category: math
+semantic_family: notation
 html_output:
   element: align
   is_html_native: false

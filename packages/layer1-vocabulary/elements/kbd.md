@@ -1,6 +1,7 @@
 ---
 semantic_role: kbd
 category: inline-formatting
+semantic_family: emphasis-and-marking
 html_output:
   element: kbd
   is_html_native: true

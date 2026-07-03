@@ -1,6 +1,7 @@
 ---
 semantic_role: book
 category: document-containers
+semantic_family: structural-scaffolding
 html_output:
   element: book
   is_html_native: false

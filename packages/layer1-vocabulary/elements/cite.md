@@ -1,6 +1,7 @@
 ---
 semantic_role: cite
 category: citations-and-references
+semantic_family: quotation-and-sourcing
 requires-context: bibliography
 html_output:
   element: cite

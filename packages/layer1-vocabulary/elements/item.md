@@ -1,6 +1,7 @@
 ---
 semantic_role: navigation-item
 category: navigation
+semantic_family: structural-scaffolding
 html_output:
   element: item
   is_html_native: false

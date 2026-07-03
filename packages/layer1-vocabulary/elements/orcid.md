@@ -1,6 +1,7 @@
 ---
 semantic_role: orcid
 category: metadata
+semantic_family: declarations-and-metadata
 html_output:
   element: orcid
   is_html_native: false

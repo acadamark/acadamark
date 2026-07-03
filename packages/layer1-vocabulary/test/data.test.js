@@ -100,6 +100,26 @@ check(
 // Build-time loader has nothing to report in normal state.
 check('VOCABULARY_ERRORS is empty', VOCABULARY_ERRORS.length === 0);
 
+// semantic_family: every element carries a semantic_family that is one of the 10
+// taxonomy families (notes/taxonomies/semantic-taxonomy.md §§1-10), and all 10 are
+// represented. The anti-drift lever — the semantic taxonomy made mechanically checkable
+// per element, kept distinct from the processing-flavored `category`.
+const SEMANTIC_FAMILIES = new Set([
+  'primary-prose', 'emphasis-and-marking', 'aside', 'quotation-and-sourcing', 'exhibit',
+  'formal-statements', 'notation', 'stores', 'declarations-and-metadata', 'structural-scaffolding',
+]);
+{
+  const bad = [];
+  const used = new Set();
+  for (const [name, entry] of Object.entries(VOCABULARY)) {
+    const fam = entry.semantic_family;
+    if (typeof fam !== 'string' || !SEMANTIC_FAMILIES.has(fam)) bad.push(`${name}=${fam}`);
+    else used.add(fam);
+  }
+  check(`every vocabulary entry has a valid semantic_family (bad: ${bad.join(', ') || 'none'})`, bad.length === 0);
+  check(`all 10 semantic families are represented (have ${used.size}/10)`, used.size === 10);
+}
+
 // In-scope structural elements (the old test's required set).
 const required = [
   'article', 'section', 'sub-section', 'sub-sub-section',

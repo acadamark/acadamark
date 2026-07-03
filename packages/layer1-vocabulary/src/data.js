@@ -14,6 +14,7 @@
 const _a = Object.freeze({
     "semantic_role": "a",
     "category": "inline-formatting",
+    "semantic_family": "quotation-and-sourcing",
     "html_output": {
       "element": "a",
       "is_html_native": true,
@@ -114,6 +115,7 @@ const _a = Object.freeze({
 const _abbr = Object.freeze({
     "semantic_role": "abbr",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "abbr",
       "is_html_native": true,
@@ -171,6 +173,7 @@ const _abbr = Object.freeze({
 const _abstract = Object.freeze({
     "semantic_role": "abstract",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "abstract",
       "is_html_native": false,
@@ -248,6 +251,7 @@ const _abstract = Object.freeze({
 const _affiliation = Object.freeze({
     "semantic_role": "affiliation",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "affiliation",
       "is_html_native": false,
@@ -298,6 +302,7 @@ const _affiliation = Object.freeze({
 const _align = Object.freeze({
     "semantic_role": "align",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "align",
       "is_html_native": false,
@@ -347,6 +352,7 @@ const _align = Object.freeze({
 const _article_back = Object.freeze({
     "semantic_role": "article-back",
     "category": "structural-regions",
+    "semantic_family": "structural-scaffolding",
     "authoring": "generated",
     "html_output": {
       "element": "article-back",
@@ -383,6 +389,7 @@ const _article_back = Object.freeze({
 const _article_body = Object.freeze({
     "semantic_role": "article-body",
     "category": "structural-regions",
+    "semantic_family": "structural-scaffolding",
     "authoring": "generated",
     "html_output": {
       "element": "article-body",
@@ -416,6 +423,7 @@ const _article_body = Object.freeze({
 const _article_front = Object.freeze({
     "semantic_role": "article-front",
     "category": "structural-regions",
+    "semantic_family": "structural-scaffolding",
     "authoring": "generated",
     "html_output": {
       "element": "article-front",
@@ -454,6 +462,7 @@ const _article_front = Object.freeze({
 const _article_subtitle = Object.freeze({
     "semantic_role": "article-subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "article-subtitle",
@@ -486,6 +495,7 @@ const _article_subtitle = Object.freeze({
 const _article_title = Object.freeze({
     "semantic_role": "article-title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "article-title",
@@ -518,6 +528,7 @@ const _article_title = Object.freeze({
 const _article = Object.freeze({
     "semantic_role": "article",
     "category": "document-containers",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "article",
       "is_html_native": true,
@@ -611,6 +622,7 @@ const _article = Object.freeze({
 const _aside = Object.freeze({
     "semantic_role": "aside",
     "category": "block-prose",
+    "semantic_family": "aside",
     "html_output": {
       "element": "aside",
       "is_html_native": true,
@@ -699,6 +711,7 @@ const _aside = Object.freeze({
 const _author = Object.freeze({
     "semantic_role": "author",
     "category": "structured-data-containers",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "author",
       "is_html_native": false,
@@ -803,6 +816,7 @@ const _author = Object.freeze({
 const _b = Object.freeze({
     "semantic_role": "b",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "b",
       "is_html_native": true,
@@ -865,6 +879,7 @@ const _b = Object.freeze({
 const _bib_entry = Object.freeze({
     "semantic_role": "bib-entry",
     "category": "citations-and-references",
+    "semantic_family": "quotation-and-sourcing",
     "authoring": "generated",
     "html_output": {
       "element": "bib-entry",
@@ -981,6 +996,7 @@ const _bib_entry = Object.freeze({
 const _bibliography = Object.freeze({
     "semantic_role": "bibliography",
     "category": "citations-and-references",
+    "semantic_family": "quotation-and-sourcing",
     "authoring": "generated",
     "html_output": {
       "element": "bibliography",
@@ -1073,6 +1089,7 @@ const _bibliography = Object.freeze({
 const _blockquote = Object.freeze({
     "semantic_role": "blockquote",
     "category": "block-prose",
+    "semantic_family": "quotation-and-sourcing",
     "html_output": {
       "element": "blockquote",
       "is_html_native": true,
@@ -1157,6 +1174,7 @@ const _blockquote = Object.freeze({
 const _book_back = Object.freeze({
     "semantic_role": "book-back",
     "category": "structural-regions",
+    "semantic_family": "structural-scaffolding",
     "authoring": "generated",
     "html_output": {
       "element": "book-back",
@@ -1193,6 +1211,7 @@ const _book_back = Object.freeze({
 const _book_body = Object.freeze({
     "semantic_role": "book-body",
     "category": "structural-regions",
+    "semantic_family": "structural-scaffolding",
     "authoring": "generated",
     "html_output": {
       "element": "book-body",
@@ -1225,6 +1244,7 @@ const _book_body = Object.freeze({
 const _book_front = Object.freeze({
     "semantic_role": "book-front",
     "category": "structural-regions",
+    "semantic_family": "structural-scaffolding",
     "authoring": "generated",
     "html_output": {
       "element": "book-front",
@@ -1264,6 +1284,7 @@ const _book_front = Object.freeze({
 const _book_part_subtitle = Object.freeze({
     "semantic_role": "book-part-subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "book-part-subtitle",
@@ -1296,6 +1317,7 @@ const _book_part_subtitle = Object.freeze({
 const _book_part_title = Object.freeze({
     "semantic_role": "book-part-title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "book-part-title",
@@ -1328,6 +1350,7 @@ const _book_part_title = Object.freeze({
 const _book_part = Object.freeze({
     "semantic_role": "book-part",
     "category": "document-containers",
+    "semantic_family": "structural-scaffolding",
     "requires-context": "book",
     "html_output": {
       "element": "book-part",
@@ -1540,6 +1563,7 @@ const _book_part = Object.freeze({
 const _book_subtitle = Object.freeze({
     "semantic_role": "book-subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "book-subtitle",
@@ -1572,6 +1596,7 @@ const _book_subtitle = Object.freeze({
 const _book_title = Object.freeze({
     "semantic_role": "book-title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "book-title",
@@ -1604,6 +1629,7 @@ const _book_title = Object.freeze({
 const _book = Object.freeze({
     "semantic_role": "book",
     "category": "document-containers",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "book",
       "is_html_native": false,
@@ -1697,6 +1723,7 @@ const _book = Object.freeze({
 const _caption = Object.freeze({
     "semantic_role": "caption",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "caption",
       "is_html_native": true,
@@ -1735,6 +1762,7 @@ const _caption = Object.freeze({
 const _cases = Object.freeze({
     "semantic_role": "cases",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "cases",
       "is_html_native": false,
@@ -1784,6 +1812,7 @@ const _cases = Object.freeze({
 const _cite = Object.freeze({
     "semantic_role": "cite",
     "category": "citations-and-references",
+    "semantic_family": "quotation-and-sourcing",
     "requires-context": "bibliography",
     "html_output": {
       "element": "cite",
@@ -1912,6 +1941,7 @@ const _cite = Object.freeze({
 const _code_block = Object.freeze({
     "semantic_role": "code-block",
     "category": "code",
+    "semantic_family": "notation",
     "html_output": {
       "element": "code-block",
       "is_html_native": false,
@@ -1958,6 +1988,7 @@ const _code_block = Object.freeze({
 const _code = Object.freeze({
     "semantic_role": "code",
     "category": "code",
+    "semantic_family": "notation",
     "html_output": {
       "element": "code",
       "is_html_native": true,
@@ -2026,6 +2057,7 @@ const _code = Object.freeze({
 const _config = Object.freeze({
     "semantic_role": "config",
     "category": "configuration",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "config",
       "is_html_native": false,
@@ -2080,6 +2112,7 @@ const _config = Object.freeze({
 const _corollary = Object.freeze({
     "semantic_role": "corollary",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "corollary",
       "is_html_native": false,
@@ -2145,6 +2178,7 @@ const _corollary = Object.freeze({
 const _data = Object.freeze({
     "semantic_role": "data",
     "category": "storage-hosts",
+    "semantic_family": "stores",
     "html_output": {
       "element": "data",
       "is_html_native": false,
@@ -2219,6 +2253,7 @@ const _data = Object.freeze({
 const _date = Object.freeze({
     "semantic_role": "date",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "date",
       "is_html_native": false,
@@ -2309,6 +2344,7 @@ const _date = Object.freeze({
 const _dd = Object.freeze({
     "semantic_role": "dd",
     "category": "block-prose",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "dd",
       "is_html_native": true,
@@ -2358,6 +2394,7 @@ const _dd = Object.freeze({
 const _definition = Object.freeze({
     "semantic_role": "definition",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "definition",
       "is_html_native": false,
@@ -2423,6 +2460,7 @@ const _definition = Object.freeze({
 const _details = Object.freeze({
     "semantic_role": "details",
     "category": "block-prose",
+    "semantic_family": "aside",
     "html_output": {
       "element": "details",
       "is_html_native": true,
@@ -2495,6 +2533,7 @@ const _details = Object.freeze({
 const _diagram = Object.freeze({
     "semantic_role": "diagram",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "diagram",
       "is_html_native": false,
@@ -2562,6 +2601,7 @@ const _diagram = Object.freeze({
 const _display_math = Object.freeze({
     "semantic_role": "display-math",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "display-math",
       "is_html_native": false,
@@ -2608,6 +2648,7 @@ const _display_math = Object.freeze({
 const _dl = Object.freeze({
     "semantic_role": "dl",
     "category": "block-prose",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "dl",
       "is_html_native": true,
@@ -2670,6 +2711,7 @@ const _dl = Object.freeze({
 const _doi = Object.freeze({
     "semantic_role": "doi",
     "category": "metadata",
+    "semantic_family": "quotation-and-sourcing",
     "html_output": {
       "element": "doi",
       "is_html_native": false,
@@ -2722,6 +2764,7 @@ const _doi = Object.freeze({
 const _dt = Object.freeze({
     "semantic_role": "dt",
     "category": "block-prose",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "dt",
       "is_html_native": true,
@@ -2771,6 +2814,7 @@ const _dt = Object.freeze({
 const _editor = Object.freeze({
     "semantic_role": "editor",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "editor",
       "is_html_native": false,
@@ -2848,6 +2892,7 @@ const _editor = Object.freeze({
 const _em = Object.freeze({
     "semantic_role": "em",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "em",
       "is_html_native": true,
@@ -2903,6 +2948,7 @@ const _em = Object.freeze({
 const _email = Object.freeze({
     "semantic_role": "email",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "email",
       "is_html_native": false,
@@ -2947,6 +2993,7 @@ const _email = Object.freeze({
 const _endnotes = Object.freeze({
     "semantic_role": "endnotes",
     "category": "block-prose",
+    "semantic_family": "aside",
     "authoring": "generated",
     "html_output": {
       "element": "endnotes",
@@ -3000,6 +3047,7 @@ const _endnotes = Object.freeze({
 const _eqnarray = Object.freeze({
     "semantic_role": "eqnarray",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "eqnarray",
       "is_html_native": false,
@@ -3049,6 +3097,7 @@ const _eqnarray = Object.freeze({
 const _example = Object.freeze({
     "semantic_role": "example",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "example",
       "is_html_native": false,
@@ -3114,6 +3163,7 @@ const _example = Object.freeze({
 const _fig = Object.freeze({
     "semantic_role": "figure",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "fig",
       "is_html_native": true,
@@ -3253,6 +3303,7 @@ const _fig = Object.freeze({
 const _frame = Object.freeze({
     "semantic_role": "frame",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "frame",
       "is_html_native": false,
@@ -3344,6 +3395,7 @@ const _frame = Object.freeze({
 const _glossary_entry = Object.freeze({
     "semantic_role": "glossary-entry",
     "category": "block-prose",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "glossary-entry",
       "is_html_native": false,
@@ -3400,6 +3452,7 @@ const _glossary_entry = Object.freeze({
 const _glossary = Object.freeze({
     "semantic_role": "glossary",
     "category": "block-prose",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "glossary",
       "is_html_native": false,
@@ -3445,6 +3498,7 @@ const _glossary = Object.freeze({
 const _hr = Object.freeze({
     "semantic_role": "hr",
     "category": "block-prose",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "hr",
       "is_html_native": true,
@@ -3505,6 +3559,7 @@ const _hr = Object.freeze({
 const _i = Object.freeze({
     "semantic_role": "i",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "i",
       "is_html_native": true,
@@ -3574,6 +3629,7 @@ const _i = Object.freeze({
 const _inline_code = Object.freeze({
     "semantic_role": "inline-code",
     "category": "code",
+    "semantic_family": "notation",
     "html_output": {
       "element": "inline-code",
       "is_html_native": false,
@@ -3620,6 +3676,7 @@ const _inline_code = Object.freeze({
 const _inline_math = Object.freeze({
     "semantic_role": "inline-math",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "inline-math",
       "is_html_native": false,
@@ -3659,6 +3716,7 @@ const _inline_math = Object.freeze({
 const _item = Object.freeze({
     "semantic_role": "navigation-item",
     "category": "navigation",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "item",
       "is_html_native": false,
@@ -3710,6 +3768,7 @@ const _item = Object.freeze({
 const _kbd = Object.freeze({
     "semantic_role": "kbd",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "kbd",
       "is_html_native": true,
@@ -3759,6 +3818,7 @@ const _kbd = Object.freeze({
 const _keywords = Object.freeze({
     "semantic_role": "keywords",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "keywords",
       "is_html_native": false,
@@ -3808,6 +3868,7 @@ const _keywords = Object.freeze({
 const _lang = Object.freeze({
     "semantic_role": "lang",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "lang",
       "is_html_native": false,
@@ -3857,6 +3918,7 @@ const _lang = Object.freeze({
 const _lemma = Object.freeze({
     "semantic_role": "lemma",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "lemma",
       "is_html_native": false,
@@ -3923,6 +3985,7 @@ const _lemma = Object.freeze({
 const _library = Object.freeze({
     "semantic_role": "library",
     "category": "storage-hosts",
+    "semantic_family": "stores",
     "html_output": {
       "element": "library",
       "is_html_native": false,
@@ -4012,6 +4075,7 @@ const _library = Object.freeze({
 const _license = Object.freeze({
     "semantic_role": "license",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "license",
       "is_html_native": false,
@@ -4072,6 +4136,7 @@ const _license = Object.freeze({
 const _math = Object.freeze({
     "semantic_role": "math",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "math",
       "is_html_native": false,
@@ -4120,6 +4185,7 @@ const _math = Object.freeze({
 const _matrix = Object.freeze({
     "semantic_role": "matrix",
     "category": "math",
+    "semantic_family": "notation",
     "html_output": {
       "element": "matrix",
       "is_html_native": false,
@@ -4169,6 +4235,7 @@ const _matrix = Object.freeze({
 const _meta = Object.freeze({
     "semantic_role": "meta",
     "category": "structured-data-containers",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "meta",
       "is_html_native": false,
@@ -4306,6 +4373,7 @@ const _meta = Object.freeze({
 const _minipage = Object.freeze({
     "semantic_role": "minipage",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "minipage",
       "is_html_native": false,
@@ -4380,6 +4448,7 @@ const _minipage = Object.freeze({
 const _name = Object.freeze({
     "semantic_role": "name",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "name",
       "is_html_native": false,
@@ -4429,6 +4498,7 @@ const _name = Object.freeze({
 const _nav_group = Object.freeze({
     "semantic_role": "navigation-group",
     "category": "navigation",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "nav-group",
       "is_html_native": false,
@@ -4480,6 +4550,7 @@ const _nav_group = Object.freeze({
 const _nav = Object.freeze({
     "semantic_role": "navigation",
     "category": "navigation",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "nav",
       "is_html_native": true,
@@ -4531,6 +4602,7 @@ const _nav = Object.freeze({
 const _note_list = Object.freeze({
     "semantic_role": "note-list",
     "category": "block-prose",
+    "semantic_family": "aside",
     "authoring": "output-only",
     "html_output": {
       "element": "note-list",
@@ -4590,6 +4662,7 @@ const _note_list = Object.freeze({
 const _note = Object.freeze({
     "semantic_role": "note",
     "category": "block-prose",
+    "semantic_family": "aside",
     "html_output": {
       "element": "note",
       "is_html_native": false,
@@ -4687,6 +4760,7 @@ const _note = Object.freeze({
 const _orcid = Object.freeze({
     "semantic_role": "orcid",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "orcid",
       "is_html_native": false,
@@ -4739,6 +4813,7 @@ const _orcid = Object.freeze({
 const _output = Object.freeze({
     "semantic_role": "output",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "output",
       "is_html_native": true,
@@ -4783,6 +4858,7 @@ const _output = Object.freeze({
 const _p = Object.freeze({
     "semantic_role": "p",
     "category": "block-prose",
+    "semantic_family": "primary-prose",
     "html_output": {
       "element": "p",
       "is_html_native": true,
@@ -4850,6 +4926,7 @@ const _p = Object.freeze({
 const _proof = Object.freeze({
     "semantic_role": "proof",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "proof",
       "is_html_native": false,
@@ -4918,6 +4995,7 @@ const _proof = Object.freeze({
 const _proposition = Object.freeze({
     "semantic_role": "proposition",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "proposition",
       "is_html_native": false,
@@ -4983,6 +5061,7 @@ const _proposition = Object.freeze({
 const _publication_date = Object.freeze({
     "semantic_role": "publication-date",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "publication-date",
       "is_html_native": false,
@@ -5048,6 +5127,7 @@ const _publication_date = Object.freeze({
 const _q = Object.freeze({
     "semantic_role": "q",
     "category": "inline-formatting",
+    "semantic_family": "quotation-and-sourcing",
     "html_output": {
       "element": "q",
       "is_html_native": true,
@@ -5103,6 +5183,7 @@ const _q = Object.freeze({
 const _ref = Object.freeze({
     "semantic_role": "ref",
     "category": "citations-and-references",
+    "semantic_family": "quotation-and-sourcing",
     "html_output": {
       "element": "ref",
       "is_html_native": false,
@@ -5227,6 +5308,7 @@ const _ref = Object.freeze({
 const _remark = Object.freeze({
     "semantic_role": "remark",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "remark",
       "is_html_native": false,
@@ -5292,6 +5374,7 @@ const _remark = Object.freeze({
 const _s = Object.freeze({
     "semantic_role": "s",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "s",
       "is_html_native": true,
@@ -5352,6 +5435,7 @@ const _s = Object.freeze({
 const _samp = Object.freeze({
     "semantic_role": "samp",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "samp",
       "is_html_native": true,
@@ -5401,6 +5485,7 @@ const _samp = Object.freeze({
 const _section_subtitle = Object.freeze({
     "semantic_role": "section-subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "section-subtitle",
@@ -5433,6 +5518,7 @@ const _section_subtitle = Object.freeze({
 const _section_title = Object.freeze({
     "semantic_role": "section-title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "section-title",
@@ -5465,6 +5551,7 @@ const _section_title = Object.freeze({
 const _section = Object.freeze({
     "semantic_role": "section",
     "category": "sections",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "section",
       "is_html_native": true,
@@ -5591,6 +5678,7 @@ const _section = Object.freeze({
 const _strong = Object.freeze({
     "semantic_role": "strong",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "strong",
       "is_html_native": true,
@@ -5644,6 +5732,7 @@ const _strong = Object.freeze({
 const _sub_section_subtitle = Object.freeze({
     "semantic_role": "sub-section-subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-section-subtitle",
@@ -5676,6 +5765,7 @@ const _sub_section_subtitle = Object.freeze({
 const _sub_section_title = Object.freeze({
     "semantic_role": "sub-section-title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-section-title",
@@ -5708,6 +5798,7 @@ const _sub_section_title = Object.freeze({
 const _sub_section = Object.freeze({
     "semantic_role": "sub-section",
     "category": "sections",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "sub-section",
       "is_html_native": false,
@@ -5829,6 +5920,7 @@ const _sub_section = Object.freeze({
 const _sub_sub_section_subtitle = Object.freeze({
     "semantic_role": "sub-sub-section-subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-sub-section-subtitle",
@@ -5861,6 +5953,7 @@ const _sub_sub_section_subtitle = Object.freeze({
 const _sub_sub_section_title = Object.freeze({
     "semantic_role": "sub-sub-section-title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "authoring": "generated",
     "html_output": {
       "element": "sub-sub-section-title",
@@ -5893,6 +5986,7 @@ const _sub_sub_section_title = Object.freeze({
 const _sub_sub_section = Object.freeze({
     "semantic_role": "sub-sub-section",
     "category": "sections",
+    "semantic_family": "structural-scaffolding",
     "html_output": {
       "element": "sub-sub-section",
       "is_html_native": false,
@@ -6013,6 +6107,7 @@ const _sub_sub_section = Object.freeze({
 const _sub = Object.freeze({
     "semantic_role": "sub",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "sub",
       "is_html_native": true,
@@ -6058,6 +6153,7 @@ const _sub = Object.freeze({
 const _subject = Object.freeze({
     "semantic_role": "subject",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "subject",
       "is_html_native": false,
@@ -6115,6 +6211,7 @@ const _subject = Object.freeze({
 const _subtitle = Object.freeze({
     "semantic_role": "subtitle",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "subtitle",
       "is_html_native": false,
@@ -6157,6 +6254,7 @@ const _subtitle = Object.freeze({
 const _summary = Object.freeze({
     "semantic_role": "summary",
     "category": "block-prose",
+    "semantic_family": "aside",
     "html_output": {
       "element": "summary",
       "is_html_native": true,
@@ -6206,6 +6304,7 @@ const _summary = Object.freeze({
 const _sup = Object.freeze({
     "semantic_role": "sup",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "sup",
       "is_html_native": true,
@@ -6255,6 +6354,7 @@ const _sup = Object.freeze({
 const _svg = Object.freeze({
     "semantic_role": "svg",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "svg",
       "is_html_native": true,
@@ -6343,6 +6443,7 @@ const _svg = Object.freeze({
 const _table = Object.freeze({
     "semantic_role": "table",
     "category": "frameables",
+    "semantic_family": "exhibit",
     "html_output": {
       "element": "table",
       "is_html_native": true,
@@ -6450,6 +6551,7 @@ const _table = Object.freeze({
 const _term = Object.freeze({
     "semantic_role": "term",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "term",
       "is_html_native": false,
@@ -6503,6 +6605,7 @@ const _term = Object.freeze({
 const _theorem = Object.freeze({
     "semantic_role": "theorem",
     "category": "theorem-family",
+    "semantic_family": "formal-statements",
     "html_output": {
       "element": "theorem",
       "is_html_native": false,
@@ -6571,6 +6674,7 @@ const _theorem = Object.freeze({
 const _title = Object.freeze({
     "semantic_role": "title",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "title",
       "is_html_native": false,
@@ -6626,6 +6730,7 @@ const _title = Object.freeze({
 const _u = Object.freeze({
     "semantic_role": "u",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "u",
       "is_html_native": true,
@@ -6685,6 +6790,7 @@ const _u = Object.freeze({
 const _var = Object.freeze({
     "semantic_role": "var",
     "category": "inline-formatting",
+    "semantic_family": "emphasis-and-marking",
     "html_output": {
       "element": "var",
       "is_html_native": true,
@@ -6734,6 +6840,7 @@ const _var = Object.freeze({
 const _version = Object.freeze({
     "semantic_role": "version",
     "category": "metadata",
+    "semantic_family": "declarations-and-metadata",
     "html_output": {
       "element": "version",
       "is_html_native": false,

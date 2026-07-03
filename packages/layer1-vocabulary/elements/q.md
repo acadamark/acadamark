@@ -1,6 +1,7 @@
 ---
 semantic_role: q
 category: inline-formatting
+semantic_family: quotation-and-sourcing
 html_output:
   element: q
   is_html_native: true

@@ -1,6 +1,7 @@
 ---
 semantic_role: sub-sub-section-subtitle
 category: metadata
+semantic_family: declarations-and-metadata
 authoring: generated
 html_output:
   element: sub-sub-section-subtitle

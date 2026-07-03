@@ -1,6 +1,7 @@
 ---
 semantic_role: data
 category: storage-hosts
+semantic_family: stores
 html_output:
   element: data
   is_html_native: false
