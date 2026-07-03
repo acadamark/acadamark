@@ -111,6 +111,10 @@
     "kind": "S",
     "pass": true
   },
+  "RQ-BOOK-S2": {
+    "kind": "S",
+    "pass": true
+  },
   "RQ-TOC-S1": {
     "kind": "S",
     "pass": true
@@ -266,6 +270,16 @@
     "status": "untested"
   },
   "RQ-BOOK-M6": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M7": {
+    "kind": "M",
+    "pass": null,
+    "status": "untested"
+  },
+  "RQ-BOOK-M8": {
     "kind": "M",
     "pass": null,
     "status": "untested"

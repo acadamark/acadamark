@@ -7,10 +7,10 @@
 
 ## Summary
 
-- **Behavior cells:** 359  ·  **fixtures:** 55  ·  **annexed (generated) elements:** 19
-- **Covered:** 66 (18%)
-- **By status:** `deferred` 18 · `gap` 275 · `pass` 66
-- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 20 · `no-output` 4 · `specified` 315
+- **Behavior cells:** 361  ·  **fixtures:** 94  ·  **annexed (generated) elements:** 19
+- **Covered:** 63 (17%)
+- **By status:** `deferred` 18 · `gap` 274 · `needs-review` 6 · `pass` 63
+- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 19 · `needs-review` 6 · `no-output` 4 · `specified` 312
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -159,7 +159,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `q` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `s` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `samp` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
-| `span` | blanket | generic-implicit | `sweep/swp-inline.emd` | 🟢 pass |
 | `strong` | base | specified | — | 🔴 gap |
 | `strong` | id | specified | — | 🔴 gap |
 | `strong` | class | specified | — | 🔴 gap |
@@ -229,6 +228,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `svg` | kwarg:height | specified | — | 🔴 gap |
 | `svg` | kwarg:viewBox | specified | — | 🔴 gap |
 | `svg` | kwarg:caption | specified | — | 🔴 gap |
+| `svg` | form:pipe | specified | — | 🔴 gap |
 | `svg` | form:long | specified | — | 🔴 gap |
 | `table` | base | specified | — | 🔴 gap |
 | `table` | id | specified | — | 🔴 gap |
@@ -402,11 +402,6 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|
-| `marginnote` | base | specified | — | 🔴 gap |
-| `marginnote` | id | specified | — | 🔴 gap |
-| `marginnote` | class | specified | — | 🔴 gap |
-| `marginnote` | form:pipe | specified | `document-57-marginnotes.emd` | 🟢 pass |
-| `marginnote` | form:long | specified | — | 🔴 gap |
 | `note` | base | specified | — | 🔴 gap |
 | `note` | id | specified | — | 🔴 gap |
 | `note` | class | specified | — | 🔴 gap |
@@ -433,6 +428,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `bibliography` | kwarg:style | specified | — | 🔴 gap |
 | `bibliography` | kwarg:sort | specified | — | 🔴 gap |
 | `bibliography` | kwarg:type | specified | — | 🔴 gap |
+| `bibliography` | form:slash | specified | — | 🔴 gap |
 | `bibliography` | form:long | specified | — | 🔴 gap |
 
 ## RQ-TOC — Table-of-contents sidebar and scroll-spy
@@ -451,11 +447,22 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `book-part` | base | specified | — | 🔴 gap |
 | `book-part` | id | specified | — | 🔴 gap |
 | `book-part` | class | specified | — | 🔴 gap |
-| `book-part` | kwarg:book-part-type | specified | `context/ctx-book-complete.emd` | 🟢 pass |
+| `book-part` | kwarg:type | specified | — | 🔴 gap |
 | `book-part` | kwarg:numbering-style | specified | — | 🔴 gap |
 | `book-part` | kwarg:note-position | specified | — | 🔴 gap |
 | `book-part` | form:pipe | specified | `context/ctx-book-complete.emd` | 🟢 pass |
 | `book-part` | form:long | specified | — | 🔴 gap |
+
+## ? — live-vocabulary elements with no coverage-map row (needs-review)
+
+| element | cell | status |
+|---|---|---|
+| `caption` | base | 🔵 needs-review |
+| `endnotes` | base | 🔵 needs-review |
+| `item` | base | 🔵 needs-review |
+| `minipage` | base | 🔵 needs-review |
+| `nav` | base | 🔵 needs-review |
+| `nav-group` | base | 🔵 needs-review |
 
 ## Annex — generated / not-authored-directly elements
 

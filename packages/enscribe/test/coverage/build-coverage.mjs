@@ -30,8 +30,12 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, '..', 'fixtures');
 const RESULTS_PATH = join(__dirname, 'results.json'); // written by the predicate harness
-const OUT_JSON = join(FIXTURES_DIR, 'coverage.json');
-const OUT_MD = join(FIXTURES_DIR, 'COVERAGE.md');
+// Output dir is overridable via env so the freshness guard (coverage-fresh.test.js)
+// can regenerate to a temp dir and diff against the committed manifest without
+// touching the working tree. Unset (the normal case) → writes in place, unchanged.
+const OUT_DIR = process.env.ENSCRIBE_COVERAGE_OUTDIR || FIXTURES_DIR;
+const OUT_JSON = join(OUT_DIR, 'coverage.json');
+const OUT_MD = join(OUT_DIR, 'COVERAGE.md');
 
 const vocabGet = (k) => (VOCABULARY instanceof Map ? VOCABULARY.get(k) : VOCABULARY[k]);
 const vocabKeys = () => (VOCABULARY instanceof Map ? [...VOCABULARY.keys()] : Object.keys(VOCABULARY));
