@@ -25,7 +25,7 @@ content:
     constructs are interpreted inside the code block. Newlines are preserved.
 shorthand_examples:
   - source: '<``` python | print("hello, world") ```>'
-    layer1_html: '<pre><code class="language-python"> print("hello, world") </code></pre>'
+    ehtml: '<pre><code class="language-python"> print("hello, world") </code></pre>'
     notes: |
       The triple-backtick sigil. The first positional token is the
       language (emitted as a `language-X` class on the <code>); the pipe
@@ -33,7 +33,7 @@ shorthand_examples:
       pipe-form padding (the spaces around the content) is KEPT, since
       whitespace in code is significant and visible to the reader. (#327)
   - source: '<``` this is all content ```>'
-    layer1_html: '<pre><code> this is all content </code></pre>'
+    ehtml: '<pre><code> this is all content </code></pre>'
     notes: |
       The no-pipe form: the entire body is opaque content with no language
       extraction.

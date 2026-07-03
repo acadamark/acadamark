@@ -36,13 +36,13 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <proposition | The sum of two even integers is even.>
-    layer1_html: '<proposition><span class="proposition-label">Proposition 1.</span><p>The sum of two even integers is even.</p></proposition>'
+    ehtml: '<proposition><span class="proposition-label">Proposition 1.</span><p>The sum of two even integers is even.</p></proposition>'
   - source: |
       <proposition name="Cauchy-Schwarz">
       For any vectors $u$, $v$ in an inner-product space,
       $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
       </proposition>
-    layer1_html: |
+    ehtml: |
       <proposition data-name="Cauchy-Schwarz">For any vectors $u$, $v$ in an inner-product space, $|\langle u, v \rangle| \le \|u\| \, \|v\|$.</proposition>
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js

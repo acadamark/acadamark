@@ -32,11 +32,11 @@ jats_counterpart:
     role: a stylistic distinction without emphasis.
 shorthand_examples:
   - source: 'The species is <i type=taxonomic | Loxodonta africana>.'
-    layer1_html: '<p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>'
+    ehtml: '<p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>'
   - source: 'The French <i type=foreign | tour de force> is impressive.'
-    layer1_html: '<p>The French <i data-italic-type="foreign">tour de force</i> is impressive.</p>'
+    ehtml: '<p>The French <i data-italic-type="foreign">tour de force</i> is impressive.</p>'
   - source: 'The technical term <i type=technical | mitochondria> refers to organelles.'
-    layer1_html: '<p>The technical term <i data-italic-type="technical">mitochondria</i> refers to organelles.</p>'
+    ehtml: '<p>The technical term <i data-italic-type="technical">mitochondria</i> refers to organelles.</p>'
 interpreter_strategy: schema
 ---
 

@@ -47,7 +47,7 @@ shorthand_examples:
         <dt | Layer 2>
         <dd | The shorthand authoring syntax that compiles to Layer 1.>
       </dl>
-    layer1_html: |
+    ehtml: |
       <dl>
         <dt>enscribe</dt>
         <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>
@@ -65,7 +65,7 @@ shorthand_examples:
         <dd | First definition of term-1.>
         <dd | Second definition of term-1.>
       </dl>
-    layer1_html: |
+    ehtml: |
       <dl class="compact">
         <dt>term-1</dt>
         <dd><p>First definition of term-1.</p></dd>

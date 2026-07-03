@@ -41,13 +41,13 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <remark | The converse does not hold in general.>
-    layer1_html: '<remark><span class="remark-label">Remark.</span><p>The converse does not hold in general.</p></remark>'
+    ehtml: '<remark><span class="remark-label">Remark.</span><p>The converse does not hold in general.</p></remark>'
   - source: |
       <remark>
       The hypothesis of compactness is essential here; without it
       the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
       </remark>
-    layer1_html: |
+    ehtml: |
       <remark>The hypothesis of compactness is essential here; without it the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).</remark>
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js

@@ -40,14 +40,14 @@ shorthand_examples:
       <author>
         <name | Jane Goodall>
       </author>
-    layer1_html: |
+    ehtml: |
       <author>
         <name>Jane Goodall</name>
       </author>
     notes: |
       The common case. Pipe content becomes the name string.
   - source: '<author name="Jane Goodall" orcid="0000-0001-2345-6789" +corresponding>'
-    layer1_html: |
+    ehtml: |
       <author corresponding>
         <name>Jane Goodall</name>
         <orcid>0000-0001-2345-6789</orcid>

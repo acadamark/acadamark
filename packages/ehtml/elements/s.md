@@ -25,12 +25,12 @@ jats_counterpart:
     JATS uses <strike> for strikethrough text.
 shorthand_examples:
   - source: 'The price is ~~$50~~ now $40.'
-    layer1_html: '<p>The price is <s>$50</s> now $40.</p>'
+    ehtml: '<p>The price is <s>$50</s> now $40.</p>'
     notes: |
       GFM's tilde syntax produces <s> elements. The most common
       authoring path for casual strikethrough.
   - source: 'The claim <s type=retracted | was unsupported> has been corrected.'
-    layer1_html: '<p>The claim <s data-strikethrough-type="retracted">was unsupported</s> has been corrected.</p>'
+    ehtml: '<p>The claim <s data-strikethrough-type="retracted">was unsupported</s> has been corrected.</p>'
 interpreter_strategy: schema
 ---
 

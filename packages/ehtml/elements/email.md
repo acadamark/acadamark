@@ -29,7 +29,7 @@ shorthand_examples:
         <name | Jane Goodall>
         <email | jane@example.org>
       </author>
-    layer1_html: '<author><name>Jane Goodall</name><email><a href="mailto:jane@example.org">jane@example.org</a></email></author>'
+    ehtml: '<author><name>Jane Goodall</name><email><a href="mailto:jane@example.org">jane@example.org</a></email></author>'
     notes: |
       Author contact email. Common in journal article metadata for
       the corresponding author (see also the +corresponding boolean

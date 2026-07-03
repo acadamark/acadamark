@@ -43,21 +43,21 @@ jats_counterpart:
     kwarg value.
 shorthand_examples:
   - source: '<date | 2024-03-15>'
-    layer1_html: '<date>2024-03-15</date>'
+    ehtml: '<date>2024-03-15</date>'
     notes: |
       A bare <date> is UNTYPED (no data-date-type) — an authoring date is
       "when you wrote it" (like the date on a letter), not a publication
       date (cf. Quarto/Pandoc/Bookdown preamble date slots). Use an explicit
       type= (e.g. <date type=publication | …>) for a typed date. (#325)
   - source: '<date type=submission | 2023-11-01>'
-    layer1_html: '<date data-date-type="submission">2023-11-01</date>'
+    ehtml: '<date data-date-type="submission">2023-11-01</date>'
   - source: |
       <meta>
         <date type=submission | 2023-11-01>
         <date type=acceptance | 2024-02-10>
         <date type=publication | 2024-03-15>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <date data-date-type="submission">2023-11-01</date>
         <date data-date-type="acceptance">2024-02-10</date>
@@ -67,7 +67,7 @@ shorthand_examples:
       Multiple dates of different types. The publication date is the
       primary; submission, acceptance, etc., go in JATS history.
   - source: '<date | March 15, 2024>'
-    layer1_html: '<date>March 15, 2024</date>'
+    ehtml: '<date>March 15, 2024</date>'
     notes: |
       Free-form date format. Acceptable but ISO 8601 is preferred for
       machine readability and for predictable JATS export.

@@ -31,12 +31,12 @@ jats_counterpart:
     not a scholarly-content concern JATS models.
 shorthand_examples:
   - source: 'The function takes a parameter <var | n> and returns <var | n>²+1.'
-    layer1_html: '<p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>'
+    ehtml: '<p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>'
     notes: |
       Variable names in prose. Browsers render <var> in italic by
       default, distinguishing it from surrounding prose.
   - source: 'Set <var | threshold> to <samp | 0.05>.'
-    layer1_html: '<p>Set <var>threshold</var> to <samp>0.05</samp>.</p>'
+    ehtml: '<p>Set <var>threshold</var> to <samp>0.05</samp>.</p>'
     notes: |
       <var> for the variable name and <samp> for a sample value —
       the natural pair for documenting configuration in technical writing.

@@ -31,16 +31,16 @@ jats_counterpart:
     preserved as an HTML data attribute but does not appear in JATS export.
 shorthand_examples:
   - source: '<p | A simple paragraph.>'
-    layer1_html: '<p>A simple paragraph.</p>'
+    ehtml: '<p>A simple paragraph.</p>'
   - source: 'A paragraph written without explicit tags.'
-    layer1_html: '<p>A paragraph written without explicit tags.</p>'
+    ehtml: '<p>A paragraph written without explicit tags.</p>'
     notes: |
       In most cases, paragraphs do not need to be written with explicit
       tags. Plain markdown handles paragraph separation: blank lines
       delineate paragraphs. The explicit <p> form is used when attributes
       (id, classes, type) are needed.
   - source: '<p type=lead | The opening paragraph of an article.>'
-    layer1_html: '<p data-paragraph-type="lead">The opening paragraph of an article.</p>'
+    ehtml: '<p data-paragraph-type="lead">The opening paragraph of an article.</p>'
 interpreter_strategy: schema
 ---
 

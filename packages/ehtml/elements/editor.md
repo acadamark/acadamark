@@ -77,12 +77,12 @@ jats_counterpart:
     <email>).
 shorthand_examples:
   - source: '<editor | The Editor>'
-    layer1_html: '<editor>The Editor</editor>'
+    ehtml: '<editor>The Editor</editor>'
     notes: |
       Casual form — the pipe content is the editor's name (text content,
       not lifted to a <name> child), mirroring <author | ...>.
   - source: '<editor role=series-editor name="Jane Goodall" affiliation="Cambridge University" />'
-    layer1_html: '<editor data-role="series-editor"><name>Jane Goodall</name><affiliation>Cambridge University</affiliation></editor>'
+    ehtml: '<editor data-role="series-editor"><name>Jane Goodall</name><affiliation>Cambridge University</affiliation></editor>'
     notes: |
       Kwarg form. name / affiliation / orcid / email lift to child tags at
       the gate (unified to <author>'s shape, #338); role stays a scalar

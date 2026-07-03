@@ -43,7 +43,7 @@ shorthand_examples:
       significantly affect regional climate patterns through their
       role in shaping vegetation and carbon storage.
       >
-    layer1_html: |
+    ehtml: |
       <abstract>
         <p>This paper presents new evidence that elephant populations significantly affect regional climate patterns through their role in shaping vegetation and carbon storage.</p>
       </abstract>
@@ -59,7 +59,7 @@ shorthand_examples:
 
       **Conclusion:** Conservation efforts are essential.
       >
-    layer1_html: '<abstract data-abstract-type="structured"><p><b>Background:</b> Elephant populations have declined significantly.</p><p><b>Methods:</b> We surveyed 50 forest sites over 10 years.</p><p><b>Results:</b> Decline correlates with vegetation loss.</p><p><b>Conclusion:</b> Conservation efforts are essential.</p></abstract>'
+    ehtml: '<abstract data-abstract-type="structured"><p><b>Background:</b> Elephant populations have declined significantly.</p><p><b>Methods:</b> We surveyed 50 forest sites over 10 years.</p><p><b>Results:</b> Decline correlates with vegetation loss.</p><p><b>Conclusion:</b> Conservation efforts are essential.</p></abstract>'
     notes: |
       Structured abstract using markdown bold for section headings.
       Common in medical and scientific journals. The structure is
@@ -68,7 +68,7 @@ shorthand_examples:
       <abstract word-limit=250 |
       This paper presents...
       >
-    layer1_html: |
+    ehtml: |
       <abstract data-word-limit="250">
         <p>This paper presents…</p>
       </abstract>

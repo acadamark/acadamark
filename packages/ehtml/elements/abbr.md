@@ -36,12 +36,12 @@ jats_counterpart:
     enscribe's title kwarg to the JATS form the target schema expects.
 shorthand_examples:
   - source: 'The <abbr title="Document Object Model" | DOM> is the browser API for HTML.'
-    layer1_html: '<p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>'
+    ehtml: '<p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>'
     notes: |
       Standard pattern — abbreviation with its expansion as the title
       kwarg. Browsers show the expansion in a hover tooltip.
   - source: 'Using <abbr | CSS> selectors.'
-    layer1_html: '<p>Using <abbr>CSS</abbr> selectors.</p>'
+    ehtml: '<p>Using <abbr>CSS</abbr> selectors.</p>'
     notes: |
       Bare abbreviation, no title. Acceptable when the expansion
       has already been introduced earlier in the document.

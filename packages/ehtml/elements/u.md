@@ -27,9 +27,9 @@ jats_counterpart:
     indicates hyperlinks in modern web rendering.
 shorthand_examples:
   - source: 'The author wrote <u type=misspelling | recieve> in the original.'
-    layer1_html: '<p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>'
+    ehtml: '<p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>'
   - source: 'The Chinese name <u type=proper-name | 王明> appears here.'
-    layer1_html: '<p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>'
+    ehtml: '<p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>'
 interpreter_strategy: schema
 ---
 

@@ -31,13 +31,13 @@ jats_counterpart:
     with the content-type attribute from enscribe's <term>.
 shorthand_examples:
   - source: 'An <term | eigenvector> is a non-zero vector that scales under a linear transformation.'
-    layer1_html: '<p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>'
+    ehtml: '<p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>'
     notes: |
       Standard term introduction. The element marks the word as
       "this is a term being introduced," typically rendered in italic
       or bold by default CSS.
   - source: 'An <term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize <term | eigenvector>s to operators.'
-    layer1_html: '<p>An <term id="term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>'
+    ehtml: '<p>An <term id="term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>'
     notes: |
       First introduction carries an id so later references can link
       back to it. Subsequent uses of the same term (without an id)

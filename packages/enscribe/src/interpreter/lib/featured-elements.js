@@ -21,7 +21,7 @@
 //   • CONTEXT-FREE — no `requires-context` element (<cite> needs a bibliography and
 //     <book-part> shorthands need a book; both render empty/misleading in isolation).
 //   • Carries a usable example — `shorthand_examples[0].source` must exist, and for
-//     the Layer 1 list its `.layer1_html` expansion too (the Layer 1 intro DISPLAYS the
+//     the Layer 1 list its `.ehtml` expansion too (the Layer 1 intro DISPLAYS the
 //     canonical expansion in a three-part shorthand → Layer 1 → rendered form).
 //   • Beginner-legible and representative — a section, a figure, a note, math, etc.
 //
@@ -46,7 +46,7 @@ export const FEATURED_SHORTHAND = [
 /**
  * Featured constructs for the **Layer 1** intro — the semantic-HTML substrate that
  * shorthand expands to. Each is shown as the shorthand source → its canonical
- * `layer1_html` expansion → one live render (the "shorthand expands to Layer 1" form).
+ * `ehtml` expansion → one live render (the "shorthand expands to Layer 1" form).
  */
 export const FEATURED_LAYER1 = [
   'section',

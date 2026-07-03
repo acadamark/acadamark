@@ -38,13 +38,13 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <definition | A *group* is a set with an associative binary operation, identity, and inverses.>
-    layer1_html: '<definition><span class="definition-label">Definition 1.</span><p>A <i>group</i> is a set with an associative binary operation, identity, and inverses.</p></definition>'
+    ehtml: '<definition><span class="definition-label">Definition 1.</span><p>A <i>group</i> is a set with an associative binary operation, identity, and inverses.</p></definition>'
   - source: |
       <definition name="Group" #def:group>
       A *group* is a set $G$ together with a binary operation
       $\cdot$ satisfying associativity, identity, and inverses.
       </definition>
-    layer1_html: |
+    ehtml: |
       <definition id="def:group" data-name="Group">A <em>group</em> is a set $G$ together with a binary operation $\cdot$ satisfying associativity, identity, and inverses.</definition>
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js

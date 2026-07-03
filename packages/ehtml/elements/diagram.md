@@ -57,7 +57,7 @@ shorthand_examples:
         B -->|yes| C[OK]
         B -->|no| D[Stop]
       </diagram>
-    layer1_html: |
+    ehtml: |
       <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
         A[Start] --> B{Decision}
         B -->|yes| C[OK]
@@ -73,7 +73,7 @@ shorthand_examples:
       K:C
       CDEFGABc
       </diagram>
-    layer1_html: |
+    ehtml: |
       <pre class="abc" data-enscribe-dsl="abc">X:1
       T:Scale
       K:C

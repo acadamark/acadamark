@@ -32,16 +32,16 @@ jats_counterpart:
     prefers explicit semantic structure over thematic breaks.
 shorthand_examples:
   - source: '<hr>'
-    layer1_html: '<hr />'
+    ehtml: '<hr />'
   - source: '<hr type=scene-break>'
-    layer1_html: '<hr data-hr-type="scene-break" />'
+    ehtml: '<hr data-hr-type="scene-break" />'
   - source: |
       <p | First paragraph.>
 
       <hr type=ornamental>
 
       <p | Second paragraph after a thematic break.>
-    layer1_html: |
+    ehtml: |
       <p>First paragraph.</p>
       <hr data-hr-type="ornamental" />
       <p>Second paragraph after a thematic break.</p>

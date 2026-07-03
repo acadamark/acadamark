@@ -36,7 +36,7 @@ shorthand_examples:
         <name | Jane Goodall>
         <affiliation | Anthropic>
       </author>
-    layer1_html: |
+    ehtml: |
       <author>
         <name>Jane Goodall</name>
         <affiliation>Anthropic</affiliation>
@@ -54,7 +54,7 @@ shorthand_examples:
         <name | David Attenborough>
         <affiliation #aff1 />
       </author>
-    layer1_html: |
+    ehtml: |
       <author>
         <name>Jane Goodall</name>
         <affiliation id="aff1">Anthropic, San Francisco, USA</affiliation>

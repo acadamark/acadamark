@@ -39,7 +39,7 @@ shorthand_examples:
         <dt | enscribe>
         <dd | An academic publishing system built on HTML+CSS+JS.>
       </glossary-entry>
-    layer1_html: |
+    ehtml: |
       <glossary-entry id="term:enscribe">
         <dt>enscribe</dt>
         <dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>

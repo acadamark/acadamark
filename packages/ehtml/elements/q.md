@@ -29,12 +29,12 @@ jats_counterpart:
     (Unicode left/right double quotes) rather than a JATS element.
 shorthand_examples:
   - source: 'She said <q | hello> in passing.'
-    layer1_html: '<p>She said <q>hello</q> in passing.</p>'
+    ehtml: '<p>She said <q>hello</q> in passing.</p>'
     notes: |
       Browsers automatically render <q> with quotation marks. Authors
       do not include quotation marks in the content.
   - source: 'The phrase <q cite=https://example.com | to be or not to be> is iconic.'
-    layer1_html: '<p>The phrase <q cite="https://example.com">to be or not to be</q> is iconic.</p>'
+    ehtml: '<p>The phrase <q cite="https://example.com">to be or not to be</q> is iconic.</p>'
 interpreter_strategy: schema
 ---
 

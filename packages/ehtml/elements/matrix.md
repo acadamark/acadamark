@@ -34,7 +34,7 @@ shorthand_examples:
       1 & 2 \\
       3 & 4
       </matrix>
-    layer1_html: |
+    ehtml: |
       <matrix>(KaTeX-rendered HTML of \begin{matrix}1 & 2 \\ 3 & 4\end{matrix})</matrix>
     notes: |
       A 2×2 matrix. The handler wraps the body in

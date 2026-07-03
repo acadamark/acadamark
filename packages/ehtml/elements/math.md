@@ -34,7 +34,7 @@ shorthand_examples:
       <math>
       E = mc^2
       </math>
-    layer1_html: |
+    ehtml: |
       <math>(KaTeX-rendered HTML)</math>
     notes: |
       Long-form `<math>` block. Semantically equivalent to the

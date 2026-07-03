@@ -57,7 +57,7 @@ shorthand_examples:
 
       <section | Conclusion>
       The paper concludes here.
-    layer1_html: |
+    ehtml: |
       <article>
         <article-front>
           <meta data-document-type="article">
@@ -91,7 +91,7 @@ shorthand_examples:
 
       <section | Introduction>
       The paper begins here.
-    layer1_html: |
+    ehtml: |
       <article>
         <article-front>
           <meta>
@@ -117,7 +117,7 @@ shorthand_examples:
 
       <section | Conclusion>
       The conclusion.
-    layer1_html: |
+    ehtml: |
       <article>
         <article-body>
           <section>

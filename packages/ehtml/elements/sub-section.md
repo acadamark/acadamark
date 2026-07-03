@@ -59,7 +59,7 @@ shorthand_examples:
   - source: |
       <sub-section | Quantitative analysis>
       Sub-section content.
-    layer1_html: |
+    ehtml: |
       <sub-section>
         <sub-section-title>Quantitative analysis</sub-section-title>
         <p>Sub-section content.</p>
@@ -74,7 +74,7 @@ shorthand_examples:
 
       <sub-section | Sensitivity analyses>
       Sub-section content.
-    layer1_html: |
+    ehtml: |
       <section>
         <section-title>Results</section-title>
         <sub-section>

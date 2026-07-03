@@ -19,11 +19,11 @@ jats_counterpart:
   element: sup
 shorthand_examples:
   - source: 'The 1<sup | st> edition of the work.'
-    layer1_html: '<p>The 1<sup>st</sup> edition of the work.</p>'
+    ehtml: '<p>The 1<sup>st</sup> edition of the work.</p>'
   - source: 'The function f(x) = x<sup | 2>.'
-    layer1_html: '<p>The function f(x) = x<sup>2</sup>.</p>'
+    ehtml: '<p>The function f(x) = x<sup>2</sup>.</p>'
   - source: 'The isotope <sup | 12>C is abundant.'
-    layer1_html: '<p>The isotope <sup>12</sup>C is abundant.</p>'
+    ehtml: '<p>The isotope <sup>12</sup>C is abundant.</p>'
 interpreter_strategy: schema
 ---
 

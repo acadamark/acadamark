@@ -18,7 +18,7 @@ content:
     valid LaTeX math syntax.
 shorthand_examples:
   - source: 'The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.'
-    layer1_html: '<p>The identity <inline-math><span class="katex">…</span></inline-math> holds for right triangles.</p>'
+    ehtml: '<p>The identity <inline-math><span class="katex">…</span></inline-math> holds for right triangles.</p>'
     notes: |
       The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
       wrapped in <inline-math> for CSS targeting. The sigil carries no

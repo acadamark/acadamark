@@ -131,7 +131,7 @@ shorthand_examples:
 
       <section | Introduction>
       The paper begins.
-    layer1_html: |
+    ehtml: |
       <article>
         <article-front>
           <meta data-document-type="article">
@@ -163,7 +163,7 @@ shorthand_examples:
 
       <chapter | Origins>
       Content.
-    layer1_html: |
+    ehtml: |
       <book>
         <book-front>
           <meta data-document-type="book">

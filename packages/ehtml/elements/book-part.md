@@ -107,7 +107,7 @@ shorthand_examples:
   - source: |
       <chapter | Origins>
       Content of the chapter.
-    layer1_html: |
+    ehtml: |
       <book-part book-part-type="chapter">
         <meta>
           <book-part-title>Origins</book-part-title>
@@ -121,7 +121,7 @@ shorthand_examples:
 
       <chapter | Second Chapter>
       Content.
-    layer1_html: |
+    ehtml: |
       <book-part book-part-type="part">
         <meta>
           <book-part-title>Part I: Foundations</book-part-title>
@@ -148,7 +148,7 @@ shorthand_examples:
 
       <appendix | Notation>
       Notation conventions used in this book.
-    layer1_html: |
+    ehtml: |
       <book-part book-part-type="preface">
         <meta>
           <book-part-title>A Note from the Author</book-part-title>

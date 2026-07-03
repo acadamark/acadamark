@@ -54,7 +54,7 @@ shorthand_examples:
           }
         </library>
       </data>
-    layer1_html: |
+    ehtml: |
       <data>
         <library format="bibtex">
           @article{goodall2024,

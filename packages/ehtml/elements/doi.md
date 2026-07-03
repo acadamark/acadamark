@@ -31,14 +31,14 @@ shorthand_examples:
       <meta>
         <doi | 10.1234/example.2024>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <doi>10.1234/example.2024</doi>
       </meta>
     notes: |
       Bare DOI as the typical authoring form.
   - source: '<meta doi="10.5555/test" />'
-    layer1_html: |
+    ehtml: |
       <meta>
         <doi>10.5555/test</doi>
       </meta>

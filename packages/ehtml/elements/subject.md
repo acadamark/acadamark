@@ -41,7 +41,7 @@ shorthand_examples:
       <meta>
         <subject | Ecology of large mammals>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <subject>Ecology of large mammals</subject>
       </meta>
@@ -52,7 +52,7 @@ shorthand_examples:
         <subject scheme=MSC2020 | 92D40>
         <subject scheme=MSC2020 | 92D25>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <subject data-subject-scheme="MSC2020">92D40</subject>
         <subject data-subject-scheme="MSC2020">92D25</subject>

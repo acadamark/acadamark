@@ -56,7 +56,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
-    layer1_html: |
+    ehtml: |
       <theorem>If $a^2 + b^2 = c^2$ then the triangle is right-angled.</theorem>
     notes: |
       Short-form with pipe content. The body is parsed normally.
@@ -65,7 +65,7 @@ shorthand_examples:
       If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
       is right-angled.
       </theorem>
-    layer1_html: |
+    ehtml: |
       <theorem id="thm:pyth" data-name="Pythagoras">If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$ is right-angled.</theorem>
     notes: |
       Long-form with the optional name kwarg. Cross-referenceable

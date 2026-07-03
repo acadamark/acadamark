@@ -37,7 +37,7 @@ shorthand_examples:
       x^2 + y^2 &= z^2 \\
       a + b &= c
       </align>
-    layer1_html: |
+    ehtml: |
       <align>(KaTeX-rendered HTML of \begin{aligned}...\end{aligned})</align>
     notes: |
       Two aligned equations. The `&` marks the alignment column (here,

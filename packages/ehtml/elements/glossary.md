@@ -40,7 +40,7 @@ shorthand_examples:
           <dd | The canonical semantic HTML vocabulary.>
         </glossary-entry>
       </glossary>
-    layer1_html: |
+    ehtml: |
       <glossary id="project-terms">
         <glossary-entry>
           <dt>enscribe</dt>

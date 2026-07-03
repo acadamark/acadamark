@@ -38,7 +38,7 @@ shorthand_examples:
       f(x) &=& x^2 \\
       g(x) &=& 2x
       </eqnarray>
-    layer1_html: |
+    ehtml: |
       <eqnarray>(KaTeX-rendered HTML of \begin{aligned}...\end{aligned})</eqnarray>
     notes: |
       Two equations rendered via KaTeX's `aligned` env (the supported

@@ -60,17 +60,17 @@ jats_counterpart:
     exporter typically transforms the link into an <xref> instead.
 shorthand_examples:
   - source: 'See <a https://example.com/docs | the documentation>.'
-    layer1_html: '<p>See <a href="https://example.com/docs">the documentation</a>.</p>'
+    ehtml: '<p>See <a href="https://example.com/docs">the documentation</a>.</p>'
     notes: |
       The positional URL form — the target is the first argument, the pipe
       content is the link text. The most common authoring path. (Markdown
       `[text](url)` is not an enscribe idiom; it renders as literal text.)
   - source: '<a href=https://example.com | the example site>'
-    layer1_html: '<a href="https://example.com">the example site</a>'
+    ehtml: '<a href="https://example.com">the example site</a>'
   - source: '<a href=https://example.com target=_blank rel=noopener | external link>'
-    layer1_html: '<a href="https://example.com" target="_blank" rel="noopener">external link</a>'
+    ehtml: '<a href="https://example.com" target="_blank" rel="noopener">external link</a>'
   - source: '<a href=#section-2 | jump to Section 2>'
-    layer1_html: '<a href="#section-2">jump to Section 2</a>'
+    ehtml: '<a href="#section-2">jump to Section 2</a>'
     notes: |
       Internal links use fragment identifiers pointing at element ids.
 interpreter_strategy: handler

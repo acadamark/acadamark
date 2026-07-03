@@ -32,13 +32,13 @@ jats_counterpart:
     documentation, not a scholarly-content concern JATS models.
 shorthand_examples:
   - source: 'Press <kbd | Ctrl+C> to copy.'
-    layer1_html: '<p>Press <kbd>Ctrl+C</kbd> to copy.</p>'
+    ehtml: '<p>Press <kbd>Ctrl+C</kbd> to copy.</p>'
     notes: |
       Single chord as a kbd block. Browsers render <kbd> in a
       monospace font by default, distinguishing it from surrounding
       prose.
   - source: 'Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.'
-    layer1_html: '<p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>'
+    ehtml: '<p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>'
     notes: |
       Nested <kbd> distinguishes individual keys in a chord. Browsers
       render the outer block as the chord and the inner blocks as

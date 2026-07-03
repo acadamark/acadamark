@@ -35,7 +35,7 @@ shorthand_examples:
       <meta>
         <lang | en-US>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <lang>en-US</lang>
       </meta>
@@ -44,7 +44,7 @@ shorthand_examples:
       child element of <meta>; downstream consumers (the JATS exporter,
       the render-mode lowering) project it where each format expects.
   - source: '<meta lang="fr" />'
-    layer1_html: |
+    ehtml: |
       <meta>
         <lang>fr</lang>
       </meta>

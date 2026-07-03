@@ -26,11 +26,11 @@ jats_counterpart:
     wraps the <dt>/<dd> pair in <def-item> at export.
 shorthand_examples:
   - source: '<dt | enscribe>'
-    layer1_html: '<dt>enscribe</dt>'
+    ehtml: '<dt>enscribe</dt>'
     notes: |
       A definition-list term. Appears as a child of <dl>.
   - source: '<dt | <code | strict-mode>>'
-    layer1_html: '<dt><code>strict-mode</code></dt>'
+    ehtml: '<dt><code>strict-mode</code></dt>'
     notes: |
       Inline markup in a term. The recursive-content pass parses the
       pipe content normally.

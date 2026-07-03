@@ -36,11 +36,11 @@ function checkList(name, list, { requireLayer1Html }) {
       !spec['requires-context'],
       `${name}: featured tag '${tag}' requires '${spec['requires-context']}' context — it renders empty on the intro; pick a context-free construct.`,
     );
-    // (5) Layer 1 list only: the intro DISPLAYS the canonical layer1_html expansion.
+    // (5) Layer 1 list only: the intro DISPLAYS the canonical ehtml expansion.
     if (requireLayer1Html) {
       assert.ok(
-        typeof ex.layer1_html === 'string' && ex.layer1_html.trim(),
-        `${name}: featured tag '${tag}' has no shorthand_examples[0].layer1_html — the Layer 1 intro's expansion column would be empty.`,
+        typeof ex.ehtml === 'string' && ex.ehtml.trim(),
+        `${name}: featured tag '${tag}' has no shorthand_examples[0].ehtml — the Layer 1 intro's expansion column would be empty.`,
       );
     }
   }

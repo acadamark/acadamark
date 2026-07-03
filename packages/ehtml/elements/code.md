@@ -30,19 +30,19 @@ jats_counterpart:
     <code> maps to JATS <monospace>.
 shorthand_examples:
   - source: 'The function is `factorial`.'
-    layer1_html: '<p>The function is <code>factorial</code>.</p>'
+    ehtml: '<p>The function is <code>factorial</code>.</p>'
     notes: |
       Plain markdown backticks produce inline <code>. The most common
       authoring path.
   - source: 'Use `<`code`>` for inline code.'
-    layer1_html: '<p>Use <code>&#x3C;</code>code<code>></code> for inline code.</p>'
+    ehtml: '<p>Use <code>&#x3C;</code>code<code>></code> for inline code.</p>'
     notes: |
       The enscribe sigil form. Equivalent to plain markdown backticks
       but supports attributes.
   - source: '<code language=python | def hello(): print("hi")>'
-    layer1_html: '<code class="language-python">def hello(): print("hi")</code>'
+    ehtml: '<code class="language-python">def hello(): print("hi")</code>'
   - source: '<code #factorial-impl language=python | def factorial(n):>'
-    layer1_html: '<code id="factorial-impl" class="language-python">def factorial(n):</code>'
+    ehtml: '<code id="factorial-impl" class="language-python">def factorial(n):</code>'
 interpreter_strategy: handler
 handler_module: ./handlers/code.js
 handler_responsibilities:

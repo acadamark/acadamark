@@ -36,7 +36,7 @@ shorthand_examples:
       <meta>
         <version | 1.0.0>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <version>1.0.0</version>
       </meta>
@@ -44,7 +44,7 @@ shorthand_examples:
       Semantic version. Other formats are equally valid as a free-form
       string.
   - source: '<meta version="draft-2" />'
-    layer1_html: |
+    ehtml: |
       <meta>
         <version>draft-2</version>
       </meta>

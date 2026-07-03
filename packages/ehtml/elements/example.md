@@ -38,14 +38,14 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <example | The integers under addition form a group.>
-    layer1_html: '<example><span class="example-label">Example 1.</span><p>The integers under addition form a group.</p></example>'
+    ehtml: '<example><span class="example-label">Example 1.</span><p>The integers under addition form a group.</p></example>'
   - source: |
       <example #ex:integers>
       The integers $\mathbb{Z}$ under addition form a group: the
       operation is associative, $0$ is the identity, and every
       integer has an additive inverse.
       </example>
-    layer1_html: |
+    ehtml: |
       <example id="ex:integers">The integers $\mathbb{Z}$ under addition form a group: the operation is associative, $0$ is the identity, and every integer has an additive inverse.</example>
 interpreter_strategy: handler
 handler_module: ./handlers/theorem.js

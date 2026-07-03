@@ -36,7 +36,7 @@ shorthand_examples:
       <meta>
         <keywords | elephants, conservation, climate, carbon storage>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <keywords>elephants, conservation, climate, carbon storage</keywords>
       </meta>
@@ -44,7 +44,7 @@ shorthand_examples:
       Comma-separated keyword list — the simpler and more common
       authoring form. The exporter splits on commas when emitting JATS.
   - source: '<meta keywords="elephants, conservation, climate" />'
-    layer1_html: |
+    ehtml: |
       <meta>
         <keywords>elephants, conservation, climate</keywords>
       </meta>

@@ -50,7 +50,7 @@ shorthand_examples:
       Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
       even. $\square$
       </proof>
-    layer1_html: |
+    ehtml: |
       <theorem>The sum of two even integers is even.</theorem>
       <proof>Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is even. $\square$</proof>
     notes: |
@@ -60,7 +60,7 @@ shorthand_examples:
       <proof name="of Theorem 1.2">
       The argument follows from the preceding lemma.
       </proof>
-    layer1_html: '<proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span><p>The argument follows from the preceding lemma.</p></proof>'
+    ehtml: '<proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span><p>The argument follows from the preceding lemma.</p></proof>'
     notes: |
       Optional `name` kwarg lets the proof identify what it proves
       (useful when the proof is separated from its theorem by

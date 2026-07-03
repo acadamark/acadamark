@@ -62,7 +62,7 @@ shorthand_examples:
   - source: |
       <sub-sub-section | Regression analysis>
       Detailed methods for the regression.
-    layer1_html: |
+    ehtml: |
       <sub-sub-section>
         <sub-sub-section-title>Regression analysis</sub-sub-section-title>
         <p>Detailed methods for the regression.</p>
@@ -75,7 +75,7 @@ shorthand_examples:
 
       <sub-sub-section | Sensitivity testing>
       Sensitivity tests were performed.
-    layer1_html: |
+    ehtml: |
       <section>
         <section-title>Methods</section-title>
         <sub-section>

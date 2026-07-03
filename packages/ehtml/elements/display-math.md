@@ -29,7 +29,7 @@ content:
     valid LaTeX math syntax.
 shorthand_examples:
   - source: '<$$ \sum_{i=1}^{n} x_i = X $$>'
-    layer1_html: '<display-math><span class="katex-display">…</span><span class="equation-number">(1)</span></display-math>'
+    ehtml: '<display-math><span class="katex-display">…</span><span class="equation-number">(1)</span></display-math>'
     notes: |
       The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
       numbered by default (the equation number is appended after the KaTeX

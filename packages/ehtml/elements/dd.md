@@ -27,7 +27,7 @@ jats_counterpart:
     wraps the <dt>/<dd> pair in <def-item> at export.
 shorthand_examples:
   - source: '<dd | An academic publishing system built on HTML+CSS+JS.>'
-    layer1_html: '<dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>'
+    ehtml: '<dd><p>An academic publishing system built on HTML+CSS+JS.</p></dd>'
     notes: |
       A definition-list description. Appears as a child of <dl>,
       following the term it defines.
@@ -37,7 +37,7 @@ shorthand_examples:
 
       The second paragraph of the definition.
       >
-    layer1_html: |
+    ehtml: |
       <dd>
         <p>A multi-paragraph definition.</p>
         <p>The second paragraph of the definition.</p>

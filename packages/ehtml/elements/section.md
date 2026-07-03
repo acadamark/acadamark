@@ -69,7 +69,7 @@ shorthand_examples:
   - source: |
       <section | Introduction>
       The paper begins here.
-    layer1_html: |
+    ehtml: |
       <section>
         <section-title>Introduction</section-title>
         <p>The paper begins here.</p>
@@ -78,7 +78,7 @@ shorthand_examples:
       <section #methods sec-type=methods | Methods>
       <section-subtitle | A description of our experimental approach>
       The methods used in this study were as follows.
-    layer1_html: |
+    ehtml: |
       <section id="methods" data-sec-type="methods">
         <section-title>Methods</section-title>
         <section-subtitle>A description of our experimental approach</section-subtitle>
@@ -93,7 +93,7 @@ shorthand_examples:
 
       <sub-section | Qualitative observations>
       Sub-section content.
-    layer1_html: |
+    ehtml: |
       <section>
         <section-title>Results</section-title>
         <p>Results paragraph.</p>

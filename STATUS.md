@@ -118,7 +118,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] Imported-article demonstration page (a real published paper, via `import-jats`)
 - [x] Shorthand + Layer 1 reference catalogs (generated from the shorthand tag-forms source and the vocab `elements/*.md` — every form/element listed, never hand-maintained) (#236)
 - [x] Rendering guide — the three orthogonal axes (rendering · file-structure · editing), a yes/no render-choice flowchart, and the generated `<config>` option grid (one row per `CONFIG_KWARGS` key, guarded in lockstep so it cannot drift from what the engine accepts) (#239)
-- [x] Vocabulary intros — the two curated register introductions (Enscribe Shorthand · Layer 1): the conceptual idea plus a few featured constructs rendered live from the vocab source (the guarded `FEATURED_*` lists, so they can't drift), each linking into its comprehensive catalog. The Layer 1 intro shows each construct's shorthand → canonical `layer1_html` → live render (#241)
+- [x] Vocabulary intros — the two curated register introductions (Enscribe Shorthand · Layer 1): the conceptual idea plus a few featured constructs rendered live from the vocab source (the guarded `FEATURED_*` lists, so they can't drift), each linking into its comprehensive catalog. The Layer 1 intro shows each construct's shorthand → canonical `ehtml` → live render (#241)
 - [x] Static + live site build (`npm run build:site-all`: `docs-source/` → `site/` static, `site/live/` live)
 
 ## Packaging & infrastructure

@@ -84,7 +84,7 @@ shorthand_examples:
           year = {1859}
         }
       </library>
-    layer1_html: |
+    ehtml: |
       <library data-format="bibtex">
         @article{goodall2024,
           author = {Goodall, Jane},
@@ -118,7 +118,7 @@ shorthand_examples:
           }
         ]
       </library>
-    layer1_html: |
+    ehtml: |
       <library data-format="csl-json">
         [
           {

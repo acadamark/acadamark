@@ -28,7 +28,7 @@ jats_counterpart:
     honestly per the <lang>  precedent.
 shorthand_examples:
   - source: 'The function returns <output | 42> for the test input.'
-    layer1_html: '<p>The function returns <output>42</output> for the test input.</p>'
+    ehtml: '<p>The function returns <output>42</output> for the test input.</p>'
     notes: |
       Result of a calculation in prose. <output> is semantically
       distinct from <samp> — <samp> is what a program prints (a

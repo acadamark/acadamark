@@ -77,13 +77,13 @@ jats_counterpart:
     the export is generated; they don't appear in JATS output.
 shorthand_examples:
   - source: '<config citation-style=author-year number-sections=true />'
-    layer1_html: '<config></config>'
+    ehtml: '<config></config>'
     notes: |
       The authoring form for <config> is kwargs. Settings are read at the
       discovery pass into the configuration registry; the element itself
       produces no body output (it renders as an empty <config>).
   - source: '<config number-figures=true number-tables=true show-source=true />'
-    layer1_html: '<config></config>'
+    ehtml: '<config></config>'
     notes: |
       More operational options, all from the live kwarg allowlist
       (citation-style, number-sections, number-figures, number-tables,

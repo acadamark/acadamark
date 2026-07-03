@@ -57,7 +57,7 @@ shorthand_examples:
       <chapter | Modern populations>
       <section | African elephants>
       Content here.
-    layer1_html: |
+    ehtml: |
       <book>
         <book-front>
           <meta data-document-type="book">
@@ -107,7 +107,7 @@ shorthand_examples:
       <part | Part II: Applications>
       <chapter | Practical Examples>
       Content.
-    layer1_html: '<book><book-front><meta data-document-type="book"><book-title>The Comprehensive Guide</book-title><author>Author Name</author></meta></book-front><book-body><book-part book-part-type="part"><meta><book-part-title>Part I: Foundations</book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title>First Principles</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="chapter"><meta><book-part-title>Background</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="part"><meta><book-part-title>Part II: Applications</book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title>Practical Examples</book-part-title></meta><p>Content.</p></book-part></book-body></book>'
+    ehtml: '<book><book-front><meta data-document-type="book"><book-title>The Comprehensive Guide</book-title><author>Author Name</author></meta></book-front><book-body><book-part book-part-type="part"><meta><book-part-title>Part I: Foundations</book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title>First Principles</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="chapter"><meta><book-part-title>Background</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="part"><meta><book-part-title>Part II: Applications</book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title>Practical Examples</book-part-title></meta><p>Content.</p></book-part></book-body></book>'
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeBookStructuring

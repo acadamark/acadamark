@@ -27,12 +27,12 @@ jats_counterpart:
     the parent <details> (e.g., a <sec>'s <title>).
 shorthand_examples:
   - source: '<summary | More background>'
-    layer1_html: '<summary>More background</summary>'
+    ehtml: '<summary>More background</summary>'
     notes: |
       The visible heading of a <details> disclosure. Appears as a
       child of <details>.
   - source: '<summary | Click to reveal the <em | hidden> details>'
-    layer1_html: '<summary>Click to reveal the <em>hidden</em> details</summary>'
+    ehtml: '<summary>Click to reveal the <em>hidden</em> details</summary>'
     notes: |
       Inline markup in a summary. The recursive-content pass parses
       the pipe content normally.

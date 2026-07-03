@@ -28,13 +28,13 @@ jats_counterpart:
     the <lang> precedent.
 shorthand_examples:
   - source: 'The command prints <samp | Hello, world!> to stdout.'
-    layer1_html: '<p>The command prints <samp>Hello, world!</samp> to stdout.</p>'
+    ehtml: '<p>The command prints <samp>Hello, world!</samp> to stdout.</p>'
     notes: |
       Sample output from a program. Browsers render <samp> in a
       monospace font by default, distinguishing it from surrounding
       prose.
   - source: 'Set <var | threshold> to <samp | 0.05>.'
-    layer1_html: '<p>Set <var>threshold</var> to <samp>0.05</samp>.</p>'
+    ehtml: '<p>Set <var>threshold</var> to <samp>0.05</samp>.</p>'
     notes: |
       <samp> for the sample value paired with <var> for the variable
       name — the natural pair for documenting configuration in

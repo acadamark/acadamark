@@ -82,7 +82,7 @@ jats_counterpart:
     the <contrib> element.
 shorthand_examples:
   - source: '<author | Jane Goodall>'
-    layer1_html: |
+    ehtml: |
       <author>Jane Goodall</author>
     notes: |
       Backward-compatible casual form (carried forward from before the
@@ -92,7 +92,7 @@ shorthand_examples:
       or the child-tag form. JATS export reads the name string either
       way.
   - source: '<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />'
-    layer1_html: '<author corresponding><name>Jane Goodall</name><orcid>0000-0001-2345-6789</orcid><affiliation>Cambridge University</affiliation></author>'
+    ehtml: '<author corresponding><name>Jane Goodall</name><orcid>0000-0001-2345-6789</orcid><affiliation>Cambridge University</affiliation></author>'
     notes: |
       Kwarg form. Each lifted kwarg becomes a child tag at the gate;
       +corresponding stays as a boolean kwarg on the canonical
@@ -104,7 +104,7 @@ shorthand_examples:
         <orcid | 0000-0001-2345-6789>
         <email | jane@example.com>
       </author>
-    layer1_html: '<author corresponding><name>Jane Goodall</name><affiliation>Cambridge University</affiliation><orcid>0000-0001-2345-6789</orcid><email><a href="mailto:jane@example.com">jane@example.com</a></email></author>'
+    ehtml: '<author corresponding><name>Jane Goodall</name><affiliation>Cambridge University</affiliation><orcid>0000-0001-2345-6789</orcid><email><a href="mailto:jane@example.com">jane@example.com</a></email></author>'
     notes: |
       Child-tag form. The canonical Layer 1 shape. Both this form and
       the equivalent kwarg form above produce the same Layer 1 output.
@@ -114,7 +114,7 @@ shorthand_examples:
         <author | David Attenborough>
         <author +corresponding | Charles Darwin>
       </meta>
-    layer1_html: '<meta><author>Jane Goodall</author><author>David Attenborough</author><author corresponding>Charles Darwin</author></meta>'
+    ehtml: '<meta><author>Jane Goodall</author><author>David Attenborough</author><author corresponding>Charles Darwin</author></meta>'
     notes: |
       Multiple authors are sibling <author> elements inside <meta>.
       The third is the corresponding author. JATS export groups them

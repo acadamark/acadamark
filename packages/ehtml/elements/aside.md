@@ -61,9 +61,9 @@ jats_counterpart:
     document-level collected footnotes — see <note-list>, not <aside>.
 shorthand_examples:
   - source: '<aside | A side note about the elephant.>'
-    layer1_html: '<aside class="frameable-border"><p>A side note about the elephant.</p></aside>'
+    ehtml: '<aside class="frameable-border"><p>A side note about the elephant.</p></aside>'
   - source: '<aside type=warning .important | Be careful here.>'
-    layer1_html: '<aside class="important frameable-border" data-aside-type="warning"><p>Be careful here.</p></aside>'
+    ehtml: '<aside class="important frameable-border" data-aside-type="warning"><p>Be careful here.</p></aside>'
   - source: |
       <aside type=callout |
       This is a multi-line callout.
@@ -71,7 +71,7 @@ shorthand_examples:
       It can contain multiple paragraphs and other content like
       <strong | emphasis> and inline references.
       >
-    layer1_html: '<aside class="frameable-border" data-aside-type="callout"><p>This is a multi-line callout.</p><p>It can contain multiple paragraphs and other content like <strong>emphasis</strong> and inline references.</p></aside>'
+    ehtml: '<aside class="frameable-border" data-aside-type="callout"><p>This is a multi-line callout.</p><p>It can contain multiple paragraphs and other content like <strong>emphasis</strong> and inline references.</p></aside>'
 interpreter_strategy: handler
 handler_module: ./handlers/aside.js
 ---

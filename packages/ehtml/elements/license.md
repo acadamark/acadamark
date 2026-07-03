@@ -38,14 +38,14 @@ shorthand_examples:
       <meta>
         <license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <license href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</license>
       </meta>
     notes: |
       License name with canonical URL.
   - source: '<meta license="MIT License" />'
-    layer1_html: |
+    ehtml: |
       <meta>
         <license>MIT License</license>
       </meta>

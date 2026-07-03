@@ -33,7 +33,7 @@ shorthand_examples:
       x^2 & \text{if } x \ge 0 \\
       -x^2 & \text{if } x < 0
       </cases>
-    layer1_html: |
+    ehtml: |
       <cases>(KaTeX-rendered HTML of \begin{cases}...\end{cases})</cases>
     notes: |
       A two-case piecewise definition. Handler wraps in

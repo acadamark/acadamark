@@ -53,7 +53,7 @@ shorthand_examples:
         Additional context for the curious reader. The summary is the
         visible heading; this body shows when the disclosure is opened.
       </details>
-    layer1_html: |
+    ehtml: |
       <details>
         <summary>More background</summary>
         <p>Additional context for the curious reader. The summary is the visible heading; this body shows when the disclosure is opened.</p>
@@ -67,7 +67,7 @@ shorthand_examples:
         <summary | Always-expanded section>
         This disclosure is expanded by default.
       </details>
-    layer1_html: |
+    ehtml: |
       <details open>
         <summary>Always-expanded section</summary>
         <p>This disclosure is expanded by default.</p>

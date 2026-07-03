@@ -19,9 +19,9 @@ jats_counterpart:
   element: sub
 shorthand_examples:
   - source: 'Water is H<sub | 2>O.'
-    layer1_html: '<p>Water is H<sub>2</sub>O.</p>'
+    ehtml: '<p>Water is H<sub>2</sub>O.</p>'
   - source: 'The vector x<sub | i> represents the i-th component.'
-    layer1_html: '<p>The vector x<sub>i</sub> represents the i-th component.</p>'
+    ehtml: '<p>The vector x<sub>i</sub> represents the i-th component.</p>'
 interpreter_strategy: schema
 ---
 

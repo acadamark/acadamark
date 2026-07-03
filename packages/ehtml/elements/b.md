@@ -25,9 +25,9 @@ jats_counterpart:
     toggle: 'no'
 shorthand_examples:
   - source: 'The keyword <b type=keyword | recursion> is fundamental.'
-    layer1_html: '<p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>'
+    ehtml: '<p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>'
   - source: 'Use <b type=product-name | Acrobat> to read the file.'
-    layer1_html: '<p>Use <b data-bold-type="product-name">Acrobat</b> to read the file.</p>'
+    ehtml: '<p>Use <b data-bold-type="product-name">Acrobat</b> to read the file.</p>'
 interpreter_strategy: schema
 ---
 

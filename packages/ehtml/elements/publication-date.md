@@ -38,7 +38,7 @@ shorthand_examples:
       <meta>
         <publication-date | 2024-03-15>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <publication-date>2024-03-15</publication-date>
       </meta>
@@ -48,7 +48,7 @@ shorthand_examples:
       <meta>
         <publication-date | March 15, 2024>
       </meta>
-    layer1_html: |
+    ehtml: |
       <meta>
         <publication-date>March 15, 2024</publication-date>
       </meta>
