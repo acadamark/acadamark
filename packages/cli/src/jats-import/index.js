@@ -248,17 +248,17 @@ function buildMeta(front) {
     // "editor"), so an exported editor round-trips back to <editor>.
     const EDITOR_ROLES = new Set(['editor', 'co-editor', 'series-editor', 'volume-editor', 'guest-editor', 'other']);
     for (const contrib of childrenEls(contribGroup, 'contrib')) {
-      const name = contribName(contrib);
-      if (!name) continue;
+      const content = contribContent(contrib);
+      if (!content.length) continue;
       const ctype = contrib.attributes['contrib-type'] || 'author';
       if (EDITOR_ROLES.has(ctype)) {
         children.push(
           ctype === 'editor'
-            ? makeTag('editor', [{ type: 'text', value: name }])
-            : makeTag('editor', [{ type: 'text', value: name }], { kwargs: { role: ctype } }),
+            ? makeTag('editor', content)
+            : makeTag('editor', content, { kwargs: { role: ctype } }),
         );
       } else {
-        children.push(makeTag('author', [{ type: 'text', value: name }]));
+        children.push(makeTag('author', content));
       }
     }
   }
@@ -285,6 +285,29 @@ function contribName(contrib) {
     return [given && textOf(given).trim(), surname && textOf(surname).trim()].filter(Boolean).join(' ');
   }
   return textOf(contrib).trim() || null;
+}
+
+// #349: reconstruct an Enscribe contributor's content from a JATS <contrib> — the
+// inverse of the export's emitContrib. A STRUCTURED contributor (any of <aff> /
+// <contrib-id contrib-id-type="orcid"> / <email> present) round-trips to the child-tag
+// form (<name>/<affiliation>/<orcid>/<email>, canonical order); a CASUAL one (name
+// only) stays text content. Returns [] when there is no name.
+function contribContent(contrib) {
+  const name = contribName(contrib);
+  const affEls = childrenEls(contrib, 'aff');
+  const orcidEl = childrenEls(contrib, 'contrib-id').find(
+    (c) => (c.attributes['contrib-id-type'] || '') === 'orcid',
+  );
+  const emailEls = childrenEls(contrib, 'email');
+  if (!affEls.length && !orcidEl && !emailEls.length) {
+    return name ? [{ type: 'text', value: name }] : [];
+  }
+  const kids = [];
+  if (name) kids.push(makeTag('name', [{ type: 'text', value: name }]));
+  for (const aff of affEls) kids.push(makeTag('affiliation', [{ type: 'text', value: textOf(aff).trim() }]));
+  if (orcidEl) kids.push(makeTag('orcid', [{ type: 'text', value: textOf(orcidEl).trim() }]));
+  for (const email of emailEls) kids.push(makeTag('email', [{ type: 'text', value: textOf(email).trim() }]));
+  return kids;
 }
 
 /** YYYY[-MM[-DD]] from a `<pub-date>`/`<date>` with year/month/day children, or its text. */
