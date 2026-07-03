@@ -307,6 +307,32 @@ Consequences:
   is an interop-cluster item, designed alongside TEI.
 
 
+## Contributor model — `author` and `editor` are one structured type (#338)
+
+`<author>` and `<editor>` are the **same kind of thing** — a contributor (a person or institution with a
+name, affiliation, ORCID, email) — differentiated only by **role**, never by containment shape. Every
+reference standard models it this way: CSL-JSON treats `author`, `editor`, `translator`, and ~20 more roles as
+the **same** `NAME_LIST` object (the role is just the field name); JATS uses one `<contrib>` with a
+`contrib-type` attribute wrapping the same structured `<name>` / `<aff>` / `<contrib-id>`; BibTeX's `author`
+and `editor` are the same name-list type. (Standards-alignment per "Reference standards: guide, don't gate.")
+
+**Decision.** One structured contributor for both, distinguished by a **role label**. The canonical shape is
+`<author>`'s **child-tag** form — `name` / `affiliation` / `orcid` / `email` lift to child elements
+(`lifts_to_child`) — because the name *parts* must stay machine-addressable for the citation path (citation-js)
+and downstream processors; flattening to `data-*` strings throws away exactly that structure. `<editor>` is
+unified to that shape; its current flat `data-*` attribute mapping (`data-affiliation`, `data-orcid`,
+`data-editor-role`, …) is retired, with `role` staying the distinguishing attribute.
+
+**Name boundary (scoped deliberately).** The structure goes to the **field level** — `name` is a single
+`<name>` child, **not** split into `given` / `family` sub-parts. Enscribe's citation path parses the name
+string, so field-level structure is enough today; a full CSL/JATS `given`/`family` split is a separate, later
+question, not part of this decision.
+
+**Status.** Recorded as the design; the **code change** — unify `editor`'s frontmatter from `data-*` maps to
+`lifts_to_child`, and make the JATS `<contrib contrib-type="editor">` round-trip cleanly — is a deferred,
+output-changing slice tracked in **#338**. This decision does not itself change behavior.
+
+
 ## Not a decision — recorded for accuracy
 
 **Citations are not website-broken.** Investigated this session: real citations (with a `<library>`)

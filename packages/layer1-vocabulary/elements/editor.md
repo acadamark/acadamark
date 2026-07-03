@@ -54,6 +54,8 @@ A document editor. Used in edited volumes (anthologies, conference proceedings, 
 
 The element follows the same structure as `<author>` — simple form for casual authoring, structured form for rigorous metadata.
 
+**Contributor model (#338, decided; code deferred).** `<author>` and `<editor>` are one structured contributor type, differentiated only by role — the canonical shape is `<author>`'s child-tag form (`name` / `affiliation` / `orcid` / `email` lift to child elements). This spec's frontmatter still maps those kwargs to flat `data-*` attributes (`data-affiliation`, `data-orcid`, `data-editor-role`, …); that asymmetry with `<author>` is the drift. Unifying `<editor>` to the child-tag form is a deferred, output-changing code change tracked in #338 (the name stays a single `<name>`; `given`/`family` splitting is a separate future question). See `notes/decisions.md` § "Contributor model".
+
 ## Authoring
 
 ```

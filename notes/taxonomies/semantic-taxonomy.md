@@ -120,7 +120,15 @@ In-flow marks the author places on their *own* text. Still language, default-pro
   default-processed and here.
 
 `term` sits at the boundary with family 4: it *marks* a word as a defined term and may *point at* its
-definition (glossary-linkable). Recorded here as marking, with a reference role noted as a bridge.
+definition (glossary-linkable). **Ruling (#336): it stays here as marking.** The standards agree — JATS
+`<term>` *marks* the term (the term-half of a `<def-item>` inside a `<def-list>`/`<glossary>`) and is only
+*optionally* `id`-linked; a real pointer (`xref` / `cite`) exists *to* point, whereas `<term>` exists to
+*mark*. So the definition-link is an **addressing property** the element *may* carry (the same set/identity
+property `@id`-bearing elements have), **not** family-4 membership — "addressing is a property, not a family."
+Revisit only if a first-class term→definition *linking act* is built, where the outgoing pointer becomes the
+element's primary purpose (as it is for `<a>` / `cite`). Today it marks. (Consistency: the definitional
+structures `dl`/`dt`/`dd` and `glossary` live in family 6 — `<term>` does the *marking*, the def-list/glossary
+does the *collecting*; they meet at the glossary without conflict.)
 
 ### 3. Aside — the author's side quests
 The author steps aside in their *own* secondary voice: a tangent, a digression, an illustration, a
