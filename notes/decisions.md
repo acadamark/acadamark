@@ -338,6 +338,60 @@ JATS export; **full structured-children JATS export (`<aff>`/`<contrib-id>`, and
 structured contributors) remains deferred for BOTH author and editor** — author's `extractText`-based
 `<string-name>` concatenates a structured contributor's fields, a pre-existing limitation editor now shares.
 
+---
+
+## eHTML resolves its own dynamic elements — at build AND at load (one resolver, two entry points)
+
+**Status — decided, not yet implemented.** An audit + scoping pass is queued (after the #328 rename and the
+current issue batch) to determine what it takes; this records the target and the shape.
+
+**The point of the framework.** eHTML's reason to exist is that it *resolves its own dynamic elements* — a
+`<cite>` becomes a formatted citation, a `<note>` numbers and places itself, a `<ref>` finds its target, a
+`<library>` builds a bibliography — via the framework's JavaScript + custom tags. Without that, eHTML is just a
+handful of HTML tags. Resolution is the framework.
+
+**Target: a self-contained live document.** A hand-authored eHTML file containing unresolved semantic tags plus
+a `<script>` that loads the eHTML runtime should, when opened in a browser, **resolve itself at load time** —
+numbering, citation formatting, cross-reference linking, bibliography assembly — with no shorthand compiler and
+no build step in the loop. The `.html` file *is* the document. This must work for eHTML that arrives by **any
+route**: hand-authored, imported from JATS/another format, or emitted by another system.
+
+**Current state (as coded).** Resolution runs at **shorthand-compile / build time**: the interpreter plugins
+(library-load → build-citation-index → notes → note-placement → numbering → ref-resolution → cite-resolution →
+bibliography) resolve over an intermediate tree and bake **resolved** HTML. There is already a marker stage
+(`__cite-marker`/`__ref-marker` internal nodes) and a browser path that defers *cross-page* refs to navigation
+time — so partial live resolution already exists. But single-document resolution is eager/build-time, and the
+resolution logic is bound to the compile, so **eHTML not produced by the shorthand compiler does not currently
+self-resolve.**
+
+**The decision: keep BOTH modes, via ONE origin-agnostic resolver.**
+- **Pre-resolved (static), build-time** — the existing behavior. Needed for fast first paint, no-JS/script-
+  stripped contexts, archival/print, crawlers, and **JATS/PDF export** (you cannot export a document whose
+  citations only exist after a browser runs). Also the anchor of the existing `live≡static` byte-identity
+  invariant.
+- **Live-resolving, load-time** — the new capability. Needed for the self-contained hand-authored file, client-
+  side authoring/editing, runtime-dynamic content, and eHTML from systems that don't run our build.
+
+These are **not two formats and not two resolvers** — they are the same semantic tags resolved at two entry
+points by the **same** resolution logic. Pre-resolved output is the **build-time snapshot of the live mode**.
+The implementation target is therefore: make the existing resolver **origin-agnostic** (operate on the element
+tree regardless of whether a compiler or a browser produced it) and give it a **browser-load entry point** in
+addition to the build entry point. Do **not** build a separate live resolver — two implementations would drift.
+
+**The guard against drift.** The correctness invariant becomes: *a document resolved live, then snapshotted, is
+byte-identical to the same document resolved at build.* This generalizes the existing `live≡static` invariant
+from cross-page refs to all dynamic elements, and is the design constraint the implementation must hold.
+
+**What the queued audit must find** (read-only, verify-against-code): per resolver (numbering, note-placement,
+citation-index, ref/cite-resolution, bibliography) — (1) does it operate on the eHTML element tree, or on a
+compile-only intermediate?; (2) does it read parse/build state (file objects, compile-populated registries,
+assets dir) that a raw browser-loaded eHTML file wouldn't have?; (3) how much does the existing browser bundle
+already resolve client-side?; (4) is the bibliography/citation-js path loadable client-side (cf. the DSL
+registry's CDN/bundle-loader machinery for mermaid/abc), or build-only?; (5) the concrete gap list —
+"wire the existing pass to a DOM entry point" vs. "genuinely build-only." The intuition is that the machinery
+largely exists and needs a DOM entry point plus severing build-only state dependencies; the audit confirms or
+refutes that before any implementation.
+
 
 ## Not a decision — recorded for accuracy
 
