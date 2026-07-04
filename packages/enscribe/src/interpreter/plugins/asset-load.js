@@ -445,6 +445,48 @@ function resolveCodeSrc(node, assets) {
 }
 
 /**
+ * The `<code-block src="@id">` CONSUMER's resolution (Option A — the code-indentation fix). Reads a
+ * stored `<dataset>`'s opaque bytes and renders them through the code-block handler's `<pre><code>` —
+ * the ONE path where the pipeline preserves author whitespace byte-for-byte, because the pretty-printer
+ * (`formatHtml` / rehype-format) skips a `<pre>` subtree while it REFLOWS a bare `<code>` (see
+ * `~/enscribe-reports/audit-code-indentation.md`, and the corrected comment in lib/format-html.js).
+ * This is therefore the whitespace-safe home for a MULTI-LINE code dataset; `<code src="@id">` renders
+ * inline `<code>` and collapses multi-line indentation (the lint below nudges authors here). The
+ * dataset's format hint, when the `<code-block>` names no language, seeds the LEADING POSITIONAL —
+ * a code-block's language is `positional[0]` (mirroring `<table>`/`<diagram>`), not a `language` kwarg
+ * as on inline `<code>`. Inline body (a non-`@` `src`, or a `<code-block …>…</code-block>` body) is untouched.
+ */
+function resolveCodeBlockSrc(node, assets) {
+  const ds = readDatasetSource(node, assets, 'code-block');
+  if (ds == null) return;                                       // non-@ (untouched) or already errored
+  node.content = ds.bytes;
+  if ((node.positional == null || node.positional.length === 0) && ds.format) {
+    node.positional = [ds.format];   // dataset format hint → the language positional (code-block reads positional[0])
+  }
+  if (node.kwargs) delete node.kwargs.src;
+}
+
+/**
+ * Authoring lint (Option A — code-indentation). A bare `<code>` renders INLINE and its content is
+ * reflowed by the pretty-printer (`formatHtml`), so per-line indentation is lost — whereas a
+ * `<pre><code>` (the ``` sigil / `<code-block>` / `<code-block src="@id">`) preserves it byte-for-byte.
+ * Per Option A (`<code>` is inline-only; authored code renders verbatim only through a code block),
+ * this is neither silently reflowed nor silently rewritten: it emits a located, non-fatal build
+ * warning (`file.message`) nudging the author to a code block. The code still renders unchanged. Fires
+ * only for genuinely multi-line content — an interior newline after trimming the outer whitespace the
+ * long form adds — so a single-line `<code>` (inline or long-form) stays quiet. Runs from the resolution
+ * walk AFTER `resolveCodeSrc`, so a `<code src="@id">` that pulled a MULTI-LINE `<dataset>` is nudged too.
+ */
+function lintInlineCodeWhitespace(node, file) {
+  if (!isEnscribeTag(node, 'code')) return;
+  if (typeof node.content !== 'string' || !node.content.trim().includes('\n')) return;
+  file?.message?.(
+    'multi-line code in <code> loses its indentation (inline code is reflowed) — use a code block (<``` … ```> or <code-block src="@id"> for a dataset) so the code renders verbatim',
+    node,
+  );
+}
+
+/**
  * The `@id` RESOLUTION PASS (#313): resolve body `@id` references against the store built by
  * buildAssetIndex, dispatching each use-site to its CONSUMER. Every consumer calls the one
  * neutral resolveAssetReference and then interprets what it gets:
@@ -453,13 +495,16 @@ function resolveCodeSrc(node, assets) {
  *      ref → the SAME visible __asset-error — F2.1 closed)
  *   - `<diagram src="@id">` → resolveDiagramSrc (dataset bytes become the engine source; a
  *      format hint that disagrees with the engine → visible error)
- *   - `<code src="@id">`    → resolveCodeSrc (dataset bytes become the verbatim code body)
- * The diagram/code consumers (#313 consumer wiring) share readDatasetSource for the
- * resolve→bytes-or-error shape. Runs BEFORE numbering, so a placed figure registers under its
- * adopted id and an errored ref is turned into a non-numbered __asset-error (never counted —
- * this matters for the numbered `<diagram>` too). Use-sites without an `@`-src are untouched (a
- * non-@ table `src` is a file path; output is byte-identical). A future `<plot>` is the next
- * trivial branch here — same resolveAssetReference, its own interpret.
+ *   - `<code src="@id">`    → resolveCodeSrc (dataset bytes become the verbatim INLINE code body)
+ *   - `<code-block src="@id">` → resolveCodeBlockSrc (dataset bytes → `<pre><code>`, whitespace-preserving)
+ * The code/code-block/diagram consumers share readDatasetSource for the resolve→bytes-or-error shape.
+ * Runs BEFORE numbering, so a placed figure registers under its adopted id and an errored ref is turned
+ * into a non-numbered __asset-error (never counted — this matters for the numbered `<diagram>` too).
+ * Use-sites without an `@`-src are untouched (a non-@ table `src` is a file path; output is byte-identical).
+ * A future `<plot>` is the next trivial branch here — same resolveAssetReference, its own interpret.
+ *
+ * The same walk carries the multi-line-`<code>` authoring lint (lintInlineCodeWhitespace), placed AFTER
+ * the dispatch so a `<code src="@id">` resolved to multi-line dataset bytes is nudged like an authored one.
  *
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
@@ -475,6 +520,11 @@ export function enscribeAssetResolution() {
         else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets);
         else if (isEnscribeTag(node, 'diagram')) resolveDiagramSrc(node, assets);
         else if (isEnscribeTag(node, 'code')) resolveCodeSrc(node, assets);
+        else if (isEnscribeTag(node, 'code-block')) resolveCodeBlockSrc(node, assets);
+        // Authoring lint (Option A): warn on a multi-line bare <code> (inline code is reflowed, so its
+        // indentation is lost). Runs AFTER resolveCodeSrc so a <code src="@id"> that just pulled a
+        // multi-line dataset is nudged too. Non-destructive — a located build warning, no in-tree rewrite.
+        lintInlineCodeWhitespace(node, file);
         if (isEnscribeTag(node) && Array.isArray(node.content)) walk(node.content);
         if (Array.isArray(node.children)) walk(node.children);
       }

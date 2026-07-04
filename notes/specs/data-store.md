@@ -121,12 +121,16 @@ The neutral hand-off, in three steps that no consumer-type branch may contaminat
   because the engine renders that source verbatim client-side (enscribe cannot re-read it), a dataset
   format hint that disagrees with the named engine (a `csv` dataset into a `mermaid` diagram) is a
   visible error, the ONE place a consumer guards on the hint (a table, which re-parses per its own
-  format word, does not). `resolveCodeSrc` renders a dataset's bytes as a verbatim `<code>` body (its
-  format hint, when the `<code>` names no language, seeds the highlight class). The diagram/code pair
-  share a small `readDatasetSource` helper for the resolve→bytes-or-error shape; `resolveTableSrc`
-  predates it and keeps its own copy (it also reads an external asset as a file `src`, a branch the
-  other two lack). A future `<plot>` is the next trivial branch: same `resolveAssetReference`, its own
-  interpretation.
+  format word, does not). `resolveCodeSrc` renders a dataset's bytes as a verbatim INLINE `<code>` body
+  (its format hint, when the `<code>` names no language, seeds the highlight class), and
+  `resolveCodeBlockSrc` renders one through a `<pre><code>` code block — the WHITESPACE-SAFE path, because
+  the pretty-printer (`formatHtml` / rehype-format) preserves a `<pre>` subtree byte-for-byte while it
+  reflows a bare `<code>` (Option A / the code-indentation fix — `notes/coding-conventions.md`; a bare
+  multi-line `<code>` is nudged to a code block by a located build lint, never silently reflowed or
+  rewritten). The diagram / code / code-block consumers share a small `readDatasetSource` helper for the
+  resolve→bytes-or-error shape; `resolveTableSrc` predates it and keeps its own copy (it also reads an
+  external asset as a file `src`, a branch the others lack). A future `<plot>` is the next trivial branch:
+  same `resolveAssetReference`, its own interpretation.
 
 **All `@id` errors are visible, for every consumer (F2.1 — closed).** Before, an unresolved `@id` was a
 visible `__asset-error` *only* for `<fig>`; `<table src="@id">` treated `src` as a file path, so an
@@ -207,9 +211,10 @@ first, interpretation per consumer, packaging last.
    `<table src="@id">` renders a dataset as a grid; F2.1 closed. See the split, above.)**
 3. **Per-consumer interpretation, incl. JATS** — each consuming element interprets the handed-off bytes
    (HTML render + JATS projection). `<fig>`→`<graphic>` is done and `<table src="@id">` renders a grid
-   (slice 2); **`<diagram src="@id">` feeds a dataset as engine source and `<code src="@id">` renders one
-   as a verbatim body** (the consumer-wiring slice — HTML render, sharing `readDatasetSource`; a
-   diagram's format-hint/engine mismatch is a visible error). Because resolution rewrites the node's
+   (slice 2); **`<diagram src="@id">` feeds a dataset as engine source, `<code src="@id">` renders one
+   as a verbatim inline body, and `<code-block src="@id">` renders one through a whitespace-preserving
+   `<pre><code>`** (the consumer-wiring + code-indentation slices — HTML render, sharing `readDatasetSource`;
+   a diagram's format-hint/engine mismatch is a visible error). Because resolution rewrites the node's
    content **in-tree before serialization**, a dataset-sourced diagram/code projects to JATS through each
    element's EXISTING projection (the resolved content, not the `@id`), so no consumer-specific JATS work
    was needed for them. The `<dataset>`-element's OWN `<dataset>`→JATS projection (Piece 4) is still open

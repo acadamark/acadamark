@@ -1949,6 +1949,11 @@ const _code_block = Object.freeze({
         },
         "notes": "Added to <code> alongside any language class.\n",
       },
+      "kwargs": {
+        "src": {
+          "notes": "An @id reference (Option A / #313) that pulls a stored <dataset> declared in\n<data> and renders its opaque bytes as the code block's verbatim body —\ne.g. <code-block src=\"@snippet\"> renders <dataset #snippet python>…</dataset>.\nThis is the WHITESPACE-SAFE home for multi-line code: because the body renders\nas <pre><code>, the pretty-printer preserves the author's indentation\nbyte-for-byte (a bare <code src=\"@id\"> renders inline and collapses it — a lint\nnudges authors here). The dataset's format hint, when the <code-block> names no\nlanguage, seeds the language positional (language-X highlight class). An\nunresolved id — or a wrong-kind id (an image or external asset, not a <dataset>)\n— is a visible asset-error. Inline body (the sigil / <code-block …>…</code-block>)\nis unaffected. A file-path src is not read here (the handler reads no files);\nsource a <dataset> instead.\n",
+        },
+      },
     },
     "content": {
       "notes": "The pipe content is verbatim code source. No markdown idioms or enscribe\nconstructs are interpreted inside the code block. Newlines are preserved.\n",

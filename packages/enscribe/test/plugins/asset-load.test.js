@@ -389,4 +389,46 @@ export function run() {
     assert.ok(!/<th>a<\/th>/.test(html), 'end-to-end: the rejected pipe-form dataset was not stored, so the table has no grid');
     console.log('PASS: dataset — long-form required (end-to-end): the real parser + guard reject a pipe-form <dataset>');
   }
+
+  // ══ Option A (code-indentation): <code-block src="@id"> is the whitespace-safe multi-line consumer ══
+  //
+  // A multi-line dataset rendered through <code-block src="@id"> lands in <pre><code>, where the
+  // pretty-printer (formatHtml) preserves the author's indentation byte-for-byte — unlike <code src="@id">
+  // (bare <code>), whose multi-line content is reflowed. The dataset is authored long-form (the store rule).
+  const CODEBLOCK_DS = '\n<data>\n<dataset #ind python>\ndef f(n):\n    if n:\n        return n * 2\n</dataset>\n</data>';
+
+  // 29. <code-block src="@ind"> → <pre><code> with the 4- and 8-space indentation INTACT in the HTML bytes.
+  {
+    const html = renderDoc('<section | S>\n\n<code-block src="@ind" />', CODEBLOCK_DS);
+    assert.match(html, /<pre><code class="language-python">/, 'code-block-from-dataset: <pre><code> + python class (format hint → language positional)');
+    assert.match(html, /\n {4}if n:/, 'code-block-from-dataset: the 4-space indent survives to the HTML bytes (the <pre> path is whitespace-safe)');
+    assert.match(html, /\n {8}return n \* 2/, 'code-block-from-dataset: the 8-space indent survives too');
+    assert.ok(html.includes('def f(n):'), 'code-block-from-dataset: the body is verbatim');
+    console.log('PASS: Option A — <code-block src="@id"> renders a multi-line dataset as <pre><code> with indentation INTACT');
+  }
+
+  // 30. <code-block src> wrong-kind (image) and unresolved @id → the SAME visible __asset-error path.
+  {
+    const e = renderDoc('<section | S>\n\n<code-block src="@img" />', '\n<data>\n<fig #img png>PNGB64</fig>\n</data>');
+    assert.match(e, /asset-error/, 'a <code-block> referencing an embedded image → visible error (image is not a <dataset>)');
+    const b = renderDoc('<section | S>\n\n<code-block src="@nope" />', '');
+    assert.match(b, /asset-error/, 'a <code-block src="@nope"> → visible error');
+    console.log('PASS: Option A — <code-block src> wrong-kind / unresolved @id → visible __asset-error');
+  }
+
+  // 31. the multi-line-<code> authoring lint (a located build warning; the code still renders).
+  //     processSync gives a real VFile whose .messages carry file.message() diagnostics (renderDoc's
+  //     stub file has no .message(), so it cannot capture them).
+  {
+    const fires = (src) => buildEnscribePipeline({}).processSync(src).messages
+      .some((m) => /multi-line code in <code>/.test(String(m.reason)));
+    assert.ok(fires('<section | S>\n\n<code | a\n    b>'), 'multi-line bare <code | …> warns');
+    assert.ok(fires('<section | S>\n\n<code language=py>\ndef f():\n    pass\n</code>'), 'multi-line long-form <code> warns');
+    assert.ok(!fires('<section | S>\n\n<code | x = 1>'), 'single-line inline <code> is quiet');
+    assert.ok(!fires('<section | S>\n\n<code language=py>\nx = 1\n</code>'), 'single-line long-form <code> is quiet (outer newlines trimmed before the check)');
+    assert.ok(!fires('<section | S>\n\n<```py\ndef f():\n    pass\n```>'), 'a code block (```) does NOT warn — it preserves whitespace');
+    assert.ok(fires('<section | S>\n\n<code src="@ind" />' + CODEBLOCK_DS), 'a <code src="@id"> that pulled a MULTI-LINE dataset warns (nudge to <code-block>)');
+    assert.ok(!fires('<section | S>\n\n<code-block src="@ind" />' + CODEBLOCK_DS), 'a <code-block src="@id"> does NOT warn (the whitespace-safe form)');
+    console.log('PASS: Option A — multi-line <code> lint fires (bare / long-form / @id), quiet for single-line + code block');
+  }
 }

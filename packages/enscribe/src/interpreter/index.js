@@ -1061,7 +1061,12 @@ export function enscribeInterpreter(options = {}) {
 
     // Format the hast tree for readable HTML output: block elements get
     // indentation and line breaks; inline content is preserved as-is.
-    // rehype-format leaves <style>/<script> and <pre>/<code> contents untouched;
+    // rehype-format leaves <style>/<script>/<textarea> and <pre> subtrees untouched —
+    // including a <code> NESTED IN <pre> (so a code block keeps its author whitespace).
+    // A BARE <code> (inline code, not inside <pre>) is reflowed: its leading per-line
+    // whitespace is stripped. That is by design (inline code is not whitespace-sensitive)
+    // and is why multi-line code belongs in a code block (<pre><code>), not a bare <code>
+    // — see ~/enscribe-reports/audit-code-indentation.md and lib/format-html.js.
     // formatHtml additionally keeps enscribe's inline custom elements (inline-math,
     // term) in the inline flow so no render-changing whitespace is inserted around
     // them (#117 — see lib/format-html.js).
