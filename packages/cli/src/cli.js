@@ -16,7 +16,7 @@
 // filesystem-bound CLI surface.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSync } from 'node:fs';
-import { dirname, resolve, join } from 'node:path';
+import { dirname, resolve, join, basename } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages } from '@enscribejs/enscribe';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
@@ -210,6 +210,13 @@ Usage:
 
 Options:
   -o, --output <file>  Write XML to <file> (default: stdout)
+  --package            Emit a self-contained package instead of a lone XML file:
+                       <outdir>/<name>.xml plus <outdir>/assets/ holding every
+                       external file-backed asset (external <fig src>), with each
+                       <graphic xlink:href> rewritten to assets/<name>. Requires
+                       -o <dir>. Inline assets (inline SVG, DSL source, embedded
+                       base64) stay inline. Without --package, external references
+                       are emitted as-authored (they dangle) and a warning is shown.
   --quiet              Suppress warnings
   -h, --help           Show this help
 `;
@@ -224,7 +231,7 @@ function parseCommandArgs(args) {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
     toc: undefined, theme: undefined, chapterNav: undefined, from: undefined,
-    pages: undefined,
+    pages: undefined, package: false,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -243,6 +250,7 @@ function parseCommandArgs(args) {
         throw new CliError(`--dsl-mode must be one of ${allowed.join(', ')} (got ${opts.dslMode ?? '(none)'})`);
       }
     } else if (a === '--quiet') opts.quiet = true;
+    else if (a === '--package') opts.package = true;
     else if (a === '--toc') opts.toc = true;
     else if (a.startsWith('--toc=')) {
       const v = a.slice('--toc='.length);
@@ -459,21 +467,86 @@ function doBuild(opts) {
   });
 }
 
-function doExportJats(opts) {
+// Build the post-pipeline mdast tree for JATS export, shared by lone-file + package modes.
+// export-jats needs the post-pipeline tree (not HTML): .runSync() runs the transformers; the
+// HTML compiler (.processSync) is skipped. The shared buildEnscribePipeline assembly is the same
+// one the export test mirrors. Returns the tree + the input dir (external asset srcs resolve
+// against it, exactly as the pipeline's assetsDir does).
+function exportJatsTree(opts) {
   const src = readInput(opts.input);
-  // export-jats needs the post-pipeline mdast tree (not HTML): .runSync() runs
-  // the transformers; the HTML compiler (.processSync) is skipped. The shared
-  // buildEnscribePipeline assembly is the same one the export test mirrors.
+  const inputDir = dirname(resolve(opts.input));
+  const proc = buildEnscribePipeline({ assetsDir: inputDir });
+  const tree = proc.parse(src);
+  // #246: a website is HTML-only ("no JATS/BITS — a site isn't a scholarly document"). Refuse the
+  // export (the shared classifier over the parsed master — no VFile/assembler needed) rather than
+  // let it fall through and mis-emit an empty article JATS. Classify BEFORE runSync mutates the tree.
+  if (classifyDocType(tree).type === 'website') {
+    throw new CliError('export-jats: websites have no JATS/BITS projection (HTML render only)');
+  }
+  return { tree: proc.runSync(tree), inputDir };
+}
+
+// A fresh asset collector for enscribeToJats's opts.assetPackage (#313). rewrite:true rewrites
+// each external figure href to assets/<name> (the package deliverable); rewrite:false leaves
+// hrefs as-authored but still records the external refs (so lone-file export can warn they dangle).
+function makeAssetPackage(rewrite) {
+  return { byName: new Map(), bySrc: new Map(), rewrite };
+}
+
+function doExportJats(opts) {
   return withQuiet(opts.quiet, () => {
-    const proc = buildEnscribePipeline({ assetsDir: dirname(resolve(opts.input)) });
-    const tree = proc.parse(src);
-    // #246: a website is HTML-only ("no JATS/BITS — a site isn't a scholarly document"). Refuse the
-    // export (the shared classifier over the parsed master — no VFile/assembler needed) rather than
-    // let it fall through and mis-emit an empty article JATS. Classify BEFORE runSync mutates the tree.
-    if (classifyDocType(tree).type === 'website') {
-      throw new CliError('export-jats: websites have no JATS/BITS projection (HTML render only)');
+    const { tree } = exportJatsTree(opts);
+    // Collect (do NOT rewrite) external refs so we can warn: in lone-file mode a
+    // <graphic xlink:href="path"/> is a dangling reference — the bytes are not carried.
+    const pkg = makeAssetPackage(false);
+    const xml = enscribeToJats(tree, { assetPackage: pkg });
+    if (pkg.byName.size > 0) {
+      const list = [...pkg.byName.values()].join(', ');
+      console.warn(`enscribe export-jats: ${pkg.byName.size} external asset reference(s) will dangle in lone-file output (${list}). Use --package -o <dir> to copy them into an assets/ package.`);
     }
-    return enscribeToJats(proc.runSync(tree));
+    return xml;
+  });
+}
+
+// #313 (JATS asset packaging): emit a self-contained JATS deliverable — <outdir>/<stem>.xml plus
+// <outdir>/assets/ holding every external file-backed asset the document references, each figure's
+// xlink:href rewritten to assets/<name>. Mirrors buildLiveFolder's mkdirSync + copyFileSync shape.
+// Inline cases (inline SVG base64, DSL <preformat>, embedded base64 <data> assets) have no external
+// file and are emitted unchanged. Returns a summary for the CLI to report.
+function doExportJatsPackage(opts) {
+  if (!opts.output) {
+    throw new CliError('export-jats --package needs an output directory (-o <dir>)');
+  }
+  return withQuiet(opts.quiet, () => {
+    const { tree, inputDir } = exportJatsTree(opts);
+    const outDir = resolve(opts.output);
+    const pkg = makeAssetPackage(true);
+    const xml = enscribeToJats(tree, { assetPackage: pkg });
+
+    mkdirSync(outDir, { recursive: true });
+    // <stem>.xml from the input basename: strip any trailing dots, then the final extension
+    // (so "doc.emd" → "doc", "doc.emd." → "doc", a stem-less name → the 'article' fallback).
+    const stem = basename(opts.input).replace(/\.+$/, '').replace(/\.[^./\\]+$/, '');
+    const xmlName = (stem || 'article') + '.xml';
+    writeFileSync(join(outDir, xmlName), xml.endsWith('\n') ? xml : xml + '\n', 'utf8');
+
+    let copied = 0;
+    const missing = [];
+    if (pkg.byName.size > 0) {
+      const assetsDir = join(outDir, 'assets');
+      mkdirSync(assetsDir, { recursive: true });
+      // pkg.byName is name → the (input-relative) src; resolve against the input dir and copy.
+      for (const [name, src] of pkg.byName) {
+        try {
+          copyFileSync(resolve(inputDir, src), join(assetsDir, name));
+          copied++;
+        } catch (e) {
+          missing.push(src);
+          console.warn(`enscribe export-jats: could not copy asset "${src}" (${e.code ?? e.message}) — <graphic xlink:href="assets/${name}"> will dangle`);
+        }
+      }
+    }
+    return { outDir, xmlName, referenced: pkg.byName.size, copied, missing };
   });
 }
 
@@ -605,6 +678,13 @@ export function run(argv, io = {}) {
       case 'export-jats': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(EXPORT_JATS_HELP); return 0; }
+        if (opts.package) {
+          const r = doExportJatsPackage(opts);
+          if (!opts.quiet) {
+            out.write(`Wrote ${join(r.outDir, r.xmlName)}${r.referenced ? ` + ${r.copied}/${r.referenced} asset(s) copied to assets/${r.missing.length ? ` (${r.missing.length} missing)` : ''}` : ' (no external assets)'}\n`);
+          }
+          return 0;
+        }
         emit(doExportJats(opts), opts, out);
         return 0;
       }

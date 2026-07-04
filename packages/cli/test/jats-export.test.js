@@ -1203,6 +1203,79 @@ ${dateXml}
   validateWithXmllint('book-asset-emb', bits);
 }
 
+// ─── Integration: #313 JATS asset packaging — external <fig src> → assets/ + href rewrite ──
+//
+// PACKAGE mode (opts.assetPackage) rewrites every EXTERNAL file figure href to assets/<name> and
+// records the src so the CLI can copy it into the package; inline cases (inline SVG base64,
+// embedded base64, DSL <preformat>) have no external file and are emitted unchanged. The CLI's
+// file-copy + directory layout is covered in cli.test.js; here we pin the emit-side rewrite +
+// collection + DTD-validity (xlink:href is CDATA, so a package-relative path is valid).
+{
+  const PKG_DIR = join(FIXTURES_DIR, 'jats-package');
+  const extSrc = readFileSync(join(PKG_DIR, 'article.emd'), 'utf8');
+  const proc = buildEnscribePipeline({ assetsDir: PKG_DIR });
+
+  // rewrite mode (the package deliverable): href → assets/<name>, collector maps name → src.
+  const pkg = { byName: new Map(), bySrc: new Map(), rewrite: true };
+  const jats = enscribeToJats(proc.runSync(proc.parse(extSrc)), { assetPackage: pkg });
+  check('pkg: external <fig src> href rewritten to assets/<name>',
+    jats.includes('<graphic xlink:href="assets/logo.png"/>'));
+  check('pkg: no as-authored external href survives in package mode',
+    !jats.includes('xlink:href="logo.png"'));
+  check('pkg: collector maps the package name → the source path',
+    pkg.byName.get('logo.png') === 'logo.png' && pkg.bySrc.get('logo.png') === 'logo.png');
+  validateWithXmllint('jats-package-external', jats);
+
+  // collect-only mode (lone-file export): the ref is recorded but the href is left as-authored.
+  const pkg2 = { byName: new Map(), bySrc: new Map(), rewrite: false };
+  const jats2 = enscribeToJats(proc.runSync(proc.parse(extSrc)), { assetPackage: pkg2 });
+  check('pkg: collect-only leaves the href as authored (the pre-#313 dangling reference)',
+    jats2.includes('<graphic xlink:href="logo.png"/>'));
+  check('pkg: collect-only still records the external ref (for the CLI dangling warning)',
+    pkg2.byName.size === 1);
+
+  // library default (no assetPackage): unchanged — every non-CLI caller is byte-identical.
+  const jats3 = enscribeToJats(proc.runSync(proc.parse(extSrc)));
+  check('pkg: no assetPackage → href unchanged (all library callers, back-compat)',
+    jats3.includes('<graphic xlink:href="logo.png"/>'));
+}
+
+// #313: inline assets are NOT packaged — inline SVG stays a base64 data URI, collector empty.
+{
+  const svgSrc = readFileSync(join(FIXTURES_DIR, 'document-45-jats-svg-figure.emd'), 'utf8');
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const pkg = { byName: new Map(), bySrc: new Map(), rewrite: true };
+  const jats = enscribeToJats(proc.runSync(proc.parse(svgSrc)), { assetPackage: pkg });
+  check('pkg: inline SVG stays a base64 data URI even in package mode',
+    /<graphic xlink:href="data:image\/svg\+xml;base64,/.test(jats));
+  check('pkg: inline SVG contributes NO external asset to the package', pkg.byName.size === 0);
+}
+
+// #313: a remote (http/https) figure src is portable/self-contained — not packaged.
+{
+  const remote = '<meta type=article title="R">\n<author | A>\n</meta>\n\n<section | S>\n\n<fig #f:r src="https://example.com/i.png" | Remote.>';
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const pkg = { byName: new Map(), bySrc: new Map(), rewrite: true };
+  const jats = enscribeToJats(proc.runSync(proc.parse(remote)), { assetPackage: pkg });
+  check('pkg: an http(s) figure src is left as-is (remote, portable) — not packaged',
+    jats.includes('xlink:href="https://example.com/i.png"') && pkg.byName.size === 0);
+}
+
+// #313: package mode is document-type-agnostic — a BITS BOOK's external figures package too
+// (graphicHref is called from the shared emitBlock dispatch, so article + book behave alike).
+{
+  const bookSrc = readFileSync(join(FIXTURES_DIR, 'document-42-jats-bits-book.emd'), 'utf8');
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const pkg = { byName: new Map(), bySrc: new Map(), rewrite: true };
+  const bits = enscribeToJats(proc.runSync(proc.parse(bookSrc)), { assetPackage: pkg });
+  check('pkg (book): BITS doctype (the book path packages too)', bits.includes('BITS-book2.dtd'));
+  check('pkg (book): both external chapter figs rewritten to assets/<name>',
+    bits.includes('<graphic xlink:href="assets/intro.png"/>') && bits.includes('<graphic xlink:href="assets/method.png"/>'));
+  check('pkg (book): the collector holds both book assets',
+    pkg.byName.size === 2 && pkg.byName.get('intro.png') === 'intro.png' && pkg.byName.get('method.png') === 'method.png');
+  validateWithXmllint('jats-package-book', bits);
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────
 
 console.log('');

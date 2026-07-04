@@ -158,12 +158,32 @@ serialize→reparse a stored fragment.
 Each consumer owns its **JATS projection** too, exactly as it owns its HTML interpretation:
 
 - **`<fig>` → `<graphic>` (DONE).** A body figure resolved from an asset projects to
-  `<graphic xlink:href="…">` — a `data:<mime>;base64,…` URI for an embedded asset, or the rebased path
+  `<graphic xlink:href="…">` — a `data:<mime>;base64,…` URI for an embedded asset, or the file path
   for an external one — DTD-valid for JATS Archiving 1.3 and BITS 2.0. This is **shipped and
   behaviorally confirmed** (`packages/cli/src/jats-export/index.js`, `emitFigureJats`; tests
   `packages/cli/test/jats-export.test.js` doc58 embedded-png/svg/external + `embedded-asset.test.js`, all
   DTD-validated). The earlier "remaining slice" claim in `elements/data.md` / `elements/fig.md` is
   stale and is corrected by this slice.
+
+  **Asset PACKAGING for a portable JATS deliverable (DONE).** The `data:` URI already carries an
+  embedded asset's bytes; an EXTERNAL `<graphic xlink:href="path">` is a *dangling reference* — the bytes
+  are not carried. `enscribe export-jats --package -o <dir>` closes that: it emits a self-contained
+  package — `<dir>/<name>.xml` plus `<dir>/assets/` holding every external file-backed asset copied in —
+  and rewrites each external figure's `xlink:href` to the package-relative `assets/<name>` (matching JATS's
+  article-package convention; binaries stay binaries). The mechanism is the natural hybrid: **inline what
+  is inherently inline** (an inline `<svg>` → a base64 `data:` URI; an embedded `<data>` base64 asset →
+  its `data:` URI; a DSL diagram → `<preformat>` source — none has an external file), **package what is an
+  external reference** (an external `<fig src="path">`, and an external-asset `@id` resolved to a path). A
+  `data:` URI and an `http(s)://` URL are left untouched (already self-contained / portable). The emit side
+  is neutral — `emitFigureJats`'s `graphicHref` registers each external file src and rewrites its href when
+  the caller (`enscribeToJats`'s `opts.assetPackage`) is in package mode; the CLI (`doExportJatsPackage`)
+  resolves each registered src against the input dir and copies it, mirroring `buildLiveFolder`'s
+  mkdir + copyFileSync. Lone-file / stdout export is unchanged (external hrefs emit as-authored — the
+  pre-existing dangling reference — and the CLI warns). Content-hash dedup across distinct paths with
+  identical bytes, and a JATS package *manifest*, are not done (a basename collision between two different
+  srcs is disambiguated with a `-N` suffix; identical srcs dedupe to one copy) — noted as follow-ups, not
+  needed for a valid, portable package. Tables/datasets need no packaging: their bytes are parsed and
+  **inlined** into `<table-wrap>`/`<preformat>` before export, so nothing file-backed reaches emit.
 - **`<dataset>` → ? (OPEN QUESTION).** What a stored dataset projects to in JATS is an open design
   question for the JATS slice — a candidate is `<supplementary-material>` (or, for a table consumer of
   the dataset, the existing `<table-wrap>` path). **Not decided here**; named so the JATS slice owns it
@@ -195,14 +215,22 @@ first, interpretation per consumer, packaging last.
    was needed for them. The `<dataset>`-element's OWN `<dataset>`→JATS projection (Piece 4) is still open
    for the JATS slice; a `<plot src="@id">` consumer is the remaining trivial future caller of
    `resolveAssetReference`.
-4. **Binary packaging** — the single-file build embeds a document's EXTERNAL referenced assets so the one
-   file is truly self-contained (renders its assets when opened from anywhere). **(DONE — `buildSingleFile`
-   `embedExternalAssets`: a parse-guided source edit rewrites each external `<fig src="local">` to a
-   `data:` URI and each `<table … src="local"/>` to inline long-form `<table …>bytes</table>`, reading the
-   bytes at build; embedded `<fig #id>base64</fig>` / `<dataset>` already travel in the source; an
-   `@id`/`data:`/http(s) src is left untouched. Round-trip-safe: opaque bytes, the engine re-parses normal
-   source at mount, no serialize-then-reparse. SCOPE: assets only — embedding external STRUCTURE children
-   (book chapters / website pages = site-in-a-file) is a separate, still-deferred follow-on.)**
+4. **Binary packaging** — a document's EXTERNAL referenced assets are carried into each self-contained
+   deliverable so it renders its assets when opened from anywhere. Two deliverables, each packaging in the
+   form its format wants:
+   - **Single-file HTML (DONE)** — `buildSingleFile` `embedExternalAssets`: a parse-guided source edit
+     rewrites each external `<fig src="local">` to a `data:` URI and each `<table … src="local"/>` to inline
+     long-form `<table …>bytes</table>`, reading the bytes at build; embedded `<fig #id>base64</fig>` /
+     `<dataset>` already travel in the source; an `@id`/`data:`/http(s) src is left untouched.
+     Round-trip-safe: opaque bytes, the engine re-parses normal source at mount, no serialize-then-reparse.
+   - **JATS package (DONE)** — `enscribe export-jats --package -o <dir>` emits a `<dir>/<name>.xml` +
+     `<dir>/assets/` package (the JATS article-package convention: binaries stay binaries, not inlined),
+     copying every external file-backed asset in and rewriting each external `<graphic xlink:href>` to
+     `assets/<name>`; inline SVG / DSL `<preformat>` / embedded base64 stay inline; `data:`/`http(s)` are
+     left untouched. See Piece 4. Lone-file / stdout export is unchanged (dangling ref + a warning).
+
+   SCOPE: assets only — embedding external STRUCTURE children (book chapters / website pages =
+   site-in-a-file) is a separate, still-deferred follow-on.
 
 This completes the #313 build sequence (slices 0–4); the `<diagram src="@id">` / `<code src="@id">`
 consumers (the consumer-wiring slice) fill out slice 3's per-consumer interpretation. The remaining

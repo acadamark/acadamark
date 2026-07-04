@@ -2207,7 +2207,7 @@ const _data = Object.freeze({
           "element": "fig",
           "required": false,
           "multiple": true,
-          "notes": "Image asset (#190): embedded <fig #id png>base64</fig> (png/jpg/jpeg/svg/gif/webp) or external <fig #id src=\"path\" />, pulled into the body by <fig src=\"@id\" />. Merges project-wide across an assembled document. JATS <graphic> export (embedded → data: URI, external → rebased path; DTD-valid) is done. The opaque-store design — and consumers beyond <fig> (table/code/dataset) — is specced in notes/specs/data-store.md (#313).",
+          "notes": "Image asset (#190): embedded <fig #id png>base64</fig> (png/jpg/jpeg/svg/gif/webp) or external <fig #id src=\"path\" />, pulled into the body by <fig src=\"@id\" />. Merges project-wide across an assembled document. JATS <graphic> export (embedded → data: URI, external → its file path, packaged into an assets/ dir on export-jats --package; DTD-valid) is done. The opaque-store design — and consumers beyond <fig> (table/code/dataset) — is specced in notes/specs/data-store.md (#313).",
         },
         {
           "element": "dataset",
@@ -3201,7 +3201,7 @@ const _fig = Object.freeze({
       "kwargs": {
         "src": {
           "handled_by": "handler",
-          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n\nAsset reference (#190): when src is `@id` it pulls in an asset\ndeclared inside `<data>`, either embedded —\n`<fig #id png>base64</fig>` (the format flag is one of png, jpg,\njpeg, svg, gif, webp) — or external — `<fig #id src=\"path\" />`. An\nembedded reference resolves to a `data:<mime>;base64,…` URI; an\nexternal one resolves to the declared path (rebased master-relative\nfor a cross-file child) as a plain `<img src=\"path\">`. The placed\nfigure adopts the id, so it numbers and cross-references (`<ref @id>`)\nas that id; the `<data>` declaration itself renders nothing.\nRe-placing one asset is legitimate — each `<fig src=\"@id\" />` renders\nand numbers, but only the first adopts the id (the cross-reference\nanchor); give a later placement its own `#id` to reference it. An\nunresolved `@id`, or an embedded format outside the list above,\nrenders a visible asset-error rather than a broken image. Assets\nmerge project-wide across an assembled document; the same id declared\nin two `<data>` blocks is last-wins with a visible collision flag.\n(JATS `<graphic>` export of assets is done — an embedded asset\nprojects to a `data:` URI, an external one to the rebased path,\nDTD-valid; the opaque-store design is `notes/specs/data-store.md`.)\n",
+          "notes": "URL of an image to embed. The handler generates an <img> child\nelement from this kwarg. When src is present, the figure renders\nas an image with a caption.\n\nAsset reference (#190): when src is `@id` it pulls in an asset\ndeclared inside `<data>`, either embedded —\n`<fig #id png>base64</fig>` (the format flag is one of png, jpg,\njpeg, svg, gif, webp) — or external — `<fig #id src=\"path\" />`. An\nembedded reference resolves to a `data:<mime>;base64,…` URI; an\nexternal one resolves to the declared path (rebased master-relative\nfor a cross-file child) as a plain `<img src=\"path\">`. The placed\nfigure adopts the id, so it numbers and cross-references (`<ref @id>`)\nas that id; the `<data>` declaration itself renders nothing.\nRe-placing one asset is legitimate — each `<fig src=\"@id\" />` renders\nand numbers, but only the first adopts the id (the cross-reference\nanchor); give a later placement its own `#id` to reference it. An\nunresolved `@id`, or an embedded format outside the list above,\nrenders a visible asset-error rather than a broken image. Assets\nmerge project-wide across an assembled document; the same id declared\nin two `<data>` blocks is last-wins with a visible collision flag.\n(JATS `<graphic>` export of assets is done — an embedded asset\nprojects to a `data:` URI, an external one to its file path,\npackaged into an `assets/` dir on `export-jats --package`;\nDTD-valid. The opaque-store design is `notes/specs/data-store.md`.)\n",
         },
         "alt": {
           "handled_by": "handler",
@@ -3272,7 +3272,7 @@ const _fig = Object.freeze({
       "attributes": {
         "fig-type": "from type",
       },
-      "notes": "JATS <fig> wraps <graphic> (the image) and <caption>. When src is\npresent, the exporter generates <graphic xlink:href=\"...\"> from the\nsrc kwarg. The figcaption becomes <caption>. The fig-type attribute\nmaps from enscribe's type kwarg.\n",
+      "notes": "JATS <fig> wraps <graphic> (the image) and <caption>. When src is\npresent, the exporter generates <graphic xlink:href=\"...\"> from the\nsrc kwarg. The figcaption becomes <caption>. The fig-type attribute\nmaps from enscribe's type kwarg. On `export-jats --package` an external\nfile src is copied into the package's assets/ dir and its xlink:href\nrewritten to assets/<name> (inline SVG and embedded base64 stay inline,\nalready self-contained); lone-file export leaves the href as-authored.\n",
     },
     "shorthand_expansions": [
       {

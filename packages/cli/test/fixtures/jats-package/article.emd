@@ -1,0 +1,10 @@
+<meta type=article title="JATS asset packaging">
+<author | The Enscribe Project>
+</meta>
+
+<section | An external figure>
+
+This document references an external image file, so exporting it in package
+mode must copy the image into the deliverable and rewrite its reference.
+
+<fig #fig:logo src=logo.png | The project logo.>

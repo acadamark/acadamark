@@ -50,8 +50,9 @@ enscribe_attributes:
         merge project-wide across an assembled document; the same id declared
         in two `<data>` blocks is last-wins with a visible collision flag.
         (JATS `<graphic>` export of assets is done — an embedded asset
-        projects to a `data:` URI, an external one to the rebased path,
-        DTD-valid; the opaque-store design is `notes/specs/data-store.md`.)
+        projects to a `data:` URI, an external one to its file path,
+        packaged into an `assets/` dir on `export-jats --package`;
+        DTD-valid. The opaque-store design is `notes/specs/data-store.md`.)
     alt:
       handled_by: handler
       notes: |
@@ -122,7 +123,10 @@ jats_counterpart:
     JATS <fig> wraps <graphic> (the image) and <caption>. When src is
     present, the exporter generates <graphic xlink:href="..."> from the
     src kwarg. The figcaption becomes <caption>. The fig-type attribute
-    maps from enscribe's type kwarg.
+    maps from enscribe's type kwarg. On `export-jats --package` an external
+    file src is copied into the package's assets/ dir and its xlink:href
+    rewritten to assets/<name> (inline SVG and embedded base64 stay inline,
+    already self-contained); lone-file export leaves the href as-authored.
 shorthand_expansions:
   - shorthand: figure
     expands_to: fig

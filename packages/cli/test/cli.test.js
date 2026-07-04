@@ -149,6 +149,59 @@ export function run_tests() {
     console.log('PASS: export-jats refuses a website (no JATS/BITS projection)');
   }
 
+  // ── export-jats --package → self-contained package (dir + assets/), href rewrite (#313) ──────
+  {
+    const PKG_FIXTURE = join(__dirname, 'fixtures', 'jats-package', 'article.emd');
+    const PKG_ASSET   = join(__dirname, 'fixtures', 'jats-package', 'logo.png');
+    const outDir = mkdtempSync(join(tmpdir(), 'enscribe-jats-pkg-'));
+    try {
+      const { code, out } = invoke(['export-jats', PKG_FIXTURE, '--package', '-o', outDir]);
+      assert.equal(code, 0, 'export-jats --package exits 0');
+      const xmlPath = join(outDir, 'article.xml');
+      const assetPath = join(outDir, 'assets', 'logo.png');
+      assert.ok(existsSync(xmlPath), 'package writes <stem>.xml');
+      assert.ok(existsSync(assetPath), 'package copies the external asset into assets/');
+      assert.equal(Buffer.compare(readFileSync(PKG_ASSET), readFileSync(assetPath)), 0,
+        'the copied asset is byte-identical to the source');
+      const xml = readFileSync(xmlPath, 'utf8');
+      assert.ok(xml.includes('<graphic xlink:href="assets/logo.png"/>'),
+        'the figure href is rewritten to the package-relative assets/ path');
+      assert.ok(!xml.includes('xlink:href="logo.png"'), 'no dangling as-authored href remains');
+      assert.ok(out.includes('assets/'), 'the CLI reports the package it wrote');
+      console.log('PASS: export-jats --package → dir + assets/, href rewritten, asset copied byte-identical');
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
+    }
+  }
+
+  // ── export-jats (lone-file) on a doc with an external asset → warns it will dangle (#313) ─────
+  {
+    const PKG_FIXTURE = join(__dirname, 'fixtures', 'jats-package', 'article.emd');
+    const warnings = [];
+    const origWarn = console.warn;
+    console.warn = (...a) => warnings.push(a.join(' '));
+    let out;
+    try {
+      out = invoke(['export-jats', PKG_FIXTURE]).out;
+    } finally {
+      console.warn = origWarn;
+    }
+    assert.ok(out.includes('<graphic xlink:href="logo.png"/>'),
+      'lone-file mode leaves the external href as authored (back-compat, dangling)');
+    assert.ok(warnings.some((w) => /will dangle/.test(w)),
+      'lone-file mode warns that the external reference will dangle');
+    console.log('PASS: export-jats (lone-file) leaves external hrefs as-authored + warns they dangle');
+  }
+
+  // ── export-jats --package without -o → a helpful error ───────────────────────────────────────
+  {
+    const PKG_FIXTURE = join(__dirname, 'fixtures', 'jats-package', 'article.emd');
+    const { code, err } = invoke(['export-jats', PKG_FIXTURE, '--package']);
+    assert.equal(code, 1, '--package without -o exits non-zero');
+    assert.ok(/needs an output directory/.test(err), 'the error explains -o <dir> is required');
+    console.log('PASS: export-jats --package without -o → helpful error');
+  }
+
   // ── lift → canonical source ─────────────────────────────────────────────────
   {
     const { code, out } = invoke(['lift', FIXTURE]);

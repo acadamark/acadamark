@@ -29,7 +29,7 @@ content:
     - element: fig
       required: false
       multiple: true
-      notes: 'Image asset (#190): embedded <fig #id png>base64</fig> (png/jpg/jpeg/svg/gif/webp) or external <fig #id src="path" />, pulled into the body by <fig src="@id" />. Merges project-wide across an assembled document. JATS <graphic> export (embedded → data: URI, external → rebased path; DTD-valid) is done. The opaque-store design — and consumers beyond <fig> (table/code/dataset) — is specced in notes/specs/data-store.md (#313).'
+      notes: 'Image asset (#190): embedded <fig #id png>base64</fig> (png/jpg/jpeg/svg/gif/webp) or external <fig #id src="path" />, pulled into the body by <fig src="@id" />. Merges project-wide across an assembled document. JATS <graphic> export (embedded → data: URI, external → its file path, packaged into an assets/ dir on export-jats --package; DTD-valid) is done. The opaque-store design — and consumers beyond <fig> (table/code/dataset) — is specced in notes/specs/data-store.md (#313).'
     - element: dataset
       required: false
       multiple: true

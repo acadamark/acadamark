@@ -94,6 +94,12 @@ const UNTITLED_TITLE = 'Untitled';
  *                  default for book documents (e.g. 'monograph',
  *                  'edited-volume').
  * @param {string} [opts.lang='en'] - default xml:lang on the root.
+ * @param {{ byName: Map<string,string>, bySrc: Map<string,string>, rewrite: boolean }} [opts.assetPackage]
+ *                  #313 asset packaging (CLI package mode). When provided, every external
+ *                  file figure `src` is registered (name → src / src → name) and, in
+ *                  `rewrite` mode, its `<graphic xlink:href>` is rewritten to
+ *                  `assets/<name>`; the CLI then copies the registered srcs into the
+ *                  package's `assets/` dir. Omit for a lone XML string (hrefs unchanged).
  * @returns {string} JATS XML serialization.
  */
 // #333: margin notes (position=margin) project to JATS <boxed-text
@@ -103,6 +109,16 @@ const UNTITLED_TITLE = 'Untitled';
 // emitFnGroupJats skip the item (a margin note is not a footnote). Position drives
 // the element; numbering is independent (the display number rides along as a label).
 let marginNotesById = new Map();
+
+// #313 (JATS asset packaging): in PACKAGE mode the caller passes an asset collector via
+// opts.assetPackage; emitFigureJats routes every EXTERNAL figure src (a file path — not an
+// inline data: URI, not an http(s) URL) through graphicHref, which registers the asset and
+// rewrites its xlink:href to the package-relative `assets/<name>`. In lone-file mode the caller
+// passes a collector with rewrite:false — the href is left as-authored (the pre-#313 dangling
+// reference) but the ref is still recorded so the CLI can warn. null (every library caller) →
+// no packaging: hrefs emit exactly as before. Mirrors the marginNotesById per-call module-state.
+//   shape: { byName: Map<name, src>, bySrc: Map<src, name>, rewrite: boolean }
+let assetPackage = null;
 
 function collectMarginNotes(tree) {
   const map = new Map();
@@ -123,6 +139,7 @@ export function enscribeToJats(tree, opts = {}) {
   const lang        = opts.lang        ?? 'en';
 
   marginNotesById = collectMarginNotes(tree);
+  assetPackage = opts.assetPackage ?? null;   // #313: null for library callers → hrefs unchanged
 
   // #246: a website (<meta type=website>) has NO JATS/BITS projection — a site isn't a scholarly
   // document. Refuse here so the rule holds for EVERY caller (not just the CLI's doExportJats
@@ -987,6 +1004,49 @@ function reconstructInlineSvg(node) {
 }
 
 /**
+ * Is `src` an EXTERNAL FILE reference that a JATS package must carry? True for a plain
+ * path (`images/x.png`, `x.jpg`); false for an inline `data:` URI (inline SVG or an
+ * embedded base64 asset — already self-contained) and for an `http(s)://` URL (a remote
+ * resource, portable as-is). These two exclusions match buildSingleFile's "leave
+ * data:/http(s) untouched" rule for external-asset embedding.
+ */
+function isExternalFileHref(src) {
+  return typeof src === 'string' && src.trim().length > 0
+    && !src.startsWith('data:') && !/^https?:\/\//i.test(src);
+}
+
+/**
+ * The xlink:href to emit for a figure's `src` (#313 asset packaging). With no asset
+ * package (every library caller) or a non-file src, returns `src` unchanged — the
+ * pre-#313 behavior. With an asset package and an external file src, registers the asset
+ * under a package-unique name (its basename; a basename collision between two DIFFERENT
+ * srcs is disambiguated with a `-N` suffix) and, in rewrite mode (the package
+ * deliverable), returns `assets/<name>`; in collect-only mode (lone-file export) returns
+ * `src` unchanged so the CLI can warn the reference will dangle. Identical srcs dedupe to
+ * one asset. Pure string work (no fs/path — this module is browser-safe): the CLI
+ * resolves each registered src against the input dir and copies it into `assets/`.
+ */
+function graphicHref(src) {
+  if (!assetPackage || !isExternalFileHref(src)) return src;
+  let name = assetPackage.bySrc.get(src);
+  if (!name) {
+    const base = src.split(/[/\\]/).pop();          // basename without a path import
+    name = base;
+    if (assetPackage.byName.has(name)) {
+      const dot = base.lastIndexOf('.');
+      const stem = dot > 0 ? base.slice(0, dot) : base;
+      const ext  = dot > 0 ? base.slice(dot) : '';
+      let i = 2;
+      while (assetPackage.byName.has(`${stem}-${i}${ext}`)) i++;
+      name = `${stem}-${i}${ext}`;
+    }
+    assetPackage.byName.set(name, src);
+    assetPackage.bySrc.set(src, name);
+  }
+  return assetPackage.rewrite ? `assets/${name}` : src;
+}
+
+/**
  * Emit a JATS `<fig>` for figure-family frameables (fig / svg / frame).
  * Per JATS Archiving 1.3: `<fig>` contains optional `<label>` (for
  * numbering), optional `<caption>` (with `<title>` and `<p>`s),
@@ -1026,12 +1086,13 @@ function emitFigureJats(node, indent) {
     }
     out += `${pad}  </caption>\n`;
   }
-  // Body: for figures with src, emit <graphic xlink:href="..."/>; for
-  // svg, emit <graphic> with the SVG content as a comment (full SVG
-  // embedding is slice 5e or 5f territory); for frame and other
-  // non-image figures, emit body content as paragraphs.
+  // Body: for figures with src, emit <graphic xlink:href="..."/> — an external file src
+  // is packaged (copied into assets/, href rewritten to assets/<name>) when export runs in
+  // package mode, else left as-authored (see graphicHref, #313); for svg, emit <graphic>
+  // with the SVG content as a base64 data URI (inline, no external file to package); for
+  // frame and other non-image figures, emit body content as paragraphs.
   if (src) {
-    out += `${pad}  <graphic xlink:href="${escapeXmlAttr(src)}"/>\n`;
+    out += `${pad}  <graphic xlink:href="${escapeXmlAttr(graphicHref(src))}"/>\n`;
   } else if (node.tagname === 'svg' && typeof node.content === 'string') {
     // Inline SVG has no external resource path. Consistent with enscribe's
     // self-contained-output philosophy (the HTML path's embedResources, and the
