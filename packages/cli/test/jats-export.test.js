@@ -202,6 +202,60 @@ function validateWithXmllint(fixtureName, jatsXml) {
     !!jats && /<article/.test(jats) && /<body>/.test(jats));
 }
 
+// ─── #313 piece 4: a CONSUMED <dataset> converges on the inline path BEFORE export ──
+// The block above proves the UNUSED-dataset clean skip. This proves the other
+// done-by-construction half: a <table src="@id"> fed by a stored <dataset> is resolved
+// to inline table content (resolveTableSrc sets node.content + the dataset's format hint
+// and deletes src) BEFORE the exporter runs — so it emits a <table-wrap> byte-identical
+// to the same table authored inline. No <dataset> node and no src="@id" reach JATS, so
+// piece 4 needs no dedicated dataset projection. If these diverge, piece 4 is a real gap.
+{
+  const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });
+  const head = [
+    '<meta type=article>', '<title | Dataset-fed vs inline table>', '<author | A>', '</meta>', '',
+    '<section | Data>', '',
+  ];
+  // Dataset-fed: a <table src="@id"> pulling a stored CSV <dataset>. The table names no
+  // format word, so the dataset's `csv` hint applies (see resolveTableSrc in asset-load.js).
+  const datasetFed = [
+    ...head,
+    '<table src="@sales" />', '',
+    '<data>',
+    '<dataset #sales csv>',
+    'name,value',
+    'alpha,1',
+    'beta,2',
+    '</dataset>',
+    '</data>',
+  ].join('\n');
+  // Inline equivalent: the SAME csv bytes authored directly on the table.
+  const inline = [
+    ...head,
+    '<table csv | name,value',
+    'alpha,1',
+    'beta,2>',
+  ].join('\n');
+
+  const jatsDataset = enscribeToJats(proc.runSync(proc.parse(datasetFed)));
+  const jatsInline = enscribeToJats(proc.runSync(proc.parse(inline)));
+
+  const tableWrap = (xml) => { const m = xml.match(/<table-wrap[\s\S]*?<\/table-wrap>/); return m ? m[0] : null; };
+  const twDataset = tableWrap(jatsDataset);
+  const twInline = tableWrap(jatsInline);
+
+  check('#313 piece 4: dataset-fed <table src="@id"> emits a <table-wrap> (consumed, not skipped)', !!twDataset);
+  check('#313 piece 4: inline <table> emits a <table-wrap>', !!twInline);
+  const converges = !!twDataset && twDataset === twInline;
+  check('#313 piece 4: dataset-fed <table-wrap> is byte-identical to the inline one (converges before export)', converges);
+  if (twDataset && twInline && !converges) {
+    console.log('  dataset-fed <table-wrap>:\n' + twDataset);
+    console.log('  inline    <table-wrap>:\n' + twInline);
+  }
+  check('#313 piece 4: no <dataset> node and no src="@id" reach the exporter',
+    !/<dataset/.test(jatsDataset) && !/@sales/.test(jatsDataset));
+  validateWithXmllint('doc313-dataset-consumed', jatsDataset);
+}
+
 // ─── Integration: doc-39 minimal article through full pipeline ─────────────
 
 {
