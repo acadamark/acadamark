@@ -1,0 +1,28 @@
+<meta type=article title="Code indentation — authored code renders verbatim through a code block (Option A)">
+</meta>
+
+<section | Authored code renders verbatim>
+
+An author's indentation in code is never disturbed. enscribe guarantees this
+through the **code block** — the fenced sigil `<``` … ```>` or `<code-block>` —
+which renders its content as `<pre><code>`, byte-for-byte, indentation intact. A
+bare `<code>` is for *inline* code, like the name <code | factorial> in this
+sentence, and by nature carries no multi-line indentation.
+
+<sub-section | A code block from a stored dataset>
+
+`<code-block src="@factorial">` pulls a stored `<dataset>` and renders it through
+the whitespace-safe `<pre><code>` path. The nested indentation of the function
+below survives exactly as written — the 4-space body and the 8-space loop line:
+
+<code-block src="@factorial" />
+
+<data>
+<dataset #factorial python>
+def factorial(n):
+    result = 1
+    for i in range(1, n + 1):
+        result = result * i
+    return result
+</dataset>
+</data>

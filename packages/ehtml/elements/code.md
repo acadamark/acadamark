@@ -113,6 +113,8 @@ Code content is opaque — preserved verbatim by the parser (contentHandler: "co
 
 For block-level code with the same opacity, use the code sigil (`` <`code`> `` for single-line, `` <```code```> `` for multi-line).
 
+**`<code>` is inline-only; multi-line code belongs in a code block.** A bare `<code>` renders as inline `<code>`, whose per-line indentation is reflowed away by the HTML pretty-printer (inline code is not whitespace-sensitive). Authored code renders **verbatim** only through a code block (`<pre><code>` — the `` <```...```> `` sigil, `<code-block>`, or `<code-block src="@id">` for a stored `<dataset>`), where whitespace is preserved byte-for-byte. So a `<code>` whose content contains a newline emits a **located build warning** nudging the author to a code block — the content is never silently reflowed *or* silently rewritten (Option A).
+
 ## Attributes
 
 `language` identifies the programming language for syntax highlighting. Maps to a class like `language-python`, which downstream syntax highlighters (shiki, prism) recognize.

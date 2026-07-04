@@ -2085,4 +2085,36 @@ export function run() {
     snapshotHast('document-72', hast);
     console.log('PASS: integration doc72 (dataset consumers — <table>/<diagram>/<code> read a stored <dataset> by @id, #313)');
   }
+
+  // ── Document 73: code indentation — authored code renders verbatim through <pre><code> (Option A) ──
+  // The fix for the long-standing bug (audit-code-indentation.md): a bare <code> is reflowed by the
+  // pretty-printer (formatHtml) and loses per-line indentation, while <pre><code> is preserved. Option A:
+  // multi-line code renders through a code block. Here a multi-line <dataset> is pulled by
+  // <code-block src="@id"> (the new whitespace-safe consumer) and its 4-space + 8-space indentation
+  // survives BYTE-FOR-BYTE in the HTML. A single-line inline <code> in prose is the correct inline use.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-73-code-block-indentation.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc73: article structure present');
+
+    // The code block renders <pre><code> with the dataset's format hint as the language.
+    assert.ok(/<pre><code class="language-python">/.test(html),
+      'doc73: <code-block src="@factorial"> renders <pre><code class="language-python"> (format hint → language positional)');
+    // The crux: nested indentation survives to the HTML bytes (the <pre> path is not reflowed).
+    assert.ok(/\n {4}result = 1/.test(html), 'doc73: the 4-space body indentation survives to the HTML bytes');
+    assert.ok(/\n {8}result = result \* i/.test(html), 'doc73: the 8-space loop-line indentation survives to the HTML bytes');
+    assert.ok(html.includes('def factorial(n):') && html.includes('return result'), 'doc73: the code body is verbatim');
+
+    // A single-line inline <code> in prose renders as inline <code> (its correct use — no indentation).
+    assert.ok(html.includes('<code>factorial</code>'), 'doc73: a single-line inline <code> renders as inline code');
+
+    // Resolved in-tree: no raw @-src on the rendered exhibit, and the store renders nothing.
+    assert.ok(!/<pre[^>]*\ssrc=|<code[^>]*\ssrc=/.test(html), 'doc73: no rendered exhibit carries a raw src="@…"');
+    assert.ok(!html.includes('could not resolve asset reference'), 'doc73: the @id resolved (no asset-error)');
+    assert.ok(!html.includes('<data>') && !html.includes('<dataset'), 'doc73: the <data>/<dataset> store renders nothing');
+
+    snapshotHast('document-73', hast);
+    console.log('PASS: integration doc73 (code indentation — <code-block src="@id"> renders <pre><code> with indentation INTACT, Option A)');
+  }
 }

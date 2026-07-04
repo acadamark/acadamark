@@ -1,8 +1,13 @@
 // Enscribe-inline-aware HTML formatting (#117).
 //
 // The rendered eHTML is pretty-printed for readable view-source by rehype-format,
-// which indents block structure and leaves whitespace-sensitive contexts (`<pre>`/`<code>`/
-// `<textarea>`, and inline runs) alone. ONE correctness gap: rehype-format classifies
+// which indents block structure and leaves whitespace-sensitive contexts alone: `<pre>`
+// subtrees (so a `<code>` NESTED IN `<pre>` — a code block — keeps its author whitespace),
+// `<textarea>`, `<script>`/`<style>`, and inline runs. NOTE: a BARE `<code>` (inline code,
+// not inside `<pre>`) is NOT spared — its leading per-line whitespace is reflowed away. That
+// is by design (inline code is not whitespace-sensitive); multi-line code therefore belongs in
+// a code block, not a bare `<code>` (see ~/enscribe-reports/audit-code-indentation.md, and the
+// multi-line-`<code>` lint in plugins/asset-load.js). ONE correctness gap: rehype-format classifies
 // inline-vs-block via `hast-util-phrasing`, whose "inline" set is a FIXED list of HTML
 // phrasing tag names. Every enscribe CUSTOM element is therefore treated as block — correct
 // for `<article>` / `<section>` / `<book-part>` / `<display-math>` / … (they SHOULD break onto

@@ -19,6 +19,21 @@ enscribe_attributes:
     maps_to: class
     notes: |
       Added to <code> alongside any language class.
+  kwargs:
+    src:
+      notes: |
+        An @id reference (Option A / #313) that pulls a stored <dataset> declared in
+        <data> and renders its opaque bytes as the code block's verbatim body —
+        e.g. <code-block src="@snippet"> renders <dataset #snippet python>…</dataset>.
+        This is the WHITESPACE-SAFE home for multi-line code: because the body renders
+        as <pre><code>, the pretty-printer preserves the author's indentation
+        byte-for-byte (a bare <code src="@id"> renders inline and collapses it — a lint
+        nudges authors here). The dataset's format hint, when the <code-block> names no
+        language, seeds the language positional (language-X highlight class). An
+        unresolved id — or a wrong-kind id (an image or external asset, not a <dataset>)
+        — is a visible asset-error. Inline body (the sigil / <code-block …>…</code-block>)
+        is unaffected. A file-path src is not read here (the handler reads no files);
+        source a <dataset> instead.
 content:
   notes: |
     The pipe content is verbatim code source. No markdown idioms or enscribe

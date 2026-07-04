@@ -1,0 +1,488 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Code indentation — authored code renders verbatim through a code block (Option A)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Authored code renders verbatim",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 32,
+                          "offset": 31
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "An author's indentation in code is never disturbed. enscribe guarantees this\nthrough the ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 163
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 13,
+                          "offset": 252
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "b",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "code block",
+                          "position": {
+                            "start": {
+                              "line": 7,
+                              "column": 15,
+                              "offset": 254
+                            },
+                            "end": {
+                              "line": 7,
+                              "column": 25,
+                              "offset": 264
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " — the fenced sigil ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 27,
+                          "offset": 266
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 47,
+                          "offset": 286
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<``` … ```>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " or ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 60,
+                          "offset": 299
+                        },
+                        "end": {
+                          "line": 7,
+                          "column": 64,
+                          "offset": 303
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<code-block>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " —\nwhich renders its content as ",
+                      "position": {
+                        "start": {
+                          "line": 7,
+                          "column": 78,
+                          "offset": 317
+                        },
+                        "end": {
+                          "line": 8,
+                          "column": 30,
+                          "offset": 349
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<pre><code>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ", byte-for-byte, indentation intact. A\nbare ",
+                      "position": {
+                        "start": {
+                          "line": 8,
+                          "column": 43,
+                          "offset": 362
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 6,
+                          "offset": 406
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<code>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " is for ",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 14,
+                          "offset": 414
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 22,
+                          "offset": 422
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "i",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "inline",
+                          "position": {
+                            "start": {
+                              "line": 9,
+                              "column": 23,
+                              "offset": 423
+                            },
+                            "end": {
+                              "line": 9,
+                              "column": 29,
+                              "offset": 429
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " code, like the name ",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 30,
+                          "offset": 430
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 51,
+                          "offset": 451
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": " factorial"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " in this\nsentence, and by nature carries no multi-line indentation.",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 69,
+                          "offset": 469
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 59,
+                          "offset": 536
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 163
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 59,
+                      "offset": 536
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A code block from a stored dataset",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 36,
+                              "offset": 35
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<code-block src=\"@factorial\">"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " pulls a stored ",
+                          "position": {
+                            "start": {
+                              "line": 14,
+                              "column": 32,
+                              "offset": 621
+                            },
+                            "end": {
+                              "line": 14,
+                              "column": 48,
+                              "offset": 637
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<dataset>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " and renders it through\nthe whitespace-safe ",
+                          "position": {
+                            "start": {
+                              "line": 14,
+                              "column": 59,
+                              "offset": 648
+                            },
+                            "end": {
+                              "line": 15,
+                              "column": 21,
+                              "offset": 692
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<pre><code>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " path. The nested indentation of the function\nbelow survives exactly as written — the 4-space body and the 8-space loop line:",
+                          "position": {
+                            "start": {
+                              "line": 15,
+                              "column": 34,
+                              "offset": 705
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 80,
+                              "offset": 830
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 1,
+                          "offset": 590
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 80,
+                          "offset": 830
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "pre",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {
+                            "className": [
+                              "language-python"
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "def factorial(n):\n    result = 1\n    for i in range(1, n + 1):\n        result = result * i\n    return result"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 29,
+      "column": 1,
+      "offset": 1028
+    }
+  }
+}
