@@ -2213,7 +2213,7 @@ const _data = Object.freeze({
           "element": "dataset",
           "required": false,
           "multiple": true,
-          "notes": "Opaque data store (#313 slice 1): <dataset #id format=csv | a,b\\n1,2> (or a leading-positional format, <dataset #id csv | …>) holds a CSV/TSV/JSON/… payload as OPAQUE bytes under its id — never markdown-parsed, so a #/*/_ in the payload passes through untouched. Pure storage: a consumer (<table src=\"@id\">, a future <plot>) interprets the bytes; <dataset> itself renders nothing (invisible, like <library>). Harvested into the project data store keyed by id (+ the optional format hint), project-wide merged. Consumer-side interpretation is slice 2; see notes/specs/data-store.md Piece 1.",
+          "notes": "Opaque data store (#313 slice 1): <dataset #id format=csv>a,b\\n1,2</dataset> (or a leading-positional format, <dataset #id csv>…</dataset>) holds a CSV/TSV/JSON/… payload as OPAQUE bytes under its id — never markdown-parsed, so a #/*/_ in the payload passes through untouched. A <dataset> must use this LONG form <dataset>…</dataset>, never the pipe form <dataset … | …> — the pipe form truncates the payload at the first \">\" (Mermaid \"-->\", JSON, code), which datasets routinely contain (buildAssetIndex rejects a non-long-form <dataset> as a visible authoring error). Pure storage: a consumer (<table src=\"@id\">, a future <plot>) interprets the bytes; <dataset> itself renders nothing (invisible, like <library>). Harvested into the project data store keyed by id (+ the optional format hint), project-wide merged. See notes/specs/data-store.md Piece 1.",
         },
       ],
     },
@@ -6511,7 +6511,7 @@ const _table = Object.freeze({
           "notes": "Short-form caption as a kwarg string. Renders as <caption> inside\nthe table element. When numbered, a \"Table N.\" label span is\nprepended. Long-form caption (<caption | ...> nested tag) is deferred.\n",
         },
         "src": {
-          "notes": "Where the table's data comes from. Either a path to an external data\nfile (relative to the document's assets directory, configurable via the\nassetsDir interpreter option; read at interpretation time), OR an @id\nreference (#313 slice 2) that pulls a stored <dataset> declared in\n<data> — e.g. <table src=\"@sales\"> renders the <dataset #sales csv | …>\nas a grid (the dataset's format hint applies when the table names no\nformat word). The opaque bytes go straight from the store to the table\nparser. An unresolved/wrong-kind @id is a visible asset-error (never a\nsilently-empty table).\n",
+          "notes": "Where the table's data comes from. Either a path to an external data\nfile (relative to the document's assets directory, configurable via the\nassetsDir interpreter option; read at interpretation time), OR an @id\nreference (#313 slice 2) that pulls a stored <dataset> declared in\n<data> — e.g. <table src=\"@sales\"> renders the <dataset #sales csv>…</dataset>\nas a grid (the dataset's format hint applies when the table names no\nformat word). The opaque bytes go straight from the store to the table\nparser. An unresolved/wrong-kind @id is a visible asset-error (never a\nsilently-empty table).\n",
         },
         "type": {
           "maps_to": {

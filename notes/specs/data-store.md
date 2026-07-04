@@ -60,13 +60,18 @@ because the `default` handler recursively re-parses string content as markdown
 (`packages/enscribe/src/parser/recursive-content.js`), which would both mangle the data (a `#` becomes
 a heading, a `*` becomes emphasis) and expose it to the [#330] mixed-content whitespace class.
 
-**Authoring caveat — the pipe form has no `>` terminator.** The pipe form `<dataset … | bytes>` is
-delimited by the first unescaped `>`, so a payload that itself contains `>` (Mermaid's `-->`, some JSON,
-`<code>`-shaped source) is truncated there. Such a payload must be authored in the **long form**
-`<dataset …>bytes</dataset>`, which scans to the explicit `</dataset>` and keeps `>` intact. This is a
-property of the shared tag-boundary parser (it predates and is independent of #313), noted here because
-the diagram/code consumers make `>`-bearing datasets common; it is not a store behavior. Fixing the pipe
-form to admit `>` is a separate parser question, out of scope for the data store.
+**Rule — a `<dataset>` must be long-form `<dataset …>bytes</dataset>`.** The payload is the tag *body*.
+The pipe form `<dataset … | bytes>` is delimited by the first unescaped `>`, so a payload that itself
+contains `>` (Mermaid's `-->`, some JSON, `<code>`-shaped source) is truncated there — and datasets
+routinely contain `>`. The long form scans to the explicit `</dataset>` and has no such ambiguity, so it
+is the **required** authoring form: at harvest (`buildAssetIndex`, `asset-load.js`) a non-long-form
+`<dataset>` — pipe, bare, or self-closing — is rejected as a visible `__asset-error` ("must use the long
+form …") and is **not** registered, rather than silently storing a truncated payload. This is enforced at
+harvest, *not* by changing the shared tag-boundary parser (the pipe truncation is a property of that
+parser, predating and independent of #313; "fixing" the pipe form to admit `>` is a separate parser
+question the rule deliberately sidesteps). A `<dataset>` is thus the one storage host restricted to the
+long form — its sibling `<library>` still accepts the pipe form, because a bibliography payload does not
+carry `>` the way tabular/diagram/code data does.
 
 This is **routing the new element to the existing opaque lane, not new machinery.** The lane already
 exists and is load-bearing today:

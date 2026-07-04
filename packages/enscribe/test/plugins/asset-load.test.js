@@ -22,9 +22,12 @@ function makeFile() {
 const embeddedFig = (id, fmt, base64) => makeTag('fig', [{ type: 'text', value: base64 }], { id, positional: [fmt] });
 const externalFig = (id, src) => makeTag('fig', [], { id, kwargs: { src } });
 const dataTree = (...figs) => ({ type: 'root', children: [makeTag('data', figs)] });
-// #313 slice 1: a <dataset> node — opaque content is a raw STRING (contentHandler 'dataset').
-// `kw` carries { kwargs } / { positional } to exercise both format forms.
-const dataset = (id, content, kw = {}) => makeTag('dataset', content, { id, ...kw });
+// A <dataset> node — LONG-FORM (the required authoring form), opaque content a raw STRING.
+// `makeTag` defaults to form:'short'; a real <dataset> is form:'long' (its payload is the
+// <dataset>…</dataset> body), so set it here — buildAssetIndex rejects a non-long-form dataset
+// as a visible authoring error (see test 27). `kw` carries { kwargs } / { positional } to
+// exercise both format-hint forms.
+const dataset = (id, content, kw = {}) => ({ ...makeTag('dataset', content, { id, ...kw }), form: 'long' });
 
 export function run() {
   // 1. embedded <fig #id fmt>base64</fig> → indexed (format + base64); the decl is stripped from <data>.
@@ -102,7 +105,7 @@ export function run() {
 
   // ── #313 slice 1: <dataset> opaque storage host (rides the same harvest into the same store) ──────
 
-  // 7. <dataset #id format=csv | bytes> → indexed as { format, content }; the decl is stripped from <data>.
+  // 7. <dataset #id format=csv>bytes</dataset> → indexed as { format, content }; the decl is stripped from <data>.
   {
     const tree = dataTree(dataset('d1', 'name,note\nalpha,2', { kwargs: { format: 'csv' } }));
     const file = makeFile();
@@ -111,11 +114,11 @@ export function run() {
     assert.ok(store instanceof Map && store.has('d1'), 'the dataset is indexed in the (shared) data store');
     assert.deepEqual(store.get('d1'), { format: 'csv', content: 'name,note\nalpha,2' }, 'format + opaque content captured');
     assert.equal(tree.children[0].content.length, 0, 'the harvested <dataset> is stripped from its <data> block');
-    console.log('PASS: dataset (#313) — <dataset #id format=csv | …> indexed as { format, content } and stripped');
+    console.log('PASS: dataset (#313) — <dataset #id format=csv>…</dataset> indexed as { format, content } and stripped');
   }
 
   // 8. the content is OPAQUE: a #/*/_ passes through untouched, a JSON {…} keeps its braces, and ONLY the
-  //    outer (pipe-delimiter) whitespace is trimmed — internal indentation survives.
+  //    outer whitespace (the newline/indent around the long-form body) is trimmed — internal indentation survives.
   {
     const payload = '  {\n  "a": "*bold* _em_ #h1",\n  "b": 2\n}  ';
     const tree = dataTree(dataset('d:json', payload, { kwargs: { format: 'json' } }));
@@ -127,13 +130,13 @@ export function run() {
     console.log('PASS: dataset (#313) — payload is opaque: #/*/_ and JSON braces preserved; only outer ws trimmed');
   }
 
-  // 9. the leading-positional format form (<dataset #id tsv | …>) — mirrors <library bibtex | …>.
+  // 9. the leading-positional format form (<dataset #id tsv>…</dataset>) — the format-word positional.
   {
     const tree = dataTree(dataset('d:t', 'a\tb', { positional: ['tsv'] }));
     const file = makeFile();
     buildAssetIndex(tree, file);
     assert.deepEqual(file.data[ENSCRIBE_ASSETS].get('d:t'), { format: 'tsv', content: 'a\tb' }, 'positional format hint captured');
-    console.log('PASS: dataset (#313) — leading-positional format (<dataset #id tsv | …>) captured');
+    console.log('PASS: dataset (#313) — leading-positional format (<dataset #id tsv>…</dataset>) captured');
   }
 
   // 10. a <dataset> with no #id → warns and is LEFT in place (not registered), like a no-#id <fig>.
@@ -171,9 +174,11 @@ export function run() {
     const src = [
       '<section | Body>', '', 'Hello world.', '',
       '<data>',
-      '<dataset #d:e2e csv | name,note',
+      '<dataset #d:e2e csv>',
+      'name,note',
       'alpha,*bold* _em_ #h1',
-      'beta,2>',
+      'beta,2',
+      '</dataset>',
       '</data>',
     ].join('\n');
     const proc = buildEnscribePipeline({});
@@ -199,7 +204,7 @@ export function run() {
     const file = { data: {} };
     return String(proc.stringify(proc.runSync(proc.parse(`${body}\n${data}`), file), file));
   };
-  const DATASET = '\n<data>\n<dataset #d1 csv | name,note\nalpha,*bold* #h1\nbeta,2>\n</data>';
+  const DATASET = '\n<data>\n<dataset #d1 csv>\nname,note\nalpha,*bold* #h1\nbeta,2\n</dataset>\n</data>';
 
   // 13. resolveAssetReference is CONSUMER-AGNOSTIC: bytes + status, no data:/img/grid/parse inside it.
   {
@@ -277,7 +282,7 @@ export function run() {
   // A `>`-bearing payload (Mermaid's `-->`) is authored in the LONG form <dataset …>…</dataset>, which
   // scans to the explicit close (the pipe form truncates at the first `>`); see data-store.md §Piece 1.
   const MERMAID_DS = '\n<data>\n<dataset #flow mermaid>\ngraph LR\n  A[Start] --> B[End]\n</dataset>\n</data>';
-  const CODE_DS = '\n<data>\n<dataset #snip python | def scale(n):\n    return n * 2>\n</data>';
+  const CODE_DS = '\n<data>\n<dataset #snip python>\ndef scale(n):\n    return n * 2\n</dataset>\n</data>';
 
   // 20. <diagram mermaid src="@flow"> reading a <dataset> → the engine source in the <pre> wrapper.
   {
@@ -294,7 +299,7 @@ export function run() {
     assert.match(html, /<code class="language-python">/, 'code-from-dataset: format hint seeds the language-python class');
     assert.ok(html.includes('def scale(n):'), 'code-from-dataset: the verbatim body rendered');
     // Opacity: a stored code payload with a #/* is NOT markdown-parsed.
-    const litHtml = renderDoc('<section | S>\n\n<code src="@lit" />', '\n<data>\n<dataset #lit | # not a heading *not em*>\n</data>');
+    const litHtml = renderDoc('<section | S>\n\n<code src="@lit" />', '\n<data>\n<dataset #lit>\n# not a heading *not em*\n</dataset>\n</data>');
     assert.ok(litHtml.includes('# not a heading *not em*'), 'code-from-dataset: #/* render literally in the code body');
     assert.ok(!/<em>|<strong>|<h1/.test(litHtml.replace(/language-[a-z]+/g, '')), 'code-from-dataset: no markdown elements (opaque end to end)');
     console.log('PASS: #313 consumer — <code src="@snip"> renders a <dataset> as a verbatim, opaque code body');
@@ -303,7 +308,7 @@ export function run() {
   // 22. diagram FORMAT-HINT / ENGINE mismatch → a visible asset-error (a diagram reads engine source, not
   //     tabular data; enscribe cannot re-read the client-rendered source, so the hint is the only guard).
   {
-    const html = renderDoc('<section | S>\n\n<diagram mermaid src="@cv" />', '\n<data>\n<dataset #cv csv | a,b\n1,2>\n</data>');
+    const html = renderDoc('<section | S>\n\n<diagram mermaid src="@cv" />', '\n<data>\n<dataset #cv csv>\na,b\n1,2\n</dataset>\n</data>');
     assert.match(html, /asset-error/, 'a csv <dataset> fed into a <diagram mermaid> → visible asset-error');
     assert.ok(html.includes('csv') && html.includes('mermaid'), 'the mismatch error names both the dataset format and the engine');
     console.log('PASS: #313 consumer — diagram format-hint/engine mismatch (csv → mermaid) is a visible error');
@@ -348,5 +353,40 @@ export function run() {
     const c = renderDoc('<section | S>\n\n<code language=python | print("hi")>', '');
     assert.match(c, /<code class="language-python">\s*print\("hi"\)<\/code>/, 'inline <code | …> still renders with its language class + verbatim body (non-@ path untouched)');
     console.log('PASS: #313 consumer — inline <diagram>/<code> (non-@) are untouched');
+  }
+
+  // ══ long-form required: a pipe/bare/slash-form <dataset> is a visible authoring error ══════════════
+  //
+  // A <dataset>'s payload is its <dataset>…</dataset> BODY. The pipe form <dataset … | bytes> is
+  // delimited by the first unescaped `>`, so a payload containing `>` (Mermaid `-->`, JSON, code) is
+  // truncated — datasets routinely contain `>`. buildAssetIndex rejects a non-long-form <dataset> as a
+  // visible __asset-error and does NOT register it (never a silently-truncated store entry).
+
+  // 27. a short-form (pipe) <dataset> → NOT registered + a visible long-form authoring error, stripped.
+  {
+    // makeTag defaults to form:'short' — the pipe/bare/slash form the guard rejects (the `dataset()`
+    // helper above sets form:'long', the required form; here we exercise the rejected form directly).
+    const pipeDs = makeTag('dataset', 'a,b\n1,2', { id: 'd:pipe', positional: ['csv'] });
+    assert.equal(pipeDs.form, 'short', 'guard precondition: a makeTag dataset is short-form (pipe/bare/slash)');
+    const tree = dataTree(pipeDs);
+    const file = makeFile();
+    buildAssetIndex(tree, file);
+    assert.equal(file.data[ENSCRIBE_ASSETS], undefined, 'a pipe-form <dataset> is NOT registered (never a truncated store entry)');
+    const flags = tree.children.filter((n) => n?.tagname === '__asset-error');
+    assert.equal(flags.length, 1, 'exactly one visible authoring error is injected');
+    assert.match(flags[0].kwargs.message, /must use the long form <dataset>…<\/dataset>/, 'the error tells the author to use the long form');
+    assert.match(flags[0].kwargs.message, /#d:pipe/, 'the error names the offending dataset id');
+    const dataNode = tree.children.find((n) => n?.tagname === 'data');
+    assert.equal(dataNode.content.length, 0, 'the rejected <dataset> is stripped from its <data> block');
+    console.log('PASS: dataset — long-form required: a pipe-form <dataset> is a visible error, not a store entry');
+  }
+
+  // 28. END-TO-END through the real parser: it marks a pipe-form <dataset> as form:'short', so the guard
+  //     fires in the full pipeline; a <table src="@id"> consumer then finds no such data (decl rejected).
+  {
+    const html = renderDoc('<section | S>\n\n<table src="@pf" />', '\n<data>\n<dataset #pf csv | a,b\n1,2>\n</data>');
+    assert.match(html, /must use the long form/, 'end-to-end: a pipe-form <dataset> renders the visible long-form authoring error');
+    assert.ok(!/<th>a<\/th>/.test(html), 'end-to-end: the rejected pipe-form dataset was not stored, so the table has no grid');
+    console.log('PASS: dataset — long-form required (end-to-end): the real parser + guard reject a pipe-form <dataset>');
   }
 }

@@ -27,31 +27,35 @@ Registers:
 
 *A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &lt;data&gt; block itself produces no rendered output.*
 
-A `<data>` block can also store a **dataset** — a payload (CSV/TSV/JSON/…) held under an id with a `<dataset>` — that a consuming element pulls in by `@id`. Here a CSV dataset is stored once and a `<table src="@id" />` renders it as a grid:
+A `<data>` block can also store a **dataset** — a payload (CSV/TSV/JSON/…) held under an id with a `<dataset>` — that a consuming element pulls in by `@id`. A `<dataset>` is always authored in the **long form** `<dataset …>…</dataset>`; the pipe form would truncate the payload at the first `>`, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a `<table src="@id" />` renders it as a grid:
 
 <code #code:sh-data-2>
 <data>
-  <dataset #parts-stock format=csv | part,code,in_stock
+  <dataset #parts-stock format=csv>
+part,code,in_stock
 hex bolt,#HB-08,120
 flat washer,#FW-04,340
-lock nut,#LN-06,210>
+lock nut,#LN-06,210
+</dataset>
 </data>
 
 <table src="@parts-stock" />
 </code>
 
 <data>
-  <dataset #parts-stock format=csv | part,code,in_stock
+  <dataset #parts-stock format=csv>
+part,code,in_stock
 hex bolt,#HB-08,120
 flat washer,#FW-04,340
-lock nut,#LN-06,210>
+lock nut,#LN-06,210
+</dataset>
 </data>
 
 <table src="@parts-stock" />
 
 *Unlike the front-matter examples above, this one renders a live result: the table grid above is produced from the stored dataset. The dataset is held verbatim as opaque data — never interpreted as markup, so the `#`-prefixed part codes appear as literal cell text — and the consuming element (here, a `&lt;table&gt;`) decides how to present it. (The `&lt;data&gt;`/`&lt;dataset&gt;` declaration itself renders nothing; only the table does.)*
 
-The `<table>` is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: `<table src="@id" />` renders a grid, `<diagram engine src="@id" />` reads the bytes as its engine source (a Mermaid or abc diagram — author such a dataset in the long form `<dataset engine>…</dataset>` so a `>` in the source survives), and `<code src="@id" />` renders them as a verbatim code listing. An `@id` that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.
+The `<table>` is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: `<table src="@id" />` renders a grid, `<diagram engine src="@id" />` reads the bytes as its engine source (a Mermaid or abc diagram), and `<code src="@id" />` renders them as a verbatim code listing. An `@id` that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.
 
 </section>
 

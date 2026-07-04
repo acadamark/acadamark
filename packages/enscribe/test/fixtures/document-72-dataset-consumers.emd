@@ -11,8 +11,8 @@ interpretation belongs to the consuming element (`notes/specs/data-store.md`).
 
 <sub-section | A table from a CSV dataset>
 
-`<table src="@sales">` pulls the stored `<dataset #sales csv | …>` and
-renders it as a grid. The table names no format word, so the dataset's
+`<table src="@sales">` pulls the stored `<dataset #sales csv>…</dataset>`
+and renders it as a grid. The table names no format word, so the dataset's
 `csv` hint applies.
 
 <table #tab:sales src="@sales" />
@@ -35,17 +35,21 @@ bytes render verbatim (a `#` or `*` in the source is never markdown-parsed).
 <code src="@snippet" />
 
 <data>
-<dataset #sales csv | quarter,revenue
+<dataset #sales csv>
+quarter,revenue
 Q1,100
 Q2,120
-Q3,145>
+Q3,145
+</dataset>
 <dataset #flow mermaid>
 graph LR
   A[Author] --> B[eHTML]
   B --> C[HTML + CSS + JS]
 </dataset>
-<dataset #snippet python | # compute the circle area
+<dataset #snippet python>
+# compute the circle area
 import math
 radius = 2.0
-area = math.pi * radius ** 2>
+area = math.pi * radius ** 2
+</dataset>
 </data>

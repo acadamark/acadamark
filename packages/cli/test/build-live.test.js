@@ -364,7 +364,7 @@ export function run_tests() {
       writeFileSync(embPath, [
         '<meta type=article>', '<title | E</title>', '</meta>', '',
         '<section | S>', '', '<fig src="@logo" | logo>', '', '<table src="@grid" />', '',
-        '<data>', `<fig #logo png>${PNG_B64}</fig>`, '<dataset #grid csv | a,b\n1,2>', '</data>',
+        '<data>', `<fig #logo png>${PNG_B64}</fig>`, '<dataset #grid csv>\na,b\n1,2\n</dataset>', '</data>',
       ].join('\n'));
       const emb = buildSingleFile({ master: embPath, warn: () => {} });
       assert.strictEqual(emb.embeddedAssets, 0, 'embedded asset + dataset: nothing external to embed (they already travel in the source)');

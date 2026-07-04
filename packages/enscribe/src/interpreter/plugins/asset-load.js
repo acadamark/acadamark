@@ -124,14 +124,16 @@ export function assetError(node, ref, message) {
 }
 
 /**
- * Extract a `<dataset>`'s OPAQUE payload (#313 slice 1). A `<dataset>` is opaque
+ * Extract a `<dataset>`'s OPAQUE payload. A `<dataset>` is opaque
  * (`getContentHandler('dataset')` is non-`default`), so its `content` is the raw,
- * never-markdown-parsed body STRING. Trim only the OUTER whitespace — the `| ` pipe
- * delimiter leaves a leading space that is syntax, not data — exactly as `<library>`
- * (the sibling storage host) trims its payload. `String.trim()` touches only the ends,
- * so a `#`/`*`/`_` INSIDE the payload, and any internal indentation (e.g. pretty JSON),
- * survive untouched; no brace-strip (a JSON `{…}` keeps its braces, unlike an asset
- * base64 payload). The array branch is defensive only — opaque content is a string.
+ * never-markdown-parsed body STRING. A dataset is authored LONG-FORM
+ * (`<dataset …>bytes</dataset>` — enforced at harvest, see buildAssetIndex), so the
+ * payload is the tag body; trim only the OUTER whitespace (the newline/indent around
+ * the body) — exactly as `<library>` (the sibling storage host) trims its payload.
+ * `String.trim()` touches only the ends, so a `#`/`*`/`_` INSIDE the payload, and any
+ * internal indentation (e.g. pretty JSON), survive untouched; no brace-strip (a JSON
+ * `{…}` keeps its braces, unlike an asset base64 payload). The array branch is
+ * defensive only — opaque content is a string.
  */
 function datasetPayload(content) {
   if (typeof content === 'string') return content.trim();
@@ -157,7 +159,7 @@ function datasetPayload(content) {
  * neutral store, not a parallel one — see notes/specs/data-store.md):
  *   - embedded asset  <fig #id fmt>base64</fig>  → { format, base64 }   (#190)
  *   - external asset  <fig #id src="path" />     → { src }              (#190)
- *   - dataset         <dataset #id fmt | bytes>  → { format, content }  (#313)
+ *   - dataset         <dataset #id fmt>bytes</dataset>  → { format, content }  (#313)
  * A `<dataset>` is pure OPAQUE storage: its raw bytes are held under its id (with an
  * optional format hint) for an `@id` consumer to interpret later (slice 2). Nothing
  * renders or interprets it here — like an embedded asset declaration, it is stripped
@@ -180,6 +182,17 @@ export function buildAssetIndex(tree, file) {
       const isFig = isEnscribeTag(child, 'fig');
       const isDataset = isEnscribeTag(child, 'dataset');       // #313 slice 1: opaque dataset store
       if (!isFig && !isDataset) return true;                   // not a store declaration — leave it
+      // A <dataset> must be LONG-FORM: its payload is the <dataset>…</dataset> body. The
+      // pipe form <dataset … | bytes> is delimited by the first unescaped `>`, truncating
+      // any payload that itself contains `>` (Mermaid `-->`, some JSON, code) — and
+      // datasets routinely contain `>`; the long form scans to the explicit `</dataset>`
+      // and has no such ambiguity. So a non-long-form <dataset> is a visible authoring
+      // error, never a silently-truncated store entry. (from-markdown sets form:'long'
+      // only for the <tag>…</tag> body form; pipe/bare/slash are form:'short'.)
+      if (isDataset && child.form !== 'long') {
+        errors.push(makeAssetError('', `<dataset${child.id ? ` #${child.id}` : ''}> must use the long form <dataset>…</dataset> — the pipe form truncates the payload at the first ">" (e.g. Mermaid's "-->")`));
+        return false;                                          // strip; never register a truncated payload
+      }
       const id = child.id ?? null;
       if (!id) {
         file?.message?.(`asset-load: <${child.tagname}> in <data> has no #id — not registered in the data store`, child);
@@ -198,7 +211,7 @@ export function buildAssetIndex(tree, file) {
       }
       if (isDataset) {
         // Pure opaque storage: the raw bytes + an optional format hint
-        // (`<dataset #id csv | …>` or `format=csv`), stored verbatim for an @id consumer.
+        // (`<dataset #id csv>…</dataset>` or `format=csv`), stored verbatim for an @id consumer.
         assets.set(id, { format: child.positional?.[0] ?? child.kwargs?.format ?? null, content: datasetPayload(child.content) });
       } else {
         // External (<fig #id src="path" />) vs embedded (<fig #id fmt>base64</fig>):

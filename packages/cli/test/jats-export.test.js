@@ -185,9 +185,11 @@ function validateWithXmllint(fixtureName, jatsXml) {
     '<meta type=article>', '<title | Has a dataset>', '<author | A>', '</meta>', '',
     '<section | Intro>', '', 'Body prose.', '',
     '<data>',
-    '<dataset #d1 csv | name,note',
+    '<dataset #d1 csv>',
+    'name,note',
     'alpha,*bold* #h1',
-    'beta,2>',
+    'beta,2',
+    '</dataset>',
     '</data>',
   ].join('\n');
   const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });

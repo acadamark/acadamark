@@ -63,7 +63,7 @@ enscribe_attributes:
         file (relative to the document's assets directory, configurable via the
         assetsDir interpreter option; read at interpretation time), OR an @id
         reference (#313 slice 2) that pulls a stored <dataset> declared in
-        <data> — e.g. <table src="@sales"> renders the <dataset #sales csv | …>
+        <data> — e.g. <table src="@sales"> renders the <dataset #sales csv>…</dataset>
         as a grid (the dataset's format hint applies when the table names no
         format word). The opaque bytes go straight from the store to the table
         parser. An unresolved/wrong-kind @id is a visible asset-error (never a

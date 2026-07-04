@@ -33,7 +33,7 @@ content:
     - element: dataset
       required: false
       multiple: true
-      notes: 'Opaque data store (#313 slice 1): <dataset #id format=csv | a,b\n1,2> (or a leading-positional format, <dataset #id csv | …>) holds a CSV/TSV/JSON/… payload as OPAQUE bytes under its id — never markdown-parsed, so a #/*/_ in the payload passes through untouched. Pure storage: a consumer (<table src="@id">, a future <plot>) interprets the bytes; <dataset> itself renders nothing (invisible, like <library>). Harvested into the project data store keyed by id (+ the optional format hint), project-wide merged. Consumer-side interpretation is slice 2; see notes/specs/data-store.md Piece 1.'
+      notes: 'Opaque data store (#313 slice 1): <dataset #id format=csv>a,b\n1,2</dataset> (or a leading-positional format, <dataset #id csv>…</dataset>) holds a CSV/TSV/JSON/… payload as OPAQUE bytes under its id — never markdown-parsed, so a #/*/_ in the payload passes through untouched. A <dataset> must use this LONG form <dataset>…</dataset>, never the pipe form <dataset … | …> — the pipe form truncates the payload at the first ">" (Mermaid "-->", JSON, code), which datasets routinely contain (buildAssetIndex rejects a non-long-form <dataset> as a visible authoring error). Pure storage: a consumer (<table src="@id">, a future <plot>) interprets the bytes; <dataset> itself renders nothing (invisible, like <library>). Harvested into the project data store keyed by id (+ the optional format hint), project-wide merged. See notes/specs/data-store.md Piece 1.'
 jats_counterpart:
   element: 'no direct equivalent'
   notes: |
