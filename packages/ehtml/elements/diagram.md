@@ -36,6 +36,25 @@ enscribe_attributes:
         `<figcaption>` sibling after the rendered diagram (the external-DSL
         sibling-caption layout). When the diagram participates in figure
         numbering the caption carries a "Figure N." label prefix.
+    src:
+      notes: |
+        An @id reference (#313 consumer wiring) that pulls a stored <dataset>
+        declared in <data> and feeds its opaque bytes as the diagram's engine
+        source — e.g. <diagram mermaid src="@flow"> renders the
+        <dataset #flow mermaid>…</dataset> as a Mermaid diagram. The bytes travel
+        straight from the store into the wrapper, verbatim (the engine renders
+        them at view time; enscribe never re-interprets them). Because enscribe
+        cannot re-read the source, the dataset's format hint is the only guard: a
+        hint that disagrees with the named engine (e.g. a csv dataset fed into a
+        mermaid diagram) is a visible asset-error, not a silently-broken render.
+        An unresolved id — or a wrong-kind id (an image or external asset, not a
+        <dataset>) — is a visible asset-error too (never a silently-empty diagram).
+        Inline source (<diagram engine | …> / <diagram engine>…</diagram>) is
+        unaffected. A file-path src is not read here (the diagram handler reads no
+        files); source a <dataset> instead. Note: because the engine source is
+        opaque bytes with no </dataset> terminator in pipe form, a dataset whose
+        source contains `>` (Mermaid's `-->`) must be authored in the long form
+        <dataset mermaid>…</dataset> — see notes/specs/data-store.md.
 content:
   notes: |
     Author writes the engine's diagram source verbatim. Enscribe preserves

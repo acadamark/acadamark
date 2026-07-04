@@ -17,6 +17,18 @@ enscribe_attributes:
       notes: |
         The programming language of the code. Maps to a class like
         "language-python" for syntax highlighting via shiki/prism.
+    src:
+      notes: |
+        An @id reference (#313 consumer wiring) that pulls a stored <dataset>
+        declared in <data> and renders its opaque bytes as the verbatim code body
+        — e.g. <code src="@snippet"> renders the <dataset #snippet python>…</dataset>
+        as a code listing. The bytes render verbatim (opaque end to end — a #, *, or
+        < in the stored code is never markdown-parsed); the dataset's format hint,
+        when the <code> names no language, seeds the language-X highlight class (a
+        display hint only). An unresolved id — or a wrong-kind id (an image or
+        external asset, not a <dataset>) — is a visible asset-error. Inline body
+        (<code | …>) is unaffected. A file-path src is not read here (the code
+        handler reads no files); source a <dataset> instead.
 content:
   becomes: text-content
   notes: |

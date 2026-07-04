@@ -225,8 +225,9 @@ export function buildAssetIndex(tree, file) {
  * neutral hand-off: given a use-site `src`, look up an `@id` reference in the merged store
  * and return the stored entry (or a not-found signal). It makes NO media assumption — no
  * `data:` URI, no `<img>`, no grid, no parse. Each CONSUMER interprets what it gets back
- * (`<fig>` → an image; `<table>` → a parsed grid; a future `<plot>`/`<code src>` → its own
- * reading). fig and table both call this; the interpretation lives in each consumer, not here.
+ * (`<fig>` → an image; `<table>` → a parsed grid; `<diagram>` → engine source; `<code>` →
+ * verbatim text; a future `<plot>` → its own reading). Every consumer calls this; the
+ * interpretation lives in each consumer, not here.
  *
  *   - `src` not an `@`-ref   → null  (the caller keeps its own non-@ path, e.g. a file src)
  *   - `@id` not in the store → { ref, id, found: false, entry: null }
@@ -341,16 +342,111 @@ function resolveTableSrc(node, assets) {
 }
 
 /**
- * The `@id` RESOLUTION PASS (#313 slice 2): resolve body `@id` references against the store
- * built by buildAssetIndex, dispatching each use-site to its CONSUMER. Both consumers call
- * the one neutral resolveAssetReference and then interpret what they get:
- *   - `<fig src="@id">`   → resolveFig (image: data: URI / path; a dataset ref → visible error)
- *   - `<table src="@id">` → resolveTableSrc (hand the bytes to the table parser; a bad/non-tabular
+ * Shared resolve → (dataset bytes | visible error) for the `<diagram>` and `<code>` dataset
+ * consumers (#313 consumer wiring). Both read a stored `<dataset>`'s opaque bytes at an `@id`
+ * `src` and hand them to their own render (engine source / verbatim code body); the
+ * resolve + not-found + wrong-kind shape is identical, so it lives here once (the #349
+ * contributor-helper pattern — one helper, its callers stay symmetric). `<table>`'s
+ * `resolveTableSrc` predates this and keeps its own copy: it ALSO interprets an external
+ * asset as a file `src` (a branch these two lack — their handlers read no files), so it does
+ * not fold in cleanly; sharing it would smear the table-only file path across all three.
+ *
+ *   - `src` not an `@`-ref     → null   (a file path / inline; the node is left untouched)
+ *   - `@id` not in the store   → the node becomes a visible `__asset-error`; returns null
+ *   - `@id` is NOT a <dataset> → (an embedded image / external asset) visible error; returns null
+ *   - `@id` is a <dataset>     → `{ bytes, format, ref }` — the raw bytes + the optional format hint
+ *
+ * A null return means "do nothing more" for BOTH the untouched and the already-errored case:
+ * the node is either a non-`@` src (unchanged) or already rewritten into an `__asset-error`.
+ *
+ * @param {object} node - the use-site enscribeTag (diagram / code) carrying `kwargs.src`
+ * @param {Map<string,object>|null} assets - file.data.enscribeAssets
+ * @param {string} consumerName - the consuming element name, for the wrong-kind message
+ * @returns {{ bytes: string, format: string|null, ref: string }|null}
+ */
+function readDatasetSource(node, assets, consumerName) {
+  const r = resolveAssetReference(node.kwargs?.src, assets);
+  if (r == null) return null;                                   // not an @-ref — untouched
+  const { id, ref, found, entry } = r;
+
+  if (!found) {
+    assetError(node, ref, `no data declared with id "${id}"`);
+    return null;
+  }
+  if (entry.content == null) {
+    // Not a <dataset>: an embedded image asset ({ base64 }) or an external asset ({ src }).
+    // These consumers read a stored <dataset>'s bytes only (their handlers read no files), so
+    // pointing one at an image / external asset is misuse — the same visible __asset-error a
+    // wrong-kind <fig>/<table> ref gets (F2.1: every consumer's kind mismatch is visible).
+    const kind = entry.src != null ? 'an external asset' : 'an embedded image asset';
+    assetError(node, ref, `"${id}" is ${kind} (not a <dataset>) — a <${consumerName}> reads a stored <dataset> by @id`);
+    return null;
+  }
+  return { bytes: entry.content, format: entry.format ?? null, ref };
+}
+
+/**
+ * The `<diagram src="@id">` CONSUMER's resolution (#313 consumer wiring). Reads a stored
+ * `<dataset>`'s opaque bytes and feeds them as the diagram's ENGINE SOURCE (the string the
+ * engine handler otherwise takes from `node.content`) — the diagram host owns the render,
+ * unchanged.
+ *
+ * The format-hint handling DIVERGES from the table on purpose. A table re-parses the bytes
+ * with its OWN format word (its word wins; a word/hint disagreement is harmless because the
+ * table re-reads the data either way). A diagram's engine renders its source verbatim
+ * CLIENT-SIDE and enscribe cannot re-interpret it, so the dataset's format hint is the only
+ * guard: a hint that disagrees with the named engine (e.g. a `csv` dataset into a `mermaid`
+ * diagram) is a visible asset-error, not a silently-broken render. A diagram that names NO
+ * engine is left to the handler's existing "unknown diagram engine" error (a diagram always
+ * names its engine; a format-agnostic dataset is not the place to source one). Inline source
+ * (a non-`@` `src`, or a `<diagram | …>` body) is untouched.
+ */
+function resolveDiagramSrc(node, assets) {
+  const ds = readDatasetSource(node, assets, 'diagram');
+  if (ds == null) return;                                       // non-@ (untouched) or already errored
+  const engine = node.positional?.[0] ?? null;
+  if (engine && ds.format && ds.format !== engine) {
+    assetError(node, ds.ref, `dataset "${ds.ref}" has format "${ds.format}", which does not match the diagram engine "${engine}" — a <diagram> reads engine source, not ${ds.format} data`);
+    return;
+  }
+  node.content = ds.bytes;
+  if (node.kwargs) delete node.kwargs.src;
+}
+
+/**
+ * The `<code src="@id">` CONSUMER's resolution (#313 consumer wiring). Reads a stored
+ * `<dataset>`'s opaque bytes and renders them as the VERBATIM code body (the string the code
+ * handler otherwise takes from `node.content`). The dataset's format hint, when present and
+ * the `<code>` names no `language`, seeds the `language-X` highlight class — a display hint
+ * only; the bytes render verbatim either way (opacity is preserved end to end). Inline body
+ * (a non-`@` `src`, or a `<code | …>` body) is untouched.
+ */
+function resolveCodeSrc(node, assets) {
+  const ds = readDatasetSource(node, assets, 'code');
+  if (ds == null) return;                                       // non-@ (untouched) or already errored
+  node.content = ds.bytes;
+  if (node.kwargs) {
+    if (ds.format && node.kwargs.language == null) node.kwargs.language = ds.format;
+    delete node.kwargs.src;
+  }
+}
+
+/**
+ * The `@id` RESOLUTION PASS (#313): resolve body `@id` references against the store built by
+ * buildAssetIndex, dispatching each use-site to its CONSUMER. Every consumer calls the one
+ * neutral resolveAssetReference and then interprets what it gets:
+ *   - `<fig src="@id">`     → resolveFig (image: data: URI / path; a dataset ref → visible error)
+ *   - `<table src="@id">`   → resolveTableSrc (hand the bytes to the table parser; a bad/non-tabular
  *      ref → the SAME visible __asset-error — F2.1 closed)
- * Runs BEFORE numbering, so a placed figure registers under its adopted id and an errored ref
- * is turned into a non-numbered __asset-error (never counted). Use-sites without an `@`-src are
- * untouched (a non-@ table `src` is a file path; output is byte-identical). A future `<plot>` /
- * `<code src="@id">` is a trivial new branch here — same resolveAssetReference, its own interpret.
+ *   - `<diagram src="@id">` → resolveDiagramSrc (dataset bytes become the engine source; a
+ *      format hint that disagrees with the engine → visible error)
+ *   - `<code src="@id">`    → resolveCodeSrc (dataset bytes become the verbatim code body)
+ * The diagram/code consumers (#313 consumer wiring) share readDatasetSource for the
+ * resolve→bytes-or-error shape. Runs BEFORE numbering, so a placed figure registers under its
+ * adopted id and an errored ref is turned into a non-numbered __asset-error (never counted —
+ * this matters for the numbered `<diagram>` too). Use-sites without an `@`-src are untouched (a
+ * non-@ table `src` is a file path; output is byte-identical). A future `<plot>` is the next
+ * trivial branch here — same resolveAssetReference, its own interpret.
  *
  * @returns {(tree: import('mdast').Root, file: import('vfile').VFile) => void}
  */
@@ -364,6 +460,8 @@ export function enscribeAssetResolution() {
         if (!node || typeof node !== 'object') continue;
         if (isEnscribeTag(node, 'fig')) resolveFig(node, assets, adopted);
         else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets);
+        else if (isEnscribeTag(node, 'diagram')) resolveDiagramSrc(node, assets);
+        else if (isEnscribeTag(node, 'code')) resolveCodeSrc(node, assets);
         if (isEnscribeTag(node) && Array.isArray(node.content)) walk(node.content);
         if (Array.isArray(node.children)) walk(node.children);
       }

@@ -271,4 +271,82 @@ export function run() {
     assert.match(html, /<td>4<\/td>/, 'inline table body unchanged');
     console.log('PASS: #313/2 — inline <table csv | …> (non-@) is untouched');
   }
+
+  // ══ #313 consumer wiring: <diagram src="@id"> + <code src="@id"> read a stored <dataset> ══════════
+  //
+  // A `>`-bearing payload (Mermaid's `-->`) is authored in the LONG form <dataset …>…</dataset>, which
+  // scans to the explicit close (the pipe form truncates at the first `>`); see data-store.md §Piece 1.
+  const MERMAID_DS = '\n<data>\n<dataset #flow mermaid>\ngraph LR\n  A[Start] --> B[End]\n</dataset>\n</data>';
+  const CODE_DS = '\n<data>\n<dataset #snip python | def scale(n):\n    return n * 2>\n</data>';
+
+  // 20. <diagram mermaid src="@flow"> reading a <dataset> → the engine source in the <pre> wrapper.
+  {
+    const html = renderDoc('<section | S>\n\n<diagram mermaid src="@flow" />', MERMAID_DS);
+    assert.match(html, /<pre class="mermaid" data-enscribe-dsl="mermaid">/, 'diagram-from-dataset: the mermaid wrapper renders');
+    assert.match(html, /graph LR/, 'diagram-from-dataset: the engine source reached the wrapper');
+    assert.match(html, /A\[Start\] --&#x3E;|A\[Start\] --> B\[End\]/, 'diagram-from-dataset: the `-->` arrow survived (long-form dataset kept the `>`)');
+    console.log('PASS: #313 consumer — <diagram mermaid src="@flow"> feeds a <dataset> as engine source');
+  }
+
+  // 21. <code src="@snip"> reading a <dataset> → the verbatim code body; OPAQUE end to end.
+  {
+    const html = renderDoc('<section | S>\n\n<code src="@snip" />', CODE_DS);
+    assert.match(html, /<code class="language-python">/, 'code-from-dataset: format hint seeds the language-python class');
+    assert.ok(html.includes('def scale(n):'), 'code-from-dataset: the verbatim body rendered');
+    // Opacity: a stored code payload with a #/* is NOT markdown-parsed.
+    const litHtml = renderDoc('<section | S>\n\n<code src="@lit" />', '\n<data>\n<dataset #lit | # not a heading *not em*>\n</data>');
+    assert.ok(litHtml.includes('# not a heading *not em*'), 'code-from-dataset: #/* render literally in the code body');
+    assert.ok(!/<em>|<strong>|<h1/.test(litHtml.replace(/language-[a-z]+/g, '')), 'code-from-dataset: no markdown elements (opaque end to end)');
+    console.log('PASS: #313 consumer — <code src="@snip"> renders a <dataset> as a verbatim, opaque code body');
+  }
+
+  // 22. diagram FORMAT-HINT / ENGINE mismatch → a visible asset-error (a diagram reads engine source, not
+  //     tabular data; enscribe cannot re-read the client-rendered source, so the hint is the only guard).
+  {
+    const html = renderDoc('<section | S>\n\n<diagram mermaid src="@cv" />', '\n<data>\n<dataset #cv csv | a,b\n1,2>\n</data>');
+    assert.match(html, /asset-error/, 'a csv <dataset> fed into a <diagram mermaid> → visible asset-error');
+    assert.ok(html.includes('csv') && html.includes('mermaid'), 'the mismatch error names both the dataset format and the engine');
+    console.log('PASS: #313 consumer — diagram format-hint/engine mismatch (csv → mermaid) is a visible error');
+  }
+
+  // 23. F2.1 for the new consumers — a bad @id is a VISIBLE error for BOTH <diagram> and <code>.
+  {
+    const d = renderDoc('<section | S>\n\n<diagram mermaid src="@nope" />', '');
+    assert.match(d, /asset-error/, 'diagram @nope → a visible __asset-error');
+    assert.ok(d.includes('nope'), 'the diagram error names the bad ref');
+    const c = renderDoc('<section | S>\n\n<code src="@nope" />', '');
+    assert.match(c, /asset-error/, 'code @nope → a visible __asset-error');
+    console.log('PASS: #313 consumer — an unresolved @id is a visible __asset-error for BOTH <diagram> and <code>');
+  }
+
+  // 24. cross-kind misuse: <diagram>/<code> referencing an embedded IMAGE (not a dataset) → visible error.
+  {
+    const IMG = '\n<data>\n<fig #img png>PNGB64</fig>\n</data>';
+    const d = renderDoc('<section | S>\n\n<diagram mermaid src="@img" />', IMG);
+    assert.match(d, /asset-error/, 'a <diagram> referencing an embedded image → visible error (image is not a dataset)');
+    const c = renderDoc('<section | S>\n\n<code src="@img" />', IMG);
+    assert.match(c, /asset-error/, 'a <code> referencing an embedded image → visible error (image is not a dataset)');
+    console.log('PASS: #313 consumer — cross-kind misuse (diagram/code → image) → visible __asset-error');
+  }
+
+  // 25. code language precedence: an explicit `language=` on the <code> WINS over the dataset format hint
+  //     (the hint only fills a MISSING language). The bytes render verbatim either way.
+  {
+    const html = renderDoc('<section | S>\n\n<code language=ruby src="@snip" />', CODE_DS);
+    assert.match(html, /<code class="language-ruby">/, 'an explicit language= wins over the dataset format hint');
+    assert.ok(!html.includes('language-python'), 'the dataset format hint does not override the explicit language');
+    console.log('PASS: #313 consumer — explicit <code language=…> wins; the dataset format hint only fills a missing language');
+  }
+
+  // 26. REGRESSION — non-@ diagram/code are untouched: an inline <diagram>/<code> renders identically.
+  {
+    const d = renderDoc('<section | S>\n\n<diagram mermaid>\ngraph TD\n  X --> Y\n</diagram>', '');
+    assert.match(d, /<pre class="mermaid"[^>]*>graph TD/, 'inline <diagram mermaid>…</diagram> still renders (non-@ path untouched)');
+    // Non-@ inline code is untouched: verbatim body + language class, exactly as before this slice
+    // (resolveCodeSrc fires only on an @-src, so the parser's pipe-capture behavior is unchanged —
+    // including its verbatim leading space, which is not this slice's concern).
+    const c = renderDoc('<section | S>\n\n<code language=python | print("hi")>', '');
+    assert.match(c, /<code class="language-python">\s*print\("hi"\)<\/code>/, 'inline <code | …> still renders with its language class + verbatim body (non-@ path untouched)');
+    console.log('PASS: #313 consumer — inline <diagram>/<code> (non-@) are untouched');
+  }
 }

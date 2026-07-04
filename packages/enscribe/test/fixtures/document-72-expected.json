@@ -1,0 +1,903 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "element",
+      "tagName": "article",
+      "properties": {},
+      "children": [
+        {
+          "type": "element",
+          "tagName": "article-front",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "meta",
+              "properties": {
+                "data-document-type": "article"
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "article-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Dataset consumers — one <data> store, three readers (#313)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "tagName": "article-body",
+          "properties": {},
+          "children": [
+            {
+              "type": "element",
+              "tagName": "section",
+              "properties": {},
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "section-title",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "One store, three readers",
+                      "position": {
+                        "start": {
+                          "line": 1,
+                          "column": 2,
+                          "offset": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 26,
+                          "offset": 25
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "p",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "The ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 1,
+                          "offset": 134
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 5,
+                          "offset": 138
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<data>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " block at the back of this document declares three ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 13,
+                          "offset": 146
+                        },
+                        "end": {
+                          "line": 6,
+                          "column": 64,
+                          "offset": 197
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "<dataset>"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": "\nstores — a CSV table, a Mermaid diagram source, and a Python snippet — as\nopaque bytes under shared ids. Each is consumed below by a different\nelement through the same neutral ",
+                      "position": {
+                        "start": {
+                          "line": 6,
+                          "column": 75,
+                          "offset": 208
+                        },
+                        "end": {
+                          "line": 9,
+                          "column": 34,
+                          "offset": 385
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "@id"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " hand-off: storage is opaque, and\ninterpretation belongs to the consuming element (",
+                      "position": {
+                        "start": {
+                          "line": 9,
+                          "column": 39,
+                          "offset": 390
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 50,
+                          "offset": 473
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "notes/specs/data-store.md"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": ").",
+                      "position": {
+                        "start": {
+                          "line": 10,
+                          "column": 77,
+                          "offset": 500
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 79,
+                          "offset": 502
+                        }
+                      }
+                    }
+                  ],
+                  "position": {
+                    "start": {
+                      "line": 6,
+                      "column": 1,
+                      "offset": 134
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 79,
+                      "offset": 502
+                    }
+                  }
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A table from a CSV dataset",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 28,
+                              "offset": 27
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<table src=\"@sales\">"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " pulls the stored ",
+                          "position": {
+                            "start": {
+                              "line": 14,
+                              "column": 23,
+                              "offset": 570
+                            },
+                            "end": {
+                              "line": 14,
+                              "column": 41,
+                              "offset": 588
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<dataset #sales csv | …>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " and\nrenders it as a grid. The table names no format word, so the dataset's\n",
+                          "position": {
+                            "start": {
+                              "line": 14,
+                              "column": 67,
+                              "offset": 614
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 1,
+                              "offset": 690
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "csv"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " hint applies.",
+                          "position": {
+                            "start": {
+                              "line": 16,
+                              "column": 6,
+                              "offset": 695
+                            },
+                            "end": {
+                              "line": 16,
+                              "column": 20,
+                              "offset": 709
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 14,
+                          "column": 1,
+                          "offset": 548
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 20,
+                          "offset": 709
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "table",
+                      "properties": {
+                        "id": "tab:sales"
+                      },
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "caption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "table-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Table 1."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "thead",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "th",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "quarter"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "th",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "revenue"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "tbody",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "Q1"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "100"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "Q2"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "120"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "tr",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "Q3"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "tagName": "td",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "145"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A diagram from a Mermaid dataset",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 34,
+                              "offset": 33
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<diagram mermaid src=\"@flow\">"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " feeds the stored Mermaid source verbatim\ninto the engine wrapper. The dataset's ",
+                          "position": {
+                            "start": {
+                              "line": 22,
+                              "column": 32,
+                              "offset": 827
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 40,
+                              "offset": 908
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "mermaid"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " format hint matches the\nnamed engine, so it is accepted; a hint that disagreed (a ",
+                          "position": {
+                            "start": {
+                              "line": 23,
+                              "column": 49,
+                              "offset": 917
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 59,
+                              "offset": 1000
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "csv"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " dataset,\nsay) would be a visible asset-error instead.",
+                          "position": {
+                            "start": {
+                              "line": 24,
+                              "column": 64,
+                              "offset": 1005
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 45,
+                              "offset": 1059
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 22,
+                          "column": 1,
+                          "offset": 796
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 45,
+                          "offset": 1059
+                        }
+                      }
+                    },
+                    {
+                      "type": "root",
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "pre",
+                          "properties": {
+                            "className": [
+                              "mermaid"
+                            ],
+                            "dataEnscribeDsl": "mermaid",
+                            "id": "fig:flow"
+                          },
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "graph LR\n  A[Author] --> B[eHTML]\n  B --> C[HTML + CSS + JS]"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "figcaption",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "span",
+                              "properties": {
+                                "className": [
+                                  "figure-label"
+                                ]
+                              },
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Figure 1."
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " "
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "tagName": "sub-section",
+                  "properties": {},
+                  "children": [
+                    {
+                      "type": "element",
+                      "tagName": "sub-section-title",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A code listing from a dataset",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 31,
+                              "offset": 30
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "p",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<code src=\"@snippet\">"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " renders the stored bytes as a verbatim code body.\nThe dataset's ",
+                          "position": {
+                            "start": {
+                              "line": 31,
+                              "column": 24,
+                              "offset": 1174
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 15,
+                              "offset": 1239
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "python"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " hint seeds the ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 23,
+                              "offset": 1247
+                            },
+                            "end": {
+                              "line": 32,
+                              "column": 39,
+                              "offset": 1263
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "language-python"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " highlight class; the\nbytes render verbatim (a ",
+                          "position": {
+                            "start": {
+                              "line": 32,
+                              "column": 56,
+                              "offset": 1280
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 26,
+                              "offset": 1327
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "#"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " or ",
+                          "position": {
+                            "start": {
+                              "line": 33,
+                              "column": 29,
+                              "offset": 1330
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 33,
+                              "offset": 1334
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " in the source is never markdown-parsed).",
+                          "position": {
+                            "start": {
+                              "line": 33,
+                              "column": 36,
+                              "offset": 1337
+                            },
+                            "end": {
+                              "line": 33,
+                              "column": 77,
+                              "offset": 1378
+                            }
+                          }
+                        }
+                      ],
+                      "position": {
+                        "start": {
+                          "line": 31,
+                          "column": 1,
+                          "offset": 1151
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 77,
+                          "offset": 1378
+                        }
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "tagName": "code",
+                      "properties": {
+                        "className": [
+                          "language-python"
+                        ]
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "# compute the circle area\nimport math\nradius = 2.0\narea = math.pi * radius ** 2"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "position": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "offset": 0
+    },
+    "end": {
+      "line": 52,
+      "column": 1,
+      "offset": 1684
+    }
+  }
+}

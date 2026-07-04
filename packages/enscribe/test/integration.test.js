@@ -2036,4 +2036,53 @@ export function run() {
     snapshotHast('document-71', hast);
     console.log('PASS: integration doc71 (ToC frame-skip — `<frame>`/`<aside>` demo sections excluded from the contents rail; real sections + nesting preserved)');
   }
+
+  // ── Document 72: dataset consumers — <table>/<diagram>/<code> read a stored <dataset> by @id (#313) ─
+  // Output-adding (the #313 consumer-wiring slice). ONE <data> store, THREE readers via the neutral
+  // @id hand-off (asset-load.js `resolveAssetReference`), each consumer interpreting the opaque bytes
+  // its own way (`resolveTableSrc` / `resolveDiagramSrc` / `resolveCodeSrc`): a CSV dataset renders as
+  // a table grid, a Mermaid dataset feeds a diagram's engine source, a Python dataset renders as a
+  // verbatim <code> body. The Mermaid dataset is authored LONG-FORM so its `-->` arrows (which contain
+  // `>`) survive; a matching format hint is accepted. Resolution is in-tree before render, so no
+  // exhibit carries a raw @-src and the <data> store renders nothing.
+  {
+    const src = readFileSync(join(FIXTURES_DIR, 'document-72-dataset-consumers.emd'), 'utf8');
+    const { html, hast } = runPipeline(src);
+
+    assert.ok(html.includes('<article>'), 'doc72: article structure present');
+
+    // Table consumer: the CSV dataset renders as a real grid, numbered.
+    assert.ok(/<table id="tab:sales">/.test(html), 'doc72: <table src="@sales"> renders a real <table> from the dataset');
+    assert.ok(html.includes('<th>quarter</th>') && html.includes('<th>revenue</th>'), 'doc72: CSV dataset header row rendered');
+    assert.ok(html.includes('<td>Q1</td>') && html.includes('<td>145</td>'), 'doc72: CSV dataset body cells rendered');
+    assert.ok(html.includes('Table 1.'), 'doc72: the dataset-sourced table is numbered (Table 1.)');
+
+    // Diagram consumer: the Mermaid dataset feeds the engine source verbatim into the wrapper. The
+    // arrow endpoints past the first `-->` (B[eHTML], C[…]) prove the long-form dataset was NOT
+    // truncated at the `>` inside the arrow (the pipe form would have been).
+    assert.ok(/<pre class="mermaid" data-enscribe-dsl="mermaid" id="fig:flow">graph LR/.test(html),
+      'doc72: <diagram mermaid src="@flow"> renders the mermaid wrapper with the engine source');
+    assert.ok(html.includes('A[Author]') && html.includes('B[eHTML]') && html.includes('C[HTML + CSS + JS]'),
+      'doc72: the full mermaid source (past the first `-->`) reached the wrapper — no `>` truncation');
+    assert.ok(html.includes('Figure 1.'), 'doc72: the dataset-sourced diagram is numbered (Figure 1.)');
+
+    // Code consumer: the Python dataset renders as a verbatim body; the format hint seeds the language.
+    // Opacity end to end: the leading `#` comment line stays LITERAL — it is NOT parsed as a markdown
+    // heading (a `<code>`-element render of opaque bytes, never the interpreted-content mixer).
+    assert.ok(/<code class="language-python"># compute the circle area/.test(html),
+      'doc72: <code src="@snippet"> renders the dataset verbatim with the python class; the leading # stays literal (opaque)');
+    assert.ok(html.includes('area = math.pi * radius ** 2'), 'doc72: the full code body is verbatim');
+    assert.ok(!/<h1[^>]*>compute the circle area/.test(html), 'doc72: the leading `#` did NOT become a markdown heading (opaque end to end)');
+
+    // Resolution is IN-TREE: no rendered exhibit carries a raw @-src (the prose deliberately shows
+    // `src="@flow"` inside inline <code>, so match on real element attributes, not loose substrings),
+    // there is no rendered asset-error block, and the <data>/<dataset> store renders nothing.
+    assert.ok(!/<pre[^>]*\ssrc=|<table[^>]*\ssrc=|<code[^>]*\ssrc=/.test(html),
+      'doc72: no resolved exhibit carries a raw src="@…" (resolved in-tree before render)');
+    assert.ok(!html.includes('could not resolve asset reference'), 'doc72: no rendered asset-error blocks (all @ids resolved)');
+    assert.ok(!html.includes('<data>') && !html.includes('<dataset'), 'doc72: the <data>/<dataset> store renders nothing (invisible, like <library>)');
+
+    snapshotHast('document-72', hast);
+    console.log('PASS: integration doc72 (dataset consumers — <table>/<diagram>/<code> read a stored <dataset> by @id, #313)');
+  }
 }

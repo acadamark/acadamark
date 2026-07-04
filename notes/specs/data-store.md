@@ -60,6 +60,14 @@ because the `default` handler recursively re-parses string content as markdown
 (`packages/enscribe/src/parser/recursive-content.js`), which would both mangle the data (a `#` becomes
 a heading, a `*` becomes emphasis) and expose it to the [#330] mixed-content whitespace class.
 
+**Authoring caveat — the pipe form has no `>` terminator.** The pipe form `<dataset … | bytes>` is
+delimited by the first unescaped `>`, so a payload that itself contains `>` (Mermaid's `-->`, some JSON,
+`<code>`-shaped source) is truncated there. Such a payload must be authored in the **long form**
+`<dataset …>bytes</dataset>`, which scans to the explicit `</dataset>` and keeps `>` intact. This is a
+property of the shared tag-boundary parser (it predates and is independent of #313), noted here because
+the diagram/code consumers make `>`-bearing datasets common; it is not a store behavior. Fixing the pipe
+form to admit `>` is a separate parser question, out of scope for the data store.
+
 This is **routing the new element to the existing opaque lane, not new machinery.** The lane already
 exists and is load-bearing today:
 
@@ -104,8 +112,16 @@ The neutral hand-off, in three steps that no consumer-type branch may contaminat
   rewrite) MOVED out of the resolver into the fig consumer. `resolveTableSrc` hands a dataset's opaque
   bytes to the table node as inline content (supplying the dataset's format hint when the table named
   none), so the table handler parses them with its EXISTING CSV/TSV/JSON parser — the table owns its
-  parse, unchanged. A future `<plot>` / `<code src="@id">` is a trivial new branch: same
-  `resolveAssetReference`, its own interpretation.
+  parse, unchanged. `resolveDiagramSrc` feeds a dataset's bytes as a diagram engine's source — and,
+  because the engine renders that source verbatim client-side (enscribe cannot re-read it), a dataset
+  format hint that disagrees with the named engine (a `csv` dataset into a `mermaid` diagram) is a
+  visible error, the ONE place a consumer guards on the hint (a table, which re-parses per its own
+  format word, does not). `resolveCodeSrc` renders a dataset's bytes as a verbatim `<code>` body (its
+  format hint, when the `<code>` names no language, seeds the highlight class). The diagram/code pair
+  share a small `readDatasetSource` helper for the resolve→bytes-or-error shape; `resolveTableSrc`
+  predates it and keeps its own copy (it also reads an external asset as a file `src`, a branch the
+  other two lack). A future `<plot>` is the next trivial branch: same `resolveAssetReference`, its own
+  interpretation.
 
 **All `@id` errors are visible, for every consumer (F2.1 — closed).** Before, an unresolved `@id` was a
 visible `__asset-error` *only* for `<fig>`; `<table src="@id">` treated `src` as a file path, so an
@@ -166,8 +182,14 @@ first, interpretation per consumer, packaging last.
    `<table src="@id">` renders a dataset as a grid; F2.1 closed. See the split, above.)**
 3. **Per-consumer interpretation, incl. JATS** — each consuming element interprets the handed-off bytes
    (HTML render + JATS projection). `<fig>`→`<graphic>` is done and `<table src="@id">` renders a grid
-   (slice 2); the `<dataset>`→JATS projection question (Piece 4) is still open for the JATS slice; a
-   `<code src="@id">` / `<plot>` consumer is a trivial future caller of `resolveAssetReference`.
+   (slice 2); **`<diagram src="@id">` feeds a dataset as engine source and `<code src="@id">` renders one
+   as a verbatim body** (the consumer-wiring slice — HTML render, sharing `readDatasetSource`; a
+   diagram's format-hint/engine mismatch is a visible error). Because resolution rewrites the node's
+   content **in-tree before serialization**, a dataset-sourced diagram/code projects to JATS through each
+   element's EXISTING projection (the resolved content, not the `@id`), so no consumer-specific JATS work
+   was needed for them. The `<dataset>`-element's OWN `<dataset>`→JATS projection (Piece 4) is still open
+   for the JATS slice; a `<plot src="@id">` consumer is the remaining trivial future caller of
+   `resolveAssetReference`.
 4. **Binary packaging** — the single-file build embeds a document's EXTERNAL referenced assets so the one
    file is truly self-contained (renders its assets when opened from anywhere). **(DONE — `buildSingleFile`
    `embedExternalAssets`: a parse-guided source edit rewrites each external `<fig src="local">` to a
@@ -177,9 +199,11 @@ first, interpretation per consumer, packaging last.
    source at mount, no serialize-then-reparse. SCOPE: assets only — embedding external STRUCTURE children
    (book chapters / website pages = site-in-a-file) is a separate, still-deferred follow-on.)**
 
-This completes the #313 build sequence (slices 0–4). The remaining #313-adjacent open items are the
-`<dataset>`→JATS projection (Piece 4 / the JATS slice), the `<code src="@id">` / `<plot>` consumers (trivial
-future callers of `resolveAssetReference`), and site-in-a-file (external structure children in one file).
+This completes the #313 build sequence (slices 0–4); the `<diagram src="@id">` / `<code src="@id">`
+consumers (the consumer-wiring slice) fill out slice 3's per-consumer interpretation. The remaining
+#313-adjacent open items are the `<dataset>`→JATS projection (Piece 4 / the JATS slice), the
+`<plot src="@id">` consumer (a trivial future caller of `resolveAssetReference`), and site-in-a-file
+(external structure children in one file).
 
 **[#330] parallelizes.** #330 is an independent parser fix for mixed-content whitespace; it **cannot**
 affect stored data, because opaque content never enters the interpreted-content mixer (Piece 1). The
@@ -204,7 +228,8 @@ is stated here and echoed in runtime-data-store.md §"The model".
 - `packages/ehtml/elements/data.md` — the `<data>` storage host (and `<dataset>` as a
   future child of its content model).
 - `packages/enscribe/src/interpreter/plugins/asset-load.js` — the resolver (neutralized in slice 2:
-  `resolveAssetReference` is the neutral hand-off; `resolveFig` / `resolveTableSrc` interpret per consumer).
+  `resolveAssetReference` is the neutral hand-off; `resolveFig` / `resolveTableSrc` / `resolveDiagramSrc`
+  / `resolveCodeSrc` interpret per consumer, the last two sharing `readDatasetSource`).
 - `packages/enscribe/src/parser/recursive-content.js` — the `contentHandler !== 'default'` skip that
   makes the opaque lane opaque.
 - `packages/cli/src/jats-export/index.js` (`emitFigureJats`) — the shipped `<fig>`→`<graphic>` projection.

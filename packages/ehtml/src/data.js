@@ -2001,6 +2001,9 @@ const _code = Object.freeze({
           },
           "notes": "The programming language of the code. Maps to a class like\n\"language-python\" for syntax highlighting via shiki/prism.\n",
         },
+        "src": {
+          "notes": "An @id reference (#313 consumer wiring) that pulls a stored <dataset>\ndeclared in <data> and renders its opaque bytes as the verbatim code body\n— e.g. <code src=\"@snippet\"> renders the <dataset #snippet python>…</dataset>\nas a code listing. The bytes render verbatim (opaque end to end — a #, *, or\n< in the stored code is never markdown-parsed); the dataset's format hint,\nwhen the <code> names no language, seeds the language-X highlight class (a\ndisplay hint only). An unresolved id — or a wrong-kind id (an image or\nexternal asset, not a <dataset>) — is a visible asset-error. Inline body\n(<code | …>) is unaffected. A file-path src is not read here (the code\nhandler reads no files); source a <dataset> instead.\n",
+        },
       },
     },
     "content": {
@@ -2556,6 +2559,9 @@ const _diagram = Object.freeze({
         "caption": {
           "handled_by": "handler",
           "notes": "Optional caption text. When present the handler emits a\n`<figcaption>` sibling after the rendered diagram (the external-DSL\nsibling-caption layout). When the diagram participates in figure\nnumbering the caption carries a \"Figure N.\" label prefix.\n",
+        },
+        "src": {
+          "notes": "An @id reference (#313 consumer wiring) that pulls a stored <dataset>\ndeclared in <data> and feeds its opaque bytes as the diagram's engine\nsource — e.g. <diagram mermaid src=\"@flow\"> renders the\n<dataset #flow mermaid>…</dataset> as a Mermaid diagram. The bytes travel\nstraight from the store into the wrapper, verbatim (the engine renders\nthem at view time; enscribe never re-interprets them). Because enscribe\ncannot re-read the source, the dataset's format hint is the only guard: a\nhint that disagrees with the named engine (e.g. a csv dataset fed into a\nmermaid diagram) is a visible asset-error, not a silently-broken render.\nAn unresolved id — or a wrong-kind id (an image or external asset, not a\n<dataset>) — is a visible asset-error too (never a silently-empty diagram).\nInline source (<diagram engine | …> / <diagram engine>…</diagram>) is\nunaffected. A file-path src is not read here (the diagram handler reads no\nfiles); source a <dataset> instead. Note: because the engine source is\nopaque bytes with no </dataset> terminator in pipe form, a dataset whose\nsource contains `>` (Mermaid's `-->`) must be authored in the long form\n<dataset mermaid>…</dataset> — see notes/specs/data-store.md.\n",
         },
       },
     },

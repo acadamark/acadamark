@@ -1,0 +1,51 @@
+<meta type=article title="Dataset consumers — one <data> store, three readers (#313)">
+</meta>
+
+<section | One store, three readers>
+
+The `<data>` block at the back of this document declares three `<dataset>`
+stores — a CSV table, a Mermaid diagram source, and a Python snippet — as
+opaque bytes under shared ids. Each is consumed below by a different
+element through the same neutral `@id` hand-off: storage is opaque, and
+interpretation belongs to the consuming element (`notes/specs/data-store.md`).
+
+<sub-section | A table from a CSV dataset>
+
+`<table src="@sales">` pulls the stored `<dataset #sales csv | …>` and
+renders it as a grid. The table names no format word, so the dataset's
+`csv` hint applies.
+
+<table #tab:sales src="@sales" />
+
+<sub-section | A diagram from a Mermaid dataset>
+
+`<diagram mermaid src="@flow">` feeds the stored Mermaid source verbatim
+into the engine wrapper. The dataset's `mermaid` format hint matches the
+named engine, so it is accepted; a hint that disagreed (a `csv` dataset,
+say) would be a visible asset-error instead.
+
+<diagram #fig:flow mermaid src="@flow" />
+
+<sub-section | A code listing from a dataset>
+
+`<code src="@snippet">` renders the stored bytes as a verbatim code body.
+The dataset's `python` hint seeds the `language-python` highlight class; the
+bytes render verbatim (a `#` or `*` in the source is never markdown-parsed).
+
+<code src="@snippet" />
+
+<data>
+<dataset #sales csv | quarter,revenue
+Q1,100
+Q2,120
+Q3,145>
+<dataset #flow mermaid>
+graph LR
+  A[Author] --> B[eHTML]
+  B --> C[HTML + CSS + JS]
+</dataset>
+<dataset #snippet python | # compute the circle area
+import math
+radius = 2.0
+area = math.pi * radius ** 2>
+</data>

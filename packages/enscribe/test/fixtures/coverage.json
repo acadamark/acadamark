@@ -2,7 +2,7 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 367,
-    "fixtures": 94,
+    "fixtures": 95,
     "annexed": 19
   },
   "byStatus": {
@@ -7223,6 +7223,7 @@
     "document-7-tables.emd",
     "document-70-minipage-outbound.emd",
     "document-71-toc-frame-skip.emd",
+    "document-72-dataset-consumers.emd",
     "document-8-citations.emd",
     "master/intro.emd",
     "master/master.emd",
