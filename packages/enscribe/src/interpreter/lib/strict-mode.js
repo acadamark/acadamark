@@ -137,7 +137,7 @@ export function resolveStrictMode({ sigilProcessor, canonicalProcessor, option }
 // ─── the lint flag (hast pass) ─────────────────────────────────────────────────
 //
 // In sigil/canonical mode, wrap would-be-markdown (and, in canonical, would-be-
-// sigil) substrings of text nodes in <span class="enscribe-md-flag"> so CSS can
+// sigil) substrings of text nodes in <md-flag> so CSS can
 // mark them. The text still renders — the flag is a nudge toward the canonical
 // form, never a failure. Heuristic and over-flagging-tolerant (a false positive
 // is harmless). Inline patterns match anywhere; block markers match only at the
@@ -161,8 +161,8 @@ const LEADING_MD = /^(\s*(?:#{1,6}|>|[-+*]|\d+\.)\s)/;
 function flagSpan(text) {
   return {
     type: 'element',
-    tagName: 'span',
-    properties: { className: ['enscribe-md-flag'], title: 'looks like markdown or a sigil — use a canonical tag' },
+    tagName: 'md-flag',
+    properties: { title: 'looks like markdown or a sigil — use a canonical tag' },
     children: [{ type: 'text', value: text }],
   };
 }
@@ -216,7 +216,7 @@ function walkFlag(node, inVerbatim, inlineRe) {
       const skip =
         c.tagName === 'code' || c.tagName === 'pre' || c.tagName === 'script' ||
         c.tagName === 'style' || c.tagName === 'inline-math' || c.tagName === 'display-math' ||
-        (Array.isArray(c.properties?.className) && c.properties.className.includes('enscribe-md-flag'));
+        c.tagName === 'md-flag';
       walkFlag(c, inVerbatim || skip, inlineRe);
       continue;
     }

@@ -485,12 +485,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -617,12 +613,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "ref"
-                        ]
-                      },
+                      "tagName": "ref",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",

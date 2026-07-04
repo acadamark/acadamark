@@ -29,7 +29,7 @@ content:
     valid LaTeX math syntax.
 shorthand_examples:
   - source: '<$$ \sum_{i=1}^{n} x_i = X $$>'
-    ehtml: '<display-math><span class="katex-display">…</span><span class="equation-number">(1)</span></display-math>'
+    ehtml: '<display-math><span class="katex-display">…</span><equation-number>(1)</equation-number></display-math>'
     notes: |
       The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
       numbered by default (the equation number is appended after the KaTeX
@@ -81,7 +81,7 @@ all equations. A per-element `+numbered` override takes priority over config.
 
 The numbering plugin (`plugins/numbering.js`) sets `node.computedNumber` on
 each display-math node before the hast conversion step. The math handler then
-appends `<span class="equation-number">(N)</span>` after the KaTeX children.
+appends `<equation-number>(N)</equation-number>` after the KaTeX children.
 
 ## Error handling
 

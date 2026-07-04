@@ -23,9 +23,10 @@
 // already uses for unresolved refs (`??ref: id??`) and unresolved cites
 // (`??cite: key??`). These handlers register that visible rendering.
 //
-// Rendered output, by node type:
-//   enscribeParseError → <span class="parse-error">??parse: SUBTYPE "SOURCE"??</span>
-//   enscribeTagError   → <span class="tag-error">??tag: NAME — ERROR??</span>
+// Rendered output, by node type (a derived-display diagnostic element, not
+// vocabulary — stripped from any archival export):
+//   enscribeParseError → <parse-error>??parse: SUBTYPE "SOURCE"??</parse-error>
+//   enscribeTagError   → <tag-error>??tag: NAME — ERROR??</tag-error>
 //                         (NAME is `tagname` for the long-form variant,
 //                          or the source-fragment opener for the sigil-opener
 //                          variant where no tagname was ever populated)
@@ -48,8 +49,8 @@ export function parseErrorHandler(_state, node) {
     : `??parse: ${subtype}??`;
   const el = {
     type: 'element',
-    tagName: 'span',
-    properties: { className: ['parse-error'] },
+    tagName: 'parse-error',
+    properties: {},
     // data.verbatim: the message embeds the literal source fragment (e.g. an
     // escape sequence in quotes); smart typography (#54) must not curl it.
     children: [{ type: 'text', value: text, data: { verbatim: true } }],
@@ -77,8 +78,8 @@ export function tagErrorHandler(_state, node) {
   const text = `??tag: ${name} — ${error}??`;
   const el = {
     type: 'element',
-    tagName: 'span',
-    properties: { className: ['tag-error'] },
+    tagName: 'tag-error',
+    properties: {},
     // data.verbatim: the message lists literal grammar/regex tokens (e.g.
     // Expected "$", ="'[\],]); smart typography (#54) must not curl them.
     children: [{ type: 'text', value: text, data: { verbatim: true } }],

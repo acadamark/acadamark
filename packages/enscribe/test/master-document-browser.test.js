@@ -76,22 +76,22 @@ export async function run() {
     {
       // #326: <fig> is flow — the single-paragraph caption keeps its <p> (a
       // block, so the formatter may break the line between label and caption).
-      assert.ok(/<span class="figure-label">Figure 1\.<\/span>\s*<p>The alpha figure\.<\/p>/.test(html),
+      assert.ok(/<figure-label>Figure 1\.<\/figure-label>\s*<p>The alpha figure\.<\/p>/.test(html),
         'browser cross-file: the first child file figure is Figure 1');
-      assert.ok(/<span class="figure-label">Figure 2\.<\/span>\s*<p>The beta figure\.<\/p>/.test(html),
+      assert.ok(/<figure-label>Figure 2\.<\/figure-label>\s*<p>The beta figure\.<\/p>/.test(html),
         'browser cross-file: the second child file figure continues as Figure 2');
-      assert.ok(/<span class="figure-label">Figure 3\.<\/span>\s*<p>The gamma figure\.<\/p>/.test(html),
+      assert.ok(/<figure-label>Figure 3\.<\/figure-label>\s*<p>The gamma figure\.<\/p>/.test(html),
         'browser cross-file: the third child file figure continues as Figure 3');
       console.log('PASS: #194 — figures number continuously across child files (browser)');
     }
 
     // ── continuous SECTION numbering (number-sections=true in the master config) ──
     {
-      assert.ok(html.includes('<section-title><span class="section-number">1</span>Alpha</section-title>'),
+      assert.ok(html.includes('<section-title><section-number>1</section-number>Alpha</section-title>'),
         'browser cross-file: first section numbered 1');
-      assert.ok(html.includes('<section-title><span class="section-number">2</span>Beta</section-title>'),
+      assert.ok(html.includes('<section-title><section-number>2</section-number>Beta</section-title>'),
         'browser cross-file: second section numbered 2');
-      assert.ok(html.includes('<section-title><span class="section-number">3</span>Gamma</section-title>'),
+      assert.ok(html.includes('<section-title><section-number>3</section-number>Gamma</section-title>'),
         'browser cross-file: third section numbered 3');
       console.log('PASS: #194 — sections number continuously across child files (browser)');
     }

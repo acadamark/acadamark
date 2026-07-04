@@ -577,12 +577,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "box-label"
-                            ]
-                          },
+                          "tagName": "box-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",

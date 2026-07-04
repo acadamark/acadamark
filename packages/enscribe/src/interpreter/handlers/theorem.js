@@ -100,13 +100,13 @@ export function theoremFamilyHandler(state, node, vocab) {
   // For unnumbered remark/proof, still render the unboxed-label form
   // common in academic typography: "Remark." / "Proof." (no number).
   // The shared formatLabel helper requires a number; build the
-  // numberless label inline here. Same className shape for consistency.
+  // numberless label inline here. Same <${prefix}-label> element shape for consistency.
   const fallbackLabel =
     labelSpan == null && UNNUMBERED_THEOREM_TAGNAMES.has(node.tagname)
       ? {
           type: 'element',
-          tagName: 'span',
-          properties: { className: [`${prefix.toLowerCase()}-label`] },
+          tagName: `${prefix.toLowerCase()}-label`,
+          properties: {},
           children: [{ type: 'text', value: `${prefix}.` }],
         }
       : null;

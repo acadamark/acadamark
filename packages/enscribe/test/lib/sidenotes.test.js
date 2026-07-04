@@ -26,23 +26,23 @@ export async function run() {
   const margin = html({ notePosition: 'margin' });
 
   // ── default (bottom) mode: no sidenote spans, no margin layout ──────────────
-  assert.ok(!bottom.includes('enscribe-sidenote'), 'default mode emits no sidenote spans');
+  assert.ok(!bottom.includes('<sidenote>'), 'default mode emits no sidenote spans');
   assert.ok(!bottom.includes('enscribe-layout--margin'), 'default mode emits no margin layout');
   console.log('PASS: default (bottom) note rendering is unchanged');
 
   // ── margin mode: content projected to the margin, marker + numbering intact ──
   assert.ok(margin.includes('class="enscribe-layout enscribe-layout--margin"'), 'margin mode marks the (shared) margin layout wrapper');
-  assert.ok(margin.includes('.enscribe-layout--margin .enscribe-sidenote'), 'margin mode injects the scoped sidenote CSS');
+  assert.ok(margin.includes('.enscribe-layout--margin sidenote'), 'margin mode injects the scoped sidenote CSS');
   assert.ok(margin.includes('<sup id="noteref-1" data-note-id="note-1">'), 'inline marker 1 kept');
   assert.ok(margin.includes('<sup id="noteref-2" data-note-id="note-2">'), 'inline marker 2 kept');
   // <note> is flow (#326): its single-paragraph content keeps its <p>, so the
   // margin projection carries the marker followed by the wrapped content.
   assert.ok(
-    /<span class="enscribe-sidenote"><sup>1<\/sup><p>a footnote about the first point<\/p>/.test(margin),
+    /<sidenote><sup>1<\/sup><p>a footnote about the first point<\/p>/.test(margin),
     'sidenote 1 carries its number + content into the margin',
   );
   assert.ok(
-    /<span class="enscribe-sidenote"><sup>2<\/sup><p>another note here<\/p>/.test(margin),
+    /<sidenote><sup>2<\/sup><p>another note here<\/p>/.test(margin),
     'sidenote 2 carries its number + content into the margin',
   );
   console.log('PASS: margin mode projects note content into the margin, numbering intact');
@@ -71,11 +71,11 @@ export async function run() {
   const viaConfig = String(
     buildEnscribePipeline({}).processSync('<config note-position=margin />\n\n' + SRC),
   );
-  assert.ok(viaConfig.includes('class="enscribe-sidenote"'), '<config note-position=margin> selects margin mode');
+  assert.ok(viaConfig.includes('<sidenote>'), '<config note-position=margin> selects margin mode');
   // …and the explicit option wins over config.
   const optionWins = String(
     buildEnscribePipeline({ notePosition: 'bottom' }).processSync('<config note-position=margin />\n\n' + SRC),
   );
-  assert.ok(!optionWins.includes('enscribe-sidenote'), 'the notePosition option overrides the <config> setting');
+  assert.ok(!optionWins.includes('<sidenote>'), 'the notePosition option overrides the <config> setting');
   console.log('PASS: <config note-position=margin> selects the mode; the option overrides it');
 }

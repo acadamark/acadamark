@@ -100,7 +100,7 @@ shorthand_examples:
       |------|-------|
       | foo  | 1     |
       | bar  | 2     |
-    ehtml: '<table><caption><span class="table-label">Table 1.</span></caption><thead><tr><th>Name</th><th>Price</th></tr></thead><tbody><tr><td>foo</td><td>1</td></tr><tr><td>bar</td><td>2</td></tr></tbody></table>'
+    ehtml: '<table><caption><table-label>Table 1.</table-label></caption><thead><tr><th>Name</th><th>Price</th></tr></thead><tbody><tr><td>foo</td><td>1</td></tr><tr><td>bar</td><td>2</td></tr></tbody></table>'
     notes: |
       Plain markdown table syntax (via remark-gfm). The most common
       authoring path for simple tables. No explicit enscribe tags needed.
@@ -109,7 +109,7 @@ shorthand_examples:
       foo,1
       bar,2
       >
-    ehtml: '<table><caption><span class="table-label">Table 1.</span></caption><thead><tr><th>name</th><th>price</th></tr></thead><tbody><tr><td>foo</td><td>1</td></tr><tr><td>bar</td><td>2</td></tr></tbody></table>'
+    ehtml: '<table><caption><table-label>Table 1.</table-label></caption><thead><tr><th>name</th><th>price</th></tr></thead><tbody><tr><td>foo</td><td>1</td></tr><tr><td>bar</td><td>2</td></tr></tbody></table>'
     notes: |
       The `<csv>` shorthand lowers to `<table csv>` (the standalone `<csv>` /
       `<tsv>` tags were retired to these gate shorthands) and renders today —
@@ -126,7 +126,7 @@ shorthand_examples:
         <tr><td>Q1</td><td>$100M</td></tr>
         <tr><td>Q2</td><td>$120M</td></tr>
       </table>
-    ehtml: '<table id="revenue"><caption><span class="table-label">Table 1.</span></caption><tbody><tr><th>Quarter</th><th>Revenue</th></tr><tr><td>Q1</td><td>$100M</td></tr><tr><td>Q2</td><td>$120M</td></tr></tbody></table>'
+    ehtml: '<table id="revenue"><caption><table-label>Table 1.</table-label></caption><tbody><tr><th>Quarter</th><th>Revenue</th></tr><tr><td>Q1</td><td>$100M</td></tr><tr><td>Q2</td><td>$120M</td></tr></tbody></table>'
     notes: |
       Explicit table with cells, used when fine control over structure
       or attributes is needed.

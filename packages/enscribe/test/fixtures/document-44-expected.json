@@ -288,12 +288,8 @@
               "children": [
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "section-number"
-                    ]
-                  },
+                  "tagName": "section-number",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",
@@ -313,12 +309,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "section-number"
-                            ]
-                          },
+                          "tagName": "section-number",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -544,12 +536,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "definition-label"
-                        ]
-                      },
+                      "tagName": "definition-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -1065,12 +1053,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "theorem-label"
-                        ]
-                      },
+                      "tagName": "theorem-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -1126,12 +1110,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "proof-label"
-                        ]
-                      },
+                      "tagName": "proof-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -1885,12 +1865,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -2045,12 +2021,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "figure-label"
-                            ]
-                          },
+                          "tagName": "figure-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -2210,12 +2182,8 @@
               "children": [
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "section-number"
-                    ]
-                  },
+                  "tagName": "section-number",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",
@@ -2235,12 +2203,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "section-number"
-                            ]
-                          },
+                          "tagName": "section-number",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -2395,12 +2359,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "table-label"
-                            ]
-                          },
+                          "tagName": "table-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -3703,12 +3663,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -3917,12 +3873,8 @@
               "children": [
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "section-number"
-                    ]
-                  },
+                  "tagName": "section-number",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",
@@ -3942,12 +3894,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "section-number"
-                            ]
-                          },
+                          "tagName": "section-number",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -4025,12 +3973,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "figure-label"
-                            ]
-                          },
+                          "tagName": "figure-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -4112,12 +4056,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "figure-label"
-                            ]
-                          },
+                          "tagName": "figure-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -4381,12 +4321,8 @@
               "children": [
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "section-number"
-                    ]
-                  },
+                  "tagName": "section-number",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",
@@ -4406,12 +4342,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "section-number"
-                            ]
-                          },
+                          "tagName": "section-number",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",

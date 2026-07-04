@@ -33,7 +33,7 @@ function numFor(h, tag, titleText) {
     const inner = m[1];
     const textOnly = inner.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     if (textOnly.includes(titleText)) {
-      const num = inner.match(/section-number">([^<]*)</);
+      const num = inner.match(/<section-number>([^<]*)</);
       return num ? num[1] : null;
     }
   }
@@ -89,18 +89,18 @@ export async function run() {
   // ── Gate 5: composition — numbered headings show their numbers in the listing (un-glued) ───────
   {
     const nav = bodyNav(staticRender(META + '<config number-sections=true toc=true toc-location=body />\n\n' + LEVELS));
-    assert.ok(/class="enscribe-toc-num">1<\/span>/.test(nav) && /class="enscribe-toc-title">Alpha<\/span>/.test(nav),
+    assert.ok(/<toc-num>1<\/toc-num>/.test(nav) && /<toc-title>Alpha<\/toc-title>/.test(nav),
       'a numbered section lists its number + title in separate spans (un-glued "1 Alpha")');
-    assert.ok(/class="enscribe-toc-num">1.1<\/span>/.test(nav), 'nested numbers compose too (1.1)');
+    assert.ok(/<toc-num>1.1<\/toc-num>/.test(nav), 'nested numbers compose too (1.1)');
     console.log('PASS: #218 — numbered headings show their numbers in the contents listing (composition)');
   }
 
   // ── Gate 6: default OFF for articles — no numbers, additive ────────────────────────────────────
   {
     const h = staticRender(META + LEVELS);
-    assert.ok(!/class="section-number"/.test(h), 'no number-sections → no numbers (article default off)');
+    assert.ok(!/<section-number>/.test(h), 'no number-sections → no numbers (article default off)');
     const off = staticRender(META + '<config number-sections=false />\n\n' + LEVELS);
-    assert.ok(!/class="section-number"/.test(off), 'number-sections=false → no numbers');
+    assert.ok(!/<section-number>/.test(off), 'number-sections=false → no numbers');
     console.log('PASS: #218 — numbering is default-off for articles (additive)');
   }
 

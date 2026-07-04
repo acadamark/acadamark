@@ -60,7 +60,7 @@ shorthand_examples:
       <proof name="of Theorem 1.2">
       The argument follows from the preceding lemma.
       </proof>
-    ehtml: '<proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span><p>The argument follows from the preceding lemma.</p></proof>'
+    ehtml: '<proof data-name="of Theorem 1.2"><proof-label>Proof.</proof-label><p>The argument follows from the preceding lemma.</p></proof>'
     notes: |
       Optional `name` kwarg lets the proof identify what it proves
       (useful when the proof is separated from its theorem by

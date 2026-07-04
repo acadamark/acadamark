@@ -516,7 +516,7 @@ number is stamped on the section / book-part node and its title element
 registry `entry.number` — book-parts are **registered here** (they have
 no numbering-visitor entry) so cross-refs resolve. Emission is one
 mechanism: the number is real DOM content, a
-`<span class="section-number">` prepended in `schemaDispatch` (HTML), and
+`<section-number>` prepended in `schemaDispatch` (HTML), and
 a `<label>` before `<title>` in JATS — `<sec><label>` for sections and
 `<book-part-meta><title-group><label>` for book-parts. Presentation (the
 words "Chapter"/"Appendix", separators) is the theme's / the cross-ref
@@ -1331,7 +1331,7 @@ blockquote element.
 4. Strip position data (positions refer to KaTeX's internal string, not the source document).
 
 **For numbered display-math:** If `node.computedNumber != null`, append a
-`<span class="equation-number">(N)</span>` after the KaTeX children.
+`<equation-number>(N)</equation-number>` after the KaTeX children.
 
 **Output:** `<inline-math>` or `<display-math>` element with KaTeX children.
 These are custom HTML element names, valid in browsers as unregistered custom
@@ -1354,7 +1354,7 @@ mdast; optional kwargs `src`, `alt`, `align`, `width`, `type`.
 3. If `src` kwarg: prepend `<img src="..." alt="...">` as first child.
    The `alt` value is `node.kwargs.alt ?? extractPlainText(node.content ?? [])`.
 4. If numbered (`node.computedNumber != null`): prepend
-   `<span class="figure-label">Figure N.</span>` and a space text node before
+   `<figure-label>Figure N.</figure-label>` and a space text node before
    the figcaption text.
 
 **Output:** `<figure>` element with optional `<img>` and `<figcaption>`.
@@ -1389,7 +1389,7 @@ string); `positional[0]` = format word.
 5. Build `<table>` with optional `<caption>` (from `kwargs.caption` and/or
    computed number), optional `<thead>`, and `<tbody>`.
 6. For numbered tables: `<caption>` prepends
-   `<span class="table-label">Table N.</span>`.
+   `<table-label>Table N.</table-label>`.
 
 **Error handling:** Parse failures produce `<table class="table-parse-error">`
 with a visible error message in a `<td>`.
@@ -1770,8 +1770,8 @@ The interpreter registers compile-step handlers for both node types
 (`enscribeParseError` and `enscribeTagError` in the `toHast` handler
 table; `packages/enscribe/src/interpreter/handlers/parser-errors.js`).
 They render as house-style visible markers —
-`<span class="parse-error">??parse: …??</span>` and
-`<span class="tag-error">??tag: …??</span>` — each carrying its source
+`<parse-error>??parse: …??</parse-error>` and
+`<tag-error>??tag: …??</tag-error>` — each carrying its source
 position.
 
 These markers are the same family as the §11.2 markers above

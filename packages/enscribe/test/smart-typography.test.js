@@ -123,12 +123,12 @@ export function run() {
   //    regex / source tokens — smart typography must leave them byte-identical
   //    (marked data.verbatim at the interpreter). ───────────────────────────────
   {
-    const tagErr = region(html('before <u, v> after'), /<span class="tag-error">[\s\S]*?<\/span>/);
+    const tagErr = region(html('before <u, v> after'), /<tag-error>[\s\S]*?<\/tag-error>/);
     assert.ok(tagErr, 'a malformed tag emits a tag-error span');
     assert.ok(!/[“”‘’]/.test(tagErr), 'tag-error literal tokens are NOT curled');
     assert.ok(tagErr.includes('"'), 'tag-error keeps its straight-quoted grammar tokens');
 
-    const parseErr = region(html('<aside | has \\z escape>'), /<span class="parse-error">[\s\S]*?<\/span>/);
+    const parseErr = region(html('<aside | has \\z escape>'), /<parse-error>[\s\S]*?<\/parse-error>/);
     assert.ok(parseErr, 'an unknown escape in tag content emits a parse-error span');
     assert.ok(!/[“”‘’]/.test(parseErr), 'parse-error literal source fragment is NOT curled');
     assert.ok(parseErr.includes('"'), 'parse-error keeps the straight quotes around its source fragment');

@@ -254,12 +254,8 @@
                 },
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "tag-error"
-                    ]
-                  },
+                  "tagName": "tag-error",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",

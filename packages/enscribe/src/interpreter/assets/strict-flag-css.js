@@ -8,7 +8,7 @@
 // visible even without it.
 
 export const STRICT_FLAG_CSS = `/* Strict mode (#36): visible lint on would-be-markdown / would-be-sigil text. Injected only in sigil/canonical. */
-.enscribe-md-flag {
+md-flag {
   background: var(--enscribe-callout-warning-bg, #fff8e1);
   color: var(--enscribe-callout-warning-accent, #8a6d1f);
   border-bottom: 1px dotted var(--enscribe-callout-warning-accent, #8a6d1f);

@@ -85,7 +85,7 @@ shorthand_examples:
       <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
         <circle cx="50" cy="50" r="40" />
       >
-    ehtml: '<figure><svg id="fig:diagram" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"></svg><figcaption><span class="figure-label">Figure 1.</span> A simple circle</figcaption></figure>'
+    ehtml: '<figure><svg id="fig:diagram" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"></svg><figcaption><figure-label>Figure 1.</figure-label> A simple circle</figcaption></figure>'
     notes: |
       Captioned and numbered → framed by the ordinary frameable rule: the
       handler wraps the <svg> in a <figure> with the <figcaption> as a

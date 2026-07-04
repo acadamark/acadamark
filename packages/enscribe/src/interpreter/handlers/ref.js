@@ -30,15 +30,19 @@
 export function refMarkerHandler(_state, node) {
   const { targetId, text, refType, refFormat, linkFlag, previewFlag } = node.kwargs;
 
-  // -link emits a <span> (plain text rendering, no navigable anchor).
+  // -link (non-navigable): emit a hrefless <ref> element — the reference is
+  // semantic, just not wrapped in an <a>. (The linked case below stays
+  // <a class="ref">…</a>: a reference wrapped in a real anchor when navigable.)
+  // Killing the old dead <span class="ref"> — <span> is not in the vocabulary,
+  // and all ref CSS/JS is <a class="ref">-qualified, so the span was unstyled.
   if (linkFlag === false) {
-    const properties = { className: ['ref'] };
+    const properties = {};
     if (refType) properties['data-ref-type'] = refType;
     if (refFormat) properties['data-ref-format'] = refFormat;
     if (previewFlag === false) properties['data-no-preview'] = 'true';
     return {
       type: 'element',
-      tagName: 'span',
+      tagName: 'ref',
       properties,
       children: [{ type: 'text', value: text }],
     };

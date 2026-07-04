@@ -121,7 +121,7 @@ authored directly, and are dispatched **before** the vocabulary lookup.
 | `__note-marker` | `enscribeNotePlacement` | `noteMarkerHandler` | `<sup id="noteref-N" data-note-id="ID"><a href="#ID">N</a></sup>` |
 | `__note-list` | `enscribeNotePlacement` | `noteListHandler` | `<note-list class="..."><ol>...</ol></note-list>` |
 | `__note-list-item` | `enscribeNotePlacement` | `noteListItemHandler` | `<li id="ID">…</li>` (inner `<sup>` number + `<a class="note-backref">↩</a>` back-reference) |
-| `__ref-marker` | `enscribeRefResolution` | `refMarkerHandler` | `<a href="#ID" class="ref" [data-ref-type] [data-ref-format]>TEXT</a>` — a `<span class="ref">` in `-link` mode |
+| `__ref-marker` | `enscribeRefResolution` | `refMarkerHandler` | `<a href="#ID" class="ref" [data-ref-type] [data-ref-format]>TEXT</a>` — a `<ref>` in `-link` mode |
 | `__ref-error` | `enscribeRefResolution` | `refErrorHandler` | `<a href="#ID" class="ref-error">??ref: ID??</a>` |
 | `__cite-marker` | `enscribeCiteResolution` | `citeMarkerHandler` | `<cite class="cite" data-keys="...">FORMATTED HTML</cite>` |
 | `__cite-error` | `enscribeCiteResolution` | `citeErrorHandler` | `<cite class="cite-error" data-keys="...">??cite: KEY??</cite>` |

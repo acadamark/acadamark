@@ -361,12 +361,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "theorem-label"
-                        ]
-                      },
+                      "tagName": "theorem-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -976,12 +972,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "lemma-label"
-                        ]
-                      },
+                      "tagName": "lemma-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -1039,12 +1031,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "corollary-label"
-                        ]
-                      },
+                      "tagName": "corollary-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -1102,12 +1090,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "proposition-label"
-                        ]
-                      },
+                      "tagName": "proposition-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -2777,12 +2761,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "definition-label"
-                        ]
-                      },
+                      "tagName": "definition-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -2963,12 +2943,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "example-label"
-                        ]
-                      },
+                      "tagName": "example-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -3108,12 +3084,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "remark-label"
-                        ]
-                      },
+                      "tagName": "remark-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -3169,12 +3141,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "proof-label"
-                        ]
-                      },
+                      "tagName": "proof-label",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -5073,12 +5041,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -5993,12 +5957,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",

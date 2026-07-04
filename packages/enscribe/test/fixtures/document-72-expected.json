@@ -351,12 +351,8 @@
                           "children": [
                             {
                               "type": "element",
-                              "tagName": "span",
-                              "properties": {
-                                "className": [
-                                  "table-label"
-                                ]
-                              },
+                              "tagName": "table-label",
+                              "properties": {},
                               "children": [
                                 {
                                   "type": "text",
@@ -659,12 +655,8 @@
                           "children": [
                             {
                               "type": "element",
-                              "tagName": "span",
-                              "properties": {
-                                "className": [
-                                  "figure-label"
-                                ]
-                              },
+                              "tagName": "figure-label",
+                              "properties": {},
                               "children": [
                                 {
                                   "type": "text",

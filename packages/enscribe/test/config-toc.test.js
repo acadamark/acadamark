@@ -116,8 +116,8 @@ export async function run() {
       'the listing reflects the whole-book structure (chapters + their sections)');
     // This book opts IN to numbering (<config number-sections>); default is now OFF (#246/core). The
     // numbered entry must be UN-GLUED (number + title in separate spans), not the run-together "1First Chapter".
-    assert.ok(/class="enscribe-toc-num">1<\/span>/.test(nav) && /class="enscribe-toc-title">First Chapter<\/span>/.test(nav),
-      'a numbered book chapter is listed un-glued (number span + title span), not "1First Chapter"');
+    assert.ok(/<toc-num>1<\/toc-num>/.test(nav) && /<toc-title>First Chapter<\/toc-title>/.test(nav),
+      'a numbered book chapter is listed un-glued (<toc-num> + <toc-title>), not "1First Chapter"');
     assert.ok(h.indexOf('enscribe-contents') < h.indexOf('book-part-type'),
       'the listing is inserted at the top of the book body, before the first chapter');
     console.log('PASS: #218 — a book lists its whole-book structure; numbered entries render un-glued');

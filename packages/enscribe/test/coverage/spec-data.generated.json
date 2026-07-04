@@ -167,13 +167,13 @@
       "id": "RQ-FRM-M1",
       "area": "RQ-FRM",
       "kind": "M",
-      "asserts": "a figure renders `<figure>` wrapping an optional `<img src alt>` (when `src` is given) and a `<figcaption>`. When numbered, the caption begins with `<span class=\"figure-label\">Figure N.</span>` followed by a space, then the caption text. A `name`/title adds a separate `<figcaption class=\"title\">` above the body."
+      "asserts": "a figure renders `<figure>` wrapping an optional `<img src alt>` (when `src` is given) and a `<figcaption>`. When numbered, the caption begins with `<figure-label>Figure N.</figure-label>` followed by a space, then the caption text. A `name`/title adds a separate `<figcaption class=\"title\">` above the body."
     },
     {
       "id": "RQ-FRM-M2",
       "area": "RQ-FRM",
       "kind": "M",
-      "asserts": "a table renders `<table>` with a `<caption>`; when numbered the caption begins `<span class=\"table-label\">Table N.</span>`. Headers render `<thead><tr><th>`, body rows `<tbody><tr><td>`. A `csv`/`tsv` block renders a real `<table>` — the `<csv>`/`<tsv>` element does not appear in output."
+      "asserts": "a table renders `<table>` with a `<caption>`; when numbered the caption begins `<table-label>Table N.</table-label>`. Headers render `<thead><tr><th>`, body rows `<tbody><tr><td>`. A `csv`/`tsv` block renders a real `<table>` — the `<csv>`/`<tsv>` element does not appear in output."
     },
     {
       "id": "RQ-FRM-M3",
@@ -203,7 +203,7 @@
       "id": "RQ-FRM-M7",
       "area": "RQ-FRM",
       "kind": "M",
-      "asserts": "when a frameable is numbered but has no caption text, the caption element renders the label span **alone** — `<figcaption><span class=\"figure-label\">Figure N.</span></figcaption>` — never an empty or absent caption. When the frameable is neither numbered nor captioned, no caption element is emitted at all."
+      "asserts": "when a frameable is numbered but has no caption text, the caption element renders the label span **alone** — `<figcaption><figure-label>Figure N.</figure-label></figcaption>` — never an empty or absent caption. When the frameable is neither numbered nor captioned, no caption element is emitted at all."
     },
     {
       "id": "RQ-FRM-M8",
@@ -221,7 +221,7 @@
       "id": "RQ-FRM-M10",
       "area": "RQ-FRM",
       "kind": "M",
-      "asserts": "an `<aside>` keeps the semantic `<aside>` element (it is **not** wrapped in `<figure>`, since `<figcaption>` is invalid outside `<figure>`); its title renders `<p class=\"title\">` (first child) and its caption `<p class=\"caption\">` (last child), using the same `.title`/`.caption` hooks (`RQ-FRM-S5`/`S6`). `+border` (default **on** for `<aside>`) adds `frameable-border`. A numbered `<aside>` joins its **own** `Box` counter (`<span class=\"box-label\">Box N.</span>`), not the figure counter, and is unnumbered by default. The `type` kwarg is preserved as `data-aside-type`."
+      "asserts": "an `<aside>` keeps the semantic `<aside>` element (it is **not** wrapped in `<figure>`, since `<figcaption>` is invalid outside `<figure>`); its title renders `<p class=\"title\">` (first child) and its caption `<p class=\"caption\">` (last child), using the same `.title`/`.caption` hooks (`RQ-FRM-S5`/`S6`). `+border` (default **on** for `<aside>`) adds `frameable-border`. A numbered `<aside>` joins its **own** `Box` counter (`<box-label>Box N.</box-label>`), not the figure counter, and is unnumbered by default. The `type` kwarg is preserved as `data-aside-type`."
     },
     {
       "id": "RQ-FRM-S1",
@@ -353,7 +353,7 @@
       "id": "RQ-MATH-M2",
       "area": "RQ-MATH",
       "kind": "M",
-      "asserts": "display math renders `<display-math>` wrapping `<span class=\"katex-display\">…`; when numbered, a sibling `<span class=\"equation-number\">(N)</span>` is appended (parenthesised number, no period). Numbering is conditional on the document/element numbering config."
+      "asserts": "display math renders `<display-math>` wrapping `<span class=\"katex-display\">…`; when numbered, a sibling `<equation-number>(N)</equation-number>` is appended (parenthesised number, no period). Numbering is conditional on the document/element numbering config."
     },
     {
       "id": "RQ-MATH-M3",
@@ -413,7 +413,7 @@
       "id": "RQ-XREF-M1",
       "area": "RQ-XREF",
       "kind": "M",
-      "asserts": "a resolved ref renders `<a href=\"#id\" class=\"ref\">TEXT</a>`. The `-link` flag renders `<span class=\"ref\">TEXT</span>` instead (no anchor)."
+      "asserts": "a resolved ref renders `<a href=\"#id\" class=\"ref\">TEXT</a>`. The `-link` flag renders `<ref>TEXT</ref>` instead (no anchor)."
     },
     {
       "id": "RQ-XREF-M2",

@@ -703,7 +703,7 @@ from `mdast-util-to-hast`.
 - `enscribeTag` nodes call the custom handler registered in `handlers.enscribeTag`.
 - Parser-stage error nodes (`enscribeTagError`, `enscribeParseError`) are
   rendered by dedicated compile-step handlers as visible markers
-  (`<span class="parse-error">` / `<span class="tag-error">`), honoring
+  (`<parse-error>` / `<tag-error>`), honoring
   the always-renders guarantee — see `notes/specs/interpreter.md` §11.5.
 
 **The custom handler** dispatches through:
@@ -966,14 +966,14 @@ See <ref @eqn:newton>.
 - `<ref>` replaced with `__ref-marker { targetId: 'eqn:newton', text: 'equation 1' }`
 
 **Stage 4 — toHast:**
-- `$$` → `mathHandler`: KaTeX renders `F = ma` in display mode; wraps in `<display-math>` with `<span class="equation-number">(1)</span>`.
+- `$$` → `mathHandler`: KaTeX renders `F = ma` in display mode; wraps in `<display-math>` with `<equation-number>(1)</equation-number>`.
 - `__ref-marker` → `refMarkerHandler`: `<a href="#eqn:newton" class="ref">equation 1</a>`
 
 **Output (simplified):**
 ```html
 <display-math id="eqn:newton">
   ...katex output...
-  <span class="equation-number">(1)</span>
+  <equation-number>(1)</equation-number>
 </display-math>
 <p>See <a href="#eqn:newton" class="ref">equation 1</a>.</p>
 ```

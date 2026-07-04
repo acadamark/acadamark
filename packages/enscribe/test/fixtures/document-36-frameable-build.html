@@ -309,12 +309,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -433,19 +433,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -478,12 +478,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -519,21 +519,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -614,7 +614,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -786,7 +786,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1057,7 +1057,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1095,17 +1095,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1347,7 +1347,7 @@ note-list li {
    */
   function getEquationContent(el) {
     var clone = el.cloneNode(true);
-    var numSpan = clone.querySelector('.equation-number');
+    var numSpan = clone.querySelector('equation-number');
     if (numSpan) numSpan.remove();
     return clone.innerHTML.trim();
   }
@@ -1361,7 +1361,7 @@ note-list li {
    */
   function getFigureContent(el) {
     var clone = el.cloneNode(true);
-    var label = clone.querySelector('.figure-label');
+    var label = clone.querySelector('figure-label');
     if (label) label.remove();
     return clone.outerHTML;
   }
@@ -1375,7 +1375,7 @@ note-list li {
    */
   function getTableContent(el) {
     var clone = el.cloneNode(true);
-    clone.querySelectorAll('.table-label').forEach(function(n) { n.remove(); });
+    clone.querySelectorAll('table-label').forEach(function(n) { n.remove(); });
     return clone.outerHTML;
   }
 
@@ -1533,14 +1533,14 @@ note-list li {
         </p>
         <figure id="fig:elephant">
           <img src="elephant.jpg" alt="An African elephant.">
-          <figcaption><span class="figure-label">Figure 1.</span>
+          <figcaption><figure-label>Figure 1.</figure-label>
             <p>An African elephant.</p>
           </figcaption>
         </figure>
         <p>The alias form:</p>
         <figure>
           <img src="zebra.jpg" alt="A zebra in the savanna.">
-          <figcaption><span class="figure-label">Figure 2.</span>
+          <figcaption><figure-label>Figure 2.</figure-label>
             <p>A zebra in the savanna.</p>
           </figcaption>
         </figure>
@@ -1560,7 +1560,7 @@ note-list li {
         </p>
         <p>A standalone CSV with a table cross-reference:</p>
         <table id="tab:salaries">
-          <caption><span class="table-label">Table 1.</span> Software engineer salary by level</caption>
+          <caption><table-label>Table 1.</table-label> Software engineer salary by level</caption>
           <thead>
             <tr>
               <th>level</th>
@@ -1592,7 +1592,7 @@ note-list li {
   A[Source] --> B[Parser]
   B --> C[AST]
   C --> D[HTML]</pre>
-          <figcaption><span class="figure-label">Figure 3.</span> Compilation flow</figcaption>
+          <figcaption><figure-label>Figure 3.</figure-label> Compilation flow</figcaption>
         
         <p>
           Cross-references resolve with the right prefixes — <a href="#tab:salaries" class="ref">table 1</a>
@@ -1609,16 +1609,16 @@ note-list li {
           spans that slice 3a left deferred (the registry-side numbering landed in
           3a; the visible labels in 3b).
         </p>
-        <theorem id="thm:fundamental" data-name="Fundamental Theorem of Arithmetic"><span class="theorem-label">Theorem 1 (Fundamental Theorem of Arithmetic).</span>
+        <theorem id="thm:fundamental" data-name="Fundamental Theorem of Arithmetic"><theorem-label>Theorem 1 (Fundamental Theorem of Arithmetic).</theorem-label>
           <p>
             Every integer greater than 1 either is prime itself or is the product
             of prime numbers, and that this product is unique up to ordering.
           </p>
         </theorem>
-        <lemma><span class="lemma-label">Lemma 2.</span>
+        <lemma><lemma-label>Lemma 2.</lemma-label>
           <p>Every nonempty subset of the natural numbers has a least element.</p>
         </lemma>
-        <proof><span class="proof-label">Proof.</span>
+        <proof><proof-label>Proof.</proof-label>
           <p>By induction on the size of the subset.</p>
         </proof>
         <p>Cross-reference to <a href="#thm:fundamental" class="ref">theorem 1</a> resolves to “theorem 1”.</p>
@@ -1631,7 +1631,7 @@ note-list li {
         </p>
         <figure class="frameable-border">
           <img src="plot.png" alt="A plot with a frame around it.">
-          <figcaption><span class="figure-label">Figure 4.</span>
+          <figcaption><figure-label>Figure 4.</figure-label>
             <p>A plot with a frame around it.</p>
           </figcaption>
         </figure>

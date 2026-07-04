@@ -309,12 +309,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -433,19 +433,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -478,12 +478,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -519,21 +519,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -614,7 +614,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -786,7 +786,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1057,7 +1057,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1095,17 +1095,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1294,13 +1294,13 @@ body:has(.enscribe-layout--toc) {
     <nav class="enscribe-contents" aria-label="Contents">
       <p class="enscribe-contents-heading">Contents</p>
       <ul>
-        <li><a href="#sec:introduction"><span class="enscribe-toc-num">1</span><span class="enscribe-toc-title">Introduction</span></a>
+        <li><a href="#sec:introduction"><toc-num>1</toc-num><toc-title>Introduction</toc-title></a>
           <ul>
-            <li><a href="#sec:background"><span class="enscribe-toc-num">1.1</span><span class="enscribe-toc-title">Background</span></a></li>
+            <li><a href="#sec:background"><toc-num>1.1</toc-num><toc-title>Background</toc-title></a></li>
           </ul>
         </li>
         <li><a href="#sec:a-note-on-method">A Note on Method</a></li>
-        <li><a href="#sec:methods"><span class="enscribe-toc-num">3</span><span class="enscribe-toc-title">Methods</span></a></li>
+        <li><a href="#sec:methods"><toc-num>3</toc-num><toc-title>Methods</toc-title></a></li>
       </ul>
     </nav>
     <p>
@@ -1308,16 +1308,16 @@ body:has(.enscribe-layout--toc) {
       canonical HTML / eHTML spelling. <code>&#x3C;config toc number-sections></code> ≡ <code>&#x3C;config toc=true
 number-sections=true></code>. Only a <i>known</i> boolean promotes; a bare typo stays unrecognized.
     </p>
-    <section id="sec:introduction"><span class="section-number">1</span>
-      <section-title><span class="section-number">1</span>Introduction</section-title>
+    <section id="sec:introduction"><section-number>1</section-number>
+      <section-title><section-number>1</section-number>Introduction</section-title>
       <p>A numbered section (1).</p>
-      <sub-section id="sec:background"><span class="section-number">1.1</span>
-        <sub-section-title><span class="section-number">1.1</span>Background</sub-section-title>
+      <sub-section id="sec:background"><section-number>1.1</section-number>
+        <sub-section-title><section-number>1.1</section-number>Background</sub-section-title>
         <p>A numbered sub-section (1.1).</p>
       </sub-section>
     </section>
-    <section unlisted><span class="section-number">2</span>
-      <section-title><span class="section-number">2</span>Colophon</section-title>
+    <section unlisted><section-number>2</section-number>
+      <section-title><section-number>2</section-number>Colophon</section-title>
       <p>
         <code>&#x3C;section unlisted></code> (bare) ≡ <code>&#x3C;section +unlisted></code> — kept out of the contents listing, but still
         <b>numbered</b> (2) and rendered. (<code>unlisted</code> is listing-only; it does not affect numbering.)
@@ -1330,8 +1330,8 @@ number-sections=true></code>. Only a <i>known</i> boolean promotes; a bare typo 
         and the counter does not advance. (<code>unnumbered</code> is numbering-only; it is still <i>listed</i>.)
       </p>
     </section>
-    <section id="sec:methods"><span class="section-number">3</span>
-      <section-title><span class="section-number">3</span>Methods</section-title>
+    <section id="sec:methods"><section-number>3</section-number>
+      <section-title><section-number>3</section-number>Methods</section-title>
       <p>
         A numbered section (3) — Colophon took 2 (unlisted is still numbered); the unnumbered note did not
         advance the counter.

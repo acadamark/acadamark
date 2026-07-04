@@ -83,10 +83,15 @@ export function formatLabel(prefix, number, name) {
   const text = name
     ? `${prefix} ${number} (${name}).`
     : `${prefix} ${number}.`;
+  // A per-kind DERIVED-DISPLAY label element (<figure-label> / <table-label> /
+  // <theorem-label> / …) — the generated display string for a numbered frameable,
+  // NOT an archival internal part of the element (JATS constructs its <label> from
+  // the node's computed number at export; see ehtml-naming.md). The element name IS
+  // the semantic; no class.
   return {
     type: 'element',
-    tagName: 'span',
-    properties: { className: [`${prefix.toLowerCase()}-label`] },
+    tagName: `${prefix.toLowerCase()}-label`,
+    properties: {},
     children: [{ type: 'text', value: text }],
   };
 }

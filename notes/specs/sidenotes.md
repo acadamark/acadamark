@@ -15,7 +15,7 @@ A **document-level render option**, `note-position` — set as the `notePosition
 - The footnote **marker stays inline** in the text, unchanged — same marker, same numbering as the existing footnote system.
 - The note's **content renders in a wide margin column** (body column + margin column, the Tufte-style layout), added as one layout variant (`.enscribe-layout--margin`) reusing enscribe's existing `.enscribe-layout` / `.enscribe-body` chrome.
 - The note floats into the margin near its marker via CSS.
-- **Implementation:** the compiler copies each note's rendered content from the bottom `<note-list>` into a `<span class="enscribe-sidenote">` after its marker (the mdast tree is untouched), and injects the sidenote CSS as a scoped `<style>` **only in margin mode**. Default (bottom) output is therefore byte-identical — the mode adds nothing unless selected.
+- **Implementation:** the compiler copies each note's rendered content from the bottom `<note-list>` into a `<sidenote>` after its marker (the mdast tree is untouched), and injects the sidenote CSS as a scoped `<style>` **only in margin mode**. Default (bottom) output is therefore byte-identical — the mode adds nothing unless selected.
 
 ## Mobile
 
@@ -35,7 +35,7 @@ For v1, CSS float places each note in the margin near its marker. **Precise top-
 A **margin note** is a note positioned in the margin — one note type, three positions (`foot`, `end`, `margin`), not a separate element. The former `<marginnote>` element was collapsed into `<note position=margin>` (#333); numbering is independent of position.
 
 - **Construct.** `<note position=margin | body>` (equivalently `placement=margin`; `side` is a legacy alias). A margin note is a `<note>` like any other — numbered, collected, cross-referenceable.
-- **Render.** Numbered and collected like any note (a `sidenote-fallback` list item is the below-breakpoint fallback), with its content **also** projected into the margin column beside its marker as a `<span class="enscribe-sidenote">` — per-note, independent of `note-position`. Above the breakpoint the margin copy floats into the gutter; below it, the copy hides and the bottom `<note-list>` shows.
+- **Render.** Numbered and collected like any note (a `sidenote-fallback` list item is the below-breakpoint fallback), with its content **also** projected into the margin column beside its marker as a `<sidenote>` — per-note, independent of `note-position`. Above the breakpoint the margin copy floats into the gutter; below it, the copy hides and the bottom `<note-list>` shows.
 - **JATS.** Position drives the element: `position=margin` → `<boxed-text content-type="marginnote">` at the marker position (the number rides as a `<label>`); `end`/`foot` → `<fn>`. Both round-trip (element → position; numbering is independent). See `note.md`.
 
 The margin column (`.enscribe-layout--margin`) is shared by the document-level `note-position=margin` projection (every note) and per-note margin notes; a document establishes it whenever `applySidenotes` relocated at least one note into the column. Its CSS is injected only then, so a non-margin document is byte-identical.

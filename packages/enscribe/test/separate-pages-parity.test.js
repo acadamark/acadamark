@@ -153,7 +153,7 @@ export async function run() {
         `${name} carries the return-to-cover masthead linking to index.html`);
     }
     const index = pages.get('index.html');
-    assert.ok(index.includes('<span class="enscribe-book-home-title">Field Methods in Savanna Ecology</span>'),
+    assert.ok(index.includes('<book-home-title>Field Methods in Savanna Ecology</book-home-title>'),
       'the masthead is the book title (the home affordance, not a bare "Home")');
     // the cover's masthead is a self-link → marked current; a chapter's is a plain link out
     assert.ok(index.includes('<a class="enscribe-book-home" href="index.html" aria-current="page">'),

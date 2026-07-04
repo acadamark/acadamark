@@ -27,7 +27,7 @@ export function run_tests() {
     .replace(/<style[\s\S]*?<\/style>/gi, '');
 
   const imgs = [...body.matchAll(/<img\b[^>]*\bsrc="([^"]*)"/g)].map((m) => m[1]);
-  const figures = [...body.matchAll(/<figure\b[^>]*>/g)];
+  const figures = [...body.matchAll(/<figure(?![-\w])[^>]*>/g)];
   const figureIds = [...body.matchAll(/<figure\b[^>]*\bid="([^"]*)"/g)].map((m) => m[1]);
   const labels = [...body.matchAll(/Figure\s+([0-9.]+)/g)].map((m) => m[1]);
 
@@ -70,7 +70,7 @@ export function run_tests() {
       .replace(/<style[\s\S]*?<\/style>/gi, '');
     // The <img> src of a placed figure, keyed by the figure id.
     const figImg = (id) => {
-      const fig = pbody.match(new RegExp('<figure\\b[^>]*\\bid="' + id + '"[\\s\\S]*?</figure>'));
+      const fig = pbody.match(new RegExp('<figure(?![-\\w])[^>]*\\bid="' + id + '"[\\s\\S]*?</figure>'));
       const im = fig && fig[0].match(/<img\b[^>]*\bsrc="([^"]*)"/);
       return im ? im[1] : null;
     };

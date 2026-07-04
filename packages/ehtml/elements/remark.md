@@ -41,7 +41,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <remark | The converse does not hold in general.>
-    ehtml: '<remark><span class="remark-label">Remark.</span><p>The converse does not hold in general.</p></remark>'
+    ehtml: '<remark><remark-label>Remark.</remark-label><p>The converse does not hold in general.</p></remark>'
   - source: |
       <remark>
       The hypothesis of compactness is essential here; without it

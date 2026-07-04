@@ -380,12 +380,8 @@
                         },
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "parse-error"
-                            ]
-                          },
+                          "tagName": "parse-error",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",

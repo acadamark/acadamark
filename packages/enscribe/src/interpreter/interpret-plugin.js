@@ -152,14 +152,18 @@ export function schemaDispatch(state, node, vocab) {
   // #57: section numbering. When the section-numbering pass stamped a computed
   // number on this node (a section/sub-section/...-title, or a numbered
   // book-part-title for an appendix), prepend it as real DOM content — a
-  // <span class="section-number"> — so the number is copy/paste-able, archival,
-  // and visible with no JS; the theme styles the spacing/separator. Guarded by
-  // the stamp, so titles in unnumbered documents are byte-identical.
+  // <section-number> custom element — so the number is copy/paste-able and
+  // visible with no JS; the theme styles the spacing/separator. This is a
+  // DERIVED-DISPLAY artifact, not archival vocabulary: JATS derives its
+  // <label> from node.computedSectionNumber, never from this element (the
+  // exporter runs upstream of mdast→hast, so this element does not exist in the
+  // tree it reads). Guarded by the stamp, so titles in unnumbered documents are
+  // byte-identical.
   if (node.computedSectionNumber != null) {
     children.unshift({
       type: 'element',
-      tagName: 'span',
-      properties: { className: ['section-number'] },
+      tagName: 'section-number',
+      properties: {},
       children: [{ type: 'text', value: String(node.computedSectionNumber) }],
     });
   }

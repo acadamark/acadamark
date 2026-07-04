@@ -56,7 +56,7 @@ enscribe_attributes:
       notes: |
         Controls whether the rendered ref is a navigable hyperlink. Default
         is +link, producing <a href="#targetId" class="ref">...</a>. The
-        -link form produces <span class="ref">...</span> instead — useful
+        -link form produces <ref>...</ref> instead — useful
         when the author wants the ref's display text without making it a
         navigable anchor (e.g. inside a passage that itself describes the
         cross-reference rather than invoking it).
@@ -196,7 +196,7 @@ Same principle as unresolved citations: the document renders even when there are
 
 **Boolean flags `+link` / `-link`, `+preview` / `-preview`.**
 
-Both default to on. `-link` produces a `<span class="ref">` instead of `<a>`; `-preview` adds `data-no-preview="true"` so the hover-preview attacher skips this ref.
+Both default to on. `-link` produces a `<ref>` instead of `<a>`; `-preview` adds `data-no-preview="true"` so the hover-preview attacher skips this ref.
 
 **Pipe content (`<ref @id | custom text>`).**
 
@@ -218,7 +218,7 @@ This is rarely needed. The resolver-generated text is usually preferred because 
 
 `format` indicates the desired text formatting variant. Flows to a `data-ref-format` attribute on the rendered anchor; available for CSS/JS. Default: `default`. The resolver-generated display text continues to come from the prefix dictionary.
 
-`+link` (default) renders the ref as a navigable `<a>` anchor. `-link` renders a `<span class="ref">` instead — useful when the surrounding prose describes a cross-reference rather than invoking it.
+`+link` (default) renders the ref as a navigable `<a>` anchor. `-link` renders a `<ref>` instead — useful when the surrounding prose describes a cross-reference rather than invoking it.
 
 `+preview` (default) attaches a hover preview to the rendered anchor. `-preview` adds `data-no-preview="true"` so the hover-preview script skips this ref.
 

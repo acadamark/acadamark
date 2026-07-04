@@ -157,8 +157,10 @@ export function mathHandler(_state, node) {
   if (node.id) properties.id = node.id;
   if (node.classes?.length) properties.className = node.classes;
 
-  // For any numbered math-family node, append an equation-number span
-  // after the KaTeX output: <span class="equation-number">(N)</span>.
+  // For any numbered math-family node, append an equation-number element
+  // after the KaTeX output: <equation-number>(N)</equation-number>. A derived-
+  // display artifact, not archival vocabulary — JATS re-applies the parens from
+  // node.computedNumber at export, never reading this element.
   //
   // Phase 3 slice 3a (2026-05-28): the branch now fires for every tag
   // whose vocab entry maps to the 'equation' registry-type — display-math,
@@ -174,8 +176,8 @@ export function mathHandler(_state, node) {
           ...katexChildren,
           {
             type: 'element',
-            tagName: 'span',
-            properties: { className: ['equation-number'] },
+            tagName: 'equation-number',
+            properties: {},
             // Slice B (RQ-BOOK-M4): chapter-prefix the equation number in
             // books ("(2.1)") to match cross-references ("equation 2.1").
             // Bare number for articles (node._scope absent).

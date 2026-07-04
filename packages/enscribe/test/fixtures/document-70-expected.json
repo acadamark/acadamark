@@ -126,12 +126,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "figure-label"
-                            ]
-                          },
+                          "tagName": "figure-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -346,12 +342,8 @@
                           "children": [
                             {
                               "type": "element",
-                              "tagName": "span",
-                              "properties": {
-                                "className": [
-                                  "figure-label"
-                                ]
-                              },
+                              "tagName": "figure-label",
+                              "properties": {},
                               "children": [
                                 {
                                   "type": "text",
@@ -409,12 +401,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "minipage-label"
-                            ]
-                          },
+                          "tagName": "minipage-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",

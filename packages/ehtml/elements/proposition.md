@@ -36,7 +36,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <proposition | The sum of two even integers is even.>
-    ehtml: '<proposition><span class="proposition-label">Proposition 1.</span><p>The sum of two even integers is even.</p></proposition>'
+    ehtml: '<proposition><proposition-label>Proposition 1.</proposition-label><p>The sum of two even integers is even.</p></proposition>'
   - source: |
       <proposition name="Cauchy-Schwarz">
       For any vectors $u$, $v$ in an inner-product space,

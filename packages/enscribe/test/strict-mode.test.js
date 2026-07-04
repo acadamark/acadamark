@@ -18,8 +18,8 @@ import { buildEnscribePipeline } from '../src/interpreter/index.js';
 const html = (src, opts = {}) => String(buildEnscribePipeline(opts).processSync(src));
 const cfg = (mode) => `<config strict-mode=${mode} />\n\n`;
 
-const hasFlagCss = (h) => h.includes('.enscribe-md-flag {');
-const hasFlagSpan = (h) => h.includes('class="enscribe-md-flag"');
+const hasFlagCss = (h) => h.includes('md-flag {');
+const hasFlagSpan = (h) => h.includes('<md-flag');
 
 export async function run() {
   // ── off (default): all three registers live — today's behavior ───────────────
@@ -58,9 +58,9 @@ export async function run() {
     const h = html(cfg('sigil') + 'A plain ! mark, a [text](http://l) link, and an ![alt](http://i) image.');
     // markdown register OFF — neither the image nor the link renders; both are flagged would-be-markdown.
     assert.ok(!h.includes('<img'), 'sigil: the markdown image is NOT rendered (markdown register off)');
-    assert.ok(/class="enscribe-md-flag"[^>]*>!\[alt\]\(/.test(h),
+    assert.ok(/<md-flag[^>]*>!\[alt\]\(/.test(h),
       'sigil: the image ![…](…) is wrapped in a flag span (2-F: the new pattern)');
-    assert.ok(/class="enscribe-md-flag"[^>]*>\[text\]\(/.test(h),
+    assert.ok(/<md-flag[^>]*>\[text\]\(/.test(h),
       'sigil: a plain link […](…) is still flagged (the optional ! did not break the link form)');
     console.log('PASS: #317/2-F — strict mode flags the markdown image ![…](…), not just links');
   }
@@ -97,7 +97,7 @@ export async function run() {
   {
     const h = html(cfg('canonical') + 'See <# Heading #> and <$ math $> below.');
     // the flag span wraps the sigil source (escaped <… in HTML).
-    assert.ok(/class="enscribe-md-flag"[^>]*>(&#x3C;|&lt;)#/.test(h), 'canonical: <# … #> is wrapped in a flag span');
+    assert.ok(/<md-flag[^>]*>(&#x3C;|&lt;)#/.test(h), 'canonical: <# … #> is wrapped in a flag span');
     console.log('PASS: #36 — canonical flags would-be-sigil text (<# … #>, <$ … $>)');
   }
 

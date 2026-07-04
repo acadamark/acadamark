@@ -32,13 +32,32 @@ import rehypeFormat from 'rehype-format';
  * Enscribe custom elements that render INLINE in prose. These — and ONLY these — are presented
  * to rehype-format as `<span>` so it does not insert render-changing whitespace around them.
  *
- * Add a tagName here ONLY if it renders a NON-HTML-native element that flows inline within text
- * (the current vocabulary: `inline-math` and `term`). BLOCK custom elements
- * (`article` / `section` / `book-part` / `display-math` / the `align`/`cases`/`matrix`/`eqnarray`
- * math environments / metadata / `glossary` / …) must NOT be listed — they are correctly
- * block-formatted by rehype-format's default, and listing one would wrongly flow it inline.
+ * Add a tagName here ONLY if it renders a NON-HTML-native element that flows inline within text.
+ * BLOCK custom elements (`article` / `section` / `book-part` / `display-math` / the
+ * `align`/`cases`/`matrix`/`eqnarray` math environments / metadata / `glossary` / …) must NOT be
+ * listed — they are correctly block-formatted by rehype-format's default, and listing one would
+ * wrongly flow it inline.
+ *
+ * The DERIVED-DISPLAY elements below were formerly emitted as inline `<span class="…">` (the
+ * span→custom-element conversion). They flow inline exactly where their span did — a number/label
+ * prepended to a title or caption, a diagnostic/flag/ref marker in prose, a ToC number/title/arrow
+ * inside a link, a margin sidenote after its marker. rehype-format classifies unknown custom
+ * elements as BLOCK (hast-util-phrasing has a fixed inline set), so WITHOUT this list it would
+ * insert a newline+indent around each — a render-changing whitespace regression. Listing them keeps
+ * the conversion a pure `<span class="X">` → `<X>` swap (same inline position, no added whitespace).
  */
-export const ENSCRIBE_INLINE_ELEMENTS = new Set(['inline-math', 'term']);
+export const ENSCRIBE_INLINE_ELEMENTS = new Set([
+  'inline-math', 'term',
+  // numbering + labels (frameable.js formatLabel emits the per-kind label family)
+  'section-number', 'equation-number',
+  'figure-label', 'table-label', 'box-label', 'minipage-label',
+  'theorem-label', 'lemma-label', 'corollary-label', 'definition-label', 'example-label',
+  'proposition-label', 'remark-label', 'proof-label', 'axiom-label', 'conjecture-label',
+  // ToC / nav chrome (lib/toc.js), the margin sidenote (lib/sidenotes.js)
+  'toc-num', 'toc-title', 'nav-label', 'book-home-title', 'chapter-arrow', 'sidenote',
+  // diagnostics (parser-errors.js, strict-mode.js) and the unlinked cross-ref (ref.js)
+  'parse-error', 'tag-error', 'md-flag', 'ref',
+]);
 
 /**
  * Format a compiled hast tree for readable view-source, enscribe-inline-aware. rehype-format

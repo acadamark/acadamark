@@ -38,7 +38,7 @@ jats_counterpart:
 shorthand_examples:
   - source: |
       <example | The integers under addition form a group.>
-    ehtml: '<example><span class="example-label">Example 1.</span><p>The integers under addition form a group.</p></example>'
+    ehtml: '<example><example-label>Example 1.</example-label><p>The integers under addition form a group.</p></example>'
   - source: |
       <example #ex:integers>
       The integers $\mathbb{Z}$ under addition form a group: the

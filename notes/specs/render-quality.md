@@ -399,7 +399,7 @@ styling), and the external DSLs (§9, which share the figure counter).
 ```html
 <figure>
   <img src="…" alt="…">
-  <figcaption><span class="figure-label">Figure 3.</span> caption text</figcaption>
+  <figcaption><figure-label>Figure 3.</figure-label> caption text</figcaption>
 </figure>
 ```
 
@@ -407,7 +407,7 @@ styling), and the external DSLs (§9, which share the figure counter).
 
 ```html
 <table>
-  <caption><span class="table-label">Table 2.</span> caption text</caption>
+  <caption><table-label>Table 2.</table-label> caption text</caption>
   <thead><tr><th>…</th></tr></thead>
   <tbody><tr><td>…</td></tr></tbody>
 </table>
@@ -417,11 +417,11 @@ styling), and the external DSLs (§9, which share the figure counter).
 
 - **`RQ-FRM-M1`** — a figure renders `<figure>` wrapping an optional
   `<img src alt>` (when `src` is given) and a `<figcaption>`. When numbered, the
-  caption begins with `<span class="figure-label">Figure N.</span>` followed by
+  caption begins with `<figure-label>Figure N.</figure-label>` followed by
   a space, then the caption text. A `name`/title adds a separate
   `<figcaption class="title">` above the body.
 - **`RQ-FRM-M2`** — a table renders `<table>` with a `<caption>`; when numbered
-  the caption begins `<span class="table-label">Table N.</span>`. Headers render
+  the caption begins `<table-label>Table N.</table-label>`. Headers render
   `<thead><tr><th>`, body rows `<tbody><tr><td>`. A `csv`/`tsv` block renders a
   real `<table>` — the `<csv>`/`<tsv>` element does not appear in output.
 - **`RQ-FRM-M3`** — an `svg` renders an inline HTML-native `<svg>` with source
@@ -447,7 +447,7 @@ styling), and the external DSLs (§9, which share the figure counter).
   for the figure/table families, and a `<p class="caption">` for boxed prose.
 - **`RQ-FRM-M7`** (label-only caption) — when a frameable is numbered but has no
   caption text, the caption element renders the label span **alone** —
-  `<figcaption><span class="figure-label">Figure N.</span></figcaption>` — never
+  `<figcaption><figure-label>Figure N.</figure-label></figcaption>` — never
   an empty or absent caption. When the frameable is neither numbered nor
   captioned, no caption element is emitted at all.
 - **`RQ-FRM-M8`** (alt-text fallback) — for a figure with `src`, the `<img>`'s
@@ -471,7 +471,7 @@ styling), and the external DSLs (§9, which share the figure counter).
   child) and its caption `<p class="caption">` (last child), using the same
   `.title`/`.caption` hooks (`RQ-FRM-S5`/`S6`). `+border` (default **on** for
   `<aside>`) adds `frameable-border`. A numbered `<aside>` joins its **own** `Box`
-  counter (`<span class="box-label">Box N.</span>`), not the figure counter, and
+  counter (`<box-label>Box N.</box-label>`), not the figure counter, and
   is unnumbered by default. The `type` kwarg is preserved as `data-aside-type`.
 
 **Stylesheet predicates:**
@@ -693,7 +693,7 @@ mode.
 
 <display-math>
   <span class="katex-display">…</span>
-  <span class="equation-number">(7)</span>   <!-- only when numbered -->
+  <equation-number>(7)</equation-number>   <!-- only when numbered -->
 </display-math>
 ```
 
@@ -703,7 +703,7 @@ mode.
   (`<span class="katex">…`); it is never numbered.
 - **`RQ-MATH-M2`** — display math renders `<display-math>` wrapping
   `<span class="katex-display">…`; when numbered, a sibling
-  `<span class="equation-number">(N)</span>` is appended (parenthesised number,
+  `<equation-number>(N)</equation-number>` is appended (parenthesised number,
   no period). Numbering is conditional on the document/element numbering config.
 - **`RQ-MATH-M3`** — the environment tags render their own wrapper element
   (`<align>`, `<cases>`, `<matrix>`, `<eqnarray>`, `<math>`) around the
@@ -748,9 +748,9 @@ conventional theorem-environment look from mathematical typesetting.
 **Expected markup:**
 
 ```html
-<theorem><span class="theorem-label">Theorem 1.</span> statement body…</theorem>
-<lemma><span class="lemma-label">Lemma 2 (Pythagoras).</span> …</lemma>
-<proof><span class="proof-label">Proof.</span> …</proof>
+<theorem><theorem-label>Theorem 1.</theorem-label> statement body…</theorem>
+<lemma><lemma-label>Lemma 2 (Pythagoras).</lemma-label> …</lemma>
+<proof><proof-label>Proof.</proof-label> …</proof>
 ```
 
 **Markup predicates:**
@@ -798,7 +798,7 @@ required to).
 **Markup predicates:**
 
 - **`RQ-XREF-M1`** — a resolved ref renders `<a href="#id" class="ref">TEXT</a>`.
-  The `-link` flag renders `<span class="ref">TEXT</span>` instead (no anchor).
+  The `-link` flag renders `<ref>TEXT</ref>` instead (no anchor).
 - **`RQ-XREF-M2`** — resolved ref text is `{prefix-word} {number}` for a known
   id prefix (`figure 3`, `equation 1`, `table 2`, `section 2.1`, `theorem 4`,
   `listing 1` for code), the bare number for an unknown prefix, and the id's
@@ -876,7 +876,7 @@ and its definition hoists to the note list, like any other.
 
 **Margin render (#33).** `note-position=margin` (the `notePosition` option or
 `<config note-position=margin>`) is a display-only mode: each numbered note's
-rendered body is copied into a `<span class="enscribe-sidenote">` after its
+rendered body is copied into a `<sidenote>` after its
 in-text marker and floated into a margin column (the document element is marked
 `.enscribe-layout--margin`); the note tree, markers, numbering, and JATS are
 unchanged, and the bottom `<note-list>` is retained as the below-breakpoint

@@ -233,21 +233,21 @@ export function run_tests() {
     // document number — it does not restart per file. (alpha→1, beta→2, gamma→3.)
     // #326: <fig> is flow — the single-paragraph caption keeps its <p> (a block,
     // so the formatter may break the line between the label span and the caption).
-    assert.ok(/<span class="figure-label">Figure 1\.<\/span>\s*<p>The alpha figure\.<\/p>/.test(xref),
+    assert.ok(/<figure-label>Figure 1\.<\/figure-label>\s*<p>The alpha figure\.<\/p>/.test(xref),
       'cross-file: the first child file\'s figure is Figure 1');
-    assert.ok(/<span class="figure-label">Figure 2\.<\/span>\s*<p>The beta figure\.<\/p>/.test(xref),
+    assert.ok(/<figure-label>Figure 2\.<\/figure-label>\s*<p>The beta figure\.<\/p>/.test(xref),
       'cross-file: the second child file\'s figure continues as Figure 2 (no per-file restart)');
-    assert.ok(/<span class="figure-label">Figure 3\.<\/span>\s*<p>The gamma figure\.<\/p>/.test(xref),
+    assert.ok(/<figure-label>Figure 3\.<\/figure-label>\s*<p>The gamma figure\.<\/p>/.test(xref),
       'cross-file: the third child file\'s figure continues as Figure 3');
     console.log('PASS: #190 slice 2 — figures number continuously across child files');
 
     // Continuous SECTION numbering (number-sections=true in the master <config>):
     // the section titles carry 1 / 2 / 3 in master document order, one per child.
-    assert.ok(xref.includes('<section-title><span class="section-number">1</span>Alpha</section-title>'),
+    assert.ok(xref.includes('<section-title><section-number>1</section-number>Alpha</section-title>'),
       'cross-file: first section numbered 1');
-    assert.ok(xref.includes('<section-title><span class="section-number">2</span>Beta</section-title>'),
+    assert.ok(xref.includes('<section-title><section-number>2</section-number>Beta</section-title>'),
       'cross-file: second section numbered 2');
-    assert.ok(xref.includes('<section-title><span class="section-number">3</span>Gamma</section-title>'),
+    assert.ok(xref.includes('<section-title><section-number>3</section-number>Gamma</section-title>'),
       'cross-file: third section numbered 3');
     console.log('PASS: #190 slice 2 — sections number continuously across child files (master <config>)');
 

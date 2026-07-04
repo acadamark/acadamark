@@ -83,7 +83,7 @@ function findTitleEl(node) {
 /** Extract a nav entry's title in both forms:
  *   - `glued`  — the title element's whole text ("1Introduction"); the pre-Slice-C
  *     form, used by the ARTICLE path for link text AND id slugs (byte-stable).
- *   - `number` / `clean` — the leading `<span class="section-number">` separated from
+ *   - `number` / `clean` — the leading `<section-number>` separated from
  *     the rest ("1" + "Introduction"); used by the BOOK path to render "1 Introduction".
  *  `number` is '' when the title carries no number span (front-matter, unnumbered docs). */
 export function titleParts(node) {
@@ -92,7 +92,7 @@ export function titleParts(node) {
   let number = '';
   const rest = [];
   for (const c of titleEl.children ?? []) {
-    if (c.type === 'element' && (c.properties?.className ?? []).includes('section-number')) {
+    if (c.type === 'element' && c.tagName === 'section-number') {
       number = clean(textContent(c));
     } else {
       rest.push(c);
@@ -171,8 +171,8 @@ export const bookLink = (e) => {
   const title = e.clean || 'Untitled';
   if (e.number) {
     return [
-      el('span', { className: ['enscribe-toc-num'] }, [text(e.number)]),
-      el('span', { className: ['enscribe-toc-title'] }, [text(title)]),
+      el('toc-num', {}, [text(e.number)]),
+      el('toc-title', {}, [text(title)]),
     ];
   }
   return [text(title)];
@@ -184,13 +184,13 @@ export const bookLink = (e) => {
  *  page-tree links (a tree + a resolver, no document-class assumptions baked in).
  *
  *  An entry with NO id is a non-navigable LABEL (#246 S2b: a website `<nav-group>` has no page
- *  of its own) — it renders a `<span class="enscribe-nav-label">`, never an `<a>` (no href).
+ *  of its own) — it renders a `<nav-label>`, never an `<a>` (no href).
  *  Every existing caller's entries carry an id, so this branch is never taken for them — the
  *  article/book ToC and #226 contents listing stay byte-identical. */
 export function buildList(entries, content, hrefFor = (e) => `#${e.id}`) {
   return el('ul', {}, entries.map((e) => el('li', {}, [
     e.id == null
-      ? el('span', { className: ['enscribe-nav-label'] }, content(e))
+      ? el('nav-label', {}, content(e))
       : el('a', { href: hrefFor(e) }, content(e)),
     ...(e.children.length ? [buildList(e.children, content, hrefFor)] : []),
   ])));
@@ -326,7 +326,7 @@ export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeI
     if (home.current) mastheadProps['aria-current'] = 'page';
     navChildren = [
       el('a', mastheadProps, [
-        el('span', { className: ['enscribe-book-home-title'] }, [text(home.title)]),
+        el('book-home-title', {}, [text(home.title)]),
       ]),
       details,
     ];
@@ -367,9 +367,9 @@ function chapterLink(dir, part, chapterHref = (p) => `#${p.id}`) {
   const arrow = dir === 'prev' ? '←' : '→';
   const title = part.clean || 'Untitled';
   const label = [];
-  if (part.number) label.push(el('span', { className: ['enscribe-toc-num'] }, [text(part.number)]));
-  label.push(el('span', { className: ['enscribe-toc-title'] }, [text(title)]));
-  const arrowSpan = el('span', { className: ['enscribe-chapter-arrow'] }, [text(arrow)]);
+  if (part.number) label.push(el('toc-num', {}, [text(part.number)]));
+  label.push(el('toc-title', {}, [text(title)]));
+  const arrowSpan = el('chapter-arrow', {}, [text(arrow)]);
   return el('a', {
     className: [`enscribe-chapter-${dir}`],
     href: chapterHref(part),

@@ -126,8 +126,8 @@ c`;
 
     // Left chapter rail: chapters only (no section nesting), un-glued numbers.
     const rail = (html.match(/<nav class="enscribe-toc enscribe-chapter-rail"[\s\S]*?<\/nav>/) || [''])[0];
-    assert.ok(/enscribe-toc-num">1<\/span>/.test(rail) && /enscribe-toc-title">One<\/span>/.test(rail),
-      'chapter rail: number and title are SEPARATE spans (un-glued)');
+    assert.ok(/<toc-num>1<\/toc-num>/.test(rail) && /<toc-title>One<\/toc-title>/.test(rail),
+      'chapter rail: number and title are SEPARATE elements (<toc-num> + <toc-title>, un-glued)');
     assert.ok(!/Alpha|Beta|Gamma/.test(rail), 'chapter rail lists chapters only (sections live in the right rail)');
 
     // Right "on this page" rail: per-chapter section groups keyed by chapter id.

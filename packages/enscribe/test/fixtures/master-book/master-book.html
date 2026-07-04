@@ -309,12 +309,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -433,19 +433,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -478,12 +478,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -519,21 +519,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -614,7 +614,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -786,7 +786,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1057,7 +1057,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1095,17 +1095,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1345,7 +1345,7 @@ note-list li {
    */
   function getEquationContent(el) {
     var clone = el.cloneNode(true);
-    var numSpan = clone.querySelector('.equation-number');
+    var numSpan = clone.querySelector('equation-number');
     if (numSpan) numSpan.remove();
     return clone.innerHTML.trim();
   }
@@ -1359,7 +1359,7 @@ note-list li {
    */
   function getFigureContent(el) {
     var clone = el.cloneNode(true);
-    var label = clone.querySelector('.figure-label');
+    var label = clone.querySelector('figure-label');
     if (label) label.remove();
     return clone.outerHTML;
   }
@@ -1373,7 +1373,7 @@ note-list li {
    */
   function getTableContent(el) {
     var clone = el.cloneNode(true);
-    clone.querySelectorAll('.table-label').forEach(function(n) { n.remove(); });
+    clone.querySelectorAll('table-label').forEach(function(n) { n.remove(); });
     return clone.outerHTML;
   }
 
@@ -1687,9 +1687,9 @@ note-list li {
       <summary class="enscribe-toc-summary">Chapters</summary>
       <ul>
         <li class="enscribe-rail-item enscribe-rail-item--front"><a href="#sec:about-this-book">About this Book</a></li>
-        <li class="enscribe-rail-item enscribe-rail-item--body"><a href="#sec:counting-elephants"><span class="enscribe-toc-num">1</span><span class="enscribe-toc-title">Counting Elephants</span></a></li>
-        <li class="enscribe-rail-item enscribe-rail-item--body"><a href="#sec:estimating-browse-pressure"><span class="enscribe-toc-num">2</span><span class="enscribe-toc-title">Estimating Browse Pressure</span></a></li>
-        <li class="enscribe-rail-item enscribe-rail-item--back"><a href="#sec:field-data-sheets"><span class="enscribe-toc-num">A</span><span class="enscribe-toc-title">Field Data Sheets</span></a></li>
+        <li class="enscribe-rail-item enscribe-rail-item--body"><a href="#sec:counting-elephants"><toc-num>1</toc-num><toc-title>Counting Elephants</toc-title></a></li>
+        <li class="enscribe-rail-item enscribe-rail-item--body"><a href="#sec:estimating-browse-pressure"><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></li>
+        <li class="enscribe-rail-item enscribe-rail-item--back"><a href="#sec:field-data-sheets"><toc-num>A</toc-num><toc-title>Field Data Sheets</toc-title></a></li>
       </ul>
     </details>
   </nav>
@@ -1709,80 +1709,80 @@ note-list li {
             This preface sits in the book’s front matter and introduces the multi-file book.
             It is authored in its own child file and assembled into the book by reference.
           </p>
-          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-next" href="#sec:counting-elephants" rel="next"><span class="enscribe-toc-num">1</span><span class="enscribe-toc-title">Counting Elephants</span><span class="enscribe-chapter-arrow">→</span></a></nav>
+          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-next" href="#sec:counting-elephants" rel="next"><toc-num>1</toc-num><toc-title>Counting Elephants</toc-title><chapter-arrow>→</chapter-arrow></a></nav>
         </book-part>
       </book-front>
       <book-body>
-        <book-part book-part-type="chapter" id="sec:counting-elephants"><span class="section-number">1</span>
+        <book-part book-part-type="chapter" id="sec:counting-elephants"><section-number>1</section-number>
           <meta>
-            <book-part-title><span class="section-number">1</span>Counting Elephants</book-part-title>
+            <book-part-title><section-number>1</section-number>Counting Elephants</book-part-title>
           </meta>
           <p>
             Aerial transects and ground counts are the two standard survey methods for
             savanna elephants.
           </p>
-          <sub-section id="sec:aerial-transects"><span class="section-number">1.1</span>
-            <sub-section-title><span class="section-number">1.1</span>Aerial Transects</sub-section-title>
+          <sub-section id="sec:aerial-transects"><section-number>1.1</section-number>
+            <sub-section-title><section-number>1.1</section-number>Aerial Transects</sub-section-title>
             <p>
               Aerial transects remain the standard method. See <a href="#fig:transect" class="ref">figure 1.1</a> for the grid
               layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).
             </p>
             <figure id="fig:transect">
               <img src="transect.png" alt="A standard aerial-transect grid.">
-              <figcaption><span class="figure-label">Figure 1.1.</span>
+              <figcaption><figure-label>Figure 1.1.</figure-label>
                 <p>A standard aerial-transect grid.</p>
               </figcaption>
             </figure>
           </sub-section>
-          <sub-section id="sec:ground-counts"><span class="section-number">1.2</span>
-            <sub-section-title><span class="section-number">1.2</span>Ground Counts</sub-section-title>
+          <sub-section id="sec:ground-counts"><section-number>1.2</section-number>
+            <sub-section-title><section-number>1.2</section-number>Ground Counts</sub-section-title>
             <p>
               Ground counts complement the aerial survey at known aggregation points such as
               waterholes during the dry season.
             </p>
           </sub-section>
-          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:about-this-book" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">About this Book</span></a><a class="enscribe-chapter-next" href="#sec:estimating-browse-pressure" rel="next"><span class="enscribe-toc-num">2</span><span class="enscribe-toc-title">Estimating Browse Pressure</span><span class="enscribe-chapter-arrow">→</span></a></nav>
+          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:about-this-book" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>About this Book</toc-title></a><a class="enscribe-chapter-next" href="#sec:estimating-browse-pressure" rel="next"><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title><chapter-arrow>→</chapter-arrow></a></nav>
         </book-part>
-        <book-part book-part-type="chapter" id="sec:estimating-browse-pressure"><span class="section-number">2</span>
+        <book-part book-part-type="chapter" id="sec:estimating-browse-pressure"><section-number>2</section-number>
           <meta>
-            <book-part-title><span class="section-number">2</span>Estimating Browse Pressure</book-part-title>
+            <book-part-title><section-number>2</section-number>Estimating Browse Pressure</book-part-title>
             <author>Guest Contributor</author>
           </meta>
           <p>
             This chapter carries its own author, distinct from the book-level author, and
             renumbers its figures from one.
           </p>
-          <sub-section id="sec:browse-scoring"><span class="section-number">2.1</span>
-            <sub-section-title><span class="section-number">2.1</span>Browse Scoring</sub-section-title>
+          <sub-section id="sec:browse-scoring"><section-number>2.1</section-number>
+            <sub-section-title><section-number>2.1</section-number>Browse Scoring</sub-section-title>
             <p>
               Its own figure is <a href="#fig:browse" class="ref">figure 2.1</a>; a cross-chapter reference to <a href="#fig:transect" class="ref">figure 1.1</a>
               still resolves to chapter 1 (figure 1.1).
             </p>
             <figure id="fig:browse">
               <img src="browse.png" alt="A browse-damage scoring rubric.">
-              <figcaption><span class="figure-label">Figure 2.1.</span>
+              <figcaption><figure-label>Figure 2.1.</figure-label>
                 <p>A browse-damage scoring rubric.</p>
               </figcaption>
             </figure>
           </sub-section>
-          <sub-section id="sec:limitations"><span class="section-number">2.2</span>
-            <sub-section-title><span class="section-number">2.2</span>Limitations</sub-section-title>
+          <sub-section id="sec:limitations"><section-number>2.2</section-number>
+            <sub-section-title><section-number>2.2</section-number>Limitations</sub-section-title>
             <p>
               Browse scoring is observer-dependent and should be calibrated across surveyors
               before the season’s counts begin.
             </p>
           </sub-section>
-          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:counting-elephants" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-num">1</span><span class="enscribe-toc-title">Counting Elephants</span></a><a class="enscribe-chapter-next" href="#sec:field-data-sheets" rel="next"><span class="enscribe-toc-num">A</span><span class="enscribe-toc-title">Field Data Sheets</span><span class="enscribe-chapter-arrow">→</span></a></nav>
+          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:counting-elephants" rel="prev"><chapter-arrow>←</chapter-arrow><toc-num>1</toc-num><toc-title>Counting Elephants</toc-title></a><a class="enscribe-chapter-next" href="#sec:field-data-sheets" rel="next"><toc-num>A</toc-num><toc-title>Field Data Sheets</toc-title><chapter-arrow>→</chapter-arrow></a></nav>
         </book-part>
       </book-body>
       <book-back>
         <config></config>
-        <book-part book-part-type="appendix" id="sec:field-data-sheets"><span class="section-number">A</span>
+        <book-part book-part-type="appendix" id="sec:field-data-sheets"><section-number>A</section-number>
           <meta>
-            <book-part-title><span class="section-number">A</span>Field Data Sheets</book-part-title>
+            <book-part-title><section-number>A</section-number>Field Data Sheets</book-part-title>
           </meta>
           <p>Reproducible blank data sheets for transect counts, placed in the book’s back matter.</p>
-          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:estimating-browse-pressure" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-num">2</span><span class="enscribe-toc-title">Estimating Browse Pressure</span></a></nav>
+          <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:estimating-browse-pressure" rel="prev"><chapter-arrow>←</chapter-arrow><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></nav>
         </book-part>
       </book-back>
     </book>
@@ -1792,14 +1792,14 @@ note-list li {
       <summary class="enscribe-toc-summary">On this page</summary>
       <div class="enscribe-onthispage-chapter" data-chapter="sec:counting-elephants">
         <ul>
-          <li><a href="#sec:aerial-transects"><span class="enscribe-toc-num">1.1</span><span class="enscribe-toc-title">Aerial Transects</span></a></li>
-          <li><a href="#sec:ground-counts"><span class="enscribe-toc-num">1.2</span><span class="enscribe-toc-title">Ground Counts</span></a></li>
+          <li><a href="#sec:aerial-transects"><toc-num>1.1</toc-num><toc-title>Aerial Transects</toc-title></a></li>
+          <li><a href="#sec:ground-counts"><toc-num>1.2</toc-num><toc-title>Ground Counts</toc-title></a></li>
         </ul>
       </div>
       <div class="enscribe-onthispage-chapter" data-chapter="sec:estimating-browse-pressure">
         <ul>
-          <li><a href="#sec:browse-scoring"><span class="enscribe-toc-num">2.1</span><span class="enscribe-toc-title">Browse Scoring</span></a></li>
-          <li><a href="#sec:limitations"><span class="enscribe-toc-num">2.2</span><span class="enscribe-toc-title">Limitations</span></a></li>
+          <li><a href="#sec:browse-scoring"><toc-num>2.1</toc-num><toc-title>Browse Scoring</toc-title></a></li>
+          <li><a href="#sec:limitations"><toc-num>2.2</toc-num><toc-title>Limitations</toc-title></a></li>
         </ul>
       </div>
     </details>

@@ -146,8 +146,8 @@ export async function run() {
       // a NON-LINK label; its child pages are links.
       const sidebar = root.querySelector('.enscribe-site-sidebar');
       assert.ok(sidebar, 'the opted-in sidebar is mounted');
-      const groupLabel = [...sidebar.querySelectorAll('.enscribe-nav-label')].find((s) => /Docs/.test(s.textContent));
-      assert.ok(groupLabel && groupLabel.tagName === 'SPAN', 'the sidebar renders the group as a non-link <span> label (not an <a>)');
+      const groupLabel = [...sidebar.querySelectorAll('nav-label')].find((s) => /Docs/.test(s.textContent));
+      assert.ok(groupLabel && groupLabel.tagName === 'NAV-LABEL', 'the sidebar renders the group as a non-link <nav-label> (not an <a>)');
       assert.ok([...sidebar.querySelectorAll('a')].some((a) => a.getAttribute('href') === '?page=guide'), 'the sidebar nests the group\'s page links');
       // First-page content + the cross-page ref rewrite.
       assert.ok(root.querySelector('[data-enscribe-content]').innerHTML.includes('Welcome to the site'), 'content lands on the first page');

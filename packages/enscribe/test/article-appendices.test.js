@@ -40,9 +40,9 @@ export async function run() {
   console.log('PASS: #100 — article appendices render into <article-back> (reused book-part surface)');
 
   // ── numbering: #57 letter scheme — A, B, and A.1 for sub-sections ───────────
-  assert.ok(/book-part-type="appendix"[\s\S]*?section-number">A</.test(back), 'first appendix lettered A');
-  assert.ok(/section-number">B</.test(back), 'second appendix lettered B');
-  assert.ok(/section-number">A\.1</.test(back), 'appendix sub-section numbered A.1');
+  assert.ok(/book-part-type="appendix"[\s\S]*?<section-number>A</.test(back), 'first appendix lettered A');
+  assert.ok(/<section-number>B</.test(back), 'second appendix lettered B');
+  assert.ok(/<section-number>A\.1</.test(back), 'appendix sub-section numbered A.1');
   console.log('PASS: #100 — appendices join #57 letter scheme (A, B, A.1)');
 
   // ── cross-reference: "appendix A" / "appendix B" resolve ────────────────────

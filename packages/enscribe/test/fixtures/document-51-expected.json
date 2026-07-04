@@ -47,12 +47,8 @@
               "children": [
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "section-number"
-                    ]
-                  },
+                  "tagName": "section-number",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",
@@ -67,12 +63,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "section-number"
-                        ]
-                      },
+                      "tagName": "section-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -172,12 +164,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "section-number"
-                        ]
-                      },
+                      "tagName": "section-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -192,12 +180,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "section-number"
-                            ]
-                          },
+                          "tagName": "section-number",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -271,12 +255,8 @@
               "children": [
                 {
                   "type": "element",
-                  "tagName": "span",
-                  "properties": {
-                    "className": [
-                      "section-number"
-                    ]
-                  },
+                  "tagName": "section-number",
+                  "properties": {},
                   "children": [
                     {
                       "type": "text",
@@ -291,12 +271,8 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "section-number"
-                        ]
-                      },
+                      "tagName": "section-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",

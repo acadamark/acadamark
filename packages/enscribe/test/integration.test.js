@@ -224,10 +224,10 @@ export function run() {
     assert.ok(html.includes('class="ref"'), 'doc6: resolved refs have ref class');
 
     // Equation numbers visible for numbered equations
-    assert.ok(html.includes('class="equation-number"'), 'doc6: equation numbers rendered');
+    assert.ok(html.includes('<equation-number>'), 'doc6: equation numbers rendered');
 
     // Figure labels visible
-    assert.ok(html.includes('class="figure-label"'), 'doc6: figure labels rendered');
+    assert.ok(html.includes('<figure-label>'), 'doc6: figure labels rendered');
 
     snapshotHast('document-6', hast);
     console.log('PASS: integration doc6 (cross-reference fixture)');
@@ -273,9 +273,9 @@ export function run() {
     // Unnumbered table: no Table N. label
     assert.ok(html.includes('Unnumbered'), 'doc7: unnumbered table caption text');
     // The unnumbered table should not have a Table N. label in its caption
-    const tableLabels = html.match(/class="table-label"/g) || [];
-    // Only numbered tables get the label span; TSV is numbered, CSV is 1, JSON 2, YAML 3, MD 4, src= 5
-    // Unnumbered gets no span
+    const tableLabels = html.match(/<table-label>/g) || [];
+    // Only numbered tables get the <table-label>; TSV is numbered, CSV is 1, JSON 2, YAML 3, MD 4, src= 5
+    // Unnumbered gets no label element
     assert.ok(tableLabels.length >= 5, `doc7: at least 5 numbered table labels (got ${tableLabels.length})`);
 
     // Cross-references resolve to numbered tables
@@ -641,7 +641,7 @@ export function run() {
   //   - Visible parser-error rendering (always-renders guarantee, per
   //     principles.md): enscribeParseError nodes (produced by the grammar
   //     for malformed escape sequences, etc.) now render as visible
-  //     <span class="parse-error">??parse: …??</span> markers in the house
+  //     <parse-error>??parse: …??</parse-error> markers in the house
   //     style of unresolved refs / cites.
   {
     const src = readFileSync(join(FIXTURES_DIR, 'document-17-parser-edge-cases.emd'), 'utf8');
@@ -651,17 +651,17 @@ export function run() {
 
     // Self-closing <table />: must produce a self-closed <table> element,
     // NOT a tag-error marker. The handler may render an empty table — what
-    // we assert is that no "tag-error" class appears around it (which would
+    // we assert is that no <tag-error> element appears around it (which would
     // be the previous buggy behavior).
-    const tagErrorMatches = html.match(/class="tag-error"/g) ?? [];
+    const tagErrorMatches = html.match(/<tag-error>/g) ?? [];
     assert.equal(tagErrorMatches.length, 0,
       `doc17: no tag-error markers (self-closing <table /> should parse cleanly); got ${tagErrorMatches.length}`);
 
     // Visible parse-error: \z is an unknown escape sequence; the grammar
     // produces an enscribeParseError; the new handler renders it as a
-    // visible <span class="parse-error">??parse: unknown-escape-sequence …??</span>.
-    assert.ok(html.includes('class="parse-error"'),
-      'doc17: parse-error span class present in rendered output');
+    // visible <parse-error>??parse: unknown-escape-sequence …??</parse-error>.
+    assert.ok(html.includes('<parse-error>'),
+      'doc17: parse-error element present in rendered output');
     assert.ok(html.includes('??parse:'),
       'doc17: house-style ??parse: …?? marker present in rendered output');
     assert.ok(html.includes('unknown-escape-sequence'),
@@ -689,8 +689,8 @@ export function run() {
     assert.ok(/<a href="#eqn:newton" class="ref">equation 1<\/a>/.test(html),
       'doc20: default ref renders as anchor with default text');
 
-    // -link ref → <span class="ref">equation 1</span> (no anchor).
-    assert.ok(/<span class="ref">equation 1<\/span>/.test(html),
+    // -link ref → <ref>equation 1</ref> (no anchor).
+    assert.ok(/<ref>equation 1<\/ref>/.test(html),
       'doc20: -link ref renders as <span> (no anchor)');
 
     // -preview ref → <a> with data-no-preview="true".
@@ -770,7 +770,7 @@ export function run() {
 
     assert.ok(html.includes('<article>'), 'doc23: article structure present');
     assert.ok(html.includes('<aside'), 'doc23: aside renders (not consumed as error)');
-    assert.ok(!html.includes('class="tag-error"'),
+    assert.ok(!html.includes('<tag-error>'),
       'doc23: no tag-error marker — blank line did not terminate the aside');
 
     // The aside content must contain two paragraphs.
@@ -791,8 +791,8 @@ export function run() {
   // Pins the EOF-only-terminator half of Option A. The aside opens with `|`
   // and never closes; under EOF-only termination, the tokenizer consumes to
   // EOF and from-markdown.js stamps enscribeTagError. The Phase 2 slice 1
-  // tagErrorHandler renders it as a visible <span class="tag-error">??tag:
-  // …??</span> marker at the open position. The document still renders
+  // tagErrorHandler renders it as a visible <tag-error>??tag:
+  // …??</tag-error> marker at the open position. The document still renders
   // (always-renders guarantee).
   {
     const src = readFileSync(join(FIXTURES_DIR, 'document-24-unclosed-tag-at-eof.emd'), 'utf8');
@@ -805,7 +805,7 @@ export function run() {
       'doc24: pre-error section content renders');
 
     // The unclosed-tag error renders as the house-style visible marker.
-    assert.ok(html.includes('class="tag-error"'),
+    assert.ok(html.includes('<tag-error>'),
       'doc24: tag-error span class present at the unclosed-tag position');
     assert.ok(html.includes('??tag:'),
       'doc24: house-style ??tag: …?? marker present in rendered output');
@@ -1755,11 +1755,11 @@ export function run() {
     const { html, hast } = runPipeline(src);
 
     // Build-time hierarchical numbers, emitted as <span class="section-number">.
-    assert.ok(html.includes('<section-title><span class="section-number">1</span>'),
+    assert.ok(html.includes('<section-title><section-number>1</section-number>'),
       'doc51: first section numbered 1');
-    assert.ok(html.includes('<sub-section-title><span class="section-number">1.1</span>'),
+    assert.ok(html.includes('<sub-section-title><section-number>1.1</section-number>'),
       'doc51: nested sub-section numbered 1.1');
-    assert.ok(html.includes('<section-title><span class="section-number">2</span>'),
+    assert.ok(html.includes('<section-title><section-number>2</section-number>'),
       'doc51: second section numbered 2');
     // Cross-ref to a numbered section renders the number (one registry).
     assert.ok(html.includes('class="ref">section 2</a>'),
@@ -1776,15 +1776,15 @@ export function run() {
 
     // Book defaults on: chapter heading arabic, appendix heading alphabetic;
     // sections chapter-/appendix-prefixed.
-    assert.ok(html.includes('<book-part-title><span class="section-number">1</span>'),
+    assert.ok(html.includes('<book-part-title><section-number>1</section-number>'),
       'doc52: chapter heading numbered 1');
-    assert.ok(html.includes('<section-title><span class="section-number">1.1</span>'),
+    assert.ok(html.includes('<section-title><section-number>1.1</section-number>'),
       'doc52: chapter section numbered 1.1');
-    assert.ok(html.includes('<sub-section-title><span class="section-number">1.1.1</span>'),
+    assert.ok(html.includes('<sub-section-title><section-number>1.1.1</section-number>'),
       'doc52: nested sub-section numbered 1.1.1');
-    assert.ok(html.includes('<book-part-title><span class="section-number">A</span>'),
+    assert.ok(html.includes('<book-part-title><section-number>A</section-number>'),
       'doc52: appendix heading lettered A');
-    assert.ok(html.includes('<section-title><span class="section-number">A.1</span>'),
+    assert.ok(html.includes('<section-title><section-number>A.1</section-number>'),
       'doc52: appendix section numbered A.1');
     // Cross-refs to book-parts (registered) and a chapter-prefixed section.
     assert.ok(html.includes('class="ref">appendix A</a>'), 'doc52: ref → "appendix A"');
@@ -1902,17 +1902,17 @@ export function run() {
     // own "Minipage N." label in the figcaption.
     assert.ok(/<figure id="mp:numbering" class="frameable-border">/.test(html),
       'doc69: minipage renders as <figure class="frameable-border"> with its id');
-    assert.ok(/<span class="minipage-label">Minipage 1\.<\/span> A sealed box with a private figure/.test(html),
+    assert.ok(/<minipage-label>Minipage 1\.<\/minipage-label> A sealed box with a private figure/.test(html),
       'doc69: numbered minipage gets its own "Minipage 1." caption label');
 
     // Private numbering: the document figure and the box-private figure are BOTH
     // "Figure 1" — the inner figure counts in the box registry and does NOT
     // advance the document figure counter.
-    assert.ok(/<figure id="fig:doc">[\s\S]*?<span class="figure-label">Figure 1\.<\/span>\s*<p>A document figure\./.test(html),
+    assert.ok(/<figure id="fig:doc">[\s\S]*?<figure-label>Figure 1\.<\/figure-label>\s*<p>A document figure\./.test(html),
       'doc69: the document figure is "Figure 1"');
     // #267: a minipage member's id is scope-qualified by the box slug (mp:numbering → mp-numbering)
     // so two boxes don't collide on id="fig:inner". The PRIVATE NUMBER is still "Figure 1".
-    assert.ok(/<figure id="mp-numbering-fig:inner">[\s\S]*?<span class="figure-label">Figure 1\.<\/span>\s*<p>An inner figure/.test(html),
+    assert.ok(/<figure id="mp-numbering-fig:inner">[\s\S]*?<figure-label>Figure 1\.<\/figure-label>\s*<p>An inner figure/.test(html),
       'doc69: the box-private figure is ALSO "Figure 1" (private counter, document counter untouched)');
     assert.ok(html.includes('<a href="#fig:doc" class="ref">figure 1</a>'),
       'doc69: the document figure cross-ref is "figure 1" — not bumped to 2 by the box figure');
@@ -1935,14 +1935,14 @@ export function run() {
 
     // Box-local footnote: the note collects into a <note-list> INSIDE the box
     // figure (its own bottom boundary), before the figcaption.
-    assert.ok(/<figure id="mp:notes"[\s\S]*?<note-list[\s\S]*?The footnote is collected at the box bottom[\s\S]*?<\/note-list>[\s\S]*?<span class="minipage-label">Minipage \d+\.<\/span>[\s\S]*?<\/figure>/.test(html),
+    assert.ok(/<figure id="mp:notes"[\s\S]*?<note-list[\s\S]*?The footnote is collected at the box bottom[\s\S]*?<\/note-list>[\s\S]*?<minipage-label>Minipage \d+\.<\/minipage-label>[\s\S]*?<\/figure>/.test(html),
       'doc69: a footnote inside the box collects at the box boundary (note-list inside the figure)');
 
     // Nested minipage: each level numbers privately ("Minipage 1" inside, the
     // outer is the document-level minipage count).
     // #267: the nested box's own id (mp:inner) is qualified by its parent's slug (mp-outer-mp:inner),
     // so two parents could each hold a #mp:inner without colliding; the PRIVATE NUMBER is still "Minipage 1".
-    assert.ok(/<figure id="mp:outer"[\s\S]*?<figure id="mp-outer-mp:inner"[\s\S]*?<span class="minipage-label">Minipage 1\.<\/span> Inner box[\s\S]*?<\/figure>[\s\S]*?<\/figure>/.test(html),
+    assert.ok(/<figure id="mp:outer"[\s\S]*?<figure id="mp-outer-mp:inner"[\s\S]*?<minipage-label>Minipage 1\.<\/minipage-label> Inner box[\s\S]*?<\/figure>[\s\S]*?<\/figure>/.test(html),
       'doc69: a nested minipage renders inside its parent, numbered privately ("Minipage 1")');
 
     // No external pulls: an @src inside a minipage is a visible error, not a resolved image.

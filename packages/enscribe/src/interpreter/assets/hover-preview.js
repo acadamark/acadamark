@@ -38,7 +38,7 @@
    */
   function getEquationContent(el) {
     var clone = el.cloneNode(true);
-    var numSpan = clone.querySelector('.equation-number');
+    var numSpan = clone.querySelector('equation-number');
     if (numSpan) numSpan.remove();
     return clone.innerHTML.trim();
   }
@@ -52,7 +52,7 @@
    */
   function getFigureContent(el) {
     var clone = el.cloneNode(true);
-    var label = clone.querySelector('.figure-label');
+    var label = clone.querySelector('figure-label');
     if (label) label.remove();
     return clone.outerHTML;
   }
@@ -66,7 +66,7 @@
    */
   function getTableContent(el) {
     var clone = el.cloneNode(true);
-    clone.querySelectorAll('.table-label').forEach(function(n) { n.remove(); });
+    clone.querySelectorAll('table-label').forEach(function(n) { n.remove(); });
     return clone.outerHTML;
   }
 

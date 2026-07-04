@@ -293,12 +293,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -620,12 +616,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",
@@ -1747,12 +1739,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "figure-label"
-                            ]
-                          },
+                          "tagName": "figure-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -1859,12 +1847,8 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "span",
-                          "properties": {
-                            "className": [
-                              "figure-label"
-                            ]
-                          },
+                          "tagName": "figure-label",
+                          "properties": {},
                           "children": [
                             {
                               "type": "text",
@@ -2642,12 +2626,8 @@
                     },
                     {
                       "type": "element",
-                      "tagName": "span",
-                      "properties": {
-                        "className": [
-                          "equation-number"
-                        ]
-                      },
+                      "tagName": "equation-number",
+                      "properties": {},
                       "children": [
                         {
                           "type": "text",

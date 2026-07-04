@@ -267,8 +267,8 @@ export function run() {
     const hast = tableHandler(STATE, node, VOCAB);
     const [caption] = hast.children;
     assert.equal(caption.tagName, 'caption');
-    // No label span when not numbered
-    assert.ok(!caption.children.some(c => c.tagName === 'span'), 'no label span');
+    // No <table-label> when not numbered
+    assert.ok(!caption.children.some(c => c.tagName === 'table-label'), 'no label element');
     assert.equal(caption.children[0].value, 'My caption');
     console.log('PASS: table handler: caption without numbering');
   }
@@ -284,8 +284,8 @@ export function run() {
     const hast = tableHandler(STATE, node, VOCAB);
     const [caption] = hast.children;
     assert.equal(caption.tagName, 'caption');
-    const labelSpan = caption.children.find(c => c.tagName === 'span');
-    assert.ok(labelSpan, 'label span present when numbered');
+    const labelSpan = caption.children.find(c => c.tagName === 'table-label');
+    assert.ok(labelSpan, 'label element present when numbered');
     assert.equal(labelSpan.children[0].value, 'Table 3.');
     assert.ok(
       caption.children.some(c => c.value === 'Numbered caption'),
