@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Enscribe Vocabulary</title>
+<title>Quotation &amp; sourcing — The Enscribe Vocabulary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,8 +1412,356 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html" aria-current="page"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-title>The Enscribe Vocabulary</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>
+<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary&amp;chapter=quotation-sourcing">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html" class="enscribe-toc-active" aria-current="location">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:quotation-sourcing" book-part-type="chapter">
+      <meta>
+        <book-part-title>Quotation &#x26; sourcing</book-part-title>
+      </meta>
+      <p>Quoting, citing, and pointing — block and inline quotations, citations, cross-references, links, and identifiers.</p>
+      <section id="sh-blockquote">
+        <section-title><code>&#x3C;blockquote></code></section-title>
+        <sub-section id="sec:general-usage-23">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>blockquote</i>. Compiles to eHTML <code>&#x3C;blockquote></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;blockquote></code></li>
+            <li>Markdown: <code>> …</code></li>
+            <li>Alias: <code>&#x3C;quote></code> → <code>&#x3C;blockquote></code></li>
+          </ul><code id="code:sh-blockquote-1">&#x3C;quote | A short quotation.></code>
+          <figure id="mp:sh-blockquote-1" class="frameable-border">
+            <blockquote>
+              <p>A short quotation.</p>
+            </blockquote>
+            <figcaption><span class="minipage-label">Minipage 48.</span></figcaption>
+          </figure>
+          <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at eHTML.</i></p><code id="code:sh-blockquote-2">&#x3C;quote cite=https://example.com/source |
+A longer quotation that may contain multiple paragraphs.
+The second paragraph of the quotation.
+></code>
+          <figure id="mp:sh-blockquote-2" class="frameable-border">
+            <blockquote cite="https://example.com/source">
+              <p>A longer quotation that may contain multiple paragraphs.</p>
+              <p>The second paragraph of the quotation.</p>
+            </blockquote>
+            <figcaption><span class="minipage-label">Minipage 49.</span></figcaption>
+          </figure><code id="code:sh-blockquote-3">&#x3C;quote type=epigraph |
+All happy families are alike; each unhappy family is unhappy in its own way.
+></code>
+          <figure id="mp:sh-blockquote-3" class="frameable-border">
+            <blockquote data-blockquote-type="epigraph">
+              <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
+            </blockquote>
+            <figcaption><span class="minipage-label">Minipage 50.</span></figcaption>
+          </figure><code id="code:sh-blockquote-4">&#x3C;blockquote | Same as &#x3C;quote> but using the explicit eHTML name.></code>
+          <p><i>Render pending — the example source has an unescaped <code>&#x3C;…></code> tag-mention the parser consumes into an empty nested element (issue #277).</i></p>
+          <p><i>Authors can also write &#x3C;blockquote> directly. Both forms produce the same eHTML output.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-13">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cite</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>URL of the source being quoted. Maps to HTML’s standard cite attribute on
+                  <blockquote></blockquote>. For inline citation references (citing a bibliography entry), use a <cite></cite>element inside the blockquote instead.
+                </td>
+              </tr>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>verse</code> <code>dialogue</code> <code>epigraph</code> <code>pullquote</code> <code>other</code></td>
+                <td>Optional classification of the quotation’s role. Affects styling and may affect JATS export.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-q">
+        <section-title><code>&#x3C;q></code></section-title>
+        <sub-section id="sec:general-usage-24">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>q</i>. Compiles to eHTML <code>&#x3C;q></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;q></code></li>
+          </ul><code id="code:sh-q-1">She said &#x3C;q | hello> in passing.</code>
+          <figure id="mp:sh-q-1" class="frameable-border">
+            <p>She said <q>hello</q> in passing.</p>
+            <figcaption><span class="minipage-label">Minipage 51.</span></figcaption>
+          </figure>
+          <p><i>Browsers automatically render &#x3C;q> with quotation marks. Authors do not include quotation marks in the content.</i></p><code id="code:sh-q-2">The phrase &#x3C;q cite=https://example.com | to be or not to be> is iconic.</code>
+          <figure id="mp:sh-q-2" class="frameable-border">
+            <p>The phrase <q cite="https://example.com">to be or not to be</q> is iconic.</p>
+            <figcaption><span class="minipage-label">Minipage 52.</span></figcaption>
+          </figure>
+        </sub-section>
+        <sub-section id="sec:arguments-14">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cite</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>URL of the source being quoted. Same as
+                  <blockquote></blockquote>‘s cite attribute but for inline quotations.
+                </td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-cite">
+        <section-title><code>&#x3C;cite></code></section-title>
+        <sub-section id="sec:general-usage-25">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>cite</i>. Compiles to eHTML <code>&#x3C;cite></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;cite></code></li>
+          </ul><code id="code:sh-cite-1">The argument is supported by data &#x3C;cite goodall2024>.</code>
+          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
+          <p><i>A simple citation. The resolver renders the citation according to the document-level style. For author-year style, this becomes “(Goodall 2024)”. For numbered style, “[1]”. The actual rendered text is generated by the citation resolver, not written by the author.</i></p><code id="code:sh-cite-2">Multiple sources confirm this &#x3C;cite goodall2024 attenborough2020 darwin1859>.</code>
+          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
+          <p><i>Multiple citation keys group into one citation marker. The resolver handles the joining (with separators appropriate to the style).</i></p><code id="code:sh-cite-3">See &#x3C;cite goodall2024 page=42> for details.</code>
+          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
+          <p><i>A citation with a page locator. The locator renders alongside the citation marker.</i></p><code id="code:sh-cite-4">See also &#x3C;cite goodall2024 prefix="cf." page=42-45>.</code>
+          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
+          <p><i>Citation with prefix and page range.</i></p><code id="code:sh-cite-5">A specific work &#x3C;cite goodall2024 style=footnote>.</code>
+          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
+          <p><i>Per-citation style override. This citation renders as a footnote marker even if the document-level style is something else.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-15">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>keys</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>One or more citation keys, supplied as positional arguments. Multiple keys group into a single citation: <cite></cite>renders as a combined citation (e.g., “(Smith 2020; Jones 2021)”).</td>
+              </tr>
+              <tr>
+                <td><code>page</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Page number or page range for the citation locator. E.g., <cite></cite>.</td>
+              </tr>
+              <tr>
+                <td><code>chapter</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Chapter reference within the cited work.</td>
+              </tr>
+              <tr>
+                <td><code>section</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Section reference within the cited work.</td>
+              </tr>
+              <tr>
+                <td><code>prefix</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Text to appear before the citation. E.g., “see also” in “(see also Smith 2020)”.</td>
+              </tr>
+              <tr>
+                <td><code>suffix</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Text to appear after the citation.</td>
+              </tr>
+              <tr>
+                <td><code>style</code></td>
+                <td>kwarg</td>
+                <td><code>author-year</code> <code>numbered</code> <code>footnote</code> <code>endnote</code> <code>inline-author-year</code> <code>default</code></td>
+                <td>Override the document-level citation style for this citation. “default” uses the document-level <code>&#x3C;citation-style></code> from <code>&#x3C;config></code>.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-ref">
+        <section-title><code>&#x3C;ref></code></section-title>
+        <sub-section id="sec:general-usage-26">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>ref</i>. Compiles to eHTML <code>&#x3C;ref></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;ref></code></li>
+          </ul><code id="code:sh-ref-1">See &#x3C;ref #fig:scatter> for details.</code>
+          <p><i>Render pending — <code>&#x3C;ref #id></code> self-declares instead of referencing (issue #268).</i></p>
+          <p><i>Canonical form: #id prefix. The ref-resolution plugin replaces the &#x3C;ref> node with a __ref-marker before hast conversion. The handler then renders an &#x3C;a> element with computed text. Prefix word is lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.</i></p><code id="code:sh-ref-2">As shown in &#x3C;ref #eqn:model>.</code>
+          <p><i>Render pending — <code>&#x3C;ref #id></code> self-declares instead of referencing (issue #268).</i></p>
+          <p><i>Equation references use the “equation” prefix word by default. Config override: &#x3C;config ref-prefix-eqn=”Eq.”> changes this to “Eq.”.</i></p><code id="code:sh-ref-3">&#x3C;ref #eqn:missing></code>
+          <p><i>Render pending — <code>&#x3C;ref #id></code> self-declares instead of referencing (issue #268).</i></p>
+          <p><i>Unresolved target renders a visible error anchor.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-16">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>target</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The id of the element being referenced. The canonical form uses the #id prefix: <a href="#(none)" class="ref-error">??ref: (none)??</a>. A kwarg form is also accepted as legacy: <a href="#eqn:model" class="ref-error">??ref: eqn:model??</a>. IMPORTANT (current implementation): only colon-ids (ids containing a colon, e.g., eqn:model, fig:scatter) are in the label index and can be resolved. Non-colon ids produce an unresolved error marker. This restriction may be relaxed in a future slice.</td>
+              </tr>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>auto</code> <code>figure</code> <code>table</code> <code>equation</code> <code>section</code> <code>sub-section</code> <code>note</code> <code>listing</code> <code>theorem</code> <code>other</code></td>
+                <td>Author-supplied hint about the intended kind of target. Flows through to a data-ref-type attribute on the rendered anchor, available for CSS/JS to use. The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.</td>
+              </tr>
+              <tr>
+                <td><code>format</code></td>
+                <td>kwarg</td>
+                <td><code>number</code> <code>name</code> <code>full</code> <code>label-only</code> <code>default</code></td>
+                <td>Author-supplied formatting hint. Flows through to a data-ref-format attribute on the rendered anchor, available for CSS/JS. The resolver-generated display text is still computed from the prefix dictionary; future enhancements may use this attribute to vary the rendered text.</td>
+              </tr>
+              <tr>
+                <td><code>+link</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Controls whether the rendered ref is a navigable hyperlink. Default is +link, producing <a href="#targetId">…</a>. The -link form produces &#x3C;span class="ref">…&#x3C;/span> instead — useful when the author wants the ref’s display text without making it a navigable anchor (e.g. inside a passage that itself describes the cross-reference rather than invoking it).</td>
+              </tr>
+              <tr>
+                <td><code>+preview</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Controls the hover preview that attaches to the rendered ref by default. Default +preview attaches a tippy tooltip showing the target element’s content. -preview adds data-no-preview=”true” to the rendered anchor; the hover-preview script’s attacher skips elements with that attribute.</td>
+              </tr>
+              <tr>
+                <td><code>+title</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Reserved / unimplemented. The original intent has not been recovered; deliberately set aside until that intent is articulated. Future work, not a current feature.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-a">
+        <section-title><code>&#x3C;a></code></section-title>
+        <sub-section id="sec:general-usage-27">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>a</i>. Compiles to eHTML <code>&#x3C;a></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;a></code></li>
+          </ul><code id="code:sh-a-1">See &#x3C;a https://example.com/docs | the documentation>.</code>
+          <figure id="mp:sh-a-1" class="frameable-border">
+            <p>See <a href="https://example.com/docs">the documentation</a>.</p>
+            <figcaption><span class="minipage-label">Minipage 53.</span></figcaption>
+          </figure>
+          <p><i>The positional URL form — the target is the first argument, the pipe content is the link text. The most common authoring path. (Markdown <code>[text](url)</code> is not an enscribe idiom; it renders as literal text.)</i></p><code id="code:sh-a-2">&#x3C;a href=https://example.com | the example site></code>
+          <figure id="mp:sh-a-2" class="frameable-border"><a href="https://example.com">the example site</a>
+            <figcaption><span class="minipage-label">Minipage 54.</span></figcaption>
+          </figure><code id="code:sh-a-3">&#x3C;a href=https://example.com target=_blank rel=noopener | external link></code>
+          <figure id="mp:sh-a-3" class="frameable-border"><a href="https://example.com" target="_blank" rel="noopener">external link</a>
+            <figcaption><span class="minipage-label">Minipage 55.</span></figcaption>
+          </figure><code id="code:sh-a-4">&#x3C;a href=#section-2 | jump to Section 2></code>
+          <figure id="mp:sh-a-4" class="frameable-border"><a href="#section-2">jump to Section 2</a>
+            <figcaption><span class="minipage-label">Minipage 56.</span></figcaption>
+          </figure>
+          <p><i>Internal links use fragment identifiers pointing at element ids.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-17">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>href</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The URL or fragment identifier the anchor points to. Required for hyperlinks; optional for anchors used as link targets.</td>
+              </tr>
+              <tr>
+                <td><code>target</code></td>
+                <td>kwarg</td>
+                <td><code>_self</code> <code>_blank</code> <code>_parent</code> <code>_top</code></td>
+                <td>How the link opens. _blank opens in a new tab/window.</td>
+              </tr>
+              <tr>
+                <td><code>rel</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Relationship between the current document and the link target. Common values: nofollow, noopener, noreferrer, external.</td>
+              </tr>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Tooltip text shown on hover.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-doi">
+        <section-title><code>&#x3C;doi></code></section-title>
+        <sub-section id="sec:general-usage-28">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>doi</i>. Compiles to eHTML <code>&#x3C;doi></code>.</p>
+          <p>A Digital Object Identifier. Author the bare DOI string (not a URL) as the content. It appears in two places: as a child of <code>&#x3C;meta></code> it is the document’s own DOI; inside a bibliography entry it is the cited work’s DOI. On the HTML surface it renders as a <code>https://doi.org/…</code> hyperlink.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;doi></code></li>
+          </ul><code id="code:sh-doi-1">&#x3C;meta type=article>
+&#x3C;title | The Effect of Elephants on Climate>
+&#x3C;doi | 10.1234/elephants.2024>
+&#x3C;/meta></code>
+          <p><i>Front-matter — shown as source. The document’s own DOI. JATS export writes it as an <code>&#x3C;article-id pub-id-type="doi"></code>.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-18">
+          <sub-section-title>Arguments</sub-section-title>
+          <p><code>&#x3C;doi></code> takes no attributes. Its content is the bare DOI string.</p></section>
+        </sub-section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="aside.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Aside</span></a><a class="enscribe-chapter-next" href="exhibit.html" rel="next"><span class="enscribe-toc-title">Exhibit</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:quotation-sourcing"><ul><li><a href="#sh-blockquote">&#x3C;blockquote></a><ul><li><a href="#sec:general-usage-23">General Usage</a></li><li><a href="#sec:arguments-13">Arguments</a></li></ul></li><li><a href="#sh-q">&#x3C;q></a><ul><li><a href="#sec:general-usage-24">General Usage</a></li><li><a href="#sec:arguments-14">Arguments</a></li></ul></li><li><a href="#sh-cite">&#x3C;cite></a><ul><li><a href="#sec:general-usage-25">General Usage</a></li><li><a href="#sec:arguments-15">Arguments</a></li></ul></li><li><a href="#sh-ref">&#x3C;ref></a><ul><li><a href="#sec:general-usage-26">General Usage</a></li><li><a href="#sec:arguments-16">Arguments</a></li></ul></li><li><a href="#sh-a">&#x3C;a></a><ul><li><a href="#sec:general-usage-27">General Usage</a></li><li><a href="#sec:arguments-17">Arguments</a></li></ul></li><li><a href="#sh-doi">&#x3C;doi></a><ul><li><a href="#sec:general-usage-28">General Usage</a></li><li><a href="#sec:arguments-18">Arguments</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

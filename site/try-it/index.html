@@ -1410,7 +1410,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </head>
 <body>
 <div class="enscribe-site">
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../live/?page=try-it">Open in playground ↗</a></div>
 
@@ -1735,7 +1735,7 @@ note-list li {
       <section-title>Sections come in three forms</section-title>
       <p>
         A heading can be written three ways, and all three compile to the <i>same</i> thing —
-        a Layer 1 <code>&#x3C;section></code> wrapping a <code>&#x3C;section-title></code>:
+        an eHTML <code>&#x3C;section></code> wrapping a <code>&#x3C;section-title></code>:
       </p>
       <pre><code>&#x3C;# Methods #>           — sigil form: the fewest keystrokes
 &#x3C;section | Methods>     — canonical form: explicit; what the others become
@@ -1866,7 +1866,7 @@ M834 80h400000v40h-400000z"></path>
         produced <a href="#tab:layers" class="ref">table 1</a>:
       </p>
       <pre><code>&#x3C;table #tab:layers csv caption="..." |
-Form,Keystrokes,Carries an id,Round-trips from Layer 1
+Form,Keystrokes,Carries an id,Round-trips from eHTML
 Canonical,most,yes,yes
 ...
 >
@@ -1877,13 +1877,13 @@ Canonical,most,yes,yes
         Rendered, it is:
       </p>
       <table id="tab:layers">
-        <caption><span class="table-label">Table 1.</span> The three authoring forms compared. All three compile to identical Layer 1 HTML, so the choice between them is ergonomic, not semantic.</caption>
+        <caption><span class="table-label">Table 1.</span> The three authoring forms compared. All three compile to identical eHTML, so the choice between them is ergonomic, not semantic.</caption>
         <thead>
           <tr>
             <th>Form</th>
             <th>Keystrokes</th>
             <th>Carries an id</th>
-            <th>Round-trips from Layer 1</th>
+            <th>Round-trips from eHTML</th>
           </tr>
         </thead>
         <tbody>
@@ -1923,9 +1923,9 @@ Canonical,most,yes,yes
         a local path or a URL:
       </p>
       <figure id="fig:pipeline">
-        <img src="https://picsum.photos/seed/enscribe/720/360" alt="The Enscribe pipeline in one breath — shorthand is parsed, lifted to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)">
+        <img src="https://picsum.photos/seed/enscribe/720/360" alt="The Enscribe pipeline in one breath — shorthand is parsed, lifted to canonical eHTML, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)">
         <figcaption><span class="figure-label">Figure 1.</span>
-          <p>The Enscribe pipeline in one breath — shorthand is parsed, <i>lifted</i> to canonical Layer 1, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)</p>
+          <p>The Enscribe pipeline in one breath — shorthand is parsed, <i>lifted</i> to canonical eHTML, then rendered to themed HTML, with JATS export hanging off the same canonical form. (A placeholder image stands in for a real diagram.)</p>
         </figcaption>
       </figure>
       <p>
@@ -1981,8 +1981,8 @@ Canonical,most,yes,yes
         <code>&#x3C;definition></code> is the plainest member, and this guide has been leaning on one term
         that earns it:
       </p>
-      <definition id="def:layer1" data-name="Layer 1"><span class="definition-label">Definition 1 (Layer 1).</span>
-        <p><i>Layer 1</i> is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as <code>&#x3C;section></code>, <code>&#x3C;fig></code>, and <code>&#x3C;cite></code> that record what each piece of content <i>is</i>, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.</p>
+      <definition id="def:layer1" data-name="eHTML"><span class="definition-label">Definition 1 (eHTML).</span>
+        <p><i>eHTML</i> is the canonical, semantic-HTML form an Enscribe document compiles to: custom elements such as <code>&#x3C;section></code>, <code>&#x3C;fig></code>, and <code>&#x3C;cite></code> that record what each piece of content <i>is</i>, not merely how it looks. It is the archival source of truth — the form the shorthand lifts to, and the form that exports cleanly to JATS.</p>
       </definition>
     </section>
     <section>
@@ -2001,10 +2001,10 @@ Canonical,most,yes,yes
     <section>
       <section-title>Where to go next</section-title>
       <p>
-        For the architecture behind the two-layer model — why Layer 1 is canonical, how
+        For the architecture behind the two-layer model — why eHTML is canonical, how
         the shorthand lifts to it, and where JATS fits — read the
         <a href="../design/">Design article</a>. The <b>Authoring Guide</b>, covering every element in
-        depth, and the <b>Layer 1 Reference</b>, cataloguing the output vocabulary, are the
+        depth, and the <b>eHTML Reference</b>, cataloguing the output vocabulary, are the
         next documents to land on this site. Until then, the best next step is the one
         right beside this text: keep editing, and watch what changes.
       </p>
@@ -2017,7 +2017,7 @@ Canonical,most,yes,yes
           <p>
             The Markdown heading is a <i>lossy</i> convenience:
             it lifts into the canonical section but has nowhere to put an id, so converting
-            Layer 1 back to shorthand emits the canonical form, never the <code>#</code>. The sigil and
+            eHTML back to shorthand emits the canonical form, never the <code>#</code>. The sigil and
             canonical forms are co-equal and round-trip without loss — a distinction this
             guide’s own headings rely on.
           </p><a href="#noteref-1" class="note-backref" aria-label="back to text">↩</a>

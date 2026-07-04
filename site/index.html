@@ -1410,7 +1410,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </head>
 <body>
 <div class="enscribe-site">
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="./">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="./">Home</a><a class="enscribe-site-nav-link" href="design/">Design</a><a class="enscribe-site-nav-link" href="authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="try-it/">Try It!</a></nav></header>
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="./">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="./">Home</a><a class="enscribe-site-nav-link" href="design/">Design</a><a class="enscribe-site-nav-link" href="authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="live/?page=home">Open in playground ↗</a></div>
 
@@ -1601,8 +1601,8 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         </section>
         <section id="sec:what-enscribe-is-in-two-layers">
           <section-title>What enscribe is, in two layers</section-title>
-          <p><b>Layer 1 — Semantic HTML for academic publishing.</b> A defined set of HTML elements, custom elements, and <code>data-*</code> attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is <code>&#x3C;ul></code>/<code>&#x3C;ol></code>/<code>&#x3C;li></code>); a class plus <code>data-*</code> carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.</p>
-          <p><b>Layer 2 — Authoring shorthand.</b> A compact syntax that translates losslessly into Layer 1 HTML. It comes in two registers:</p>
+          <p><b>eHTML — Semantic HTML for academic publishing.</b> A defined set of HTML elements, custom elements, and <code>data-*</code> attributes that express the semantics academic documents need: numbered sections, lists, captioned figures, citations, cross-references, footnotes and margin notes, appendices, theorems, embedded DSLs (LaTeX math, ABC music, Mermaid diagrams, CSV tables). HTML supplies the real element where one exists (a list is <code>&#x3C;ul></code>/<code>&#x3C;ol></code>/<code>&#x3C;li></code>); a class plus <code>data-*</code> carries the academic semantics HTML cannot name. This layer is independently valuable — you can author it directly if you want, and any tool that produces enscribe-conformant HTML benefits from the rest of the ecosystem.</p>
+          <p><b>Enscribe shorthand — Authoring syntax.</b> A compact syntax that translates losslessly into eHTML. It comes in two registers:</p>
           <ul>
             <li>
               <p><i>Markdown-like shorthand</i> for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.</p>
@@ -1611,7 +1611,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
               <p><i>Tag shorthand</i> for anything that needs attributes, identifiers, or academic semantics. The form is <code>&#x3C;tag #id .class attr=value | content></code> — attributes first, then a pipe, then content — read as “tag with these attributes containing this content.” Tags don’t require explicit closing — like LaTeX’s <code>\section{}</code>, a new peer-level tag implicitly ends the previous one.</p>
             </li>
           </ul>
-          <p>Both registers compile to the same Layer 1 HTML.</p>
+          <p>Both registers compile to the same eHTML.</p>
         </section>
         <section id="sec:a-taste">
           <section-title>A taste</section-title>
@@ -1632,7 +1632,7 @@ We followed the protocol described in &#x3C;cite jones2024>.
         </section>
         <section id="sec:status">
           <section-title>Status</section-title>
-          <p><b>enscribe v0.4.0 is released.</b> The shorthand parser, the interpreter, and the Layer 1 vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external <code>&#x3C;library src></code> sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export <i>and</i> import), a client-side browser library, and the <code>enscribe</code> command-line tool.</p>
+          <p><b>enscribe v0.4.0 is released.</b> The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external <code>&#x3C;library src></code> sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export <i>and</i> import), a client-side browser library, and the <code>enscribe</code> command-line tool.</p>
           <p>The implementation is built on the <a href="https://unifiedjs.com/">unified</a> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md"><code>STATUS.md</code></a> for the capability checklist (what works today), <a href="design/">the Design article</a> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/tree/main/notes/specs"><code>notes/specs/</code></a> for the architecture.</p>
         </section>
         <section id="sec:reading-order">
@@ -1643,8 +1643,8 @@ We followed the protocol described in &#x3C;cite jones2024>.
           <section-title>Project goals</section-title>
           <p>Enscribe’s purpose, in four parts:</p>
           <ol>
-            <li><b>Specify</b> a complete vocabulary of HTML conventions for academic publishing (Layer 1).</li>
-            <li><b>Author</b> that vocabulary efficiently via a uniform shorthand (Layer 2).</li>
+            <li><b>Specify</b> a complete vocabulary of HTML conventions for academic publishing (eHTML).</li>
+            <li><b>Author</b> that vocabulary efficiently via the uniform Enscribe shorthand.</li>
             <li><b>Build</b> the smallest possible reference implementation by leveraging existing parser infrastructure rather than reinventing it.</li>
             <li><b>Demonstrate</b> that a working academic document — sections, citations, cross-references, figures, math, code — can round-trip from enscribe source through HTML to PDF and other formats using only off-the-shelf tools downstream.</li>
           </ol>

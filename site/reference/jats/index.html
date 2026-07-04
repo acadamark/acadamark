@@ -1410,7 +1410,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </head>
 <body>
 <div class="enscribe-site">
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../../live/?page=jats">Open in playground ↗</a></div>
 
@@ -1857,13 +1857,13 @@ note-list li {
           <section-title>What JATS is, and why it matters</section-title>
           <p>JATS — the <b>Journal Article Tag Suite</b> — is a NISO standard (<a href="https://www.niso.org/standards-committees/jats">ANSI/NISO Z39.96</a>) that defines an XML vocabulary for scholarly articles: title and authors, affiliations, abstract, sections, figures, tables, math, references, and the rest of the apparatus a research article carries. It is the lingua franca of the publishing back end. PubMed Central <cite class="cite" data-keys="pmc">(U.S. National Library of Medicine, 2024)</cite> ingests and archives articles as JATS; publishers, aggregators, and institutional repositories exchange them as JATS; preservation systems store them as JATS. If your work ends up in any of those places, it ends up as JATS XML.</p>
           <p>The crucial thing to understand is <i>what JATS is for</i>. It is an <b>archival and interchange</b> format, not an authoring one. A JATS document is not something a person writes by hand — it is verbose, attribute-heavy XML that a <i>machine</i> emits and another machine reads. It also has no native display: a JATS file needs a stylesheet or a viewer to become a readable page. JATS answers “how do we deposit, exchange, and preserve this article?” — never “how do I write it?”</p>
-          <p>JATS is also <i>vast</i>. Two decades of refinement have given it well over two hundred elements, many for cases a given article never touches, and it is built for completeness rather than for writing or display. Enscribe does not try to mirror all of it. Layer 1 — Enscribe’s canonical form — is a small, <i>displayable, authorable</i> HTML vocabulary, on the order of thirty elements covering what most articles actually use, chosen so that what is present <i>translates</i> cleanly outward. That is the trade that makes a direct export possible: a smaller, HTML-shaped vocabulary that maps cleanly to JATS at every point of contact, with the export carrying the translation.</p>
+          <p>JATS is also <i>vast</i>. Two decades of refinement have given it well over two hundred elements, many for cases a given article never touches, and it is built for completeness rather than for writing or display. Enscribe does not try to mirror all of it. eHTML — Enscribe’s canonical form — is a small, <i>displayable, authorable</i> HTML vocabulary, on the order of thirty elements covering what most articles actually use, chosen so that what is present <i>translates</i> cleanly outward. That is the trade that makes a direct export possible: a smaller, HTML-shaped vocabulary that maps cleanly to JATS at every point of contact, with the export carrying the translation.</p>
           <p>That gap is the whole point of contact with Enscribe. Enscribe is an authoring layer; JATS is a deposit target. The interesting question is how cleanly the one reaches the other.</p>
         </section>
         <section id="sec:what-enscribe-s-jats-export-does">
           <section-title>What Enscribe’s JATS export does</section-title>
           <p>
-            Enscribe’s canonical form — Layer 1, the semantic-HTML representation every
+            Enscribe’s canonical form — eHTML, the semantic-HTML representation every
             Enscribe document compiles to — is deliberately shaped to be JATS-aligned (see
             the <a href="../../design/">Design article</a> for why). Because the vocabulary was
             designed against the JATS tag set, the export is mostly a set of one-to-one
@@ -1876,10 +1876,10 @@ Archiving</b> XML, with the correct DOCTYPE and
           </p>
           <p>What maps cleanly — that is, structure-for-structure, no information lost:</p>
           <table id="tab:map">
-            <caption><span class="table-label">Table 1.</span> How Enscribe’s Layer 1 elements map to JATS.</caption>
+            <caption><span class="table-label">Table 1.</span> How Enscribe’s eHTML elements map to JATS.</caption>
             <thead>
               <tr>
-                <th>Enscribe (Layer 1)</th>
+                <th>Enscribe (eHTML)</th>
                 <th>JATS</th>
               </tr>
             </thead>
@@ -1956,10 +1956,10 @@ import-jats</code> command brings a JATS article into Enscribe — rendered HTML
           </p>
           <p>
             Import is deliberately the weaker direction: JATS’s vocabulary is far larger than
-            Layer 1’s, so it is acknowledged-lossy — a one-way conversion that applies
+            eHTML’s, so it is acknowledged-lossy — a one-way conversion that applies
             necessary simplifications, useful as an on-ramp from the existing literature, not
             a faithful reconstruction. (The only lossless round trip in Enscribe is between
-            its shorthand and Layer 1, which are the same document in two notations.) The
+            its shorthand and eHTML, which are the same document in two notations.) The
             importer maps what maps — structure, inline formatting, math, citations, figures,
             tables, cross-references, footnotes, and the theorem family — preserves
             reader-facing apparatus such as abstracts, keywords, and acknowledgments, and
@@ -2091,7 +2091,7 @@ is summarised in &#x3C;ref @fig:flow>.
             Enscribe — work today.
           </p>
           <p>
-            For how Layer 1 is shaped to make this possible, read the
+            For how eHTML is shaped to make this possible, read the
             <a href="../../design/">Design article</a>; to write your first document, start with
             the <a href="../../try-it/">Quickstart</a>.
           </p>

@@ -1410,16 +1410,16 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 </head>
 <body>
 <div class="enscribe-site">
-<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/layer-1-vocabulary/">Layer 1 Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
+<header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=citations-notes-cross-references">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Authoring Guide</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html" class="enscribe-toc-active" aria-current="location">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:citations-notes-cross-references" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Authoring Guide</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html" class="enscribe-toc-active" aria-current="location">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:citations-notes-cross-references" book-part-type="chapter">
           <meta>
             <book-part-title>Citations, Notes &#x26; Cross-References</book-part-title>
           </meta>
           <section id="sec:citations">
             <section-title>Citations</section-title>
-            <sub-section id="sec:general-usage-26">
+            <sub-section id="sec:general-usage-11">
               <sub-section-title>General Usage</sub-section-title>
               <p>A citation points at a source by key with <code>&#x3C;cite key></code>. References are loaded once with <code>&#x3C;library></code> — paste entries straight from a reference manager — and the reference list is printed with <code>&#x3C;bibliography></code>. Citations resolve at build time against the loaded library.</p><code id="code:cite-basic">&#x3C;library format=bibtex>
 @article{goodall2024, author={Jane Goodall}, title={Field Notes}, journal={Nature}, year={2024}}
@@ -1429,7 +1429,7 @@ The data supports this claim &#x3C;cite goodall2024>.
 &#x3C;/bibliography></code>
               <p>The <code>&#x3C;cite goodall2024></code> marker renders as “(Goodall 2024)”, and <code>&#x3C;bibliography></code> prints the full entry. Cite several sources at once by listing keys: <code>&#x3C;cite smith2020 jones2021></code>.</p>
             </sub-section>
-            <sub-section id="sec:arguments-18">
+            <sub-section id="sec:arguments-9">
               <sub-section-title>Arguments</sub-section-title>
               <table>
                 <thead>
@@ -1453,7 +1453,7 @@ The data supports this claim &#x3C;cite goodall2024>.
           </section>
           <section id="sec:cross-references">
             <section-title>Cross-References</section-title>
-            <sub-section id="sec:general-usage-27">
+            <sub-section id="sec:general-usage-12">
               <sub-section-title>General Usage</sub-section-title>
               <p>A cross-reference links to any numbered target — a figure, table, equation, theorem, or section — by its id, using the <code>@</code> reference sigil. The link text and number fill in automatically.</p><code id="code:ref-basic">&#x3C;fig #fig:scatter src=scatter.png | A scatter plot of the data.>
 As shown in &#x3C;ref @fig:scatter>, the trend is clear.</code>
@@ -1465,44 +1465,46 @@ As shown in &#x3C;ref @fig:scatter>, the trend is clear.</code>
                   </figcaption>
                 </figure>
                 <p>As shown in <a href="#mp-ref-basic-fig:scatter" class="ref">figure 1</a>, the trend is clear.</p>
-                <figcaption><span class="minipage-label">Minipage 28.</span></figcaption>
+                <figcaption><span class="minipage-label">Minipage 12.</span></figcaption>
               </figure>
             </sub-section>
-            <sub-section id="sec:notes-18">
+            <sub-section id="sec:notes-8">
               <sub-section-title>Notes</sub-section-title>
               <p>The <code>#</code> sigil <i>declares</i> an id (<code>&#x3C;fig #fig:scatter></code>); the <code>@</code> sigil <i>references</i> it (<code>&#x3C;ref @fig:scatter></code>). On screen a reference shows a hover preview of its target — add <code>-preview</code> to switch that off.</p></section>
             </sub-section>
           </section>
           <section id="sec:notes">
             <section-title>Notes</section-title>
-            <sub-section id="sec:general-usage-28">
+            <sub-section id="sec:general-usage-13">
               <sub-section-title>General Usage</sub-section-title>
-              <p>A note attaches a comment to the text. <code>&#x3C;note></code> becomes a numbered footnote collected at the foot of the document; <code>&#x3C;marginnote></code> sets the comment beside the text in the margin.</p><code id="code:notes-basic">The result holds in general&#x3C;note | With the usual regularity assumptions.>. A lighter
-aside can sit in the margin instead.&#x3C;marginnote | Margins suit short, glanceable remarks.></code>
+              <p>A note attaches a comment to the text — one note type with three positions. <code>&#x3C;note></code> (position <code>foot</code>/<code>end</code>) becomes a numbered footnote collected at the foot of the document; <code>&#x3C;note position=margin></code> places the same numbered note beside the text in the margin.</p><code id="code:notes-basic">The result holds in general&#x3C;note | With the usual regularity assumptions.>. A lighter
+note can sit in the margin instead.&#x3C;note position=margin | Margins suit short, glanceable remarks.></code>
               <figure id="mp:notes-basic" class="frameable-border">
                 <p>
                   The result holds in general<sup id="mp-notes-basic-noteref-1" data-note-id="mp-notes-basic-note-1"><a href="#mp-notes-basic-note-1">1</a></sup>. A lighter
-                  aside can sit in the margin instead.
-                  <aside class="enscribe-marginnote">Margins suit short, glanceable remarks.</aside>
+                  note can sit in the margin instead.<sup id="mp-notes-basic-noteref-2" data-note-id="mp-notes-basic-note-2"><a href="#mp-notes-basic-note-2">2</a></sup><span class="enscribe-sidenote"><sup>2</sup><p>Margins suit short, glanceable remarks.</p></span>
                 </p>
-                <note-list class="endnotes">
+                <note-list class="notes">
                   <ol>
                     <li id="mp-notes-basic-note-1"><sup>1</sup>
                       <p>With the usual regularity assumptions.</p><a href="#mp-notes-basic-noteref-1" class="note-backref" aria-label="back to text">↩</a>
                     </li>
+                    <li id="mp-notes-basic-note-2" class="sidenote-fallback"><sup>2</sup>
+                      <p>Margins suit short, glanceable remarks.</p><a href="#mp-notes-basic-noteref-2" class="note-backref" aria-label="back to text">↩</a>
+                    </li>
                   </ol>
                 </note-list>
-                <figcaption><span class="minipage-label">Minipage 29.</span></figcaption>
+                <figcaption><span class="minipage-label">Minipage 13.</span></figcaption>
               </figure>
             </sub-section>
-            <sub-section id="sec:notes-19">
+            <sub-section id="sec:notes-9">
               <sub-section-title>Notes</sub-section-title>
               <p>Footnotes hover-preview their content on screen. Set <code>&#x3C;config note-position=margin /></code> to render numbered notes as Tufte-style sidenotes instead of at the foot.</p></section>
             </sub-section>
           </section>
           <section id="sec:terms-glossaries">
             <section-title>Defined Terms &#x26; Glossaries</section-title>
-            <sub-section id="sec:general-usage-29">
+            <sub-section id="sec:general-usage-14">
               <sub-section-title>General Usage</sub-section-title>
               <p><code>&#x3C;term></code> marks a defined term inline where you introduce it. A <code>&#x3C;glossary></code> collects terms and their definitions, each in a <code>&#x3C;glossary-entry></code> built from a <code>&#x3C;dt></code> term and a <code>&#x3C;dd></code> definition.</p><code id="code:term-basic">An &#x3C;term | eigenvector> is a non-zero vector that scales under a transformation.
 &#x3C;glossary>
@@ -1521,11 +1523,11 @@ aside can sit in the margin instead.&#x3C;marginnote | Margins suit short, glanc
                     </dd>
                   </glossary-entry>
                 </glossary>
-                <figcaption><span class="minipage-label">Minipage 30.</span></figcaption>
+                <figcaption><span class="minipage-label">Minipage 14.</span></figcaption>
               </figure></section>
             </sub-section>
           </section>
-        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="theorem-environments.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Theorem Environments</span></a><a class="enscribe-chapter-next" href="appendices.html" rel="next"><span class="enscribe-toc-title">Appendices</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:citations-notes-cross-references"><ul><li><a href="#sec:citations">Citations</a><ul><li><a href="#sec:general-usage-26">General Usage</a></li><li><a href="#sec:arguments-18">Arguments</a></li></ul></li><li><a href="#sec:cross-references">Cross-References</a><ul><li><a href="#sec:general-usage-27">General Usage</a></li><li><a href="#sec:notes-18">Notes</a></li></ul></li><li><a href="#sec:notes">Notes</a><ul><li><a href="#sec:general-usage-28">General Usage</a></li><li><a href="#sec:notes-19">Notes</a></li></ul></li><li><a href="#sec:terms-glossaries">Defined Terms &#x26; Glossaries</a><ul><li><a href="#sec:general-usage-29">General Usage</a></li></ul></li></ul></div></details></nav></div>
+        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="inline-formatting.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Inline Formatting</span></a><a class="enscribe-chapter-next" href="figures-frameables.html" rel="next"><span class="enscribe-toc-title">Figures &#x26; Frameables</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:citations-notes-cross-references"><ul><li><a href="#sec:citations">Citations</a><ul><li><a href="#sec:general-usage-11">General Usage</a></li><li><a href="#sec:arguments-9">Arguments</a></li></ul></li><li><a href="#sec:cross-references">Cross-References</a><ul><li><a href="#sec:general-usage-12">General Usage</a></li><li><a href="#sec:notes-8">Notes</a></li></ul></li><li><a href="#sec:notes">Notes</a><ul><li><a href="#sec:general-usage-13">General Usage</a></li><li><a href="#sec:notes-9">Notes</a></li></ul></li><li><a href="#sec:terms-glossaries">Defined Terms &#x26; Glossaries</a><ul><li><a href="#sec:general-usage-14">General Usage</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Enscribe Vocabulary</title>
+<title>Formal statements — The eHTML Vocabulary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,8 +1412,624 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html" aria-current="page"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-title>The Enscribe Vocabulary</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>
+<div class="enscribe-playground-cta"><a href="../../live/?page=ehtml&amp;chapter=formal-statements">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The eHTML Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html" class="enscribe-toc-active" aria-current="location">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:formal-statements" book-part-type="chapter">
+      <meta>
+        <book-part-title>Formal statements</book-part-title>
+      </meta>
+      <p>Formal statements — theorems and kin, proofs, and the definitional structures.</p>
+      <section id="l1-theorem">
+        <section-title><code>&#x3C;theorem></code></section-title>
+        <sub-section id="sec:specification-38">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;theorem></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the theorem’s label (the “(Pythagoras)” half of “Theorem 1.2 (Pythagoras)”). Honored by the Phase-2 theorem handler at label-rendering time; until that handler lands, the kwarg flows through to the rendered HTML as <code>data-name="..."</code> via schema dispatch. LaTeX amsthm precedent: <code>\begin{theorem}[Pythagoras]</code>.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this theorem participates in the theorem-family shared counter (see “Numbering” below). Use +numbered (default) to number; -numbered to suppress. Can also be written as numbered=true / numbered=false.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;theorem></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-34">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-theorem-1">
+&#x3C;theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.></code>
+          <figure id="mp:l1-theorem-1" class="frameable-border">
+            <theorem><span class="theorem-label">Theorem 1.</span>
+              <p>If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> then the triangle is right-angled.</p>
+            </theorem>
+            <figcaption><span class="minipage-label">Minipage 72.</span></figcaption>
+          </figure>
+          <p><i>Short-form with pipe content. The body is parsed normally.</i></p><code id="code:l1-theorem-2">&#x3C;theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+&#x3C;/theorem></code>
+          <figure id="mp:l1-theorem-2" class="frameable-border">
+            <theorem id="mp-l1-theorem-2-thm:pyth" data-name="Pythagoras"><span class="theorem-label">Theorem 1 (Pythagoras).</span>
+              <p>
+                If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math>, the triangle with sides <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></inline-math>
+                is right-angled.
+              </p>
+            </theorem>
+            <figcaption><span class="minipage-label">Minipage 73.</span></figcaption>
+          </figure>
+          <p><i>Long-form with the optional name kwarg. Cross-referenceable via id (the “thm:” colon-prefix convention is consistent with “fig:”, “eqn:”, “sec:” elsewhere in enscribe). The name kwarg lifts to <code>data-name</code>; the Phase-2 handler will render it as the “(Pythagoras)” suffix to the label “Theorem N”.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-lemma">
+        <section-title><code>&#x3C;lemma></code></section-title>
+        <sub-section id="sec:specification-39">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;lemma></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the lemma’s label, parallel to 
+                  <theorem><span class="theorem-label">Theorem 1.</span> </theorem>‘s <code>name</code> kwarg. Honored by the Phase-2 handler.
+                </td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this lemma participates in the propositional theorem- family shared counter. Default true; -numbered suppresses.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;lemma></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-35">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-lemma-1">
+&#x3C;lemma | Every continuous function on a compact set attains its maximum.></code>
+          <figure id="mp:l1-lemma-1" class="frameable-border">
+            <lemma><span class="lemma-label">Lemma 1.</span>
+              <p>Every continuous function on a compact set attains its maximum.</p>
+            </lemma>
+            <figcaption><span class="minipage-label">Minipage 74.</span></figcaption>
+          </figure><code id="code:l1-lemma-2">&#x3C;lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+&#x3C;/lemma></code>
+          <figure id="mp:l1-lemma-2" class="frameable-border">
+            <lemma id="mp-l1-lemma-2-lem:zorn" data-name="Zorn"><span class="lemma-label">Lemma 1 (Zorn).</span>
+              <p>
+                Every non-empty partially-ordered set in which every chain has
+                an upper bound contains a maximal element.
+              </p>
+            </lemma>
+            <figcaption><span class="minipage-label">Minipage 75.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-corollary">
+        <section-title><code>&#x3C;corollary></code></section-title>
+        <sub-section id="sec:specification-40">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;corollary></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the corollary’s label, parallel to 
+                  <theorem><span class="theorem-label">Theorem 2.</span> </theorem>‘s <code>name</code> kwarg.
+                </td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this corollary participates in the propositional theorem-family shared counter. Default true.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;corollary></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-36">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-corollary-1">
+&#x3C;corollary | Every prime greater than 2 is odd.></code>
+          <figure id="mp:l1-corollary-1" class="frameable-border">
+            <corollary><span class="corollary-label">Corollary 1.</span>
+              <p>Every prime greater than 2 is odd.</p>
+            </corollary>
+            <figcaption><span class="minipage-label">Minipage 76.</span></figcaption>
+          </figure><code id="code:l1-corollary-2">&#x3C;corollary #cor:bounded>
+Any continuous function on a closed interval is bounded.
+&#x3C;/corollary></code>
+          <figure id="mp:l1-corollary-2" class="frameable-border">
+            <corollary id="mp-l1-corollary-2-cor:bounded"><span class="corollary-label">Corollary 1.</span>
+              <p>Any continuous function on a closed interval is bounded.</p>
+            </corollary>
+            <figcaption><span class="minipage-label">Minipage 77.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-proposition">
+        <section-title><code>&#x3C;proposition></code></section-title>
+        <sub-section id="sec:specification-41">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;proposition></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the proposition’s label.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this proposition participates in the propositional theorem-family shared counter. Default true.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;proposition></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-37">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-proposition-1">
+&#x3C;proposition | The sum of two even integers is even.></code>
+          <figure id="mp:l1-proposition-1" class="frameable-border">
+            <proposition><span class="proposition-label">Proposition 1.</span>
+              <p>The sum of two even integers is even.</p>
+            </proposition>
+            <figcaption><span class="minipage-label">Minipage 78.</span></figcaption>
+          </figure><code id="code:l1-proposition-2">&#x3C;proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+&#x3C;/proposition></code>
+          <figure id="mp:l1-proposition-2" class="frameable-border">
+            <proposition data-name="Cauchy-Schwarz"><span class="proposition-label">Proposition 1 (Cauchy-Schwarz).</span>
+              <p>
+                For any vectors <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span></span></span></span></inline-math>, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span></span></span></span></inline-math> in an inner-product space,
+                <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mopen">⟨</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mclose">⟩</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∥</span><span class="mord mathnormal">u</span><span class="mord">∥</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">∥</span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mord">∥</span></span></span></span></inline-math>.
+              </p>
+            </proposition>
+            <figcaption><span class="minipage-label">Minipage 79.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-definition">
+        <section-title><code>&#x3C;definition></code></section-title>
+        <sub-section id="sec:specification-42">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;definition></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the definition’s label.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this definition participates in the definition counter. 
+                  <definition><span class="definition-label">Definition 1.</span> </definition>runs on its own counter (separate from the propositional theorem-family counter), matching amsthm’s conventional “definition” theorem-style family. Default true.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;definition></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-38">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-definition-1">
+&#x3C;definition | A *group* is a set with an associative binary operation, identity, and inverses.></code>
+          <figure id="mp:l1-definition-1" class="frameable-border">
+            <definition><span class="definition-label">Definition 1.</span>
+              <p>A <i>group</i> is a set with an associative binary operation, identity, and inverses.</p>
+            </definition>
+            <figcaption><span class="minipage-label">Minipage 80.</span></figcaption>
+          </figure><code id="code:l1-definition-2">&#x3C;definition name="Group" #def:group>
+A *group* is a set $G$ together with a binary operation
+$\cdot$ satisfying associativity, identity, and inverses.
+&#x3C;/definition></code>
+          <figure id="mp:l1-definition-2" class="frameable-border">
+            <definition id="mp-l1-definition-2-def:group" data-name="Group"><span class="definition-label">Definition 1 (Group).</span>
+              <p>
+                A <i>group</i> is a set <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">G</span></span></span></span></inline-math> together with a binary operation
+                <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord">⋅</span></span></span></span></inline-math> satisfying associativity, identity, and inverses.
+              </p>
+            </definition>
+            <figcaption><span class="minipage-label">Minipage 81.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-example">
+        <section-title><code>&#x3C;example></code></section-title>
+        <sub-section id="sec:specification-43">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;example></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the example’s label.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this example participates in the example counter. 
+                  <example><span class="example-label">Example 1.</span> </example>runs on its own counter (separate from theorem, lemma, definition counters), matching amsthm’s conventional “example” theorem-style family. Default true.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;example></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-39">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-example-1">
+&#x3C;example | The integers under addition form a group.></code>
+          <figure id="mp:l1-example-1" class="frameable-border">
+            <example><span class="example-label">Example 1.</span>
+              <p>The integers under addition form a group.</p>
+            </example>
+            <figcaption><span class="minipage-label">Minipage 82.</span></figcaption>
+          </figure><code id="code:l1-example-2">&#x3C;example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+&#x3C;/example></code>
+          <figure id="mp:l1-example-2" class="frameable-border">
+            <example id="mp-l1-example-2-ex:integers"><span class="example-label">Example 1.</span>
+              <p>
+                The integers <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6889em;"></span><span class="mord mathbb">Z</span></span></span></span></inline-math> under addition form a group: the
+                operation is associative, <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></inline-math> is the identity, and every
+                integer has an additive inverse.
+              </p>
+            </example>
+            <figcaption><span class="minipage-label">Minipage 83.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-remark">
+        <section-title><code>&#x3C;remark></code></section-title>
+        <sub-section id="sec:specification-44">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;remark></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix for the remark’s label. Honored by the Phase-2 handler even though 
+                  <remark><span class="remark-label">Remark.</span> </remark>is unnumbered (a named remark may render as “Remark (Name):” without a number).
+                </td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>false</code></td>
+                <td>Whether this remark is numbered. Default false — 
+                  <remark><span class="remark-label">Remark.</span> </remark>is conventionally unnumbered (the “remark” theorem-style family in amsthm is unnumbered). An author who wants numbering can opt-in per instance with +numbered, but most usage relies on the default.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;remark></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-40">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-remark-1">
+&#x3C;remark | The converse does not hold in general.></code>
+          <figure id="mp:l1-remark-1" class="frameable-border">
+            <remark><span class="remark-label">Remark.</span>
+              <p>The converse does not hold in general.</p>
+            </remark>
+            <figcaption><span class="minipage-label">Minipage 84.</span></figcaption>
+          </figure><code id="code:l1-remark-2">&#x3C;remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+&#x3C;/remark></code>
+          <figure id="mp:l1-remark-2" class="frameable-border">
+            <remark><span class="remark-label">Remark.</span>
+              <p>
+                The hypothesis of compactness is essential here; without it
+                the conclusion fails (consider <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1/</span><span class="mord mathnormal">x</span></span></span></span></inline-math> on <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></inline-math>).
+              </p>
+            </remark>
+            <figcaption><span class="minipage-label">Minipage 85.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-proof">
+        <section-title><code>&#x3C;proof></code></section-title>
+        <sub-section id="sec:specification-45">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>theorem-family</code> · eHTML <code>&#x3C;proof></code> · JATS <code>&#x3C;statement></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional name suffix — e.g. “Proof (of Theorem 1.2)” or “Proof (sketch)”. Honored by the Phase-2 handler.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>false</code></td>
+                <td>Whether this proof is numbered. Default false — proofs are conventionally unnumbered (a proof’s identity comes from the theorem it proves, not from a counter). An author who wants numbering can opt-in per instance with +numbered.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;proof></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-41">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-proof-1">
+&#x3C;theorem | The sum of two even integers is even.>
+&#x3C;proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+&#x3C;/proof></code>
+          <figure id="mp:l1-proof-1" class="frameable-border">
+            <theorem><span class="theorem-label">Theorem 1.</span>
+              <p>The sum of two even integers is even.</p>
+            </theorem>
+            <proof><span class="proof-label">Proof.</span>
+              <p>
+                Let <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">m</span></span></span></span></inline-math> and <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">n</span></span></span></span></inline-math>. Then <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></inline-math>, which is
+                even. <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.675em;"></span><span class="mord amsrm">□</span></span></span></span></inline-math>
+              </p>
+            </proof>
+            <figcaption><span class="minipage-label">Minipage 86.</span></figcaption>
+          </figure>
+          <p><i>The canonical pattern: &#x3C;theorem> followed by sibling &#x3C;proof>. The proof is NOT nested inside the theorem.</i></p><code id="code:l1-proof-2">&#x3C;proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+&#x3C;/proof></code>
+          <figure id="mp:l1-proof-2" class="frameable-border">
+            <proof data-name="of Theorem 1.2"><span class="proof-label">Proof.</span>
+              <p>The argument follows from the preceding lemma.</p>
+            </proof>
+            <figcaption><span class="minipage-label">Minipage 87.</span></figcaption>
+          </figure>
+          <p><i>Optional <code>name</code> kwarg lets the proof identify what it proves (useful when the proof is separated from its theorem by intervening text).</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-dl">
+        <section-title><code>&#x3C;dl></code></section-title>
+        <sub-section id="sec:specification-46">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;dl></code> · JATS <code>&#x3C;def-list></code> · <code>content</code> <code>structured</code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;dl></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-42">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-dl-1">
+&#x3C;dl>
+&#x3C;dt | enscribe>
+&#x3C;dd | An academic publishing system built on HTML+CSS+JS.>
+&#x3C;dt | eHTML>
+&#x3C;dd | The canonical semantic HTML vocabulary.>
+&#x3C;dt | Enscribe shorthand>
+&#x3C;dd | The shorthand authoring syntax that compiles to eHTML.>
+&#x3C;/dl></code>
+          <figure id="mp:l1-dl-1" class="frameable-border">
+            <dl>
+              <dt>enscribe</dt>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
+              <dt>eHTML</dt>
+              <dd>
+                <p>The canonical semantic HTML vocabulary.</p>
+              </dd>
+              <dt>Enscribe shorthand</dt>
+              <dd>
+                <p>The shorthand authoring syntax that compiles to eHTML.</p>
+              </dd>
+            </dl>
+            <figcaption><span class="minipage-label">Minipage 88.</span></figcaption>
+          </figure>
+          <p><i>Long-form &#x3C;dl> with short-form &#x3C;dt>/&#x3C;dd> children. The natural authoring pattern.</i></p><code id="code:l1-dl-2">&#x3C;dl .compact>
+&#x3C;dt | term-1>
+&#x3C;dd | First definition of term-1.>
+&#x3C;dd | Second definition of term-1.>
+&#x3C;/dl></code>
+          <figure id="mp:l1-dl-2" class="frameable-border">
+            <dl class="compact">
+              <dt>term-1</dt>
+              <dd>
+                <p>First definition of term-1.</p>
+              </dd>
+              <dd>
+                <p>Second definition of term-1.</p>
+              </dd>
+            </dl>
+            <figcaption><span class="minipage-label">Minipage 89.</span></figcaption>
+          </figure>
+          <p><i>One term with multiple definitions — a valid HTML pattern.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-dt">
+        <section-title><code>&#x3C;dt></code></section-title>
+        <sub-section id="sec:specification-47">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;dt></code> · JATS <code>&#x3C;term></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;dt></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-43">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-dt-1">
+&#x3C;dt | enscribe></code>
+          <figure id="mp:l1-dt-1" class="frameable-border">
+            <dt>enscribe</dt>
+            <figcaption><span class="minipage-label">Minipage 90.</span></figcaption>
+          </figure>
+          <p><i>A definition-list term. Appears as a child of &#x3C;dl>.</i></p><code id="code:l1-dt-2">&#x3C;dt | &#x3C;code | strict-mode>></code>
+          <figure id="mp:l1-dt-2" class="frameable-border">
+            <dt><code>strict-mode</code></dt>
+            <figcaption><span class="minipage-label">Minipage 91.</span></figcaption>
+          </figure>
+          <p><i>Inline markup in a term. The recursive-content pass parses the pipe content normally.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-dd">
+        <section-title><code>&#x3C;dd></code></section-title>
+        <sub-section id="sec:specification-48">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;dd></code> · JATS <code>&#x3C;def></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;dd></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-44">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-dd-1">
+&#x3C;dd | An academic publishing system built on HTML+CSS+JS.></code>
+          <figure id="mp:l1-dd-1" class="frameable-border">
+            <dd>
+              <p>An academic publishing system built on HTML+CSS+JS.</p>
+            </dd>
+            <figcaption><span class="minipage-label">Minipage 92.</span></figcaption>
+          </figure>
+          <p><i>A definition-list description. Appears as a child of &#x3C;dl>, following the term it defines.</i></p><code id="code:l1-dd-2">&#x3C;dd |
+A multi-paragraph definition.
+The second paragraph of the definition.
+></code>
+          <figure id="mp:l1-dd-2" class="frameable-border">
+            <dd>
+              <p>A multi-paragraph definition.</p>
+              <p>The second paragraph of the definition.</p>
+            </dd>
+            <figcaption><span class="minipage-label">Minipage 93.</span></figcaption>
+          </figure>
+          <p><i>Multi-paragraph descriptions are valid — the pipe content’s paragraph structure is preserved.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-glossary">
+        <section-title><code>&#x3C;glossary></code></section-title>
+        <sub-section id="sec:specification-49">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;glossary></code> · JATS <code>&#x3C;glossary></code> · <code>content</code> <code>structured</code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;glossary></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-45">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-glossary-1">
+&#x3C;glossary #project-terms>
+&#x3C;glossary-entry>
+&#x3C;dt | enscribe>
+&#x3C;dd | An academic publishing system built on HTML+CSS+JS.>
+&#x3C;/glossary-entry>
+&#x3C;glossary-entry>
+&#x3C;dt | eHTML>
+&#x3C;dd | The canonical semantic HTML vocabulary.>
+&#x3C;/glossary-entry>
+&#x3C;/glossary></code>
+          <p><i>Render pending — indented long-form closing tag not recognised → tag-error (issue #276).</i></p>
+          <p><i>A glossary with two entries. Each &#x3C;glossary-entry> uses &#x3C;dt>/&#x3C;dd> for its term and definition (the same shapes &#x3C;dl> uses), wrapped in the entry’s own envelope for cross-reference / styling.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="l1-glossary-entry">
+        <section-title><code>&#x3C;glossary-entry></code></section-title>
+        <sub-section id="sec:specification-50">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;glossary-entry></code> · JATS <code>&#x3C;def-item></code> · <code>content</code> <code>structured</code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;glossary-entry></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-46">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-glossary-entry-1">
+&#x3C;glossary-entry #term:enscribe>
+&#x3C;dt | enscribe>
+&#x3C;dd | An academic publishing system built on HTML+CSS+JS.>
+&#x3C;/glossary-entry></code>
+          <figure id="mp:l1-glossary-entry-1" class="frameable-border">
+            <glossary-entry id="mp-l1-glossary-entry-1-term:enscribe">
+              <dt>enscribe</dt>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
+            </glossary-entry>
+            <figcaption><span class="minipage-label">Minipage 94.</span></figcaption>
+          </figure>
+          <p><i>A single glossary entry. The id uses the “term:” colon-prefix convention so cross-references like &#x3C;ref @term:enscribe> can resolve into the entry.</i></p></section>
+        </sub-section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="exhibit.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Exhibit</span></a><a class="enscribe-chapter-next" href="notation.html" rel="next"><span class="enscribe-toc-title">Notation</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:formal-statements"><ul><li><a href="#l1-theorem">&#x3C;theorem></a><ul><li><a href="#sec:specification-38">Specification</a></li><li><a href="#sec:examples-34">Examples</a></li></ul></li><li><a href="#l1-lemma">&#x3C;lemma></a><ul><li><a href="#sec:specification-39">Specification</a></li><li><a href="#sec:examples-35">Examples</a></li></ul></li><li><a href="#l1-corollary">&#x3C;corollary></a><ul><li><a href="#sec:specification-40">Specification</a></li><li><a href="#sec:examples-36">Examples</a></li></ul></li><li><a href="#l1-proposition">&#x3C;proposition></a><ul><li><a href="#sec:specification-41">Specification</a></li><li><a href="#sec:examples-37">Examples</a></li></ul></li><li><a href="#l1-definition">&#x3C;definition></a><ul><li><a href="#sec:specification-42">Specification</a></li><li><a href="#sec:examples-38">Examples</a></li></ul></li><li><a href="#l1-example">&#x3C;example></a><ul><li><a href="#sec:specification-43">Specification</a></li><li><a href="#sec:examples-39">Examples</a></li></ul></li><li><a href="#l1-remark">&#x3C;remark></a><ul><li><a href="#sec:specification-44">Specification</a></li><li><a href="#sec:examples-40">Examples</a></li></ul></li><li><a href="#l1-proof">&#x3C;proof></a><ul><li><a href="#sec:specification-45">Specification</a></li><li><a href="#sec:examples-41">Examples</a></li></ul></li><li><a href="#l1-dl">&#x3C;dl></a><ul><li><a href="#sec:specification-46">Specification</a></li><li><a href="#sec:examples-42">Examples</a></li></ul></li><li><a href="#l1-dt">&#x3C;dt></a><ul><li><a href="#sec:specification-47">Specification</a></li><li><a href="#sec:examples-43">Examples</a></li></ul></li><li><a href="#l1-dd">&#x3C;dd></a><ul><li><a href="#sec:specification-48">Specification</a></li><li><a href="#sec:examples-44">Examples</a></li></ul></li><li><a href="#l1-glossary">&#x3C;glossary></a><ul><li><a href="#sec:specification-49">Specification</a></li><li><a href="#sec:examples-45">Examples</a></li></ul></li><li><a href="#l1-glossary-entry">&#x3C;glossary-entry></a><ul><li><a href="#sec:specification-50">Specification</a></li><li><a href="#sec:examples-46">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

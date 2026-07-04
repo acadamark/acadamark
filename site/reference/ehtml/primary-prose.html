@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Enscribe Vocabulary</title>
+<title>Primary prose — The eHTML Vocabulary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,8 +1412,116 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html" aria-current="page"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-title>The Enscribe Vocabulary</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>
+<div class="enscribe-playground-cta"><a href="../../live/?page=ehtml&amp;chapter=primary-prose">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The eHTML Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html" class="enscribe-toc-active" aria-current="location">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:primary-prose" book-part-type="chapter">
+      <meta>
+        <book-part-title>Primary prose</book-part-title>
+      </meta>
+      <p>The running text of a document — the paragraph, and the HTML-shaped list elements.</p>
+      <section id="l1-p">
+        <section-title><code>&#x3C;p></code></section-title>
+        <sub-section id="sec:specification">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;p></code> · JATS <code>&#x3C;p></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>normal</code> <code>lead</code> <code>intro</code> <code>abstract</code> <code>summary</code> <code>other</code></td>
+                <td>Optional classification of the paragraph’s role. Mostly used for styling (lead paragraphs render larger; abstract paragraphs styled distinctly).</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;p></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-p-1">
+&#x3C;p | A simple paragraph.></code>
+          <figure id="mp:l1-p-1" class="frameable-border">
+            <p>A simple paragraph.</p>
+            <figcaption><span class="minipage-label">Minipage 1.</span></figcaption>
+          </figure><code id="code:l1-p-2">A paragraph written without explicit tags.</code>
+          <figure id="mp:l1-p-2" class="frameable-border">
+            <p>A paragraph written without explicit tags.</p>
+            <figcaption><span class="minipage-label">Minipage 2.</span></figcaption>
+          </figure>
+          <p><i>In most cases, paragraphs do not need to be written with explicit tags. Plain markdown handles paragraph separation: blank lines delineate paragraphs. The explicit &#x3C;p> form is used when attributes (id, classes, type) are needed.</i></p><code id="code:l1-p-3">&#x3C;p type=lead | The opening paragraph of an article.></code>
+          <figure id="mp:l1-p-3" class="frameable-border">
+            <p data-paragraph-type="lead">The opening paragraph of an article.</p>
+            <figcaption><span class="minipage-label">Minipage 3.</span></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="l1-list">
+        <section-title><code>&#x3C;ul></code> / <code>&#x3C;ol></code> / <code>&#x3C;li></code></section-title>
+        <sub-section id="sec:specification-2">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;ul></code> / <code>&#x3C;ol></code> + <code>&#x3C;li></code> (HTML-native) · JATS <code>&#x3C;list></code> / <code>&#x3C;list-item></code> · <code>content</code> <code>flow</code> → <code>&#x3C;children></code></p>
+          <p>Lists are HTML-shaped: the eHTML form is the native <code>&#x3C;ul></code> / <code>&#x3C;ol></code> + <code>&#x3C;li></code>, and the render is identity. A document reaches them by any route — a person authoring <code>&#x3C;list></code> / <code>&#x3C;li></code> (or the <code>-</code> / <code>*</code> idiom), a JATS import lowering <code>&#x3C;list></code>, or another system emitting the HTML directly.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ordered vs unordered</td>
+                <td>element</td>
+                <td><code>&#x3C;ul></code> · <code>&#x3C;ol></code></td>
+                <td>The distinction is the element itself, not an attribute.</td>
+              </tr>
+              <tr>
+                <td><code>start</code></td>
+                <td>attribute</td>
+                <td>integer</td>
+                <td>First number of an <code>&#x3C;ol></code>.</td>
+              </tr>
+              <tr>
+                <td><code>reversed</code></td>
+                <td>attribute</td>
+                <td>boolean</td>
+                <td>Counts an <code>&#x3C;ol></code> down.</td>
+              </tr>
+              <tr>
+                <td><code>list-style-type</code></td>
+                <td>attribute</td>
+                <td><code>decimal</code> <code>lower-roman</code> <code>disc</code> …</td>
+                <td>Marker glyph, carried from the authoring <code>marker=</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: the <code>&#x3C;list></code> / <code>&#x3C;li></code> authoring construct (see the shorthand vocabulary), or JATS import.</p>
+        </sub-section>
+        <sub-section id="sec:examples-2">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-list-1">
+&#x3C;list ordered>
+&#x3C;li> Fit the model.
+&#x3C;li> Compute residuals.
+&#x3C;/list></code>
+          <figure id="mp:l1-list-1" class="frameable-border">
+            <ol>
+              <li>Fit the model.</li>
+              <li>Compute residuals.</li>
+            </ol>
+            <figcaption><span class="minipage-label">Minipage 4.</span></figcaption>
+          </figure>
+          <p><i>The authoring construct lowers to native <code>&#x3C;ol>&#x3C;li>…&#x3C;/li>&#x3C;/ol></code>; render is identity. JATS export translates to <code>&#x3C;list list-type="order"></code> / <code>&#x3C;list-item></code>.</i></p></section>
+        </sub-section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-next" href="emphasis-marking.html" rel="next"><span class="enscribe-toc-title">Emphasis &#x26; marking</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:primary-prose"><ul><li><a href="#l1-p">&#x3C;p></a><ul><li><a href="#sec:specification">Specification</a></li><li><a href="#sec:examples">Examples</a></li></ul></li><li><a href="#l1-list">&#x3C;ul> / &#x3C;ol> / &#x3C;li></a><ul><li><a href="#sec:specification-2">Specification</a></li><li><a href="#sec:examples-2">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Enscribe Vocabulary</title>
+<title>Stores — The eHTML Vocabulary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,8 +1412,137 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html" aria-current="page"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-title>The Enscribe Vocabulary</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>
+<div class="enscribe-playground-cta"><a href="../../live/?page=ehtml&amp;chapter=stores">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The eHTML Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html" class="enscribe-toc-active" aria-current="location">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:stores" book-part-type="chapter">
+      <meta>
+        <book-part-title>Stores</book-part-title>
+      </meta>
+      <p>Held content — data stores and reference libraries.</p>
+      <section id="l1-data">
+        <section-title><code>&#x3C;data></code></section-title>
+        <sub-section id="sec:specification-61">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;data></code> · JATS <code>&#x3C;no direct equivalent></code> · <code>content</code> <code>structured</code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;data></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-57">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-data-1">
+&#x3C;data>
+&#x3C;library format=bibtex>
+@article{goodall2024,
+author = {Goodall, Jane},
+title = {The Effect of Elephants on Climate},
+journal = {Nature},
+year = {2024}
+}
+&#x3C;/library>
+&#x3C;/data></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
+          <p><i>A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &#x3C;data> block itself produces no rendered output.</i></p>
+          <p>A <code>&#x3C;data></code> block can also store a <b>dataset</b> — a payload (CSV/TSV/JSON/…) held under an id with a <code>&#x3C;dataset></code> — that a consuming element pulls in by <code>@id</code>. A <code>&#x3C;dataset></code> is always authored in the <b>long form</b> <code>&#x3C;dataset …>…&#x3C;/dataset></code>; the pipe form would truncate the payload at the first <code>></code>, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a <code>&#x3C;table src="@id" /></code> renders it as a grid:</p><code id="code:l1-data-2">&#x3C;data>
+&#x3C;dataset #parts-stock format=csv>
+part,code,in_stock
+hex bolt,#HB-08,120
+flat washer,#FW-04,340
+lock nut,#LN-06,210
+&#x3C;/dataset>
+&#x3C;/data>
+&#x3C;table src="@parts-stock" /></code>
+          <table>
+            <thead>
+              <tr>
+                <th>part</th>
+                <th>code</th>
+                <th>in_stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>hex bolt</td>
+                <td>#HB-08</td>
+                <td>120</td>
+              </tr>
+              <tr>
+                <td>flat washer</td>
+                <td>#FW-04</td>
+                <td>340</td>
+              </tr>
+              <tr>
+                <td>lock nut</td>
+                <td>#LN-06</td>
+                <td>210</td>
+              </tr>
+            </tbody>
+          </table>
+          <p><i>Unlike the front-matter examples above, this one renders a live result: the table grid above is produced from the stored dataset. The dataset is held verbatim as opaque data — never interpreted as markup, so the <code>#</code>-prefixed part codes appear as literal cell text — and the consuming element (here, a <code>&#x26;lt;table&#x26;gt;</code>) decides how to present it. (The <code>&#x26;lt;data&#x26;gt;</code>/<code>&#x26;lt;dataset&#x26;gt;</code> declaration itself renders nothing; only the table does.)</i></p>
+          <p>The <code>&#x3C;table></code> is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: <code>&#x3C;table src="@id" /></code> renders a grid, <code>&#x3C;diagram engine src="@id" /></code> reads the bytes as its engine source (a Mermaid or abc diagram), and <code>&#x3C;code src="@id" /></code> renders them as a verbatim code listing. An <code>@id</code> that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.</p></section>
+        </sub-section>
+      </section>
+      <section id="l1-library">
+        <section-title><code>&#x3C;library></code></section-title>
+        <sub-section id="sec:specification-62">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;library></code> · JATS <code>&#x3C;no direct equivalent (entries lift into ref-list)></code> · <code>content</code> <code>opaque</code> → <code>&#x3C;parsed entries (registered in citation system)></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>format</code></td>
+                <td>kwarg</td>
+                <td><code>bibtex</code> <code>csl-json</code> <code>ris</code> <code>endnote-xml</code> <code>other</code></td>
+                <td>Attribute-form equivalent of the format-word positional. When both the positional and the kwarg are omitted, the library-load plugin auto-detects the format via citation-js (works reliably for BibTeX and CSL-JSON). A named format is passed to citation-js as a forceType.</td>
+              </tr>
+              <tr>
+                <td><code>src</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>External source (#133): a filesystem path, an http(s) URL, or any reachable URL (e.g. a GitHub raw link). The reference data is loaded from there and parsed exactly as inline content (same formats; never injected as markup). With src= the node’s own (empty) body is ignored; inline and src libraries are both valid and multiple of either merge. A failed load (unreachable / 404 / CORS-blocked / parse-fail) renders a visible error and never aborts the document (always-renders). Filesystem paths apply on the CLI/build; in the browser a relative path resolves against the document base URL and is fetched (cross-origin URLs are CORS-limited). A URL source needs an async render (the CLI render command / the browser renderAsync); a synchronous render flags it.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;library></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-58">
+          <sub-section-title>Examples</sub-section-title><code id="code:l1-library-1">
+&#x3C;library format=bibtex>
+@article{goodall2024,
+author = {Goodall, Jane},
+title = {The Effect of Elephants on Climate},
+journal = {Nature},
+year = {2024}
+}
+@book{darwin1859,
+author = {Darwin, Charles},
+title = {On the Origin of Species},
+publisher = {John Murray},
+year = {1859}
+}
+&#x3C;/library></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
+          <p><i>A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries. The library block itself produces no rendered output.</i></p><code id="code:l1-library-2">&#x3C;library format=csl-json>
+[
+{
+"id": "goodall2024",
+"type": "article-journal",
+"author": [{"family": "Goodall", "given": "Jane"}],
+"title": "The Effect of Elephants on Climate",
+"container-title": "Nature",
+"issued": {"date-parts": [[2024]]}
+}
+]
+&#x3C;/library></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p></section>
+        </sub-section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="notation.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Notation</span></a><a class="enscribe-chapter-next" href="declarations-metadata.html" rel="next"><span class="enscribe-toc-title">Declarations &#x26; metadata</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:stores"><ul><li><a href="#l1-data">&#x3C;data></a><ul><li><a href="#sec:specification-61">Specification</a></li><li><a href="#sec:examples-57">Examples</a></li></ul></li><li><a href="#l1-library">&#x3C;library></a><ul><li><a href="#sec:specification-62">Specification</a></li><li><a href="#sec:examples-58">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

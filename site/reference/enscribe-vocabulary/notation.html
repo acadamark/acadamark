@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Enscribe Vocabulary</title>
+<title>Notation — The Enscribe Vocabulary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,8 +1412,256 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html" aria-current="page"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-title>The Enscribe Vocabulary</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p></main></div>
+<div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary&amp;chapter=notation">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html" class="enscribe-toc-active" aria-current="location">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:notation" book-part-type="chapter">
+      <meta>
+        <book-part-title>Notation</book-part-title>
+      </meta>
+      <p>Notation — mathematics and code, inline and displayed.</p>
+      <section id="sh-inline-math">
+        <section-title><code>&#x3C;inline-math></code></section-title>
+        <sub-section id="sec:general-usage-49">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>inline-math</i>. Compiles to eHTML <code>&#x3C;inline-math></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;inline-math></code></li>
+            <li>Sigil: <code>&#x3C;$ … $></code></li>
+          </ul><code id="code:sh-inline-math-1">The identity &#x3C;$ a^2 + b^2 = c^2 $> holds for right triangles.</code>
+          <figure id="mp:sh-inline-math-1" class="frameable-border">
+            <p>The identity <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> holds for right triangles.</p>
+            <figcaption><span class="minipage-label">Minipage 98.</span></figcaption>
+          </figure>
+          <p><i>The <code>$</code> sigil. Opaque LaTeX content rendered inline by KaTeX and wrapped in &#x3C;inline-math> for CSS targeting. The sigil carries no attributes — id and classes are not supported for inline math.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-display-math">
+        <section-title><code>&#x3C;display-math></code></section-title>
+        <sub-section id="sec:general-usage-50">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>display-math</i>. Compiles to eHTML <code>&#x3C;display-math></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;display-math></code></li>
+            <li>Sigil: <code>&#x3C;$$ … $$></code></li>
+          </ul><code id="code:sh-display-math-1">&#x3C;$$ \sum_{i=1}^{n} x_i = X $$></code>
+          <figure id="mp:sh-display-math-1" class="frameable-border">
+            <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.9291em;vertical-align:-1.2777em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0785em;">X</span></span></span></span></span><span class="equation-number">(1)</span></display-math>
+            <figcaption><span class="minipage-label">Minipage 99.</span></figcaption>
+          </figure>
+          <p><i>The <code>$$</code> sigil. Display-mode LaTeX rendered by KaTeX on its own line; numbered by default (the equation number is appended after the KaTeX output).</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-34">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>+numbered</code></td>
+                <td>boolean</td>
+                <td>default <code>true</code></td>
+                <td>Whether this equation participates in the document-wide numbered sequence. Use +numbered (default) to number, -numbered to suppress. Can also be written as numbered=true / numbered=false. When suppressed, the equation renders without a number and is not added to the numbered counter. The config key number-equations=false suppresses all equations unless overridden per-element with +numbered.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-math">
+        <section-title><code>&#x3C;math></code></section-title>
+        <sub-section id="sec:general-usage-51">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>math</i>. Compiles to eHTML <code>&#x3C;math></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;math></code></li>
+          </ul><code id="code:sh-math-1">&#x3C;math>
+E = mc^2
+&#x3C;/math></code>
+          <figure id="mp:sh-math-1" class="frameable-border">
+            <math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8641em;"></span><span class="mord mathnormal">m</span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></math>
+            <figcaption><span class="minipage-label">Minipage 100.</span></figcaption>
+          </figure>
+          <p><i>Long-form <code>&#x26;lt;math&#x26;gt;</code> block. Semantically equivalent to the <code>&#x26;lt;$$ E = mc^2 $$&#x26;gt;</code> display-math sigil — both render block-level LaTeX math via KaTeX. Use the long-form when the source is multi-line or when explicit tag bounds aid readability; use the sigil for brevity.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-align">
+        <section-title><code>&#x3C;align></code></section-title>
+        <sub-section id="sec:general-usage-52">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>align</i>. Compiles to eHTML <code>&#x3C;align></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;align></code></li>
+          </ul><code id="code:sh-align-1">&#x3C;align>
+x^2 + y^2 &#x26;= z^2 \\
+a + b &#x26;= c
+&#x3C;/align></code>
+          <figure id="mp:sh-align-1" class="frameable-border">
+            <align><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.7241em;vertical-align:-1.1121em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6121em;"><span style="top:-3.7479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.2479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">b</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1121em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6121em;"><span style="top:-3.7479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.044em;">z</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.2479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">c</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1121em;"><span></span></span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></align>
+            <figcaption><span class="minipage-label">Minipage 101.</span></figcaption>
+          </figure>
+          <p><i>Two aligned equations. The <code>&#x26;</code> marks the alignment column (here, the <code>=</code> sign). Handler wraps in <code>\begin{aligned}...\end{aligned}</code> (KaTeX-compatible variant of LaTeX’s <code>align</code>).</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-eqnarray">
+        <section-title><code>&#x3C;eqnarray></code></section-title>
+        <sub-section id="sec:general-usage-53">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>eqnarray</i>. Compiles to eHTML <code>&#x3C;eqnarray></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;eqnarray></code></li>
+          </ul><code id="code:sh-eqnarray-1">&#x3C;eqnarray>
+f(x) &#x26;=&#x26; x^2 \\
+g(x) &#x26;=&#x26; 2x
+&#x3C;/eqnarray></code>
+          <figure id="mp:sh-eqnarray-1" class="frameable-border">
+            <eqnarray><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.7241em;vertical-align:-1.1121em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6121em;"><span style="top:-3.7479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span><span style="top:-2.2479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0359em;">g</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1121em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6121em;"><span style="top:-3.7479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span></span></span><span style="top:-2.2479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1121em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:1em;"></span><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6121em;"><span style="top:-3.7479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.2479em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord mathnormal">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.1121em;"><span></span></span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></eqnarray>
+            <figcaption><span class="minipage-label">Minipage 102.</span></figcaption>
+          </figure>
+          <p><i>Two equations rendered via KaTeX’s <code>aligned</code> env (the supported equivalent of LaTeX’s <code>eqnarray</code>).</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-cases">
+        <section-title><code>&#x3C;cases></code></section-title>
+        <sub-section id="sec:general-usage-54">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>cases</i>. Compiles to eHTML <code>&#x3C;cases></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;cases></code></li>
+          </ul><code id="code:sh-cases-1">&#x3C;cases>
+x^2 &#x26; \text{if } x \ge 0 \\
+-x^2 &#x26; \text{if } x &#x3C; 0
+&#x3C;/cases></code>
+          <figure id="mp:sh-cases-1" class="frameable-border">
+            <cases><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:3em;vertical-align:-1.25em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord">−</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:1em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord">if </span></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">0</span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord">if </span></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&#x3C;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span><span class="equation-number">(1)</span></cases>
+            <figcaption><span class="minipage-label">Minipage 103.</span></figcaption>
+          </figure>
+          <p><i>A two-case piecewise definition. Handler wraps in <code>\begin{cases}...\end{cases}</code>.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-matrix">
+        <section-title><code>&#x3C;matrix></code></section-title>
+        <sub-section id="sec:general-usage-55">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>matrix</i>. Compiles to eHTML <code>&#x3C;matrix></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;matrix></code></li>
+          </ul><code id="code:sh-matrix-1">&#x3C;matrix>
+1 &#x26; 2 \\
+3 &#x26; 4
+&#x3C;/matrix></code>
+          <figure id="mp:sh-matrix-1" class="frameable-border">
+            <matrix><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.4em;vertical-align:-0.95em;"></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.45em;"><span style="top:-3.61em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span><span style="top:-2.41em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.95em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.45em;"><span style="top:-3.61em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-2.41em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.95em;"><span></span></span></span></span></span></span></span></span></span></span></span><span class="equation-number">(1)</span></matrix>
+            <figcaption><span class="minipage-label">Minipage 104.</span></figcaption>
+          </figure>
+          <p><i>A 2×2 matrix. The handler wraps the body in <code>\begin{matrix}...\end{matrix}</code> before KaTeX renders.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-inline-code">
+        <section-title><code>&#x3C;inline-code></code></section-title>
+        <sub-section id="sec:general-usage-56">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>inline-code</i>. Compiles to eHTML <code>&#x3C;inline-code></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;inline-code></code></li>
+            <li>Sigil: <code>&#x3C;</code> … <code>></code></li>
+            <li>Markdown: <code>…</code></li>
+          </ul><code id="code:sh-inline-code-1">Assign with &#x3C;` x = 1 `> at the top of the function.</code>
+          <figure id="mp:sh-inline-code-1" class="frameable-border">
+            <p>Assign with <code>x = 1 </code>at the top of the function.</p>
+            <figcaption><span class="minipage-label">Minipage 105.</span></figcaption>
+          </figure>
+          <p><i>The single-backtick sigil. With no pipe, the whole body is opaque code content rendered as &#x3C;code> (the same output as a markdown backtick span).</i></p><code id="code:sh-inline-code-2">Call &#x3C;` python | factorial(n) `> to recurse.</code>
+          <figure id="mp:sh-inline-code-2" class="frameable-border">
+            <p>Call <code class="language-python">factorial(n) </code>to recurse.</p>
+            <figcaption><span class="minipage-label">Minipage 106.</span></figcaption>
+          </figure>
+          <p><i>The first positional token before the pipe is the language, emitted as a <code>language-X</code> class on the &#x3C;code> (discoverable by highlighters; the interpreter applies no highlighting itself).</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-code">
+        <section-title><code>&#x3C;code></code></section-title>
+        <sub-section id="sec:general-usage-57">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>code</i>. Compiles to eHTML <code>&#x3C;code></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;code></code></li>
+          </ul><code id="code:sh-code-1">The function is `factorial`.</code>
+          <figure id="mp:sh-code-1" class="frameable-border">
+            <p>The function is <code>factorial</code>.</p>
+            <figcaption><span class="minipage-label">Minipage 107.</span></figcaption>
+          </figure>
+          <p><i>Plain markdown backticks produce inline &#x3C;code>. The most common authoring path.</i></p><code id="code:sh-code-2">Use `&#x3C;`code`>` for inline code.</code>
+          <figure id="mp:sh-code-2" class="frameable-border">
+            <p>Use <code>&#x3C;</code>code<code>></code> for inline code.</p>
+            <figcaption><span class="minipage-label">Minipage 108.</span></figcaption>
+          </figure>
+          <p><i>The enscribe sigil form. Equivalent to plain markdown backticks but supports attributes.</i></p><code id="code:sh-code-3">&#x3C;code language=python | def hello(): print("hi")></code>
+          <figure id="mp:sh-code-3" class="frameable-border"><code class="language-python">def hello(): print("hi")</code>
+            <figcaption><span class="minipage-label">Minipage 109.</span></figcaption>
+          </figure><code id="code:sh-code-4">&#x3C;code #factorial-impl language=python | def factorial(n):></code>
+          <figure id="mp:sh-code-4" class="frameable-border"><code class="language-python" id="mp-sh-code-4-factorial-impl">def factorial(n):</code>
+            <figcaption><span class="minipage-label">Minipage 110.</span></figcaption>
+          </figure>
+        </sub-section>
+        <sub-section id="sec:arguments-35">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>language</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The programming language of the code. Maps to a class like “language-python” for syntax highlighting via shiki/prism.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-code-block">
+        <section-title><code>&#x3C;code-block></code></section-title>
+        <sub-section id="sec:general-usage-58">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>code-block</i>. Compiles to eHTML <code>&#x3C;code-block></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;code-block></code></li>
+            <li>Sigil: <code>&#x3C;``` … ``` ></code></li>
+            <li>Markdown: <code>…</code></li>
+          </ul><code id="code:sh-code-block-1">&#x3C;``` python | print("hello, world") ```></code>
+          <figure id="mp:sh-code-block-1" class="frameable-border">
+            <pre><code class="language-python"> print("hello, world") </code></pre>
+            <figcaption><span class="minipage-label">Minipage 111.</span></figcaption>
+          </figure>
+          <p><i>The triple-backtick sigil. The first positional token is the language (emitted as a <code>language-X</code> class on the &#x3C;code>); the pipe separates it from the verbatim, newline-preserving content.</i></p><code id="code:sh-code-block-2">&#x3C;``` this is all content ```></code>
+          <figure id="mp:sh-code-block-2" class="frameable-border">
+            <pre><code> this is all content </code></pre>
+            <figcaption><span class="minipage-label">Minipage 112.</span></figcaption>
+          </figure>
+          <p><i>The no-pipe form: the entire body is opaque content with no language extraction.</i></p></section>
+        </sub-section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="formal-statements.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Formal statements</span></a><a class="enscribe-chapter-next" href="stores.html" rel="next"><span class="enscribe-toc-title">Stores</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:notation"><ul><li><a href="#sh-inline-math">&#x3C;inline-math></a><ul><li><a href="#sec:general-usage-49">General Usage</a></li></ul></li><li><a href="#sh-display-math">&#x3C;display-math></a><ul><li><a href="#sec:general-usage-50">General Usage</a></li><li><a href="#sec:arguments-34">Arguments</a></li></ul></li><li><a href="#sh-math">&#x3C;math></a><ul><li><a href="#sec:general-usage-51">General Usage</a></li></ul></li><li><a href="#sh-align">&#x3C;align></a><ul><li><a href="#sec:general-usage-52">General Usage</a></li></ul></li><li><a href="#sh-eqnarray">&#x3C;eqnarray></a><ul><li><a href="#sec:general-usage-53">General Usage</a></li></ul></li><li><a href="#sh-cases">&#x3C;cases></a><ul><li><a href="#sec:general-usage-54">General Usage</a></li></ul></li><li><a href="#sh-matrix">&#x3C;matrix></a><ul><li><a href="#sec:general-usage-55">General Usage</a></li></ul></li><li><a href="#sh-inline-code">&#x3C;inline-code></a><ul><li><a href="#sec:general-usage-56">General Usage</a></li></ul></li><li><a href="#sh-code">&#x3C;code></a><ul><li><a href="#sec:general-usage-57">General Usage</a></li><li><a href="#sec:arguments-35">Arguments</a></li></ul></li><li><a href="#sh-code-block">&#x3C;code-block></a><ul><li><a href="#sec:general-usage-58">General Usage</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {
