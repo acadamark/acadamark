@@ -413,6 +413,35 @@ registry's CDN/bundle-loader machinery for mermaid/abc), or build-only?; (5) the
 largely exists and needs a DOM entry point plus severing build-only state dependencies; the audit confirms or
 refutes that before any implementation.
 
+**Scope correction — the resolver covers ALL build-engine derivations, not just references.** The original
+framing named citations / notes / cross-references. That undercounts. The `.emd` build engine performs a whole
+class of **derivations** that the eHTML runtime must *also* be able to perform on load, or a hand-authored /
+imported / externally-emitted eHTML document is inert (missing its numbers, ToC, labels). The full set the
+origin-agnostic resolver must eventually cover:
+
+- **Reference resolution** — cites, refs, notes, bibliography (partially built; browser path exists).
+- **Counter-based numbering** — **section numbers**, equation numbers, figure/table numbers, theorem-family
+  numbers. Today these are computed at build and *baked in*; the runtime cannot currently derive them.
+- **ToC / nav construction** — built from document structure at build; the runtime must be able to construct it.
+- **Any other structure-derived output** the build engine produces that isn't authored by hand.
+
+The test for each: *can it run in the browser, from eHTML tags alone, without the shorthand parse or the build
+context?* The queued live-resolution audit must inventory **every** build-engine derivation against this test —
+not just the reference subset.
+
+**Prerequisite ordering — semantic elements enable live derivation.** The span→custom-element conversion (the
+`<span class="section-number">` → `<section-number>` cleanup) is not merely a semantics-hygiene fix; it is a
+**precondition** for live derivation. The runtime can *find and populate* a real `<section-number>` element on
+load; it cannot do anything with a frozen `<span class="section-number">3.2.1</span>` baked at build. So the
+sequence is: **(1) custom semantic elements first** (gives the runtime real targets), **(2) live derivation
+second** (the runtime computes into those targets). The two efforts are one architecture: *eHTML is a semantic
+format whose engine derives everything the build engine derives, in the browser, from real elements.*
+
+**Relationship to the span audit and the numbering insight.** The span-drift finding (output was
+under-semantic: class-strings on meaningless elements) and this derivation-gap finding (capability was
+under-portable: locked in the build engine) are two views of the same gap — eHTML received a diminished version
+of what the build engine does. Making eHTML a first-class self-sufficient format means closing both: real
+elements (span audit) + full derivation at load (this scope correction).
 
 ## Not a decision — recorded for accuracy
 
@@ -420,3 +449,4 @@ refutes that before any implementation.
 resolve in the website build identically to a standalone build. The `unknown tag <handler for cite>`
 warnings come from documentation pages that cite without a library, and warn the same way standalone —
 example-content noise (the #281 class), not a website bug. No action; noted so the trail is accurate.
+
