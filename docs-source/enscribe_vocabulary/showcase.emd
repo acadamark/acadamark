@@ -2,7 +2,7 @@
 
 Meta, sections, inline + display math, a theorem, a numbered figure, and a cross-reference, in one document. (Citations are authored with `<cite>` + `<library>`; they resolve via the build / async render path, not shown live here — see issue #273.)
 
-<code #code:sh-showcase-1>
+<code-block #code:sh-showcase-1>
 <meta type=article>
 <title | On the Convergence of Iterative Maps>
 <author | A. Researcher>
@@ -23,7 +23,7 @@ defines the fixed point referenced throughout.
 The schematic in <ref @fig:map> sketches the iteration, and equation <ref @eqn:fix> states the fixed-point condition.
 
 <fig #fig:map src=iteration.png | The iteration approaching its fixed point.>
-</code>
+</code-block>
 
 <minipage #mp:sh-showcase-1>
 <meta type=article>
@@ -54,7 +54,7 @@ The schematic in <ref @fig:map> sketches the iteration, and equation <ref @eqn:f
 
 A definition, a list, a table, and a callout — the everyday block constructs together.
 
-<code #code:sh-showcase-2>
+<code-block #code:sh-showcase-2>
 <section #sec:method | Method>
 
 <definition #def:residual | The *residual* is the difference between observed and predicted values.>
@@ -73,7 +73,7 @@ mean,0.01
 sd,0.98>
 
 <aside type=tip | Standardize residuals before comparing across models.>
-</code>
+</code-block>
 
 <minipage #mp:sh-showcase-2>
 <section #sec:method | Method>

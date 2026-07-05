@@ -41,7 +41,7 @@ Registers:
 
 *The `id` enables cross-referencing with `&lt;ref @elephant&gt;` (or the canonical `&lt;ref @fig:elephant&gt;` colon-prefix form). Numbered by default; the figcaption gets a "Figure N." label span prepended.*
 
-<code #code:sh-fig-4>
+<code-block #code:sh-fig-4>
 <fig #revenue-table type=table |
 <table>
   <tr><th>Quarter</th><th>Revenue</th></tr>
@@ -50,7 +50,7 @@ Registers:
 </table>
 Quarterly revenue for fiscal year 2024.
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-fig-4>
 <fig #revenue-table type=table |
@@ -90,12 +90,12 @@ Registers:
 
 - Canonical: `<table>`
 
-<code #code:sh-table-1>
+<code-block #code:sh-table-1>
 | Name | Price |
 |------|-------|
 | foo  | 1     |
 | bar  | 2     |
-</code>
+</code-block>
 
 <minipage #mp:sh-table-1>
 | Name | Price |
@@ -106,12 +106,12 @@ Registers:
 
 *Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.*
 
-<code #code:sh-table-2>
+<code-block #code:sh-table-2>
 <csv | name,price
 foo,1
 bar,2
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-table-2>
 <csv | name,price
@@ -122,14 +122,14 @@ bar,2
 
 *The `&lt;csv&gt;` shorthand lowers to `&lt;table csv&gt;` (the standalone `&lt;csv&gt;` / `&lt;tsv&gt;` tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler's csv engine. `&lt;csv | ... &gt;` and the qualifying form `&lt;table csv | ... &gt;` converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying `&lt;table json | ... &gt;` form — there is no standalone `&lt;json&gt;` shorthand. See the `&lt;csv&gt;` vocabulary entry for engine attributes (header control, alignment, etc.).*
 
-<code #code:sh-table-3>
+<code-block #code:sh-table-3>
 <table #revenue type=results>
   <caption | Quarterly revenue>
   <tr><th>Quarter</th><th>Revenue</th></tr>
   <tr><td>Q1</td><td>$100M</td></tr>
   <tr><td>Q2</td><td>$120M</td></tr>
 </table>
-</code>
+</code-block>
 
 <minipage #mp:sh-table-3>
 <table #revenue type=results>
@@ -168,7 +168,7 @@ Registers:
 
 - Canonical: `<caption>` (child of a frameable)
 
-<code #code:sh-caption-1>
+<code-block #code:sh-caption-1>
 <table>
   <caption | Annual rainfall by region, 2020–2024.>
 
@@ -177,7 +177,7 @@ Registers:
   | Congo basin | 1600 |
   | Serengeti | 800 |
 </table>
-</code>
+</code-block>
 
 <minipage #mp:sh-caption-1>
 <table>
@@ -218,14 +218,14 @@ Registers:
 
 - Canonical: `<diagram>`
 
-<code #code:sh-diagram-1>
+<code-block #code:sh-diagram-1>
 <diagram mermaid>
 graph LR
   A[Start] --> B{Decision}
   B -->|yes| C[OK]
   B -->|no| D[Stop]
 </diagram>
-</code>
+</code-block>
 
 <minipage #mp:sh-diagram-1>
 <diagram mermaid>
@@ -238,14 +238,14 @@ graph LR
 
 *The `mermaid` format word selects the Mermaid engine. The handler emits the same `&lt;pre class="mermaid" data-enscribe-dsl="mermaid"&gt;` contract as the legacy `&lt;mermaid&gt;` shorthand expands to.*
 
-<code #code:sh-diagram-2>
+<code-block #code:sh-diagram-2>
 <diagram abc>
 X:1
 T:Scale
 K:C
 CDEFGABc
 </diagram>
-</code>
+</code-block>
 
 <minipage #mp:sh-diagram-2>
 <diagram abc>
@@ -276,11 +276,11 @@ Registers:
 
 - Canonical: `<svg>`
 
-<code #code:sh-svg-1>
+<code-block #code:sh-svg-1>
 <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
   <circle cx="50" cy="50" r="40" fill="blue" />
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-svg-1>
 <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
@@ -290,11 +290,11 @@ Registers:
 
 *A lone inline SVG. `&lt;svg&gt;` is numbered by default (it shares the figure counter), so `-numbered` is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &lt;svg&gt; element.*
 
-<code #code:sh-svg-2>
+<code-block #code:sh-svg-2>
 <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
   <circle cx="50" cy="50" r="40" />
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-svg-2>
 <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
@@ -337,11 +337,11 @@ Registers:
 
 *The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `frame` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;frame&gt;, so the class appears automatically.*
 
-<code #code:sh-frame-2>
+<code-block #code:sh-frame-2>
 <frame type=note title="Important" |
 Make sure to read this carefully.
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-frame-2>
 <frame type=note title="Important" |
@@ -351,13 +351,13 @@ Make sure to read this carefully.
 
 *With a title rendered at the top.*
 
-<code #code:sh-frame-3>
+<code-block #code:sh-frame-3>
 <frame #fig:method-box +numbered caption="Workflow steps" |
 1. Collect data.
 2. Clean.
 3. Model.
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-frame-3>
 <frame #fig:method-box +numbered caption="Workflow steps" |
@@ -401,14 +401,14 @@ Registers:
 
 *The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `minipage` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;minipage&gt;, so the class appears automatically. The body renders as sealed eHTML.*
 
-<code #code:sh-minipage-2>
+<code-block #code:sh-minipage-2>
 <minipage #mp:compare +numbered caption="Side-by-side comparison" |
 A figure here counts privately.
 
 <fig #fig:left src="left.png" | Left panel.>
 <fig #fig:right src="right.png" | Right panel.>
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-minipage-2>
 <minipage #mp:compare +numbered caption="Side-by-side comparison" |

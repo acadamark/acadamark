@@ -19,13 +19,13 @@ Assign with `x = 1`, and call <`python | factorial(n)`> to recurse.
 
 A code block holds a verbatim, multi-line listing. Write it with the mirrored triple-backtick sigil — the language goes before the pipe — or with a plain markdown fence.
 
-<code #code:block-basic>
+<code-block #code:block-basic>
 <``` python |
 import math
 radius = 2.0
 area = math.pi * radius ** 2
 ```>
-</code>
+</code-block>
 
 <minipage #mp:block-basic>
 <``` python |

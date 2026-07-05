@@ -4,7 +4,7 @@
 
 A citation points at a source by key with `<cite key>`. References are loaded once with `<library>` — paste entries straight from a reference manager — and the reference list is printed with `<bibliography>`. Citations resolve at build time against the loaded library.
 
-<code #code:cite-basic>
+<code-block #code:cite-basic>
 <library format=bibtex>
 @article{goodall2024, author={Jane Goodall}, title={Field Notes}, journal={Nature}, year={2024}}
 </library>
@@ -13,7 +13,7 @@ The data supports this claim <cite goodall2024>.
 
 <bibliography>
 </bibliography>
-</code>
+</code-block>
 
 The `<cite goodall2024>` marker renders as "(Goodall 2024)", and `<bibliography>` prints the full entry. Cite several sources at once by listing keys: `<cite smith2020 jones2021>`.
 
@@ -32,11 +32,11 @@ library — src (load from an external file), src=references.bib
 
 A cross-reference links to any numbered target — a figure, table, equation, theorem, or section — by its id, using the `@` reference sigil. The link text and number fill in automatically.
 
-<code #code:ref-basic>
+<code-block #code:ref-basic>
 <fig #fig:scatter src=scatter.png | A scatter plot of the data.>
 
 As shown in <ref @fig:scatter>, the trend is clear.
-</code>
+</code-block>
 
 <minipage #mp:ref-basic>
 <fig #fig:scatter src=scatter.png | A scatter plot of the data.>
@@ -55,10 +55,10 @@ The `#` sigil *declares* an id (`<fig #fig:scatter>`); the `@` sigil *references
 
 A note attaches a comment to the text — one note type with three positions. `<note>` (position `foot`/`end`) becomes a numbered footnote collected at the foot of the document; `<note position=margin>` places the same numbered note beside the text in the margin.
 
-<code #code:notes-basic>
+<code-block #code:notes-basic>
 The result holds in general<note | With the usual regularity assumptions.>. A lighter
 note can sit in the margin instead.<note position=margin | Margins suit short, glanceable remarks.>
-</code>
+</code-block>
 
 <minipage #mp:notes-basic>
 The result holds in general<note | With the usual regularity assumptions.>. A lighter
@@ -76,7 +76,7 @@ Footnotes hover-preview their content on screen. Set `<config note-position=marg
 
 `<term>` marks a defined term inline where you introduce it. A `<glossary>` collects terms and their definitions, each in a `<glossary-entry>` built from a `<dt>` term and a `<dd>` definition.
 
-<code #code:term-basic>
+<code-block #code:term-basic>
 An <term | eigenvector> is a non-zero vector that scales under a transformation.
 
 <glossary>
@@ -85,7 +85,7 @@ An <term | eigenvector> is a non-zero vector that scales under a transformation.
 <dd | A non-zero vector whose direction a transformation preserves.>
 </glossary-entry>
 </glossary>
-</code>
+</code-block>
 
 <minipage #mp:term-basic>
 An <term | eigenvector> is a non-zero vector that scales under a transformation.

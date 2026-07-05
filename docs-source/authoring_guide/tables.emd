@@ -4,14 +4,14 @@
 
 A table is `<table>` with a format and the data written inline. The first row is the header by default, and a `caption` titles it:
 
-<code #code:table-basic>
+<code-block #code:table-basic>
 <table csv caption="Quarterly revenue">
 Quarter, Revenue, Growth
 Q1, 1.2M, —
 Q2, 1.5M, 25%
 Q3, 1.9M, 27%
 </table>
-</code>
+</code-block>
 
 <minipage #mp:table-basic>
 <table csv caption="Quarterly revenue">

@@ -22,13 +22,13 @@ Registers:
 
 *The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at eHTML.*
 
-<code #code:sh-blockquote-2>
+<code-block #code:sh-blockquote-2>
 <quote cite=https://example.com/source |
 A longer quotation that may contain multiple paragraphs.
 
 The second paragraph of the quotation.
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-blockquote-2>
 <quote cite=https://example.com/source |
@@ -38,11 +38,11 @@ The second paragraph of the quotation.
 >
 </minipage>
 
-<code #code:sh-blockquote-3>
+<code-block #code:sh-blockquote-3>
 <quote type=epigraph |
 All happy families are alike; each unhappy family is unhappy in its own way.
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-blockquote-3>
 <quote type=epigraph |
@@ -283,12 +283,12 @@ Registers:
 
 - Canonical: `<doi>`
 
-<code #code:sh-doi-1>
+<code-block #code:sh-doi-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <doi | 10.1234/elephants.2024>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source. The document's own DOI. JATS export writes it as an `<article-id pub-id-type="doi">`.*
 

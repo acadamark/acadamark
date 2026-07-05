@@ -7,13 +7,13 @@ Math is written in LaTeX and rendered by KaTeX. Inline math sits in the line wit
 Inline: `<$ a^2 + b^2 = c^2 $>` or `$a^2 + b^2 = c^2$`
 Display: `<$$ … $$>` or `$$ … $$`
 
-<code #code:math-basic>
+<code-block #code:math-basic>
 The identity <$ a^2 + b^2 = c^2 $> holds for right triangles, and
 
 <$$ \sum_{i=1}^{n} x_i = X $$>
 
 sets the sum on its own line.
-</code>
+</code-block>
 
 <minipage #mp:math-basic>
 The identity <$ a^2 + b^2 = c^2 $> holds for right triangles, and
@@ -34,12 +34,12 @@ sets the sum on its own line.
 
 `<align>` lines up a sequence of equations on a chosen column. Mark the alignment point with `&` and end each line with `\\`.
 
-<code #code:align-basic>
+<code-block #code:align-basic>
 <align>
 (a + b)^2 &= a^2 + 2ab + b^2 \\
 (a - b)^2 &= a^2 - 2ab + b^2
 </align>
-</code>
+</code-block>
 
 <minipage #mp:align-basic>
 <align>
@@ -59,12 +59,12 @@ sets the sum on its own line.
 
 `<cases>` sets a piecewise definition. Each line is a value, a `&`, then its condition, ended with `\\`.
 
-<code #code:cases-basic>
+<code-block #code:cases-basic>
 <cases>
 x^2 & \text{if } x \ge 0 \\
 -x^2 & \text{if } x < 0
 </cases>
-</code>
+</code-block>
 
 <minipage #mp:cases-basic>
 <cases>
@@ -80,12 +80,12 @@ x^2 & \text{if } x \ge 0 \\
 
 `<matrix>` lays out a grid of entries. Separate columns with `&` and rows with `\\`.
 
-<code #code:matrix-basic>
+<code-block #code:matrix-basic>
 <matrix>
 1 & 2 \\
 3 & 4
 </matrix>
-</code>
+</code-block>
 
 <minipage #mp:matrix-basic>
 <matrix>

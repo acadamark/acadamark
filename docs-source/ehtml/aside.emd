@@ -34,14 +34,14 @@ Produced by: canonical `<aside>`.
 <aside type=warning .important | Be careful here.>
 </minipage>
 
-<code #code:l1-aside-3>
+<code-block #code:l1-aside-3>
 <aside type=callout |
 This is a multi-line callout.
 
 It can contain multiple paragraphs and other content like
 <strong | emphasis> and inline references.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-aside-3>
 <aside type=callout |
@@ -136,13 +136,13 @@ Produced by: canonical `<details>`.
 
 <sub-section | Examples>
 
-<code #code:l1-details-1>
+<code-block #code:l1-details-1>
 <details>
   <summary | More background>
   Additional context for the curious reader. The summary is the
   visible heading; this body shows when the disclosure is opened.
 </details>
-</code>
+</code-block>
 
 <minipage #mp:l1-details-1>
 <details>
@@ -154,12 +154,12 @@ Produced by: canonical `<details>`.
 
 *The canonical shape: a &lt;summary&gt; for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.*
 
-<code #code:l1-details-2>
+<code-block #code:l1-details-2>
 <details +open>
   <summary | Always-expanded section>
   This disclosure is expanded by default.
 </details>
-</code>
+</code-block>
 
 <minipage #mp:l1-details-2>
 <details +open>

@@ -51,7 +51,7 @@ Produced by: canonical `<fig>` · alias `<figure>`.
 
 *The `id` enables cross-referencing with `&lt;ref @elephant&gt;` (or the canonical `&lt;ref @fig:elephant&gt;` colon-prefix form). Numbered by default; the figcaption gets a "Figure N." label span prepended.*
 
-<code #code:l1-fig-4>
+<code-block #code:l1-fig-4>
 <fig #revenue-table type=table |
 <table>
   <tr><th>Quarter</th><th>Revenue</th></tr>
@@ -60,7 +60,7 @@ Produced by: canonical `<fig>` · alias `<figure>`.
 </table>
 Quarterly revenue for fiscal year 2024.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-fig-4>
 <fig #revenue-table type=table |
@@ -97,12 +97,12 @@ Produced by: canonical `<table>`.
 
 <sub-section | Examples>
 
-<code #code:l1-table-1>
+<code-block #code:l1-table-1>
 | Name | Price |
 |------|-------|
 | foo  | 1     |
 | bar  | 2     |
-</code>
+</code-block>
 
 <minipage #mp:l1-table-1>
 | Name | Price |
@@ -113,12 +113,12 @@ Produced by: canonical `<table>`.
 
 *Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.*
 
-<code #code:l1-table-2>
+<code-block #code:l1-table-2>
 <csv | name,price
 foo,1
 bar,2
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-table-2>
 <csv | name,price
@@ -129,14 +129,14 @@ bar,2
 
 *The `&lt;csv&gt;` shorthand lowers to `&lt;table csv&gt;` (the standalone `&lt;csv&gt;` / `&lt;tsv&gt;` tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler's csv engine. `&lt;csv | ... &gt;` and the qualifying form `&lt;table csv | ... &gt;` converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying `&lt;table json | ... &gt;` form — there is no standalone `&lt;json&gt;` shorthand. See the `&lt;csv&gt;` vocabulary entry for engine attributes (header control, alignment, etc.).*
 
-<code #code:l1-table-3>
+<code-block #code:l1-table-3>
 <table #revenue type=results>
   <caption | Quarterly revenue>
   <tr><th>Quarter</th><th>Revenue</th></tr>
   <tr><td>Q1</td><td>$100M</td></tr>
   <tr><td>Q2</td><td>$120M</td></tr>
 </table>
-</code>
+</code-block>
 
 <minipage #mp:l1-table-3>
 <table #revenue type=results>
@@ -163,7 +163,7 @@ Produced by: canonical `<caption>`; the `caption=` kwarg on a frameable; a figur
 
 <sub-section | Examples>
 
-<code #code:l1-caption-1>
+<code-block #code:l1-caption-1>
 <table>
   <caption | Annual rainfall by region, 2020–2024.>
 
@@ -171,7 +171,7 @@ Produced by: canonical `<caption>`; the `caption=` kwarg on a frameable; a figur
   |---|---|
   | Congo basin | 1600 |
 </table>
-</code>
+</code-block>
 
 <minipage #mp:l1-caption-1>
 <table>
@@ -201,14 +201,14 @@ Produced by: canonical `<diagram>`.
 
 <sub-section | Examples>
 
-<code #code:l1-diagram-1>
+<code-block #code:l1-diagram-1>
 <diagram mermaid>
 graph LR
   A[Start] --> B{Decision}
   B -->|yes| C[OK]
   B -->|no| D[Stop]
 </diagram>
-</code>
+</code-block>
 
 <minipage #mp:l1-diagram-1>
 <diagram mermaid>
@@ -221,14 +221,14 @@ graph LR
 
 *The `mermaid` format word selects the Mermaid engine. The handler emits the same `&lt;pre class="mermaid" data-enscribe-dsl="mermaid"&gt;` contract as the legacy `&lt;mermaid&gt;` shorthand expands to.*
 
-<code #code:l1-diagram-2>
+<code-block #code:l1-diagram-2>
 <diagram abc>
 X:1
 T:Scale
 K:C
 CDEFGABc
 </diagram>
-</code>
+</code-block>
 
 <minipage #mp:l1-diagram-2>
 <diagram abc>
@@ -262,11 +262,11 @@ Produced by: canonical `<svg>`.
 
 <sub-section | Examples>
 
-<code #code:l1-svg-1>
+<code-block #code:l1-svg-1>
 <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
   <circle cx="50" cy="50" r="40" fill="blue" />
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-svg-1>
 <svg -numbered viewBox="0 0 100 100" width=200 height=200 |
@@ -276,11 +276,11 @@ Produced by: canonical `<svg>`.
 
 *A lone inline SVG. `&lt;svg&gt;` is numbered by default (it shares the figure counter), so `-numbered` is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &lt;svg&gt; element.*
 
-<code #code:l1-svg-2>
+<code-block #code:l1-svg-2>
 <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
   <circle cx="50" cy="50" r="40" />
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-svg-2>
 <svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
@@ -320,11 +320,11 @@ Produced by: canonical `<frame>`.
 
 *The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `frame` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;frame&gt;, so the class appears automatically.*
 
-<code #code:l1-frame-2>
+<code-block #code:l1-frame-2>
 <frame type=note title="Important" |
 Make sure to read this carefully.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-frame-2>
 <frame type=note title="Important" |
@@ -334,13 +334,13 @@ Make sure to read this carefully.
 
 *With a title rendered at the top.*
 
-<code #code:l1-frame-3>
+<code-block #code:l1-frame-3>
 <frame #fig:method-box +numbered caption="Workflow steps" |
 1. Collect data.
 2. Clean.
 3. Model.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-frame-3>
 <frame #fig:method-box +numbered caption="Workflow steps" |
@@ -381,14 +381,14 @@ Produced by: canonical `<minipage>`.
 
 *The simplest case. The handler emits a &lt;figure&gt; wrapper (the vocab html_output.element `minipage` is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &lt;minipage&gt;, so the class appears automatically. The body renders as sealed eHTML.*
 
-<code #code:l1-minipage-2>
+<code-block #code:l1-minipage-2>
 <minipage #mp:compare +numbered caption="Side-by-side comparison" |
 A figure here counts privately.
 
 <fig #fig:left src="left.png" | Left panel.>
 <fig #fig:right src="right.png" | Right panel.>
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-minipage-2>
 <minipage #mp:compare +numbered caption="Side-by-side comparison" |

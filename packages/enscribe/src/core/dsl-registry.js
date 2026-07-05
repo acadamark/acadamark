@@ -91,6 +91,14 @@ export const LANGUAGES = new Map([
   ['tsv',      'tsv'],
   ['math',     'math'],
   ['code',     'code'],
+  // The long-form named `<code-block>` tag, mirroring `['code', 'code']` for the
+  // named `<code>` tag. Without this row getContentHandler('code-block') falls
+  // through to 'default', leaving the body non-opaque: recursive-content re-parses
+  // it into child nodes and code-block.js (which reads a string body) drops it,
+  // rendering an empty <pre>. The ``` sigil already maps to 'code-block' above; the
+  // named tag needs the same handler so `<code-block …>…</code-block>` bodies stay
+  // opaque verbatim source.
+  ['code-block', 'code-block'],
   // mermaid, abc — the external-library DSLs. Their parse-time entries are DERIVED
   // from the registration seeds (core/dsl-registrations.js), not hand-written: a
   // seed held `opaqueAtParse` yields `[name, name]` here (#341). A new external DSL

@@ -13,9 +13,11 @@ import assert from 'node:assert/strict';
 import { LANGUAGES, getContentHandler } from '../src/core/dsl-registry.js';
 
 // The flat map, frozen here as the byte-identity oracle: identifier → handler,
-// in insertion order. LANGUAGES and getContentHandler() must match. The first 18
-// entries are the pre-reshape (#175) map, preserved entry-for-entry; later
-// entries are post-reshape additions (each a deliberate new opaque-content host).
+// in insertion order. LANGUAGES and getContentHandler() must match. Entries are
+// the pre-reshape (#175) map preserved entry-for-entry, plus deliberate additions
+// (each a new opaque-content host) — including `['code-block','code-block']`,
+// inserted next to its named-tag sibling `['code','code']` so the long-form
+// `<code-block>` tag keeps its body opaque like the ``` sigil.
 const EXPECTED = [
   ['$',        'math'],
   ['$$',       'math-display'],
@@ -25,6 +27,7 @@ const EXPECTED = [
   ['tsv',      'tsv'],
   ['math',     'math'],
   ['code',     'code'],
+  ['code-block', 'code-block'],
   ['mermaid',  'mermaid'],
   ['abc',      'abc'],
   ['diagram',  'diagram'],

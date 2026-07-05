@@ -25,12 +25,12 @@ Produced by: canonical `<theorem>`.
 
 *Short-form with pipe content. The body is parsed normally.*
 
-<code #code:l1-theorem-2>
+<code-block #code:l1-theorem-2>
 <theorem name="Pythagoras" #thm:pyth>
 If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
 is right-angled.
 </theorem>
-</code>
+</code-block>
 
 <minipage #mp:l1-theorem-2>
 <theorem name="Pythagoras" #thm:pyth>
@@ -66,12 +66,12 @@ Produced by: canonical `<lemma>`.
 <lemma | Every continuous function on a compact set attains its maximum.>
 </minipage>
 
-<code #code:l1-lemma-2>
+<code-block #code:l1-lemma-2>
 <lemma name="Zorn" #lem:zorn>
 Every non-empty partially-ordered set in which every chain has
 an upper bound contains a maximal element.
 </lemma>
-</code>
+</code-block>
 
 <minipage #mp:l1-lemma-2>
 <lemma name="Zorn" #lem:zorn>
@@ -105,11 +105,11 @@ Produced by: canonical `<corollary>`.
 <corollary | Every prime greater than 2 is odd.>
 </minipage>
 
-<code #code:l1-corollary-2>
+<code-block #code:l1-corollary-2>
 <corollary #cor:bounded>
 Any continuous function on a closed interval is bounded.
 </corollary>
-</code>
+</code-block>
 
 <minipage #mp:l1-corollary-2>
 <corollary #cor:bounded>
@@ -142,12 +142,12 @@ Produced by: canonical `<proposition>`.
 <proposition | The sum of two even integers is even.>
 </minipage>
 
-<code #code:l1-proposition-2>
+<code-block #code:l1-proposition-2>
 <proposition name="Cauchy-Schwarz">
 For any vectors $u$, $v$ in an inner-product space,
 $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
 </proposition>
-</code>
+</code-block>
 
 <minipage #mp:l1-proposition-2>
 <proposition name="Cauchy-Schwarz">
@@ -181,12 +181,12 @@ Produced by: canonical `<definition>`.
 <definition | A *group* is a set with an associative binary operation, identity, and inverses.>
 </minipage>
 
-<code #code:l1-definition-2>
+<code-block #code:l1-definition-2>
 <definition name="Group" #def:group>
 A *group* is a set $G$ together with a binary operation
 $\cdot$ satisfying associativity, identity, and inverses.
 </definition>
-</code>
+</code-block>
 
 <minipage #mp:l1-definition-2>
 <definition name="Group" #def:group>
@@ -220,13 +220,13 @@ Produced by: canonical `<example>`.
 <example | The integers under addition form a group.>
 </minipage>
 
-<code #code:l1-example-2>
+<code-block #code:l1-example-2>
 <example #ex:integers>
 The integers $\mathbb{Z}$ under addition form a group: the
 operation is associative, $0$ is the identity, and every
 integer has an additive inverse.
 </example>
-</code>
+</code-block>
 
 <minipage #mp:l1-example-2>
 <example #ex:integers>
@@ -261,12 +261,12 @@ Produced by: canonical `<remark>`.
 <remark | The converse does not hold in general.>
 </minipage>
 
-<code #code:l1-remark-2>
+<code-block #code:l1-remark-2>
 <remark>
 The hypothesis of compactness is essential here; without it
 the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
 </remark>
-</code>
+</code-block>
 
 <minipage #mp:l1-remark-2>
 <remark>
@@ -292,14 +292,14 @@ Produced by: canonical `<proof>`.
 
 <sub-section | Examples>
 
-<code #code:l1-proof-1>
+<code-block #code:l1-proof-1>
 <theorem | The sum of two even integers is even.>
 
 <proof>
 Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
 even. $\square$
 </proof>
-</code>
+</code-block>
 
 <minipage #mp:l1-proof-1>
 <theorem | The sum of two even integers is even.>
@@ -312,11 +312,11 @@ even. $\square$
 
 *The canonical pattern: &lt;theorem&gt; followed by sibling &lt;proof&gt;. The proof is NOT nested inside the theorem.*
 
-<code #code:l1-proof-2>
+<code-block #code:l1-proof-2>
 <proof name="of Theorem 1.2">
 The argument follows from the preceding lemma.
 </proof>
-</code>
+</code-block>
 
 <minipage #mp:l1-proof-2>
 <proof name="of Theorem 1.2">
@@ -340,7 +340,7 @@ Produced by: canonical `<dl>`.
 
 <sub-section | Examples>
 
-<code #code:l1-dl-1>
+<code-block #code:l1-dl-1>
 <dl>
   <dt | enscribe>
   <dd | An academic publishing system built on HTML+CSS+JS.>
@@ -349,7 +349,7 @@ Produced by: canonical `<dl>`.
   <dt | Enscribe shorthand>
   <dd | The shorthand authoring syntax that compiles to eHTML.>
 </dl>
-</code>
+</code-block>
 
 <minipage #mp:l1-dl-1>
 <dl>
@@ -364,13 +364,13 @@ Produced by: canonical `<dl>`.
 
 *Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural authoring pattern.*
 
-<code #code:l1-dl-2>
+<code-block #code:l1-dl-2>
 <dl .compact>
   <dt | term-1>
   <dd | First definition of term-1.>
   <dd | Second definition of term-1.>
 </dl>
-</code>
+</code-block>
 
 <minipage #mp:l1-dl-2>
 <dl .compact>
@@ -440,13 +440,13 @@ Produced by: canonical `<dd>`.
 
 *A definition-list description. Appears as a child of &lt;dl&gt;, following the term it defines.*
 
-<code #code:l1-dd-2>
+<code-block #code:l1-dd-2>
 <dd |
 A multi-paragraph definition.
 
 The second paragraph of the definition.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-dd-2>
 <dd |
@@ -472,7 +472,7 @@ Produced by: canonical `<glossary>`.
 
 <sub-section | Examples>
 
-<code #code:l1-glossary-1>
+<code-block #code:l1-glossary-1>
 <glossary #project-terms>
   <glossary-entry>
     <dt | enscribe>
@@ -483,7 +483,7 @@ Produced by: canonical `<glossary>`.
     <dd | The canonical semantic HTML vocabulary.>
   </glossary-entry>
 </glossary>
-</code>
+</code-block>
 
 *Render pending — indented long-form closing tag not recognised → tag-error (issue #276).*
 
@@ -503,12 +503,12 @@ Produced by: canonical `<glossary-entry>`.
 
 <sub-section | Examples>
 
-<code #code:l1-glossary-entry-1>
+<code-block #code:l1-glossary-entry-1>
 <glossary-entry #term:enscribe>
   <dt | enscribe>
   <dd | An academic publishing system built on HTML+CSS+JS.>
 </glossary-entry>
-</code>
+</code-block>
 
 <minipage #mp:l1-glossary-entry-1>
 <glossary-entry #term:enscribe>

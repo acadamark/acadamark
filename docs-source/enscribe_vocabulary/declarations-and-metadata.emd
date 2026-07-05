@@ -10,7 +10,7 @@ Registers:
 
 - Canonical: `<meta>`
 
-<code #code:sh-meta-1>
+<code-block #code:sh-meta-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <author | Jane Goodall>
@@ -19,7 +19,7 @@ Registers:
 
 <section | Introduction>
 The paper begins.
-</code>
+</code-block>
 
 <minipage #mp:sh-meta-1>
 <meta type=article>
@@ -34,7 +34,7 @@ The paper begins.
 
 *Author writes &lt;meta type=article&gt; at the top with no &lt;article&gt; wrapper. The structural plugin reads type=article and generates: - the &lt;article&gt; container - &lt;article-front&gt; wrapping the original &lt;meta&gt; - &lt;article-body&gt; wrapping the section content &lt;title&gt; is promoted to &lt;article-title&gt; as the first child of &lt;meta&gt;. &lt;meta&gt; itself survives in the output, inside &lt;article-front&gt;.*
 
-<code #code:sh-meta-2>
+<code-block #code:sh-meta-2>
 <meta type=book>
   <title | A Natural History of Elephants>
   <author | Jane Goodall>
@@ -42,7 +42,7 @@ The paper begins.
 
 <chapter | Origins>
 Content.
-</code>
+</code-block>
 
 <minipage #mp:sh-meta-2>
 <meta type=book>
@@ -112,12 +112,12 @@ Registers:
 
 - Canonical: `<title>` (child of `<meta>`)
 
-<code #code:sh-title-1>
+<code-block #code:sh-title-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <author | Jane Goodall>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source (it carries document metadata, not body content). Titles may contain inline formatting.*
 
@@ -139,12 +139,12 @@ Registers:
 
 - Canonical: `<subtitle>` (child of `<meta>`)
 
-<code #code:sh-subtitle-1>
+<code-block #code:sh-subtitle-1>
 <meta type=article>
   <title | On the Convergence of Iterative Maps>
   <subtitle | A Fixed-Point Perspective>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -166,7 +166,7 @@ Registers:
 
 - Canonical: `<abstract>` (child of `<meta>`)
 
-<code #code:sh-abstract-1>
+<code-block #code:sh-abstract-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <abstract |
@@ -174,7 +174,7 @@ Registers:
   affect regional climate. We quantify the effect across 50 sites.
   >
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -199,12 +199,12 @@ Registers:
 
 - Canonical: `<keywords>` (child of `<meta>`)
 
-<code #code:sh-keywords-1>
+<code-block #code:sh-keywords-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <keywords | elephants; carbon storage; regional climate; conservation>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -226,13 +226,13 @@ Registers:
 
 - Canonical: `<subject>` (child of `<meta>`)
 
-<code #code:sh-subject-1>
+<code-block #code:sh-subject-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <subject | Ecology>
   <subject scheme=msc | 92D40>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -274,14 +274,14 @@ Registers:
 
 *Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &lt;author&gt;.*
 
-<code #code:sh-author-3>
+<code-block #code:sh-author-3>
 <author +corresponding>
   <name | Jane Goodall>
   <affiliation | Cambridge University>
   <orcid | 0000-0001-2345-6789>
   <email | jane@example.com>
 </author>
-</code>
+</code-block>
 
 <minipage #mp:sh-author-3>
 <author +corresponding>
@@ -294,13 +294,13 @@ Registers:
 
 *Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.*
 
-<code #code:sh-author-4>
+<code-block #code:sh-author-4>
 <meta>
   <author | Jane Goodall>
   <author | David Attenborough>
   <author +corresponding | Charles Darwin>
 </meta>
-</code>
+</code-block>
 
 <minipage #mp:sh-author-4>
 <meta>
@@ -336,21 +336,21 @@ Registers:
 
 - Canonical: `<editor>` (child of `<meta>`)
 
-<code #code:sh-editor-1>
+<code-block #code:sh-editor-1>
 <meta type=book>
   <title | A Natural History of Elephants>
   <editor | Jane Goodall>
   <editor name="David Attenborough" affiliation="BBC" />
 </meta>
-</code>
+</code-block>
 
-<code #code:sh-editor-2>
+<code-block #code:sh-editor-2>
 <editor>
   <name | Jane Goodall>
   <affiliation | Cambridge University>
   <orcid | 0000-0001-2345-6789>
 </editor>
-</code>
+</code-block>
 
 *Front-matter — shown as source. Like `<author>`, each lifted kwarg becomes a child tag at the gate; the child-tag form is the canonical eHTML shape. JATS export groups editors in the `<contrib-group>` with `contrib-type="editor"`.*
 
@@ -378,13 +378,13 @@ Registers:
 
 - Canonical: `<date>` (child of `<meta>`)
 
-<code #code:sh-date-1>
+<code-block #code:sh-date-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <date | 2024-03-15>
   <date type=received | 2023-11-02>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -409,12 +409,12 @@ Registers:
 
 - Canonical: `<publication-date>` (child of `<meta>`)
 
-<code #code:sh-publication-date-1>
+<code-block #code:sh-publication-date-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <publication-date | 2024-03-15>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -438,12 +438,12 @@ Registers:
 
 - Canonical: `<license>` (child of `<meta>`)
 
-<code #code:sh-license-1>
+<code-block #code:sh-license-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -467,12 +467,12 @@ Registers:
 
 - Canonical: `<lang>` (child of `<meta>`)
 
-<code #code:sh-lang-1>
+<code-block #code:sh-lang-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <lang | en>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 
@@ -494,12 +494,12 @@ Registers:
 
 - Canonical: `<version>` (child of `<meta>`)
 
-<code #code:sh-version-1>
+<code-block #code:sh-version-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <version | 2.1>
 </meta>
-</code>
+</code-block>
 
 *Front-matter — shown as source.*
 

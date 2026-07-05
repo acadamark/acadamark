@@ -60,13 +60,13 @@ Registers:
 - Sigil: `<->` or `<*>`
 - Markdown: `-` or `*`
 
-<code #code:sh-list-1>
+<code-block #code:sh-list-1>
 <list>
 <li> Fit the model.
 <li> Compute residuals.
 <li> Inspect their distribution.
 </list>
-</code>
+</code-block>
 
 <minipage #mp:sh-list-1>
 <list>
@@ -78,14 +78,14 @@ Registers:
 
 *Unordered list. `<list>` lowers to `<ul>`; each `<li>` to an `<li>`.*
 
-<code #code:sh-list-2>
+<code-block #code:sh-list-2>
 <list ordered start=2>
 <-> Fit the model.
 <-> Compute residuals, then discuss.
 
   A second paragraph belongs to the same item — no indentation is required.
 </list>
-</code>
+</code-block>
 
 <minipage #mp:sh-list-2>
 <list ordered start=2>

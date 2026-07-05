@@ -6,7 +6,7 @@ A theorem-like environment sets a statement in a numbered, labelled box. They al
 
 Available: `theorem`, `lemma`, `corollary`, `proposition`, `definition`, `example`, `remark`.
 
-<code #code:thm-basic>
+<code-block #code:thm-basic>
 <theorem name=Pythagoras |
 If <$ a^2 + b^2 = c^2 $> then the triangle is right-angled.
 >
@@ -14,7 +14,7 @@ If <$ a^2 + b^2 = c^2 $> then the triangle is right-angled.
 <definition |
 A *prime* is a natural number greater than 1 whose only divisors are 1 and itself.
 >
-</code>
+</code-block>
 
 <minipage #mp:thm-basic>
 <theorem name=Pythagoras |
@@ -46,14 +46,14 @@ Each kind keeps its own counter, so theorems number independently of definitions
 
 A `<proof>` is labelled "Proof." and is not numbered. Close it with a QED mark, `<$ \square $>`.
 
-<code #code:proof-basic>
+<code-block #code:proof-basic>
 <theorem | The sum of two even integers is even.>
 
 <proof |
 Let <$ a = 2m $> and <$ b = 2n $>. Then <$ a + b = 2(m + n) $>,
 which is even. <$ \square $>
 >
-</code>
+</code-block>
 
 <minipage #mp:proof-basic>
 <theorem | The sum of two even integers is even.>

@@ -35,12 +35,12 @@ In the live single-page site, all pages draw figure assets from one shared set o
 
 A diagram is drawn from a text description by an external engine. Name the engine after the tag and put the source in the body; the browser renders it live.
 
-<code #code:diagram-basic>
+<code-block #code:diagram-basic>
 <diagram mermaid caption="A simple build flow.">
 graph LR
 write --> render --> publish
 </diagram>
-</code>
+</code-block>
 
 <minipage #mp:diagram-basic>
 <diagram mermaid caption="A simple build flow.">
@@ -69,12 +69,12 @@ The body is opaque — arrows like `-->` and other engine syntax pass through un
 
 Inline SVG drops vector graphics straight into the document. Put the SVG body in the tag and size the box with `width`, `height`, and `viewBox`.
 
-<code #code:svg-basic>
+<code-block #code:svg-basic>
 <svg width=180 height=32 caption="A progress bar." |
 <rect width=180 height=32 rx=6 fill=gainsboro />
 <rect width=117 height=32 rx=6 fill=steelblue />
 >
-</code>
+</code-block>
 
 <minipage #mp:svg-basic>
 <svg width=180 height=32 caption="A progress bar." |
@@ -99,12 +99,12 @@ Id, #fig:progress
 
 A frame draws a border around its content as a self-contained box. Unlike a figure it is an unnumbered annotation by default; add `+numbered` to fold it into the figure sequence.
 
-<code #code:frame-basic>
+<code-block #code:frame-basic>
 <frame |
 This note sits in a bordered box, set apart from
 the main flow but not numbered.
 >
-</code>
+</code-block>
 
 <minipage #mp:frame-basic>
 <frame |
@@ -129,12 +129,12 @@ Class, .tinted
 
 A minipage is a sealed, self-contained box: whatever renders inside it — sections, numbers, footnotes — stays inside and never leaks into the surrounding document. Every rendered example in this guide sits in one.
 
-<code #code:minipage-basic>
+<code-block #code:minipage-basic>
 <minipage>
 <section | A self-contained section>
 Its heading and numbering stay inside the box.
 </minipage>
-</code>
+</code-block>
 
 <minipage #mp:minipage-basic>
 <section | A self-contained section>

@@ -25,13 +25,13 @@ Produced by: canonical `<blockquote>` · markdown `> …` · alias `<quote>`.
 
 *The &lt;quote&gt; shorthand expands to &lt;blockquote&gt; at eHTML.*
 
-<code #code:l1-blockquote-2>
+<code-block #code:l1-blockquote-2>
 <quote cite=https://example.com/source |
 A longer quotation that may contain multiple paragraphs.
 
 The second paragraph of the quotation.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-blockquote-2>
 <quote cite=https://example.com/source |
@@ -41,11 +41,11 @@ The second paragraph of the quotation.
 >
 </minipage>
 
-<code #code:l1-blockquote-3>
+<code-block #code:l1-blockquote-3>
 <quote type=epigraph |
 All happy families are alike; each unhappy family is unhappy in its own way.
 >
-</code>
+</code-block>
 
 <minipage #mp:l1-blockquote-3>
 <quote type=epigraph |
@@ -271,11 +271,11 @@ Produced by: canonical `<doi>`.
 
 <sub-section | Examples>
 
-<code #code:l1-doi-1>
+<code-block #code:l1-doi-1>
 <meta>
   <doi | 10.1234/example.2024>
 </meta>
-</code>
+</code-block>
 
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 
