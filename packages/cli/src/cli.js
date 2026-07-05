@@ -189,6 +189,12 @@ Options:
   --single-file        Emit ONE self-contained .html for one document: the source
                        is embedded (read at mount, no fetch); chrome/display assets
                        load from the web. Editable iff the document is self-contained
+  --assets <mode>      Chrome/display asset delivery for --live / --single-file:
+                       siblings (default for --live: copy assets flat),
+                       cdn (default for --single-file: pinned jsDelivr),
+                       inlined (embed engine + CSS + fonts + KaTeX + editor →
+                       no network; --single-file opens from file://). External-DSL
+                       diagram libs (mermaid/abc) still load from the CDN.
   --embed              Self-contained HTML, assets inlined (default)
   --no-embed           Link assets externally (fonts / KaTeX CSS from CDNs)
   --dsl-mode <mode>    DSL rendering mode: skip, live-link, live-inline, static
@@ -231,7 +237,7 @@ function parseCommandArgs(args) {
     input: null, output: null, help: false,
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
     toc: undefined, theme: undefined, chapterNav: undefined, from: undefined,
-    pages: undefined, package: false,
+    pages: undefined, package: false, assetDelivery: undefined,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -269,6 +275,16 @@ function parseCommandArgs(args) {
     else if (a === '--single-page') opts.pages = 'single';
     else if (a === '--live') opts.live = true;
     else if (a === '--single-file') opts.singleFile = true;
+    else if (a === '--assets' || a.startsWith('--assets=')) {
+      // The asset-delivery axis (#363; delivery-modes.md §"Asset delivery"): where the chrome + display
+      // assets come from. Honored by --live and --single-file (the modes that admit it); see the build case.
+      const v = a.startsWith('--assets=') ? a.slice('--assets='.length) : args[++i];
+      const allowed = ['siblings', 'cdn', 'inlined'];
+      if (!allowed.includes(v)) {
+        throw new CliError(`--assets must be one of ${allowed.join(', ')} (got ${v ?? '(none)'})`);
+      }
+      opts.assetDelivery = v;
+    }
     else if (a === '--edit') opts.edit = true;
     else if (a === '--title') { opts.title = args[++i]; if (opts.title == null) throw new CliError('--title needs a value'); }
     else if (a.startsWith('--title=')) opts.title = a.slice('--title='.length);
@@ -601,6 +617,15 @@ export function run(argv, io = {}) {
       case 'build': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(BUILD_HELP); return 0; }
+        // #363: --assets selects the chrome asset-delivery mode (siblings | cdn | inlined). It is honored
+        // only by --live and --single-file (the modes that admit it, delivery-modes.md §"Asset delivery").
+        // A plain static build references sibling assets by construction, so the flag is rejected there.
+        if (opts.assetDelivery && !opts.live && !opts.singleFile) {
+          throw new CliError('--assets applies to --live or --single-file (a static build references sibling assets)');
+        }
+        if (opts.assetDelivery === 'siblings' && opts.singleFile) {
+          throw new CliError('--single-file --assets siblings is invalid (a single file has no siblings); use cdn or inlined');
+        }
         // --single-file (delivery-modes.md §Single-file): emit ONE self-contained .html that EMBEDS the
         // document's source (read at mount, no fetch of the document) and references chrome/display
         // assets from the web. One file — no sibling assets, no sources folder. Editable iff the
@@ -608,10 +633,11 @@ export function run(argv, io = {}) {
         // read-only with a warning. Written to -o <file> or stdout, like the ordinary single build.
         if (opts.singleFile) {
           const res = withQuiet(opts.quiet, () =>
-            buildSingleFile({ master: opts.input, title: opts.title, edit: opts.edit }));
+            buildSingleFile({ master: opts.input, title: opts.title, edit: opts.edit, delivery: opts.assetDelivery }));
           emit(res.html, opts, out);
           if (!opts.quiet && opts.output) {
-            out.write(`Wrote a single-file document to ${opts.output} (${res.editable ? 'self-contained → editable' : 'render-only — not self-contained'})\n`);
+            const offline = res.delivery === 'inlined' ? ', inlined → offline (no network)' : ' (assets from the web)';
+            out.write(`Wrote a single-file document to ${opts.output} (${res.editable ? 'self-contained → editable' : 'render-only — not self-contained'}${offline})\n`);
           }
           return 0;
         }
@@ -623,9 +649,12 @@ export function run(argv, io = {}) {
           if (!opts.output) {
             throw new CliError('--live writes a live folder — give an output directory with -o <dir>');
           }
-          const res = buildLiveFolder({ master: opts.input, outDir: opts.output, title: opts.title, edit: opts.edit });
+          const res = buildLiveFolder({ master: opts.input, outDir: opts.output, title: opts.title, edit: opts.edit, delivery: opts.assetDelivery });
           if (!opts.quiet) {
-            out.write(`Wrote a live folder to ${opts.output}/ (${res.master} + ${res.children.length} children + index.html + ${res.assets.length} assets)\n`);
+            const how = res.delivery === 'inlined' ? 'index.html inlines the chrome — no network'
+              : res.delivery === 'cdn' ? `index.html + ${res.assets.length} assets from the CDN`
+              : `index.html + ${res.assets.length} sibling assets`;
+            out.write(`Wrote a live folder to ${opts.output}/ (${res.master} + ${res.children.length} children + ${how}) [${res.delivery}]\n`);
           }
           return 0;
         }

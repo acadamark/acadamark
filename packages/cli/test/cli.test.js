@@ -407,5 +407,49 @@ export function run_tests() {
     console.log('PASS: build — --single-page retained; separate-pages requires -o <dir>');
   }
 
+  // ── #363 — the --assets asset-delivery option surface ───────────────────────────────────────────
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-cli-assets-'));
+    try {
+      // --single-file --assets inlined → an offline file (the message says so; the output has no net refs
+      // outside the inlined engine).
+      const inl = invoke(['build', FIXTURE, '--single-file', '--assets', 'inlined', '-o', join(dir, 'inl.html')]);
+      assert.equal(inl.code, 0, '--single-file --assets inlined exits 0');
+      assert.ok(/inlined → offline/.test(inl.out), 'the message reports the inlined/offline delivery');
+      const inlHtml = readFileSync(join(dir, 'inl.html'), 'utf8').replace(/<script>[\s\S]*?<\/script>/, 'X');
+      const inlRefs = [...inlHtml.matchAll(/(?:href|src)="(https?:[^"]+)"|import\('(https?:[^']+)'/g)].map((m) => m[1] || m[2]);
+      assert.deepStrictEqual(inlRefs, [], '--assets inlined: the file has ZERO network references (offline)');
+
+      // --single-file --assets cdn (the default) → references the pinned jsDelivr package.
+      const cdn = invoke(['build', FIXTURE, '--single-file', '--assets', 'cdn', '-o', join(dir, 'cdn.html')]);
+      assert.equal(cdn.code, 0, '--single-file --assets cdn exits 0');
+      assert.ok(readFileSync(join(dir, 'cdn.html'), 'utf8').includes('cdn.jsdelivr.net/npm/@enscribejs/enscribe@'),
+        '--assets cdn: chrome referenced from the pinned jsDelivr package');
+
+      // Invalid combinations exit 1 with a clear message (parse + mode-applicability guards).
+      const sib = invoke(['build', FIXTURE, '--single-file', '--assets', 'siblings', '-o', join(dir, 'x.html')]);
+      assert.equal(sib.code, 1, '--single-file --assets siblings exits 1');
+      assert.ok(/no siblings/.test(sib.err), 'siblings is rejected for a single file with a clear message');
+
+      const stat = invoke(['build', FIXTURE, '--assets', 'cdn', '-o', join(dir, 's.html')]);
+      assert.equal(stat.code, 1, '--assets on a plain static build exits 1');
+      assert.ok(/applies to --live or --single-file/.test(stat.err), 'the error explains --assets only applies to --live / --single-file');
+
+      const bogus = invoke(['build', FIXTURE, '--single-file', '--assets', 'bogus', '-o', join(dir, 'b.html')]);
+      assert.equal(bogus.code, 1, 'an unknown --assets value exits 1');
+      assert.ok(/must be one of siblings, cdn, inlined/.test(bogus.err), 'the error lists the valid --assets values');
+
+      // --live threads the delivery into buildLiveFolder (cdn → the shell references the CDN, no copies).
+      const live = invoke(['build', WEBSITE_FIXTURE, '--live', '--assets', 'cdn', '-o', join(dir, 'live')]);
+      assert.equal(live.code, 0, '--live --assets cdn exits 0');
+      assert.ok(/\[cdn\]/.test(live.out), 'the live-folder message reports the cdn delivery');
+      assert.ok(!existsSync(join(dir, 'live', 'enscribe.browser.global.js')), '--live --assets cdn copies no chrome (referenced from the CDN)');
+
+      console.log('PASS: #363 — the --assets option selects siblings/cdn/inlined per mode; invalid combinations error clearly');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   console.log('All CLI tests passed.');
 }
