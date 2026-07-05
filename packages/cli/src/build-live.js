@@ -62,17 +62,18 @@ export function copyShellAssets(destDir, only) {
   return names;
 }
 
-// Read the chrome + display bytes for the INLINED asset-delivery mode (#364): the engine bundle, the
-// two chrome stylesheets, and the document-display <style> pair (fonts + KaTeX, via the single-source
-// getInlineDisplayHead). Resolved from the SAME package exports copyShellAssets copies — one authority
-// (SHELL_ASSET_SPECS), so inlined and siblings can never ship different bytes. The bundled editor
-// (`inline.editor`) is added by #365; here the editor rides its href delivery (sibling / CDN).
+// Read the chrome + display bytes for the INLINED asset-delivery mode (#364/#365): the engine bundle,
+// the two chrome stylesheets, the document-display <style> pair (fonts + KaTeX, via the single-source
+// getInlineDisplayHead), and the bundled editor (#365 — so an inlined editable artifact edits offline
+// too). All resolved from the SAME package exports copyShellAssets copies — one authority
+// (SHELL_ASSET_SPECS), so inlined and siblings can never ship different bytes.
 function readInlineChrome() {
   return {
     engine: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe.browser.global.js']), 'utf8'),
     defaultCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['default.css']), 'utf8'),
     shellCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe-shell.css']), 'utf8'),
     displayHead: getInlineDisplayHead(),
+    editor: readFileSync(require.resolve(SHELL_ASSET_SPECS['editor-codemirror.js']), 'utf8'),
   };
 }
 
@@ -147,7 +148,7 @@ export function discoverWebsitePages(masterSource) {
  * @param {'siblings'|'cdn'|'inlined'} [opts.delivery='siblings'] - the chrome asset-delivery mode
  *   (#363/#364; delivery-modes.md §"Asset delivery"). `siblings` (default) copies the four chrome assets
  *   flat and references them; `cdn` copies none and references the pinned jsDelivr package; `inlined`
- *   embeds engine + CSS + display assets in the shell (copying only the editor sibling), so the served
+ *   embeds engine + CSS + display assets + the editor in the shell (copying NO chrome), so the served
  *   folder needs no network. The document `.emd` content is copied flat in every mode (it is fetched).
  * @returns {{ outDir: string, master: string, children: string[], assets: string[], delivery: string }}
  */
@@ -253,7 +254,7 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
     copiedAssets = [];
     shellAssetOpts = { assets: SINGLE_FILE_ASSETS };
   } else if (delivery === 'inlined') {
-    copiedAssets = copyShellAssets(out, ['editor-codemirror.js']);   // editor rides sibling (#364); engine/CSS inlined
+    copiedAssets = [];              // #365: engine + CSS + editor all inlined into the shell — copy no chrome
     shellAssetOpts = { assetBase: './', inline: readInlineChrome() };
   } else {                          // siblings (the deployed default)
     copiedAssets = copyShellAssets(out);

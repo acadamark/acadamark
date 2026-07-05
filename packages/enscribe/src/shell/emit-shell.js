@@ -114,13 +114,25 @@ function inlineHeadAssets(inline) {
   );
 }
 
-// The editor-delivery seam: the `editorFactory` JS expression + any inert carrier the shell body must
-// also emit. Here (#364) the editor rides its HREF delivery — lazily dynamic-import the editor asset by
-// URL (sibling or CDN), preserving the #213 "read mode loads nothing" invariant and the #211
-// mount(el,{value,onChange})->{destroy()} adapter seam. #365 extends this with an INLINED editor
-// variant (carry the bundled editor in an escaped <template>, blob-imported lazily) so an inlined
-// editable artifact edits with no network too.
-function editorDelivery(editorHref) {
+// The editor-delivery seam (#365): the `editorFactory` JS expression + any inert carrier the shell body
+// must also emit, so the editor RIDES the asset-delivery choice like the rest of the chrome:
+//   - href (siblings / cdn) — lazily dynamic-import the bundled editor asset by URL.
+//   - inlined (`inlineEditorBytes` given) — carry the bundled editor in an escaped <template> and
+//     blob-import it lazily on the factory call, so an inlined editable artifact edits with NO network.
+// Both preserve the #213 "read mode loads nothing" invariant (the import/blob is created only when the
+// factory runs, i.e. editing is on) and the #211 mount(el,{value,onChange})->{destroy()} adapter seam.
+// The <template>+`.content.textContent` round-trip is the same robust carrier the .emd source uses:
+// HTML-escaping the (minified, </script>-bearing) editor bytes and decoding them back on parse.
+function editorDelivery(editorHref, inlineEditorBytes) {
+  if (inlineEditorBytes) {
+    return {
+      editorTemplate: `<template id="enscribe-editor-src">${escapeHtml(inlineEditorBytes)}</template>\n`,
+      editorFactoryExpr:
+        `() => { const _s = document.getElementById('enscribe-editor-src').content.textContent; ` +
+        `const _u = URL.createObjectURL(new Blob([_s], { type: 'text/javascript' })); ` +
+        `return import(_u).then((m) => { URL.revokeObjectURL(_u); return m.codeMirrorEditorFactory(); }); }`,
+    };
+  }
   return {
     editorTemplate: '',
     editorFactoryExpr: `() => import('${editorHref}').then((m) => m.codeMirrorEditorFactory())`,
@@ -160,7 +172,7 @@ export function emitLiveShell({ master, title, edit = false, assetBase = './', a
   // INLINED delivery (#364): the chrome + display assets are embedded; the editor rides its href
   // delivery (a.editor) unless `inline.editor` bytes are supplied (#365). The master is still FETCHED.
   if (inline) {
-    const { editorTemplate, editorFactoryExpr } = editorDelivery(a.editor);
+    const { editorTemplate, editorFactoryExpr } = editorDelivery(a.editor, inline.editor);
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -299,7 +311,7 @@ export function emitSingleFileShell({ source, title, edit = false, editable = tr
     const embeddedSrc = escapeHtml(source);
     const editAttrInline = (editable && edit) ? ' data-enscribe-edit' : '';
     const { editorTemplate, editorFactoryExpr } = editable
-      ? editorDelivery(a.editor)
+      ? editorDelivery(a.editor, inline.editor)
       : { editorTemplate: '', editorFactoryExpr: null };
     // documentFontsCss/katexCss 'skip': the display assets are inlined in the head above, so the render
     // must NOT re-link them from the CDN — that is what makes this file open offline. (External-DSL

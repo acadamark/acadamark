@@ -418,9 +418,9 @@ export function run_tests() {
       // inlined: only the editor sibling copied; engine + CSS + display inlined; the served folder is offline.
       const iRes = buildLiveFolder({ master: EXAMPLE_MASTER, outDir: inl, delivery: 'inlined' });
       assert.strictEqual(iRes.delivery, 'inlined', 'delivery inlined recorded');
-      assert.deepStrictEqual(iRes.assets, ['editor-codemirror.js'], 'inlined: ONLY the editor sibling copied');
+      assert.deepStrictEqual(iRes.assets, [], 'inlined: NO chrome copied — engine + CSS + editor all inlined (#365)');
       assert.ok(!existsSync(join(inl, 'enscribe.browser.global.js')), 'inlined: engine NOT copied (it is inline)');
-      assert.ok(existsSync(join(inl, 'editor-codemirror.js')), 'inlined: editor sibling copied (#364 editor delivery)');
+      assert.ok(!existsSync(join(inl, 'editor-codemirror.js')), 'inlined: editor NOT copied — it is inlined (#365)');
       const iHtml = readFileSync(join(inl, 'index.html'), 'utf8');
       // check OUTSIDE the inlined engine — the minified engine bundle carries `<link rel="stylesheet"` /
       // `<script src=` as string LITERALS (it is the code that GENERATES those tags), not references.
@@ -428,9 +428,10 @@ export function run_tests() {
       assert.ok(!iShell.includes('<link rel="stylesheet"') && !iShell.includes('<script src='),
         'inlined: engine + CSS embedded, no reference tags');
       assert.ok(iHtml.includes('@font-face'), 'inlined: display fonts embedded in the head');
+      assert.ok(iHtml.includes('<template id="enscribe-editor-src">'), 'inlined: the editor is carried inline (#365)');
       assert.ok(existsSync(join(inl, 'book.emd')), 'inlined: the document CONTENT is still copied (it is fetched)');
       assert.deepStrictEqual(netRefs(iHtml), [],
-        'inlined live folder: ZERO network references — served offline (editor is a local sibling)');
+        'inlined live folder: ZERO network references — served fully offline (engine + CSS + editor all inline)');
 
       assert.throws(() => buildLiveFolder({ master: EXAMPLE_MASTER, outDir: inl, delivery: 'bogus' }), /unknown asset delivery/,
         'an unknown delivery is rejected');
@@ -461,13 +462,14 @@ export function run_tests() {
         'inlined single-file: engine + CSS embedded, no references');
       assert.ok(inl.html.includes('@font-face') && inl.html.includes("documentFontsCss: 'skip'"),
         'inlined single-file: display assets inlined + the render skips re-linking them');
-      assert.deepStrictEqual(netRefs(inl.html),
-        ['https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/editor-codemirror.js'],
-        'inlined single-file (#364): offline to READ; the editor loads from the CDN until #365 inlines it');
+      assert.ok(inl.html.includes('<template id="enscribe-editor-src">'),
+        'inlined single-file: the bundled editor is carried inline (#365)');
+      assert.deepStrictEqual(netRefs(inl.html), [],
+        'inlined single-file: ZERO network references — fully offline, read AND edit (#365)');
 
       assert.throws(() => buildSingleFile({ master: soloPath, delivery: 'siblings', warn: () => {} }),
         /siblings is invalid for a single file/, 'single-file rejects siblings (it has no siblings)');
-      console.log('PASS: #363/#364 cli — buildSingleFile cdn (default) vs inlined; siblings rejected');
+      console.log('PASS: #363/#364/#365 cli — buildSingleFile cdn (default) vs inlined (fully offline); siblings rejected');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

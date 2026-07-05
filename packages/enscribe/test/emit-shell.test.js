@@ -149,9 +149,9 @@ export async function run() {
     assert.ok(live.includes("documentFontsCss: 'skip', katexCss: 'skip'"),
       'inlined live: the render SKIPS re-linking display assets (the head already inlines them → offline)');
     assert.ok(live.includes("import('./editor-codemirror.js')"),
-      'inlined live (#364): the editor rides its SIBLING delivery (already offline); #365 inlines it');
+      'inlined chrome, no inline.editor: the editor rides its href delivery (here the ./ sibling)');
     assert.deepStrictEqual(realRefs(live), [],
-      'inlined live folder: ZERO real network references — fully offline (editor is a local sibling)');
+      'inlined live folder (sibling editor): ZERO real network references — fully offline');
 
     const sf = emitSingleFileShell({ source: '<meta type=article><title|T></meta>', title: 'T', editable: true, inline });
     assert.ok(sf.includes('<template id="enscribe-source">'), 'inlined single-file still embeds the source');
@@ -160,8 +160,44 @@ export async function run() {
     assert.ok(sf.includes("documentFontsCss: 'skip', katexCss: 'skip'"),
       'inlined single-file: the render skips re-linking display assets');
     assert.deepStrictEqual(realRefs(sf), ['https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/editor-codemirror.js'],
-      'inlined single-file (#364): offline to READ; the editor still loads from the CDN until #365 inlines it');
-    console.log('PASS: #364 — inlined delivery embeds engine + CSS + display assets; live folder is fully offline, single-file offline-to-read');
+      'inlined chrome, no inline.editor: the editor rides its href delivery (here the CDN)');
+    console.log('PASS: #364 — inlined delivery embeds engine + CSS + display assets (editor rides its href delivery when not inlined)');
+  }
+
+  // ── #365 — the editor RIDES the asset-delivery choice: inlined editor (template + blob-import) ───────
+  //    When `inline.editor` bytes are supplied, the bundled editor is carried in an escaped <template>
+  //    and blob-imported lazily — so an inlined EDITABLE artifact edits with NO network. This is what
+  //    makes an inlined single-file fully offline (read AND edit).
+  {
+    const inline = {
+      engine: 'window.enscribe={render(){}};/* </script> */',
+      defaultCss: '.d{}', shellCss: '.s{}', displayHead: getInlineDisplayHead(),
+      editor: 'export const codeMirrorEditorFactory = () => ({ mount(){} });/* </script> in bytes */',
+    };
+    const stripEngine = (h) => h.replace(/<script>[\s\S]*?<\/script>/, '<script>ENGINE</script>');
+    const realRefs = (h) => [...stripEngine(h).matchAll(/(?:href|src)="(https?:[^"]+)"|import\('(https?:[^']+)'/g)]
+      .map((m) => m[1] || m[2]);
+
+    for (const [label, html] of [
+      ['live folder', emitLiveShell({ master: 'index.emd', inline, assetBase: './' })],
+      ['single-file', emitSingleFileShell({ source: 'x', title: 'T', editable: true, inline })],
+    ]) {
+      assert.ok(html.includes('<template id="enscribe-editor-src">'),
+        `inlined ${label}: the bundled editor is carried in an inert <template>`);
+      assert.ok(html.includes("URL.createObjectURL(new Blob([_s]"),
+        `inlined ${label}: the editor factory blob-imports the carried bytes lazily (read mode loads nothing)`);
+      assert.ok(!html.includes("import('./editor-codemirror.js')") && !html.includes('editor-codemirror.js"'),
+        `inlined ${label}: NO editor href — the editor is inlined, not referenced`);
+      // the editor bytes carry a literal </script>; the escaped <template> must round-trip it, not break out.
+      assert.ok(html.includes('&lt;/script&gt;'), `inlined ${label}: editor </script> is HTML-escaped in the template (safe round-trip)`);
+      assert.deepStrictEqual(realRefs(html), [],
+        `inlined ${label} with inline editor: ZERO real network references — fully offline (read AND edit)`);
+    }
+    // read-only single-file (not editable): no editor at all, still fully offline.
+    const ro = emitSingleFileShell({ source: 'x', editable: false, inline });
+    assert.ok(!ro.includes('<template id="enscribe-editor-src">') && !ro.includes('editorFactory'),
+      'inlined read-only single-file: no editor is emitted (editing disabled), still offline');
+    console.log('PASS: #365 — the editor rides the delivery choice: inlined editor is a <template>+blob-import, no network');
   }
 
   console.log('All live-shell emitter (#215) checks passed.');
