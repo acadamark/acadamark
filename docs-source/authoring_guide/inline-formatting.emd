@@ -24,6 +24,7 @@ For plain styling, *this is italic* and **this is bold**.
 `<i>`, `<b>`, and `<u>` take an optional `type` that records why the text is set apart:
 
 <table csv -numbered>
+Element, Allowed type values
 i — type, foreign | taxonomic | technical | thought | ship-name | other
 b — type, keyword | product-name | lead | offset | other
 u — type, misspelling | proper-name | editorial-correction | other
@@ -77,6 +78,7 @@ is the browser's API for HTML.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 abbr — title (the expansion), title="Document Object Model"
 u — type, misspelling | proper-name | editorial-correction | other
 </table>
@@ -105,6 +107,7 @@ or jump to <a enscribe-vocabulary | the vocabulary page> in this document.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 destination (URL or page slug), https://example.com  ·  vocabulary
 Open in a new tab, target=_blank
 rel (link relationship), nofollow | noopener | noreferrer | external

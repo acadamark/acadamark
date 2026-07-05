@@ -55,6 +55,7 @@ A list is numbered with `<list ordered>`, and nests by putting a `<list>` inside
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 Ordered (render as a numbered list), ordered
 marker (the CSS list-style-type), decimal | lower-roman | upper-alpha | disc | …
 "start (first number, ordered only)", start=3
@@ -98,6 +99,7 @@ new ideas as in escaping from old ones.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 cite (URL of the source), cite=https://example.com/source
 Id, #quote:keynes
 Class, .pullquote
@@ -131,6 +133,7 @@ A definition list pairs terms with their definitions. `<dl>` wraps the list; eac
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 Id, #dl:linear-algebra
 Class, .compact
 </table>
@@ -159,6 +162,7 @@ it cannot be undone.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 type (the callout flavour), note | sidebar | callout | warning | tip | info | caution
 Numbered (count this aside in the float sequence), +numbered
 No border (drop the visual box), -border
@@ -222,6 +226,7 @@ A new movement begins.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 type (a styling hint), type=ornamental
 </table>
 

@@ -20,6 +20,7 @@ The `<cite goodall2024>` marker renders as "(Goodall 2024)", and `<bibliography>
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 keys (one or more source keys), goodall2024  ·  smith2020 jones2021
 library — format (the entry format), format=bibtex
 library — src (load from an external file), src=references.bib

@@ -29,6 +29,7 @@ A *prime* is a natural number greater than 1 whose only divisors are 1 and itsel
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 name (parenthetical suffix on the label), name=Pythagoras
 Unnumbered (drop the "Theorem N." label), -numbered
 Id, #thm:pythagoras

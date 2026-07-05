@@ -38,6 +38,7 @@ area = math.pi * radius ** 2
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 language (sets the language-X class for highlighting), python  ·  r  ·  js
 Id, #code:area
 Class, .extra-class

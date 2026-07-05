@@ -37,6 +37,7 @@ The `<meta>` block holds the document's front matter — its class, title, autho
 <sub-section | Fields>
 
 <table csv -numbered>
+Field, Description
 type, article | book | website
 title / subtitle, the document's heading and tagline
 author (repeatable), a name with optional affiliation / email / orcid
@@ -62,6 +63,7 @@ doi / license / lang, identifiers and rights metadata
 <sub-section | Options>
 
 <table csv -numbered>
+Option, Description
 number-sections / number-figures / number-tables / …, turn on numbering for each kind of element
 number-depth, how many heading levels carry numbers
 toc, generate a table of contents

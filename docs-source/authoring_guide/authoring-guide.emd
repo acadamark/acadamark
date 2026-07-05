@@ -56,6 +56,7 @@ What we found.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 Id, #sec:intro
 Class, .my-class
 numbering-style, arabic | roman | alpha | none

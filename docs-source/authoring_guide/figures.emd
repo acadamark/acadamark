@@ -15,6 +15,7 @@ A figure places an image with a numbered caption. The `src` names the image, the
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 src (image file or @id of a stored asset), src=revenue-2025.png
 alt (text alternative for the image), alt="Bar chart of revenue"
 Unnumbered (drop the "Figure N." label), -numbered
@@ -52,6 +53,7 @@ write --> render --> publish
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 engine (the renderer), mermaid | abc
 caption (the figure caption), caption="A build flow."
 Id, #fig:flow
@@ -86,6 +88,7 @@ Inline SVG drops vector graphics straight into the document. Put the SVG body in
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 width / height (the SVG box), width=180 height=32
 viewBox (the coordinate system), viewBox="0 0 180 32"
 caption (the figure caption), caption="A progress bar."
@@ -116,6 +119,7 @@ the main flow but not numbered.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 caption (caption at the foot of the frame), caption="An exhibit."
 Numbered (join the figure sequence as "Figure N."), +numbered
 Id, #frame:note
@@ -144,6 +148,7 @@ Its heading and numbering stay inside the box.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 caption (caption at the foot of the box), caption="Two panels."
 Numbered (number the box as "Minipage N."), +numbered
 Id, #mp:panels
