@@ -1,0 +1,90 @@
+# Documentation — spec (design of record for the docs site's content)
+
+**Role.** This is the missing spec for the documentation site's authored/generated content —
+the #223 information architecture promoted out of issue comments into a real `notes/specs/`
+document. It records *what the docs pages are and how they come to exist*; the generator's
+mechanics are implementation of this spec.
+
+Held to the rebuild-from-docs standard (CONTRIBUTING §coherence): with the code deleted, this
+spec plus the element specs must be enough to regenerate the docs.
+
+---
+
+## The core decision: the guides are GENERATED from the spec, not hand-authored
+
+The vocabulary guides **and** the authoring guide are **generated** from the element
+definitions (`packages/ehtml/elements/*.md`) plus the semantic taxonomy
+(`notes/taxonomies/semantic-taxonomy.md`), by a docs generator run as part of the site build.
+They are **generator output** — never hand-edited. This is the whole point of #223: docs
+derived from the spec are correct and complete by construction and cannot drift from it.
+
+This supersedes the current state, in which `docs-source/**/*.emd` are hand-maintained. Those
+pages become generator output. (Prior generators — `gen-reference.js`, `vocab-extract.js`,
+`gen-books.js` — are archived under `notes/archive/old-docs*/` as prior art.)
+
+### What is generated vs. sourced vs. app
+
+| Page | Origin |
+|---|---|
+| **eHTML Vocabulary** (reference) | **Generated** from `elements/*.md` + taxonomy — comprehensive |
+| **Enscribe Shorthand Vocabulary** (reference) | **Generated** from `elements/*.md` + taxonomy — comprehensive |
+| **Authoring Guide** | **Generated** from the same source — *lighter*, not exhaustive |
+| Home | Sourced (single-source) from `README.md` |
+| Design | Sourced (single-source) from `DESIGN.md` |
+| JATS (import/export) | Guide content (status: settle when the generator is built) |
+| Try It | The in-browser editor app, not generated content |
+
+The single-source pages (Home ← README, Design ← DESIGN) are derived from their source file,
+not hand-copied, so they cannot drift either.
+
+---
+
+## Generation rules (correct by construction)
+
+The generator emits pages that obey these rules, so the whole drift class we hit — collapsed
+code, headerless tables, stale content — cannot recur:
+
+1. **Organized by the semantic taxonomy.** Pages and sections follow the taxonomy families
+   (`semantic-taxonomy.md`): primary prose, emphasis & marking, notation, structural
+   scaffolding, and the rest. Page structure derives from the taxonomy, not a hand-kept order.
+2. **Reference guides are comprehensive.** Every element, every option (kwarg / boolean flag),
+   every authoring form (canonical / sigil / markdown), each with a rendered example. Nothing an
+   author can write is absent.
+3. **The authoring guide is lighter.** It teaches the common path — it is deliberately *not*
+   exhaustive — but it is still generated from the same source and still taxonomy-following, so
+   it is accurate even though it is not complete.
+4. **Every generated table has a header row. No special cases.** The generator never emits a
+   headerless table and never uses `-headers` in docs output. (This is the D2 decision — stated
+   as an absolute so no downstream tool invents per-table bandaids.)
+5. **Multi-line code examples use `<code-block>`.** Never inline `<code>` for multi-line content
+   (inline `<code>` reflows to one line). Single-value inline examples may use inline `<code>`.
+6. **Examples show source and rendered result** (the `<code-block>` source + a rendered
+   companion), so the reader sees both what to type and what it produces.
+
+---
+
+## Prerequisite: the spec must be reconciled with the code first
+
+The generator reads the element spec, so its input must be true. Before the generator is trusted,
+run a **spec ⇄ code ⇄ docs reconciliation over the vocabulary** (method:
+`notes/audits/deep-drift-audit-design.md`; read-only, report-only, drift-map).
+
+**Adjudication rule (this project's, stated here):** neither the spec nor the code is the gold
+standard — both drift, and the **spec is generally the tighter of the two**. Where the audit
+finds spec ⇄ code disagreement, it **surfaces the discrepancy to Ariel for decision**; it does
+**not** auto-resolve toward the code. (This narrows the deep-drift method's default "verify
+against code," which is a reliability check for descriptions, into an adjudicated reconciliation
+for the specific case where the spec may be the correct party.)
+
+---
+
+## Relationship / status
+
+- **Realizes #223.** #223 is "the docs are generated from the spec." Its remaining work is the
+  spec↔code audit and the generator; the current hand-authored pages are the interim, not the end.
+- **Supersedes hand-editing.** Fixing a rendered docs glitch by editing a `docs-source/*.emd`
+  page is patching generator output; the fix belongs in the generator (or the element spec it
+  reads). The only exceptions are genuine **engine** bugs surfaced via the docs (e.g. the
+  `<code-block>` registration bug, the `<span>`/link fallback), which are fixed in the engine.
+- **Mechanics are implementation.** The generator's file layout, template details, and build
+  wiring are implementation of this spec and live with the code; this spec holds the *decisions*.
