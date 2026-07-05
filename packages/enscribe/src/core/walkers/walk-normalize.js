@@ -24,9 +24,13 @@
 // This matches walkReplace()'s behavior, which advances past the replacement
 // and then recurses into its children if the replacement is a non-opaque tag.
 //
-// NOTE: process() must return exactly one node (not an array). Normalization is
-// always 1-to-1. If 1-to-N replacement becomes necessary, this contract can be
-// extended — add a note here and update the splice call below.
+// NOTE: process() returns EITHER one node (the 1-to-1 case) OR an array of nodes
+// (a 1-to-N fragment splice). 1-to-1 is the norm — most normalizers replace one
+// mdast node with one canonical node. The 1-to-N form exists for the degenerate
+// markdown-link fallback (`liftLink`), which splices the link's literal source in
+// place as sibling text + inline nodes (no wrapper element), so it never emits an
+// unhandled `<span>`. Each returned node is descended into (it may carry further
+// normalizable content). A `null`/empty-array return deletes the node.
 
 import { isEnscribeTag } from '../tag.js';
 
@@ -36,27 +40,38 @@ import { isEnscribeTag } from '../tag.js';
  * @param {Array}    nodes     - node array to walk and mutate
  * @param {Function} predicate - (node: object) => boolean
  *                               Returns true for nodes that should be replaced.
- * @param {Function} process   - (node: object) => object
- *                               Called for each matching node. Must return the
- *                               single replacement node. (1-to-1 contract.)
+ * @param {Function} process   - (node: object) => (object | object[])
+ *                               Called for each matching node. Returns the single
+ *                               replacement node (1-to-1), or an array of nodes
+ *                               spliced in its place (1-to-N).
  */
 export function walkNormalize(nodes, predicate, process) {
   let i = 0;
   while (i < nodes.length) {
     const node = nodes[i];
     if (predicate(node)) {
-      const replacement = process(node);
-      nodes.splice(i, 1, replacement);
-      // Descend into the replacement — it may itself carry normalizable content.
-      // For opaque replacements (isOpaqueContent: true, e.g. math), the guards
-      // below prevent any descent, so this is a no-op in the math case.
-      if (isEnscribeTag(replacement) && Array.isArray(replacement.content) && !replacement.isOpaqueContent) {
-        walkNormalize(replacement.content, predicate, process);
+      const result = process(node);
+      if (Array.isArray(result)) {
+        // 1-to-N: splice the fragment in place and DO NOT advance — the while loop
+        // re-visits each spliced node from `i`, so any raw mdast among them (e.g. a
+        // strong/emphasis child carried out of a lifted link) is itself normalized,
+        // and its children are descended into by the normal loop. The 1-to-N producer
+        // must not return a node that re-matches `predicate` (else re-visiting loops);
+        // liftLink returns only text + already-canonical children, so it terminates.
+        nodes.splice(i, 1, ...result);
+      } else {
+        nodes.splice(i, 1, result);
+        // Descend into the replacement — it may itself carry normalizable content.
+        // For opaque replacements (isOpaqueContent: true, e.g. math), the guards
+        // below prevent any descent, so this is a no-op in the math case.
+        if (isEnscribeTag(result) && Array.isArray(result.content) && !result.isOpaqueContent) {
+          walkNormalize(result.content, predicate, process);
+        }
+        if (result.children && Array.isArray(result.children)) {
+          walkNormalize(result.children, predicate, process);
+        }
+        i++;
       }
-      if (replacement.children && Array.isArray(replacement.children)) {
-        walkNormalize(replacement.children, predicate, process);
-      }
-      i++;
     } else {
       // Recurse into non-opaque enscribeTag content.
       if (isEnscribeTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {

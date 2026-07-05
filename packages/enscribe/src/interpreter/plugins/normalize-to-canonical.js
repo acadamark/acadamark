@@ -459,10 +459,13 @@ function isAutolink(node) {
 // authors write the `<a>` tag (`<a URL | text>`). An explicit link therefore
 // renders as its literal source: the brackets and parens show as text, while
 // the link text's own inline formatting (e.g. emphasis) still renders. The
-// literal is wrapped in a `<span>` so this stays the 1-to-1 normalization
-// walkNormalize requires; the span is inert inline and the gate still emits
-// only canonical nodes (a `<span>` plus text). The URL inside the literal is
-// built after parsing, so remark-gfm never re-autolinks it.
+// literal is spliced in place as sibling nodes — the `[` text, the original
+// (inline-formatted) link children, and the `](url)` text — via walkNormalize's
+// 1-to-N return. There is NO wrapper element: a former `<span>` wrapper reached
+// tag-dispatch with no `span` handler and warned "unknown tag <span>" (span was
+// retired from the vocabulary in #334); emitting only text + the already-canonical
+// children keeps the gate's "canonical nodes only" invariant with nothing to warn
+// on. The URL is stitched after parsing, so remark-gfm never re-autolinks it.
 function liftLink(node) {
   if (isAutolink(node)) {
     const kwargs = {};
@@ -471,11 +474,11 @@ function liftLink(node) {
     return makeTag('a', node.children ?? [], { kwargs });
   }
   const title = node.title ? ` "${node.title}"` : '';
-  return makeTag('span', [
+  return [
     { type: 'text', value: '[' },
     ...(node.children ?? []),
     { type: 'text', value: `](${node.url ?? ''}${title})` },
-  ]);
+  ];
 }
 
 // Markdown images are no longer an authoring idiom — authors write `<fig>` /
