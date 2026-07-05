@@ -166,20 +166,16 @@ Produced by: canonical `<caption>`; the `caption=` kwarg on a frameable; a figur
 <code-block #code:l1-caption-1>
 <table>
   <caption | Annual rainfall by region, 2020–2024.>
-
-  | region | mm |
-  |---|---|
-  | Congo basin | 1600 |
+  <tr><th>region</th><th>mm</th></tr>
+  <tr><td>Congo basin</td><td>1600</td></tr>
 </table>
 </code-block>
 
 <minipage #mp:l1-caption-1>
 <table>
   <caption | Annual rainfall by region, 2020–2024.>
-
-  | region | mm |
-  |---|---|
-  | Congo basin | 1600 |
+  <tr><th>region</th><th>mm</th></tr>
+  <tr><td>Congo basin</td><td>1600</td></tr>
 </table>
 </minipage>
 

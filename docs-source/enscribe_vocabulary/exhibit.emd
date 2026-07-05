@@ -171,22 +171,18 @@ Registers:
 <code-block #code:sh-caption-1>
 <table>
   <caption | Annual rainfall by region, 2020–2024.>
-
-  | region | mm |
-  |---|---|
-  | Congo basin | 1600 |
-  | Serengeti | 800 |
+  <tr><th>region</th><th>mm</th></tr>
+  <tr><td>Congo basin</td><td>1600</td></tr>
+  <tr><td>Serengeti</td><td>800</td></tr>
 </table>
 </code-block>
 
 <minipage #mp:sh-caption-1>
 <table>
   <caption | Annual rainfall by region, 2020–2024.>
-
-  | region | mm |
-  |---|---|
-  | Congo basin | 1600 |
-  | Serengeti | 800 |
+  <tr><th>region</th><th>mm</th></tr>
+  <tr><td>Congo basin</td><td>1600</td></tr>
+  <tr><td>Serengeti</td><td>800</td></tr>
 </table>
 </minipage>
 
