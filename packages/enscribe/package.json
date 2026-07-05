@@ -41,6 +41,7 @@
     "./browser": "./dist/enscribe.browser.js",
     "./browser-global": "./dist/enscribe.browser.global.js",
     "./default.css": "./src/interpreter/assets/default.css",
+    "./shell/editor-codemirror.js": "./dist/editor-codemirror.js",
     "./shell/*": "./src/shell/*",
     "./package.json": "./package.json"
   },
@@ -64,6 +65,7 @@
     "@popperjs/core": "^2.11.8",
     "abcjs": "^6.6.3",
     "citation-js": "^0.7.22",
+    "codemirror": "^6.0.2",
     "hast-util-from-html": "^2.0.3",
     "hast-util-to-html": "^9.0.0",
     "js-yaml": "^4.1.1",

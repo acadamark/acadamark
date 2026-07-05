@@ -45,15 +45,16 @@ export function run_tests() {
     // EVERY local reference in the emitted shell resolves inside the folder (the no-404 gate)
     const html = readFileSync(join(out, 'index.html'), 'utf8');
     const refs = [...html.matchAll(/(?:href|src)="(\.\/[^"]+)"/g)].map((m) => m[1])
-      .concat([...html.matchAll(/from '(\.\/[^']+)'/g)].map((m) => m[1]));
+      .concat([...html.matchAll(/from '(\.\/[^']+)'/g)].map((m) => m[1]))
+      .concat([...html.matchAll(/import\('(\.\/[^']+)'\)/g)].map((m) => m[1]));  // lazy dynamic-import of the editor asset
     assert.ok(refs.length >= 4, 'the shell references the copied assets');
     for (const r of refs) {
       assert.ok(existsSync(join(out, r.slice(2))), `the shell asset resolves (no 404): ${r}`);
     }
 
     // the deployed flat shell mounts the book and carries the #213 host switch
-    assert.ok(html.includes('src="./enscribe.browser.global.js"') && html.includes("from './editor-codemirror.js'"),
-      'the shell references the flat-copied engine bundle + default editor');
+    assert.ok(html.includes('src="./enscribe.browser.global.js"') && html.includes("import('./editor-codemirror.js')"),
+      'the shell references the flat-copied engine bundle + lazily dynamic-imports the default editor');
     assert.ok(html.includes("mountLiveShell('#enscribe-book-root', 'book.emd'") &&
       html.includes("new URLSearchParams(location.search).has('edit')"),
       'the shell mounts the master via mountLiveShell with the #213 ?edit switch');

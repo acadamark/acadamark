@@ -35,7 +35,7 @@ export async function run() {
     assert.ok(html.includes('<title>My Book</title>'), 'explicit title is used');
     assert.ok(html.includes('href="./default.css"'), 'flat: links ./default.css');
     assert.ok(html.includes('href="./enscribe-shell.css"'), 'flat: links ./enscribe-shell.css');
-    assert.ok(html.includes("from './editor-codemirror.js'"), 'flat: imports ./editor-codemirror.js');
+    assert.ok(html.includes("import('./editor-codemirror.js')"), 'flat: lazily dynamic-imports ./editor-codemirror.js');
     assert.ok(html.includes('src="./enscribe.browser.global.js"'), 'flat: loads ./enscribe.browser.global.js');
     console.log('PASS: #215 — assetBase "./" emits the flat deployed asset layout');
   }
@@ -47,7 +47,7 @@ export async function run() {
       assets: { engine: '../e.js', defaultCss: '../d.css', shellCss: '../s.css', editor: '../ed.js' },
     });
     assert.ok(html.includes('href="../d.css"') && html.includes('href="../s.css"') &&
-      html.includes("from '../ed.js'") && html.includes('src="../e.js"'),
+      html.includes("import('../ed.js')") && html.includes('src="../e.js"'),
       'explicit asset hrefs are used verbatim (the dev fixture references the source tree)');
     console.log('PASS: #215 — explicit `assets` override the flat assetBase (scattered dev paths)');
   }

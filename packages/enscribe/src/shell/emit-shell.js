@@ -53,14 +53,19 @@ const FLAT_FILENAMES = {
 // with emitSingleFileShell's `assetBase` (a flat self-host) or `assets` (per-asset).
 export const SINGLE_FILE_CDN_ROOT = 'https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/';
 
-// The four chrome assets at their REAL paths in the pinned `0.4.1` tarball (verified non-404, correct
-// MIME). These mirror the package `exports`: `./browser-global` → `dist/…`, `./default.css` →
-// `src/interpreter/assets/…`, `./shell/*` → `src/shell/…`.
+// The four chrome assets at their REAL paths in the pinned tarball (verified non-404, correct MIME).
+// These mirror the package `exports`: `./browser-global` → `dist/…`, `./default.css` →
+// `src/interpreter/assets/…`, `enscribe-shell.css` via `./shell/*` → `src/shell/…`. The editor is the
+// exception: `./shell/editor-codemirror.js` now resolves to the BUNDLED `dist/editor-codemirror.js`
+// (CodeMirror inlined), so it points at `dist/…` here too — the raw `src/shell/editor-codemirror.js`
+// carries a bare `import('codemirror')` that a browser cannot resolve without an import map. (This
+// path is correct for the version that first publishes the bundled editor; bumping the pinned version
+// on release is the one edit to SINGLE_FILE_CDN_ROOT, as noted above.)
 export const SINGLE_FILE_ASSETS = Object.freeze({
   engine: SINGLE_FILE_CDN_ROOT + 'dist/enscribe.browser.global.js',
   defaultCss: SINGLE_FILE_CDN_ROOT + 'src/interpreter/assets/default.css',
   shellCss: SINGLE_FILE_CDN_ROOT + 'src/shell/enscribe-shell.css',
-  editor: SINGLE_FILE_CDN_ROOT + 'src/shell/editor-codemirror.js',
+  editor: SINGLE_FILE_CDN_ROOT + 'dist/editor-codemirror.js',
 });
 
 /**
@@ -132,13 +137,14 @@ ${HEAD_ASSET_LINKS}
 <script src="${a.engine}"></script>
 
 <script type="module">
-  // The default editor adapter ships with the package (CodeMirror loaded host-side, only when
-  // editing is on — importing this module loads nothing). A host could pass its own factory.
-  import { codeMirrorEditorFactory } from '${a.editor}';
+  // The default editor adapter ships with the package with CodeMirror BUNDLED into it. It is loaded
+  // LAZILY: the factory dynamically imports the editor asset, so mountLiveShell fetches it only when
+  // editing is on — a read-mode page never downloads the (large) bundled CodeMirror asset. A host
+  // could pass its own factory.
 
   // The #213 host switch: \`?edit\` flips it at runtime; otherwise the \`data-enscribe-edit\` on the
   // mount <div> decides (default: read). The engine is unchanged.
-  const opts = { editorFactory: codeMirrorEditorFactory };
+  const opts = { editorFactory: () => import('${a.editor}').then((m) => m.codeMirrorEditorFactory()) };
   if (new URLSearchParams(location.search).has('edit')) opts.edit = true;
 
   window.enscribe
@@ -197,10 +203,10 @@ export function emitSingleFileShell({ source, title, edit = false, editable = tr
   // no editor module is loaded and `?edit` is inert.
   const editAttr = (editable && edit) ? ' data-enscribe-edit' : '';
   const editBootstrap = editable
-    ? `  // Editable (self-contained): load the default editor adapter (CodeMirror loads host-side, only
-  // when editing is on). \`?edit\` flips it; the \`data-enscribe-edit\` on the mount <div> is the default.
-  import { codeMirrorEditorFactory } from '${a.editor}';
-  const opts = { editorFactory: codeMirrorEditorFactory };
+    ? `  // Editable (self-contained): the default editor adapter (CodeMirror bundled in) is loaded LAZILY —
+  // the factory dynamically imports the editor asset, so it is fetched only when editing is on.
+  // \`?edit\` flips it; the \`data-enscribe-edit\` on the mount <div> is the default.
+  const opts = { editorFactory: () => import('${a.editor}').then((m) => m.codeMirrorEditorFactory()) };
   if (new URLSearchParams(location.search).has('edit')) opts.edit = true;`
     : `  // Render-only: this document pulls in external <… src> children, which a single self-contained
   // file does not embed (one document only). Editing is disabled; children load from the web at render.

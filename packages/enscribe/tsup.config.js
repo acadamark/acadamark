@@ -83,7 +83,7 @@ const hoverPreviewJs = readFileSync(join(assetsDir, 'hover-preview.js'), 'utf8')
 // the browser bundle resolves — and loads — without a live `__require` of a built-in.
 const nodeBuiltinStub = join(assetsDir, 'node-builtin-stub.js');
 
-export default defineConfig({
+export default defineConfig([{
   entry: { 'enscribe.browser': 'src/interpreter/browser.js' },
   format: ['esm', 'iife'],
   globalName: 'enscribe',
@@ -129,4 +129,25 @@ export default defineConfig({
     // genuinely new warning still surfaces.
     options.logOverride = { ...options.logOverride, 'empty-import-meta': 'silent' };
   },
-});
+}, {
+  // The shell EDITOR asset (#214) — bundled so the shipped `dist/editor-codemirror.js` inlines
+  // CodeMirror instead of fetching it from a CDN at load. ESM-only (the shell imports it as a
+  // module) with no globalName (it exposes the named `codeMirrorEditorFactory`, not a window global).
+  // `splitting: false` so the factory's lazy `import('codemirror')` is inlined into this single
+  // self-contained asset rather than split into a separate chunk. `clean: false` — the browser build
+  // above owns `clean` for dist/; a second clean here would race it and wipe one of the two outputs.
+  entry: { 'editor-codemirror': 'src/shell/editor-codemirror.js' },
+  format: ['esm'],
+  platform: 'browser',
+  target: 'es2020',
+  minify: true,
+  sourcemap: true,
+  splitting: false,
+  clean: false,
+  // Force-bundle `codemirror` (a package.json dependency, which tsup would otherwise leave as an
+  // EXTERNAL bare `import("codemirror")` a browser cannot resolve). With `splitting: false`, esbuild
+  // inlines this now-internal module and evaluates it lazily on the factory's dynamic import — so the
+  // asset is a single self-contained file AND read mode still loads nothing. Its transitive
+  // `@codemirror/*` deps are not direct deps, so they bundle in with it.
+  noExternal: ['codemirror'],
+}]);

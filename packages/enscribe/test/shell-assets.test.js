@@ -47,8 +47,8 @@ export async function run() {
   {
     assert.ok(shellHtml.includes('href="../../../src/shell/enscribe-shell.css"'),
       'the shell <link>s the packaged enscribe-shell.css');
-    assert.ok(shellHtml.includes("from '../../../src/shell/editor-codemirror.js'"),
-      'the shell imports the packaged default editorFactory module');
+    assert.ok(shellHtml.includes("import('../../../src/shell/editor-codemirror.js')"),
+      'the shell LAZILY dynamic-imports the packaged default editorFactory module (read mode never fetches the bundled CodeMirror asset)');
     assert.ok(!shellHtml.includes('a.enscribe-book-home {'),
       'the shell no longer inlines the masthead CSS rule (referenced, not copied)');
     assert.ok(!shellHtml.includes('.enscribe-edit-tabs {'),
@@ -62,9 +62,11 @@ export async function run() {
   {
     assert.ok(/export async function codeMirrorEditorFactory\b/.test(editorMod),
       'editor-codemirror.js exports codeMirrorEditorFactory');
-    assert.ok(/await import\(\s*['"]https:\/\/esm\.sh\/codemirror/.test(editorMod),
-      'codeMirrorEditorFactory LAZILY imports CodeMirror from a CDN (host-side; not in the core engine bundle)');
-    console.log('PASS: #214 — the default editorFactory ships as a host-side, lazy shell-layer module');
+    assert.ok(/await import\(\s*['"]codemirror['"]\s*\)/.test(editorMod),
+      'codeMirrorEditorFactory LAZILY imports the BUNDLED CodeMirror (dynamic import of the `codemirror` dep, inlined by tsup — host-side, not in the core engine bundle, and no runtime CDN)');
+    assert.ok(!/esm\.sh/.test(editorMod),
+      'editor-codemirror.js no longer imports CodeMirror from esm.sh (it is bundled, not fetched from a CDN at load)');
+    console.log('PASS: #214 — the default editorFactory ships as a host-side, lazy shell-layer module (CodeMirror bundled)');
   }
 
   // ── the #213 read↔edit host switch is intact in the minimal shell (behavior unchanged) ──────

@@ -83,12 +83,12 @@ export async function run() {
     assert.ok(html.includes('<template id="enscribe-source">'), 'the source rides in a <template id=enscribe-source>');
     assert.ok(html.includes('mountLiveDocument'), 'the bootstrap mounts via mountLiveDocument (no fetch)');
     // The four chrome assets load from the PINNED npm CDN (@0.4.1), each at its real (non-flat)
-    // tarball path — engine in dist/, the rest scattered under src/.
+    // tarball path — engine + the bundled editor in dist/, default.css + shell CSS under src/.
     assert.ok(SINGLE_FILE_CDN_ROOT.includes('@enscribejs/enscribe@0.4.1'), 'the CDN root is pinned to the published 0.4.1');
     assert.ok(html.includes(`src="${SINGLE_FILE_ASSETS.engine}"`), 'the engine loads from the pinned npm CDN (dist/)');
     assert.ok(html.includes(`href="${SINGLE_FILE_ASSETS.defaultCss}"`), 'default.css loads from the pinned npm CDN (src/interpreter/assets/)');
     assert.ok(html.includes(`href="${SINGLE_FILE_ASSETS.shellCss}"`), 'the shell CSS loads from the pinned npm CDN (src/shell/)');
-    assert.ok(html.includes(`from '${SINGLE_FILE_ASSETS.editor}'`), 'the editor module loads from the pinned npm CDN (src/shell/)');
+    assert.ok(html.includes(`import('${SINGLE_FILE_ASSETS.editor}')`), 'the editor module is lazily dynamic-imported from the pinned npm CDN (dist/, CodeMirror bundled)');
     assert.ok(html.includes('codeMirrorEditorFactory'), 'a self-contained doc wires the editor (editable)');
     // Round-trip: the <template> content decodes back to the exact source.
     const dom = new JSDOM(html);

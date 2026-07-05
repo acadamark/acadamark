@@ -181,8 +181,8 @@ instead of fetch) and forecloses the server.
   by URL — the file is small (shell + content), no engine inlined. The default source is the
   **pinned, published npm package** on jsDelivr — `cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/`,
   an **immutable version** (not the moving `@main` git ref the initial stopgap used). The npm tarball
-  is not flat, so the four chrome assets are referenced at their real per-package paths (engine in
-  `dist/`, the stylesheets + editor under `src/`), each verified to resolve with the correct MIME
+  is not flat, so the four chrome assets are referenced at their real per-package paths (engine + the
+  bundled editor in `dist/`, the stylesheets under `src/`), each verified to resolve with the correct MIME
   (`application/javascript` / `text/css`). Bumping the pin is one edit; a self-host or alternate tag is
   the emitter's `assetBase` / `assets` override. (NB: `raw.githubusercontent.com` serves `text/plain`
   + `nosniff`, which browsers refuse to execute — hence jsDelivr.)

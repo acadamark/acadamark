@@ -6,19 +6,25 @@
 // and passes it to `mountLiveShell` as `editorFactory`; the engine calls it ONLY when editing
 // is on, so read mode never loads CodeMirror. A host may pass its own factory instead.
 //
-// CodeMirror is lazy-imported from a CDN INSIDE the factory, so merely importing this module loads
-// nothing. The reference path / bundling for a deployed shell is the shell EMITTER's job (a
-// follow-on); here a fixture imports this file dev/package-relative.
+// CodeMirror is BUNDLED into the shipped editor asset (not fetched from a CDN): the tsup `editor`
+// build inlines the `codemirror` dependency into `dist/editor-codemirror.js`, and the package's
+// `./shell/editor-codemirror.js` export ships that bundled file. The import below is kept as a
+// DYNAMIC import INSIDE the factory so merely importing this module still loads nothing — tsup
+// inlines the dynamically-imported module (code-splitting off) into the same asset and evaluates it
+// lazily, only when the factory is called (i.e. when editing is on). So read mode never pays for
+// CodeMirror, and a load-bearing editor no longer depends on a third-party CDN resolving an unpinned
+// dep tree at load (the CDN runtime import it replaced was failing to resolve its transitive
+// `@codemirror/view`). A host may still pass its own `editorFactory` instead.
 
 /**
- * Build the default editor adapter: lazily load CodeMirror 6 (from a CDN) and turn a mount element
+ * Build the default editor adapter: lazily load the BUNDLED CodeMirror 6 and turn a mount element
  * into an editor. Matches the #211 adapter seam — `mount(el, {value, onChange}) → {destroy()}` —
  * reporting every document change through `onChange`.
  *
  * @returns {Promise<{ mount: (el: Element, opts: { value: string, onChange: (source: string) => void }) => { destroy(): void } }>}
  */
 export async function codeMirrorEditorFactory() {
-  const { EditorView, basicSetup } = await import('https://esm.sh/codemirror@6.0.1');
+  const { EditorView, basicSetup } = await import('codemirror');
   return {
     mount(el, { value, onChange }) {
       const view = new EditorView({

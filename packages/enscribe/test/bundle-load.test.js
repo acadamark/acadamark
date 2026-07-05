@@ -17,12 +17,13 @@
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { readFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import assert from 'node:assert/strict';
 
 const pkgRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const bundlePath = join(pkgRoot, 'dist', 'enscribe.browser.global.js');
+const editorPath = join(pkgRoot, 'dist', 'editor-codemirror.js');
 
 export async function run() {
   // Build fresh so the test reflects current src/ + tsup.config.js. A build
@@ -78,4 +79,26 @@ export async function run() {
   );
 
   console.log('PASS: bundle-load (IIFE loads in a browser-like context; render/renderInto/executeAssets present; render works)');
+
+  // ── #214: the shipped EDITOR asset bundles CodeMirror (no runtime CDN) ───────────────
+  // The same build above also emits dist/editor-codemirror.js. Prove it is self-contained: CodeMirror
+  // is INLINED (no esm.sh URL, no unbundled bare `import("codemirror")` a browser can't resolve), the
+  // built module imports in Node with NO network, and it exposes the async codeMirrorEditorFactory.
+  // (Importing the module does NOT evaluate CodeMirror — the factory's lazy `import('codemirror')` is
+  // the boundary — so this runs without a DOM. A live EditorView mount is the browser check, which CC
+  // cannot run; see the slice report's "needs a browser mount check on a ?edit page".)
+  assert.ok(existsSync(editorPath), `bundle-load(editor): expected ${editorPath} after build`);
+  const editorCode = readFileSync(editorPath, 'utf8');
+  assert.ok(!/esm\.sh/.test(editorCode),
+    'bundle-load(editor): no esm.sh URL in the shipped editor asset (CodeMirror is bundled, not CDN-loaded)');
+  assert.ok(!/\bimport\(\s*["']codemirror["']\s*\)/.test(editorCode),
+    'bundle-load(editor): no unbundled bare import("codemirror") remains (CodeMirror is inlined, not external)');
+  assert.ok(/EditorView/.test(editorCode) && /basicSetup/.test(editorCode),
+    'bundle-load(editor): the bundled asset contains CodeMirror (EditorView + basicSetup inlined)');
+  assert.ok(editorCode.length > 100_000,
+    `bundle-load(editor): the editor asset is substantial (CodeMirror inlined), got ${editorCode.length} bytes`);
+  const editorMod = await import(pathToFileURL(editorPath).href);
+  assert.equal(typeof editorMod.codeMirrorEditorFactory, 'function',
+    'bundle-load(editor): the built module imports with NO network and exposes codeMirrorEditorFactory');
+  console.log('PASS: bundle-load (editor asset bundles CodeMirror — no esm.sh, EditorView/basicSetup inlined, imports with no network, exposes codeMirrorEditorFactory)');
 }
