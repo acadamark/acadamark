@@ -1457,14 +1457,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             </figure>
             <figcaption><minipage-label>Minipage 59.</minipage-label></figcaption>
           </figure>
-          <p><i>The <code>id</code> enables cross-referencing with <code>&#x26;lt;ref @elephant&#x26;gt;</code> (or the canonical <code>&#x26;lt;ref @fig:elephant&#x26;gt;</code> colon-prefix form). Numbered by default; the figcaption gets a “Figure N.” label span prepended.</i></p><code id="code:sh-fig-4">&#x3C;fig #revenue-table type=table |
+          <p><i>The <code>id</code> enables cross-referencing with <code>&#x26;lt;ref @elephant&#x26;gt;</code> (or the canonical <code>&#x26;lt;ref @fig:elephant&#x26;gt;</code> colon-prefix form). Numbered by default; the figcaption gets a “Figure N.” label span prepended.</i></p>
+          <pre><code id="code:sh-fig-4">
+&#x3C;fig #revenue-table type=table |
 &#x3C;table>
-&#x3C;tr>&#x3C;th>Quarter&#x3C;/th>&#x3C;th>Revenue&#x3C;/th>&#x3C;/tr>
-&#x3C;tr>&#x3C;td>Q1&#x3C;/td>&#x3C;td>$100M&#x3C;/td>&#x3C;/tr>
-&#x3C;tr>&#x3C;td>Q2&#x3C;/td>&#x3C;td>$120M&#x3C;/td>&#x3C;/tr>
+  &#x3C;tr>&#x3C;th>Quarter&#x3C;/th>&#x3C;th>Revenue&#x3C;/th>&#x3C;/tr>
+  &#x3C;tr>&#x3C;td>Q1&#x3C;/td>&#x3C;td>$100M&#x3C;/td>&#x3C;/tr>
+  &#x3C;tr>&#x3C;td>Q2&#x3C;/td>&#x3C;td>$120M&#x3C;/td>&#x3C;/tr>
 &#x3C;/table>
 Quarterly revenue for fiscal year 2024.
-></code>
+>
+</code></pre>
           <figure id="mp:sh-fig-4" class="frameable-border">
             <figure id="mp-sh-fig-4-revenue-table" data-figure-type="table">
               <figcaption><figure-label>Figure 1.</figure-label>
@@ -1568,10 +1571,13 @@ Quarterly revenue for fiscal year 2024.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;table></code></li>
-          </ul><code id="code:sh-table-1">| Name | Price |
+          </ul>
+          <pre><code id="code:sh-table-1">
+| Name | Price |
 |------|-------|
-| foo | 1 |
-| bar | 2 |</code>
+| foo  | 1     |
+| bar  | 2     |
+</code></pre>
           <figure id="mp:sh-table-1" class="frameable-border">
             <table>
               <caption><table-label>Table 1.</table-label></caption>
@@ -1594,10 +1600,13 @@ Quarterly revenue for fiscal year 2024.
             </table>
             <figcaption><minipage-label>Minipage 61.</minipage-label></figcaption>
           </figure>
-          <p><i>Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.</i></p><code id="code:sh-table-2">&#x3C;csv | name,price
+          <p><i>Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.</i></p>
+          <pre><code id="code:sh-table-2">
+&#x3C;csv | name,price
 foo,1
 bar,2
-></code>
+>
+</code></pre>
           <figure id="mp:sh-table-2" class="frameable-border">
             <table>
               <caption><table-label>Table 1.</table-label></caption>
@@ -1620,12 +1629,15 @@ bar,2
             </table>
             <figcaption><minipage-label>Minipage 62.</minipage-label></figcaption>
           </figure>
-          <p><i>The <code>&#x26;lt;csv&#x26;gt;</code> shorthand lowers to <code>&#x26;lt;table csv&#x26;gt;</code> (the standalone <code>&#x26;lt;csv&#x26;gt;</code> / <code>&#x26;lt;tsv&#x26;gt;</code> tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler’s csv engine. <code>&#x26;lt;csv | ... &#x26;gt;</code> and the qualifying form <code>&#x26;lt;table csv | ... &#x26;gt;</code> converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying <code>&#x26;lt;table json | ... &#x26;gt;</code> form — there is no standalone <code>&#x26;lt;json&#x26;gt;</code> shorthand. See the <code>&#x26;lt;csv&#x26;gt;</code> vocabulary entry for engine attributes (header control, alignment, etc.).</i></p><code id="code:sh-table-3">&#x3C;table #revenue type=results>
-&#x3C;caption | Quarterly revenue>
-&#x3C;tr>&#x3C;th>Quarter&#x3C;/th>&#x3C;th>Revenue&#x3C;/th>&#x3C;/tr>
-&#x3C;tr>&#x3C;td>Q1&#x3C;/td>&#x3C;td>$100M&#x3C;/td>&#x3C;/tr>
-&#x3C;tr>&#x3C;td>Q2&#x3C;/td>&#x3C;td>$120M&#x3C;/td>&#x3C;/tr>
-&#x3C;/table></code>
+          <p><i>The <code>&#x26;lt;csv&#x26;gt;</code> shorthand lowers to <code>&#x26;lt;table csv&#x26;gt;</code> (the standalone <code>&#x26;lt;csv&#x26;gt;</code> / <code>&#x26;lt;tsv&#x26;gt;</code> tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler’s csv engine. <code>&#x26;lt;csv | ... &#x26;gt;</code> and the qualifying form <code>&#x26;lt;table csv | ... &#x26;gt;</code> converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying <code>&#x26;lt;table json | ... &#x26;gt;</code> form — there is no standalone <code>&#x26;lt;json&#x26;gt;</code> shorthand. See the <code>&#x26;lt;csv&#x26;gt;</code> vocabulary entry for engine attributes (header control, alignment, etc.).</i></p>
+          <pre><code id="code:sh-table-3">
+&#x3C;table #revenue type=results>
+  &#x3C;caption | Quarterly revenue>
+  &#x3C;tr>&#x3C;th>Quarter&#x3C;/th>&#x3C;th>Revenue&#x3C;/th>&#x3C;/tr>
+  &#x3C;tr>&#x3C;td>Q1&#x3C;/td>&#x3C;td>$100M&#x3C;/td>&#x3C;/tr>
+  &#x3C;tr>&#x3C;td>Q2&#x3C;/td>&#x3C;td>$120M&#x3C;/td>&#x3C;/tr>
+&#x3C;/table>
+</code></pre>
           <figure id="mp:sh-table-3" class="frameable-border">
             <table id="mp-sh-table-3-revenue">
               <caption><table-label>Table 1.</table-label></caption>
@@ -1717,13 +1729,17 @@ bar,2
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;caption></code> (child of a frameable)</li>
-          </ul><code id="code:sh-caption-1">&#x3C;table>
-&#x3C;caption | Annual rainfall by region, 2020–2024.>
-| region | mm |
-|---|---|
-| Congo basin | 1600 |
-| Serengeti | 800 |
-&#x3C;/table></code>
+          </ul>
+          <pre><code id="code:sh-caption-1">
+&#x3C;table>
+  &#x3C;caption | Annual rainfall by region, 2020–2024.>
+
+  | region | mm |
+  |---|---|
+  | Congo basin | 1600 |
+  | Serengeti | 800 |
+&#x3C;/table>
+</code></pre>
           <figure id="mp:sh-caption-1" class="frameable-border"><table>
 <caption | Annual rainfall by region, 2020–2024.>
 
@@ -1759,12 +1775,15 @@ bar,2
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;diagram></code></li>
-          </ul><code id="code:sh-diagram-1">&#x3C;diagram mermaid>
+          </ul>
+          <pre><code id="code:sh-diagram-1">
+&#x3C;diagram mermaid>
 graph LR
-A[Start] --> B{Decision}
-B -->|yes| C[OK]
-B -->|no| D[Stop]
-&#x3C;/diagram></code>
+  A[Start] --> B{Decision}
+  B -->|yes| C[OK]
+  B -->|no| D[Stop]
+&#x3C;/diagram>
+</code></pre>
           <figure id="mp:sh-diagram-1" class="frameable-border">
             
               <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
@@ -1775,12 +1794,15 @@ B -->|no| D[Stop]
             
             <figcaption><minipage-label>Minipage 66.</minipage-label></figcaption>
           </figure>
-          <p><i>The <code>mermaid</code> format word selects the Mermaid engine. The handler emits the same <code>&#x26;lt;pre class="mermaid" data-enscribe-dsl="mermaid"&#x26;gt;</code> contract as the legacy <code>&#x26;lt;mermaid&#x26;gt;</code> shorthand expands to.</i></p><code id="code:sh-diagram-2">&#x3C;diagram abc>
+          <p><i>The <code>mermaid</code> format word selects the Mermaid engine. The handler emits the same <code>&#x26;lt;pre class="mermaid" data-enscribe-dsl="mermaid"&#x26;gt;</code> contract as the legacy <code>&#x26;lt;mermaid&#x26;gt;</code> shorthand expands to.</i></p>
+          <pre><code id="code:sh-diagram-2">
+&#x3C;diagram abc>
 X:1
 T:Scale
 K:C
 CDEFGABc
-&#x3C;/diagram></code>
+&#x3C;/diagram>
+</code></pre>
           <figure id="mp:sh-diagram-2" class="frameable-border">
             
               <pre class="abc" data-enscribe-dsl="abc">X:1
@@ -1823,18 +1845,24 @@ CDEFGABc</pre>
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;svg></code></li>
-          </ul><code id="code:sh-svg-1">&#x3C;svg -numbered viewBox="0 0 100 100" width=200 height=200 |
-&#x3C;circle cx="50" cy="50" r="40" fill="blue" />
-></code>
+          </ul>
+          <pre><code id="code:sh-svg-1">
+&#x3C;svg -numbered viewBox="0 0 100 100" width=200 height=200 |
+  &#x3C;circle cx="50" cy="50" r="40" fill="blue" />
+>
+</code></pre>
           <figure id="mp:sh-svg-1" class="frameable-border">
             <svg viewBox="0 0 100 100" width="200" height="200">
   <circle cx="50" cy="50" r="40" fill="blue" />
 </svg>
             <figcaption><minipage-label>Minipage 68.</minipage-label></figcaption>
           </figure>
-          <p><i>A lone inline SVG. <code>&#x26;lt;svg&#x26;gt;</code> is numbered by default (it shares the figure counter), so <code>-numbered</code> is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &#x3C;svg> element.</i></p><code id="code:sh-svg-2">&#x3C;svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
-&#x3C;circle cx="50" cy="50" r="40" />
-></code>
+          <p><i>A lone inline SVG. <code>&#x26;lt;svg&#x26;gt;</code> is numbered by default (it shares the figure counter), so <code>-numbered</code> is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &#x3C;svg> element.</i></p>
+          <pre><code id="code:sh-svg-2">
+&#x3C;svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
+  &#x3C;circle cx="50" cy="50" r="40" />
+>
+</code></pre>
           <figure id="mp:sh-svg-2" class="frameable-border">
             <figure>
               <svg id="mp-sh-svg-2-fig:diagram" viewBox="0 0 100 100">
@@ -1941,9 +1969,12 @@ CDEFGABc</pre>
             </figure>
             <figcaption><minipage-label>Minipage 70.</minipage-label></figcaption>
           </figure>
-          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>frame</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;frame>, so the class appears automatically.</i></p><code id="code:sh-frame-2">&#x3C;frame type=note title="Important" |
+          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>frame</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;frame>, so the class appears automatically.</i></p>
+          <pre><code id="code:sh-frame-2">
+&#x3C;frame type=note title="Important" |
 Make sure to read this carefully.
-></code>
+>
+</code></pre>
           <figure id="mp:sh-frame-2" class="frameable-border">
             <figure data-frame-type="note" class="frameable-border">
               <figcaption class="title">Important</figcaption>
@@ -1952,11 +1983,14 @@ Make sure to read this carefully.
             </figure>
             <figcaption><minipage-label>Minipage 71.</minipage-label></figcaption>
           </figure>
-          <p><i>With a title rendered at the top.</i></p><code id="code:sh-frame-3">&#x3C;frame #fig:method-box +numbered caption="Workflow steps" |
+          <p><i>With a title rendered at the top.</i></p>
+          <pre><code id="code:sh-frame-3">
+&#x3C;frame #fig:method-box +numbered caption="Workflow steps" |
 1. Collect data.
 2. Clean.
 3. Model.
-></code>
+>
+</code></pre>
           <figure id="mp:sh-frame-3" class="frameable-border">
             <figure id="mp-sh-frame-3-fig:method-box" class="frameable-border">
               <ol>
@@ -2067,11 +2101,15 @@ Make sure to read this carefully.
             </figure>
             <figcaption><minipage-label>Minipage 73.</minipage-label></figcaption>
           </figure>
-          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>minipage</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;minipage>, so the class appears automatically. The body renders as sealed eHTML.</i></p><code id="code:sh-minipage-2">&#x3C;minipage #mp:compare +numbered caption="Side-by-side comparison" |
+          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>minipage</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;minipage>, so the class appears automatically. The body renders as sealed eHTML.</i></p>
+          <pre><code id="code:sh-minipage-2">
+&#x3C;minipage #mp:compare +numbered caption="Side-by-side comparison" |
 A figure here counts privately.
+
 &#x3C;fig #fig:left src="left.png" | Left panel.>
 &#x3C;fig #fig:right src="right.png" | Right panel.>
-></code>
+>
+</code></pre>
           <figure id="mp:sh-minipage-2" class="frameable-border">
             <figure id="mp-sh-minipage-2-mp:compare" class="frameable-border">
               <p>A figure here counts privately.</p>

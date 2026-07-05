@@ -1421,12 +1421,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <section-title>Tables</section-title>
         <sub-section id="sec:general-usage-20">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A table is <code>&#x3C;table></code> with a format and the data written inline. The first row is the header by default, and a <code>caption</code> titles it:</p><code id="code:table-basic">&#x3C;table csv caption="Quarterly revenue">
+          <p>A table is <code>&#x3C;table></code> with a format and the data written inline. The first row is the header by default, and a <code>caption</code> titles it:</p>
+          <pre><code id="code:table-basic">
+&#x3C;table csv caption="Quarterly revenue">
 Quarter, Revenue, Growth
 Q1, 1.2M, —
 Q2, 1.5M, 25%
 Q3, 1.9M, 27%
-&#x3C;/table></code>
+&#x3C;/table>
+</code></pre>
           <figure id="mp:table-basic" class="frameable-border">
             <table>
               <caption><table-label>Table 1.</table-label> Quarterly revenue</caption>
@@ -1464,11 +1467,15 @@ Q3, 1.9M, 27%
           <table>
             <thead>
               <tr>
-                <th>format (the shape of the inline data)</th>
-                <th>csv | tsv | json | yaml | md</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>format (the shape of the inline data)</td>
+                <td>csv | tsv | json | yaml | md</td>
+              </tr>
               <tr>
                 <td>caption (the table’s title)</td>
                 <td>caption=”Quarterly revenue”</td>

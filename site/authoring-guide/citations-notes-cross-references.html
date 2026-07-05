@@ -1421,12 +1421,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             <section-title>Citations</section-title>
             <sub-section id="sec:general-usage-11">
               <sub-section-title>General Usage</sub-section-title>
-              <p>A citation points at a source by key with <code>&#x3C;cite key></code>. References are loaded once with <code>&#x3C;library></code> — paste entries straight from a reference manager — and the reference list is printed with <code>&#x3C;bibliography></code>. Citations resolve at build time against the loaded library.</p><code id="code:cite-basic">&#x3C;library format=bibtex>
+              <p>A citation points at a source by key with <code>&#x3C;cite key></code>. References are loaded once with <code>&#x3C;library></code> — paste entries straight from a reference manager — and the reference list is printed with <code>&#x3C;bibliography></code>. Citations resolve at build time against the loaded library.</p>
+              <pre><code id="code:cite-basic">
+&#x3C;library format=bibtex>
 @article{goodall2024, author={Jane Goodall}, title={Field Notes}, journal={Nature}, year={2024}}
 &#x3C;/library>
+
 The data supports this claim &#x3C;cite goodall2024>.
+
 &#x3C;bibliography>
-&#x3C;/bibliography></code>
+&#x3C;/bibliography>
+</code></pre>
               <p>The <code>&#x3C;cite goodall2024></code> marker renders as “(Goodall 2024)”, and <code>&#x3C;bibliography></code> prints the full entry. Cite several sources at once by listing keys: <code>&#x3C;cite smith2020 jones2021></code>.</p>
             </sub-section>
             <sub-section id="sec:arguments-9">
@@ -1434,11 +1439,15 @@ The data supports this claim &#x3C;cite goodall2024>.
               <table>
                 <thead>
                   <tr>
-                    <th>keys (one or more source keys)</th>
-                    <th>goodall2024 · smith2020 jones2021</th>
+                    <th>Attribute</th>
+                    <th>Example</th>
                   </tr>
                 </thead>
                 <tbody>
+                  <tr>
+                    <td>keys (one or more source keys)</td>
+                    <td>goodall2024 · smith2020 jones2021</td>
+                  </tr>
                   <tr>
                     <td>library — format (the entry format)</td>
                     <td>format=bibtex</td>
@@ -1455,8 +1464,12 @@ The data supports this claim &#x3C;cite goodall2024>.
             <section-title>Cross-References</section-title>
             <sub-section id="sec:general-usage-12">
               <sub-section-title>General Usage</sub-section-title>
-              <p>A cross-reference links to any numbered target — a figure, table, equation, theorem, or section — by its id, using the <code>@</code> reference sigil. The link text and number fill in automatically.</p><code id="code:ref-basic">&#x3C;fig #fig:scatter src=scatter.png | A scatter plot of the data.>
-As shown in &#x3C;ref @fig:scatter>, the trend is clear.</code>
+              <p>A cross-reference links to any numbered target — a figure, table, equation, theorem, or section — by its id, using the <code>@</code> reference sigil. The link text and number fill in automatically.</p>
+              <pre><code id="code:ref-basic">
+&#x3C;fig #fig:scatter src=scatter.png | A scatter plot of the data.>
+
+As shown in &#x3C;ref @fig:scatter>, the trend is clear.
+</code></pre>
               <figure id="mp:ref-basic" class="frameable-border">
                 <figure id="mp-ref-basic-fig:scatter">
                   <img src="scatter.png" alt="A scatter plot of the data.">
@@ -1477,8 +1490,11 @@ As shown in &#x3C;ref @fig:scatter>, the trend is clear.</code>
             <section-title>Notes</section-title>
             <sub-section id="sec:general-usage-13">
               <sub-section-title>General Usage</sub-section-title>
-              <p>A note attaches a comment to the text — one note type with three positions. <code>&#x3C;note></code> (position <code>foot</code>/<code>end</code>) becomes a numbered footnote collected at the foot of the document; <code>&#x3C;note position=margin></code> places the same numbered note beside the text in the margin.</p><code id="code:notes-basic">The result holds in general&#x3C;note | With the usual regularity assumptions.>. A lighter
-note can sit in the margin instead.&#x3C;note position=margin | Margins suit short, glanceable remarks.></code>
+              <p>A note attaches a comment to the text — one note type with three positions. <code>&#x3C;note></code> (position <code>foot</code>/<code>end</code>) becomes a numbered footnote collected at the foot of the document; <code>&#x3C;note position=margin></code> places the same numbered note beside the text in the margin.</p>
+              <pre><code id="code:notes-basic">
+The result holds in general&#x3C;note | With the usual regularity assumptions.>. A lighter
+note can sit in the margin instead.&#x3C;note position=margin | Margins suit short, glanceable remarks.>
+</code></pre>
               <figure id="mp:notes-basic" class="frameable-border">
                 <p>
                   The result holds in general<sup id="mp-notes-basic-noteref-1" data-note-id="mp-notes-basic-note-1"><a href="#mp-notes-basic-note-1">1</a></sup>. A lighter
@@ -1506,13 +1522,17 @@ note can sit in the margin instead.&#x3C;note position=margin | Margins suit sho
             <section-title>Defined Terms &#x26; Glossaries</section-title>
             <sub-section id="sec:general-usage-14">
               <sub-section-title>General Usage</sub-section-title>
-              <p><code>&#x3C;term></code> marks a defined term inline where you introduce it. A <code>&#x3C;glossary></code> collects terms and their definitions, each in a <code>&#x3C;glossary-entry></code> built from a <code>&#x3C;dt></code> term and a <code>&#x3C;dd></code> definition.</p><code id="code:term-basic">An &#x3C;term | eigenvector> is a non-zero vector that scales under a transformation.
+              <p><code>&#x3C;term></code> marks a defined term inline where you introduce it. A <code>&#x3C;glossary></code> collects terms and their definitions, each in a <code>&#x3C;glossary-entry></code> built from a <code>&#x3C;dt></code> term and a <code>&#x3C;dd></code> definition.</p>
+              <pre><code id="code:term-basic">
+An &#x3C;term | eigenvector> is a non-zero vector that scales under a transformation.
+
 &#x3C;glossary>
 &#x3C;glossary-entry #g:eigenvector>
 &#x3C;dt | Eigenvector>
 &#x3C;dd | A non-zero vector whose direction a transformation preserves.>
 &#x3C;/glossary-entry>
-&#x3C;/glossary></code>
+&#x3C;/glossary>
+</code></pre>
               <figure id="mp:term-basic" class="frameable-border">
                 <p>An <term>eigenvector</term> is a non-zero vector that scales under a transformation.</p>
                 <glossary>

@@ -12,21 +12,21 @@ Registers:
 - Sigil: `<# … #>`
 - Markdown: `# …`
 
-<code #code:sh-section-1>
+<code-block #code:sh-section-1>
 <section | Introduction>
 The paper begins here.
-</code>
+</code-block>
 
 <minipage #mp:sh-section-1>
 <section | Introduction>
 The paper begins here.
 </minipage>
 
-<code #code:sh-section-2>
+<code-block #code:sh-section-2>
 <section #methods sec-type=methods | Methods>
 <section-subtitle | A description of our experimental approach>
 The methods used in this study were as follows.
-</code>
+</code-block>
 
 <minipage #mp:sh-section-2>
 <section #methods sec-type=methods | Methods>
@@ -34,7 +34,7 @@ The methods used in this study were as follows.
 The methods used in this study were as follows.
 </minipage>
 
-<code #code:sh-section-3>
+<code-block #code:sh-section-3>
 <section | Results>
 Results paragraph.
 
@@ -43,7 +43,7 @@ Sub-section content.
 
 <sub-section | Qualitative observations>
 Sub-section content.
-</code>
+</code-block>
 
 <minipage #mp:sh-section-3>
 <section | Results>
@@ -79,17 +79,17 @@ Registers:
 - Sigil: `<## … ##>`
 - Markdown: `## …`
 
-<code #code:sh-sub-section-1>
+<code-block #code:sh-sub-section-1>
 <sub-section | Quantitative analysis>
 Sub-section content.
-</code>
+</code-block>
 
 <minipage #mp:sh-sub-section-1>
 <sub-section | Quantitative analysis>
 Sub-section content.
 </minipage>
 
-<code #code:sh-sub-section-2>
+<code-block #code:sh-sub-section-2>
 <section | Results>
 <sub-section | Statistical methods>
 Sub-section content.
@@ -99,7 +99,7 @@ Sub-sub-section content.
 
 <sub-section | Sensitivity analyses>
 Sub-section content.
-</code>
+</code-block>
 
 <minipage #mp:sh-sub-section-2>
 <section | Results>
@@ -136,17 +136,17 @@ Registers:
 - Sigil: `<### … ###>`
 - Markdown: `### …`
 
-<code #code:sh-sub-sub-section-1>
+<code-block #code:sh-sub-sub-section-1>
 <sub-sub-section | Regression analysis>
 Detailed methods for the regression.
-</code>
+</code-block>
 
 <minipage #mp:sh-sub-sub-section-1>
 <sub-sub-section | Regression analysis>
 Detailed methods for the regression.
 </minipage>
 
-<code #code:sh-sub-sub-section-2>
+<code-block #code:sh-sub-sub-section-2>
 <section | Methods>
 <sub-section | Statistical methods>
 <sub-sub-section | Regression>
@@ -154,7 +154,7 @@ Linear regression was performed.
 
 <sub-sub-section | Sensitivity testing>
 Sensitivity tests were performed.
-</code>
+</code-block>
 
 <minipage #mp:sh-sub-sub-section-2>
 <section | Methods>
@@ -254,13 +254,13 @@ Registers:
 
 *Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
 
-<code #code:sh-hr-3>
+<code-block #code:sh-hr-3>
 <p | First paragraph.>
 
 <hr type=ornamental>
 
 <p | Second paragraph after a thematic break.>
-</code>
+</code-block>
 
 *Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
 

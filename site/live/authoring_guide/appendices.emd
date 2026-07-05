@@ -4,7 +4,7 @@
 
 The `<meta>` block holds the document's front matter — its class, title, authors, and abstract — at the top of the file. Its `type` selects the document class.
 
-<code #code:meta-basic>
+<code-block #code:meta-basic>
 <meta type=article>
 <title | On the Spectra of Linear Operators>
 <subtitle | A Survey>
@@ -17,7 +17,7 @@ The `<meta>` block holds the document's front matter — its class, title, autho
 <abstract | We survey the eigenstructure of bounded operators.>
 <keywords | eigenvalues, operators, spectra>
 </meta>
-</code>
+</code-block>
 
 <minipage #mp:meta-basic>
 <meta type=article>
@@ -37,6 +37,7 @@ The `<meta>` block holds the document's front matter — its class, title, autho
 <sub-section | Fields>
 
 <table csv -numbered>
+Field, Description
 type, article | book | website
 title / subtitle, the document's heading and tagline
 author (repeatable), a name with optional affiliation / email / orcid
@@ -53,15 +54,16 @@ doi / license / lang, identifiers and rights metadata
 
 `<config>` sets document-wide options. It is self-closing — note the trailing slash — and each entry is a flag or a `key=value`.
 
-<code #code:config-basic>
+<code-block #code:config-basic>
 <config number-sections />
 <config toc />
 <config note-position=margin />
-</code>
+</code-block>
 
 <sub-section | Options>
 
 <table csv -numbered>
+Option, Description
 number-sections / number-figures / number-tables / …, turn on numbering for each kind of element
 number-depth, how many heading levels carry numbers
 toc, generate a table of contents
@@ -84,7 +86,7 @@ Each numbering family is off by default, so a document is unnumbered until you o
 
 `<data>` is an invisible store for assets the document embeds — images and datasets — declared once with an id and pulled in by `@id`. It keeps a whole document self-contained in a single file.
 
-<code #code:data-basic>
+<code-block #code:data-basic>
 <data>
 <fig #fig:logo png>iVBORw0KGgo…base64…</fig>
 </data>
@@ -92,7 +94,7 @@ Each numbering family is off by default, so a document is unnumbered until you o
 Later, in the body:
 
 <fig src="@fig:logo" | The project logo.>
-</code>
+</code-block>
 
 <sub-section | Notes>
 
@@ -105,12 +107,12 @@ The data block renders nothing itself — it holds the bytes. Reference an embed
 
 `<library>` is an invisible store for bibliographic references, pasted straight from a reference manager. Citations resolve against it, and `<bibliography>` prints the list.
 
-<code #code:library-basic>
+<code-block #code:library-basic>
 <library format=bibtex>
 @book{strang2016, author={Gilbert Strang}, title={Introduction to Linear Algebra}, year={2016}}
 @article{goodall2024, author={Jane Goodall}, title={Field Notes}, year={2024}}
 </library>
-</code>
+</code-block>
 
 <sub-section | Notes>
 

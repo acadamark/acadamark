@@ -15,6 +15,7 @@ A figure places an image with a numbered caption. The `src` names the image, the
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 src (image file or @id of a stored asset), src=revenue-2025.png
 alt (text alternative for the image), alt="Bar chart of revenue"
 Unnumbered (drop the "Figure N." label), -numbered
@@ -35,12 +36,12 @@ In the live single-page site, all pages draw figure assets from one shared set o
 
 A diagram is drawn from a text description by an external engine. Name the engine after the tag and put the source in the body; the browser renders it live.
 
-<code #code:diagram-basic>
+<code-block #code:diagram-basic>
 <diagram mermaid caption="A simple build flow.">
 graph LR
 write --> render --> publish
 </diagram>
-</code>
+</code-block>
 
 <minipage #mp:diagram-basic>
 <diagram mermaid caption="A simple build flow.">
@@ -52,6 +53,7 @@ write --> render --> publish
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 engine (the renderer), mermaid | abc
 caption (the figure caption), caption="A build flow."
 Id, #fig:flow
@@ -69,12 +71,12 @@ The body is opaque — arrows like `-->` and other engine syntax pass through un
 
 Inline SVG drops vector graphics straight into the document. Put the SVG body in the tag and size the box with `width`, `height`, and `viewBox`.
 
-<code #code:svg-basic>
+<code-block #code:svg-basic>
 <svg width=180 height=32 caption="A progress bar." |
 <rect width=180 height=32 rx=6 fill=gainsboro />
 <rect width=117 height=32 rx=6 fill=steelblue />
 >
-</code>
+</code-block>
 
 <minipage #mp:svg-basic>
 <svg width=180 height=32 caption="A progress bar." |
@@ -86,6 +88,7 @@ Inline SVG drops vector graphics straight into the document. Put the SVG body in
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 width / height (the SVG box), width=180 height=32
 viewBox (the coordinate system), viewBox="0 0 180 32"
 caption (the figure caption), caption="A progress bar."
@@ -99,12 +102,12 @@ Id, #fig:progress
 
 A frame draws a border around its content as a self-contained box. Unlike a figure it is an unnumbered annotation by default; add `+numbered` to fold it into the figure sequence.
 
-<code #code:frame-basic>
+<code-block #code:frame-basic>
 <frame |
 This note sits in a bordered box, set apart from
 the main flow but not numbered.
 >
-</code>
+</code-block>
 
 <minipage #mp:frame-basic>
 <frame |
@@ -116,6 +119,7 @@ the main flow but not numbered.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 caption (caption at the foot of the frame), caption="An exhibit."
 Numbered (join the figure sequence as "Figure N."), +numbered
 Id, #frame:note
@@ -129,12 +133,12 @@ Class, .tinted
 
 A minipage is a sealed, self-contained box: whatever renders inside it — sections, numbers, footnotes — stays inside and never leaks into the surrounding document. Every rendered example in this guide sits in one.
 
-<code #code:minipage-basic>
+<code-block #code:minipage-basic>
 <minipage>
 <section | A self-contained section>
 Its heading and numbering stay inside the box.
 </minipage>
-</code>
+</code-block>
 
 <minipage #mp:minipage-basic>
 <section | A self-contained section>
@@ -144,6 +148,7 @@ Its heading and numbering stay inside the box.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 caption (caption at the foot of the box), caption="Two panels."
 Numbered (number the box as "Minipage N."), +numbered
 Id, #mp:panels

@@ -26,14 +26,14 @@ Registers:
 <aside type=warning .important | Be careful here.>
 </minipage>
 
-<code #code:sh-aside-3>
+<code-block #code:sh-aside-3>
 <aside type=callout |
 This is a multi-line callout.
 
 It can contain multiple paragraphs and other content like
 <strong | emphasis> and inline references.
 >
-</code>
+</code-block>
 
 <minipage #mp:sh-aside-3>
 <aside type=callout |
@@ -132,12 +132,12 @@ Registers:
 
 - Canonical: `<endnotes>`
 
-<code #code:sh-endnotes-1>
+<code-block #code:sh-endnotes-1>
 The claim holds<note | A note collected at the end.>.
 
 <section | Notes>
 <endnotes>
-</code>
+</code-block>
 
 <minipage #mp:sh-endnotes-1>
 The claim holds<note | A note collected at the end.>.
@@ -164,13 +164,13 @@ Registers:
 
 - Canonical: `<details>`
 
-<code #code:sh-details-1>
+<code-block #code:sh-details-1>
 <details>
   <summary | More background>
   Additional context for the curious reader. The summary is the
   visible heading; this body shows when the disclosure is opened.
 </details>
-</code>
+</code-block>
 
 <minipage #mp:sh-details-1>
 <details>
@@ -182,12 +182,12 @@ Registers:
 
 *The canonical shape: a &lt;summary&gt; for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.*
 
-<code #code:sh-details-2>
+<code-block #code:sh-details-2>
 <details +open>
   <summary | Always-expanded section>
   This disclosure is expanded by default.
 </details>
-</code>
+</code-block>
 
 <minipage #mp:sh-details-2>
 <details +open>

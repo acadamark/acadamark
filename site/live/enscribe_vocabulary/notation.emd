@@ -62,11 +62,11 @@ Registers:
 
 - Canonical: `<math>`
 
-<code #code:sh-math-1>
+<code-block #code:sh-math-1>
 <math>
 E = mc^2
 </math>
-</code>
+</code-block>
 
 <minipage #mp:sh-math-1>
 <math>
@@ -88,12 +88,12 @@ Registers:
 
 - Canonical: `<align>`
 
-<code #code:sh-align-1>
+<code-block #code:sh-align-1>
 <align>
 x^2 + y^2 &= z^2 \\
 a + b &= c
 </align>
-</code>
+</code-block>
 
 <minipage #mp:sh-align-1>
 <align>
@@ -116,12 +116,12 @@ Registers:
 
 - Canonical: `<eqnarray>`
 
-<code #code:sh-eqnarray-1>
+<code-block #code:sh-eqnarray-1>
 <eqnarray>
 f(x) &=& x^2 \\
 g(x) &=& 2x
 </eqnarray>
-</code>
+</code-block>
 
 <minipage #mp:sh-eqnarray-1>
 <eqnarray>
@@ -144,12 +144,12 @@ Registers:
 
 - Canonical: `<cases>`
 
-<code #code:sh-cases-1>
+<code-block #code:sh-cases-1>
 <cases>
 x^2 & \text{if } x \ge 0 \\
 -x^2 & \text{if } x < 0
 </cases>
-</code>
+</code-block>
 
 <minipage #mp:sh-cases-1>
 <cases>
@@ -172,12 +172,12 @@ Registers:
 
 - Canonical: `<matrix>`
 
-<code #code:sh-matrix-1>
+<code-block #code:sh-matrix-1>
 <matrix>
 1 & 2 \\
 3 & 4
 </matrix>
-</code>
+</code-block>
 
 <minipage #mp:sh-matrix-1>
 <matrix>

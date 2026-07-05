@@ -1460,19 +1460,26 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             </blockquote>
             <figcaption><minipage-label>Minipage 46.</minipage-label></figcaption>
           </figure>
-          <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at eHTML.</i></p><code id="code:l1-blockquote-2">&#x3C;quote cite=https://example.com/source |
+          <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at eHTML.</i></p>
+          <pre><code id="code:l1-blockquote-2">
+&#x3C;quote cite=https://example.com/source |
 A longer quotation that may contain multiple paragraphs.
+
 The second paragraph of the quotation.
-></code>
+>
+</code></pre>
           <figure id="mp:l1-blockquote-2" class="frameable-border">
             <blockquote cite="https://example.com/source">
               <p>A longer quotation that may contain multiple paragraphs.</p>
               <p>The second paragraph of the quotation.</p>
             </blockquote>
             <figcaption><minipage-label>Minipage 47.</minipage-label></figcaption>
-          </figure><code id="code:l1-blockquote-3">&#x3C;quote type=epigraph |
+          </figure>
+          <pre><code id="code:l1-blockquote-3">
+&#x3C;quote type=epigraph |
 All happy families are alike; each unhappy family is unhappy in its own way.
-></code>
+>
+</code></pre>
           <figure id="mp:l1-blockquote-3" class="frameable-border">
             <blockquote data-blockquote-type="epigraph">
               <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
@@ -1637,7 +1644,7 @@ The argument is supported by data &#x3C;cite goodall2024>.</code>
                 <td><code>+link</code></td>
                 <td>boolean</td>
                 <td>default <code>true</code></td>
-                <td>Controls whether the rendered ref is a navigable hyperlink. Default is +link, producing <a href="#targetId">…</a>. The -link form produces &#x3C;span class="ref">…&#x3C;/span> instead — useful when the author wants the ref’s display text without making it a navigable anchor (e.g. inside a passage that itself describes the cross-reference rather than invoking it).</td>
+                <td>Controls whether the rendered ref is a navigable hyperlink. Default is +link, producing <code>&#x3C;a href="#targetId" class="ref">...&#x3C;/a></code>. The -link form produces <code>&#x3C;ref>...&#x3C;/ref></code> instead — useful when the author wants the ref’s display text without making it a navigable anchor (e.g. inside a passage that itself describes the cross-reference rather than invoking it).</td>
               </tr>
               <tr>
                 <td><code>+preview</code></td>
@@ -1738,10 +1745,12 @@ See &#x3C;a https://example.com/docs | the documentation>.</code>
           <p>Produced by: canonical <code>&#x3C;doi></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-26">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-doi-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-doi-1">
 &#x3C;meta>
-&#x3C;doi | 10.1234/example.2024>
-&#x3C;/meta></code>
+  &#x3C;doi | 10.1234/example.2024>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Bare DOI as the typical authoring form.</i></p><code id="code:l1-doi-2">&#x3C;meta doi="10.5555/test" /></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>

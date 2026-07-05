@@ -1425,8 +1425,11 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <p>
             Canonical: <code>&#x3C;section {args} | Section Title></code>
             Sigil: <code>&#x3C;# {args} | Section Title #></code>
-          </p><code id="code:sec-basic">&#x3C;section | Introduction>
-The paper begins here.</code>
+          </p>
+          <pre><code id="code:sec-basic">
+&#x3C;section | Introduction>
+The paper begins here.
+</code></pre>
           <figure id="mp:sec-basic" class="frameable-border">
             <section>
               <section-title>Introduction</section-title>
@@ -1442,14 +1445,20 @@ The paper begins here.</code>
           <p>
             Canonical: <code>&#x3C;sub-sub-section {args} | Section Title></code>
             Sigil: <code>&#x3C;### {args} | Section Title ###></code>
-          </p><code id="code:sec-nested">&#x3C;section | Materials and Methods>
+          </p>
+          <pre><code id="code:sec-nested">
+&#x3C;section | Materials and Methods>
 Opening text.
+
 &#x3C;sub-section | Sampling>
 How samples were drawn.
+
 &#x3C;sub-section | Instruments>
 What we measured with.
+
 &#x3C;section | Results>
-What we found.</code>
+What we found.
+</code></pre>
           <figure id="mp:sec-nested" class="frameable-border">
             <section>
               <section-title>Materials and Methods</section-title>
@@ -1475,11 +1484,15 @@ What we found.</code>
           <table>
             <thead>
               <tr>
-                <th>Id</th>
-                <th>#sec:intro</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>Id</td>
+                <td>#sec:intro</td>
+              </tr>
               <tr>
                 <td>Class</td>
                 <td>.my-class</td>

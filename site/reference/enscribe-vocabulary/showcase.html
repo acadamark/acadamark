@@ -1419,18 +1419,29 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       </meta>
       <section id="sh-showcase-1">
         <section-title>A short paper</section-title>
-        <p>Meta, sections, inline + display math, a theorem, a numbered figure, and a cross-reference, in one document. (Citations are authored with <code>&#x3C;cite></code> + <code>&#x3C;library></code>; they resolve via the build / async render path, not shown live here — see issue #273.)</p><code id="code:sh-showcase-1">&#x3C;meta type=article>
+        <p>Meta, sections, inline + display math, a theorem, a numbered figure, and a cross-reference, in one document. (Citations are authored with <code>&#x3C;cite></code> + <code>&#x3C;library></code>; they resolve via the build / async render path, not shown live here — see issue #273.)</p>
+        <pre><code id="code:sh-showcase-1">
+&#x3C;meta type=article>
 &#x3C;title | On the Convergence of Iterative Maps>
 &#x3C;author | A. Researcher>
 &#x3C;/meta>
+
 &#x3C;section #sec:intro | Introduction>
+
 We study the fixed point of an iterative map $x_{n+1} = f(x_n)$. The displayed relation
+
 &#x3C;$$ #eqn:fix | x^\* = f(x^\*) $$>
+
 defines the fixed point referenced throughout.
+
 &#x3C;section #sec:result | Result>
+
 &#x3C;theorem #thm:main | A contraction on a complete space has a unique fixed point.>
+
 The schematic in &#x3C;ref @fig:map> sketches the iteration, and equation &#x3C;ref @eqn:fix> states the fixed-point condition.
-&#x3C;fig #fig:map src=iteration.png | The iteration approaching its fixed point.></code>
+
+&#x3C;fig #fig:map src=iteration.png | The iteration approaching its fixed point.>
+</code></pre>
         <figure id="mp:sh-showcase-1" class="frameable-border">
           <meta data-document-type="article">
             <article-title>On the Convergence of Iterative Maps</article-title>
@@ -1460,19 +1471,27 @@ The schematic in &#x3C;ref @fig:map> sketches the iteration, and equation &#x3C;
       </section>
       <section id="sh-showcase-2">
         <section-title>A boxed worked example</section-title>
-        <p>A definition, a list, a table, and a callout — the everyday block constructs together.</p><code id="code:sh-showcase-2">&#x3C;section #sec:method | Method>
+        <p>A definition, a list, a table, and a callout — the everyday block constructs together.</p>
+        <pre><code id="code:sh-showcase-2">
+&#x3C;section #sec:method | Method>
+
 &#x3C;definition #def:residual | The *residual* is the difference between observed and predicted values.>
+
 The procedure has three steps:
+
 &#x3C;list ordered>
 &#x3C;li> Fit the model.
 &#x3C;li> Compute residuals.
 &#x3C;li> Inspect their distribution.
 &#x3C;/list>
+
 &#x3C;table csv caption="Residual summary." |
 stat,value
 mean,0.01
 sd,0.98>
-&#x3C;aside type=tip | Standardize residuals before comparing across models.></code>
+
+&#x3C;aside type=tip | Standardize residuals before comparing across models.>
+</code></pre>
         <figure id="mp:sh-showcase-2" class="frameable-border">
           <section id="mp-sh-showcase-2-sec:method">
             <section-title>Method</section-title>

@@ -1427,8 +1427,11 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             Strong (semantic): <code>&#x3C;strong | text></code>
             Italic (visual): <code>&#x3C;i | text></code> or <code>*text*</code>
             Bold (visual): <code>&#x3C;b | text></code> or <code>**text**</code>
-          </p><code id="code:emphasis-basic">This &#x3C;em | really> matters, and this is &#x3C;strong | critical>.
-For plain styling, *this is italic* and **this is bold**.</code>
+          </p>
+          <pre><code id="code:emphasis-basic">
+This &#x3C;em | really> matters, and this is &#x3C;strong | critical>.
+For plain styling, *this is italic* and **this is bold**.
+</code></pre>
           <figure id="mp:emphasis-basic" class="frameable-border">
             <p>
               This <em>really</em> matters, and this is <strong>critical</strong>.
@@ -1443,11 +1446,15 @@ For plain styling, *this is italic* and **this is bold**.</code>
           <table>
             <thead>
               <tr>
-                <th>i — type</th>
-                <th>foreign | taxonomic | technical | thought | ship-name | other</th>
+                <th>Element</th>
+                <th>Allowed type values</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>i — type</td>
+                <td>foreign | taxonomic | technical | thought | ship-name | other</td>
+              </tr>
               <tr>
                 <td>b — type</td>
                 <td>keyword | product-name | lead | offset | other</td>
@@ -1471,8 +1478,11 @@ For plain styling, *this is italic* and **this is bold**.</code>
           <p>
             Superscript: <code>&#x3C;sup | text></code> or <code>^{text}</code>
             Subscript: <code>&#x3C;sub | text></code> or <code>_{text}</code>
-          </p><code id="code:supsub-basic">Water is H_{2}O and area grows as r^{2}.
-The same in named form: H&#x3C;sub | 2>O and r&#x3C;sup | 2>.</code>
+          </p>
+          <pre><code id="code:supsub-basic">
+Water is H_{2}O and area grows as r^{2}.
+The same in named form: H&#x3C;sub | 2>O and r&#x3C;sup | 2>.
+</code></pre>
           <figure id="mp:supsub-basic" class="frameable-border">
             <p>
               Water is H<sub>2</sub>O and area grows as r<sup>2</sup>.
@@ -1492,9 +1502,12 @@ The same in named form: H&#x3C;sub | 2>O and r&#x3C;sup | 2>.</code>
             Underline: <code>&#x3C;u | text></code>
             Abbreviation: <code>&#x3C;abbr title="…" | text></code>
             Keyboard: <code>&#x3C;kbd | text></code>
-          </p><code id="code:marks-basic">She replied &#x3C;q | of course> and crossed out ~~the old price~~.
+          </p>
+          <pre><code id="code:marks-basic">
+She replied &#x3C;q | of course> and crossed out ~~the old price~~.
 Press &#x3C;kbd | Ctrl+S> to save. The &#x3C;abbr title="Document Object Model" | DOM>
-is the browser's API for HTML.</code>
+is the browser's API for HTML.
+</code></pre>
           <figure id="mp:marks-basic" class="frameable-border">
             <p>
               She replied <q>of course</q> and crossed out <s>the old price</s>.
@@ -1509,11 +1522,15 @@ is the browser's API for HTML.</code>
           <table>
             <thead>
               <tr>
-                <th>abbr — title (the expansion)</th>
-                <th>title=”Document Object Model”</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>abbr — title (the expansion)</td>
+                <td>title=”Document Object Model”</td>
+              </tr>
               <tr>
                 <td>u — type</td>
                 <td>misspelling | proper-name | editorial-correction | other</td>
@@ -1530,8 +1547,11 @@ is the browser's API for HTML.</code>
         <section-title>Links</section-title>
         <sub-section id="sec:general-usage-10">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A link is <code>&#x3C;a destination | link text></code>. The destination is a full URL for an external link, or a page slug for an internal one — the build resolves slugs to their final paths.</p><code id="code:links-basic">Read &#x3C;a https://enscribe.org | the Enscribe site> for more,
-or jump to &#x3C;a enscribe-vocabulary | the vocabulary page> in this document.</code>
+          <p>A link is <code>&#x3C;a destination | link text></code>. The destination is a full URL for an external link, or a page slug for an internal one — the build resolves slugs to their final paths.</p>
+          <pre><code id="code:links-basic">
+Read &#x3C;a https://enscribe.org | the Enscribe site> for more,
+or jump to &#x3C;a enscribe-vocabulary | the vocabulary page> in this document.
+</code></pre>
           <figure id="mp:links-basic" class="frameable-border">
             <p>
               Read <a href="https://enscribe.org">the Enscribe site</a> for more,
@@ -1545,11 +1565,15 @@ or jump to &#x3C;a enscribe-vocabulary | the vocabulary page> in this document.<
           <table>
             <thead>
               <tr>
-                <th>destination (URL or page slug)</th>
-                <th>https://example.com · vocabulary</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>destination (URL or page slug)</td>
+                <td>https://example.com · vocabulary</td>
+              </tr>
               <tr>
                 <td>Open in a new tab</td>
                 <td>target=_blank</td>

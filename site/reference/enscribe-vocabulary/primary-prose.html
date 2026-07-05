@@ -1475,11 +1475,14 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             <li>Canonical: <code>&#x3C;li></code></li>
             <li>Sigil: <code>&#x3C;-></code> or <code>&#x3C;*></code></li>
             <li>Markdown: <code>-</code> or <code>*</code></li>
-          </ul><code id="code:sh-list-1">&#x3C;list>
+          </ul>
+          <pre><code id="code:sh-list-1">
+&#x3C;list>
 &#x3C;li> Fit the model.
 &#x3C;li> Compute residuals.
 &#x3C;li> Inspect their distribution.
-&#x3C;/list></code>
+&#x3C;/list>
+</code></pre>
           <figure id="mp:sh-list-1" class="frameable-border">
             <ul>
               <li>Fit the model.</li>
@@ -1488,11 +1491,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             </ul>
             <figcaption><minipage-label>Minipage 4.</minipage-label></figcaption>
           </figure>
-          <p><i>Unordered list. <code>&#x3C;list></code> lowers to <code>&#x3C;ul></code>; each <code>&#x3C;li></code> to an <code>&#x3C;li></code>.</i></p><code id="code:sh-list-2">&#x3C;list ordered start=2>
+          <p><i>Unordered list. <code>&#x3C;list></code> lowers to <code>&#x3C;ul></code>; each <code>&#x3C;li></code> to an <code>&#x3C;li></code>.</i></p>
+          <pre><code id="code:sh-list-2">
+&#x3C;list ordered start=2>
 &#x3C;-> Fit the model.
 &#x3C;-> Compute residuals, then discuss.
-A second paragraph belongs to the same item — no indentation is required.
-&#x3C;/list></code>
+
+  A second paragraph belongs to the same item — no indentation is required.
+&#x3C;/list>
+</code></pre>
           <figure id="mp:sh-list-2" class="frameable-border">
             <ol start="2">
               <li>

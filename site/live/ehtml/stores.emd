@@ -12,7 +12,7 @@ Produced by: canonical `<data>`.
 
 <sub-section | Examples>
 
-<code #code:l1-data-1>
+<code-block #code:l1-data-1>
 <data>
   <library format=bibtex>
     @article{goodall2024,
@@ -23,7 +23,7 @@ Produced by: canonical `<data>`.
     }
   </library>
 </data>
-</code>
+</code-block>
 
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 
@@ -31,7 +31,7 @@ Produced by: canonical `<data>`.
 
 A `<data>` block can also store a **dataset** — a payload (CSV/TSV/JSON/…) held under an id with a `<dataset>` — that a consuming element pulls in by `@id`. A `<dataset>` is always authored in the **long form** `<dataset …>…</dataset>`; the pipe form would truncate the payload at the first `>`, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a `<table src="@id" />` renders it as a grid:
 
-<code #code:l1-data-2>
+<code-block #code:l1-data-2>
 <data>
   <dataset #parts-stock format=csv>
 part,code,in_stock
@@ -42,7 +42,7 @@ lock nut,#LN-06,210
 </data>
 
 <table src="@parts-stock" />
-</code>
+</code-block>
 
 <data>
   <dataset #parts-stock format=csv>
@@ -76,7 +76,7 @@ Produced by: canonical `<library>`.
 
 <sub-section | Examples>
 
-<code #code:l1-library-1>
+<code-block #code:l1-library-1>
 <library format=bibtex>
   @article{goodall2024,
     author = {Goodall, Jane},
@@ -92,13 +92,13 @@ Produced by: canonical `<library>`.
     year = {1859}
   }
 </library>
-</code>
+</code-block>
 
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 
 *A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &lt;cite goodall2024&gt;) resolve against these entries. The library block itself produces no rendered output.*
 
-<code #code:l1-library-2>
+<code-block #code:l1-library-2>
 <library format=csl-json>
   [
     {
@@ -111,7 +111,7 @@ Produced by: canonical `<library>`.
     }
   ]
 </library>
-</code>
+</code-block>
 
 *Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
 

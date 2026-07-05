@@ -15,7 +15,7 @@ Produced by: canonical `<book>`.
 
 <sub-section | Examples>
 
-<code #code:l1-book-1>
+<code-block #code:l1-book-1>
 <meta type=book>
   <title | A Natural History of Elephants>
   <author | Jane Goodall>
@@ -28,13 +28,13 @@ Content here.
 <chapter | Modern populations>
 <section | African elephants>
 Content here.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
 *Typical authoring path: &lt;meta type=book&gt; at the top with no &lt;book&gt; wrapper. The structural plugin generates &lt;book&gt; + the three region wrappers. Each book-part contains its own &lt;meta&gt; with the promoted &lt;book-part-title&gt;; no &lt;book-part-meta&gt; wrapper.*
 
-<code #code:l1-book-2>
+<code-block #code:l1-book-2>
 <meta type=book>
   <title | The Comprehensive Guide>
   <author | Author Name>
@@ -50,7 +50,7 @@ Content.
 <part | Part II: Applications>
 <chapter | Practical Examples>
 Content.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
@@ -110,25 +110,25 @@ Produced by: canonical `<book-part>` · alias `<chapter>` · alias `<part>` · a
 
 <sub-section | Examples>
 
-<code #code:l1-book-part-1>
+<code-block #code:l1-book-part-1>
 <chapter | Origins>
 Content of the chapter.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
-<code #code:l1-book-part-2>
+<code-block #code:l1-book-part-2>
 <part | Part I: Foundations>
 <chapter | First Chapter>
 Content.
 
 <chapter | Second Chapter>
 Content.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
-<code #code:l1-book-part-3>
+<code-block #code:l1-book-part-3>
 <preface | A Note from the Author>
 I wrote this book because...
 
@@ -137,7 +137,7 @@ Body content.
 
 <appendix | Notation>
 Notation conventions used in this book.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
@@ -160,7 +160,7 @@ Produced by: canonical `<article>`.
 
 <sub-section | Examples>
 
-<code #code:l1-article-1>
+<code-block #code:l1-article-1>
 <meta type=article>
   <title | The Effect of Elephants on Climate>
   <author | Jane Goodall>
@@ -172,13 +172,13 @@ The paper begins here.
 
 <section | Conclusion>
 The paper concludes here.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
 *Typical authoring path: &lt;meta type=article&gt; at the top with no &lt;article&gt; wrapper. The structural plugin generates the &lt;article&gt; container and the three region wrappers. &lt;title&gt; in &lt;meta&gt; is promoted to &lt;article-title&gt;; &lt;meta&gt; itself survives inside &lt;article-front&gt;.*
 
-<code #code:l1-article-2>
+<code-block #code:l1-article-2>
 <article | The Effect of Elephants on Climate>
 <meta>
   <author | Jane Goodall>
@@ -186,19 +186,19 @@ The paper concludes here.
 
 <section | Introduction>
 The paper begins here.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
 *Explicit-form escape hatch: &lt;article | Title&gt;. The structural plugin respects the explicit wrapper. Pipe content from &lt;article&gt; becomes &lt;article-title&gt;, placed as the first child of &lt;meta&gt; (creating &lt;meta&gt; if absent, or appending if present).*
 
-<code #code:l1-article-3>
+<code-block #code:l1-article-3>
 <section | Introduction>
 The introduction.
 
 <section | Conclusion>
 The conclusion.
-</code>
+</code-block>
 
 *Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.*
 
@@ -259,21 +259,21 @@ Produced by: canonical `<section>` · sigil `<# … #>` · markdown `# …`.
 
 <sub-section | Examples>
 
-<code #code:l1-section-1>
+<code-block #code:l1-section-1>
 <section | Introduction>
 The paper begins here.
-</code>
+</code-block>
 
 <minipage #mp:l1-section-1>
 <section | Introduction>
 The paper begins here.
 </minipage>
 
-<code #code:l1-section-2>
+<code-block #code:l1-section-2>
 <section #methods sec-type=methods | Methods>
 <section-subtitle | A description of our experimental approach>
 The methods used in this study were as follows.
-</code>
+</code-block>
 
 <minipage #mp:l1-section-2>
 <section #methods sec-type=methods | Methods>
@@ -281,7 +281,7 @@ The methods used in this study were as follows.
 The methods used in this study were as follows.
 </minipage>
 
-<code #code:l1-section-3>
+<code-block #code:l1-section-3>
 <section | Results>
 Results paragraph.
 
@@ -290,7 +290,7 @@ Sub-section content.
 
 <sub-section | Qualitative observations>
 Sub-section content.
-</code>
+</code-block>
 
 <minipage #mp:l1-section-3>
 <section | Results>
@@ -322,17 +322,17 @@ Produced by: canonical `<sub-section>` · sigil `<## … ##>` · markdown `## �
 
 <sub-section | Examples>
 
-<code #code:l1-sub-section-1>
+<code-block #code:l1-sub-section-1>
 <sub-section | Quantitative analysis>
 Sub-section content.
-</code>
+</code-block>
 
 <minipage #mp:l1-sub-section-1>
 <sub-section | Quantitative analysis>
 Sub-section content.
 </minipage>
 
-<code #code:l1-sub-section-2>
+<code-block #code:l1-sub-section-2>
 <section | Results>
 <sub-section | Statistical methods>
 Sub-section content.
@@ -342,7 +342,7 @@ Sub-sub-section content.
 
 <sub-section | Sensitivity analyses>
 Sub-section content.
-</code>
+</code-block>
 
 <minipage #mp:l1-sub-section-2>
 <section | Results>
@@ -375,17 +375,17 @@ Produced by: canonical `<sub-sub-section>` · sigil `<### … ###>` · markdown 
 
 <sub-section | Examples>
 
-<code #code:l1-sub-sub-section-1>
+<code-block #code:l1-sub-sub-section-1>
 <sub-sub-section | Regression analysis>
 Detailed methods for the regression.
-</code>
+</code-block>
 
 <minipage #mp:l1-sub-sub-section-1>
 <sub-sub-section | Regression analysis>
 Detailed methods for the regression.
 </minipage>
 
-<code #code:l1-sub-sub-section-2>
+<code-block #code:l1-sub-sub-section-2>
 <section | Methods>
 <sub-section | Statistical methods>
 <sub-sub-section | Regression>
@@ -393,7 +393,7 @@ Linear regression was performed.
 
 <sub-sub-section | Sensitivity testing>
 Sensitivity tests were performed.
-</code>
+</code-block>
 
 <minipage #mp:l1-sub-sub-section-2>
 <section | Methods>
@@ -473,13 +473,13 @@ Produced by: canonical `<hr>` · markdown `---`.
 
 *Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
 
-<code #code:l1-hr-3>
+<code-block #code:l1-hr-3>
 <p | First paragraph.>
 
 <hr type=ornamental>
 
 <p | Second paragraph after a thematic break.>
-</code>
+</code-block>
 
 *Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
 

@@ -1432,11 +1432,14 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <section-title>Code Blocks</section-title>
         <sub-section id="sec:general-usage-28">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A code block holds a verbatim, multi-line listing. Write it with the mirrored triple-backtick sigil — the language goes before the pipe — or with a plain markdown fence.</p><code id="code:block-basic">&#x3C;``` python |
+          <p>A code block holds a verbatim, multi-line listing. Write it with the mirrored triple-backtick sigil — the language goes before the pipe — or with a plain markdown fence.</p>
+          <pre><code id="code:block-basic">
+&#x3C;``` python |
 import math
 radius = 2.0
 area = math.pi * radius ** 2
-```></code>
+```>
+</code></pre>
           <figure id="mp:block-basic" class="frameable-border">
             <pre><code class="language-python">
 import math
@@ -1451,11 +1454,15 @@ area = math.pi * radius ** 2
           <table>
             <thead>
               <tr>
-                <th>language (sets the language-X class for highlighting)</th>
-                <th>python · r · js</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>language (sets the language-X class for highlighting)</td>
+                <td>python · r · js</td>
+              </tr>
               <tr>
                 <td>Id</td>
                 <td>#code:area</td>

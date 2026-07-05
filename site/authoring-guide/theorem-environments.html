@@ -1422,12 +1422,16 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <sub-section id="sec:general-usage-21">
           <sub-section-title>General Usage</sub-section-title>
           <p>A theorem-like environment sets a statement in a numbered, labelled box. They all share one form — <code>&#x3C;theorem | statement></code>, <code>&#x3C;lemma | …></code>, <code>&#x3C;definition | …></code>, and so on — differing only in the label word. An optional <code>name</code> adds a parenthetical.</p>
-          <p>Available: <code>theorem</code>, <code>lemma</code>, <code>corollary</code>, <code>proposition</code>, <code>definition</code>, <code>example</code>, <code>remark</code>.</p><code id="code:thm-basic">&#x3C;theorem name=Pythagoras |
+          <p>Available: <code>theorem</code>, <code>lemma</code>, <code>corollary</code>, <code>proposition</code>, <code>definition</code>, <code>example</code>, <code>remark</code>.</p>
+          <pre><code id="code:thm-basic">
+&#x3C;theorem name=Pythagoras |
 If &#x3C;$ a^2 + b^2 = c^2 $> then the triangle is right-angled.
 >
+
 &#x3C;definition |
 A *prime* is a natural number greater than 1 whose only divisors are 1 and itself.
-></code>
+>
+</code></pre>
           <figure id="mp:thm-basic" class="frameable-border">
             <theorem data-name="Pythagoras"><theorem-label>Theorem 1 (Pythagoras).</theorem-label>
               <p>If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> then the triangle is right-angled.</p>
@@ -1443,11 +1447,15 @@ A *prime* is a natural number greater than 1 whose only divisors are 1 and itsel
           <table>
             <thead>
               <tr>
-                <th>name (parenthetical suffix on the label)</th>
-                <th>name=Pythagoras</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>name (parenthetical suffix on the label)</td>
+                <td>name=Pythagoras</td>
+              </tr>
               <tr>
                 <td>Unnumbered (drop the “Theorem N.” label)</td>
                 <td>-numbered</td>
@@ -1472,11 +1480,15 @@ A *prime* is a natural number greater than 1 whose only divisors are 1 and itsel
         <section-title>Proofs</section-title>
         <sub-section id="sec:general-usage-22">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A <code>&#x3C;proof></code> is labelled “Proof.” and is not numbered. Close it with a QED mark, <code>&#x3C;$ \square $></code>.</p><code id="code:proof-basic">&#x3C;theorem | The sum of two even integers is even.>
+          <p>A <code>&#x3C;proof></code> is labelled “Proof.” and is not numbered. Close it with a QED mark, <code>&#x3C;$ \square $></code>.</p>
+          <pre><code id="code:proof-basic">
+&#x3C;theorem | The sum of two even integers is even.>
+
 &#x3C;proof |
 Let &#x3C;$ a = 2m $> and &#x3C;$ b = 2n $>. Then &#x3C;$ a + b = 2(m + n) $>,
 which is even. &#x3C;$ \square $>
-></code>
+>
+</code></pre>
           <figure id="mp:proof-basic" class="frameable-border">
             <theorem><theorem-label>Theorem 1.</theorem-label>
               <p>The sum of two even integers is even.</p>

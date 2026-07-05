@@ -62,11 +62,11 @@ Produced by: canonical `<math>`.
 
 <sub-section | Examples>
 
-<code #code:l1-math-1>
+<code-block #code:l1-math-1>
 <math>
 E = mc^2
 </math>
-</code>
+</code-block>
 
 <minipage #mp:l1-math-1>
 <math>
@@ -90,12 +90,12 @@ Produced by: canonical `<align>`.
 
 <sub-section | Examples>
 
-<code #code:l1-align-1>
+<code-block #code:l1-align-1>
 <align>
 x^2 + y^2 &= z^2 \\
 a + b &= c
 </align>
-</code>
+</code-block>
 
 <minipage #mp:l1-align-1>
 <align>
@@ -120,12 +120,12 @@ Produced by: canonical `<eqnarray>`.
 
 <sub-section | Examples>
 
-<code #code:l1-eqnarray-1>
+<code-block #code:l1-eqnarray-1>
 <eqnarray>
 f(x) &=& x^2 \\
 g(x) &=& 2x
 </eqnarray>
-</code>
+</code-block>
 
 <minipage #mp:l1-eqnarray-1>
 <eqnarray>
@@ -150,12 +150,12 @@ Produced by: canonical `<cases>`.
 
 <sub-section | Examples>
 
-<code #code:l1-cases-1>
+<code-block #code:l1-cases-1>
 <cases>
 x^2 & \text{if } x \ge 0 \\
 -x^2 & \text{if } x < 0
 </cases>
-</code>
+</code-block>
 
 <minipage #mp:l1-cases-1>
 <cases>
@@ -180,12 +180,12 @@ Produced by: canonical `<matrix>`.
 
 <sub-section | Examples>
 
-<code #code:l1-matrix-1>
+<code-block #code:l1-matrix-1>
 <matrix>
 1 & 2 \\
 3 & 4
 </matrix>
-</code>
+</code-block>
 
 <minipage #mp:l1-matrix-1>
 <matrix>

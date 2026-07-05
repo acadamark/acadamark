@@ -1450,30 +1450,40 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <p>Produced by: canonical <code>&#x3C;book></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-77">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-book-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-book-1">
 &#x3C;meta type=book>
-&#x3C;title | A Natural History of Elephants>
-&#x3C;author | Jane Goodall>
+  &#x3C;title | A Natural History of Elephants>
+  &#x3C;author | Jane Goodall>
 &#x3C;/meta>
+
 &#x3C;chapter | Origins>
 &#x3C;section | Early ancestors>
 Content here.
+
 &#x3C;chapter | Modern populations>
 &#x3C;section | African elephants>
-Content here.</code>
+Content here.
+</code></pre>
           <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>Typical authoring path: &#x3C;meta type=book> at the top with no &#x3C;book> wrapper. The structural plugin generates &#x3C;book> + the three region wrappers. Each book-part contains its own &#x3C;meta> with the promoted &#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p><code id="code:l1-book-2">&#x3C;meta type=book>
-&#x3C;title | The Comprehensive Guide>
-&#x3C;author | Author Name>
+          <p><i>Typical authoring path: &#x3C;meta type=book> at the top with no &#x3C;book> wrapper. The structural plugin generates &#x3C;book> + the three region wrappers. Each book-part contains its own &#x3C;meta> with the promoted &#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p>
+          <pre><code id="code:l1-book-2">
+&#x3C;meta type=book>
+  &#x3C;title | The Comprehensive Guide>
+  &#x3C;author | Author Name>
 &#x3C;/meta>
+
 &#x3C;part | Part I: Foundations>
 &#x3C;chapter | First Principles>
 Content.
+
 &#x3C;chapter | Background>
 Content.
+
 &#x3C;part | Part II: Applications>
 &#x3C;chapter | Practical Examples>
-Content.</code>
+Content.
+</code></pre>
           <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p></section>
         </sub-section>
       </section>
@@ -1554,20 +1564,31 @@ Content.</code>
           <p>Produced by: canonical <code>&#x3C;book-part></code> · alias <code>&#x3C;chapter></code> · alias <code>&#x3C;part></code> · alias <code>&#x3C;appendix></code> · alias <code>&#x3C;preface></code> · alias <code>&#x3C;foreword></code> · alias <code>&#x3C;introduction></code> · alias <code>&#x3C;conclusion></code> · alias <code>&#x3C;glossary></code> · alias <code>&#x3C;dedication></code> · alias <code>&#x3C;afterword></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-78">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-book-part-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-book-part-1">
 &#x3C;chapter | Origins>
-Content of the chapter.</code>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p><code id="code:l1-book-part-2">&#x3C;part | Part I: Foundations>
+Content of the chapter.
+</code></pre>
+          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
+          <pre><code id="code:l1-book-part-2">
+&#x3C;part | Part I: Foundations>
 &#x3C;chapter | First Chapter>
 Content.
+
 &#x3C;chapter | Second Chapter>
-Content.</code>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p><code id="code:l1-book-part-3">&#x3C;preface | A Note from the Author>
+Content.
+</code></pre>
+          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
+          <pre><code id="code:l1-book-part-3">
+&#x3C;preface | A Note from the Author>
 I wrote this book because...
+
 &#x3C;chapter | Chapter One>
 Body content.
+
 &#x3C;appendix | Notation>
-Notation conventions used in this book.</code>
+Notation conventions used in this book.
+</code></pre>
           <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
           <p><i>The structural plugin places the preface in book-front, the chapter in book-body, and the appendix in book-back based on book-part-type.</i></p></section>
         </sub-section>
@@ -1604,28 +1625,40 @@ Notation conventions used in this book.</code>
           <p>Produced by: canonical <code>&#x3C;article></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-79">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-article-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-article-1">
 &#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;author | Jane Goodall>
-&#x3C;date | 2024-03-15>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;author | Jane Goodall>
+  &#x3C;date | 2024-03-15>
 &#x3C;/meta>
+
 &#x3C;section | Introduction>
 The paper begins here.
+
 &#x3C;section | Conclusion>
-The paper concludes here.</code>
+The paper concludes here.
+</code></pre>
           <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>Typical authoring path: &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin generates the &#x3C;article> container and the three region wrappers. &#x3C;title> in &#x3C;meta> is promoted to &#x3C;article-title>; &#x3C;meta> itself survives inside &#x3C;article-front>.</i></p><code id="code:l1-article-2">&#x3C;article | The Effect of Elephants on Climate>
+          <p><i>Typical authoring path: &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin generates the &#x3C;article> container and the three region wrappers. &#x3C;title> in &#x3C;meta> is promoted to &#x3C;article-title>; &#x3C;meta> itself survives inside &#x3C;article-front>.</i></p>
+          <pre><code id="code:l1-article-2">
+&#x3C;article | The Effect of Elephants on Climate>
 &#x3C;meta>
-&#x3C;author | Jane Goodall>
+  &#x3C;author | Jane Goodall>
 &#x3C;/meta>
+
 &#x3C;section | Introduction>
-The paper begins here.</code>
+The paper begins here.
+</code></pre>
           <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>Explicit-form escape hatch: &#x3C;article | Title>. The structural plugin respects the explicit wrapper. Pipe content from &#x3C;article> becomes &#x3C;article-title>, placed as the first child of &#x3C;meta> (creating &#x3C;meta> if absent, or appending if present).</i></p><code id="code:l1-article-3">&#x3C;section | Introduction>
+          <p><i>Explicit-form escape hatch: &#x3C;article | Title>. The structural plugin respects the explicit wrapper. Pipe content from &#x3C;article> becomes &#x3C;article-title>, placed as the first child of &#x3C;meta> (creating &#x3C;meta> if absent, or appending if present).</i></p>
+          <pre><code id="code:l1-article-3">
+&#x3C;section | Introduction>
 The introduction.
+
 &#x3C;section | Conclusion>
-The conclusion.</code>
+The conclusion.
+</code></pre>
           <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
           <p><i>No &#x3C;meta> and no &#x3C;article> declared. The structural plugin assumes article-shaped (the default) and wraps the sections in an implicit article. &#x3C;article-front> is omitted because there’s no metadata.</i></p></section>
         </sub-section>
@@ -1705,18 +1738,23 @@ The conclusion.</code>
           <p>Produced by: canonical <code>&#x3C;section></code> · sigil <code>&#x3C;# … #></code> · markdown <code># …</code>.</p>
         </sub-section>
         <sub-section id="sec:examples-80">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-section-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-section-1">
 &#x3C;section | Introduction>
-The paper begins here.</code>
+The paper begins here.
+</code></pre>
           <figure id="mp:l1-section-1" class="frameable-border">
             <section>
               <section-title>Introduction</section-title>
               <p>The paper begins here.</p>
             </section>
             <figcaption><minipage-label>Minipage 116.</minipage-label></figcaption>
-          </figure><code id="code:l1-section-2">&#x3C;section #methods sec-type=methods | Methods>
+          </figure>
+          <pre><code id="code:l1-section-2">
+&#x3C;section #methods sec-type=methods | Methods>
 &#x3C;section-subtitle | A description of our experimental approach>
-The methods used in this study were as follows.</code>
+The methods used in this study were as follows.
+</code></pre>
           <figure id="mp:l1-section-2" class="frameable-border">
             <section id="mp-l1-section-2-methods" data-sec-type="methods">
               <section-title>Methods</section-title>
@@ -1724,12 +1762,17 @@ The methods used in this study were as follows.</code>
               <p>The methods used in this study were as follows.</p>
             </section>
             <figcaption><minipage-label>Minipage 117.</minipage-label></figcaption>
-          </figure><code id="code:l1-section-3">&#x3C;section | Results>
+          </figure>
+          <pre><code id="code:l1-section-3">
+&#x3C;section | Results>
 Results paragraph.
+
 &#x3C;sub-section | Quantitative analysis>
 Sub-section content.
+
 &#x3C;sub-section | Qualitative observations>
-Sub-section content.</code>
+Sub-section content.
+</code></pre>
           <figure id="mp:l1-section-3" class="frameable-border">
             <section>
               <section-title>Results</section-title>
@@ -1793,22 +1836,29 @@ Sub-section content.</code>
           <p>Produced by: canonical <code>&#x3C;sub-section></code> · sigil <code>&#x3C;## … ##></code> · markdown <code>## …</code>.</p>
         </sub-section>
         <sub-section id="sec:examples-81">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-sub-section-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-sub-section-1">
 &#x3C;sub-section | Quantitative analysis>
-Sub-section content.</code>
+Sub-section content.
+</code></pre>
           <figure id="mp:l1-sub-section-1" class="frameable-border">
             <sub-section>
               <sub-section-title>Quantitative analysis</sub-section-title>
               <p>Sub-section content.</p>
             </sub-section>
             <figcaption><minipage-label>Minipage 119.</minipage-label></figcaption>
-          </figure><code id="code:l1-sub-section-2">&#x3C;section | Results>
+          </figure>
+          <pre><code id="code:l1-sub-section-2">
+&#x3C;section | Results>
 &#x3C;sub-section | Statistical methods>
 Sub-section content.
+
 &#x3C;sub-sub-section | Regression analysis>
 Sub-sub-section content.
+
 &#x3C;sub-section | Sensitivity analyses>
-Sub-section content.</code>
+Sub-section content.
+</code></pre>
           <figure id="mp:l1-sub-section-2" class="frameable-border">
             <section>
               <section-title>Results</section-title>
@@ -1873,21 +1923,27 @@ Sub-section content.</code>
           <p>Produced by: canonical <code>&#x3C;sub-sub-section></code> · sigil <code>&#x3C;### … ###></code> · markdown <code>### …</code>.</p>
         </sub-section>
         <sub-section id="sec:examples-82">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-sub-sub-section-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-sub-sub-section-1">
 &#x3C;sub-sub-section | Regression analysis>
-Detailed methods for the regression.</code>
+Detailed methods for the regression.
+</code></pre>
           <figure id="mp:l1-sub-sub-section-1" class="frameable-border">
             <sub-sub-section>
               <sub-sub-section-title>Regression analysis</sub-sub-section-title>
               <p>Detailed methods for the regression.</p>
             </sub-sub-section>
             <figcaption><minipage-label>Minipage 121.</minipage-label></figcaption>
-          </figure><code id="code:l1-sub-sub-section-2">&#x3C;section | Methods>
+          </figure>
+          <pre><code id="code:l1-sub-sub-section-2">
+&#x3C;section | Methods>
 &#x3C;sub-section | Statistical methods>
 &#x3C;sub-sub-section | Regression>
 Linear regression was performed.
+
 &#x3C;sub-sub-section | Sensitivity testing>
-Sensitivity tests were performed.</code>
+Sensitivity tests were performed.
+</code></pre>
           <figure id="mp:l1-sub-sub-section-2" class="frameable-border">
             <section>
               <section-title>Methods</section-title>
@@ -1997,9 +2053,14 @@ Sensitivity tests were performed.</code>
           <sub-section-title>Examples</sub-section-title><code id="code:l1-hr-1">
 &#x3C;hr></code>
           <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p><code id="code:l1-hr-2">&#x3C;hr type=scene-break></code>
-          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p><code id="code:l1-hr-3">&#x3C;p | First paragraph.>
+          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p>
+          <pre><code id="code:l1-hr-3">
+&#x3C;p | First paragraph.>
+
 &#x3C;hr type=ornamental>
-&#x3C;p | Second paragraph after a thematic break.></code>
+
+&#x3C;p | Second paragraph after a thematic break.>
+</code></pre>
           <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p></section>
         </sub-section>
       </section>

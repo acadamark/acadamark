@@ -1426,13 +1426,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;meta></code></li>
-          </ul><code id="code:sh-meta-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;author | Jane Goodall>
-&#x3C;date | 2024-03-15>
+          </ul>
+          <pre><code id="code:sh-meta-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;author | Jane Goodall>
+  &#x3C;date | 2024-03-15>
 &#x3C;/meta>
+
 &#x3C;section | Introduction>
-The paper begins.</code>
+The paper begins.
+</code></pre>
           <figure id="mp:sh-meta-1" class="frameable-border">
             <meta data-document-type="article">
               <article-title>The Effect of Elephants on Climate</article-title>
@@ -1445,12 +1449,16 @@ The paper begins.</code>
             </section>
             <figcaption><minipage-label>Minipage 113.</minipage-label></figcaption>
           </figure>
-          <p><i>Author writes &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin reads type=article and generates: - the &#x3C;article> container - &#x3C;article-front> wrapping the original &#x3C;meta> - &#x3C;article-body> wrapping the section content &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>. &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.</i></p><code id="code:sh-meta-2">&#x3C;meta type=book>
-&#x3C;title | A Natural History of Elephants>
-&#x3C;author | Jane Goodall>
+          <p><i>Author writes &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin reads type=article and generates: - the &#x3C;article> container - &#x3C;article-front> wrapping the original &#x3C;meta> - &#x3C;article-body> wrapping the section content &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>. &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.</i></p>
+          <pre><code id="code:sh-meta-2">
+&#x3C;meta type=book>
+  &#x3C;title | A Natural History of Elephants>
+  &#x3C;author | Jane Goodall>
 &#x3C;/meta>
+
 &#x3C;chapter | Origins>
-Content.</code>
+Content.
+</code></pre>
           <figure id="mp:sh-meta-2" class="frameable-border">
             <book>
               <book-front>
@@ -1563,10 +1571,13 @@ Content.</code>
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;title></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-title-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;author | Jane Goodall>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-title-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;author | Jane Goodall>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source (it carries document metadata, not body content). Titles may contain inline formatting.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-39">
@@ -1583,10 +1594,13 @@ Content.</code>
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;subtitle></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-subtitle-1">&#x3C;meta type=article>
-&#x3C;title | On the Convergence of Iterative Maps>
-&#x3C;subtitle | A Fixed-Point Perspective>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-subtitle-1">
+&#x3C;meta type=article>
+  &#x3C;title | On the Convergence of Iterative Maps>
+  &#x3C;subtitle | A Fixed-Point Perspective>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-40">
@@ -1603,13 +1617,16 @@ Content.</code>
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;abstract></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-abstract-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;abstract |
-Elephant populations shape vegetation and carbon storage, and so
-affect regional climate. We quantify the effect across 50 sites.
->
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-abstract-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;abstract |
+  Elephant populations shape vegetation and carbon storage, and so
+  affect regional climate. We quantify the effect across 50 sites.
+  >
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-41">
@@ -1649,10 +1666,13 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;keywords></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-keywords-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;keywords | elephants; carbon storage; regional climate; conservation>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-keywords-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;keywords | elephants; carbon storage; regional climate; conservation>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-42">
@@ -1669,11 +1689,14 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;subject></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-subject-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;subject | Ecology>
-&#x3C;subject scheme=msc | 92D40>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-subject-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;subject | Ecology>
+  &#x3C;subject scheme=msc | 92D40>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-43">
@@ -1720,12 +1743,15 @@ affect regional climate. We quantify the effect across 50 sites.
             </author>
             <figcaption><minipage-label>Minipage 116.</minipage-label></figcaption>
           </figure>
-          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &#x3C;author>.</i></p><code id="code:sh-author-3">&#x3C;author +corresponding>
-&#x3C;name | Jane Goodall>
-&#x3C;affiliation | Cambridge University>
-&#x3C;orcid | 0000-0001-2345-6789>
-&#x3C;email | jane@example.com>
-&#x3C;/author></code>
+          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &#x3C;author>.</i></p>
+          <pre><code id="code:sh-author-3">
+&#x3C;author +corresponding>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation | Cambridge University>
+  &#x3C;orcid | 0000-0001-2345-6789>
+  &#x3C;email | jane@example.com>
+&#x3C;/author>
+</code></pre>
           <figure id="mp:sh-author-3" class="frameable-border">
             <author corresponding>
               <name>Jane Goodall</name>
@@ -1735,11 +1761,14 @@ affect regional climate. We quantify the effect across 50 sites.
             </author>
             <figcaption><minipage-label>Minipage 117.</minipage-label></figcaption>
           </figure>
-          <p><i>Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.</i></p><code id="code:sh-author-4">&#x3C;meta>
-&#x3C;author | Jane Goodall>
-&#x3C;author | David Attenborough>
-&#x3C;author +corresponding | Charles Darwin>
-&#x3C;/meta></code>
+          <p><i>Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.</i></p>
+          <pre><code id="code:sh-author-4">
+&#x3C;meta>
+  &#x3C;author | Jane Goodall>
+  &#x3C;author | David Attenborough>
+  &#x3C;author +corresponding | Charles Darwin>
+&#x3C;/meta>
+</code></pre>
           <figure id="mp:sh-author-4" class="frameable-border">
             <meta>
               <author>Jane Goodall</author>
@@ -1817,16 +1846,21 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;editor></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-editor-1">&#x3C;meta type=book>
-&#x3C;title | A Natural History of Elephants>
-&#x3C;editor | Jane Goodall>
-&#x3C;editor name="David Attenborough" affiliation="BBC" />
+          </ul>
+          <pre><code id="code:sh-editor-1">
+&#x3C;meta type=book>
+  &#x3C;title | A Natural History of Elephants>
+  &#x3C;editor | Jane Goodall>
+  &#x3C;editor name="David Attenborough" affiliation="BBC" />
 &#x3C;/meta>
-</code><code id="code:sh-editor-2">&#x3C;editor>
-&#x3C;name | Jane Goodall>
-&#x3C;affiliation | Cambridge University>
-&#x3C;orcid | 0000-0001-2345-6789>
-&#x3C;/editor></code>
+</code></pre>
+          <pre><code id="code:sh-editor-2">
+&#x3C;editor>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation | Cambridge University>
+  &#x3C;orcid | 0000-0001-2345-6789>
+&#x3C;/editor>
+</code></pre>
           <p><i>Front-matter — shown as source. Like <code>&#x3C;author></code>, each lifted kwarg becomes a child tag at the gate; the child-tag form is the canonical eHTML shape. JATS export groups editors in the <code>&#x3C;contrib-group></code> with <code>contrib-type="editor"</code>.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-45">
@@ -1884,11 +1918,14 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;date></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-date-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;date | 2024-03-15>
-&#x3C;date type=received | 2023-11-02>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-date-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;date | 2024-03-15>
+  &#x3C;date type=received | 2023-11-02>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-46">
@@ -1928,10 +1965,13 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;publication-date></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-publication-date-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;publication-date | 2024-03-15>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-publication-date-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;publication-date | 2024-03-15>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-47">
@@ -1965,10 +2005,13 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;license></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-license-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-license-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-48">
@@ -2002,10 +2045,13 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;lang></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-lang-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;lang | en>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-lang-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;lang | en>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-49">
@@ -2022,10 +2068,13 @@ affect regional climate. We quantify the effect across 50 sites.
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;version></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul><code id="code:sh-version-1">&#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;version | 2.1>
-&#x3C;/meta></code>
+          </ul>
+          <pre><code id="code:sh-version-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;version | 2.1>
+&#x3C;/meta>
+</code></pre>
           <p><i>Front-matter — shown as source.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-50">

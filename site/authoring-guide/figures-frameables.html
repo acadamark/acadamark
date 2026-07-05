@@ -1437,11 +1437,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <table>
             <thead>
               <tr>
-                <th>src (image file or @id of a stored asset)</th>
-                <th>src=revenue-2025.png</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>src (image file or @id of a stored asset)</td>
+                <td>src=revenue-2025.png</td>
+              </tr>
               <tr>
                 <td>alt (text alternative for the image)</td>
                 <td>alt=”Bar chart of revenue”</td>
@@ -1471,10 +1475,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <section-title>Diagrams</section-title>
         <sub-section id="sec:general-usage-16">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A diagram is drawn from a text description by an external engine. Name the engine after the tag and put the source in the body; the browser renders it live.</p><code id="code:diagram-basic">&#x3C;diagram mermaid caption="A simple build flow.">
+          <p>A diagram is drawn from a text description by an external engine. Name the engine after the tag and put the source in the body; the browser renders it live.</p>
+          <pre><code id="code:diagram-basic">
+&#x3C;diagram mermaid caption="A simple build flow.">
 graph LR
 write --> render --> publish
-&#x3C;/diagram></code>
+&#x3C;/diagram>
+</code></pre>
           <figure id="mp:diagram-basic" class="frameable-border">
             
               <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
@@ -1489,11 +1496,15 @@ write --> render --> publish</pre>
           <table>
             <thead>
               <tr>
-                <th>engine (the renderer)</th>
-                <th>mermaid | abc</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>engine (the renderer)</td>
+                <td>mermaid | abc</td>
+              </tr>
               <tr>
                 <td>caption (the figure caption)</td>
                 <td>caption=”A build flow.”</td>
@@ -1518,10 +1529,13 @@ write --> render --> publish</pre>
         <section-title>Inline SVG</section-title>
         <sub-section id="sec:general-usage-17">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Inline SVG drops vector graphics straight into the document. Put the SVG body in the tag and size the box with <code>width</code>, <code>height</code>, and <code>viewBox</code>.</p><code id="code:svg-basic">&#x3C;svg width=180 height=32 caption="A progress bar." |
+          <p>Inline SVG drops vector graphics straight into the document. Put the SVG body in the tag and size the box with <code>width</code>, <code>height</code>, and <code>viewBox</code>.</p>
+          <pre><code id="code:svg-basic">
+&#x3C;svg width=180 height=32 caption="A progress bar." |
 &#x3C;rect width=180 height=32 rx=6 fill=gainsboro />
 &#x3C;rect width=117 height=32 rx=6 fill=steelblue />
-></code>
+>
+</code></pre>
           <figure id="mp:svg-basic" class="frameable-border">
             <figure>
               <svg width="180" height="32">
@@ -1538,11 +1552,15 @@ write --> render --> publish</pre>
           <table>
             <thead>
               <tr>
-                <th>width / height (the SVG box)</th>
-                <th>width=180 height=32</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>width / height (the SVG box)</td>
+                <td>width=180 height=32</td>
+              </tr>
               <tr>
                 <td>viewBox (the coordinate system)</td>
                 <td>viewBox=”0 0 180 32”</td>
@@ -1563,10 +1581,13 @@ write --> render --> publish</pre>
         <section-title>Frames</section-title>
         <sub-section id="sec:general-usage-18">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A frame draws a border around its content as a self-contained box. Unlike a figure it is an unnumbered annotation by default; add <code>+numbered</code> to fold it into the figure sequence.</p><code id="code:frame-basic">&#x3C;frame |
+          <p>A frame draws a border around its content as a self-contained box. Unlike a figure it is an unnumbered annotation by default; add <code>+numbered</code> to fold it into the figure sequence.</p>
+          <pre><code id="code:frame-basic">
+&#x3C;frame |
 This note sits in a bordered box, set apart from
 the main flow but not numbered.
-></code>
+>
+</code></pre>
           <figure id="mp:frame-basic" class="frameable-border">
             <figure class="frameable-border">
               <p>
@@ -1583,11 +1604,15 @@ the main flow but not numbered.
           <table>
             <thead>
               <tr>
-                <th>caption (caption at the foot of the frame)</th>
-                <th>caption=”An exhibit.”</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>caption (caption at the foot of the frame)</td>
+                <td>caption=”An exhibit.”</td>
+              </tr>
               <tr>
                 <td>Numbered (join the figure sequence as “Figure N.”)</td>
                 <td>+numbered</td>
@@ -1608,10 +1633,13 @@ the main flow but not numbered.
         <section-title>Minipages</section-title>
         <sub-section id="sec:general-usage-19">
           <sub-section-title>General Usage</sub-section-title>
-          <p>A minipage is a sealed, self-contained box: whatever renders inside it — sections, numbers, footnotes — stays inside and never leaks into the surrounding document. Every rendered example in this guide sits in one.</p><code id="code:minipage-basic">&#x3C;minipage>
+          <p>A minipage is a sealed, self-contained box: whatever renders inside it — sections, numbers, footnotes — stays inside and never leaks into the surrounding document. Every rendered example in this guide sits in one.</p>
+          <pre><code id="code:minipage-basic">
+&#x3C;minipage>
 &#x3C;section | A self-contained section>
 Its heading and numbering stay inside the box.
-&#x3C;/minipage></code>
+&#x3C;/minipage>
+</code></pre>
           <figure id="mp:minipage-basic" class="frameable-border">
             <section>
               <section-title>A self-contained section</section-title>
@@ -1625,11 +1653,15 @@ Its heading and numbering stay inside the box.
           <table>
             <thead>
               <tr>
-                <th>caption (caption at the foot of the box)</th>
-                <th>caption=”Two panels.”</th>
+                <th>Attribute</th>
+                <th>Example</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>caption (caption at the foot of the box)</td>
+                <td>caption=”Two panels.”</td>
+              </tr>
               <tr>
                 <td>Numbered (number the box as “Minipage N.”)</td>
                 <td>+numbered</td>

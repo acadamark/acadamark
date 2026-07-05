@@ -1483,11 +1483,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                   <p>Be careful here.</p>
                 </aside>
                 <figcaption><minipage-label>Minipage 37.</minipage-label></figcaption>
-              </figure><code id="code:l1-aside-3">&#x3C;aside type=callout |
+              </figure>
+              <pre><code id="code:l1-aside-3">
+&#x3C;aside type=callout |
 This is a multi-line callout.
+
 It can contain multiple paragraphs and other content like
 &#x3C;strong | emphasis> and inline references.
-></code>
+>
+</code></pre>
               <figure id="mp:l1-aside-3" class="frameable-border">
                 <aside data-aside-type="callout" class="frameable-border">
                   <p>This is a multi-line callout.</p>
@@ -1638,12 +1642,14 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
               <p>Produced by: canonical <code>&#x3C;details></code>.</p>
             </sub-section>
             <sub-section id="sec:examples-19">
-              <sub-section-title>Examples</sub-section-title><code id="code:l1-details-1">
+              <sub-section-title>Examples</sub-section-title>
+              <pre><code id="code:l1-details-1">
 &#x3C;details>
-&#x3C;summary | More background>
-Additional context for the curious reader. The summary is the
-visible heading; this body shows when the disclosure is opened.
-&#x3C;/details></code>
+  &#x3C;summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+&#x3C;/details>
+</code></pre>
               <figure id="mp:l1-details-1" class="frameable-border">
                 <details>
                   <summary>More background</summary>
@@ -1654,10 +1660,13 @@ visible heading; this body shows when the disclosure is opened.
                 </details>
                 <figcaption><minipage-label>Minipage 42.</minipage-label></figcaption>
               </figure>
-              <p><i>The canonical shape: a &#x3C;summary> for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.</i></p><code id="code:l1-details-2">&#x3C;details +open>
-&#x3C;summary | Always-expanded section>
-This disclosure is expanded by default.
-&#x3C;/details></code>
+              <p><i>The canonical shape: a &#x3C;summary> for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.</i></p>
+              <pre><code id="code:l1-details-2">
+&#x3C;details +open>
+  &#x3C;summary | Always-expanded section>
+  This disclosure is expanded by default.
+&#x3C;/details>
+</code></pre>
               <figure id="mp:l1-details-2" class="frameable-border">
                 <details open>
                   <summary>Always-expanded section</summary>

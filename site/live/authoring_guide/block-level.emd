@@ -8,14 +8,14 @@ Canonical: `<li>`
 Sigil: `<->` or `<*>`
 Markdown: `-` or `*`
 
-<code #code:list-basic>
+<code-block #code:list-basic>
 <list>
 <li> First item
 <li> Second item, which can run
 across several lines and even hold
 more than one paragraph.
 </list>
-</code>
+</code-block>
 
 <minipage #mp:list-basic>
 <list>
@@ -28,7 +28,7 @@ more than one paragraph.
 
 A list is numbered with `<list ordered>`, and nests by putting a `<list>` inside an item:
 
-<code #code:list-ordered>
+<code-block #code:list-ordered>
 <list ordered>
 <li> Wash
 <li> Rinse
@@ -38,7 +38,7 @@ A list is numbered with `<list ordered>`, and nests by putting a `<list>` inside
 </list>
 <li> Repeat
 </list>
-</code>
+</code-block>
 
 <minipage #mp:list-ordered>
 <list ordered>
@@ -55,6 +55,7 @@ A list is numbered with `<list ordered>`, and nests by putting a `<list>` inside
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 Ordered (render as a numbered list), ordered
 marker (the CSS list-style-type), decimal | lower-roman | upper-alpha | disc | …
 "start (first number, ordered only)", start=3
@@ -81,12 +82,12 @@ A block quotation sets a passage off from the surrounding text. Write it canonic
 Canonical: `<quote {args} | Quotation text>`
 Markdown: `> Quotation text`
 
-<code #code:quote-basic>
+<code-block #code:quote-basic>
 <quote cite=https://example.com/keynes |
 The difficulty lies not so much in developing
 new ideas as in escaping from old ones.
 >
-</code>
+</code-block>
 
 <minipage #mp:quote-basic>
 <quote cite=https://example.com/keynes |
@@ -98,6 +99,7 @@ new ideas as in escaping from old ones.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 cite (URL of the source), cite=https://example.com/source
 Id, #quote:keynes
 Class, .pullquote
@@ -110,14 +112,14 @@ Class, .pullquote
 
 A definition list pairs terms with their definitions. `<dl>` wraps the list; each pair is a `<dt>` term and a `<dd>` definition.
 
-<code #code:dl-basic>
+<code-block #code:dl-basic>
 <dl>
 <dt | Eigenvalue>
 <dd | A scalar that stretches its eigenvector under a transformation.>
 <dt | Eigenvector>
 <dd | A non-zero vector whose direction the transformation preserves.>
 </dl>
-</code>
+</code-block>
 
 <minipage #mp:dl-basic>
 <dl>
@@ -131,6 +133,7 @@ A definition list pairs terms with their definitions. `<dl>` wraps the list; eac
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 Id, #dl:linear-algebra
 Class, .compact
 </table>
@@ -142,12 +145,12 @@ Class, .compact
 
 A callout lifts a note out of the flow into a bordered box. Write `<aside>` and pick a flavour with `type`:
 
-<code #code:aside-basic>
+<code-block #code:aside-basic>
 <aside type=warning |
 Back up your data before running this command —
 it cannot be undone.
 >
-</code>
+</code-block>
 
 <minipage #mp:aside-basic>
 <aside type=warning |
@@ -159,6 +162,7 @@ it cannot be undone.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 type (the callout flavour), note | sidebar | callout | warning | tip | info | caution
 Numbered (count this aside in the float sequence), +numbered
 No border (drop the visual box), -border
@@ -177,13 +181,13 @@ The emphasis flavours (callout, warning, tip, info, caution, note) draw a box ar
 
 A disclosure widget hides its body until the reader opens it. Wrap the body in `<details>` … `</details>` and label it with a `<summary>`:
 
-<code #code:details-basic>
+<code-block #code:details-basic>
 <details>
 <summary | Show the proof>
 By induction on n. The base case holds since…
 and the inductive step follows directly.
 </details>
-</code>
+</code-block>
 
 <minipage #mp:details-basic>
 <details>
@@ -203,13 +207,13 @@ A thematic break is a scene-change rule between blocks. Write `---` on its own l
 Canonical: `<hr/>`
 Markdown: `---`
 
-<code #code:hr-basic>
+<code-block #code:hr-basic>
 The first movement closes here.
 
 ---
 
 A new movement begins.
-</code>
+</code-block>
 
 <minipage #mp:hr-basic>
 The first movement closes here.
@@ -222,6 +226,7 @@ A new movement begins.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 type (a styling hint), type=ornamental
 </table>
 

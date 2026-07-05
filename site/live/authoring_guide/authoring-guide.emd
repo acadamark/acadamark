@@ -7,10 +7,10 @@ A section heading opens a new section. Write one two ways:
 Canonical: `<section {args} | Section Title>`
 Sigil: `<# {args} | Section Title #>`
 
-<code #code:sec-basic>
+<code-block #code:sec-basic>
 <section | Introduction>
 The paper begins here.
-</code>
+</code-block>
 
 <minipage #mp:sec-basic>
 <section | Introduction>
@@ -25,7 +25,7 @@ Sigil: `<## {args} | Section Title ##>`
 Canonical: `<sub-sub-section {args} | Section Title>`
 Sigil: `<### {args} | Section Title ###>`
 
-<code #code:sec-nested>
+<code-block #code:sec-nested>
 <section | Materials and Methods>
 Opening text.
 
@@ -37,7 +37,7 @@ What we measured with.
 
 <section | Results>
 What we found.
-</code>
+</code-block>
 
 <minipage #mp:sec-nested>
 <section | Materials and Methods>
@@ -56,6 +56,7 @@ What we found.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 Id, #sec:intro
 Class, .my-class
 numbering-style, arabic | roman | alpha | none

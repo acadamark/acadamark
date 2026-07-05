@@ -1421,7 +1421,9 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <section-title>Document Metadata</section-title>
         <sub-section id="sec:general-usage-30">
           <sub-section-title>General Usage</sub-section-title>
-          <p>The <code>&#x3C;meta></code> block holds the document’s front matter — its class, title, authors, and abstract — at the top of the file. Its <code>type</code> selects the document class.</p><code id="code:meta-basic">&#x3C;meta type=article>
+          <p>The <code>&#x3C;meta></code> block holds the document’s front matter — its class, title, authors, and abstract — at the top of the file. Its <code>type</code> selects the document class.</p>
+          <pre><code id="code:meta-basic">
+&#x3C;meta type=article>
 &#x3C;title | On the Spectra of Linear Operators>
 &#x3C;subtitle | A Survey>
 &#x3C;author>
@@ -1432,7 +1434,8 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 &#x3C;date | 2025-06-01>
 &#x3C;abstract | We survey the eigenstructure of bounded operators.>
 &#x3C;keywords | eigenvalues, operators, spectra>
-&#x3C;/meta></code>
+&#x3C;/meta>
+</code></pre>
           <figure id="mp:meta-basic" class="frameable-border">
             <meta data-document-type="article">
               <article-title>On the Spectra of Linear Operators</article-title>
@@ -1456,11 +1459,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <table>
             <thead>
               <tr>
-                <th>type</th>
-                <th>article | book | website</th>
+                <th>Field</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>type</td>
+                <td>article | book | website</td>
+              </tr>
               <tr>
                 <td>title / subtitle</td>
                 <td>the document’s heading and tagline</td>
@@ -1493,21 +1500,27 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <section-title>Configuration</section-title>
         <sub-section id="sec:general-usage-31">
           <sub-section-title>General Usage</sub-section-title>
-          <p><code>&#x3C;config></code> sets document-wide options. It is self-closing — note the trailing slash — and each entry is a flag or a <code>key=value</code>.</p><code id="code:config-basic">&#x3C;config number-sections />
+          <p><code>&#x3C;config></code> sets document-wide options. It is self-closing — note the trailing slash — and each entry is a flag or a <code>key=value</code>.</p>
+          <pre><code id="code:config-basic">
+&#x3C;config number-sections />
 &#x3C;config toc />
 &#x3C;config note-position=margin />
-</code>
+</code></pre>
         </sub-section>
         <sub-section id="sec:options">
           <sub-section-title>Options</sub-section-title>
           <table>
             <thead>
               <tr>
-                <th>number-sections / number-figures / number-tables / …</th>
-                <th>turn on numbering for each kind of element</th>
+                <th>Option</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>number-sections / number-figures / number-tables / …</td>
+                <td>turn on numbering for each kind of element</td>
+              </tr>
               <tr>
                 <td>number-depth</td>
                 <td>how many heading levels carry numbers</td>
@@ -1552,12 +1565,16 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         <section-title>Embedded Data</section-title>
         <sub-section id="sec:general-usage-32">
           <sub-section-title>General Usage</sub-section-title>
-          <p><code>&#x3C;data></code> is an invisible store for assets the document embeds — images and datasets — declared once with an id and pulled in by <code>@id</code>. It keeps a whole document self-contained in a single file.</p><code id="code:data-basic">&#x3C;data>
+          <p><code>&#x3C;data></code> is an invisible store for assets the document embeds — images and datasets — declared once with an id and pulled in by <code>@id</code>. It keeps a whole document self-contained in a single file.</p>
+          <pre><code id="code:data-basic">
+&#x3C;data>
 &#x3C;fig #fig:logo png>iVBORw0KGgo…base64…&#x3C;/fig>
 &#x3C;/data>
+
 Later, in the body:
+
 &#x3C;fig src="@fig:logo" | The project logo.>
-</code>
+</code></pre>
         </sub-section>
         <sub-section id="sec:notes-21">
           <sub-section-title>Notes</sub-section-title>
@@ -1568,11 +1585,13 @@ Later, in the body:
         <section-title>Reference Library</section-title>
         <sub-section id="sec:general-usage-33">
           <sub-section-title>General Usage</sub-section-title>
-          <p><code>&#x3C;library></code> is an invisible store for bibliographic references, pasted straight from a reference manager. Citations resolve against it, and <code>&#x3C;bibliography></code> prints the list.</p><code id="code:library-basic">&#x3C;library format=bibtex>
+          <p><code>&#x3C;library></code> is an invisible store for bibliographic references, pasted straight from a reference manager. Citations resolve against it, and <code>&#x3C;bibliography></code> prints the list.</p>
+          <pre><code id="code:library-basic">
+&#x3C;library format=bibtex>
 @book{strang2016, author={Gilbert Strang}, title={Introduction to Linear Algebra}, year={2016}}
 @article{goodall2024, author={Jane Goodall}, title={Field Notes}, year={2024}}
 &#x3C;/library>
-</code>
+</code></pre>
         </sub-section>
         <sub-section id="sec:notes-22">
           <sub-section-title>Notes</sub-section-title>

@@ -9,10 +9,10 @@ Strong (semantic): `<strong | text>`
 Italic (visual): `<i | text>` or `*text*`
 Bold (visual): `<b | text>` or `**text**`
 
-<code #code:emphasis-basic>
+<code-block #code:emphasis-basic>
 This <em | really> matters, and this is <strong | critical>.
 For plain styling, *this is italic* and **this is bold**.
-</code>
+</code-block>
 
 <minipage #mp:emphasis-basic>
 This <em | really> matters, and this is <strong | critical>.
@@ -24,6 +24,7 @@ For plain styling, *this is italic* and **this is bold**.
 `<i>`, `<b>`, and `<u>` take an optional `type` that records why the text is set apart:
 
 <table csv -numbered>
+Element, Allowed type values
 i — type, foreign | taxonomic | technical | thought | ship-name | other
 b — type, keyword | product-name | lead | offset | other
 u — type, misspelling | proper-name | editorial-correction | other
@@ -41,10 +42,10 @@ The markdown `*`/`**` render as italic and bold (`<i>`/`<b>`), not as `<em>`/`<s
 Superscript: `<sup | text>` or `^{text}`
 Subscript: `<sub | text>` or `_{text}`
 
-<code #code:supsub-basic>
+<code-block #code:supsub-basic>
 Water is H_{2}O and area grows as r^{2}.
 The same in named form: H<sub | 2>O and r<sup | 2>.
-</code>
+</code-block>
 
 <minipage #mp:supsub-basic>
 Water is H_{2}O and area grows as r^{2}.
@@ -62,11 +63,11 @@ Underline: `<u | text>`
 Abbreviation: `<abbr title="…" | text>`
 Keyboard: `<kbd | text>`
 
-<code #code:marks-basic>
+<code-block #code:marks-basic>
 She replied <q | of course> and crossed out ~~the old price~~.
 Press <kbd | Ctrl+S> to save. The <abbr title="Document Object Model" | DOM>
 is the browser's API for HTML.
-</code>
+</code-block>
 
 <minipage #mp:marks-basic>
 She replied <q | of course> and crossed out ~~the old price~~.
@@ -77,6 +78,7 @@ is the browser's API for HTML.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 abbr — title (the expansion), title="Document Object Model"
 u — type, misspelling | proper-name | editorial-correction | other
 </table>
@@ -92,10 +94,10 @@ Keep `~~` clear of `$` — a dollar sign opens inline math, which will swallow t
 
 A link is `<a destination | link text>`. The destination is a full URL for an external link, or a page slug for an internal one — the build resolves slugs to their final paths.
 
-<code #code:links-basic>
+<code-block #code:links-basic>
 Read <a https://enscribe.org | the Enscribe site> for more,
 or jump to <a enscribe-vocabulary | the vocabulary page> in this document.
-</code>
+</code-block>
 
 <minipage #mp:links-basic>
 Read <a https://enscribe.org | the Enscribe site> for more,
@@ -105,6 +107,7 @@ or jump to <a enscribe-vocabulary | the vocabulary page> in this document.
 <sub-section | Arguments>
 
 <table csv -numbered>
+Attribute, Example
 destination (URL or page slug), https://example.com  ·  vocabulary
 Open in a new tab, target=_blank
 rel (link relationship), nofollow | noopener | noreferrer | external

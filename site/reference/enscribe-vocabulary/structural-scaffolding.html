@@ -1428,17 +1428,23 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             <li>Canonical: <code>&#x3C;section></code></li>
             <li>Sigil: <code>&#x3C;# … #></code></li>
             <li>Markdown: <code># …</code></li>
-          </ul><code id="code:sh-section-1">&#x3C;section | Introduction>
-The paper begins here.</code>
+          </ul>
+          <pre><code id="code:sh-section-1">
+&#x3C;section | Introduction>
+The paper begins here.
+</code></pre>
           <figure id="mp:sh-section-1" class="frameable-border">
             <section>
               <section-title>Introduction</section-title>
               <p>The paper begins here.</p>
             </section>
             <figcaption><minipage-label>Minipage 119.</minipage-label></figcaption>
-          </figure><code id="code:sh-section-2">&#x3C;section #methods sec-type=methods | Methods>
+          </figure>
+          <pre><code id="code:sh-section-2">
+&#x3C;section #methods sec-type=methods | Methods>
 &#x3C;section-subtitle | A description of our experimental approach>
-The methods used in this study were as follows.</code>
+The methods used in this study were as follows.
+</code></pre>
           <figure id="mp:sh-section-2" class="frameable-border">
             <section id="mp-sh-section-2-methods" data-sec-type="methods">
               <section-title>Methods</section-title>
@@ -1446,12 +1452,17 @@ The methods used in this study were as follows.</code>
               <p>The methods used in this study were as follows.</p>
             </section>
             <figcaption><minipage-label>Minipage 120.</minipage-label></figcaption>
-          </figure><code id="code:sh-section-3">&#x3C;section | Results>
+          </figure>
+          <pre><code id="code:sh-section-3">
+&#x3C;section | Results>
 Results paragraph.
+
 &#x3C;sub-section | Quantitative analysis>
 Sub-section content.
+
 &#x3C;sub-section | Qualitative observations>
-Sub-section content.</code>
+Sub-section content.
+</code></pre>
           <figure id="mp:sh-section-3" class="frameable-border">
             <section>
               <section-title>Results</section-title>
@@ -1522,21 +1533,29 @@ Sub-section content.</code>
             <li>Canonical: <code>&#x3C;sub-section></code></li>
             <li>Sigil: <code>&#x3C;## … ##></code></li>
             <li>Markdown: <code>## …</code></li>
-          </ul><code id="code:sh-sub-section-1">&#x3C;sub-section | Quantitative analysis>
-Sub-section content.</code>
+          </ul>
+          <pre><code id="code:sh-sub-section-1">
+&#x3C;sub-section | Quantitative analysis>
+Sub-section content.
+</code></pre>
           <figure id="mp:sh-sub-section-1" class="frameable-border">
             <sub-section>
               <sub-section-title>Quantitative analysis</sub-section-title>
               <p>Sub-section content.</p>
             </sub-section>
             <figcaption><minipage-label>Minipage 122.</minipage-label></figcaption>
-          </figure><code id="code:sh-sub-section-2">&#x3C;section | Results>
+          </figure>
+          <pre><code id="code:sh-sub-section-2">
+&#x3C;section | Results>
 &#x3C;sub-section | Statistical methods>
 Sub-section content.
+
 &#x3C;sub-sub-section | Regression analysis>
 Sub-sub-section content.
+
 &#x3C;sub-section | Sensitivity analyses>
-Sub-section content.</code>
+Sub-section content.
+</code></pre>
           <figure id="mp:sh-sub-section-2" class="frameable-border">
             <section>
               <section-title>Results</section-title>
@@ -1608,20 +1627,27 @@ Sub-section content.</code>
             <li>Canonical: <code>&#x3C;sub-sub-section></code></li>
             <li>Sigil: <code>&#x3C;### … ###></code></li>
             <li>Markdown: <code>### …</code></li>
-          </ul><code id="code:sh-sub-sub-section-1">&#x3C;sub-sub-section | Regression analysis>
-Detailed methods for the regression.</code>
+          </ul>
+          <pre><code id="code:sh-sub-sub-section-1">
+&#x3C;sub-sub-section | Regression analysis>
+Detailed methods for the regression.
+</code></pre>
           <figure id="mp:sh-sub-sub-section-1" class="frameable-border">
             <sub-sub-section>
               <sub-sub-section-title>Regression analysis</sub-sub-section-title>
               <p>Detailed methods for the regression.</p>
             </sub-sub-section>
             <figcaption><minipage-label>Minipage 124.</minipage-label></figcaption>
-          </figure><code id="code:sh-sub-sub-section-2">&#x3C;section | Methods>
+          </figure>
+          <pre><code id="code:sh-sub-sub-section-2">
+&#x3C;section | Methods>
 &#x3C;sub-section | Statistical methods>
 &#x3C;sub-sub-section | Regression>
 Linear regression was performed.
+
 &#x3C;sub-sub-section | Sensitivity testing>
-Sensitivity tests were performed.</code>
+Sensitivity tests were performed.
+</code></pre>
           <figure id="mp:sh-sub-sub-section-2" class="frameable-border">
             <section>
               <section-title>Methods</section-title>
@@ -1769,9 +1795,14 @@ Sensitivity tests were performed.</code>
             <li>Markdown: <code>---</code></li>
           </ul><code id="code:sh-hr-1">&#x3C;hr></code>
           <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p><code id="code:sh-hr-2">&#x3C;hr type=scene-break></code>
-          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p><code id="code:sh-hr-3">&#x3C;p | First paragraph.>
+          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p>
+          <pre><code id="code:sh-hr-3">
+&#x3C;p | First paragraph.>
+
 &#x3C;hr type=ornamental>
-&#x3C;p | Second paragraph after a thematic break.></code>
+
+&#x3C;p | Second paragraph after a thematic break.>
+</code></pre>
           <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p>
         </sub-section>
         <sub-section id="sec:arguments-56">

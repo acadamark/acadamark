@@ -61,12 +61,12 @@ Produced by: the `<list>` / `<li>` authoring construct (see the shorthand vocabu
 
 <sub-section | Examples>
 
-<code #code:l1-list-1>
+<code-block #code:l1-list-1>
 <list ordered>
 <li> Fit the model.
 <li> Compute residuals.
 </list>
-</code>
+</code-block>
 
 <minipage #mp:l1-list-1>
 <list ordered>

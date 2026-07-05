@@ -1438,11 +1438,15 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                   <p>Be careful here.</p>
                 </aside>
                 <figcaption><minipage-label>Minipage 38.</minipage-label></figcaption>
-              </figure><code id="code:sh-aside-3">&#x3C;aside type=callout |
+              </figure>
+              <pre><code id="code:sh-aside-3">
+&#x3C;aside type=callout |
 This is a multi-line callout.
+
 It can contain multiple paragraphs and other content like
 &#x3C;strong | emphasis> and inline references.
-></code>
+>
+</code></pre>
               <figure id="mp:sh-aside-3" class="frameable-border">
                 <aside data-aside-type="callout" class="frameable-border">
                   <p>This is a multi-line callout.</p>
@@ -1621,9 +1625,13 @@ It can contain multiple paragraphs and other content like
               <p>Registers:</p>
               <ul>
                 <li>Canonical: <code>&#x3C;endnotes></code></li>
-              </ul><code id="code:sh-endnotes-1">The claim holds&#x3C;note | A note collected at the end.>.
+              </ul>
+              <pre><code id="code:sh-endnotes-1">
+The claim holds&#x3C;note | A note collected at the end.>.
+
 &#x3C;section | Notes>
-&#x3C;endnotes></code>
+&#x3C;endnotes>
+</code></pre>
               <figure id="mp:sh-endnotes-1" class="frameable-border">
                 <p>The claim holds<sup id="mp-sh-endnotes-1-noteref-1" data-note-id="mp-sh-endnotes-1-note-1"><a href="#mp-sh-endnotes-1-note-1">1</a></sup>.</p>
                 <section>
@@ -1653,11 +1661,14 @@ It can contain multiple paragraphs and other content like
               <p>Registers:</p>
               <ul>
                 <li>Canonical: <code>&#x3C;details></code></li>
-              </ul><code id="code:sh-details-1">&#x3C;details>
-&#x3C;summary | More background>
-Additional context for the curious reader. The summary is the
-visible heading; this body shows when the disclosure is opened.
-&#x3C;/details></code>
+              </ul>
+              <pre><code id="code:sh-details-1">
+&#x3C;details>
+  &#x3C;summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+&#x3C;/details>
+</code></pre>
               <figure id="mp:sh-details-1" class="frameable-border">
                 <details>
                   <summary>More background</summary>
@@ -1668,10 +1679,13 @@ visible heading; this body shows when the disclosure is opened.
                 </details>
                 <figcaption><minipage-label>Minipage 44.</minipage-label></figcaption>
               </figure>
-              <p><i>The canonical shape: a &#x3C;summary> for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.</i></p><code id="code:sh-details-2">&#x3C;details +open>
-&#x3C;summary | Always-expanded section>
-This disclosure is expanded by default.
-&#x3C;/details></code>
+              <p><i>The canonical shape: a &#x3C;summary> for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.</i></p>
+              <pre><code id="code:sh-details-2">
+&#x3C;details +open>
+  &#x3C;summary | Always-expanded section>
+  This disclosure is expanded by default.
+&#x3C;/details>
+</code></pre>
               <figure id="mp:sh-details-2" class="frameable-border">
                 <details open>
                   <summary>Always-expanded section</summary>

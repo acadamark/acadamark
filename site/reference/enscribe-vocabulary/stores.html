@@ -1426,27 +1426,34 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;data></code></li>
-          </ul><code id="code:sh-data-1">&#x3C;data>
-&#x3C;library format=bibtex>
-@article{goodall2024,
-author = {Goodall, Jane},
-title = {The Effect of Elephants on Climate},
-journal = {Nature},
-year = {2024}
-}
-&#x3C;/library>
-&#x3C;/data></code>
+          </ul>
+          <pre><code id="code:sh-data-1">
+&#x3C;data>
+  &#x3C;library format=bibtex>
+    @article{goodall2024,
+      author = {Goodall, Jane},
+      title = {The Effect of Elephants on Climate},
+      journal = {Nature},
+      year = {2024}
+    }
+  &#x3C;/library>
+&#x3C;/data>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &#x3C;data> block itself produces no rendered output.</i></p>
-          <p>A <code>&#x3C;data></code> block can also store a <b>dataset</b> — a payload (CSV/TSV/JSON/…) held under an id with a <code>&#x3C;dataset></code> — that a consuming element pulls in by <code>@id</code>. A <code>&#x3C;dataset></code> is always authored in the <b>long form</b> <code>&#x3C;dataset …>…&#x3C;/dataset></code>; the pipe form would truncate the payload at the first <code>></code>, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a <code>&#x3C;table src="@id" /></code> renders it as a grid:</p><code id="code:sh-data-2">&#x3C;data>
-&#x3C;dataset #parts-stock format=csv>
+          <p>A <code>&#x3C;data></code> block can also store a <b>dataset</b> — a payload (CSV/TSV/JSON/…) held under an id with a <code>&#x3C;dataset></code> — that a consuming element pulls in by <code>@id</code>. A <code>&#x3C;dataset></code> is always authored in the <b>long form</b> <code>&#x3C;dataset …>…&#x3C;/dataset></code>; the pipe form would truncate the payload at the first <code>></code>, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a <code>&#x3C;table src="@id" /></code> renders it as a grid:</p>
+          <pre><code id="code:sh-data-2">
+&#x3C;data>
+  &#x3C;dataset #parts-stock format=csv>
 part,code,in_stock
 hex bolt,#HB-08,120
 flat washer,#FW-04,340
 lock nut,#LN-06,210
 &#x3C;/dataset>
 &#x3C;/data>
-&#x3C;table src="@parts-stock" /></code>
+
+&#x3C;table src="@parts-stock" />
+</code></pre>
           <table>
             <thead>
               <tr>
@@ -1485,33 +1492,40 @@ lock nut,#LN-06,210
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;library></code></li>
-          </ul><code id="code:sh-library-1">&#x3C;library format=bibtex>
-@article{goodall2024,
-author = {Goodall, Jane},
-title = {The Effect of Elephants on Climate},
-journal = {Nature},
-year = {2024}
-}
-@book{darwin1859,
-author = {Darwin, Charles},
-title = {On the Origin of Species},
-publisher = {John Murray},
-year = {1859}
-}
-&#x3C;/library></code>
+          </ul>
+          <pre><code id="code:sh-library-1">
+&#x3C;library format=bibtex>
+  @article{goodall2024,
+    author = {Goodall, Jane},
+    title = {The Effect of Elephants on Climate},
+    journal = {Nature},
+    year = {2024}
+  }
+
+  @book{darwin1859,
+    author = {Darwin, Charles},
+    title = {On the Origin of Species},
+    publisher = {John Murray},
+    year = {1859}
+  }
+&#x3C;/library>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries. The library block itself produces no rendered output.</i></p><code id="code:sh-library-2">&#x3C;library format=csl-json>
-[
-{
-"id": "goodall2024",
-"type": "article-journal",
-"author": [{"family": "Goodall", "given": "Jane"}],
-"title": "The Effect of Elephants on Climate",
-"container-title": "Nature",
-"issued": {"date-parts": [[2024]]}
-}
-]
-&#x3C;/library></code>
+          <p><i>A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries. The library block itself produces no rendered output.</i></p>
+          <pre><code id="code:sh-library-2">
+&#x3C;library format=csl-json>
+  [
+    {
+      "id": "goodall2024",
+      "type": "article-journal",
+      "author": [{"family": "Goodall", "given": "Jane"}],
+      "title": "The Effect of Elephants on Climate",
+      "container-title": "Nature",
+      "issued": {"date-parts": [[2024]]}
+    }
+  ]
+&#x3C;/library>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-36">

@@ -1468,14 +1468,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <p>Produced by: canonical <code>&#x3C;meta></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-59">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-meta-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-meta-1">
 &#x3C;meta type=article>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;author | Jane Goodall>
-&#x3C;date | 2024-03-15>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;author | Jane Goodall>
+  &#x3C;date | 2024-03-15>
 &#x3C;/meta>
+
 &#x3C;section | Introduction>
-The paper begins.</code>
+The paper begins.
+</code></pre>
           <figure id="mp:l1-meta-1" class="frameable-border">
             <meta data-document-type="article">
               <article-title>The Effect of Elephants on Climate</article-title>
@@ -1488,12 +1491,16 @@ The paper begins.</code>
             </section>
             <figcaption><minipage-label>Minipage 110.</minipage-label></figcaption>
           </figure>
-          <p><i>Author writes &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin reads type=article and generates: - the &#x3C;article> container - &#x3C;article-front> wrapping the original &#x3C;meta> - &#x3C;article-body> wrapping the section content &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>. &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.</i></p><code id="code:l1-meta-2">&#x3C;meta type=book>
-&#x3C;title | A Natural History of Elephants>
-&#x3C;author | Jane Goodall>
+          <p><i>Author writes &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin reads type=article and generates: - the &#x3C;article> container - &#x3C;article-front> wrapping the original &#x3C;meta> - &#x3C;article-body> wrapping the section content &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>. &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.</i></p>
+          <pre><code id="code:l1-meta-2">
+&#x3C;meta type=book>
+  &#x3C;title | A Natural History of Elephants>
+  &#x3C;author | Jane Goodall>
 &#x3C;/meta>
+
 &#x3C;chapter | Origins>
-Content.</code>
+Content.
+</code></pre>
           <figure id="mp:l1-meta-2" class="frameable-border">
             <book>
               <book-front>
@@ -1559,20 +1566,28 @@ Content.</code>
           <p>Produced by: canonical <code>&#x3C;title></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-61">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-title-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-title-1">
 &#x3C;meta>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;/meta></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Inside &#x3C;article>, &#x3C;title> in &#x3C;meta> becomes &#x3C;article-title>.</i></p><code id="code:l1-title-2">&#x3C;book>
-&#x3C;meta>
-&#x3C;title | A Comprehensive Guide>
+  &#x3C;title | The Effect of Elephants on Climate>
 &#x3C;/meta>
-&#x3C;/book></code>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Inside &#x3C;book>, &#x3C;title> in &#x3C;meta> becomes &#x3C;book-title>.</i></p><code id="code:l1-title-3">&#x3C;meta>
-&#x3C;title | The role of &#x3C;i type=taxonomic | Loxodonta africana> in ecosystem dynamics>
-&#x3C;/meta></code>
+          <p><i>Inside &#x3C;article>, &#x3C;title> in &#x3C;meta> becomes &#x3C;article-title>.</i></p>
+          <pre><code id="code:l1-title-2">
+&#x3C;book>
+  &#x3C;meta>
+    &#x3C;title | A Comprehensive Guide>
+  &#x3C;/meta>
+&#x3C;/book>
+</code></pre>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
+          <p><i>Inside &#x3C;book>, &#x3C;title> in &#x3C;meta> becomes &#x3C;book-title>.</i></p>
+          <pre><code id="code:l1-title-3">
+&#x3C;meta>
+  &#x3C;title | The role of &#x3C;i type=taxonomic | Loxodonta africana> in ecosystem dynamics>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Titles can contain inline elements. The recursive content parsing handles nested constructs.</i></p></section>
         </sub-section>
@@ -1586,11 +1601,13 @@ Content.</code>
           <p>Produced by: canonical <code>&#x3C;subtitle></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-62">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-subtitle-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-subtitle-1">
 &#x3C;meta>
-&#x3C;title | The Effect of Elephants on Climate>
-&#x3C;subtitle | A Multi-Year Field Study in Tanzania>
-&#x3C;/meta></code>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;subtitle | A Multi-Year Field Study in Tanzania>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p></section>
         </sub-section>
       </section>
@@ -1734,23 +1751,34 @@ Content.</code>
           <p>Produced by: canonical <code>&#x3C;abstract></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-63">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-abstract-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-abstract-1">
 &#x3C;abstract |
 This paper presents new evidence that elephant populations
 significantly affect regional climate patterns through their
 role in shaping vegetation and carbon storage.
-></code>
+>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Unstructured abstract (the default). Single paragraph of summary prose.</i></p><code id="code:l1-abstract-2">&#x3C;abstract type=structured |
+          <p><i>Unstructured abstract (the default). Single paragraph of summary prose.</i></p>
+          <pre><code id="code:l1-abstract-2">
+&#x3C;abstract type=structured |
 **Background:** Elephant populations have declined significantly.
+
 **Methods:** We surveyed 50 forest sites over 10 years.
+
 **Results:** Decline correlates with vegetation loss.
+
 **Conclusion:** Conservation efforts are essential.
-></code>
+>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Structured abstract using markdown bold for section headings. Common in medical and scientific journals. The structure is visible in the rendered output via the bold prefixes.</i></p><code id="code:l1-abstract-3">&#x3C;abstract word-limit=250 |
+          <p><i>Structured abstract using markdown bold for section headings. Common in medical and scientific journals. The structure is visible in the rendered output via the bold prefixes.</i></p>
+          <pre><code id="code:l1-abstract-3">
+&#x3C;abstract word-limit=250 |
 This paper presents...
-></code>
+>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p></section>
         </sub-section>
       </section>
@@ -1763,10 +1791,12 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;keywords></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-64">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-keywords-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-keywords-1">
 &#x3C;meta>
-&#x3C;keywords | elephants, conservation, climate, carbon storage>
-&#x3C;/meta></code>
+  &#x3C;keywords | elephants, conservation, climate, carbon storage>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Comma-separated keyword list — the simpler and more common authoring form. The exporter splits on commas when emitting JATS.</i></p><code id="code:l1-keywords-2">&#x3C;meta keywords="elephants, conservation, climate" /></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
@@ -1799,15 +1829,20 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;subject></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-65">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-subject-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-subject-1">
 &#x3C;meta>
-&#x3C;subject | Ecology of large mammals>
-&#x3C;/meta></code>
+  &#x3C;subject | Ecology of large mammals>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Free-form subject. Common for general-interest documents.</i></p><code id="code:l1-subject-2">&#x3C;meta>
-&#x3C;subject scheme=MSC2020 | 92D40>
-&#x3C;subject scheme=MSC2020 | 92D25>
-&#x3C;/meta></code>
+          <p><i>Free-form subject. Common for general-interest documents.</i></p>
+          <pre><code id="code:l1-subject-2">
+&#x3C;meta>
+  &#x3C;subject scheme=MSC2020 | 92D40>
+  &#x3C;subject scheme=MSC2020 | 92D25>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Multiple subjects from a controlled vocabulary. The scheme identifies the classification system; the JATS exporter generates the appropriate &#x3C;subj-group subj-group-type=”…”> wrapper.</i></p></section>
         </sub-section>
@@ -1889,12 +1924,15 @@ This paper presents...
             </author>
             <figcaption><minipage-label>Minipage 113.</minipage-label></figcaption>
           </figure>
-          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &#x3C;author>.</i></p><code id="code:l1-author-3">&#x3C;author +corresponding>
-&#x3C;name | Jane Goodall>
-&#x3C;affiliation | Cambridge University>
-&#x3C;orcid | 0000-0001-2345-6789>
-&#x3C;email | jane@example.com>
-&#x3C;/author></code>
+          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &#x3C;author>.</i></p>
+          <pre><code id="code:l1-author-3">
+&#x3C;author +corresponding>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation | Cambridge University>
+  &#x3C;orcid | 0000-0001-2345-6789>
+  &#x3C;email | jane@example.com>
+&#x3C;/author>
+</code></pre>
           <figure id="mp:l1-author-3" class="frameable-border">
             <author corresponding>
               <name>Jane Goodall</name>
@@ -1904,11 +1942,14 @@ This paper presents...
             </author>
             <figcaption><minipage-label>Minipage 114.</minipage-label></figcaption>
           </figure>
-          <p><i>Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.</i></p><code id="code:l1-author-4">&#x3C;meta>
-&#x3C;author | Jane Goodall>
-&#x3C;author | David Attenborough>
-&#x3C;author +corresponding | Charles Darwin>
-&#x3C;/meta></code>
+          <p><i>Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.</i></p>
+          <pre><code id="code:l1-author-4">
+&#x3C;meta>
+  &#x3C;author | Jane Goodall>
+  &#x3C;author | David Attenborough>
+  &#x3C;author +corresponding | Charles Darwin>
+&#x3C;/meta>
+</code></pre>
           <figure id="mp:l1-author-4" class="frameable-border">
             <meta>
               <author>Jane Goodall</author>
@@ -1979,10 +2020,12 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;name></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-68">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-name-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-name-1">
 &#x3C;author>
-&#x3C;name | Jane Goodall>
-&#x3C;/author></code>
+  &#x3C;name | Jane Goodall>
+&#x3C;/author>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>The common case. Pipe content becomes the name string.</i></p><code id="code:l1-name-2">&#x3C;author name="Jane Goodall" orcid="0000-0001-2345-6789" +corresponding></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
@@ -1998,20 +2041,25 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;affiliation></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-69">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-affiliation-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-affiliation-1">
 &#x3C;author>
-&#x3C;name | Jane Goodall>
-&#x3C;affiliation | Anthropic>
-&#x3C;/author></code>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation | Anthropic>
+&#x3C;/author>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Simple author affiliation. The affiliation sits as a sub-element of &#x3C;author>, parallel to other rich-author-metadata elements (&#x3C;orcid>, &#x3C;email>).</i></p><code id="code:l1-affiliation-2">&#x3C;author>
-&#x3C;name | Jane Goodall>
-&#x3C;affiliation #aff1 | Anthropic, San Francisco, USA>
+          <p><i>Simple author affiliation. The affiliation sits as a sub-element of &#x3C;author>, parallel to other rich-author-metadata elements (&#x3C;orcid>, &#x3C;email>).</i></p>
+          <pre><code id="code:l1-affiliation-2">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation #aff1 | Anthropic, San Francisco, USA>
 &#x3C;/author>
 &#x3C;author>
-&#x3C;name | David Attenborough>
-&#x3C;affiliation #aff1 />
-&#x3C;/author></code>
+  &#x3C;name | David Attenborough>
+  &#x3C;affiliation #aff1 />
+&#x3C;/author>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Shared affiliation. The id on the first affiliation lets subsequent authors reference the same one by id via a self-closing tag. JATS exporter generates the appropriate &#x3C;xref ref-type=”aff” rid=”aff1”> structure.</i></p></section>
         </sub-section>
@@ -2025,16 +2073,21 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;orcid></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-70">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-orcid-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-orcid-1">
 &#x3C;author>
-&#x3C;name | Jane Goodall>
-&#x3C;orcid | 0000-0002-1825-0097>
-&#x3C;/author></code>
+  &#x3C;name | Jane Goodall>
+  &#x3C;orcid | 0000-0002-1825-0097>
+&#x3C;/author>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Bare 16-digit ORCID — the canonical form.</i></p><code id="code:l1-orcid-2">&#x3C;author>
-&#x3C;name | Jane Goodall>
-&#x3C;orcid | https://orcid.org/0000-0002-1825-0097>
-&#x3C;/author></code>
+          <p><i>Bare 16-digit ORCID — the canonical form.</i></p>
+          <pre><code id="code:l1-orcid-2">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;orcid | https://orcid.org/0000-0002-1825-0097>
+&#x3C;/author>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>URL form is accepted but bare form is preferred.</i></p></section>
         </sub-section>
@@ -2048,11 +2101,13 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;email></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-71">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-email-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-email-1">
 &#x3C;author>
-&#x3C;name | Jane Goodall>
-&#x3C;email | jane@example.org>
-&#x3C;/author></code>
+  &#x3C;name | Jane Goodall>
+  &#x3C;email | jane@example.org>
+&#x3C;/author>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Author contact email. Common in journal article metadata for the corresponding author (see also the +corresponding boolean kwarg on &#x3C;author>).</i></p></section>
         </sub-section>
@@ -2093,11 +2148,14 @@ This paper presents...
 &#x3C;date | 2024-03-15></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Simple publication date. The type defaults to “publication” when not specified.</i></p><code id="code:l1-date-2">&#x3C;date type=submission | 2023-11-01></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p><code id="code:l1-date-3">&#x3C;meta>
-&#x3C;date type=submission | 2023-11-01>
-&#x3C;date type=acceptance | 2024-02-10>
-&#x3C;date type=publication | 2024-03-15>
-&#x3C;/meta></code>
+          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
+          <pre><code id="code:l1-date-3">
+&#x3C;meta>
+  &#x3C;date type=submission | 2023-11-01>
+  &#x3C;date type=acceptance | 2024-02-10>
+  &#x3C;date type=publication | 2024-03-15>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Multiple dates of different types. The publication date is the primary; submission, acceptance, etc., go in JATS history.</i></p><code id="code:l1-date-4">&#x3C;date | March 15, 2024></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
@@ -2132,14 +2190,19 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;publication-date></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-73">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-publication-date-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-publication-date-1">
 &#x3C;meta>
-&#x3C;publication-date | 2024-03-15>
-&#x3C;/meta></code>
+  &#x3C;publication-date | 2024-03-15>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>ISO 8601 publication date — the preferred form.</i></p><code id="code:l1-publication-date-2">&#x3C;meta>
-&#x3C;publication-date | March 15, 2024>
-&#x3C;/meta></code>
+          <p><i>ISO 8601 publication date — the preferred form.</i></p>
+          <pre><code id="code:l1-publication-date-2">
+&#x3C;meta>
+  &#x3C;publication-date | March 15, 2024>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Free-form publication date. Acceptable but ISO 8601 is preferred for predictable JATS export and machine readability.</i></p></section>
         </sub-section>
@@ -2170,10 +2233,12 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;license></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-74">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-license-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-license-1">
 &#x3C;meta>
-&#x3C;license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
-&#x3C;/meta></code>
+  &#x3C;license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>License name with canonical URL.</i></p><code id="code:l1-license-2">&#x3C;meta license="MIT License" /></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
@@ -2189,10 +2254,12 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;lang></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-75">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-lang-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-lang-1">
 &#x3C;meta>
-&#x3C;lang | en-US>
-&#x3C;/meta></code>
+  &#x3C;lang | en-US>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>BCP 47 language tag. The eHTML form preserves the value as a child element of &#x3C;meta>; downstream consumers (the JATS exporter, the render-mode lowering) project it where each format expects.</i></p><code id="code:l1-lang-2">&#x3C;meta lang="fr" /></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
@@ -2208,10 +2275,12 @@ This paper presents...
           <p>Produced by: canonical <code>&#x3C;version></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-76">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-version-1">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:l1-version-1">
 &#x3C;meta>
-&#x3C;version | 1.0.0>
-&#x3C;/meta></code>
+  &#x3C;version | 1.0.0>
+&#x3C;/meta>
+</code></pre>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
           <p><i>Semantic version. Other formats are equally valid as a free-form string.</i></p><code id="code:l1-version-2">&#x3C;meta version="draft-2" /></code>
           <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
