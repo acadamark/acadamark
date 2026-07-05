@@ -1,0 +1,118 @@
+Held content — inline data stores and reference libraries the document draws on.
+
+<section #sh-data | `<data>`>
+
+<sub-section | General Usage>
+
+Semantic role: *data*. Compiles to eHTML `<data>`.
+
+Registers:
+
+- Canonical: `<data>`
+
+<code #code:sh-data-1>
+<data>
+  <library format=bibtex>
+    @article{goodall2024,
+      author = {Goodall, Jane},
+      title = {The Effect of Elephants on Climate},
+      journal = {Nature},
+      year = {2024}
+    }
+  </library>
+</data>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &lt;data&gt; block itself produces no rendered output.*
+
+A `<data>` block can also store a **dataset** — a payload (CSV/TSV/JSON/…) held under an id with a `<dataset>` — that a consuming element pulls in by `@id`. A `<dataset>` is always authored in the **long form** `<dataset …>…</dataset>`; the pipe form would truncate the payload at the first `>`, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a `<table src="@id" />` renders it as a grid:
+
+<code #code:sh-data-2>
+<data>
+  <dataset #parts-stock format=csv>
+part,code,in_stock
+hex bolt,#HB-08,120
+flat washer,#FW-04,340
+lock nut,#LN-06,210
+</dataset>
+</data>
+
+<table src="@parts-stock" />
+</code>
+
+<data>
+  <dataset #parts-stock format=csv>
+part,code,in_stock
+hex bolt,#HB-08,120
+flat washer,#FW-04,340
+lock nut,#LN-06,210
+</dataset>
+</data>
+
+<table src="@parts-stock" />
+
+*Unlike the front-matter examples above, this one renders a live result: the table grid above is produced from the stored dataset. The dataset is held verbatim as opaque data — never interpreted as markup, so the `#`-prefixed part codes appear as literal cell text — and the consuming element (here, a `&lt;table&gt;`) decides how to present it. (The `&lt;data&gt;`/`&lt;dataset&gt;` declaration itself renders nothing; only the table does.)*
+
+The `<table>` is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: `<table src="@id" />` renders a grid, `<diagram engine src="@id" />` reads the bytes as its engine source (a Mermaid or abc diagram), `<code src="@id" />` renders them as a verbatim inline code listing, and `<code-block src="@id" />` renders them through `<pre><code>` — the whitespace-preserving form, so **multi-line code keeps its indentation** (an inline `<code>` is reflowed, so a multi-line one is warned toward a code block). An `@id` that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.
+
+</section>
+
+<section #sh-library | `<library>`>
+
+<sub-section | General Usage>
+
+Semantic role: *library*. Compiles to eHTML `<library>`.
+
+Registers:
+
+- Canonical: `<library>`
+
+<code #code:sh-library-1>
+<library format=bibtex>
+  @article{goodall2024,
+    author = {Goodall, Jane},
+    title = {The Effect of Elephants on Climate},
+    journal = {Nature},
+    year = {2024}
+  }
+
+  @book{darwin1859,
+    author = {Darwin, Charles},
+    title = {On the Origin of Species},
+    publisher = {John Murray},
+    year = {1859}
+  }
+</library>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &lt;cite goodall2024&gt;) resolve against these entries. The library block itself produces no rendered output.*
+
+<code #code:sh-library-2>
+<library format=csl-json>
+  [
+    {
+      "id": "goodall2024",
+      "type": "article-journal",
+      "author": [{"family": "Goodall", "given": "Jane"}],
+      "title": "The Effect of Elephants on Climate",
+      "container-title": "Nature",
+      "issued": {"date-parts": [[2024]]}
+    }
+  ]
+</library>
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `format` | kwarg | `bibtex` `csl-json` `ris` `endnote-xml` `other` | Attribute-form equivalent of the format-word positional. When both the positional and the kwarg are omitted, the library-load plugin auto-detects the format via citation-js (works reliably for BibTeX and CSL-JSON). A named format is passed to citation-js as a forceType. |
+| `src` | kwarg |  | External source (#133): a filesystem path, an http(s) URL, or any reachable URL (e.g. a GitHub raw link). The reference data is loaded from there and parsed exactly as inline content (same formats; never injected as markup). With src= the node's own (empty) body is ignored; inline and src libraries are both valid and multiple of either merge. A failed load (unreachable / 404 / CORS-blocked / parse-fail) renders a visible error and never aborts the document (always-renders). Filesystem paths apply on the CLI/build; in the browser a relative path resolves against the document base URL and is fetched (cross-origin URLs are CORS-limited). A URL source needs an async render (the CLI render command / the browser renderAsync); a synchronous render flags it. |
+
+</section>

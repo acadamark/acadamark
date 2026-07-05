@@ -1,0 +1,156 @@
+<section #sec:figures | Figures>
+
+<sub-section | General Usage>
+
+A figure places an image with a numbered caption. The `src` names the image, the pipe gives the caption, and `alt` supplies the text alternative. Markdown `![](url)` is not a register — figures are always tags.
+
+<code #code:fig-basic>
+<fig src=revenue-2025.png alt="Bar chart of quarterly revenue" | Quarterly revenue for 2025.>
+</code>
+
+<minipage #mp:fig-basic>
+<fig src=revenue-2025.png alt="Bar chart of quarterly revenue" | Quarterly revenue for 2025.>
+</minipage>
+
+<sub-section | Arguments>
+
+<table csv -numbered>
+src (image file or @id of a stored asset), src=revenue-2025.png
+alt (text alternative for the image), alt="Bar chart of revenue"
+Unnumbered (drop the "Figure N." label), -numbered
+Id, #fig:revenue
+Class, .wide
+</table>
+
+<sub-section | Notes>
+
+Figures are numbered "Figure N." by default and can be cross-referenced by id. A stored asset is declared once — `<fig #fig:logo png>…base64…</fig>` — and placed anywhere with `<fig src="@fig:logo" />`.
+
+In the live single-page site, all pages draw figure assets from one shared set of filenames. Give **distinct images distinct filenames** — two different images that share a filename will collide, and one will stand in for both. Reusing the *same* image under one filename across pages is fine and intended: the pages simply share the single file.
+</section>
+
+<section #sec:diagrams | Diagrams>
+
+<sub-section | General Usage>
+
+A diagram is drawn from a text description by an external engine. Name the engine after the tag and put the source in the body; the browser renders it live.
+
+<code #code:diagram-basic>
+<diagram mermaid caption="A simple build flow.">
+graph LR
+write --> render --> publish
+</diagram>
+</code>
+
+<minipage #mp:diagram-basic>
+<diagram mermaid caption="A simple build flow.">
+graph LR
+write --> render --> publish
+</diagram>
+</minipage>
+
+<sub-section | Arguments>
+
+<table csv -numbered>
+engine (the renderer), mermaid | abc
+caption (the figure caption), caption="A build flow."
+Id, #fig:flow
+Class, .centered
+</table>
+
+<sub-section | Notes>
+
+The body is opaque — arrows like `-->` and other engine syntax pass through untouched. A captioned diagram joins the figure sequence as "Figure N.".
+</section>
+
+<section #sec:svg | Inline SVG>
+
+<sub-section | General Usage>
+
+Inline SVG drops vector graphics straight into the document. Put the SVG body in the tag and size the box with `width`, `height`, and `viewBox`.
+
+<code #code:svg-basic>
+<svg width=180 height=32 caption="A progress bar." |
+<rect width=180 height=32 rx=6 fill=gainsboro />
+<rect width=117 height=32 rx=6 fill=steelblue />
+>
+</code>
+
+<minipage #mp:svg-basic>
+<svg width=180 height=32 caption="A progress bar." |
+<rect width=180 height=32 rx=6 fill=gainsboro />
+<rect width=117 height=32 rx=6 fill=steelblue />
+>
+</minipage>
+
+<sub-section | Arguments>
+
+<table csv -numbered>
+width / height (the SVG box), width=180 height=32
+viewBox (the coordinate system), viewBox="0 0 180 32"
+caption (the figure caption), caption="A progress bar."
+Id, #fig:progress
+</table>
+</section>
+
+<section #sec:frames | Frames>
+
+<sub-section | General Usage>
+
+A frame draws a border around its content as a self-contained box. Unlike a figure it is an unnumbered annotation by default; add `+numbered` to fold it into the figure sequence.
+
+<code #code:frame-basic>
+<frame |
+This note sits in a bordered box, set apart from
+the main flow but not numbered.
+>
+</code>
+
+<minipage #mp:frame-basic>
+<frame |
+This note sits in a bordered box, set apart from
+the main flow but not numbered.
+>
+</minipage>
+
+<sub-section | Arguments>
+
+<table csv -numbered>
+caption (caption at the foot of the frame), caption="An exhibit."
+Numbered (join the figure sequence as "Figure N."), +numbered
+Id, #frame:note
+Class, .tinted
+</table>
+</section>
+
+<section #sec:minipages | Minipages>
+
+<sub-section | General Usage>
+
+A minipage is a sealed, self-contained box: whatever renders inside it — sections, numbers, footnotes — stays inside and never leaks into the surrounding document. Every rendered example in this guide sits in one.
+
+<code #code:minipage-basic>
+<minipage>
+<section | A self-contained section>
+Its heading and numbering stay inside the box.
+</minipage>
+</code>
+
+<minipage #mp:minipage-basic>
+<section | A self-contained section>
+Its heading and numbering stay inside the box.
+</minipage>
+
+<sub-section | Arguments>
+
+<table csv -numbered>
+caption (caption at the foot of the box), caption="Two panels."
+Numbered (number the box as "Minipage N."), +numbered
+Id, #mp:panels
+Class, .columns
+</table>
+
+<sub-section | Notes>
+
+Minipages are unnumbered by default — most are layout boxes, not cross-referenced floats. Reach for one whenever a self-contained fragment (a demo, a panel, a worked example) must render without disturbing the host document.
+</section>

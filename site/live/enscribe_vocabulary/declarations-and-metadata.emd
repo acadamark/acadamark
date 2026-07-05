@@ -1,0 +1,510 @@
+The document's front-matter declarations — the `<meta>` block and the fields an author writes inside it.
+
+<section #sh-meta | `<meta>`>
+
+<sub-section | General Usage>
+
+Semantic role: *meta*. Compiles to eHTML `<meta>`.
+
+Registers:
+
+- Canonical: `<meta>`
+
+<code #code:sh-meta-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins.
+</code>
+
+<minipage #mp:sh-meta-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins.
+</minipage>
+
+*Author writes &lt;meta type=article&gt; at the top with no &lt;article&gt; wrapper. The structural plugin reads type=article and generates: - the &lt;article&gt; container - &lt;article-front&gt; wrapping the original &lt;meta&gt; - &lt;article-body&gt; wrapping the section content &lt;title&gt; is promoted to &lt;article-title&gt; as the first child of &lt;meta&gt;. &lt;meta&gt; itself survives in the output, inside &lt;article-front&gt;.*
+
+<code #code:sh-meta-2>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+</code>
+
+<minipage #mp:sh-meta-2>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+Content.
+</minipage>
+
+*type=book generates the book-shaped wrapper instead. Changing the single kwarg switches the entire output structure. Each book-part contains its own &lt;meta&gt; with &lt;book-part-title&gt;; no &lt;book-part-meta&gt; wrapper.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `article` `book` `book-part` `website` | Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to "article" (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which eHTML wrapper to generate around the document: type=article → <article> with <article-front>/<article-body>/<article-back>; type=book → <book> with <book-front>/<book-body>/<book-back>; type=book-part → <book-part> containing <meta> and body content directly (no nested front/body/back wrappers). type=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master's <nav> (#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is "article" — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic. |
+| `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` | For a single-file book-part (type=book-part) only: sets the book-part-type on the generated `<book-part>` wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always "chapter". Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive `<meta>` field). Default "chapter" when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the `<chapter>` / `<appendix>` / … shorthand instead. |
+| `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is `<meta>`'s title — there is no in-header `<icon>`/`<title>` tag. |
+
+</section>
+
+<section #sh-config | `<config>`>
+
+<sub-section | General Usage>
+
+Semantic role: *config*. Compiles to eHTML `<config>`.
+
+Registers:
+
+- Canonical: `<config>`
+
+<code #code:sh-config-1>
+<config citation-style=author-year number-sections=true />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*The authoring form for &lt;config&gt; is kwargs. Settings are read at the discovery pass into the configuration registry; the element itself produces no body output (it renders as an empty &lt;config&gt;).*
+
+<code #code:sh-config-2>
+<config number-figures=true number-tables=true show-source=true />
+</code>
+
+*Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.*
+
+*More operational options, all from the live kwarg allowlist (citation-style, number-sections, number-figures, number-tables, number-equations, show-source, parse-data-tables, ref-prefix-).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `notes` | kwarg |  |  |
+
+</section>
+
+<section #sh-title | `<title>`>
+
+<sub-section | General Usage>
+
+Semantic role: *title*. Compiles to eHTML `<title>`.
+
+The document (or section) title, authored as a child of `<meta>`. One authored `<title>` resolves to the right eHTML element by context: inside an article it is promoted to `<article-title>`, inside a book to `<book-title>`, inside a section's `<meta>` to the matching section-title. You write `<title>`; the compiler picks the variant.
+
+Registers:
+
+- Canonical: `<title>` (child of `<meta>`)
+
+<code #code:sh-title-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+</meta>
+</code>
+
+*Front-matter — shown as source (it carries document metadata, not body content). Titles may contain inline formatting.*
+
+<sub-section | Arguments>
+
+`<title>` takes no attributes. Its content is inline prose. Pair it with `<subtitle>` for a secondary line.
+
+</section>
+
+<section #sh-subtitle | `<subtitle>`>
+
+<sub-section | General Usage>
+
+Semantic role: *subtitle*. Compiles to eHTML `<subtitle>`.
+
+A secondary title line, authored as a child of `<meta>` alongside `<title>`. Like `<title>`, it resolves to the contextual variant — `<article-subtitle>`, `<book-subtitle>`, or the matching section-subtitle.
+
+Registers:
+
+- Canonical: `<subtitle>` (child of `<meta>`)
+
+<code #code:sh-subtitle-1>
+<meta type=article>
+  <title | On the Convergence of Iterative Maps>
+  <subtitle | A Fixed-Point Perspective>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+`<subtitle>` takes no attributes. Its content is inline prose.
+
+</section>
+
+<section #sh-abstract | `<abstract>`>
+
+<sub-section | General Usage>
+
+Semantic role: *abstract*. Compiles to eHTML `<abstract>`.
+
+The document abstract, authored as a child of `<meta>`. Its content is block prose (one or more paragraphs); a structured abstract uses markdown bold for its sub-headings.
+
+Registers:
+
+- Canonical: `<abstract>` (child of `<meta>`)
+
+<code #code:sh-abstract-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <abstract |
+  Elephant populations shape vegetation and carbon storage, and so
+  affect regional climate. We quantify the effect across 50 sites.
+  >
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `unstructured` `structured` `graphical` `executive-summary` `other` | Distinguishes abstract types. A structured abstract has explicit sub-headings (Background, Methods, Results, Conclusion); the default is unstructured flowing prose. |
+| `word-limit` | kwarg |  | Optional documentation of the journal's word limit. Informational only — it does not enforce. |
+
+</section>
+
+<section #sh-keywords | `<keywords>`>
+
+<sub-section | General Usage>
+
+Semantic role: *keywords*. Compiles to eHTML `<keywords>` (JATS `<kwd-group>`).
+
+The document's keyword set, authored as a child of `<meta>`. Author the terms as the content; they are the discovery keywords a journal or index lists.
+
+Registers:
+
+- Canonical: `<keywords>` (child of `<meta>`)
+
+<code #code:sh-keywords-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <keywords | elephants; carbon storage; regional climate; conservation>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+`<keywords>` takes no attributes. Its content is the keyword list as inline text.
+
+</section>
+
+<section #sh-subject | `<subject>`>
+
+<sub-section | General Usage>
+
+Semantic role: *subject*. Compiles to eHTML `<subject>`.
+
+A subject classification for the document — a discipline, category, or subject-scheme term — authored as a child of `<meta>`. Repeat it for multiple classifications.
+
+Registers:
+
+- Canonical: `<subject>` (child of `<meta>`)
+
+<code #code:sh-subject-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <subject | Ecology>
+  <subject scheme=msc | 92D40>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `scheme` | kwarg |  | Optional classification scheme the subject term belongs to (e.g. a subject-classification code list). |
+
+</section>
+
+<section #sh-author | `<author>`>
+
+<sub-section | General Usage>
+
+Semantic role: *author*. Compiles to eHTML `<author>`.
+
+Registers:
+
+- Canonical: `<author>`
+
+<code #code:sh-author-1>
+<author | Jane Goodall>
+</code>
+
+<minipage #mp:sh-author-1>
+<author | Jane Goodall>
+</minipage>
+
+*Backward-compatible casual form (carried forward from before the structured-interface reconciliation). The pipe content sits as text content of &lt;author&gt;; it is NOT lifted to a &lt;name&gt; child — authors who want the structured shape use the kwarg form below or the child-tag form. JATS export reads the name string either way.*
+
+<code #code:sh-author-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+</code>
+
+<minipage #mp:sh-author-2>
+<author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding />
+</minipage>
+
+*Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &lt;author&gt;.*
+
+<code #code:sh-author-3>
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+  <email | jane@example.com>
+</author>
+</code>
+
+<minipage #mp:sh-author-3>
+<author +corresponding>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+  <email | jane@example.com>
+</author>
+</minipage>
+
+*Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.*
+
+<code #code:sh-author-4>
+<meta>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <author +corresponding | Charles Darwin>
+</meta>
+</code>
+
+<minipage #mp:sh-author-4>
+<meta>
+  <author | Jane Goodall>
+  <author | David Attenborough>
+  <author +corresponding | Charles Darwin>
+</meta>
+</minipage>
+
+*Multiple authors are sibling &lt;author&gt; elements inside &lt;meta&gt;. The third is the corresponding author. JATS export groups them as &lt;contrib-group&gt;.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | The author's name. Authored as a kwarg, lifted at the normalize-to-canonical gate to a <name> child tag. Equivalent to authoring <name \| ...> inside the <author>'s child-tag form. |
+| `affiliation` | kwarg |  | Author's institutional affiliation. Lifts to <affiliation>. |
+| `orcid` | kwarg |  | Author's ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to <orcid>. |
+| `email` | kwarg |  | Author's contact email address. Lifts to <email>. |
+| `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). A scalar marker — stays as a kwarg/ attribute on the canonical eHTML <author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a `corresponding="true"` attribute on the canonical eHTML node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer's attribute mapping fires uniformly. |
+
+</section>
+
+<section #sh-editor | `<editor>`>
+
+<sub-section | General Usage>
+
+Semantic role: *editor*. Compiles to eHTML `<editor>`.
+
+An editor of the document — a contributor, parallel to `<author>` — authored as a child of `<meta>`. It takes the same surface forms as `<author>`: a casual pipe name, a kwarg form, or the structured child-tag form. Repeat it for multiple editors.
+
+Registers:
+
+- Canonical: `<editor>` (child of `<meta>`)
+
+<code #code:sh-editor-1>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <editor | Jane Goodall>
+  <editor name="David Attenborough" affiliation="BBC" />
+</meta>
+</code>
+
+<code #code:sh-editor-2>
+<editor>
+  <name | Jane Goodall>
+  <affiliation | Cambridge University>
+  <orcid | 0000-0001-2345-6789>
+</editor>
+</code>
+
+*Front-matter — shown as source. Like `<author>`, each lifted kwarg becomes a child tag at the gate; the child-tag form is the canonical eHTML shape. JATS export groups editors in the `<contrib-group>` with `contrib-type="editor"`.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | The editor's name. Lifts to a `<name>` child. |
+| `affiliation` | kwarg |  | Institutional affiliation. Lifts to `<affiliation>`. |
+| `orcid` | kwarg |  | ORCID identifier. Lifts to `<orcid>`. |
+| `email` | kwarg |  | Contact email. Lifts to `<email>`. |
+| `role` | kwarg |  | Optional editorial role (e.g. `series` for a series editor). |
+
+</section>
+
+<section #sh-date | `<date>`>
+
+<sub-section | General Usage>
+
+Semantic role: *date*. Compiles to eHTML `<date>`.
+
+A date associated with the document, authored as a child of `<meta>`. Author the date as an ISO string in the content; the `type` kwarg says which date it is (publication, received, accepted, …).
+
+Registers:
+
+- Canonical: `<date>` (child of `<meta>`)
+
+<code #code:sh-date-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <date | 2024-03-15>
+  <date type=received | 2023-11-02>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `published` `received` `accepted` … | Which date this is. A publication date maps to JATS `<pub-date>`; other types map to `<date>` entries in the article history. Default is the publication date. |
+| `format` | kwarg |  | Optional display-format hint for the rendered date. |
+
+</section>
+
+<section #sh-publication-date | `<publication-date>`>
+
+<sub-section | General Usage>
+
+Semantic role: *publication-date*. Compiles to eHTML `<publication-date>` (JATS `<pub-date>`).
+
+The document's publication date, authored as a child of `<meta>`. It is the explicit, named form of the publication date (equivalent to `<date type=published>`); use it when you want the publication date to read unambiguously in the source.
+
+Registers:
+
+- Canonical: `<publication-date>` (child of `<meta>`)
+
+<code #code:sh-publication-date-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <publication-date | 2024-03-15>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `format` | kwarg |  | Optional display-format hint for the rendered date. |
+
+</section>
+
+<section #sh-license | `<license>`>
+
+<sub-section | General Usage>
+
+Semantic role: *license*. Compiles to eHTML `<license>`.
+
+The document's license, authored as a child of `<meta>`. Author the human-readable license name as the content; the `href` kwarg carries the canonical license URL.
+
+Registers:
+
+- Canonical: `<license>` (child of `<meta>`)
+
+<code #code:sh-license-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `href` | kwarg |  | The canonical URL of the license. Renders as a link on the license name. |
+
+</section>
+
+<section #sh-lang | `<lang>`>
+
+<sub-section | General Usage>
+
+Semantic role: *lang*. Compiles to eHTML `<lang>`.
+
+The document's primary language, authored as a child of `<meta>`. Author a BCP-47 language tag (`en`, `en-GB`, `fr`) as the content. On the HTML surface it becomes the `xml:lang` / `lang` attribute of the document.
+
+Registers:
+
+- Canonical: `<lang>` (child of `<meta>`)
+
+<code #code:sh-lang-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <lang | en>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+`<lang>` takes no attributes. Its content is the language tag.
+
+</section>
+
+<section #sh-version | `<version>`>
+
+<sub-section | General Usage>
+
+Semantic role: *version*. Compiles to eHTML `<version>`.
+
+A version string for the document, authored as a child of `<meta>`. Useful for preprints and living documents that are revised over time.
+
+Registers:
+
+- Canonical: `<version>` (child of `<meta>`)
+
+<code #code:sh-version-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <version | 2.1>
+</meta>
+</code>
+
+*Front-matter — shown as source.*
+
+<sub-section | Arguments>
+
+`<version>` takes no attributes. Its content is the version string.
+
+</section>

@@ -311,12 +311,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -435,19 +435,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -480,12 +480,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -521,21 +521,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -616,7 +616,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -788,7 +788,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1059,7 +1059,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1097,17 +1097,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1284,13 +1284,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
-.enscribe-site-sidebar a, .enscribe-site-sidebar .enscribe-nav-label {
+.enscribe-site-sidebar a, .enscribe-site-sidebar nav-label {
   display: block; padding: 0.2rem 0; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none;
 }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-.enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-sidebar nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
@@ -1413,7 +1413,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../../live/?page=ehtml&amp;chapter=emphasis-marking">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The eHTML Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html" class="enscribe-toc-active" aria-current="location">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:emphasis-marking" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The eHTML Vocabulary</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html" class="enscribe-toc-active" aria-current="location">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:emphasis-marking" book-part-type="chapter">
       <meta>
         <book-part-title>Emphasis &#x26; marking</book-part-title>
       </meta>
@@ -1431,14 +1431,14 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 This is **strongly emphasized** content.</code>
           <figure id="mp:l1-strong-1" class="frameable-border">
             <p>This is <b>strongly emphasized</b> content.</p>
-            <figcaption><span class="minipage-label">Minipage 5.</span></figcaption>
+            <figcaption><minipage-label>Minipage 5.</minipage-label></figcaption>
           </figure>
           <p><i>Plain markdown with double asterisks (or double underscores) produces &#x3C;strong> elements.</i></p><code id="code:l1-strong-2">&#x3C;strong | important></code>
           <figure id="mp:l1-strong-2" class="frameable-border"><strong>important</strong>
-            <figcaption><span class="minipage-label">Minipage 6.</span></figcaption>
+            <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
           </figure><code id="code:l1-strong-3">&#x3C;strong #critical .warning | This is critical.></code>
           <figure id="mp:l1-strong-3" class="frameable-border"><strong id="mp-l1-strong-3-critical" class="warning">This is critical.</strong>
-            <figcaption><span class="minipage-label">Minipage 7.</span></figcaption>
+            <figcaption><minipage-label>Minipage 7.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1455,15 +1455,15 @@ This is **strongly emphasized** content.</code>
 This has *emphasized* content.</code>
           <figure id="mp:l1-em-1" class="frameable-border">
             <p>This has <i>emphasized</i> content.</p>
-            <figcaption><span class="minipage-label">Minipage 8.</span></figcaption>
+            <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
           </figure>
           <p><i>Plain markdown emphasis with single asterisks (or single underscores) produces &#x3C;em> elements. This is the most common authoring path.</i></p><code id="code:l1-em-2">&#x3C;em | emphasized></code>
           <figure id="mp:l1-em-2" class="frameable-border"><em>emphasized</em>
-            <figcaption><span class="minipage-label">Minipage 9.</span></figcaption>
+            <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
           </figure>
           <p><i>The explicit form is reached for when attributes are needed.</i></p><code id="code:l1-em-3">&#x3C;em #key-term .highlighted | distinguishing feature></code>
           <figure id="mp:l1-em-3" class="frameable-border"><em id="mp-l1-em-3-key-term" class="highlighted">distinguishing feature</em>
-            <figcaption><span class="minipage-label">Minipage 10.</span></figcaption>
+            <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1497,11 +1497,11 @@ This has *emphasized* content.</code>
 The keyword &#x3C;b type=keyword | recursion> is fundamental.</code>
           <figure id="mp:l1-b-1" class="frameable-border">
             <p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>
-            <figcaption><span class="minipage-label">Minipage 11.</span></figcaption>
+            <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
           </figure><code id="code:l1-b-2">Use &#x3C;b type=product-name | Acrobat> to read the file.</code>
           <figure id="mp:l1-b-2" class="frameable-border">
             <p>Use <b data-bold-type="product-name">Acrobat</b> to read the file.</p>
-            <figcaption><span class="minipage-label">Minipage 12.</span></figcaption>
+            <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1535,15 +1535,15 @@ The keyword &#x3C;b type=keyword | recursion> is fundamental.</code>
 The species is &#x3C;i type=taxonomic | Loxodonta africana>.</code>
           <figure id="mp:l1-i-1" class="frameable-border">
             <p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>
-            <figcaption><span class="minipage-label">Minipage 13.</span></figcaption>
+            <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
           </figure><code id="code:l1-i-2">The French &#x3C;i type=foreign | tour de force> is impressive.</code>
           <figure id="mp:l1-i-2" class="frameable-border">
             <p>The French <i data-italic-type="foreign">tour de force</i> is impressive.</p>
-            <figcaption><span class="minipage-label">Minipage 14.</span></figcaption>
+            <figcaption><minipage-label>Minipage 14.</minipage-label></figcaption>
           </figure><code id="code:l1-i-3">The technical term &#x3C;i type=technical | mitochondria> refers to organelles.</code>
           <figure id="mp:l1-i-3" class="frameable-border">
             <p>The technical term <i data-italic-type="technical">mitochondria</i> refers to organelles.</p>
-            <figcaption><span class="minipage-label">Minipage 15.</span></figcaption>
+            <figcaption><minipage-label>Minipage 15.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1577,11 +1577,11 @@ The species is &#x3C;i type=taxonomic | Loxodonta africana>.</code>
 The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
           <figure id="mp:l1-u-1" class="frameable-border">
             <p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>
-            <figcaption><span class="minipage-label">Minipage 16.</span></figcaption>
+            <figcaption><minipage-label>Minipage 16.</minipage-label></figcaption>
           </figure><code id="code:l1-u-2">The Chinese name &#x3C;u type=proper-name | 王明> appears here.</code>
           <figure id="mp:l1-u-2" class="frameable-border">
             <p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>
-            <figcaption><span class="minipage-label">Minipage 17.</span></figcaption>
+            <figcaption><minipage-label>Minipage 17.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1615,12 +1615,12 @@ The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
 The price is ~~$50~~ now $40.</code>
           <figure id="mp:l1-s-1" class="frameable-border">
             <p>The price is ~~<inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace nobreak"> </span><span class="mspace nobreak"> </span><span class="mord mathnormal">n</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.0269em;">w</span></span></span></span></inline-math>40.</p>
-            <figcaption><span class="minipage-label">Minipage 18.</span></figcaption>
+            <figcaption><minipage-label>Minipage 18.</minipage-label></figcaption>
           </figure>
           <p><i>GFM’s tilde syntax produces &#x3C;s> elements. The most common authoring path for casual strikethrough.</i></p><code id="code:l1-s-2">The claim &#x3C;s type=retracted | was unsupported> has been corrected.</code>
           <figure id="mp:l1-s-2" class="frameable-border">
             <p>The claim <s data-strikethrough-type="retracted">was unsupported</s> has been corrected.</p>
-            <figcaption><span class="minipage-label">Minipage 19.</span></figcaption>
+            <figcaption><minipage-label>Minipage 19.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1637,11 +1637,11 @@ The price is ~~$50~~ now $40.</code>
 Water is H&#x3C;sub | 2>O.</code>
           <figure id="mp:l1-sub-1" class="frameable-border">
             <p>Water is H<sub>2</sub>O.</p>
-            <figcaption><span class="minipage-label">Minipage 20.</span></figcaption>
+            <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
           </figure><code id="code:l1-sub-2">The vector x&#x3C;sub | i> represents the i-th component.</code>
           <figure id="mp:l1-sub-2" class="frameable-border">
             <p>The vector x<sub>i</sub> represents the i-th component.</p>
-            <figcaption><span class="minipage-label">Minipage 21.</span></figcaption>
+            <figcaption><minipage-label>Minipage 21.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1658,15 +1658,15 @@ Water is H&#x3C;sub | 2>O.</code>
 The 1&#x3C;sup | st> edition of the work.</code>
           <figure id="mp:l1-sup-1" class="frameable-border">
             <p>The 1<sup>st</sup> edition of the work.</p>
-            <figcaption><span class="minipage-label">Minipage 22.</span></figcaption>
+            <figcaption><minipage-label>Minipage 22.</minipage-label></figcaption>
           </figure><code id="code:l1-sup-2">The function f(x) = x&#x3C;sup | 2>.</code>
           <figure id="mp:l1-sup-2" class="frameable-border">
             <p>The function f(x) = x<sup>2</sup>.</p>
-            <figcaption><span class="minipage-label">Minipage 23.</span></figcaption>
+            <figcaption><minipage-label>Minipage 23.</minipage-label></figcaption>
           </figure><code id="code:l1-sup-3">The isotope &#x3C;sup | 12>C is abundant.</code>
           <figure id="mp:l1-sup-3" class="frameable-border">
             <p>The isotope <sup>12</sup>C is abundant.</p>
-            <figcaption><span class="minipage-label">Minipage 24.</span></figcaption>
+            <figcaption><minipage-label>Minipage 24.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1700,12 +1700,12 @@ The 1&#x3C;sup | st> edition of the work.</code>
 The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.</code>
           <figure id="mp:l1-abbr-1" class="frameable-border">
             <p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>
-            <figcaption><span class="minipage-label">Minipage 25.</span></figcaption>
+            <figcaption><minipage-label>Minipage 25.</minipage-label></figcaption>
           </figure>
           <p><i>Standard pattern — abbreviation with its expansion as the title kwarg. Browsers show the expansion in a hover tooltip.</i></p><code id="code:l1-abbr-2">Using &#x3C;abbr | CSS> selectors.</code>
           <figure id="mp:l1-abbr-2" class="frameable-border">
             <p>Using <abbr>CSS</abbr> selectors.</p>
-            <figcaption><span class="minipage-label">Minipage 26.</span></figcaption>
+            <figcaption><minipage-label>Minipage 26.</minipage-label></figcaption>
           </figure>
           <p><i>Bare abbreviation, no title. Acceptable when the expansion has already been introduced earlier in the document.</i></p></section>
         </sub-section>
@@ -1723,12 +1723,12 @@ The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.
 The function takes a parameter &#x3C;var | n> and returns &#x3C;var | n>²+1.</code>
           <figure id="mp:l1-var-1" class="frameable-border">
             <p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>
-            <figcaption><span class="minipage-label">Minipage 27.</span></figcaption>
+            <figcaption><minipage-label>Minipage 27.</minipage-label></figcaption>
           </figure>
           <p><i>Variable names in prose. Browsers render &#x3C;var> in italic by default, distinguishing it from surrounding prose.</i></p><code id="code:l1-var-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
           <figure id="mp:l1-var-2" class="frameable-border">
             <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
-            <figcaption><span class="minipage-label">Minipage 28.</span></figcaption>
+            <figcaption><minipage-label>Minipage 28.</minipage-label></figcaption>
           </figure>
           <p><i>&#x3C;var> for the variable name and &#x3C;samp> for a sample value — the natural pair for documenting configuration in technical writing.</i></p></section>
         </sub-section>
@@ -1746,12 +1746,12 @@ The function takes a parameter &#x3C;var | n> and returns &#x3C;var | n>²+1.</c
 The command prints &#x3C;samp | Hello, world!> to stdout.</code>
           <figure id="mp:l1-samp-1" class="frameable-border">
             <p>The command prints <samp>Hello, world!</samp> to stdout.</p>
-            <figcaption><span class="minipage-label">Minipage 29.</span></figcaption>
+            <figcaption><minipage-label>Minipage 29.</minipage-label></figcaption>
           </figure>
           <p><i>Sample output from a program. Browsers render &#x3C;samp> in a monospace font by default, distinguishing it from surrounding prose.</i></p><code id="code:l1-samp-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
           <figure id="mp:l1-samp-2" class="frameable-border">
             <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
-            <figcaption><span class="minipage-label">Minipage 30.</span></figcaption>
+            <figcaption><minipage-label>Minipage 30.</minipage-label></figcaption>
           </figure>
           <p><i>&#x3C;samp> for the sample value paired with &#x3C;var> for the variable name — the natural pair for documenting configuration in technical writing.</i></p></section>
         </sub-section>
@@ -1769,12 +1769,12 @@ The command prints &#x3C;samp | Hello, world!> to stdout.</code>
 Press &#x3C;kbd | Ctrl+C> to copy.</code>
           <figure id="mp:l1-kbd-1" class="frameable-border">
             <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
-            <figcaption><span class="minipage-label">Minipage 31.</span></figcaption>
+            <figcaption><minipage-label>Minipage 31.</minipage-label></figcaption>
           </figure>
           <p><i>Single chord as a kbd block. Browsers render &#x3C;kbd> in a monospace font by default, distinguishing it from surrounding prose.</i></p><code id="code:l1-kbd-2">Press &#x3C;kbd | &#x3C;kbd | Ctrl>+&#x3C;kbd | C>> to copy.</code>
           <figure id="mp:l1-kbd-2" class="frameable-border">
             <p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>
-            <figcaption><span class="minipage-label">Minipage 32.</span></figcaption>
+            <figcaption><minipage-label>Minipage 32.</minipage-label></figcaption>
           </figure>
           <p><i>Nested &#x3C;kbd> distinguishes individual keys in a chord. Browsers render the outer block as the chord and the inner blocks as individual keys, both monospace.</i></p></section>
         </sub-section>
@@ -1792,7 +1792,7 @@ Press &#x3C;kbd | Ctrl+C> to copy.</code>
 The function returns &#x3C;output | 42> for the test input.</code>
           <figure id="mp:l1-output-1" class="frameable-border">
             <p>The function returns <output>42</output> for the test input.</p>
-            <figcaption><span class="minipage-label">Minipage 33.</span></figcaption>
+            <figcaption><minipage-label>Minipage 33.</minipage-label></figcaption>
           </figure>
           <p><i>Result of a calculation in prose. &#x3C;output> is semantically distinct from &#x3C;samp> — &#x3C;samp> is what a program prints (a display artifact); &#x3C;output> is the result of a computation (a semantic value). Browsers render both similarly.</i></p></section>
         </sub-section>
@@ -1810,17 +1810,17 @@ The function returns &#x3C;output | 42> for the test input.</code>
 An &#x3C;term | eigenvector> is a non-zero vector that scales under a linear transformation.</code>
           <figure id="mp:l1-term-1" class="frameable-border">
             <p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>
-            <figcaption><span class="minipage-label">Minipage 34.</span></figcaption>
+            <figcaption><minipage-label>Minipage 34.</minipage-label></figcaption>
           </figure>
           <p><i>Standard term introduction. The element marks the word as “this is a term being introduced,” typically rendered in italic or bold by default CSS.</i></p><code id="code:l1-term-2">An &#x3C;term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize &#x3C;term | eigenvector>s to operators.</code>
           <figure id="mp:l1-term-2" class="frameable-border">
             <p>An <term id="mp-l1-term-2-term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>
-            <figcaption><span class="minipage-label">Minipage 35.</span></figcaption>
+            <figcaption><minipage-label>Minipage 35.</minipage-label></figcaption>
           </figure>
           <p><i>First introduction carries an id so later references can link back to it. Subsequent uses of the same term (without an id) still mark it as a term being referenced, distinct from running prose, without re-asserting the introduction.</i></p></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Primary prose</span></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><span class="enscribe-toc-title">Aside</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#l1-strong">&#x3C;strong></a><ul><li><a href="#sec:specification-3">Specification</a></li><li><a href="#sec:examples-3">Examples</a></li></ul></li><li><a href="#l1-em">&#x3C;em></a><ul><li><a href="#sec:specification-4">Specification</a></li><li><a href="#sec:examples-4">Examples</a></li></ul></li><li><a href="#l1-b">&#x3C;b></a><ul><li><a href="#sec:specification-5">Specification</a></li><li><a href="#sec:examples-5">Examples</a></li></ul></li><li><a href="#l1-i">&#x3C;i></a><ul><li><a href="#sec:specification-6">Specification</a></li><li><a href="#sec:examples-6">Examples</a></li></ul></li><li><a href="#l1-u">&#x3C;u></a><ul><li><a href="#sec:specification-7">Specification</a></li><li><a href="#sec:examples-7">Examples</a></li></ul></li><li><a href="#l1-s">&#x3C;s></a><ul><li><a href="#sec:specification-8">Specification</a></li><li><a href="#sec:examples-8">Examples</a></li></ul></li><li><a href="#l1-sub">&#x3C;sub></a><ul><li><a href="#sec:specification-9">Specification</a></li><li><a href="#sec:examples-9">Examples</a></li></ul></li><li><a href="#l1-sup">&#x3C;sup></a><ul><li><a href="#sec:specification-10">Specification</a></li><li><a href="#sec:examples-10">Examples</a></li></ul></li><li><a href="#l1-abbr">&#x3C;abbr></a><ul><li><a href="#sec:specification-11">Specification</a></li><li><a href="#sec:examples-11">Examples</a></li></ul></li><li><a href="#l1-var">&#x3C;var></a><ul><li><a href="#sec:specification-12">Specification</a></li><li><a href="#sec:examples-12">Examples</a></li></ul></li><li><a href="#l1-samp">&#x3C;samp></a><ul><li><a href="#sec:specification-13">Specification</a></li><li><a href="#sec:examples-13">Examples</a></li></ul></li><li><a href="#l1-kbd">&#x3C;kbd></a><ul><li><a href="#sec:specification-14">Specification</a></li><li><a href="#sec:examples-14">Examples</a></li></ul></li><li><a href="#l1-output">&#x3C;output></a><ul><li><a href="#sec:specification-15">Specification</a></li><li><a href="#sec:examples-15">Examples</a></li></ul></li><li><a href="#l1-term">&#x3C;term></a><ul><li><a href="#sec:specification-16">Specification</a></li><li><a href="#sec:examples-16">Examples</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Primary prose</toc-title></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><toc-title>Aside</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#l1-strong">&#x3C;strong></a><ul><li><a href="#sec:specification-3">Specification</a></li><li><a href="#sec:examples-3">Examples</a></li></ul></li><li><a href="#l1-em">&#x3C;em></a><ul><li><a href="#sec:specification-4">Specification</a></li><li><a href="#sec:examples-4">Examples</a></li></ul></li><li><a href="#l1-b">&#x3C;b></a><ul><li><a href="#sec:specification-5">Specification</a></li><li><a href="#sec:examples-5">Examples</a></li></ul></li><li><a href="#l1-i">&#x3C;i></a><ul><li><a href="#sec:specification-6">Specification</a></li><li><a href="#sec:examples-6">Examples</a></li></ul></li><li><a href="#l1-u">&#x3C;u></a><ul><li><a href="#sec:specification-7">Specification</a></li><li><a href="#sec:examples-7">Examples</a></li></ul></li><li><a href="#l1-s">&#x3C;s></a><ul><li><a href="#sec:specification-8">Specification</a></li><li><a href="#sec:examples-8">Examples</a></li></ul></li><li><a href="#l1-sub">&#x3C;sub></a><ul><li><a href="#sec:specification-9">Specification</a></li><li><a href="#sec:examples-9">Examples</a></li></ul></li><li><a href="#l1-sup">&#x3C;sup></a><ul><li><a href="#sec:specification-10">Specification</a></li><li><a href="#sec:examples-10">Examples</a></li></ul></li><li><a href="#l1-abbr">&#x3C;abbr></a><ul><li><a href="#sec:specification-11">Specification</a></li><li><a href="#sec:examples-11">Examples</a></li></ul></li><li><a href="#l1-var">&#x3C;var></a><ul><li><a href="#sec:specification-12">Specification</a></li><li><a href="#sec:examples-12">Examples</a></li></ul></li><li><a href="#l1-samp">&#x3C;samp></a><ul><li><a href="#sec:specification-13">Specification</a></li><li><a href="#sec:examples-13">Examples</a></li></ul></li><li><a href="#l1-kbd">&#x3C;kbd></a><ul><li><a href="#sec:specification-14">Specification</a></li><li><a href="#sec:examples-14">Examples</a></li></ul></li><li><a href="#l1-output">&#x3C;output></a><ul><li><a href="#sec:specification-15">Specification</a></li><li><a href="#sec:examples-15">Examples</a></li></ul></li><li><a href="#l1-term">&#x3C;term></a><ul><li><a href="#sec:specification-16">Specification</a></li><li><a href="#sec:examples-16">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

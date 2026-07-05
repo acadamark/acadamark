@@ -311,12 +311,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -435,19 +435,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -480,12 +480,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -521,21 +521,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -616,7 +616,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -788,7 +788,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1059,7 +1059,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1097,17 +1097,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1284,13 +1284,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
-.enscribe-site-sidebar a, .enscribe-site-sidebar .enscribe-nav-label {
+.enscribe-site-sidebar a, .enscribe-site-sidebar nav-label {
   display: block; padding: 0.2rem 0; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none;
 }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-.enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-sidebar nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
@@ -1413,7 +1413,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=inline-formatting">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Authoring Guide</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html" class="enscribe-toc-active" aria-current="location">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:inline-formatting" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html" class="enscribe-toc-active" aria-current="location">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:inline-formatting" book-part-type="chapter">
       <meta>
         <book-part-title>Inline Formatting</book-part-title>
       </meta>
@@ -1434,7 +1434,7 @@ For plain styling, *this is italic* and **this is bold**.</code>
               This <em>really</em> matters, and this is <strong>critical</strong>.
               For plain styling, <i>this is italic</i> and <b>this is bold</b>.
             </p>
-            <figcaption><span class="minipage-label">Minipage 8.</span></figcaption>
+            <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
           </figure>
         </sub-section>
         <sub-section id="sec:arguments-6">
@@ -1478,7 +1478,7 @@ The same in named form: H&#x3C;sub | 2>O and r&#x3C;sup | 2>.</code>
               Water is H<sub>2</sub>O and area grows as r<sup>2</sup>.
               The same in named form: H<sub>2</sub>O and r<sup>2</sup>.
             </p>
-            <figcaption><span class="minipage-label">Minipage 9.</span></figcaption>
+            <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1501,7 +1501,7 @@ is the browser's API for HTML.</code>
               Press <kbd>Ctrl+S</kbd> to save. The <abbr title="Document Object Model">DOM</abbr>
               is the browser’s API for HTML.
             </p>
-            <figcaption><span class="minipage-label">Minipage 10.</span></figcaption>
+            <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
           </figure>
         </sub-section>
         <sub-section id="sec:arguments-7">
@@ -1537,7 +1537,7 @@ or jump to &#x3C;a enscribe-vocabulary | the vocabulary page> in this document.<
               Read <a href="https://enscribe.org">the Enscribe site</a> for more,
               or jump to <a href="../reference/enscribe-vocabulary/">the vocabulary page</a> in this document.
             </p>
-            <figcaption><span class="minipage-label">Minipage 11.</span></figcaption>
+            <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
           </figure>
         </sub-section>
         <sub-section id="sec:arguments-8">
@@ -1578,7 +1578,7 @@ or jump to &#x3C;a enscribe-vocabulary | the vocabulary page> in this document.<
           <p>Markdown <code>[text](url)</code> is not a register in Enscribe — write the link with <code>&#x3C;a … | …></code>.</p></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="block-level-content.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Block-Level Content</span></a><a class="enscribe-chapter-next" href="citations-notes-cross-references.html" rel="next"><span class="enscribe-toc-title">Citations, Notes &#x26; Cross-References</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:inline-formatting"><ul><li><a href="#sec:emphasis">Emphasis &#x26; Weight</a><ul><li><a href="#sec:general-usage-7">General Usage</a></li><li><a href="#sec:arguments-6">Arguments</a></li><li><a href="#sec:notes-5">Notes</a></li></ul></li><li><a href="#sec:super-subscript">Superscript &#x26; Subscript</a><ul><li><a href="#sec:general-usage-8">General Usage</a></li></ul></li><li><a href="#sec:inline-marks">Other Inline Marks</a><ul><li><a href="#sec:general-usage-9">General Usage</a></li><li><a href="#sec:arguments-7">Arguments</a></li><li><a href="#sec:notes-6">Notes</a></li></ul></li><li><a href="#sec:links">Links</a><ul><li><a href="#sec:general-usage-10">General Usage</a></li><li><a href="#sec:arguments-8">Arguments</a></li><li><a href="#sec:notes-7">Notes</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="block-level-content.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Block-Level Content</toc-title></a><a class="enscribe-chapter-next" href="citations-notes-cross-references.html" rel="next"><toc-title>Citations, Notes &#x26; Cross-References</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:inline-formatting"><ul><li><a href="#sec:emphasis">Emphasis &#x26; Weight</a><ul><li><a href="#sec:general-usage-7">General Usage</a></li><li><a href="#sec:arguments-6">Arguments</a></li><li><a href="#sec:notes-5">Notes</a></li></ul></li><li><a href="#sec:super-subscript">Superscript &#x26; Subscript</a><ul><li><a href="#sec:general-usage-8">General Usage</a></li></ul></li><li><a href="#sec:inline-marks">Other Inline Marks</a><ul><li><a href="#sec:general-usage-9">General Usage</a></li><li><a href="#sec:arguments-7">Arguments</a></li><li><a href="#sec:notes-6">Notes</a></li></ul></li><li><a href="#sec:links">Links</a><ul><li><a href="#sec:general-usage-10">General Usage</a></li><li><a href="#sec:arguments-8">Arguments</a></li><li><a href="#sec:notes-7">Notes</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

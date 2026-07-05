@@ -311,12 +311,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -435,19 +435,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -480,12 +480,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -521,21 +521,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -616,7 +616,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -788,7 +788,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1059,7 +1059,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1097,17 +1097,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1284,13 +1284,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
-.enscribe-site-sidebar a, .enscribe-site-sidebar .enscribe-nav-label {
+.enscribe-site-sidebar a, .enscribe-site-sidebar nav-label {
   display: block; padding: 0.2rem 0; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none;
 }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-.enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-sidebar nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
@@ -1413,7 +1413,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary&amp;chapter=stores">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html" class="enscribe-toc-active" aria-current="location">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:stores" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Vocabulary</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html" class="enscribe-toc-active" aria-current="location">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:stores" book-part-type="chapter">
       <meta>
         <book-part-title>Stores</book-part-title>
       </meta>
@@ -1474,7 +1474,7 @@ lock nut,#LN-06,210
             </tbody>
           </table>
           <p><i>Unlike the front-matter examples above, this one renders a live result: the table grid above is produced from the stored dataset. The dataset is held verbatim as opaque data — never interpreted as markup, so the <code>#</code>-prefixed part codes appear as literal cell text — and the consuming element (here, a <code>&#x26;lt;table&#x26;gt;</code>) decides how to present it. (The <code>&#x26;lt;data&#x26;gt;</code>/<code>&#x26;lt;dataset&#x26;gt;</code> declaration itself renders nothing; only the table does.)</i></p>
-          <p>The <code>&#x3C;table></code> is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: <code>&#x3C;table src="@id" /></code> renders a grid, <code>&#x3C;diagram engine src="@id" /></code> reads the bytes as its engine source (a Mermaid or abc diagram), and <code>&#x3C;code src="@id" /></code> renders them as a verbatim code listing. An <code>@id</code> that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.</p></section>
+          <p>The <code>&#x3C;table></code> is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: <code>&#x3C;table src="@id" /></code> renders a grid, <code>&#x3C;diagram engine src="@id" /></code> reads the bytes as its engine source (a Mermaid or abc diagram), <code>&#x3C;code src="@id" /></code> renders them as a verbatim inline code listing, and <code>&#x3C;code-block src="@id" /></code> renders them through <code>&#x3C;pre>&#x3C;code></code> — the whitespace-preserving form, so <b>multi-line code keeps its indentation</b> (an inline <code>&#x3C;code></code> is reflowed, so a multi-line one is warned toward a code block). An <code>@id</code> that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.</p></section>
         </sub-section>
       </section>
       <section id="sh-library">
@@ -1542,7 +1542,7 @@ year = {1859}
           </table></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="notation.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Notation</span></a><a class="enscribe-chapter-next" href="declarations-metadata.html" rel="next"><span class="enscribe-toc-title">Declarations &#x26; metadata</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:stores"><ul><li><a href="#sh-data">&#x3C;data></a><ul><li><a href="#sec:general-usage-59">General Usage</a></li></ul></li><li><a href="#sh-library">&#x3C;library></a><ul><li><a href="#sec:general-usage-60">General Usage</a></li><li><a href="#sec:arguments-36">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="notation.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Notation</toc-title></a><a class="enscribe-chapter-next" href="declarations-metadata.html" rel="next"><toc-title>Declarations &#x26; metadata</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:stores"><ul><li><a href="#sh-data">&#x3C;data></a><ul><li><a href="#sec:general-usage-59">General Usage</a></li></ul></li><li><a href="#sh-library">&#x3C;library></a><ul><li><a href="#sec:general-usage-60">General Usage</a></li><li><a href="#sec:arguments-36">Arguments</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

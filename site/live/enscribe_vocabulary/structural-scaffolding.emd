@@ -1,0 +1,273 @@
+The document skeleton an author writes — sections, navigation, and the horizontal rule.
+
+<section #sh-section | `<section>`>
+
+<sub-section | General Usage>
+
+Semantic role: *section*. Compiles to eHTML `<section>`.
+
+Registers:
+
+- Canonical: `<section>`
+- Sigil: `<# … #>`
+- Markdown: `# …`
+
+<code #code:sh-section-1>
+<section | Introduction>
+The paper begins here.
+</code>
+
+<minipage #mp:sh-section-1>
+<section | Introduction>
+The paper begins here.
+</minipage>
+
+<code #code:sh-section-2>
+<section #methods sec-type=methods | Methods>
+<section-subtitle | A description of our experimental approach>
+The methods used in this study were as follows.
+</code>
+
+<minipage #mp:sh-section-2>
+<section #methods sec-type=methods | Methods>
+<section-subtitle | A description of our experimental approach>
+The methods used in this study were as follows.
+</minipage>
+
+<code #code:sh-section-3>
+<section | Results>
+Results paragraph.
+
+<sub-section | Quantitative analysis>
+Sub-section content.
+
+<sub-section | Qualitative observations>
+Sub-section content.
+</code>
+
+<minipage #mp:sh-section-3>
+<section | Results>
+Results paragraph.
+
+<sub-section | Quantitative analysis>
+Sub-section content.
+
+<sub-section | Qualitative observations>
+Sub-section content.
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Optional classification of the section's role. Maps to JATS sec-type attribute. Values match common JATS conventions for IMRaD-style papers. |
+| `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` | Override the inherited numbering style for this section. |
+| `+unlisted` | boolean | default `false` | Keep this section out of the generated table of contents, regardless of toc-depth (#218). Display-only: the section still renders; it is only absent from the contents listing. The ToC is config-driven (<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as +unlisted (the boolean shorthand); renders to the HTML attribute unlisted. |
+| `+unnumbered` | boolean | default `false` | Skip this section's number, regardless of number-depth (#218). The heading is OUTSIDE the numbered sequence — it gets no number AND does not advance the counter, so the next numbered sibling continues unbroken (the \\section* / Quarto .unnumbered behavior); its subtree is unnumbered too. Numbering is config-driven (<config number-sections=true>); see notes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp reads node.booleans.unnumbered in runSync, and the unnumbered attribute also renders on the element. |
+
+</section>
+
+<section #sh-sub-section | `<sub-section>`>
+
+<sub-section | General Usage>
+
+Semantic role: *sub-section*. Compiles to eHTML `<sub-section>`.
+
+Registers:
+
+- Canonical: `<sub-section>`
+- Sigil: `<## … ##>`
+- Markdown: `## …`
+
+<code #code:sh-sub-section-1>
+<sub-section | Quantitative analysis>
+Sub-section content.
+</code>
+
+<minipage #mp:sh-sub-section-1>
+<sub-section | Quantitative analysis>
+Sub-section content.
+</minipage>
+
+<code #code:sh-sub-section-2>
+<section | Results>
+<sub-section | Statistical methods>
+Sub-section content.
+
+<sub-sub-section | Regression analysis>
+Sub-sub-section content.
+
+<sub-section | Sensitivity analyses>
+Sub-section content.
+</code>
+
+<minipage #mp:sh-sub-section-2>
+<section | Results>
+<sub-section | Statistical methods>
+Sub-section content.
+
+<sub-sub-section | Regression analysis>
+Sub-sub-section content.
+
+<sub-section | Sensitivity analyses>
+Sub-section content.
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Same values as <section>. Optional classification of the sub-section role. |
+| `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
+| `+unlisted` | boolean | default `false` | Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218). Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted. |
+| `+unnumbered` | boolean | default `false` | Skip this sub-section's number, regardless of number-depth (#218). Outside the numbered sequence — no number, no counter advance, subtree unnumbered; the next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md. Authored as +unnumbered. |
+
+</section>
+
+<section #sh-sub-sub-section | `<sub-sub-section>`>
+
+<sub-section | General Usage>
+
+Semantic role: *sub-sub-section*. Compiles to eHTML `<sub-sub-section>`.
+
+Registers:
+
+- Canonical: `<sub-sub-section>`
+- Sigil: `<### … ###>`
+- Markdown: `### …`
+
+<code #code:sh-sub-sub-section-1>
+<sub-sub-section | Regression analysis>
+Detailed methods for the regression.
+</code>
+
+<minipage #mp:sh-sub-sub-section-1>
+<sub-sub-section | Regression analysis>
+Detailed methods for the regression.
+</minipage>
+
+<code #code:sh-sub-sub-section-2>
+<section | Methods>
+<sub-section | Statistical methods>
+<sub-sub-section | Regression>
+Linear regression was performed.
+
+<sub-sub-section | Sensitivity testing>
+Sensitivity tests were performed.
+</code>
+
+<minipage #mp:sh-sub-sub-section-2>
+<section | Methods>
+<sub-section | Statistical methods>
+<sub-sub-section | Regression>
+Linear regression was performed.
+
+<sub-sub-section | Sensitivity testing>
+Sensitivity tests were performed.
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` |  |
+| `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
+| `+unlisted` | boolean | default `false` | Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218). Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted. |
+| `+unnumbered` | boolean | default `false` | Skip this sub-sub-section's number, regardless of number-depth (#218). Outside the numbered sequence — no number, no counter advance, subtree unnumbered; the next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md. Authored as +unnumbered. |
+
+</section>
+
+<section #sh-nav | `<nav>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation*. Compiles to eHTML `<nav>`.
+
+Registers:
+
+- Canonical: `<nav>`
+
+*No standalone example — see the registers above and the related constructs in this chapter.*
+
+</section>
+
+<section #sh-nav-group | `<nav-group>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation-group*. Compiles to eHTML `<nav-group>`.
+
+Registers:
+
+- Canonical: `<nav-group>`
+
+*No standalone example — see the registers above and the related constructs in this chapter.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `title` | kwarg |  | The group's display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a `<nav-group>` is a long-form container (neither `\|` nor `/`), so the label cannot ride the pipe slot the way a page's title does. |
+
+</section>
+
+<section #sh-item | `<item>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation-item*. Compiles to eHTML `<item>`.
+
+Registers:
+
+- Canonical: `<item>`
+
+*No standalone example — see the registers above and the related constructs in this chapter.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `src` | kwarg |  | For an EXTERNAL page: the child `.emd` file that supplies the page body. The pipe gives the menu label and overrides the child's own title, exactly as `<section src \| Title>` does in an article. Omitted for an INLINE page, whose body is authored in the master after the `<item \| Title>` marker (peer-closed by the next entry, the `<section \| Title>` model). The website render (S2) loads the child; S1 records the `src` as a reference only. |
+
+</section>
+
+<section #sh-hr | `<hr>`>
+
+<sub-section | General Usage>
+
+Semantic role: *hr*. Compiles to eHTML `<hr>`.
+
+Registers:
+
+- Canonical: `<hr>`
+- Markdown: `---`
+
+<code #code:sh-hr-1>
+<hr>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<code #code:sh-hr-2>
+<hr type=scene-break>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<code #code:sh-hr-3>
+<p | First paragraph.>
+
+<hr type=ornamental>
+
+<p | Second paragraph after a thematic break.>
+</code>
+
+*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `scene-break` `section-break` `ornamental` `decorative` `other` | Optional classification of the thematic break's role. Affects rendering (scene breaks render as blank space; ornamental breaks render with decorative characters or images). |
+
+</section>

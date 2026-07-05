@@ -311,12 +311,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -435,19 +435,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -480,12 +480,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -521,21 +521,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -616,7 +616,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -788,7 +788,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1059,7 +1059,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1097,17 +1097,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1284,13 +1284,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
-.enscribe-site-sidebar a, .enscribe-site-sidebar .enscribe-nav-label {
+.enscribe-site-sidebar a, .enscribe-site-sidebar nav-label {
   display: block; padding: 0.2rem 0; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none;
 }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-.enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-sidebar nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
@@ -1413,7 +1413,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary&amp;chapter=exhibit">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The Enscribe Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html" class="enscribe-toc-active" aria-current="location">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:exhibit" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Vocabulary</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html" class="enscribe-toc-active" aria-current="location">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:exhibit" book-part-type="chapter">
       <meta>
         <book-part-title>Exhibit</book-part-title>
       </meta>
@@ -1431,31 +1431,31 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <figure id="mp:sh-fig-1" class="frameable-border">
             <figure>
               <img src="elephant.jpg" alt="An adult African elephant.">
-              <figcaption><span class="figure-label">Figure 1.</span>
+              <figcaption><figure-label>Figure 1.</figure-label>
                 <p>An adult African elephant.</p>
               </figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 57.</span></figcaption>
+            <figcaption><minipage-label>Minipage 57.</minipage-label></figcaption>
           </figure>
           <p><i>The simplest case. The src kwarg generates the &#x3C;img>; the pipe content generates the figcaption. The alt text defaults to the figcaption text when not specified explicitly. The eHTML element is HTML-native &#x3C;figure> (not the custom-element &#x3C;fig>) because the HTML rendering surface is the HTML5 native element while the enscribe canonical name follows JATS’s shorter &#x3C;fig>.</i></p><code id="code:sh-fig-2">&#x3C;figure src=elephant.jpg | An adult African elephant.></code>
           <figure id="mp:sh-fig-2" class="frameable-border">
             <figure>
               <img src="elephant.jpg" alt="An adult African elephant.">
-              <figcaption><span class="figure-label">Figure 1.</span>
+              <figcaption><figure-label>Figure 1.</figure-label>
                 <p>An adult African elephant.</p>
               </figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 58.</span></figcaption>
+            <figcaption><minipage-label>Minipage 58.</minipage-label></figcaption>
           </figure>
           <p><i><code>&#x26;lt;figure&#x26;gt;</code> is the authoring alias. The normalize-to-canonical gate rewrites the tagname to <code>fig</code> early; the rendered output is the same.</i></p><code id="code:sh-fig-3">&#x3C;fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.></code>
           <figure id="mp:sh-fig-3" class="frameable-border">
             <figure id="mp-sh-fig-3-elephant" data-align="right">
               <img src="elephant.jpg" alt="A photograph of an elephant">
-              <figcaption><span class="figure-label">Figure 1.</span>
+              <figcaption><figure-label>Figure 1.</figure-label>
                 <p>An adult African elephant photographed in Tanzania.</p>
               </figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 59.</span></figcaption>
+            <figcaption><minipage-label>Minipage 59.</minipage-label></figcaption>
           </figure>
           <p><i>The <code>id</code> enables cross-referencing with <code>&#x26;lt;ref @elephant&#x26;gt;</code> (or the canonical <code>&#x26;lt;ref @fig:elephant&#x26;gt;</code> colon-prefix form). Numbered by default; the figcaption gets a “Figure N.” label span prepended.</i></p><code id="code:sh-fig-4">&#x3C;fig #revenue-table type=table |
 &#x3C;table>
@@ -1467,9 +1467,9 @@ Quarterly revenue for fiscal year 2024.
 ></code>
           <figure id="mp:sh-fig-4" class="frameable-border">
             <figure id="mp-sh-fig-4-revenue-table" data-figure-type="table">
-              <figcaption><span class="figure-label">Figure 1.</span>
+              <figcaption><figure-label>Figure 1.</figure-label>
                 <table>
-                  <caption><span class="table-label">Table 1.</span></caption>
+                  <caption><table-label>Table 1.</table-label></caption>
                   <tbody>
                     <tr>
                       <th>Quarter</th>
@@ -1488,7 +1488,7 @@ Quarterly revenue for fiscal year 2024.
                 <p>Quarterly revenue for fiscal year 2024.</p>
               </figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 60.</span></figcaption>
+            <figcaption><minipage-label>Minipage 60.</minipage-label></figcaption>
           </figure>
           <p><i>A figure without src. The content (a table) is preserved as-is; the trailing line becomes the figcaption. Author convention is to put the caption text on its own line at the end of the content.</i></p>
         </sub-section>
@@ -1552,7 +1552,7 @@ Quarterly revenue for fiscal year 2024.
                 <td>default <code>false</code></td>
                 <td>The frameable surface. When +border is set, the rendered
                   <figure>
-                    <figcaption><span class="figure-label">Figure 1.</span></figcaption>
+                    <figcaption><figure-label>Figure 1.</figure-label></figcaption>
                   </figure>gains the <code>frameable-border</code> class so theme stylesheets can draw the outline box per the frameable convention. Off by default.
                 </td>
               </tr>
@@ -1574,7 +1574,7 @@ Quarterly revenue for fiscal year 2024.
 | bar | 2 |</code>
           <figure id="mp:sh-table-1" class="frameable-border">
             <table>
-              <caption><span class="table-label">Table 1.</span></caption>
+              <caption><table-label>Table 1.</table-label></caption>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -1592,7 +1592,7 @@ Quarterly revenue for fiscal year 2024.
                 </tr>
               </tbody>
             </table>
-            <figcaption><span class="minipage-label">Minipage 61.</span></figcaption>
+            <figcaption><minipage-label>Minipage 61.</minipage-label></figcaption>
           </figure>
           <p><i>Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.</i></p><code id="code:sh-table-2">&#x3C;csv | name,price
 foo,1
@@ -1600,7 +1600,7 @@ bar,2
 ></code>
           <figure id="mp:sh-table-2" class="frameable-border">
             <table>
-              <caption><span class="table-label">Table 1.</span></caption>
+              <caption><table-label>Table 1.</table-label></caption>
               <thead>
                 <tr>
                   <th>name</th>
@@ -1618,7 +1618,7 @@ bar,2
                 </tr>
               </tbody>
             </table>
-            <figcaption><span class="minipage-label">Minipage 62.</span></figcaption>
+            <figcaption><minipage-label>Minipage 62.</minipage-label></figcaption>
           </figure>
           <p><i>The <code>&#x26;lt;csv&#x26;gt;</code> shorthand lowers to <code>&#x26;lt;table csv&#x26;gt;</code> (the standalone <code>&#x26;lt;csv&#x26;gt;</code> / <code>&#x26;lt;tsv&#x26;gt;</code> tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler’s csv engine. <code>&#x26;lt;csv | ... &#x26;gt;</code> and the qualifying form <code>&#x26;lt;table csv | ... &#x26;gt;</code> converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying <code>&#x26;lt;table json | ... &#x26;gt;</code> form — there is no standalone <code>&#x26;lt;json&#x26;gt;</code> shorthand. See the <code>&#x26;lt;csv&#x26;gt;</code> vocabulary entry for engine attributes (header control, alignment, etc.).</i></p><code id="code:sh-table-3">&#x3C;table #revenue type=results>
 &#x3C;caption | Quarterly revenue>
@@ -1628,7 +1628,7 @@ bar,2
 &#x3C;/table></code>
           <figure id="mp:sh-table-3" class="frameable-border">
             <table id="mp-sh-table-3-revenue">
-              <caption><span class="table-label">Table 1.</span></caption>
+              <caption><table-label>Table 1.</table-label></caption>
               <tbody>
                 <tr>
                   <th>Quarter</th>
@@ -1644,7 +1644,7 @@ bar,2
                 </tr>
               </tbody>
             </table>
-            <figcaption><span class="minipage-label">Minipage 63.</span></figcaption>
+            <figcaption><minipage-label>Minipage 63.</minipage-label></figcaption>
           </figure>
           <p><i>Explicit table with cells, used when fine control over structure or attributes is needed.</i></p>
         </sub-section>
@@ -1732,17 +1732,17 @@ bar,2
   | Congo basin | 1600 |
   | Serengeti | 800 |
 </table>
-            <figcaption><span class="minipage-label">Minipage 64.</span></figcaption>
+            <figcaption><minipage-label>Minipage 64.</minipage-label></figcaption>
           </figure>
           <p><i>Child-tag form. The caption renders with the frameable, and the “Table N.” / “Figure N.” label folds in when the frameable is numbered.</i></p><code id="code:sh-caption-2">&#x3C;fig src=elephant.jpg caption="A forest elephant in the Congo basin." /></code>
           <figure id="mp:sh-caption-2" class="frameable-border">
             <figure>
               <img src="elephant.jpg" alt="A forest elephant in the Congo basin.">
-              <figcaption><span class="figure-label">Figure 1.</span>
+              <figcaption><figure-label>Figure 1.</figure-label>
                 <p>A forest elephant in the Congo basin.</p>
               </figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 65.</span></figcaption>
+            <figcaption><minipage-label>Minipage 65.</minipage-label></figcaption>
           </figure>
           <p><i>Kwarg form. Equivalent to the child-tag form — <code>caption=</code> lifts to a <code>&#x3C;caption></code> child at the gate.</i></p>
         </sub-section>
@@ -1771,9 +1771,9 @@ B -->|no| D[Stop]
   A[Start] --> B{Decision}
   B -->|yes| C[OK]
   B -->|no| D[Stop]</pre>
-              <figcaption><span class="figure-label">Figure 1.</span></figcaption>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
             
-            <figcaption><span class="minipage-label">Minipage 66.</span></figcaption>
+            <figcaption><minipage-label>Minipage 66.</minipage-label></figcaption>
           </figure>
           <p><i>The <code>mermaid</code> format word selects the Mermaid engine. The handler emits the same <code>&#x26;lt;pre class="mermaid" data-enscribe-dsl="mermaid"&#x26;gt;</code> contract as the legacy <code>&#x26;lt;mermaid&#x26;gt;</code> shorthand expands to.</i></p><code id="code:sh-diagram-2">&#x3C;diagram abc>
 X:1
@@ -1787,9 +1787,9 @@ CDEFGABc
 T:Scale
 K:C
 CDEFGABc</pre>
-              <figcaption><span class="figure-label">Figure 1.</span></figcaption>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
             
-            <figcaption><span class="minipage-label">Minipage 67.</span></figcaption>
+            <figcaption><minipage-label>Minipage 67.</minipage-label></figcaption>
           </figure>
           <p><i>The <code>abc</code> format word selects the abcjs engine.</i></p>
         </sub-section>
@@ -1830,7 +1830,7 @@ CDEFGABc</pre>
             <svg viewBox="0 0 100 100" width="200" height="200">
   <circle cx="50" cy="50" r="40" fill="blue" />
 </svg>
-            <figcaption><span class="minipage-label">Minipage 68.</span></figcaption>
+            <figcaption><minipage-label>Minipage 68.</minipage-label></figcaption>
           </figure>
           <p><i>A lone inline SVG. <code>&#x26;lt;svg&#x26;gt;</code> is numbered by default (it shares the figure counter), so <code>-numbered</code> is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &#x3C;svg> element.</i></p><code id="code:sh-svg-2">&#x3C;svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
 &#x3C;circle cx="50" cy="50" r="40" />
@@ -1840,9 +1840,9 @@ CDEFGABc</pre>
               <svg id="mp-sh-svg-2-fig:diagram" viewBox="0 0 100 100">
   <circle cx="50" cy="50" r="40" />
 </svg>
-              <figcaption><span class="figure-label">Figure 1.</span> A simple circle</figcaption>
+              <figcaption><figure-label>Figure 1.</figure-label> A simple circle</figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 69.</span></figcaption>
+            <figcaption><minipage-label>Minipage 69.</minipage-label></figcaption>
           </figure>
           <p><i>Captioned and numbered → framed by the ordinary frameable rule: the handler wraps the &#x3C;svg> in a &#x3C;figure> with the &#x3C;figcaption> as a sibling inside the wrapper (figcaption is not a valid child of &#x3C;svg>). Shares the figure counter with &#x3C;fig>; <code>&#x26;lt;ref @fig:diagram&#x26;gt;</code> resolves to “Figure N”.</i></p>
         </sub-section>
@@ -1865,7 +1865,7 @@ CDEFGABc</pre>
                 <td>SVG width attribute. CSS length or unitless number. Maps directly to the rendered
                   <figure>
                     <svg></svg>
-                    <figcaption><span class="figure-label">Figure 2.</span></figcaption>
+                    <figcaption><figure-label>Figure 2.</figure-label></figcaption>
                   </figure>element’s width attribute.
                 </td>
               </tr>
@@ -1882,7 +1882,7 @@ CDEFGABc</pre>
                 <td>SVG viewBox attribute. Defines the coordinate system. Passes through to the rendered
                   <figure>
                     <svg></svg>
-                    <figcaption><span class="figure-label">Figure 3.</span></figcaption>
+                    <figcaption><figure-label>Figure 3.</figure-label></figcaption>
                   </figure>element.
                 </td>
               </tr>
@@ -1898,15 +1898,15 @@ CDEFGABc</pre>
                 <td>default <code>true</code></td>
                 <td>Whether this SVG participates in the document-wide figure sequence (shares the <code>figure</code> counter with
                   <figure>
-                    <figcaption><span class="figure-label">Figure 4.</span></figcaption>
+                    <figcaption><figure-label>Figure 4.</figure-label></figcaption>
                   </figure>, 
                   
                     <pre class="mermaid" data-enscribe-dsl="mermaid"></pre>
-                    <figcaption><span class="figure-label">Figure 5.</span></figcaption>
+                    <figcaption><figure-label>Figure 5.</figure-label></figcaption>
                   , 
                   
                     <pre class="abc" data-enscribe-dsl="abc"></pre>
-                    <figcaption><span class="figure-label">Figure 6.</span></figcaption>
+                    <figcaption><figure-label>Figure 6.</figure-label></figcaption>
                   ). Use +numbered (default) to number, -numbered to suppress.
                 </td>
               </tr>
@@ -1917,7 +1917,7 @@ CDEFGABc</pre>
                 <td>The frameable surface. When +border is set, the rendered
                   <figure>
                     <svg></svg>
-                    <figcaption><span class="figure-label">Figure 7.</span></figcaption>
+                    <figcaption><figure-label>Figure 7.</figure-label></figcaption>
                   </figure>wrapper gains the <code>frameable-border</code> class.
                 </td>
               </tr>
@@ -1937,9 +1937,9 @@ CDEFGABc</pre>
           <figure id="mp:sh-frame-1" class="frameable-border">
             <figure class="frameable-border">
               <p>A short callout.</p>
-              <figcaption><span class="figure-label">Figure 1.</span></figcaption>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 70.</span></figcaption>
+            <figcaption><minipage-label>Minipage 70.</minipage-label></figcaption>
           </figure>
           <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>frame</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;frame>, so the class appears automatically.</i></p><code id="code:sh-frame-2">&#x3C;frame type=note title="Important" |
 Make sure to read this carefully.
@@ -1948,9 +1948,9 @@ Make sure to read this carefully.
             <figure data-frame-type="note" class="frameable-border">
               <figcaption class="title">Important</figcaption>
               <p>Make sure to read this carefully.</p>
-              <figcaption><span class="figure-label">Figure 1.</span></figcaption>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 71.</span></figcaption>
+            <figcaption><minipage-label>Minipage 71.</minipage-label></figcaption>
           </figure>
           <p><i>With a title rendered at the top.</i></p><code id="code:sh-frame-3">&#x3C;frame #fig:method-box +numbered caption="Workflow steps" |
 1. Collect data.
@@ -1964,11 +1964,11 @@ Make sure to read this carefully.
                 <li>Clean.</li>
                 <li>Model.</li>
               </ol>
-              <figcaption><span class="figure-label">Figure 1.</span>
+              <figcaption><figure-label>Figure 1.</figure-label>
                 <p>Workflow steps</p>
               </figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 72.</span></figcaption>
+            <figcaption><minipage-label>Minipage 72.</minipage-label></figcaption>
           </figure>
           <p><i>Numbered frame, opted in via +numbered. Shares the figure counter with &#x3C;fig>/&#x3C;svg>/&#x3C;mermaid>/&#x3C;abc>.</i></p>
         </sub-section>
@@ -2004,13 +2004,13 @@ Make sure to read this carefully.
                 <td></td>
                 <td>Optional classification of what the frame contains (note, warning, tip, theorem-block, etc.), preserved as the data-frame-type attribute. Since
                   <figure class="frameable-border">
-                    <figcaption><span class="figure-label">Figure 8.</span></figcaption>
+                    <figcaption><figure-label>Figure 8.</figure-label></figcaption>
                   </figure>renders as
                   <figure>
-                    <figcaption><span class="figure-label">Figure 9.</span></figcaption>
+                    <figcaption><figure-label>Figure 9.</figure-label></figcaption>
                   </figure>(not a custom
                   <figure class="frameable-border">
-                    <figcaption><span class="figure-label">Figure 10.</span></figcaption>
+                    <figcaption><figure-label>Figure 10.</figure-label></figcaption>
                   </figure>element), authors target it with the rendered figure — figure[data-frame-type=”note”] { … } — not a “.frame” selector.
                 </td>
               </tr>
@@ -2020,11 +2020,11 @@ Make sure to read this carefully.
                 <td>default <code>false</code></td>
                 <td>Whether this frame participates in the document-wide figure sequence. <b>Off by default for frame</b> (unlike
                   <figure>
-                    <figcaption><span class="figure-label">Figure 11.</span></figcaption>
+                    <figcaption><figure-label>Figure 11.</figure-label></figcaption>
                   </figure>/
                   <figure>
                     <svg></svg>
-                    <figcaption><span class="figure-label">Figure 12.</span></figcaption>
+                    <figcaption><figure-label>Figure 12.</figure-label></figcaption>
                   </figure>/etc.) because a generic frame is typically a sidebar / callout / annotation, not a numbered float. Use +numbered to opt in.
                 </td>
               </tr>
@@ -2034,14 +2034,14 @@ Make sure to read this carefully.
                 <td>default <code>true</code></td>
                 <td>The frameable surface. <b>On by default for frame</b> (unlike
                   <figure>
-                    <figcaption><span class="figure-label">Figure 13.</span></figcaption>
+                    <figcaption><figure-label>Figure 13.</figure-label></figcaption>
                   </figure>/
                   <figure>
                     <svg></svg>
-                    <figcaption><span class="figure-label">Figure 14.</span></figcaption>
+                    <figcaption><figure-label>Figure 14.</figure-label></figcaption>
                   </figure>/etc.) because the whole point of the generic
                   <figure class="frameable-border">
-                    <figcaption><span class="figure-label">Figure 15.</span></figcaption>
+                    <figcaption><figure-label>Figure 15.</figure-label></figcaption>
                   </figure>element is the visual frame. Use -border to suppress the outline and just use the frame as a semantic grouping wrapper. border=
                   <name></name> selects a named look (accent / thick / dashed / subtle) and implies the border on; the look renders as a frameable-border-
                   <name></name> modifier class (document names it, theme defines it — #58; see frameable.md).
@@ -2063,9 +2063,9 @@ Make sure to read this carefully.
           <figure id="mp:sh-minipage-1" class="frameable-border">
             <figure class="frameable-border">
               <p>Two panels side by side.</p>
-              <figcaption><span class="minipage-label">Minipage 1.</span></figcaption>
+              <figcaption><minipage-label>Minipage 1.</minipage-label></figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 73.</span></figcaption>
+            <figcaption><minipage-label>Minipage 73.</minipage-label></figcaption>
           </figure>
           <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>minipage</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;minipage>, so the class appears automatically. The body renders as sealed eHTML.</i></p><code id="code:sh-minipage-2">&#x3C;minipage #mp:compare +numbered caption="Side-by-side comparison" |
 A figure here counts privately.
@@ -2077,19 +2077,19 @@ A figure here counts privately.
               <p>A figure here counts privately.</p>
               <figure id="mp-sh-minipage-2-mp-compare-fig:left">
                 <img src="left.png" alt="Left panel.">
-                <figcaption><span class="figure-label">Figure 1.</span>
+                <figcaption><figure-label>Figure 1.</figure-label>
                   <p>Left panel.</p>
                 </figcaption>
               </figure>
               <figure id="mp-sh-minipage-2-mp-compare-fig:right">
                 <img src="right.png" alt="Right panel.">
-                <figcaption><span class="figure-label">Figure 2.</span>
+                <figcaption><figure-label>Figure 2.</figure-label>
                   <p>Right panel.</p>
                 </figcaption>
               </figure>
-              <figcaption><span class="minipage-label">Minipage 1.</span> Side-by-side comparison</figcaption>
+              <figcaption><minipage-label>Minipage 1.</minipage-label> Side-by-side comparison</figcaption>
             </figure>
-            <figcaption><span class="minipage-label">Minipage 74.</span></figcaption>
+            <figcaption><minipage-label>Minipage 74.</minipage-label></figcaption>
           </figure>
           <p><i>Numbered minipage, opted in via +numbered. It counts in its own “Minipage N” series — <code>&#x26;lt;ref @mp:compare&#x26;gt;</code> resolves to “minipage 1”. The two inner figures number 1 and 2 in the minipage’s PRIVATE figure counter, NOT the document’s: a document &#x3C;fig> elsewhere is unaffected, and an outside <code>&#x26;lt;ref @fig:left&#x26;gt;</code> is a normal not-found ref-error (the seal forbids inbound references to the body).</i></p>
         </sub-section>
@@ -2114,7 +2114,7 @@ A figure here counts privately.
                   <title></title>written inside the pipe would be part of the sealed body, not the box’s outward title. Same opaque-frameable convention as
                   <figure>
                     <svg></svg>
-                    <figcaption><span class="figure-label">Figure 16.</span></figcaption>
+                    <figcaption><figure-label>Figure 16.</figure-label></figcaption>
                   </figure>/<table>
 
 </table>/
@@ -2139,7 +2139,7 @@ A figure here counts privately.
                 <td>default <code>true</code></td>
                 <td>The frameable surface. <b>On by default for minipage</b> — the visual box is the point (a minipage sets its sealed content apart, like
                   <figure class="frameable-border">
-                    <figcaption><span class="figure-label">Figure 17.</span></figcaption>
+                    <figcaption><figure-label>Figure 17.</figure-label></figcaption>
                   </figure>). Use -border to suppress the outline and keep only the seal. border=
                   <name></name> selects a named look (accent / thick / dashed / subtle) and implies the border on (#58; see frameable.md).
                 </td>
@@ -2148,7 +2148,7 @@ A figure here counts privately.
           </table></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="quotation-sourcing.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Quotation &#x26; sourcing</span></a><a class="enscribe-chapter-next" href="formal-statements.html" rel="next"><span class="enscribe-toc-title">Formal statements</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:exhibit"><ul><li><a href="#sh-fig">&#x3C;fig></a><ul><li><a href="#sec:general-usage-29">General Usage</a></li><li><a href="#sec:arguments-19">Arguments</a></li></ul></li><li><a href="#sh-table">&#x3C;table></a><ul><li><a href="#sec:general-usage-30">General Usage</a></li><li><a href="#sec:arguments-20">Arguments</a></li></ul></li><li><a href="#sh-caption">&#x3C;caption></a><ul><li><a href="#sec:general-usage-31">General Usage</a></li><li><a href="#sec:arguments-21">Arguments</a></li></ul></li><li><a href="#sh-diagram">&#x3C;diagram></a><ul><li><a href="#sec:general-usage-32">General Usage</a></li><li><a href="#sec:arguments-22">Arguments</a></li></ul></li><li><a href="#sh-svg">&#x3C;svg></a><ul><li><a href="#sec:general-usage-33">General Usage</a></li><li><a href="#sec:arguments-23">Arguments</a></li></ul></li><li><a href="#sh-frame">&#x3C;frame></a><ul><li><a href="#sec:general-usage-34">General Usage</a></li><li><a href="#sec:arguments-24">Arguments</a></li></ul></li><li><a href="#sh-minipage">&#x3C;minipage></a><ul><li><a href="#sec:general-usage-35">General Usage</a></li><li><a href="#sec:arguments-25">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="quotation-sourcing.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Quotation &#x26; sourcing</toc-title></a><a class="enscribe-chapter-next" href="formal-statements.html" rel="next"><toc-title>Formal statements</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:exhibit"><ul><li><a href="#sh-fig">&#x3C;fig></a><ul><li><a href="#sec:general-usage-29">General Usage</a></li><li><a href="#sec:arguments-19">Arguments</a></li></ul></li><li><a href="#sh-table">&#x3C;table></a><ul><li><a href="#sec:general-usage-30">General Usage</a></li><li><a href="#sec:arguments-20">Arguments</a></li></ul></li><li><a href="#sh-caption">&#x3C;caption></a><ul><li><a href="#sec:general-usage-31">General Usage</a></li><li><a href="#sec:arguments-21">Arguments</a></li></ul></li><li><a href="#sh-diagram">&#x3C;diagram></a><ul><li><a href="#sec:general-usage-32">General Usage</a></li><li><a href="#sec:arguments-22">Arguments</a></li></ul></li><li><a href="#sh-svg">&#x3C;svg></a><ul><li><a href="#sec:general-usage-33">General Usage</a></li><li><a href="#sec:arguments-23">Arguments</a></li></ul></li><li><a href="#sh-frame">&#x3C;frame></a><ul><li><a href="#sec:general-usage-34">General Usage</a></li><li><a href="#sec:arguments-24">Arguments</a></li></ul></li><li><a href="#sh-minipage">&#x3C;minipage></a><ul><li><a href="#sec:general-usage-35">General Usage</a></li><li><a href="#sec:arguments-25">Arguments</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

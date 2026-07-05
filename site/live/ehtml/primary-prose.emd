@@ -1,0 +1,80 @@
+The running text of a document — the paragraph, and the HTML-shaped list elements.
+
+<section #l1-p | `<p>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<p>` · JATS `<p>` · `content` `prose` → `<children>`
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `normal` `lead` `intro` `abstract` `summary` `other` | Optional classification of the paragraph's role. Mostly used for styling (lead paragraphs render larger; abstract paragraphs styled distinctly). |
+
+Produced by: canonical `<p>`.
+
+<sub-section | Examples>
+
+<code #code:l1-p-1>
+<p | A simple paragraph.>
+</code>
+
+<minipage #mp:l1-p-1>
+<p | A simple paragraph.>
+</minipage>
+
+<code #code:l1-p-2>
+A paragraph written without explicit tags.
+</code>
+
+<minipage #mp:l1-p-2>
+A paragraph written without explicit tags.
+</minipage>
+
+*In most cases, paragraphs do not need to be written with explicit tags. Plain markdown handles paragraph separation: blank lines delineate paragraphs. The explicit &lt;p&gt; form is used when attributes (id, classes, type) are needed.*
+
+<code #code:l1-p-3>
+<p type=lead | The opening paragraph of an article.>
+</code>
+
+<minipage #mp:l1-p-3>
+<p type=lead | The opening paragraph of an article.>
+</minipage>
+
+</section>
+
+<section #l1-list | `<ul>` / `<ol>` / `<li>`>
+
+<sub-section | Specification>
+
+`category` `block-prose` · eHTML `<ul>` / `<ol>` + `<li>` (HTML-native) · JATS `<list>` / `<list-item>` · `content` `flow` → `<children>`
+
+Lists are HTML-shaped: the eHTML form is the native `<ul>` / `<ol>` + `<li>`, and the render is identity. A document reaches them by any route — a person authoring `<list>` / `<li>` (or the `-` / `*` idiom), a JATS import lowering `<list>`, or another system emitting the HTML directly.
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| ordered vs unordered | element | `<ul>` · `<ol>` | The distinction is the element itself, not an attribute. |
+| `start` | attribute | integer | First number of an `<ol>`. |
+| `reversed` | attribute | boolean | Counts an `<ol>` down. |
+| `list-style-type` | attribute | `decimal` `lower-roman` `disc` … | Marker glyph, carried from the authoring `marker=`. |
+
+Produced by: the `<list>` / `<li>` authoring construct (see the shorthand vocabulary), or JATS import.
+
+<sub-section | Examples>
+
+<code #code:l1-list-1>
+<list ordered>
+<li> Fit the model.
+<li> Compute residuals.
+</list>
+</code>
+
+<minipage #mp:l1-list-1>
+<list ordered>
+<li> Fit the model.
+<li> Compute residuals.
+</list>
+</minipage>
+
+*The authoring construct lowers to native `<ol><li>…</li></ol>`; render is identity. JATS export translates to `<list list-type="order">` / `<list-item>`.*
+
+</section>

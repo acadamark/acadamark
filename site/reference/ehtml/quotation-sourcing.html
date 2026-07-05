@@ -311,12 +311,12 @@ sub-sub-section-title {
 }
 
 /* Section numbering (#57). The build-time number is emitted as a
- * <span class="section-number"> at the start of the section title (and the
+ * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
  * inherits the heading's weight/size; the theme controls only the spacing /
  * separator before the title text. The document carries the canonical dotted
  * number; the presentation (separator, any "Chapter N" framing) is the theme's. */
-.section-number {
+section-number {
   margin-right: var(--enscribe-space-2);
 }
 
@@ -435,19 +435,19 @@ cite.cite-error {
  * HTML structure emitted by the interpreter:
  *   <display-math>
  *     <span class="katex-display">...</span>   ← KaTeX in display mode
- *     <span class="equation-number">(N)</span>  ← only when numbered
+ *     <equation-number>(N)</equation-number>  ← only when numbered
  *   </display-math>
  *
  * KaTeX's own stylesheet sets .katex-display { display: block; text-align: center; }.
  * When display-math becomes a flex container, .katex-display becomes a flex item
  * (flex: 1) while retaining text-align: center for its content.
  *
- * For unnumbered equations (no .equation-number sibling), .katex-display fills
+ * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
  * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
  * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
- * .katex-display child) and may carry a single .equation-number, so grouping
+ * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
@@ -480,12 +480,12 @@ eqnarray > .katex-display {
 }
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
-display-math > .equation-number,
-math > .equation-number,
-align > .equation-number,
-cases > .equation-number,
-matrix > .equation-number,
-eqnarray > .equation-number {
+display-math > equation-number,
+math > equation-number,
+align > equation-number,
+cases > equation-number,
+matrix > equation-number,
+eqnarray > equation-number {
   flex: 0 0 auto;
   min-width: 3em;
   text-align: right;
@@ -521,21 +521,21 @@ proof {
 }
 
 /*
- * RQ-THM-S2: the leading .{kind}-label span ("Theorem 1.", "Lemma 2 (Name).",
+ * RQ-THM-S2: the leading <{kind}-label> element ("Theorem 1.", "Lemma 2 (Name).",
  * "Proof.") renders with prominence (font-weight: 700). Matches the
- * weight-only convention of .figure-label / .table-label; the label already
+ * weight-only convention of <figure-label> / <table-label>; the label already
  * carries a trailing space from the handler, so no extra margin is needed.
  * Italicised statement bodies (an amsthm convention) are out of spec for S2
  * and left to a later theme.
  */
-.theorem-label,
-.lemma-label,
-.corollary-label,
-.proposition-label,
-.definition-label,
-.example-label,
-.remark-label,
-.proof-label {
+theorem-label,
+lemma-label,
+corollary-label,
+proposition-label,
+definition-label,
+example-label,
+remark-label,
+proof-label {
   font-weight: 700;
 }
 
@@ -616,7 +616,7 @@ figcaption {
   line-height: var(--enscribe-line-height-tight);
 }
 
-.figure-label {
+figure-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -788,7 +788,7 @@ caption {
   font-weight: normal;
 }
 
-.table-label {
+table-label {
   font-weight: 700;
   margin-right: var(--enscribe-space-1);
 }
@@ -1059,7 +1059,7 @@ body:has(.enscribe-layout--toc) {
   color: var(--enscribe-link-hover);
 }
 
-.enscribe-chapter-arrow {
+chapter-arrow {
   color: var(--enscribe-text-muted);
 }
 
@@ -1097,17 +1097,17 @@ body:has(.enscribe-layout--toc) {
  */
 
 /* Number + title in a rail link: a fixed number gutter so titles align ("1" / "2.1"
- * / "A" all start the title at the same x). These spans are emitted by the BOOK
- * path only (lib/toc.js bookLink); the article ToC keeps its glued link text, so an
- * article ToC — numbered or not — is byte-identical to pre-Slice-C. */
-.enscribe-toc-num {
+ * / "A" all start the title at the same x). These <toc-num> elements are emitted by
+ * the BOOK path only (lib/toc.js bookLink); the article ToC keeps its glued link text,
+ * so an article ToC — numbered or not — is byte-identical to pre-Slice-C. */
+toc-num {
   display: inline-block;
   min-width: 1.6em;
   color: var(--enscribe-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.enscribe-chapter-rail .enscribe-rail-item .enscribe-toc-num::after {
+.enscribe-chapter-rail .enscribe-rail-item toc-num::after {
   content: "·";
   margin-left: var(--enscribe-space-2);
   color: var(--enscribe-border-strong);
@@ -1284,13 +1284,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 .enscribe-site-sidebar { padding: 1.5rem 1rem; }
 .enscribe-site-sidebar ul { list-style: none; margin: 0; padding-left: 0.75rem; }
 .enscribe-site-sidebar > ul { padding-left: 0; }
-.enscribe-site-sidebar a, .enscribe-site-sidebar .enscribe-nav-label {
+.enscribe-site-sidebar a, .enscribe-site-sidebar nav-label {
   display: block; padding: 0.2rem 0; font-size: 0.9rem;
   color: var(--enscribe-text-muted, #57606a); text-decoration: none;
 }
 .enscribe-site-sidebar a:hover { color: var(--enscribe-link, #0969da); }
 .enscribe-site-sidebar a[aria-current="page"] { color: var(--enscribe-text-primary, #1f2328); font-weight: 600; }
-.enscribe-site-sidebar .enscribe-nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-site-sidebar nav-label { font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-site-footer {
   max-width: 84rem; margin: 2.5rem auto 0; padding: 1rem 1.75rem 2rem;
   border-top: 1px solid var(--enscribe-border, #d8dee4);
@@ -1413,7 +1413,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../../live/?page=ehtml&amp;chapter=quotation-sourcing">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><span class="enscribe-book-home-title">The eHTML Vocabulary</span></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html" class="enscribe-toc-active" aria-current="location">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:quotation-sourcing" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The eHTML Vocabulary</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html" class="enscribe-toc-active" aria-current="location">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:quotation-sourcing" book-part-type="chapter">
       <meta>
         <book-part-title>Quotation &#x26; sourcing</book-part-title>
       </meta>
@@ -1458,7 +1458,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             <blockquote>
               <p>A short quotation.</p>
             </blockquote>
-            <figcaption><span class="minipage-label">Minipage 46.</span></figcaption>
+            <figcaption><minipage-label>Minipage 46.</minipage-label></figcaption>
           </figure>
           <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at eHTML.</i></p><code id="code:l1-blockquote-2">&#x3C;quote cite=https://example.com/source |
 A longer quotation that may contain multiple paragraphs.
@@ -1469,7 +1469,7 @@ The second paragraph of the quotation.
               <p>A longer quotation that may contain multiple paragraphs.</p>
               <p>The second paragraph of the quotation.</p>
             </blockquote>
-            <figcaption><span class="minipage-label">Minipage 47.</span></figcaption>
+            <figcaption><minipage-label>Minipage 47.</minipage-label></figcaption>
           </figure><code id="code:l1-blockquote-3">&#x3C;quote type=epigraph |
 All happy families are alike; each unhappy family is unhappy in its own way.
 ></code>
@@ -1477,7 +1477,7 @@ All happy families are alike; each unhappy family is unhappy in its own way.
             <blockquote data-blockquote-type="epigraph">
               <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
             </blockquote>
-            <figcaption><span class="minipage-label">Minipage 48.</span></figcaption>
+            <figcaption><minipage-label>Minipage 48.</minipage-label></figcaption>
           </figure><code id="code:l1-blockquote-4">&#x3C;blockquote | Same as &#x3C;quote> but using the explicit eHTML name.></code>
           <p><i>Render pending — the example source has an unescaped <code>&#x3C;…></code> tag-mention the parser consumes into an empty nested element (issue #277).</i></p>
           <p><i>Authors can also write &#x3C;blockquote> directly. Both forms produce the same eHTML output.</i></p></section>
@@ -1515,12 +1515,12 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 She said &#x3C;q | hello> in passing.</code>
           <figure id="mp:l1-q-1" class="frameable-border">
             <p>She said <q>hello</q> in passing.</p>
-            <figcaption><span class="minipage-label">Minipage 49.</span></figcaption>
+            <figcaption><minipage-label>Minipage 49.</minipage-label></figcaption>
           </figure>
           <p><i>Browsers automatically render &#x3C;q> with quotation marks. Authors do not include quotation marks in the content.</i></p><code id="code:l1-q-2">The phrase &#x3C;q cite=https://example.com | to be or not to be> is iconic.</code>
           <figure id="mp:l1-q-2" class="frameable-border">
             <p>The phrase <q cite="https://example.com">to be or not to be</q> is iconic.</p>
-            <figcaption><span class="minipage-label">Minipage 50.</span></figcaption>
+            <figcaption><minipage-label>Minipage 50.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
@@ -1714,17 +1714,17 @@ See &#x3C;ref #fig:scatter> for details.</code>
 See &#x3C;a https://example.com/docs | the documentation>.</code>
           <figure id="mp:l1-a-1" class="frameable-border">
             <p>See <a href="https://example.com/docs">the documentation</a>.</p>
-            <figcaption><span class="minipage-label">Minipage 51.</span></figcaption>
+            <figcaption><minipage-label>Minipage 51.</minipage-label></figcaption>
           </figure>
           <p><i>The positional URL form — the target is the first argument, the pipe content is the link text. The most common authoring path. (Markdown <code>[text](url)</code> is not an enscribe idiom; it renders as literal text.)</i></p><code id="code:l1-a-2">&#x3C;a href=https://example.com | the example site></code>
           <figure id="mp:l1-a-2" class="frameable-border"><a href="https://example.com">the example site</a>
-            <figcaption><span class="minipage-label">Minipage 52.</span></figcaption>
+            <figcaption><minipage-label>Minipage 52.</minipage-label></figcaption>
           </figure><code id="code:l1-a-3">&#x3C;a href=https://example.com target=_blank rel=noopener | external link></code>
           <figure id="mp:l1-a-3" class="frameable-border"><a href="https://example.com" target="_blank" rel="noopener">external link</a>
-            <figcaption><span class="minipage-label">Minipage 53.</span></figcaption>
+            <figcaption><minipage-label>Minipage 53.</minipage-label></figcaption>
           </figure><code id="code:l1-a-4">&#x3C;a href=#section-2 | jump to Section 2></code>
           <figure id="mp:l1-a-4" class="frameable-border"><a href="#section-2">jump to Section 2</a>
-            <figcaption><span class="minipage-label">Minipage 54.</span></figcaption>
+            <figcaption><minipage-label>Minipage 54.</minipage-label></figcaption>
           </figure>
           <p><i>Internal links use fragment identifiers pointing at element ids.</i></p></section>
         </sub-section>
@@ -1812,7 +1812,7 @@ See &#x3C;a https://example.com/docs | the documentation>.</code>
           <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="aside.html" rel="prev"><span class="enscribe-chapter-arrow">←</span><span class="enscribe-toc-title">Aside</span></a><a class="enscribe-chapter-next" href="exhibit.html" rel="next"><span class="enscribe-toc-title">Exhibit</span><span class="enscribe-chapter-arrow">→</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:quotation-sourcing"><ul><li><a href="#l1-blockquote">&#x3C;blockquote></a><ul><li><a href="#sec:specification-23">Specification</a></li><li><a href="#sec:examples-21">Examples</a></li></ul></li><li><a href="#l1-q">&#x3C;q></a><ul><li><a href="#sec:specification-24">Specification</a></li><li><a href="#sec:examples-22">Examples</a></li></ul></li><li><a href="#l1-cite">&#x3C;cite></a><ul><li><a href="#sec:specification-25">Specification</a></li><li><a href="#sec:examples-23">Examples</a></li></ul></li><li><a href="#l1-ref">&#x3C;ref></a><ul><li><a href="#sec:specification-26">Specification</a></li><li><a href="#sec:examples-24">Examples</a></li></ul></li><li><a href="#l1-a">&#x3C;a></a><ul><li><a href="#sec:specification-27">Specification</a></li><li><a href="#sec:examples-25">Examples</a></li></ul></li><li><a href="#l1-doi">&#x3C;doi></a><ul><li><a href="#sec:specification-28">Specification</a></li><li><a href="#sec:examples-26">Examples</a></li></ul></li><li><a href="#l1-bibliography">&#x3C;bibliography></a><ul><li><a href="#sec:specification-29">Specification</a></li></ul></li><li><a href="#l1-bib-entry">&#x3C;bib-entry></a><ul><li><a href="#sec:specification-30">Specification</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="aside.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Aside</toc-title></a><a class="enscribe-chapter-next" href="exhibit.html" rel="next"><toc-title>Exhibit</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:quotation-sourcing"><ul><li><a href="#l1-blockquote">&#x3C;blockquote></a><ul><li><a href="#sec:specification-23">Specification</a></li><li><a href="#sec:examples-21">Examples</a></li></ul></li><li><a href="#l1-q">&#x3C;q></a><ul><li><a href="#sec:specification-24">Specification</a></li><li><a href="#sec:examples-22">Examples</a></li></ul></li><li><a href="#l1-cite">&#x3C;cite></a><ul><li><a href="#sec:specification-25">Specification</a></li><li><a href="#sec:examples-23">Examples</a></li></ul></li><li><a href="#l1-ref">&#x3C;ref></a><ul><li><a href="#sec:specification-26">Specification</a></li><li><a href="#sec:examples-24">Examples</a></li></ul></li><li><a href="#l1-a">&#x3C;a></a><ul><li><a href="#sec:specification-27">Specification</a></li><li><a href="#sec:examples-25">Examples</a></li></ul></li><li><a href="#l1-doi">&#x3C;doi></a><ul><li><a href="#sec:specification-28">Specification</a></li><li><a href="#sec:examples-26">Examples</a></li></ul></li><li><a href="#l1-bibliography">&#x3C;bibliography></a><ul><li><a href="#sec:specification-29">Specification</a></li></ul></li><li><a href="#l1-bib-entry">&#x3C;bib-entry></a><ul><li><a href="#sec:specification-30">Specification</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {
