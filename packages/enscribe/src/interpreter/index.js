@@ -246,6 +246,21 @@ const getKatexCss = createLazyAsset(() => {
   return patchKatexFontUrls(readFileSync(join(katexDir, 'katex.min.css'), 'utf8'));
 });
 
+/**
+ * The document-display head as INLINE <style> blocks — the offline counterpart of HEAD_ASSET_LINKS
+ * (font-loader.js), which LINKS the same two assets from CDNs. Emits the base64-inlined document fonts
+ * (getDocumentFontsCss) followed by the base64-inlined KaTeX CSS (getKatexCss), so a self-contained
+ * shell needs NO network for its display assets. This is the SINGLE SOURCE the `inlined` asset-delivery
+ * mode (delivery-modes.md §"Asset delivery" → inlined) uses for the shell head — mirroring how
+ * HEAD_ASSET_LINKS is the single source for the siblings/cdn (link) form. fs-backed (both readers read
+ * files), so it runs Node-side at build time; a browser bundle never calls it (inlined is a CLI build).
+ *
+ * @returns {string} two <style> blocks — document fonts, then KaTeX CSS.
+ */
+export function getInlineDisplayHead() {
+  return `<style>\n${getDocumentFontsCss()}\n</style>\n<style>\n${getKatexCss()}\n</style>`;
+}
+
 // ─── Theme CSS (Phase 8 Slice 2) ──────────────────────────────────────────────
 //
 // Themes are `:root` custom-property overrides shipped in src/assets/themes/.

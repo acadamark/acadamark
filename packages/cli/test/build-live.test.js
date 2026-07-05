@@ -385,4 +385,91 @@ export function run_tests() {
       rmSync(dir, { recursive: true, force: true });
     }
   }
+
+  // ── #363/#364 — asset-delivery modes (siblings / cdn / inlined) ─────────────────────────────────
+  // A shell OUTSIDE the inlined engine <script> (its internal CDN URL literals are not resource refs).
+  const stripEngine = (h) => h.replace(/<script>[\s\S]*?<\/script>/, '<script>ENGINE</script>');
+  const netRefs = (h) => [...stripEngine(h).matchAll(/(?:href|src)="(https?:[^"]+)"|import\('(https?:[^']+)'/g)]
+    .map((m) => m[1] || m[2]);
+
+  // buildLiveFolder — the three deliveries.
+  {
+    // siblings (default): all four chrome assets copied flat, referenced ./ (the existing gate covers
+    // the no-404 detail; here we assert the delivery shape).
+    const sib = mkdtempSync(join(tmpdir(), 'enscribe-deliv-sib-'));
+    const cdn = mkdtempSync(join(tmpdir(), 'enscribe-deliv-cdn-'));
+    const inl = mkdtempSync(join(tmpdir(), 'enscribe-deliv-inl-'));
+    try {
+      const sRes = buildLiveFolder({ master: EXAMPLE_MASTER, outDir: sib });   // delivery defaults to siblings
+      assert.strictEqual(sRes.delivery, 'siblings', 'default delivery is siblings');
+      assert.strictEqual(sRes.assets.length, 4, 'siblings copies all four chrome assets');
+      assert.ok(existsSync(join(sib, 'enscribe.browser.global.js')), 'siblings: engine copied flat');
+
+      // cdn: NO chrome copied; the shell references the pinned jsDelivr package.
+      const cRes = buildLiveFolder({ master: EXAMPLE_MASTER, outDir: cdn, delivery: 'cdn' });
+      assert.strictEqual(cRes.delivery, 'cdn', 'delivery cdn recorded');
+      assert.deepStrictEqual(cRes.assets, [], 'cdn copies NO chrome assets');
+      assert.ok(!existsSync(join(cdn, 'enscribe.browser.global.js')), 'cdn: engine NOT copied');
+      const cHtml = readFileSync(join(cdn, 'index.html'), 'utf8');
+      assert.ok(cHtml.includes('src="https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/enscribe.browser.global.js"'),
+        'cdn: engine referenced from the pinned jsDelivr package');
+      assert.ok(existsSync(join(cdn, 'book.emd')), 'cdn: the document CONTENT is still copied (it is fetched)');
+
+      // inlined: only the editor sibling copied; engine + CSS + display inlined; the served folder is offline.
+      const iRes = buildLiveFolder({ master: EXAMPLE_MASTER, outDir: inl, delivery: 'inlined' });
+      assert.strictEqual(iRes.delivery, 'inlined', 'delivery inlined recorded');
+      assert.deepStrictEqual(iRes.assets, ['editor-codemirror.js'], 'inlined: ONLY the editor sibling copied');
+      assert.ok(!existsSync(join(inl, 'enscribe.browser.global.js')), 'inlined: engine NOT copied (it is inline)');
+      assert.ok(existsSync(join(inl, 'editor-codemirror.js')), 'inlined: editor sibling copied (#364 editor delivery)');
+      const iHtml = readFileSync(join(inl, 'index.html'), 'utf8');
+      // check OUTSIDE the inlined engine — the minified engine bundle carries `<link rel="stylesheet"` /
+      // `<script src=` as string LITERALS (it is the code that GENERATES those tags), not references.
+      const iShell = stripEngine(iHtml);
+      assert.ok(!iShell.includes('<link rel="stylesheet"') && !iShell.includes('<script src='),
+        'inlined: engine + CSS embedded, no reference tags');
+      assert.ok(iHtml.includes('@font-face'), 'inlined: display fonts embedded in the head');
+      assert.ok(existsSync(join(inl, 'book.emd')), 'inlined: the document CONTENT is still copied (it is fetched)');
+      assert.deepStrictEqual(netRefs(iHtml), [],
+        'inlined live folder: ZERO network references — served offline (editor is a local sibling)');
+
+      assert.throws(() => buildLiveFolder({ master: EXAMPLE_MASTER, outDir: inl, delivery: 'bogus' }), /unknown asset delivery/,
+        'an unknown delivery is rejected');
+      console.log('PASS: #363/#364 cli — buildLiveFolder siblings/cdn/inlined; inlined served folder is fully offline');
+    } finally {
+      rmSync(sib, { recursive: true, force: true });
+      rmSync(cdn, { recursive: true, force: true });
+      rmSync(inl, { recursive: true, force: true });
+    }
+  }
+
+  // buildSingleFile — cdn (default) vs inlined; siblings is invalid.
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-deliv-sf-'));
+    try {
+      const soloPath = join(dir, 'solo.emd');
+      writeFileSync(soloPath, '<meta type=article>\n<title | Solo</title>\n</meta>\n\n<section | S>\n\nProse with $x$ math.');
+
+      const cdn = buildSingleFile({ master: soloPath, warn: () => {} });   // delivery defaults to cdn
+      assert.strictEqual(cdn.delivery, 'cdn', 'single-file delivery defaults to cdn');
+      assert.ok(cdn.html.includes('src="https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/enscribe.browser.global.js"'),
+        'cdn single-file: engine referenced from jsDelivr');
+
+      const inl = buildSingleFile({ master: soloPath, delivery: 'inlined', warn: () => {} });
+      assert.strictEqual(inl.delivery, 'inlined', 'single-file delivery inlined recorded');
+      const inlShell = stripEngine(inl.html);   // exclude the inlined engine's <link>/<script src> string literals
+      assert.ok(!inlShell.includes('<script src=') && !inlShell.includes('<link rel="stylesheet"'),
+        'inlined single-file: engine + CSS embedded, no references');
+      assert.ok(inl.html.includes('@font-face') && inl.html.includes("documentFontsCss: 'skip'"),
+        'inlined single-file: display assets inlined + the render skips re-linking them');
+      assert.deepStrictEqual(netRefs(inl.html),
+        ['https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/editor-codemirror.js'],
+        'inlined single-file (#364): offline to READ; the editor loads from the CDN until #365 inlines it');
+
+      assert.throws(() => buildSingleFile({ master: soloPath, delivery: 'siblings', warn: () => {} }),
+        /siblings is invalid for a single file/, 'single-file rejects siblings (it has no siblings)');
+      console.log('PASS: #363/#364 cli — buildSingleFile cdn (default) vs inlined; siblings rejected');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
 }

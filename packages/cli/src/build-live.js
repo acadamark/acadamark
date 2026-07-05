@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve, extname } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, emitSingleFileShell, extractDocumentTitle } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, emitSingleFileShell, extractDocumentTitle, getInlineDisplayHead, SINGLE_FILE_ASSETS } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { resolvePageSource, pageDirAssets } from './static-website.js';
@@ -49,15 +49,35 @@ export const SHELL_ASSET_SPECS = {
  * presence first if graceful degradation is wanted.
  *
  * @param {string} destDir - directory to copy the assets into (created if missing).
- * @returns {string[]} the copied filenames (the keys of SHELL_ASSET_SPECS).
+ * @param {string[]} [only] - copy just this subset of SHELL_ASSET_SPECS names (the `inlined` delivery
+ *   copies ONLY the editor sibling — engine + CSS are inlined into the shell). Default: all four.
+ * @returns {string[]} the copied filenames.
  */
-export function copyShellAssets(destDir) {
+export function copyShellAssets(destDir, only) {
   mkdirSync(destDir, { recursive: true });
-  for (const [name, spec] of Object.entries(SHELL_ASSET_SPECS)) {
-    copyFileSync(require.resolve(spec), join(destDir, name));
+  const names = only ?? Object.keys(SHELL_ASSET_SPECS);
+  for (const name of names) {
+    copyFileSync(require.resolve(SHELL_ASSET_SPECS[name]), join(destDir, name));
   }
-  return Object.keys(SHELL_ASSET_SPECS);
+  return names;
 }
+
+// Read the chrome + display bytes for the INLINED asset-delivery mode (#364): the engine bundle, the
+// two chrome stylesheets, and the document-display <style> pair (fonts + KaTeX, via the single-source
+// getInlineDisplayHead). Resolved from the SAME package exports copyShellAssets copies — one authority
+// (SHELL_ASSET_SPECS), so inlined and siblings can never ship different bytes. The bundled editor
+// (`inline.editor`) is added by #365; here the editor rides its href delivery (sibling / CDN).
+function readInlineChrome() {
+  return {
+    engine: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe.browser.global.js']), 'utf8'),
+    defaultCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['default.css']), 'utf8'),
+    shellCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe-shell.css']), 'utf8'),
+    displayHead: getInlineDisplayHead(),
+  };
+}
+
+// The asset-delivery values the CLI `--assets` option exposes (delivery-modes.md §"Asset delivery").
+const DELIVERY_VALUES = new Set(['siblings', 'cdn', 'inlined']);
 
 /**
  * Discover a master document's `<… src>` structure children — the same `master + its src children`
@@ -124,9 +144,17 @@ export function discoverWebsitePages(masterSource) {
  * @param {string} [opts.title] - the shell <title>. Order: explicit `title` → the master
  *   document's own `<title>` → the master filename (#228).
  * @param {boolean} [opts.edit=false] - default the shell to the editor (#213; `?edit` always works).
- * @returns {{ outDir: string, master: string, children: string[], assets: string[] }}
+ * @param {'siblings'|'cdn'|'inlined'} [opts.delivery='siblings'] - the chrome asset-delivery mode
+ *   (#363/#364; delivery-modes.md §"Asset delivery"). `siblings` (default) copies the four chrome assets
+ *   flat and references them; `cdn` copies none and references the pinned jsDelivr package; `inlined`
+ *   embeds engine + CSS + display assets in the shell (copying only the editor sibling), so the served
+ *   folder needs no network. The document `.emd` content is copied flat in every mode (it is fetched).
+ * @returns {{ outDir: string, master: string, children: string[], assets: string[], delivery: string }}
  */
-export function buildLiveFolder({ master, outDir, title, edit = false }) {
+export function buildLiveFolder({ master, outDir, title, edit = false, delivery = 'siblings' }) {
+  if (!DELIVERY_VALUES.has(delivery)) {
+    throw new Error(`buildLiveFolder: unknown asset delivery "${delivery}" (expected siblings | cdn | inlined)`);
+  }
   const masterPath = resolve(master);
   const out = resolve(outDir);
   mkdirSync(out, { recursive: true });
@@ -215,19 +243,33 @@ export function buildLiveFolder({ master, outDir, title, edit = false }) {
     }
   }
 
-  // 2. the shell assets + engine bundle, copied flat into the folder (assetBase './').
-  copyShellAssets(out);
+  // 2. the chrome assets, per the delivery mode (#363/#364). `siblings` copies all four flat; `cdn`
+  //    copies none (the shell references the pinned jsDelivr package); `inlined` copies ONLY the editor
+  //    sibling (engine + CSS + display are inlined into the shell). The document `.emd` content copied
+  //    above is unchanged — every mode fetches it; delivery is about the chrome only.
+  let copiedAssets;                 // the chrome filenames written into the folder (informational)
+  let shellAssetOpts;               // the emitLiveShell asset options for this delivery
+  if (delivery === 'cdn') {
+    copiedAssets = [];
+    shellAssetOpts = { assets: SINGLE_FILE_ASSETS };
+  } else if (delivery === 'inlined') {
+    copiedAssets = copyShellAssets(out, ['editor-codemirror.js']);   // editor rides sibling (#364); engine/CSS inlined
+    shellAssetOpts = { assetBase: './', inline: readInlineChrome() };
+  } else {                          // siblings (the deployed default)
+    copiedAssets = copyShellAssets(out);
+    shellAssetOpts = { assetBase: './' };
+  }
 
-  // 3. the emitted live shell — flat assetBase, so every reference resolves inside the folder.
-  //    Title default (#228): explicit `title` → the document's own `<title>` → the filename.
+  // 3. the emitted live shell. Title default (#228): explicit `title` → the document's own `<title>` →
+  //    the filename. The delivery-specific asset options select siblings / cdn / inlined.
   const shellTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
   writeFileSync(
     join(out, 'index.html'),
-    emitLiveShell({ master: masterName, title: shellTitle, edit, assetBase: './' }),
+    emitLiveShell({ master: masterName, title: shellTitle, edit, ...shellAssetOpts }),
     'utf8',
   );
 
-  return { outDir: out, master: masterName, children, assets: Object.keys(SHELL_ASSET_SPECS) };
+  return { outDir: out, master: masterName, children, assets: copiedAssets, delivery };
 }
 
 // #313 slice 4 — binary packaging: embed a single file's EXTERNAL referenced assets into its source so
@@ -349,10 +391,20 @@ function embedExternalAssets(source, tree, masterDir, warn) {
  * @param {string} [opts.title] - the page <title>. Order: explicit → the document's `<title>` → filename.
  * @param {boolean} [opts.edit=false] - default the editable file to the editor (`?edit` always works).
  * @param {string} [opts.assetBase] - override the web asset base (default: jsDelivr; see emit-shell.js).
+ * @param {'cdn'|'inlined'} [opts.delivery='cdn'] - the chrome asset-delivery mode (#363/#364). `cdn`
+ *   (default) references the pinned jsDelivr package; `inlined` embeds engine + CSS + display assets in
+ *   the file so it opens from `file://` with NO network at all. `siblings` is invalid for a single file
+ *   (there are no siblings) and throws.
  * @param {(msg:string)=>void} [opts.warn=console.warn] - warning sink (the CLI silences it under --quiet).
- * @returns {{ html: string, master: string, editable: boolean, childSrcs: string[], websitePages: string[], type: string, embeddedAssets: number }}
+ * @returns {{ html: string, master: string, editable: boolean, childSrcs: string[], websitePages: string[], type: string, embeddedAssets: number, delivery: string }}
  */
-export function buildSingleFile({ master, title, edit = false, assetBase, warn = (m) => console.warn(m) }) {
+export function buildSingleFile({ master, title, edit = false, assetBase, delivery = 'cdn', warn = (m) => console.warn(m) }) {
+  if (delivery === 'siblings') {
+    throw new Error('buildSingleFile: --assets siblings is invalid for a single file (it has no siblings); use cdn or inlined');
+  }
+  if (!DELIVERY_VALUES.has(delivery)) {
+    throw new Error(`buildSingleFile: unknown asset delivery "${delivery}" (expected cdn | inlined)`);
+  }
   const masterPath = resolve(master);
   const masterName = basename(masterPath);
   const masterDir = dirname(masterPath);
@@ -382,6 +434,8 @@ export function buildSingleFile({ master, title, edit = false, assetBase, warn =
   const { source: packagedSource, embedded: embeddedAssets } = embedExternalAssets(masterSource, tree, masterDir, warn);
 
   const fileTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
-  const html = emitSingleFileShell({ source: packagedSource, title: fileTitle, edit, editable, assetBase });
-  return { html, master: masterName, editable, childSrcs, websitePages, type, embeddedAssets };
+  // INLINED delivery (#364): embed the chrome + display bytes so the file needs no network at all.
+  const inline = delivery === 'inlined' ? readInlineChrome() : undefined;
+  const html = emitSingleFileShell({ source: packagedSource, title: fileTitle, edit, editable, assetBase, inline });
+  return { html, master: masterName, editable, childSrcs, websitePages, type, embeddedAssets, delivery };
 }

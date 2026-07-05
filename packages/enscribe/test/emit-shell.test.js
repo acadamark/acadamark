@@ -11,7 +11,7 @@ import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { emitLiveShell, resolveShellAssets } from '../src/interpreter/index.js';
+import { emitLiveShell, emitSingleFileShell, resolveShellAssets, getInlineDisplayHead } from '../src/interpreter/index.js';
 import { HEAD_ASSET_LINKS } from '../src/interpreter/assets/font-loader.js';
 import { MASTER_BOOK_SHELL_PARAMS } from './fixtures/master-book/shell-params.mjs';
 
@@ -116,6 +116,52 @@ export async function run() {
     assert.ok(!/fonts\.googleapis\.com/.test(outsideSource),
       '#296: no document-fonts CDN URL appears outside HEAD_ASSET_LINKS (no independent hardcoded copy)');
     console.log('PASS: #296 — the live shell head links its document assets only via HEAD_ASSET_LINKS (last fork closed)');
+  }
+
+  // ── INLINED delivery (#364): chrome + display assets embedded; the artifact needs no network ────────
+  //    The `inline` bytes are supplied by the caller (build-live.js reads them). We hand small stand-ins
+  //    for engine/CSS and the REAL getInlineDisplayHead() (fonts + KaTeX <style>), and assert the emitter
+  //    embeds them instead of referencing them. The inlined engine carries CDN URL LITERALS (KaTeX/DSL
+  //    constants) internally, so a "no network" check must look at the shell OUTSIDE the inlined engine
+  //    <script> — real resource references are `href=/src="http"` attributes and `import('http')`, none
+  //    of which the inlined chrome emits (the editor is the one exception in single-file, #365 closes it).
+  {
+    const displayHead = getInlineDisplayHead();
+    assert.ok(displayHead.includes('@font-face') && displayHead.includes('<style>'),
+      'getInlineDisplayHead: inline <style> with base64 @font-face (the offline counterpart of HEAD_ASSET_LINKS)');
+    const inline = {
+      engine: 'window.enscribe={render(){}};/* engine </script> guard */',
+      defaultCss: '.d{}', shellCss: '.s{}', displayHead,
+    };
+    // strip the inlined engine <script>…</script> (its internal URL literals are not resource refs)
+    const stripEngine = (h) => h.replace(/<script>[\s\S]*?<\/script>/, '<script>ENGINE</script>');
+    const realRefs = (h) => [...stripEngine(h).matchAll(/(?:href|src)="(https?:[^"]+)"|import\('(https?:[^']+)'/g)]
+      .map((m) => m[1] || m[2]);
+
+    // engine </script> in the bytes is neutralized so it can't terminate the inline <script> early.
+    const live = emitLiveShell({ master: 'index.emd', inline, assetBase: './' });
+    assert.ok(live.includes('<style>\n.d{}\n</style>') && live.includes('<style>\n.s{}\n</style>'),
+      'inlined live: chrome CSS embedded as <style>, not <link>');
+    assert.ok(!live.includes('<link rel="stylesheet"'), 'inlined live: no <link> stylesheet references');
+    assert.ok(!live.includes('<script src='), 'inlined live: the engine is an inline <script>, not a src reference');
+    assert.ok(live.includes('window.enscribe={render(){}}') && live.includes('<\\/script>'),
+      'inlined live: engine bytes inlined with </script> neutralized');
+    assert.ok(live.includes("documentFontsCss: 'skip', katexCss: 'skip'"),
+      'inlined live: the render SKIPS re-linking display assets (the head already inlines them → offline)');
+    assert.ok(live.includes("import('./editor-codemirror.js')"),
+      'inlined live (#364): the editor rides its SIBLING delivery (already offline); #365 inlines it');
+    assert.deepStrictEqual(realRefs(live), [],
+      'inlined live folder: ZERO real network references — fully offline (editor is a local sibling)');
+
+    const sf = emitSingleFileShell({ source: '<meta type=article><title|T></meta>', title: 'T', editable: true, inline });
+    assert.ok(sf.includes('<template id="enscribe-source">'), 'inlined single-file still embeds the source');
+    assert.ok(!sf.includes('<script src=') && !sf.includes('<link rel="stylesheet"'),
+      'inlined single-file: engine + CSS embedded, no references');
+    assert.ok(sf.includes("documentFontsCss: 'skip', katexCss: 'skip'"),
+      'inlined single-file: the render skips re-linking display assets');
+    assert.deepStrictEqual(realRefs(sf), ['https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/editor-codemirror.js'],
+      'inlined single-file (#364): offline to READ; the editor still loads from the CDN until #365 inlines it');
+    console.log('PASS: #364 — inlined delivery embeds engine + CSS + display assets; live folder is fully offline, single-file offline-to-read');
   }
 
   console.log('All live-shell emitter (#215) checks passed.');
