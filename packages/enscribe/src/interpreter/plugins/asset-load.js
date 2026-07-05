@@ -239,7 +239,7 @@ export function buildAssetIndex(tree, file) {
  * and return the stored entry (or a not-found signal). It makes NO media assumption — no
  * `data:` URI, no `<img>`, no grid, no parse. Each CONSUMER interprets what it gets back
  * (`<fig>` → an image; `<table>` → a parsed grid; `<diagram>` → engine source; `<code>` →
- * verbatim text; a future `<plot>` → its own reading). Every consumer calls this; the
+ * verbatim text; each new consumer, its own reading). Every consumer calls this; the
  * interpretation lives in each consumer, not here.
  *
  *   - `src` not an `@`-ref   → null  (the caller keeps its own non-@ path, e.g. a file src)
@@ -501,7 +501,7 @@ function lintInlineCodeWhitespace(node, file) {
  * Runs BEFORE numbering, so a placed figure registers under its adopted id and an errored ref is turned
  * into a non-numbered __asset-error (never counted — this matters for the numbered `<diagram>` too).
  * Use-sites without an `@`-src are untouched (a non-@ table `src` is a file path; output is byte-identical).
- * A future `<plot>` is the next trivial branch here — same resolveAssetReference, its own interpret.
+ * A new consumer is a trivial new branch here — same resolveAssetReference, its own interpretation.
  *
  * The same walk carries the multi-line-`<code>` authoring lint (lintInlineCodeWhitespace), placed AFTER
  * the dispatch so a `<code src="@id">` resolved to multi-line dataset bytes is nudged like an authored one.

@@ -33,12 +33,12 @@ behave (see *Piece 1*).
 
 **2. Interpretation belongs to the consuming element.** A **consuming element** decides what the bytes
 *mean*. The same opaque CSV becomes a grid under `<table src="@id">`, a syntax-highlighted listing
-under `<code src="@id">`, an image under `<fig src="@id">`, and a chart under a future plot element.
+under `<code src="@id">`, and an image under `<fig src="@id">`.
 Storage is shared; interpretation is the consumer's. Consumers are genuinely different — handled
 differently **by design**, not by a fork inside the store.
 
 **3. `@id` resolution is consumer-agnostic.** Resolution fetches the opaque bytes for an id and hands
-them to the use-site. It does **not** know or care whether the consumer is a fig / table / code / plot.
+them to the use-site. It does **not** know or care whether the consumer is a fig / table / code / diagram.
 The interpretation — a `data:` URI for an image, a parsed grid for a table, verbatim text for code —
 lives in **each consuming element**, not in the resolver. This is *less* code and *less* divergence,
 not more: **one neutral hand-off + N consumers**, not one resolver carrying a branch per type.
@@ -101,7 +101,7 @@ The neutral hand-off, in three steps that no consumer-type branch may contaminat
 2. **Hand off** those bytes to the use-site element.
 3. **The consumer interprets** them: `<fig>` → an `<img>` (`data:` URI for embedded, path for external);
    `<table>` → a parsed grid; `<code>` → verbatim highlighted text; `<dataset>` placed-as-data → its
-   consumer's reading; a future `<plot>` → a chart. Each consumer owns its interpretation.
+   consumer's reading. Each consumer owns its interpretation.
 
 **The split (#313 slice 2, built).** Resolution is neutral + per-consumer, in the one resolution pass
 (`asset-load.js`, `enscribeAssetResolution`), before numbering:
@@ -129,7 +129,7 @@ The neutral hand-off, in three steps that no consumer-type branch may contaminat
   multi-line `<code>` is nudged to a code block by a located build lint, never silently reflowed or
   rewritten). The diagram / code / code-block consumers share a small `readDatasetSource` helper for the
   resolve→bytes-or-error shape; `resolveTableSrc` predates it and keeps its own copy (it also reads an
-  external asset as a file `src`, a branch the others lack). A future `<plot>` is the next trivial branch:
+  external asset as a file `src`, a branch the others lack). A new consumer is a trivial new branch:
   same `resolveAssetReference`, its own interpretation.
 
 **All `@id` errors are visible, for every consumer (F2.1 — closed).** Before, an unresolved `@id` was a
@@ -188,10 +188,14 @@ Each consumer owns its **JATS projection** too, exactly as it owns its HTML inte
   srcs is disambiguated with a `-N` suffix; identical srcs dedupe to one copy) — noted as follow-ups, not
   needed for a valid, portable package. Tables/datasets need no packaging: their bytes are parsed and
   **inlined** into `<table-wrap>`/`<preformat>` before export, so nothing file-backed reaches emit.
-- **`<dataset>` → ? (OPEN QUESTION).** What a stored dataset projects to in JATS is an open design
-  question for the JATS slice — a candidate is `<supplementary-material>` (or, for a table consumer of
-  the dataset, the existing `<table-wrap>` path). **Not decided here**; named so the JATS slice owns it
-  rather than inventing a projection ad hoc.
+- **`<dataset>` → JATS is DONE-BY-CONSTRUCTION.** A stored `<dataset>` needs no standalone JATS
+  projection. A dataset that is *used* is resolved in-tree into its consumer before export — its bytes
+  inline into the consumer's own projection (a `<table-wrap>` for a table, `<preformat>` for a
+  code/diagram consumer), exactly as if the same content had been authored inline — so nothing
+  dataset-shaped reaches the exporter. A dataset that is *unused* is stripped at harvest. Either way no
+  standalone `<dataset>` node ever reaches emit, so there is nothing left to project. (Verified:
+  `packages/cli/test/jats-export.test.js` checks a dataset-fed consumer exports identically to the same
+  content authored inline — #313 piece 4, done-by-construction.)
 
 ---
 
@@ -217,9 +221,9 @@ first, interpretation per consumer, packaging last.
    a diagram's format-hint/engine mismatch is a visible error). Because resolution rewrites the node's
    content **in-tree before serialization**, a dataset-sourced diagram/code projects to JATS through each
    element's EXISTING projection (the resolved content, not the `@id`), so no consumer-specific JATS work
-   was needed for them. The `<dataset>`-element's OWN `<dataset>`→JATS projection (Piece 4) is still open
-   for the JATS slice; a `<plot src="@id">` consumer is the remaining trivial future caller of
-   `resolveAssetReference`.
+   was needed for them. The `<dataset>`-element needs no standalone JATS projection either — it is
+   **done-by-construction** (a used dataset inlines into its consumer before export; an unused one is
+   stripped; no standalone `<dataset>` reaches the exporter — Piece 4).
 4. **Binary packaging** — a document's EXTERNAL referenced assets are carried into each self-contained
    deliverable so it renders its assets when opened from anywhere. Two deliverables, each packaging in the
    form its format wants:
@@ -237,11 +241,11 @@ first, interpretation per consumer, packaging last.
    SCOPE: assets only — embedding external STRUCTURE children (book chapters / website pages =
    site-in-a-file) is a separate, still-deferred follow-on.
 
-This completes the #313 build sequence (slices 0–4); the `<diagram src="@id">` / `<code src="@id">`
-consumers (the consumer-wiring slice) fill out slice 3's per-consumer interpretation. The remaining
-#313-adjacent open items are the `<dataset>`→JATS projection (Piece 4 / the JATS slice), the
-`<plot src="@id">` consumer (a trivial future caller of `resolveAssetReference`), and site-in-a-file
-(external structure children in one file).
+This completes the #313 build sequence (slices 0–4): the `<diagram src="@id">` / `<code src="@id">`
+consumers (the consumer-wiring slice) fill out slice 3's per-consumer interpretation, and the
+`<dataset>`→JATS projection is done-by-construction (Piece 4). **#313 is closed.** The one remaining
+#313-*adjacent* item — a separate, still-deferred follow-on, not one of #313's pieces — is site-in-a-file
+(embedding external structure children, i.e. book chapters / website pages, in one file).
 
 **[#330] parallelizes.** #330 is an independent parser fix for mixed-content whitespace; it **cannot**
 affect stored data, because opaque content never enters the interpreted-content mixer (Piece 1). The
