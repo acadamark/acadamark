@@ -121,10 +121,22 @@ for the diagram family (mermaid, abc) today; the intent is to extend the same sh
 to tables and any other DSL-rendered content. *(Diagram-only is the current state, not the end state.)*
 
 ### Asset delivery — where the scripts and styles come from
-- **Baked in** (self-contained file) or **linked from the web** (CDN). Two values, not three — there is no
-  "link to your own server" option.
-- This choice governs the **static** output only. The live shell and editor always pull from the web; an
-  offline live mode is not built.
+- **The model of record is `notes/specs/delivery-modes.md` §"Asset delivery": three values —
+  `siblings` / `cdn` / `inlined`** (an earlier "two values" framing — baked-in vs linked-from-the-web —
+  under-counted: "linked" splits into *siblings* (assets copied flat next to the HTML, referenced by a
+  relative path) and *cdn* (referenced from the pinned jsDelivr package); "baked in" is *inlined*. There is
+  still no "link to your own server" option beyond pointing `cdn`/`siblings` at your own base.)
+- **The choice governs live + single-file too, not just static — and it is author-selectable** via
+  `enscribe build --assets <siblings|cdn|inlined>` ([#363](https://github.com/enscribejs/enscribe/issues/363)).
+  An **offline** artifact IS now built ([#364](https://github.com/enscribejs/enscribe/issues/364)): `inlined`
+  embeds the engine + CSS + fonts + KaTeX so a single-file opens from `file://` with no network, and a live
+  folder serves with no network. **The editor no longer always pulls from the web**: CodeMirror is bundled
+  into the shipped editor asset ([#362](https://github.com/enscribejs/enscribe/issues/362)) and the editor
+  *rides the same asset-delivery choice* ([#365](https://github.com/enscribejs/enscribe/issues/365)) —
+  sibling-copied, CDN-referenced, or inlined (blob-imported) — so an inlined editable file edits offline
+  too. (External-DSL diagram libs — mermaid/abc — are not bundled, so a diagram still loads its lib from the
+  CDN; text + math + fonts are fully offline. Defaults are unchanged: a live folder is `siblings`, a
+  single-file is `cdn`.)
 - **The static website links shared assets; it does not bake per page.** Where a standalone document may
 inline its CSS and runtime for self-containment, the multi-page website links one shared `default.css`
 and one shared DSL runtime instead of stamping a copy into each of its pages. Baking per page would

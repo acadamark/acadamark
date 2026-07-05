@@ -108,14 +108,13 @@ defines the single-file mode below.
   identical assets, otherwise an asset-IDENTITY follow-up (the data-store `@id` model, #313-adjacent),
   not a deploy move.
 - *CDN* — the same shell with asset hrefs pointing at a CDN instead of siblings (smaller folder,
-  network dependency). Display assets (fonts, KaTeX) are already CDN by default; the engine/CSS
-  *could* be too — reachable through the asset seam, but not emitted by a build path today (see
-  §"Asset delivery").
-- *Inlined* — engine + CSS embedded in the shell (a conceptual profile — **not built today**; see
-  §"Asset delivery"). This would make the shell heavier but remove the sibling assets; note that
-  inlining *assets* would not by itself make the document single-file, because the **content** is
-  still fetched. (Inlined-assets + fetched-content is a valid Live profile in principle;
-  embedded-*content* is what crosses into single-file.)
+  network dependency). Display assets (fonts, KaTeX) are already CDN by default; the engine/CSS are too
+  under **`--assets cdn`** (#363), which points the emitter's `assets` at the pinned jsDelivr package.
+- *Inlined* — engine + CSS (and fonts + KaTeX + the editor) embedded in the shell, built under
+  **`--assets inlined`** (#364/#365): a served folder with no network dependency for its chrome. Note
+  that inlining *assets* does not by itself make the document single-file, because the **content** is
+  still fetched (a live folder still serves its `.emd` content over HTTP); embedded-*content* is what
+  crosses into single-file.
 
 **Capability on Live:** `?edit` (or `data-enscribe-edit` on the mount) selects the Write/Preview
 editor; default is read. Edits are preview-only in the current build (in-memory, no save). The edit
@@ -233,15 +232,16 @@ in `emit-shell.js`) — so a new asset profile is a different value at that seam
 shell or a different engine. This is why asset delivery is an axis and not a mode: it changes href
 strings, not the artifact's contract.
 
-**Wired vs reachable (verified against code).** Only **siblings** is wired today: it is the deployed
-default — `buildLiveFolder` (`build-live.js`) copies the four chrome assets flat next to the shell and
-emits it with `assetBase: './'`. **CDN** for the chrome assets is *reachable through the seam* — the
-emitter's `assets` parameter accepts any href, so pointing it at a CDN URL would emit CDN `<link>` /
-`<script>` references — but **no build path emits it**. **Inlined** chrome assets are **not built**:
-the shell only ever emits href / `src` *references*, so inlining is not a value of the href seam at
-all — it would need a different shell shape (embedding the engine/CSS content), which does not exist.
-(This is the *chrome* assets only; the *display* assets — fonts, KaTeX — are already CDN by default,
-routed through the single head-asset source `HEAD_ASSET_LINKS`, independent of this seam.)
+**All three are wired (verified against code).** The `enscribe build --assets <siblings|cdn|inlined>`
+option (#363) selects the value, honored by `--live` and `--single-file`. **Siblings** (the deployed
+default for `--live`) copies the four chrome assets flat next to the shell and emits it with
+`assetBase: './'` (`buildLiveFolder`). **CDN** (the default for `--single-file`) references the pinned
+jsDelivr package (`SINGLE_FILE_ASSETS`) and copies no chrome. **Inlined** *embeds* the engine + CSS
+content — a classic `<script>` (IIFE) / `<style>` — rather than referencing it: a different shell shape
+the emitter now emits (`emitLiveShell` / `emitSingleFileShell` `inline` bytes path, #364), with the
+bundled editor inlined too (carried in an escaped `<template>`, blob-imported lazily; #365). (This is
+the *chrome* assets; the *display* assets — fonts, KaTeX — are CDN by default via `HEAD_ASSET_LINKS`
+and inlined via its single-source counterpart `getInlineDisplayHead` under `--assets inlined`.)
 
 ## Cross-cutting axis: Capability
 
@@ -264,19 +264,21 @@ discriminator that separates Static from the others.
 
 - **Static** — built (canonical/default site delivery; single static documents likewise).
 - **Live** — built (shell + fetch + runtime dispatch; `?edit` editor; sibling assets the deployed
-  default). Of the chrome asset-delivery profiles, **only siblings is wired** (the deployed default);
-  **CDN is reachable through the asset seam** (point the emitter's `assets` at a CDN href) but emitted
-  by no build path; **inlined chrome assets are not built** (the shell emits only href / `src`
-  references). See §"Asset delivery". (Display assets — fonts/KaTeX — are already CDN, separately.)
+  default). All three chrome asset-delivery profiles are now **wired and author-selectable** via
+  `enscribe build --assets <siblings|cdn|inlined>` (#363): **siblings** (default), **cdn** (pinned
+  jsDelivr), and **inlined** (engine + CSS + display + editor embedded → a no-network served folder;
+  #364/#365). See §"Asset delivery". (Display assets — fonts/KaTeX — are CDN by default, separately.)
 - **Single-file** — **built for one self-contained document.** `build --single-file` embeds the `.emd`
   in a `<template>` and mounts it via `mountLiveDocument` (read-from-provided-source, no master fetch);
   editable iff self-contained (`childSrcs.length === 0`), else render-only with a warning; chrome +
   display assets load from the web (the **pinned npm package** `@enscribejs/enscribe@0.4.1` on
-  jsDelivr — *not* `raw.githubusercontent.com`, which serves `text/plain`+`nosniff` and won't execute). **Still unbuilt:** site-in-a-file (embedding a multi-
-  document master's children) and inlined-offline assets (open from `file://` with no network). The
-  read-path seam is shared with #288, but #288 does **not** fall out free — over `file://` a page
-  cannot fetch siblings, so in-place needs HTTP (or the children inlined); only #288-over-HTTP is
-  near-free on the seam.
+  jsDelivr — *not* `raw.githubusercontent.com`, which serves `text/plain`+`nosniff` and won't execute)
+  under the **`--assets cdn`** default; **`--assets inlined`** (#364/#365) instead embeds the engine +
+  CSS + fonts + KaTeX + the bundled editor so the file opens from `file://` with **no network at all**
+  (external-DSL diagram libs still load from the CDN). **Still unbuilt:** site-in-a-file (embedding a
+  multi-document master's children). The read-path seam is shared with #288, but #288 does **not** fall
+  out free — over `file://` a page cannot fetch siblings, so in-place needs HTTP (or the children
+  inlined); only #288-over-HTTP is near-free on the seam.
 
 This document is the single home for the *delivery-mode model*; whether each mode is built is a
 STATUS/ROADMAP question, tracked there. The spec relocates and unifies a model previously implicit
