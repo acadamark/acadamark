@@ -76,7 +76,7 @@ three content-model states:
 | State | `contains` reading | `<p>` valid inside? | Single-paragraph pipe body | Why |
 |---|---|---|---|---|
 | **phrasing** | `[inline]` (inline only) | no | **unwrap** to inline children | a `<p>` is *invalid* inside (e.g. `<em><p>x</p></em>` is invalid HTML); unwrapping is a **correctness** requirement, not a choice |
-| **flow** | includes `block`, not `inline` (e.g. `[block]`, `[block, section]`) | yes | **wrap** in `<p>` | consistency (single ≡ multi), uniform CSS targeting (`abstract p {…}`), structural uniformity for consumers (JATS models this as `<p>`), least-surprise; matches Pandoc / CommonMark / HTML / JATS |
+| **flow** | includes `block`, not `inline` (e.g. `[block]`, `[block, section]`) | yes | **wrap** in `<p>` | consistency (single ≡ multi), uniform CSS targeting (`abstract p {…}`), structural uniformity for consumers (JATS and TEI model this as `<p>`), least-surprise; matches Pandoc / CommonMark / HTML / JATS |
 | **tight/loose** | `[inline, block]` (both) | yes | **stay bare (tight)**; multiple paragraphs **wrap (loose)** | the Markdown/Pandoc list-item (tight-vs-loose) convention — the one case where a single-paragraph stays bare for a non-phrasing element |
 
 The rule is therefore **derivable, not arbitrary**: classify any element by whether a `<p>` is valid in

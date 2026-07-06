@@ -20,6 +20,7 @@ The relevant docs are:
 - `DESIGN.md` — design rationale.
 - `STATUS.md` — current state, what's done, what's next.
 - `ROADMAP.md` — the release plan and targets. Open work lives in GitHub Issues (by milestone and label).
+- `notes/jats-is-not-the-center.md` — why JATS is a reference model and export target, not the project's purpose; read to avoid the recurring JATS-centrism drift.
 - `notes/specs/ehtml-naming.md` — eHTML vocabulary rules.
 - `notes/specs/shorthand-syntax.md` — parser specification.
 - `notes/specs/idioms.md` — delegation principle (enscribe hands off to existing parsers wherever possible).

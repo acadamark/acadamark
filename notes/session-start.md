@@ -14,6 +14,7 @@ From `raw.githubusercontent.com/enscribejs/enscribe/main/`:
 - `DESIGN.md` — the design rationale and philosophy. The most important doc for reasoning in-grain.
 - `STATUS.md` — what's shipped and the current position (so you don't propose building shipped things).
 - `CONTRIBUTING.md` — the workflow and the **doc index** — your map to every spec. Use it to pick what to read next.
+- `notes/jats-is-not-the-center.md` — why JATS is a reference model and export target, not the project's purpose; read to avoid the recurring JATS-centrism drift.
 
 (`raw.githubusercontent.com` isn't rate-limited; the GitHub API is — Ariel uploads issue JSON or tree listings when the API is needed.)
 
