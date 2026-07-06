@@ -2,7 +2,7 @@
 <title | The Enscribe Vocabulary>
 <subtitle | Every author-facing construct — registers, arguments, and live examples>
 <author>
-<name | Generated from the Enscribe vocabulary source>
+<name | Generated from the Enscribe vocabulary source (docs-gen/generate-docs.mjs)>
 </author>
 </meta>
 
@@ -18,5 +18,4 @@
 <chapter src="stores.emd" | Stores>
 <chapter src="declarations-and-metadata.emd" | Declarations & metadata>
 <chapter src="structural-scaffolding.emd" | Structural scaffolding>
-
 <chapter src="showcase.emd" | Showcase>

@@ -92,9 +92,12 @@ function check(label, cond) {
 //   echoes as escaped literal text like any unknown tag). Net: 109 → 108 primary.
 // - 2026-07-02: #333 — `marginnote.md` removed (collapsed into `<note position=margin>`: one note
 //   type, three positions foot/end/margin; a margin note now renders like any note). Net: 108 → 107 primary.
+// - 2026-07-05: #223 — `dataset.md` added (promoted to a first-class storage element with its own
+//   registry key + generated docs section; it was previously documented only inside `data.md`). Net:
+//   107 → 108 primary.
 check(
-  `VOCABULARY has 109 entries (107 primary + 'quote' and 'figure' aliases)`,
-  Object.keys(VOCABULARY).length === 109,
+  `VOCABULARY has 110 entries (108 primary + 'quote' and 'figure' aliases)`,
+  Object.keys(VOCABULARY).length === 110,
 );
 
 // Build-time loader has nothing to report in normal state.

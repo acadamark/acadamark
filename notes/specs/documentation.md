@@ -80,8 +80,12 @@ for the specific case where the spec may be the correct party.)
 
 ## Relationship / status
 
-- **Realizes #223.** #223 is "the docs are generated from the spec." Its remaining work is the
-  spec↔code audit and the generator; the current hand-authored pages are the interim, not the end.
+- **Realizes #223.** #223 is "the docs are generated from the spec." The spec↔code audit
+  (`~/enscribe-reports/vocab-drift-audit.md`) and the generator (`docs-gen/generate-docs.mjs`, wired
+  into `build:site` via the `docs:gen` script) are built; the hand-authored vocabulary + authoring
+  pages are now generator output. Remaining: the em/strong prose and `remark` numbering the audit
+  surfaced (the concurrent `spec-reconcile` slice) flow into the generated pages on the next
+  regeneration; and the authoring guide's per-family template can grow richer common-path prose.
 - **Supersedes hand-editing.** Fixing a rendered docs glitch by editing a `docs-source/*.emd`
   page is patching generator output; the fix belongs in the generator (or the element spec it
   reads). The only exceptions are genuine **engine** bugs surfaced via the docs (e.g. the

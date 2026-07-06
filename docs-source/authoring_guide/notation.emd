@@ -1,0 +1,210 @@
+Foreign formal-language content a DSL owns — mathematics and code, embedded when small and exhibited when large.
+
+<section #ag-align | `<align>`>
+
+Compiles to eHTML `<align>`.
+
+<code-block #code:ag-align-1>
+<align>
+x^2 + y^2 &= z^2 \\
+a + b &= c
+</align>
+</code-block>
+
+<minipage #mp:ag-align-1>
+<align>
+x^2 + y^2 &= z^2 \\
+a + b &= c
+</align>
+</minipage>
+
+*Two aligned equations. The `&amp;` marks the alignment column (here,
+the `=` sign). Handler wraps in `\begin{aligned}...\end{aligned}`
+(KaTeX-compatible variant of LaTeX's `align`).*
+
+</section>
+
+<section #ag-cases | `<cases>`>
+
+Compiles to eHTML `<cases>`.
+
+<code-block #code:ag-cases-1>
+<cases>
+x^2 & \text{if } x \ge 0 \\
+-x^2 & \text{if } x < 0
+</cases>
+</code-block>
+
+<minipage #mp:ag-cases-1>
+<cases>
+x^2 & \text{if } x \ge 0 \\
+-x^2 & \text{if } x < 0
+</cases>
+</minipage>
+
+*A two-case piecewise definition. Handler wraps in
+`\begin{cases}...\end{cases}`.*
+
+</section>
+
+<section #ag-code | `<code>`>
+
+Compiles to eHTML `<code>`.
+
+<code #code:ag-code-1>
+The function is `factorial`.
+</code>
+
+<minipage #mp:ag-code-1>
+The function is `factorial`.
+</minipage>
+
+*Plain markdown backticks produce inline &lt;code&gt;. The most common
+authoring path.*
+
+</section>
+
+<section #ag-code-block | `<code-block>`>
+
+Compiles to eHTML `<code-block>`.
+
+<code #code:ag-code-block-1>
+<``` python | print("hello, world") ```>
+</code>
+
+<minipage #mp:ag-code-block-1>
+<``` python | print("hello, world") ```>
+</minipage>
+
+*The triple-backtick sigil. The first positional token is the
+language (emitted as a `language-X` class on the &lt;code&gt;); the pipe
+separates it from the verbatim, whitespace-preserving content — the
+pipe-form padding (the spaces around the content) is KEPT, since
+whitespace in code is significant and visible to the reader. (#327)*
+
+</section>
+
+<section #ag-display-math | `<display-math>`>
+
+Compiles to eHTML `<display-math>`.
+
+<code #code:ag-display-math-1>
+<$$ \sum_{i=1}^{n} x_i = X $$>
+</code>
+
+<minipage #mp:ag-display-math-1>
+<$$ \sum_{i=1}^{n} x_i = X $$>
+</minipage>
+
+*The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
+numbered by default (the equation number is appended after the KaTeX
+output).*
+
+</section>
+
+<section #ag-eqnarray | `<eqnarray>`>
+
+Compiles to eHTML `<eqnarray>`.
+
+<code-block #code:ag-eqnarray-1>
+<eqnarray>
+f(x) &=& x^2 \\
+g(x) &=& 2x
+</eqnarray>
+</code-block>
+
+<minipage #mp:ag-eqnarray-1>
+<eqnarray>
+f(x) &=& x^2 \\
+g(x) &=& 2x
+</eqnarray>
+</minipage>
+
+*Two equations rendered via KaTeX's `aligned` env (the supported
+equivalent of LaTeX's `eqnarray`).*
+
+</section>
+
+<section #ag-inline-code | `<inline-code>`>
+
+Compiles to eHTML `<inline-code>`.
+
+<code #code:ag-inline-code-1>
+Assign with <` x = 1 `> at the top of the function.
+</code>
+
+<minipage #mp:ag-inline-code-1>
+Assign with <` x = 1 `> at the top of the function.
+</minipage>
+
+*The single-backtick sigil. With no pipe, the whole body is opaque
+code content rendered as &lt;code&gt; (the same output as a markdown
+backtick span). Whitespace in code is significant and preserved, so
+the pipe-form padding stays INSIDE the &lt;code&gt;. (#327)*
+
+</section>
+
+<section #ag-inline-math | `<inline-math>`>
+
+Compiles to eHTML `<inline-math>`.
+
+<code #code:ag-inline-math-1>
+The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+</code>
+
+<minipage #mp:ag-inline-math-1>
+The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
+</minipage>
+
+*The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
+wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no
+attributes — id and classes are not supported for inline math.*
+
+</section>
+
+<section #ag-math | `<math>`>
+
+Compiles to eHTML `<math>`.
+
+<code-block #code:ag-math-1>
+<math>
+E = mc^2
+</math>
+</code-block>
+
+<minipage #mp:ag-math-1>
+<math>
+E = mc^2
+</math>
+</minipage>
+
+*Long-form `&lt;math&gt;` block. Semantically equivalent to the
+`&lt;$$ E = mc^2 $$&gt;` display-math sigil — both render block-level
+LaTeX math via KaTeX. Use the long-form when the source is
+multi-line or when explicit tag bounds aid readability; use the
+sigil for brevity.*
+
+</section>
+
+<section #ag-matrix | `<matrix>`>
+
+Compiles to eHTML `<matrix>`.
+
+<code-block #code:ag-matrix-1>
+<matrix>
+1 & 2 \\
+3 & 4
+</matrix>
+</code-block>
+
+<minipage #mp:ag-matrix-1>
+<matrix>
+1 & 2 \\
+3 & 4
+</matrix>
+</minipage>
+
+*A 2×2 matrix. The handler wraps the body in
+`\begin{matrix}...\end{matrix}` before KaTeX renders.*
+
+</section>

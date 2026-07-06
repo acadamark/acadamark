@@ -1,90 +1,4 @@
-Formal statements — theorems and their kin, their proofs, and the definitional structures (definition lists and glossaries).
-
-<section #sh-theorem | `<theorem>`>
-
-<sub-section | General Usage>
-
-Semantic role: *theorem*. Compiles to eHTML `<theorem>`.
-
-Registers:
-
-- Canonical: `<theorem>`
-
-<code #code:sh-theorem-1>
-<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
-</code>
-
-<minipage #mp:sh-theorem-1>
-<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
-</minipage>
-
-*Short-form with pipe content. The body is parsed normally.*
-
-<code-block #code:sh-theorem-2>
-<theorem name="Pythagoras" #thm:pyth>
-If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
-is right-angled.
-</theorem>
-</code-block>
-
-<minipage #mp:sh-theorem-2>
-<theorem name="Pythagoras" #thm:pyth>
-If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
-is right-angled.
-</theorem>
-</minipage>
-
-*Long-form with the optional name kwarg. Cross-referenceable via id (the "thm:" colon-prefix convention is consistent with "fig:", "eqn:", "sec:" elsewhere in enscribe). The name kwarg lifts to `data-name`; the Phase-2 handler will render it as the "(Pythagoras)" suffix to the label "Theorem N".*
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `name` | kwarg |  | Optional name suffix for the theorem's label (the "(Pythagoras)" half of "Theorem 1.2 (Pythagoras)"). Honored by the Phase-2 theorem handler at label-rendering time; until that handler lands, the kwarg flows through to the rendered HTML as `data-name="..."` via schema dispatch. LaTeX amsthm precedent: `\begin{theorem}[Pythagoras]`. |
-| `+numbered` | boolean | default `true` | Whether this theorem participates in the theorem-family shared counter (see "Numbering" below). Use +numbered (default) to number; -numbered to suppress. Can also be written as numbered=true / numbered=false. |
-
-</section>
-
-<section #sh-lemma | `<lemma>`>
-
-<sub-section | General Usage>
-
-Semantic role: *lemma*. Compiles to eHTML `<lemma>`.
-
-Registers:
-
-- Canonical: `<lemma>`
-
-<code #code:sh-lemma-1>
-<lemma | Every continuous function on a compact set attains its maximum.>
-</code>
-
-<minipage #mp:sh-lemma-1>
-<lemma | Every continuous function on a compact set attains its maximum.>
-</minipage>
-
-<code-block #code:sh-lemma-2>
-<lemma name="Zorn" #lem:zorn>
-Every non-empty partially-ordered set in which every chain has
-an upper bound contains a maximal element.
-</lemma>
-</code-block>
-
-<minipage #mp:sh-lemma-2>
-<lemma name="Zorn" #lem:zorn>
-Every non-empty partially-ordered set in which every chain has
-an upper bound contains a maximal element.
-</lemma>
-</minipage>
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `name` | kwarg |  | Optional name suffix for the lemma's label, parallel to <theorem>'s `name` kwarg. Honored by the Phase-2 handler. |
-| `+numbered` | boolean | default `true` | Whether this lemma participates in the propositional theorem- family shared counter. Default true; -numbered suppresses. |
-
-</section>
+Labeled formal units asserted in the argument — theorems, proofs, definitions, and the definitional structures.
 
 <section #sh-corollary | `<corollary>`>
 
@@ -120,49 +34,50 @@ Any continuous function on a closed interval is bounded.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `name` | kwarg |  | Optional name suffix for the corollary's label, parallel to <theorem>'s `name` kwarg. |
-| `+numbered` | boolean | default `true` | Whether this corollary participates in the propositional theorem-family shared counter. Default true. |
+| `name` | kwarg |  | Optional name suffix for the corollary's label, parallel to &lt;theorem&gt;'s `name` kwarg. |
+| `+numbered` / `-numbered` | flag | default on | Whether this corollary participates in the propositional theorem-family shared counter. |
 
 </section>
 
-<section #sh-proposition | `<proposition>`>
+<section #sh-dd | `<dd>`>
 
 <sub-section | General Usage>
 
-Semantic role: *proposition*. Compiles to eHTML `<proposition>`.
+Semantic role: *dd*. Compiles to eHTML `<dd>`.
 
 Registers:
 
-- Canonical: `<proposition>`
+- Canonical: `<dd>`
 
-<code #code:sh-proposition-1>
-<proposition | The sum of two even integers is even.>
+<code #code:sh-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
 </code>
 
-<minipage #mp:sh-proposition-1>
-<proposition | The sum of two even integers is even.>
+<minipage #mp:sh-dd-1>
+<dd | An academic publishing system built on HTML+CSS+JS.>
 </minipage>
 
-<code-block #code:sh-proposition-2>
-<proposition name="Cauchy-Schwarz">
-For any vectors $u$, $v$ in an inner-product space,
-$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
-</proposition>
+*A definition-list description. Appears as a child of &lt;dl&gt;,
+following the term it defines.*
+
+<code-block #code:sh-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
 </code-block>
 
-<minipage #mp:sh-proposition-2>
-<proposition name="Cauchy-Schwarz">
-For any vectors $u$, $v$ in an inner-product space,
-$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
-</proposition>
+<minipage #mp:sh-dd-2>
+<dd |
+A multi-paragraph definition.
+
+The second paragraph of the definition.
+>
 </minipage>
 
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `name` | kwarg |  | Optional name suffix for the proposition's label. |
-| `+numbered` | boolean | default `true` | Whether this proposition participates in the propositional theorem-family shared counter. Default true. |
+*Multi-paragraph descriptions are valid — the pipe content's
+paragraph structure is preserved.*
 
 </section>
 
@@ -203,144 +118,7 @@ $\cdot$ satisfying associativity, identity, and inverses.
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `name` | kwarg |  | Optional name suffix for the definition's label. |
-| `+numbered` | boolean | default `true` | Whether this definition participates in the definition counter. <definition> runs on its own counter (separate from the propositional theorem-family counter), matching amsthm's conventional "definition" theorem-style family. Default true. |
-
-</section>
-
-<section #sh-example | `<example>`>
-
-<sub-section | General Usage>
-
-Semantic role: *example*. Compiles to eHTML `<example>`.
-
-Registers:
-
-- Canonical: `<example>`
-
-<code #code:sh-example-1>
-<example | The integers under addition form a group.>
-</code>
-
-<minipage #mp:sh-example-1>
-<example | The integers under addition form a group.>
-</minipage>
-
-<code-block #code:sh-example-2>
-<example #ex:integers>
-The integers $\mathbb{Z}$ under addition form a group: the
-operation is associative, $0$ is the identity, and every
-integer has an additive inverse.
-</example>
-</code-block>
-
-<minipage #mp:sh-example-2>
-<example #ex:integers>
-The integers $\mathbb{Z}$ under addition form a group: the
-operation is associative, $0$ is the identity, and every
-integer has an additive inverse.
-</example>
-</minipage>
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `name` | kwarg |  | Optional name suffix for the example's label. |
-| `+numbered` | boolean | default `true` | Whether this example participates in the example counter. <example> runs on its own counter (separate from theorem, lemma, definition counters), matching amsthm's conventional "example" theorem-style family. Default true. |
-
-</section>
-
-<section #sh-remark | `<remark>`>
-
-<sub-section | General Usage>
-
-Semantic role: *remark*. Compiles to eHTML `<remark>`.
-
-Registers:
-
-- Canonical: `<remark>`
-
-<code #code:sh-remark-1>
-<remark | The converse does not hold in general.>
-</code>
-
-<minipage #mp:sh-remark-1>
-<remark | The converse does not hold in general.>
-</minipage>
-
-<code-block #code:sh-remark-2>
-<remark>
-The hypothesis of compactness is essential here; without it
-the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
-</remark>
-</code-block>
-
-<minipage #mp:sh-remark-2>
-<remark>
-The hypothesis of compactness is essential here; without it
-the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
-</remark>
-</minipage>
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `name` | kwarg |  | Optional name suffix for the remark's label. Honored by the Phase-2 handler even though <remark> is unnumbered (a named remark may render as "Remark (Name):" without a number). |
-| `+numbered` | boolean | default `false` | Whether this remark is numbered. Default false — <remark> is conventionally unnumbered (the "remark" theorem-style family in amsthm is unnumbered). An author who wants numbering can opt-in per instance with +numbered, but most usage relies on the default. |
-
-</section>
-
-<section #sh-proof | `<proof>`>
-
-<sub-section | General Usage>
-
-Semantic role: *proof*. Compiles to eHTML `<proof>`.
-
-Registers:
-
-- Canonical: `<proof>`
-
-<code-block #code:sh-proof-1>
-<theorem | The sum of two even integers is even.>
-
-<proof>
-Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
-even. $\square$
-</proof>
-</code-block>
-
-<minipage #mp:sh-proof-1>
-<theorem | The sum of two even integers is even.>
-
-<proof>
-Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
-even. $\square$
-</proof>
-</minipage>
-
-*The canonical pattern: &lt;theorem&gt; followed by sibling &lt;proof&gt;. The proof is NOT nested inside the theorem.*
-
-<code-block #code:sh-proof-2>
-<proof name="of Theorem 1.2">
-The argument follows from the preceding lemma.
-</proof>
-</code-block>
-
-<minipage #mp:sh-proof-2>
-<proof name="of Theorem 1.2">
-The argument follows from the preceding lemma.
-</proof>
-</minipage>
-
-*Optional `name` kwarg lets the proof identify what it proves (useful when the proof is separated from its theorem by intervening text).*
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `name` | kwarg |  | Optional name suffix — e.g. "Proof (of Theorem 1.2)" or "Proof (sketch)". Honored by the Phase-2 handler. |
-| `+numbered` | boolean | default `false` | Whether this proof is numbered. Default false — proofs are conventionally unnumbered (a proof's identity comes from the theorem it proves, not from a counter). An author who wants numbering can opt-in per instance with +numbered. |
+| `+numbered` / `-numbered` | flag | default on | Whether this definition participates in the definition counter. |
 
 </section>
 
@@ -376,7 +154,8 @@ Registers:
 </dl>
 </minipage>
 
-*Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural authoring pattern.*
+*Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural
+authoring pattern.*
 
 <code-block #code:sh-dl-2>
 <dl .compact>
@@ -426,47 +205,51 @@ Registers:
 <dt | <code | strict-mode>>
 </minipage>
 
-*Inline markup in a term. The recursive-content pass parses the pipe content normally.*
+*Inline markup in a term. The recursive-content pass parses the
+pipe content normally.*
 
 </section>
 
-<section #sh-dd | `<dd>`>
+<section #sh-example | `<example>`>
 
 <sub-section | General Usage>
 
-Semantic role: *dd*. Compiles to eHTML `<dd>`.
+Semantic role: *example*. Compiles to eHTML `<example>`.
 
 Registers:
 
-- Canonical: `<dd>`
+- Canonical: `<example>`
 
-<code #code:sh-dd-1>
-<dd | An academic publishing system built on HTML+CSS+JS.>
+<code #code:sh-example-1>
+<example | The integers under addition form a group.>
 </code>
 
-<minipage #mp:sh-dd-1>
-<dd | An academic publishing system built on HTML+CSS+JS.>
+<minipage #mp:sh-example-1>
+<example | The integers under addition form a group.>
 </minipage>
 
-*A definition-list description. Appears as a child of &lt;dl&gt;, following the term it defines.*
-
-<code-block #code:sh-dd-2>
-<dd |
-A multi-paragraph definition.
-
-The second paragraph of the definition.
->
+<code-block #code:sh-example-2>
+<example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+</example>
 </code-block>
 
-<minipage #mp:sh-dd-2>
-<dd |
-A multi-paragraph definition.
-
-The second paragraph of the definition.
->
+<minipage #mp:sh-example-2>
+<example #ex:integers>
+The integers $\mathbb{Z}$ under addition form a group: the
+operation is associative, $0$ is the identity, and every
+integer has an additive inverse.
+</example>
 </minipage>
 
-*Multi-paragraph descriptions are valid — the pipe content's paragraph structure is preserved.*
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the example's label. |
+| `+numbered` / `-numbered` | flag | default on | Whether this example participates in the example counter. |
 
 </section>
 
@@ -493,9 +276,22 @@ Registers:
 </glossary>
 </code-block>
 
-*Render pending — indented long-form closing tag not recognised → tag-error (issue #276).*
+<minipage #mp:sh-glossary-1>
+<glossary #project-terms>
+  <glossary-entry>
+    <dt | enscribe>
+    <dd | An academic publishing system built on HTML+CSS+JS.>
+  </glossary-entry>
+  <glossary-entry>
+    <dt | eHTML>
+    <dd | The canonical semantic HTML vocabulary.>
+  </glossary-entry>
+</glossary>
+</minipage>
 
-*A glossary with two entries. Each &lt;glossary-entry&gt; uses &lt;dt&gt;/&lt;dd&gt; for its term and definition (the same shapes &lt;dl&gt; uses), wrapped in the entry's own envelope for cross-reference / styling.*
+*A glossary with two entries. Each &lt;glossary-entry&gt; uses &lt;dt&gt;/&lt;dd&gt;
+for its term and definition (the same shapes &lt;dl&gt; uses), wrapped
+in the entry's own envelope for cross-reference / styling.*
 
 </section>
 
@@ -523,6 +319,236 @@ Registers:
 </glossary-entry>
 </minipage>
 
-*A single glossary entry. The id uses the "term:" colon-prefix convention so cross-references like &lt;ref @term:enscribe&gt; can resolve into the entry.*
+*A single glossary entry. The id uses the "term:" colon-prefix
+convention so cross-references like &lt;ref @term:enscribe&gt; can
+resolve into the entry.*
+
+</section>
+
+<section #sh-lemma | `<lemma>`>
+
+<sub-section | General Usage>
+
+Semantic role: *lemma*. Compiles to eHTML `<lemma>`.
+
+Registers:
+
+- Canonical: `<lemma>`
+
+<code #code:sh-lemma-1>
+<lemma | Every continuous function on a compact set attains its maximum.>
+</code>
+
+<minipage #mp:sh-lemma-1>
+<lemma | Every continuous function on a compact set attains its maximum.>
+</minipage>
+
+<code-block #code:sh-lemma-2>
+<lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+</lemma>
+</code-block>
+
+<minipage #mp:sh-lemma-2>
+<lemma name="Zorn" #lem:zorn>
+Every non-empty partially-ordered set in which every chain has
+an upper bound contains a maximal element.
+</lemma>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the lemma's label, parallel to &lt;theorem&gt;'s `name` kwarg. |
+| `+numbered` / `-numbered` | flag | default on | Whether this lemma participates in the propositional theorem- family shared counter. |
+
+</section>
+
+<section #sh-proof | `<proof>`>
+
+<sub-section | General Usage>
+
+Semantic role: *proof*. Compiles to eHTML `<proof>`.
+
+Registers:
+
+- Canonical: `<proof>`
+
+<code-block #code:sh-proof-1>
+<theorem | The sum of two even integers is even.>
+
+<proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+</proof>
+</code-block>
+
+<minipage #mp:sh-proof-1>
+<theorem | The sum of two even integers is even.>
+
+<proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+</proof>
+</minipage>
+
+*The canonical pattern: &lt;theorem&gt; followed by sibling &lt;proof&gt;.
+The proof is NOT nested inside the theorem.*
+
+<code-block #code:sh-proof-2>
+<proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+</proof>
+</code-block>
+
+<minipage #mp:sh-proof-2>
+<proof name="of Theorem 1.2">
+The argument follows from the preceding lemma.
+</proof>
+</minipage>
+
+*Optional `name` kwarg lets the proof identify what it proves
+(useful when the proof is separated from its theorem by
+intervening text).*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix — e.g. |
+| `+numbered` / `-numbered` | flag | default off | Whether this proof is numbered. |
+
+</section>
+
+<section #sh-proposition | `<proposition>`>
+
+<sub-section | General Usage>
+
+Semantic role: *proposition*. Compiles to eHTML `<proposition>`.
+
+Registers:
+
+- Canonical: `<proposition>`
+
+<code #code:sh-proposition-1>
+<proposition | The sum of two even integers is even.>
+</code>
+
+<minipage #mp:sh-proposition-1>
+<proposition | The sum of two even integers is even.>
+</minipage>
+
+<code-block #code:sh-proposition-2>
+<proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+</proposition>
+</code-block>
+
+<minipage #mp:sh-proposition-2>
+<proposition name="Cauchy-Schwarz">
+For any vectors $u$, $v$ in an inner-product space,
+$|\langle u, v \rangle| \le \|u\| \, \|v\|$.
+</proposition>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the proposition's label. |
+| `+numbered` / `-numbered` | flag | default on | Whether this proposition participates in the propositional theorem-family shared counter. |
+
+</section>
+
+<section #sh-remark | `<remark>`>
+
+<sub-section | General Usage>
+
+Semantic role: *remark*. Compiles to eHTML `<remark>`.
+
+Registers:
+
+- Canonical: `<remark>`
+
+<code #code:sh-remark-1>
+<remark | The converse does not hold in general.>
+</code>
+
+<minipage #mp:sh-remark-1>
+<remark | The converse does not hold in general.>
+</minipage>
+
+<code-block #code:sh-remark-2>
+<remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+</remark>
+</code-block>
+
+<minipage #mp:sh-remark-2>
+<remark>
+The hypothesis of compactness is essential here; without it
+the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
+</remark>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the remark's label. |
+| `+numbered` / `-numbered` | flag | default off | Whether this remark is numbered. |
+
+</section>
+
+<section #sh-theorem | `<theorem>`>
+
+<sub-section | General Usage>
+
+Semantic role: *theorem*. Compiles to eHTML `<theorem>`.
+
+Registers:
+
+- Canonical: `<theorem>`
+
+<code #code:sh-theorem-1>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</code>
+
+<minipage #mp:sh-theorem-1>
+<theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.>
+</minipage>
+
+*Short-form with pipe content. The body is parsed normally.*
+
+<code-block #code:sh-theorem-2>
+<theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+</theorem>
+</code-block>
+
+<minipage #mp:sh-theorem-2>
+<theorem name="Pythagoras" #thm:pyth>
+If $a^2 + b^2 = c^2$, the triangle with sides $a$, $b$, $c$
+is right-angled.
+</theorem>
+</minipage>
+
+*Long-form with the optional name kwarg. Cross-referenceable
+via id (the "thm:" colon-prefix convention is consistent with
+"fig:", "eqn:", "sec:" elsewhere in enscribe). The name
+kwarg lifts to `data-name`; the Phase-2 handler will render
+it as the "(Pythagoras)" suffix to the label "Theorem N".*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `name` | kwarg |  | Optional name suffix for the theorem's label (the "(Pythagoras)" half of "Theorem 1.2 (Pythagoras)"). |
+| `+numbered` / `-numbered` | flag | default on | Whether this theorem participates in the theorem-family shared counter (see "Numbering" below). |
 
 </section>

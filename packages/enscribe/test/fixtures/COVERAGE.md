@@ -7,10 +7,10 @@
 
 ## Summary
 
-- **Behavior cells:** 367  ·  **fixtures:** 96  ·  **annexed (generated) elements:** 19
+- **Behavior cells:** 368  ·  **fixtures:** 96  ·  **annexed (generated) elements:** 19
 - **Covered:** 64 (17%)
-- **By status:** `deferred` 18 · `gap` 285 · `pass` 64
-- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 19 · `no-output` 8 · `specified` 320
+- **By status:** `deferred` 18 · `gap` 285 · `needs-review` 1 · `pass` 64
+- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 19 · `needs-review` 1 · `no-output` 8 · `specified` 320
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -464,6 +464,12 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `item` | no-output | no-output | — | 🔴 gap |
 | `nav` | no-output | no-output | — | 🔴 gap |
 | `nav-group` | no-output | no-output | — | 🔴 gap |
+
+## ? — live-vocabulary elements with no coverage-map row (needs-review)
+
+| element | cell | status |
+|---|---|---|
+| `dataset` | base | 🔵 needs-review |
 
 ## Annex — generated / not-authored-directly elements
 

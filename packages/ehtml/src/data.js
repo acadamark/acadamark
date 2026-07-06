@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/ehtml/elements/*.md` by
 // `packages/ehtml/build/generate-data-module.js`.
-// Source files: 107 vocabulary entries.
+// Source files: 108 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -2245,6 +2245,86 @@ const _data = Object.freeze({
       },
     ],
     "_sourceFile": "data.md",
+  });
+
+const _dataset = Object.freeze({
+    "semantic_role": "dataset",
+    "category": "storage-hosts",
+    "semantic_family": "stores",
+    "html_output": {
+      "element": "dataset",
+      "is_html_native": false,
+      "default_attributes": {},
+      "notes": "Enscribe's <dataset> is a custom element. It is a data block: an opaque\npayload (CSV/TSV/JSON/…) held under an id inside <data>, harvested at build\nand stripped, producing no inline rendered output. A consumer pulls it by\n@id (<table src=\"@id\">, <code src=\"@id\">, <diagram src=\"@id\">, <fig src=\"@id\">)\nand interprets the bytes; <dataset> itself renders nothing (invisible, like\n<library>).\n",
+    },
+    "enscribe_attributes": {
+      "id": {
+        "maps_to": {
+          "html": "id",
+        },
+        "notes": "Required. The id under which the payload is stored; a consumer references\nit as src=\"@id\". A <dataset> in <data> with no id is not registered.\n",
+      },
+      "classes": {
+        "maps_to": {
+          "html": "class",
+        },
+      },
+      "positional": [
+        {
+          "name": "format",
+          "values": [
+            "csv",
+            "tsv",
+            "json",
+            "other",
+          ],
+          "notes": "The format word — the canonical way to name the payload language\n(`<dataset #id csv>…</dataset>`). Opaque: the format is a stored hint the\nconsumer reads, never interpreted at the store. The `format=` kwarg below\nis the equivalent attribute form.\n",
+        },
+      ],
+      "kwargs": {
+        "format": {
+          "maps_to": {
+            "html": "data-format",
+          },
+          "values": [
+            "csv",
+            "tsv",
+            "json",
+            "other",
+          ],
+          "required": false,
+          "notes": "Attribute-form equivalent of the format-word positional\n(`<dataset #id format=csv>…</dataset>`). Stored verbatim as a hint for\nthe @id consumer (a <table> without its own format word uses it; a\n<diagram> whose engine disagrees with it is a visible error). The store\nnever interprets the bytes.\n",
+        },
+      },
+    },
+    "content": {
+      "shape": {
+        "contains": [
+          "opaque",
+        ],
+      },
+      "becomes": "harvested",
+      "notes": "OPAQUE bytes — never markdown-parsed, so a #/*/_ in the payload passes\nthrough untouched. A <dataset> MUST be authored in the LONG form\n<dataset …>…</dataset>: the payload is the tag body. The pipe form\n<dataset … | bytes> is delimited by the first unescaped \">\", truncating a\npayload that contains \">\" (Mermaid \"-->\", JSON, code) — which datasets\nroutinely carry. buildAssetIndex rejects a non-long-form <dataset> as a\nvisible authoring error. See notes/specs/data-store.md Piece 1.\n",
+    },
+    "jats_counterpart": {
+      "element": "no direct equivalent",
+      "notes": "A stored dataset has no settled JATS projection yet (an open question for the\nJATS slice — a candidate is <supplementary-material>, or the existing\n<table-wrap> path for a table consumer of the dataset). The <dataset>\ndeclaration is harvested and stripped before JATS lowering, so it never leaks\ninto the export.\n",
+    },
+    "interpreter_strategy": "schema",
+    "shorthand_examples": [
+      {
+        "source": "<data>\n  <dataset #sales csv>\nquarter,revenue\nQ1,100\nQ2,120\nQ3,145\n  </dataset>\n</data>\n\n<table src=\"@sales\" />\n",
+        "ehtml": "<table id=\"tab:sales\">\n  <thead><tr><th>quarter</th><th>revenue</th></tr></thead>\n  <tbody>\n    <tr><td>Q1</td><td>100</td></tr>\n    <tr><td>Q2</td><td>120</td></tr>\n    <tr><td>Q3</td><td>145</td></tr>\n  </tbody>\n</table>\n",
+        "notes": "A CSV dataset is stored once under #sales and a <table src=\"@sales\" /> pulls\nit in and renders it as a grid. The dataset itself renders nothing; the\nconsuming element decides how to present the opaque bytes.\n",
+      },
+    ],
+    "related_plugins": [
+      {
+        "name": "enscribeResourceCollection",
+        "purpose": "Phase 1 discovery — collects <data> blocks (and their <dataset> stores) regardless of source position. See notes/specs/data-store.md.",
+      },
+    ],
+    "_sourceFile": "dataset.md",
   });
 
 const _date = Object.freeze({
@@ -6938,6 +7018,7 @@ export const VOCABULARY = Object.freeze({
   "config": _config,
   "corollary": _corollary,
   "data": _data,
+  "dataset": _dataset,
   "date": _date,
   "dd": _dd,
   "definition": _definition,
