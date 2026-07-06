@@ -31,7 +31,7 @@ pages become generator output. (Prior generators — `gen-reference.js`, `vocab-
 | **Authoring Guide** | **Generated** from the same source — *lighter*, not exhaustive |
 | Home | Sourced (single-source) from `README.md` |
 | Design | Sourced (single-source) from `DESIGN.md` |
-| JATS (import/export) | Guide content (status: settle when the generator is built) |
+| JATS (import/export) | Custom — hand-authored, not spec-generated |
 | Try It | The in-browser editor app, not generated content |
 
 The single-source pages (Home ← README, Design ← DESIGN) are derived from their source file,

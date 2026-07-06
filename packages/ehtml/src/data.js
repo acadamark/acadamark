@@ -2951,7 +2951,7 @@ const _em = Object.freeze({
       {
         "source": "This has *emphasized* content.",
         "ehtml": "<p>This has <i>emphasized</i> content.</p>",
-        "notes": "Plain markdown emphasis with single asterisks (or single underscores)\nproduces <em> elements. This is the most common authoring path.\n",
+        "notes": "Plain markdown with single asterisks (or single underscores) produces the\nvisual <i>, not the semantic <em> — markdown emphasis maps to the visual\ntag. <em> is reached only by the explicit form.\n",
       },
       {
         "source": "<em | emphasized>",
@@ -5730,7 +5730,7 @@ const _strong = Object.freeze({
       {
         "source": "This is **strongly emphasized** content.",
         "ehtml": "<p>This is <b>strongly emphasized</b> content.</p>",
-        "notes": "Plain markdown with double asterisks (or double underscores) produces\n<strong> elements.\n",
+        "notes": "Plain markdown with double asterisks (or double underscores) produces the\nvisual <b>, not the semantic <strong> — markdown emphasis maps to the\nvisual tag. <strong> is reached only by the explicit form.\n",
       },
       {
         "source": "<strong | important>",

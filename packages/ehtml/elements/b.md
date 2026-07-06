@@ -53,11 +53,11 @@ For content of greater importance or seriousness (warnings, critical claims, urg
 - `<strong>` says "this matters more." Screen readers may emphasize. The content has greater importance than surrounding text.
 - `<b>` says "this is conventionally bold but isn't more important." Screen readers don't emphasize. The bold is typographic, not meaningful.
 
-Most authors should default to `<strong>` (or markdown's `**bold**`) for ordinary importance and reach for `<b>` only when the bold-without-importance pattern applies.
+Most authors should default to `<strong>` for ordinary importance and reach for `<b>` only when the bold-without-importance pattern applies.
 
 ## Authoring
 
-`<b>` is reached for via the explicit form. Plain markdown's `**...**` produces `<strong>`, not `<b>`.
+`<b>` is produced two ways: plain markdown's `**...**` yields a bare `<b>` (casual bold), and the explicit form below carries a `type` when the reason for the bold matters. Plain markdown does **not** produce `<strong>` — the semantic importance element is reached only by writing `<strong>` explicitly.
 
 ```
 The keyword <b type=keyword | recursion> means a function calling itself.
