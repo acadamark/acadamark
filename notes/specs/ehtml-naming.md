@@ -66,20 +66,20 @@ The corresponding title elements follow the container-role rule:
 | `<sub-sub-section-title>`  | `<sub-sub-section>` |
 | `<sub-sub-section-subtitle>` | `<sub-sub-section>` |
 
-### Rule 4: Consult JATS before adding new vocabulary
+### Rule 4: Consult the reference mirrors before adding new vocabulary
 
-When extending eHTML with a new element, the JATS tag library ([jats.nlm.nih.gov/archiving/tag-library/](https://jats.nlm.nih.gov/archiving/tag-library/)) is the first reference. JATS has spent two decades refining a vocabulary for academic content; enscribe inherits that thinking rather than reinventing it.
+When extending eHTML with a new element, consult the **reference mirrors** — the established academic-document models: JATS, TEI, RASH, and Scholarly-HTML (W3C). Each is a decades-refined inventory of what academic content needs; enscribe stays close to what they can express rather than reinventing a parallel naming universe. **No single model is privileged.** JATS's [Tag Library](https://jats.nlm.nih.gov/archiving/tag-library/) is the most-developed single reference, so it is the natural *worked example* of how to consult a mirror; TEI's Guidelines, the RASH schema, and the Scholarly-HTML model are references of the same kind — published guidelines/models for the same concepts — and carry equal weight.
 
 The rule is binding, not advisory. Before specifying a new eHTML element:
 
-1. Find the corresponding JATS element (or determine that no JATS equivalent exists).
-2. Adopt JATS naming where it makes sense, adjusted for HTML conventions and the container-role rule (Rule 1). For instance, JATS's `<article-title>` becomes enscribe's `<article-title>` directly. JATS's `<sec><title>` pattern becomes enscribe's `<section-title>` (because enscribe uses named depth, not nested `<sec>` with `<title>`).
-3. Adopt JATS attribute conventions where they're sensible. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references. Enscribe may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
+1. Find the corresponding element in the reference mirrors (or determine that none of them names the concept). JATS's Tag Library is the most-developed place to look; TEI's Guidelines and the RASH / Scholarly-HTML models cover the same ground and are consulted alongside it.
+2. Adopt the naming the mirrors converge on where it makes sense, adjusted for HTML conventions and the container-role rule (Rule 1). For instance, JATS's `<article-title>` becomes enscribe's `<article-title>` directly; JATS's `<sec><title>` pattern becomes enscribe's `<section-title>` (because enscribe uses named depth, not nested `<sec>` with `<title>`). Where the mirrors disagree, prefer a name that stays expressible across them.
+3. Adopt sensible attribute conventions from the mirrors. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references; enscribe may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
 4. Document any deliberate divergences in the spec for that element, with rationale.
 
-This rule means that as the eHTML vocabulary grows, it stays close to JATS-translatable rather than drifting into a parallel naming universe. Enscribe's JATS exporter (the `enscribeToJats` function) becomes a mostly-mechanical transform rather than a deep restructuring.
+This rule means that as the eHTML vocabulary grows, it stays close to what the established academic-document models can express rather than drifting into a parallel naming universe — which keeps the exit ramps to those formats tractable. Concretely today, that exit ramp is the shipped `enscribeToJats` export, the one built exporter: staying mirror-aligned keeps it a mostly-mechanical transform rather than a deep restructuring. That JATS is the exporter that exists is a fact about the machinery, not a privileging of JATS in the vocabulary; the other mirrors are prospective export targets on the same footing.
 
-JATS also includes elements enscribe may not need (`<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting, etc.). Don't add them speculatively. Add elements when authors actually need them.
+The mirrors also include elements enscribe may not need (JATS's `<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting; TEI's deep editorial apparatus; and so on). Don't add them speculatively. Add elements when authors actually need them.
 
 ## Two compilation targets
 
@@ -111,11 +111,11 @@ These are flagged here so they don't get re-litigated implicitly later:
 
 ## Why this matters
 
-These conventions are the spine of enscribe's contribution. Markdown extensions accrete idioms because they don't have a unifying naming scheme — every feature gets its own special-case syntax. By committing to container-role naming, defer-to-HTML, named depth, and JATS-aligned vocabulary, enscribe keeps its vocabulary growing in a single coherent direction *and* maintains an exit ramp to the established scholarly publishing ecosystem.
+These conventions are the spine of enscribe's contribution. Markdown extensions accrete idioms because they don't have a unifying naming scheme — every feature gets its own special-case syntax. By committing to container-role naming, defer-to-HTML, named depth, and a **mirror-aligned vocabulary** (close to what JATS, TEI, RASH, and Scholarly-HTML can express, with no single model privileged), enscribe keeps its vocabulary growing in a single coherent direction *and* maintains exit ramps to the established scholarly publishing ecosystem.
 
 When in doubt, two questions to ask:
 
 1. "What container does this belong in, and what role does it play there?" (Container-role rule.)
-2. "What does JATS call this, and why?" (JATS-first rule.)
+2. "What do the reference models (JATS, TEI, RASH, Scholarly-HTML) call this, and why?" (Mirror-consultation rule.)
 
 The answers usually converge on a good name.

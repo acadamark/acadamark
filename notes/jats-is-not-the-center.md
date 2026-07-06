@@ -7,11 +7,11 @@ about JATS" in public reads as protesting too much. Public docs get *rebalanced*
 
 ## The drift this corrects
 New sessions repeatedly conclude Enscribe is "about JATS" — a direct feeder to the JATS archival
-format. **It is not.** This misreading recurs because JATS is named far more often in the docs
-than any other reference (~288 mentions across the core docs, vs. a handful each for
-TEI/LaTeX/Quarto and **zero** for Scholarly-HTML). That frequency is an accident of JATS's own
-verbosity as a specification — **not** a statement of the project's focus. Do not let frequency
-become the message.
+format. **It is not.** This misreading recurs because JATS is still named far more often in the
+core docs than any other reference — an artifact of JATS's own verbosity as a specification,
+**not** a statement of the project's focus. (The peer models — TEI, RASH, Scholarly-HTML, LaTeX,
+Quarto — are now named wherever the growth methodology is stated, and Scholarly-HTML is present in
+the core docs; what lingers is the raw frequency imbalance.) Do not let frequency become the message.
 
 ## What Enscribe actually is
 A way to write **HTML-shaped, semantic academic documents.** eHTML is HTML internally and renders
@@ -41,7 +41,14 @@ The JATS **machinery** (import/export) is a legitimate feature — leave it be. 
 and emphasis** that over-center JATS, not the mechanics.
 
 ## Status (this is a standing corrective)
-Keep this note until the project's own docs no longer over-weight JATS. The removal work it
-governs: name the peer models wherever JATS currently stands alone, add Scholarly-HTML (currently
-absent), and keep public docs *balanced* rather than defensive. When that rebalancing is done and
-JATS no longer dominates by frequency, this note can go.
+The rebalancing is largely done — this note now records the **settled framing**, not a backlog of
+removals. The vocabulary-growth rule consults the **reference mirrors** as a set
+(`notes/specs/ehtml-naming.md` Rule 4, no single model privileged), the peer models are named
+wherever the methodology is stated, and Scholarly-HTML is present in the core docs. So the rulebook
+no longer contradicts this note's "none of them shapes eHTML": the mirrors are consulted for naming
+and completeness prior-art, never to dictate eHTML's HTML shape.
+
+What remains is residual: JATS still dominates by raw *frequency* (an artifact of its verbosity), and
+a fresh session can still slip into JATS-centrism — so this note stays as a standing corrective and
+its **anti-drift tells above remain live**. When JATS no longer dominates by frequency either, this
+note can go.
