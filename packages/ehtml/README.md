@@ -33,8 +33,10 @@ apply throughout:
 3. **Named depth ladder.** Section depth is named (`<section>`,
    `<sub-section>`, `<sub-sub-section>`), not derived from nesting or
    heading levels.
-4. **Consult JATS first.** Before defining a new element, check whether
-   JATS has a settled vocabulary for the same concept.
+4. **Consult the reference mirrors.** Before defining a new element,
+   check whether the established academic-document models (JATS, TEI,
+   RASH, Scholarly-HTML — no single model privileged) have a settled
+   vocabulary for the same concept.
 
 ## Documentation
 

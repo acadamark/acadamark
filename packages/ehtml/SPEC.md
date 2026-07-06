@@ -4,7 +4,7 @@ The enscribe eHTML semantic HTML vocabulary. This is the target for enscribe's i
 
 This document is the high-level overview: scope, element list by category, governing rules, design decisions. **Field-level details — canonical kwarg value lists, defaults, content shapes, JATS mappings, render-mode lowering — live in the per-element entries under `elements/`.** When the two disagree, the per-element entries are authoritative.
 
-The four governing rules from `notes/specs/ehtml-naming.md` apply throughout: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult JATS first.
+The four governing rules from `notes/specs/ehtml-naming.md` apply throughout: container-role naming, defer to HTML where HTML suffices, named depth ladder for sections, consult the reference mirrors (JATS, TEI, RASH, Scholarly-HTML — no single model privileged) before adding vocabulary.
 
 ## Scope
 
