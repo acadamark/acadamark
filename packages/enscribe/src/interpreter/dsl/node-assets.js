@@ -118,6 +118,17 @@ export function renderAbcStatic(source) {
   const prevWindow = globalThis.window;
   globalThis.document = window.document;
   globalThis.window = window;
+  // abcjs reads the GLOBAL `navigator` at call time (as it reads the global `document`). Node 21+ ships
+  // a global `navigator`, but Node 20 — the CI runtime — does NOT, so without this shim abcjs throws
+  // `navigator is not defined` there (green on newer local Node, red in CI). jsdom's window carries a
+  // real Navigator; install it for the render and restore it in `finally`.
+  //
+  // `navigator` needs defineProperty, not plain assignment: on Node 21+ it is a getter-only global, so
+  // `globalThis.navigator = …` throws in this (strict, ESM) module. It is `configurable`, so we redefine
+  // it as a data property and restore the original descriptor (or delete it, on Node 20 where there was
+  // none) afterwards. document/window are ordinary (non-accessor) globals, so their assignment is fine.
+  const prevNavDesc = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  Object.defineProperty(globalThis, 'navigator', { value: window.navigator, configurable: true, writable: true });
   let html;
   try {
     const el = window.document.createElement('div');
@@ -131,6 +142,8 @@ export function renderAbcStatic(source) {
   } finally {
     globalThis.document = prevDocument;
     globalThis.window = prevWindow;
+    if (prevNavDesc) Object.defineProperty(globalThis, 'navigator', prevNavDesc);
+    else delete globalThis.navigator;
   }
   if (!/<svg[\s>]/i.test(html)) {
     throw new Error(`abc static render produced no SVG for source:\n${String(source)}`);
