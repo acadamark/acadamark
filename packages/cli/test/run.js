@@ -11,6 +11,7 @@ import { run_tests as runLibrarySrcTests } from './library-src.test.js';
 import { run_tests as runMasterDocumentTests } from './master-document.test.js';
 import { run_tests as runEmbeddedAssetTests } from './embedded-asset.test.js';
 import { run_tests as runBuildLiveTests } from './build-live.test.js';
+import { run_tests as runDeliveryModesTests } from './delivery-modes.test.js';
 import { run_tests as runStaticWebsiteTests } from './static-website.test.js';
 import { run_tests as runWebsiteXrefTests } from './website-xref.test.js';
 import { run_tests as runWebsiteAssetLinksTests } from './website-asset-links.test.js';
@@ -24,6 +25,7 @@ try {
   runMasterDocumentTests(); // #190: multi-file master-document walking skeleton
   runEmbeddedAssetTests(); // #190: <data> embedded-png asset → numbered figure via src="@id"
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
+  await runDeliveryModesTests(); // #369: delivery-modes regression matrix + offline render/editor (async: Tier 2 browser)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
   await runWebsiteXrefTests(); // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)
   runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
