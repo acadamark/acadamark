@@ -66,20 +66,24 @@ const NUMBERED_TAGNAMES = new Map([
   ['eqnarray',     'equation'],
   // Theorem family (Phase 3 slice 3a, 2026-05-28): four propositional
   // tagnames share the 'theorem' counter (amsthm "plain" style);
-  // <definition> and <example> get their own counters; <remark> and
-  // <proof> stay unnumbered (no entries here). The theorem's own
-  // rendered HTML does NOT yet show a "Theorem N." label — the
-  // schema-dispatch path doesn't consume node.computedNumber for
-  // theorem-family tags. Cross-references DO resolve ("Theorem 3")
-  // because the registry entry exists. Visible label rendering on the
-  // theorem element itself is slice 3b's work (the frameable-class
-  // build will surface the title/label/caption rendering shape).
+  // <definition> and <example> get their own counters. <remark> and
+  // <proof> are unnumbered BY DEFAULT (their vocab `numbered.default` is
+  // false, so they auto-join NUMBERED_DEFAULT_FALSE below and skip the
+  // registry when unnumbered + id-less) but opt IN per instance with
+  // +numbered — the documented flag (remark.md / proof.md) that was a
+  // no-op while they were absent here (spec-reconcile D4). Each gets its
+  // own counter; theorem.js already renders "Remark N."/"Proof N." from
+  // node.computedNumber, with a numberless "Remark."/"Proof." fallback
+  // when unnumbered. Cross-references resolve because the registry entry
+  // then exists.
   ['theorem',      'theorem'],
   ['lemma',        'theorem'],
   ['corollary',    'theorem'],
   ['proposition',  'theorem'],
   ['definition',   'definition'],
   ['example',      'example'],
+  ['remark',       'remark'],   // D4: opt-in via +numbered (default false)
+  ['proof',        'proof'],    // D4: opt-in via +numbered (default false)
   // Figures and tables — original Phase 1 entries.
   // 'figure' kept as a NUMBERED_TAGNAMES entry for the pre-gate-rewrite
   // path: nodes reach this plugin AFTER normalize-to-canonical, where
