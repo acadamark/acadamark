@@ -23,8 +23,9 @@ shorthand_examples:
   - source: 'This is **strongly emphasized** content.'
     ehtml: '<p>This is <b>strongly emphasized</b> content.</p>'
     notes: |
-      Plain markdown with double asterisks (or double underscores) produces
-      <strong> elements.
+      Plain markdown with double asterisks (or double underscores) produces the
+      visual <b>, not the semantic <strong> — markdown emphasis maps to the
+      visual tag. <strong> is reached only by the explicit form.
   - source: '<strong | important>'
     ehtml: '<strong>important</strong>'
   - source: '<strong #critical .warning | This is critical.>'
@@ -44,21 +45,13 @@ For purely visual bold styling without semantic importance (keywords, product na
 
 ## Authoring
 
-**Plain markdown (most common).**
-
-```
-This is **strongly emphasized** content.
-```
-
-Double asterisks (or double underscores) produce `<strong>` via remark.
-
-**Explicit form.**
+`<strong>` is authored via the explicit form — plain markdown does not produce it.
 
 ```
 <strong | content>
 ```
 
-Used when attributes are needed.
+Plain markdown's `**...**` produces the visual [`<b>`](b.md), **not** `<strong>`: markdown emphasis maps to the visual tag, and the semantic importance element is reached only by writing `<strong>` explicitly.
 
 ## Content
 

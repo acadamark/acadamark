@@ -65,11 +65,11 @@ The distinction matters for accessibility and for downstream tooling:
 - `<em>` says "the reader should stress this word." Screen readers may apply vocal emphasis. Search and indexing tools may treat the content as significant.
 - `<i>` says "this content is conventionally italic for a reason that isn't emphasis." Screen readers don't apply vocal stress. The italic is a typographic convention, not a meaning marker.
 
-Most authors should default to `<em>` (or markdown's `*emphasis*`) for ordinary stress and reach for `<i>` only when the conventional italic-without-emphasis pattern applies.
+Most authors should default to `<em>` for ordinary stress and reach for `<i>` only when the conventional italic-without-emphasis pattern applies.
 
 ## Authoring
 
-`<i>` is reached for via the explicit form. Plain markdown's `*...*` produces `<em>`, not `<i>`.
+`<i>` is produced two ways: plain markdown's `*...*` yields a bare `<i>` (casual italics), and the explicit form below carries a `type` when the reason for the italic matters. Plain markdown does **not** produce `<em>` — the semantic emphasis element is reached only by writing `<em>` explicitly.
 
 ```
 The species <i type=taxonomic | Loxodonta africana> is the largest.

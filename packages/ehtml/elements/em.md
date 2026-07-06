@@ -27,8 +27,9 @@ shorthand_examples:
   - source: 'This has *emphasized* content.'
     ehtml: '<p>This has <i>emphasized</i> content.</p>'
     notes: |
-      Plain markdown emphasis with single asterisks (or single underscores)
-      produces <em> elements. This is the most common authoring path.
+      Plain markdown with single asterisks (or single underscores) produces the
+      visual <i>, not the semantic <em> — markdown emphasis maps to the visual
+      tag. <em> is reached only by the explicit form.
   - source: '<em | emphasized>'
     ehtml: '<em>emphasized</em>'
     notes: |
@@ -50,21 +51,13 @@ For purely visual italic styling without semantic emphasis (foreign words, biolo
 
 ## Authoring
 
-**Plain markdown (most common).**
-
-```
-This is *emphasized* content.
-```
-
-Single asterisks (or single underscores) around content produce `<em>` via remark. No explicit enscribe tags needed.
-
-**Explicit form.**
+`<em>` is authored via the explicit form — plain markdown does not produce it.
 
 ```
 <em | emphasized text>
 ```
 
-Used when attributes are needed.
+Plain markdown's `*...*` produces the visual [`<i>`](i.md), **not** `<em>`: markdown emphasis maps to the visual tag, and the semantic emphasis element is reached only by writing `<em>` explicitly.
 
 ## Content
 
