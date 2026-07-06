@@ -1417,59 +1417,52 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Emphasis &#x26; marking</book-part-title>
       </meta>
-      <p>Inline marks on words and phrases — emphasis and the small typographic and semantic elements.</p>
-      <section id="l1-strong">
-        <section-title><code>&#x3C;strong></code></section-title>
-        <sub-section id="sec:specification-3">
+      <p>Marks the author places on their own words — emphasis and the small typographic and semantic marks.</p>
+      <section id="eh-abbr">
+        <section-title><code>&#x3C;abbr></code></section-title>
+        <sub-section id="sec:specification-2">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;strong></code> · JATS <code>&#x3C;bold></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;strong></code>.</p>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;abbr></code> · JATS <code>&#x3C;abbrev></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The abbreviation’s expansion.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;abbr></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-3">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-strong-1">
-This is **strongly emphasized** content.</code>
-          <figure id="mp:l1-strong-1" class="frameable-border">
-            <p>This is <b>strongly emphasized</b> content.</p>
+        <sub-section id="sec:examples-2">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-abbr-1">
+The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.</code>
+          <figure id="mp:eh-abbr-1" class="frameable-border">
+            <p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>
+            <figcaption><minipage-label>Minipage 4.</minipage-label></figcaption>
+          </figure>
+          <p><i>Standard pattern — abbreviation with its expansion as the title
+kwarg. Browsers show the expansion in a hover tooltip.</i></p><code id="code:eh-abbr-2">Using &#x3C;abbr | CSS> selectors.</code>
+          <figure id="mp:eh-abbr-2" class="frameable-border">
+            <p>Using <abbr>CSS</abbr> selectors.</p>
             <figcaption><minipage-label>Minipage 5.</minipage-label></figcaption>
           </figure>
-          <p><i>Plain markdown with double asterisks (or double underscores) produces &#x3C;strong> elements.</i></p><code id="code:l1-strong-2">&#x3C;strong | important></code>
-          <figure id="mp:l1-strong-2" class="frameable-border"><strong>important</strong>
-            <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
-          </figure><code id="code:l1-strong-3">&#x3C;strong #critical .warning | This is critical.></code>
-          <figure id="mp:l1-strong-3" class="frameable-border"><strong id="mp-l1-strong-3-critical" class="warning">This is critical.</strong>
-            <figcaption><minipage-label>Minipage 7.</minipage-label></figcaption>
-          </figure></section>
+          <p><i>Bare abbreviation, no title. Acceptable when the expansion
+has already been introduced earlier in the document.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-em">
-        <section-title><code>&#x3C;em></code></section-title>
-        <sub-section id="sec:specification-4">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;em></code> · JATS <code>&#x3C;italic></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;em></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-4">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-em-1">
-This has *emphasized* content.</code>
-          <figure id="mp:l1-em-1" class="frameable-border">
-            <p>This has <i>emphasized</i> content.</p>
-            <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
-          </figure>
-          <p><i>Plain markdown emphasis with single asterisks (or single underscores) produces &#x3C;em> elements. This is the most common authoring path.</i></p><code id="code:l1-em-2">&#x3C;em | emphasized></code>
-          <figure id="mp:l1-em-2" class="frameable-border"><em>emphasized</em>
-            <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
-          </figure>
-          <p><i>The explicit form is reached for when attributes are needed.</i></p><code id="code:l1-em-3">&#x3C;em #key-term .highlighted | distinguishing feature></code>
-          <figure id="mp:l1-em-3" class="frameable-border"><em id="mp-l1-em-3-key-term" class="highlighted">distinguishing feature</em>
-            <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
-          </figure></section>
-        </sub-section>
-      </section>
-      <section id="l1-b">
+      <section id="eh-b">
         <section-title><code>&#x3C;b></code></section-title>
-        <sub-section id="sec:specification-5">
+        <sub-section id="sec:specification-3">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;b></code> · JATS <code>&#x3C;bold></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <table>
@@ -1490,24 +1483,51 @@ This has *emphasized* content.</code>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;b></code> · markdown <code>**…**</code>.</p>
+          <p>Produced by: canonical <code>&#x3C;b></code>, markdown <code>**…**</code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-5">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-b-1">
+        <sub-section id="sec:examples-3">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-b-1">
 The keyword &#x3C;b type=keyword | recursion> is fundamental.</code>
-          <figure id="mp:l1-b-1" class="frameable-border">
+          <figure id="mp:eh-b-1" class="frameable-border">
             <p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>
-            <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
-          </figure><code id="code:l1-b-2">Use &#x3C;b type=product-name | Acrobat> to read the file.</code>
-          <figure id="mp:l1-b-2" class="frameable-border">
+            <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
+          </figure><code id="code:eh-b-2">Use &#x3C;b type=product-name | Acrobat> to read the file.</code>
+          <figure id="mp:eh-b-2" class="frameable-border">
             <p>Use <b data-bold-type="product-name">Acrobat</b> to read the file.</p>
-            <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 7.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-i">
+      <section id="eh-em">
+        <section-title><code>&#x3C;em></code></section-title>
+        <sub-section id="sec:specification-4">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;em></code> · JATS <code>&#x3C;italic></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;em></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-4">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-em-1">
+This has *emphasized* content.</code>
+          <figure id="mp:eh-em-1" class="frameable-border">
+            <p>This has <i>emphasized</i> content.</p>
+            <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
+          </figure>
+          <p><i>Plain markdown with single asterisks (or single underscores) produces the
+visual &#x3C;i>, not the semantic &#x3C;em> — markdown emphasis maps to the visual
+tag. &#x3C;em> is reached only by the explicit form.</i></p><code id="code:eh-em-2">&#x3C;em | emphasized></code>
+          <figure id="mp:eh-em-2" class="frameable-border"><em>emphasized</em>
+            <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
+          </figure>
+          <p><i>The explicit form is reached for when attributes are needed.</i></p><code id="code:eh-em-3">&#x3C;em #key-term .highlighted | distinguishing feature></code>
+          <figure id="mp:eh-em-3" class="frameable-border"><em id="mp-eh-em-3-key-term" class="highlighted">distinguishing feature</em>
+            <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="eh-i">
         <section-title><code>&#x3C;i></code></section-title>
-        <sub-section id="sec:specification-6">
+        <sub-section id="sec:specification-5">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;i></code> · JATS <code>&#x3C;italic></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <table>
@@ -1524,68 +1544,78 @@ The keyword &#x3C;b type=keyword | recursion> is fundamental.</code>
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>foreign</code> <code>taxonomic</code> <code>technical</code> <code>thought</code> <code>ship-name</code> <code>other</code></td>
-                <td>Optional classification of the italic’s role. Useful for accessibility tools and stylesheet targeting.</td>
+                <td>Optional classification of the italic’s role.</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;i></code> · markdown <code>*…* (or _…_)</code>.</p>
+          <p>Produced by: canonical <code>&#x3C;i></code>, markdown <code>*…*</code> (or <code>_…_</code>).</p>
+        </sub-section>
+        <sub-section id="sec:examples-5">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-i-1">
+The species is &#x3C;i type=taxonomic | Loxodonta africana>.</code>
+          <figure id="mp:eh-i-1" class="frameable-border">
+            <p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>
+            <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
+          </figure><code id="code:eh-i-2">The French &#x3C;i type=foreign | tour de force> is impressive.</code>
+          <figure id="mp:eh-i-2" class="frameable-border">
+            <p>The French <i data-italic-type="foreign">tour de force</i> is impressive.</p>
+            <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
+          </figure><code id="code:eh-i-3">The technical term &#x3C;i type=technical | mitochondria> refers to organelles.</code>
+          <figure id="mp:eh-i-3" class="frameable-border">
+            <p>The technical term <i data-italic-type="technical">mitochondria</i> refers to organelles.</p>
+            <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="eh-kbd">
+        <section-title><code>&#x3C;kbd></code></section-title>
+        <sub-section id="sec:specification-6">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;kbd></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;kbd></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-6">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-i-1">
-The species is &#x3C;i type=taxonomic | Loxodonta africana>.</code>
-          <figure id="mp:l1-i-1" class="frameable-border">
-            <p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>
-            <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
-          </figure><code id="code:l1-i-2">The French &#x3C;i type=foreign | tour de force> is impressive.</code>
-          <figure id="mp:l1-i-2" class="frameable-border">
-            <p>The French <i data-italic-type="foreign">tour de force</i> is impressive.</p>
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-kbd-1">
+Press &#x3C;kbd | Ctrl+C> to copy.</code>
+          <figure id="mp:eh-kbd-1" class="frameable-border">
+            <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
             <figcaption><minipage-label>Minipage 14.</minipage-label></figcaption>
-          </figure><code id="code:l1-i-3">The technical term &#x3C;i type=technical | mitochondria> refers to organelles.</code>
-          <figure id="mp:l1-i-3" class="frameable-border">
-            <p>The technical term <i data-italic-type="technical">mitochondria</i> refers to organelles.</p>
+          </figure>
+          <p><i>Single chord as a kbd block. Browsers render &#x3C;kbd> in a
+monospace font by default, distinguishing it from surrounding
+prose.</i></p><code id="code:eh-kbd-2">Press &#x3C;kbd | &#x3C;kbd | Ctrl>+&#x3C;kbd | C>> to copy.</code>
+          <figure id="mp:eh-kbd-2" class="frameable-border">
+            <p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>
             <figcaption><minipage-label>Minipage 15.</minipage-label></figcaption>
-          </figure></section>
+          </figure>
+          <p><i>Nested &#x3C;kbd> distinguishes individual keys in a chord. Browsers
+render the outer block as the chord and the inner blocks as
+individual keys, both monospace.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-u">
-        <section-title><code>&#x3C;u></code></section-title>
+      <section id="eh-output">
+        <section-title><code>&#x3C;output></code></section-title>
         <sub-section id="sec:specification-7">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;u></code> · JATS <code>&#x3C;underline></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>misspelling</code> <code>proper-name</code> <code>editorial-correction</code> <code>other</code></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: canonical <code>&#x3C;u></code>.</p>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;output></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;output></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-7">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-u-1">
-The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
-          <figure id="mp:l1-u-1" class="frameable-border">
-            <p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-output-1">
+The function returns &#x3C;output | 42> for the test input.</code>
+          <figure id="mp:eh-output-1" class="frameable-border">
+            <p>The function returns <output>42</output> for the test input.</p>
             <figcaption><minipage-label>Minipage 16.</minipage-label></figcaption>
-          </figure><code id="code:l1-u-2">The Chinese name &#x3C;u type=proper-name | 王明> appears here.</code>
-          <figure id="mp:l1-u-2" class="frameable-border">
-            <p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>
-            <figcaption><minipage-label>Minipage 17.</minipage-label></figcaption>
-          </figure></section>
+          </figure>
+          <p><i>Result of a calculation in prose. &#x3C;output> is semantically
+distinct from &#x3C;samp> — &#x3C;samp> is what a program prints (a
+display artifact); &#x3C;output> is the result of a computation
+(a semantic value). Browsers render both similarly.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-s">
+      <section id="eh-s">
         <section-title><code>&#x3C;s></code></section-title>
         <sub-section id="sec:specification-8">
           <sub-section-title>Specification</sub-section-title>
@@ -1608,73 +1638,155 @@ The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;s></code> · markdown <code>~~…~~</code>.</p>
+          <p>Produced by: canonical <code>&#x3C;s></code>, markdown <code>~~…~~</code>.</p>
         </sub-section>
         <sub-section id="sec:examples-8">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-s-1">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-s-1">
 The price is ~~$50~~ now $40.</code>
-          <figure id="mp:l1-s-1" class="frameable-border">
+          <figure id="mp:eh-s-1" class="frameable-border">
             <p>The price is ~~<inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace nobreak"> </span><span class="mspace nobreak"> </span><span class="mord mathnormal">n</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.0269em;">w</span></span></span></span></inline-math>40.</p>
-            <figcaption><minipage-label>Minipage 18.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 17.</minipage-label></figcaption>
           </figure>
-          <p><i>GFM’s tilde syntax produces &#x3C;s> elements. The most common authoring path for casual strikethrough.</i></p><code id="code:l1-s-2">The claim &#x3C;s type=retracted | was unsupported> has been corrected.</code>
-          <figure id="mp:l1-s-2" class="frameable-border">
+          <p><i>GFM’s tilde syntax produces &#x3C;s> elements. The most common
+authoring path for casual strikethrough.</i></p><code id="code:eh-s-2">The claim &#x3C;s type=retracted | was unsupported> has been corrected.</code>
+          <figure id="mp:eh-s-2" class="frameable-border">
             <p>The claim <s data-strikethrough-type="retracted">was unsupported</s> has been corrected.</p>
-            <figcaption><minipage-label>Minipage 19.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 18.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-sub">
-        <section-title><code>&#x3C;sub></code></section-title>
+      <section id="eh-samp">
+        <section-title><code>&#x3C;samp></code></section-title>
         <sub-section id="sec:specification-9">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;samp></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;samp></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-9">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-samp-1">
+The command prints &#x3C;samp | Hello, world!> to stdout.</code>
+          <figure id="mp:eh-samp-1" class="frameable-border">
+            <p>The command prints <samp>Hello, world!</samp> to stdout.</p>
+            <figcaption><minipage-label>Minipage 19.</minipage-label></figcaption>
+          </figure>
+          <p><i>Sample output from a program. Browsers render &#x3C;samp> in a
+monospace font by default, distinguishing it from surrounding
+prose.</i></p><code id="code:eh-samp-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
+          <figure id="mp:eh-samp-2" class="frameable-border">
+            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
+            <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
+          </figure>
+          <p><i>&#x3C;samp> for the sample value paired with &#x3C;var> for the variable
+name — the natural pair for documenting configuration in
+technical writing.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="eh-strong">
+        <section-title><code>&#x3C;strong></code></section-title>
+        <sub-section id="sec:specification-10">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;strong></code> · JATS <code>&#x3C;bold></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;strong></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-10">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-strong-1">
+This is **strongly emphasized** content.</code>
+          <figure id="mp:eh-strong-1" class="frameable-border">
+            <p>This is <b>strongly emphasized</b> content.</p>
+            <figcaption><minipage-label>Minipage 21.</minipage-label></figcaption>
+          </figure>
+          <p><i>Plain markdown with double asterisks (or double underscores) produces the
+visual &#x3C;b>, not the semantic &#x3C;strong> — markdown emphasis maps to the
+visual tag. &#x3C;strong> is reached only by the explicit form.</i></p><code id="code:eh-strong-2">&#x3C;strong | important></code>
+          <figure id="mp:eh-strong-2" class="frameable-border"><strong>important</strong>
+            <figcaption><minipage-label>Minipage 22.</minipage-label></figcaption>
+          </figure><code id="code:eh-strong-3">&#x3C;strong #critical .warning | This is critical.></code>
+          <figure id="mp:eh-strong-3" class="frameable-border"><strong id="mp-eh-strong-3-critical" class="warning">This is critical.</strong>
+            <figcaption><minipage-label>Minipage 23.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="eh-sub">
+        <section-title><code>&#x3C;sub></code></section-title>
+        <sub-section id="sec:specification-11">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;sub></code> · JATS <code>&#x3C;sub></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <p><i>No kwargs or boolean flags.</i></p>
           <p>Produced by: canonical <code>&#x3C;sub></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-9">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-sub-1">
+        <sub-section id="sec:examples-11">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-sub-1">
 Water is H&#x3C;sub | 2>O.</code>
-          <figure id="mp:l1-sub-1" class="frameable-border">
+          <figure id="mp:eh-sub-1" class="frameable-border">
             <p>Water is H<sub>2</sub>O.</p>
-            <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
-          </figure><code id="code:l1-sub-2">The vector x&#x3C;sub | i> represents the i-th component.</code>
-          <figure id="mp:l1-sub-2" class="frameable-border">
+            <figcaption><minipage-label>Minipage 24.</minipage-label></figcaption>
+          </figure><code id="code:eh-sub-2">The vector x&#x3C;sub | i> represents the i-th component.</code>
+          <figure id="mp:eh-sub-2" class="frameable-border">
             <p>The vector x<sub>i</sub> represents the i-th component.</p>
-            <figcaption><minipage-label>Minipage 21.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 25.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-sup">
+      <section id="eh-sup">
         <section-title><code>&#x3C;sup></code></section-title>
-        <sub-section id="sec:specification-10">
+        <sub-section id="sec:specification-12">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;sup></code> · JATS <code>&#x3C;sup></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <p><i>No kwargs or boolean flags.</i></p>
           <p>Produced by: canonical <code>&#x3C;sup></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-10">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-sup-1">
+        <sub-section id="sec:examples-12">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-sup-1">
 The 1&#x3C;sup | st> edition of the work.</code>
-          <figure id="mp:l1-sup-1" class="frameable-border">
+          <figure id="mp:eh-sup-1" class="frameable-border">
             <p>The 1<sup>st</sup> edition of the work.</p>
-            <figcaption><minipage-label>Minipage 22.</minipage-label></figcaption>
-          </figure><code id="code:l1-sup-2">The function f(x) = x&#x3C;sup | 2>.</code>
-          <figure id="mp:l1-sup-2" class="frameable-border">
+            <figcaption><minipage-label>Minipage 26.</minipage-label></figcaption>
+          </figure><code id="code:eh-sup-2">The function f(x) = x&#x3C;sup | 2>.</code>
+          <figure id="mp:eh-sup-2" class="frameable-border">
             <p>The function f(x) = x<sup>2</sup>.</p>
-            <figcaption><minipage-label>Minipage 23.</minipage-label></figcaption>
-          </figure><code id="code:l1-sup-3">The isotope &#x3C;sup | 12>C is abundant.</code>
-          <figure id="mp:l1-sup-3" class="frameable-border">
+            <figcaption><minipage-label>Minipage 27.</minipage-label></figcaption>
+          </figure><code id="code:eh-sup-3">The isotope &#x3C;sup | 12>C is abundant.</code>
+          <figure id="mp:eh-sup-3" class="frameable-border">
             <p>The isotope <sup>12</sup>C is abundant.</p>
-            <figcaption><minipage-label>Minipage 24.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 28.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-abbr">
-        <section-title><code>&#x3C;abbr></code></section-title>
-        <sub-section id="sec:specification-11">
+      <section id="eh-term">
+        <section-title><code>&#x3C;term></code></section-title>
+        <sub-section id="sec:specification-13">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;abbr></code> · JATS <code>&#x3C;abbrev></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;term></code> · JATS <code>&#x3C;named-content></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;term></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-13">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-term-1">
+An &#x3C;term | eigenvector> is a non-zero vector that scales under a linear transformation.</code>
+          <figure id="mp:eh-term-1" class="frameable-border">
+            <p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>
+            <figcaption><minipage-label>Minipage 29.</minipage-label></figcaption>
+          </figure>
+          <p><i>Standard term introduction. The element marks the word as
+“this is a term being introduced,” typically rendered in italic
+or bold by default CSS.</i></p><code id="code:eh-term-2">An &#x3C;term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize &#x3C;term | eigenvector>s to operators.</code>
+          <figure id="mp:eh-term-2" class="frameable-border">
+            <p>An <term id="mp-eh-term-2-term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>
+            <figcaption><minipage-label>Minipage 30.</minipage-label></figcaption>
+          </figure>
+          <p><i>First introduction carries an id so later references can link
+back to it. Subsequent uses of the same term (without an id)
+still mark it as a term being referenced, distinct from running
+prose, without re-asserting the introduction.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="eh-u">
+        <section-title><code>&#x3C;u></code></section-title>
+        <sub-section id="sec:specification-14">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;u></code> · JATS <code>&#x3C;underline></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1686,141 +1798,54 @@ The 1&#x3C;sup | st> edition of the work.</code>
             </thead>
             <tbody>
               <tr>
-                <td><code>title</code></td>
+                <td><code>type</code></td>
                 <td>kwarg</td>
+                <td><code>misspelling</code> <code>proper-name</code> <code>editorial-correction</code> <code>other</code></td>
                 <td></td>
-                <td>The abbreviation’s expansion. Standard HTML <abbr title="..."></abbr>— browsers display the expansion as a tooltip on hover. Strongly recommended on first use of an abbreviation; optional on subsequent uses if the expansion is already in scope.</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;abbr></code>.</p>
+          <p>Produced by: canonical <code>&#x3C;u></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-11">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-abbr-1">
-The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.</code>
-          <figure id="mp:l1-abbr-1" class="frameable-border">
-            <p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>
-            <figcaption><minipage-label>Minipage 25.</minipage-label></figcaption>
-          </figure>
-          <p><i>Standard pattern — abbreviation with its expansion as the title kwarg. Browsers show the expansion in a hover tooltip.</i></p><code id="code:l1-abbr-2">Using &#x3C;abbr | CSS> selectors.</code>
-          <figure id="mp:l1-abbr-2" class="frameable-border">
-            <p>Using <abbr>CSS</abbr> selectors.</p>
-            <figcaption><minipage-label>Minipage 26.</minipage-label></figcaption>
-          </figure>
-          <p><i>Bare abbreviation, no title. Acceptable when the expansion has already been introduced earlier in the document.</i></p></section>
+        <sub-section id="sec:examples-14">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-u-1">
+The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
+          <figure id="mp:eh-u-1" class="frameable-border">
+            <p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>
+            <figcaption><minipage-label>Minipage 31.</minipage-label></figcaption>
+          </figure><code id="code:eh-u-2">The Chinese name &#x3C;u type=proper-name | 王明> appears here.</code>
+          <figure id="mp:eh-u-2" class="frameable-border">
+            <p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>
+            <figcaption><minipage-label>Minipage 32.</minipage-label></figcaption>
+          </figure></section>
         </sub-section>
       </section>
-      <section id="l1-var">
+      <section id="eh-var">
         <section-title><code>&#x3C;var></code></section-title>
-        <sub-section id="sec:specification-12">
+        <sub-section id="sec:specification-15">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;var></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <p><i>No kwargs or boolean flags.</i></p>
           <p>Produced by: canonical <code>&#x3C;var></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-12">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-var-1">
-The function takes a parameter &#x3C;var | n> and returns &#x3C;var | n>²+1.</code>
-          <figure id="mp:l1-var-1" class="frameable-border">
-            <p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>
-            <figcaption><minipage-label>Minipage 27.</minipage-label></figcaption>
-          </figure>
-          <p><i>Variable names in prose. Browsers render &#x3C;var> in italic by default, distinguishing it from surrounding prose.</i></p><code id="code:l1-var-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
-          <figure id="mp:l1-var-2" class="frameable-border">
-            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
-            <figcaption><minipage-label>Minipage 28.</minipage-label></figcaption>
-          </figure>
-          <p><i>&#x3C;var> for the variable name and &#x3C;samp> for a sample value — the natural pair for documenting configuration in technical writing.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-samp">
-        <section-title><code>&#x3C;samp></code></section-title>
-        <sub-section id="sec:specification-13">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;samp></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;samp></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-13">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-samp-1">
-The command prints &#x3C;samp | Hello, world!> to stdout.</code>
-          <figure id="mp:l1-samp-1" class="frameable-border">
-            <p>The command prints <samp>Hello, world!</samp> to stdout.</p>
-            <figcaption><minipage-label>Minipage 29.</minipage-label></figcaption>
-          </figure>
-          <p><i>Sample output from a program. Browsers render &#x3C;samp> in a monospace font by default, distinguishing it from surrounding prose.</i></p><code id="code:l1-samp-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
-          <figure id="mp:l1-samp-2" class="frameable-border">
-            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
-            <figcaption><minipage-label>Minipage 30.</minipage-label></figcaption>
-          </figure>
-          <p><i>&#x3C;samp> for the sample value paired with &#x3C;var> for the variable name — the natural pair for documenting configuration in technical writing.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-kbd">
-        <section-title><code>&#x3C;kbd></code></section-title>
-        <sub-section id="sec:specification-14">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;kbd></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;kbd></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-14">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-kbd-1">
-Press &#x3C;kbd | Ctrl+C> to copy.</code>
-          <figure id="mp:l1-kbd-1" class="frameable-border">
-            <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
-            <figcaption><minipage-label>Minipage 31.</minipage-label></figcaption>
-          </figure>
-          <p><i>Single chord as a kbd block. Browsers render &#x3C;kbd> in a monospace font by default, distinguishing it from surrounding prose.</i></p><code id="code:l1-kbd-2">Press &#x3C;kbd | &#x3C;kbd | Ctrl>+&#x3C;kbd | C>> to copy.</code>
-          <figure id="mp:l1-kbd-2" class="frameable-border">
-            <p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>
-            <figcaption><minipage-label>Minipage 32.</minipage-label></figcaption>
-          </figure>
-          <p><i>Nested &#x3C;kbd> distinguishes individual keys in a chord. Browsers render the outer block as the chord and the inner blocks as individual keys, both monospace.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-output">
-        <section-title><code>&#x3C;output></code></section-title>
-        <sub-section id="sec:specification-15">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;output></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;output></code>.</p>
-        </sub-section>
         <sub-section id="sec:examples-15">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-output-1">
-The function returns &#x3C;output | 42> for the test input.</code>
-          <figure id="mp:l1-output-1" class="frameable-border">
-            <p>The function returns <output>42</output> for the test input.</p>
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-var-1">
+The function takes a parameter &#x3C;var | n> and returns &#x3C;var | n>²+1.</code>
+          <figure id="mp:eh-var-1" class="frameable-border">
+            <p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>
             <figcaption><minipage-label>Minipage 33.</minipage-label></figcaption>
           </figure>
-          <p><i>Result of a calculation in prose. &#x3C;output> is semantically distinct from &#x3C;samp> — &#x3C;samp> is what a program prints (a display artifact); &#x3C;output> is the result of a computation (a semantic value). Browsers render both similarly.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-term">
-        <section-title><code>&#x3C;term></code></section-title>
-        <sub-section id="sec:specification-16">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;term></code> · JATS <code>&#x3C;named-content></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;term></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-16">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-term-1">
-An &#x3C;term | eigenvector> is a non-zero vector that scales under a linear transformation.</code>
-          <figure id="mp:l1-term-1" class="frameable-border">
-            <p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>
+          <p><i>Variable names in prose. Browsers render &#x3C;var> in italic by
+default, distinguishing it from surrounding prose.</i></p><code id="code:eh-var-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
+          <figure id="mp:eh-var-2" class="frameable-border">
+            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
             <figcaption><minipage-label>Minipage 34.</minipage-label></figcaption>
           </figure>
-          <p><i>Standard term introduction. The element marks the word as “this is a term being introduced,” typically rendered in italic or bold by default CSS.</i></p><code id="code:l1-term-2">An &#x3C;term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize &#x3C;term | eigenvector>s to operators.</code>
-          <figure id="mp:l1-term-2" class="frameable-border">
-            <p>An <term id="mp-l1-term-2-term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>
-            <figcaption><minipage-label>Minipage 35.</minipage-label></figcaption>
-          </figure>
-          <p><i>First introduction carries an id so later references can link back to it. Subsequent uses of the same term (without an id) still mark it as a term being referenced, distinct from running prose, without re-asserting the introduction.</i></p></section>
+          <p><i>&#x3C;var> for the variable name and &#x3C;samp> for a sample value —
+the natural pair for documenting configuration in technical writing.</i></p></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Primary prose</toc-title></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><toc-title>Aside</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#l1-strong">&#x3C;strong></a><ul><li><a href="#sec:specification-3">Specification</a></li><li><a href="#sec:examples-3">Examples</a></li></ul></li><li><a href="#l1-em">&#x3C;em></a><ul><li><a href="#sec:specification-4">Specification</a></li><li><a href="#sec:examples-4">Examples</a></li></ul></li><li><a href="#l1-b">&#x3C;b></a><ul><li><a href="#sec:specification-5">Specification</a></li><li><a href="#sec:examples-5">Examples</a></li></ul></li><li><a href="#l1-i">&#x3C;i></a><ul><li><a href="#sec:specification-6">Specification</a></li><li><a href="#sec:examples-6">Examples</a></li></ul></li><li><a href="#l1-u">&#x3C;u></a><ul><li><a href="#sec:specification-7">Specification</a></li><li><a href="#sec:examples-7">Examples</a></li></ul></li><li><a href="#l1-s">&#x3C;s></a><ul><li><a href="#sec:specification-8">Specification</a></li><li><a href="#sec:examples-8">Examples</a></li></ul></li><li><a href="#l1-sub">&#x3C;sub></a><ul><li><a href="#sec:specification-9">Specification</a></li><li><a href="#sec:examples-9">Examples</a></li></ul></li><li><a href="#l1-sup">&#x3C;sup></a><ul><li><a href="#sec:specification-10">Specification</a></li><li><a href="#sec:examples-10">Examples</a></li></ul></li><li><a href="#l1-abbr">&#x3C;abbr></a><ul><li><a href="#sec:specification-11">Specification</a></li><li><a href="#sec:examples-11">Examples</a></li></ul></li><li><a href="#l1-var">&#x3C;var></a><ul><li><a href="#sec:specification-12">Specification</a></li><li><a href="#sec:examples-12">Examples</a></li></ul></li><li><a href="#l1-samp">&#x3C;samp></a><ul><li><a href="#sec:specification-13">Specification</a></li><li><a href="#sec:examples-13">Examples</a></li></ul></li><li><a href="#l1-kbd">&#x3C;kbd></a><ul><li><a href="#sec:specification-14">Specification</a></li><li><a href="#sec:examples-14">Examples</a></li></ul></li><li><a href="#l1-output">&#x3C;output></a><ul><li><a href="#sec:specification-15">Specification</a></li><li><a href="#sec:examples-15">Examples</a></li></ul></li><li><a href="#l1-term">&#x3C;term></a><ul><li><a href="#sec:specification-16">Specification</a></li><li><a href="#sec:examples-16">Examples</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Primary prose</toc-title></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><toc-title>Aside</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#eh-abbr">&#x3C;abbr></a><ul><li><a href="#sec:specification-2">Specification</a></li><li><a href="#sec:examples-2">Examples</a></li></ul></li><li><a href="#eh-b">&#x3C;b></a><ul><li><a href="#sec:specification-3">Specification</a></li><li><a href="#sec:examples-3">Examples</a></li></ul></li><li><a href="#eh-em">&#x3C;em></a><ul><li><a href="#sec:specification-4">Specification</a></li><li><a href="#sec:examples-4">Examples</a></li></ul></li><li><a href="#eh-i">&#x3C;i></a><ul><li><a href="#sec:specification-5">Specification</a></li><li><a href="#sec:examples-5">Examples</a></li></ul></li><li><a href="#eh-kbd">&#x3C;kbd></a><ul><li><a href="#sec:specification-6">Specification</a></li><li><a href="#sec:examples-6">Examples</a></li></ul></li><li><a href="#eh-output">&#x3C;output></a><ul><li><a href="#sec:specification-7">Specification</a></li><li><a href="#sec:examples-7">Examples</a></li></ul></li><li><a href="#eh-s">&#x3C;s></a><ul><li><a href="#sec:specification-8">Specification</a></li><li><a href="#sec:examples-8">Examples</a></li></ul></li><li><a href="#eh-samp">&#x3C;samp></a><ul><li><a href="#sec:specification-9">Specification</a></li><li><a href="#sec:examples-9">Examples</a></li></ul></li><li><a href="#eh-strong">&#x3C;strong></a><ul><li><a href="#sec:specification-10">Specification</a></li><li><a href="#sec:examples-10">Examples</a></li></ul></li><li><a href="#eh-sub">&#x3C;sub></a><ul><li><a href="#sec:specification-11">Specification</a></li><li><a href="#sec:examples-11">Examples</a></li></ul></li><li><a href="#eh-sup">&#x3C;sup></a><ul><li><a href="#sec:specification-12">Specification</a></li><li><a href="#sec:examples-12">Examples</a></li></ul></li><li><a href="#eh-term">&#x3C;term></a><ul><li><a href="#sec:specification-13">Specification</a></li><li><a href="#sec:examples-13">Examples</a></li></ul></li><li><a href="#eh-u">&#x3C;u></a><ul><li><a href="#sec:specification-14">Specification</a></li><li><a href="#sec:examples-14">Examples</a></li></ul></li><li><a href="#eh-var">&#x3C;var></a><ul><li><a href="#sec:specification-15">Specification</a></li><li><a href="#sec:examples-15">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

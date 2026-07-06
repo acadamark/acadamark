@@ -1417,16 +1417,111 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Exhibit</book-part-title>
       </meta>
-      <p>Exhibited artifacts — figures, tables, diagrams, and the surfaces that frame them, with their captions.</p>
+      <p>Supporting material showcased in isolation — figures, tables, diagrams, and framed boxes.</p>
+      <section id="sh-caption">
+        <section-title><code>&#x3C;caption></code></section-title>
+        <sub-section id="sec:general-usage-30">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>caption</i>. Compiles to eHTML <code>&#x3C;caption></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;caption></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-diagram">
+        <section-title><code>&#x3C;diagram></code></section-title>
+        <sub-section id="sec:general-usage-31">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>diagram</i>. Compiles to eHTML <code>&#x3C;diagram></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;diagram></code></li>
+          </ul>
+          <pre><code id="code:sh-diagram-1">
+&#x3C;diagram mermaid>
+graph LR
+  A[Start] --> B{Decision}
+  B -->|yes| C[OK]
+  B -->|no| D[Stop]
+&#x3C;/diagram>
+</code></pre>
+          <figure id="mp:sh-diagram-1" class="frameable-border">
+            
+              <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
+  A[Start] --> B{Decision}
+  B -->|yes| C[OK]
+  B -->|no| D[Stop]</pre>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
+            
+            <figcaption><minipage-label>Minipage 65.</minipage-label></figcaption>
+          </figure>
+          <p><i>The <code>mermaid</code> format word selects the Mermaid engine. The handler
+emits the same <code>&#x26;lt;pre class="mermaid" data-enscribe-dsl="mermaid"&#x26;gt;</code>
+contract as the legacy <code>&#x26;lt;mermaid&#x26;gt;</code> shorthand expands to.</i></p>
+          <pre><code id="code:sh-diagram-2">
+&#x3C;diagram abc>
+X:1
+T:Scale
+K:C
+CDEFGABc
+&#x3C;/diagram>
+</code></pre>
+          <figure id="mp:sh-diagram-2" class="frameable-border">
+            
+              <pre class="abc" data-enscribe-dsl="abc">X:1
+T:Scale
+K:C
+CDEFGABc</pre>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
+            
+            <figcaption><minipage-label>Minipage 66.</minipage-label></figcaption>
+          </figure>
+          <p><i>The <code>abc</code> format word selects the abcjs engine.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-18">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>engine</code></td>
+                <td>format-word</td>
+                <td><code>mermaid</code> <code>abc</code></td>
+                <td>The diagram engine — the language that renders the body.</td>
+              </tr>
+              <tr>
+                <td><code>caption</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional caption text.</td>
+              </tr>
+              <tr>
+                <td><code>src</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>An @id reference (#313 consumer wiring) that pulls a stored &#x3C;dataset> declared in &#x3C;data> and feeds its opaque bytes as the diagram’s engine source — e.g.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
       <section id="sh-fig">
         <section-title><code>&#x3C;fig></code></section-title>
-        <sub-section id="sec:general-usage-29">
+        <sub-section id="sec:general-usage-32">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>figure</i>. Compiles to eHTML <code>&#x3C;fig></code>.</p>
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;fig></code></li>
-            <li>Alias: <code>&#x3C;figure></code> → <code>&#x3C;fig></code></li>
+            <li>Alias: <code>&#x3C;figure></code></li>
           </ul><code id="code:sh-fig-1">&#x3C;fig src=elephant.jpg | An adult African elephant.></code>
           <figure id="mp:sh-fig-1" class="frameable-border">
             <figure>
@@ -1435,9 +1530,14 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <p>An adult African elephant.</p>
               </figcaption>
             </figure>
-            <figcaption><minipage-label>Minipage 57.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 67.</minipage-label></figcaption>
           </figure>
-          <p><i>The simplest case. The src kwarg generates the &#x3C;img>; the pipe content generates the figcaption. The alt text defaults to the figcaption text when not specified explicitly. The eHTML element is HTML-native &#x3C;figure> (not the custom-element &#x3C;fig>) because the HTML rendering surface is the HTML5 native element while the enscribe canonical name follows JATS’s shorter &#x3C;fig>.</i></p><code id="code:sh-fig-2">&#x3C;figure src=elephant.jpg | An adult African elephant.></code>
+          <p><i>The simplest case. The src kwarg generates the &#x3C;img>; the pipe
+content generates the figcaption. The alt text defaults to the
+figcaption text when not specified explicitly. The eHTML
+element is HTML-native &#x3C;figure> (not the custom-element &#x3C;fig>)
+because the HTML rendering surface is the HTML5 native element
+while the enscribe canonical name follows JATS’s shorter &#x3C;fig>.</i></p><code id="code:sh-fig-2">&#x3C;figure src=elephant.jpg | An adult African elephant.></code>
           <figure id="mp:sh-fig-2" class="frameable-border">
             <figure>
               <img src="elephant.jpg" alt="An adult African elephant.">
@@ -1445,9 +1545,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <p>An adult African elephant.</p>
               </figcaption>
             </figure>
-            <figcaption><minipage-label>Minipage 58.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 68.</minipage-label></figcaption>
           </figure>
-          <p><i><code>&#x26;lt;figure&#x26;gt;</code> is the authoring alias. The normalize-to-canonical gate rewrites the tagname to <code>fig</code> early; the rendered output is the same.</i></p><code id="code:sh-fig-3">&#x3C;fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.></code>
+          <p><i><code>&#x26;lt;figure&#x26;gt;</code> is the authoring alias. The normalize-to-canonical gate rewrites the
+tagname to <code>fig</code> early; the rendered output is the same.</i></p><code id="code:sh-fig-3">&#x3C;fig #elephant src=elephant.jpg align=right alt="A photograph of an elephant" | An adult African elephant photographed in Tanzania.></code>
           <figure id="mp:sh-fig-3" class="frameable-border">
             <figure id="mp-sh-fig-3-elephant" data-align="right">
               <img src="elephant.jpg" alt="A photograph of an elephant">
@@ -1455,9 +1556,11 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <p>An adult African elephant photographed in Tanzania.</p>
               </figcaption>
             </figure>
-            <figcaption><minipage-label>Minipage 59.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 69.</minipage-label></figcaption>
           </figure>
-          <p><i>The <code>id</code> enables cross-referencing with <code>&#x26;lt;ref @elephant&#x26;gt;</code> (or the canonical <code>&#x26;lt;ref @fig:elephant&#x26;gt;</code> colon-prefix form). Numbered by default; the figcaption gets a “Figure N.” label span prepended.</i></p>
+          <p><i>The <code>id</code> enables cross-referencing with <code>&#x26;lt;ref @elephant&#x26;gt;</code> (or the
+canonical <code>&#x26;lt;ref @fig:elephant&#x26;gt;</code> colon-prefix form). Numbered by
+default; the figcaption gets a “Figure N.” label span prepended.</i></p>
           <pre><code id="code:sh-fig-4">
 &#x3C;fig #revenue-table type=table |
 &#x3C;table>
@@ -1491,9 +1594,11 @@ Quarterly revenue for fiscal year 2024.
                 <p>Quarterly revenue for fiscal year 2024.</p>
               </figcaption>
             </figure>
-            <figcaption><minipage-label>Minipage 60.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 70.</minipage-label></figcaption>
           </figure>
-          <p><i>A figure without src. The content (a table) is preserved as-is; the trailing line becomes the figcaption. Author convention is to put the caption text on its own line at the end of the content.</i></p>
+          <p><i>A figure without src. The content (a table) is preserved as-is;
+the trailing line becomes the figcaption. Author convention is
+to put the caption text on its own line at the end of the content.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-19">
           <sub-section-title>Arguments</sub-section-title>
@@ -1511,53 +1616,343 @@ Quarterly revenue for fiscal year 2024.
                 <td><code>src</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>URL of an image to embed. The handler generates an <code>&#x3C;img></code> child element from this kwarg. When src is present, the figure renders as an image with a caption. Asset reference (#190): when src is <code>@id</code> it pulls in an asset declared inside <code>&#x3C;data></code>, either embedded — <code>&#x3C;fig #id png>base64&#x3C;/fig></code> (the format flag is one of png, jpg, jpeg, svg, gif, webp) — or external — <code>&#x3C;fig #id src="path" /></code>. An embedded reference resolves to a <code>data:&#x3C;mime>;base64,…</code> URI; an external one resolves to the declared path (rebased master-relative for a cross-file child) as a plain <code>&#x3C;img src="path"></code>. The placed figure adopts the id, so it numbers and cross-references (<code>&#x3C;ref @id></code>) as that id; the <code>&#x3C;data></code> declaration itself renders nothing. Re-placing one asset is legitimate — each <code>&#x3C;fig src="@id" /></code> renders and numbers, but only the first adopts the id (the cross-reference anchor); give a later placement its own <code>#id</code> to reference it. An unresolved <code>@id</code>, or an embedded format outside the list above, renders a visible asset-error rather than a broken image. Assets merge project-wide across an assembled document; the same id declared in two <code>&#x3C;data></code> blocks is last-wins with a visible collision flag. (JATS <code>&#x3C;graphic></code> export of assets is the remaining slice.)</td>
+                <td>URL of an image to embed.</td>
               </tr>
               <tr>
                 <td><code>alt</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Alt text for the generated <code>&#x3C;img></code> when src is present. Recommended for accessibility but not required: when alt is not specified, the handler falls back to the figcaption text. Ignored when src is absent.</td>
+                <td>Alt text for the generated &#x3C;img> when src is present.</td>
               </tr>
               <tr>
                 <td><code>align</code></td>
                 <td>kwarg</td>
                 <td><code>left</code> <code>right</code> <code>center</code> <code>full-width</code></td>
-                <td>How the figure is positioned in the document flow. Affects rendering only; not exported to JATS.</td>
+                <td>How the figure is positioned in the document flow.</td>
               </tr>
               <tr>
                 <td><code>width</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Suggested rendered width. Can be a CSS length (e.g., “300px”, “50%”) or a relative value.</td>
+                <td>Suggested rendered width.</td>
               </tr>
               <tr>
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>image</code> <code>table</code> <code>code</code> <code>equation</code> <code>diagram</code> <code>multi-part</code> <code>other</code></td>
-                <td>Optional classification of the figure’s content. Maps to JATS fig content-type or to wrapping element choices.</td>
+                <td>Optional classification of the figure’s content.</td>
               </tr>
               <tr>
                 <td><code>caption</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional caption text. The <code>caption=</code> kwarg lifts to a <code>&#x3C;caption></code> child tag at the normalize-to-canonical gate (caption-as-content) — the same way <code>&#x3C;meta></code> / <code>&#x3C;author></code> kwargs lift to their child tags — so a <code>&#x3C;caption></code> child can equivalently be authored directly. The figure handler also still accepts the legacy figure-as-pipe-caption form: when no <code>&#x3C;caption></code> child is present, the pipe content becomes the caption. (<code>title=</code> lifts to a <code>&#x3C;title></code> child the same way.)</td>
+                <td>Optional caption text.</td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this figure participates in the document-wide figure sequence. Use +numbered (default) to number, -numbered to suppress. Can also be written as numbered=true / numbered=false. The config key number-figures=false suppresses all figures unless overridden per-element with +numbered.</td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Whether this figure participates in the document-wide figure sequence.</td>
               </tr>
               <tr>
-                <td><code>+border</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>The frameable surface. When +border is set, the rendered
-                  <figure>
-                    <figcaption><figure-label>Figure 1.</figure-label></figcaption>
-                  </figure>gains the <code>frameable-border</code> class so theme stylesheets can draw the outline box per the frameable convention. Off by default.
-                </td>
+                <td><code>+border</code> / <code>-border</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>The frameable surface.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-frame">
+        <section-title><code>&#x3C;frame></code></section-title>
+        <sub-section id="sec:general-usage-33">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>frame</i>. Compiles to eHTML <code>&#x3C;frame></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;frame></code></li>
+          </ul><code id="code:sh-frame-1">&#x3C;frame | A short callout.></code>
+          <figure id="mp:sh-frame-1" class="frameable-border">
+            <figure class="frameable-border">
+              <p>A short callout.</p>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
+            </figure>
+            <figcaption><minipage-label>Minipage 71.</minipage-label></figcaption>
+          </figure>
+          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab
+html_output.element <code>frame</code> is only the lookup key for handler-strategy
+entries — the handler controls the actual element). +border is default on
+for &#x3C;frame>, so the class appears automatically.</i></p>
+          <pre><code id="code:sh-frame-2">
+&#x3C;frame type=note title="Important" |
+Make sure to read this carefully.
+>
+</code></pre>
+          <figure id="mp:sh-frame-2" class="frameable-border">
+            <figure data-frame-type="note" class="frameable-border">
+              <figcaption class="title">Important</figcaption>
+              <p>Make sure to read this carefully.</p>
+              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
+            </figure>
+            <figcaption><minipage-label>Minipage 72.</minipage-label></figcaption>
+          </figure>
+          <p><i>With a title rendered at the top.</i></p>
+          <pre><code id="code:sh-frame-3">
+&#x3C;frame #fig:method-box caption="Workflow steps" |
+1. Collect data.
+2. Clean.
+3. Model.
+>
+</code></pre>
+          <figure id="mp:sh-frame-3" class="frameable-border">
+            <figure id="mp-sh-frame-3-fig:method-box" class="frameable-border">
+              <ol>
+                <li>Collect data.</li>
+                <li>Clean.</li>
+                <li>Model.</li>
+              </ol>
+              <figcaption><figure-label>Figure 1.</figure-label>
+                <p>Workflow steps</p>
+              </figcaption>
+            </figure>
+            <figcaption><minipage-label>Minipage 73.</minipage-label></figcaption>
+          </figure>
+          <p><i>Numbered by default (#272). Shares the figure counter with
+&#x3C;fig>/&#x3C;svg>/&#x3C;mermaid>/&#x3C;abc>; use -numbered for an unnumbered frame.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-20">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional title rendered at the top of the frame (the frameable title-top convention), as a title= kwarg or a &#x3C;title> child tag.</td>
+              </tr>
+              <tr>
+                <td><code>caption</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional caption text rendered at the bottom of the frame (the frameable caption-bottom convention).</td>
+              </tr>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional classification of what the frame contains (note, warning, tip, theorem-block, etc.), preserved as the data-frame-type attribute.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Whether this frame participates in the document-wide figure sequence.</td>
+              </tr>
+              <tr>
+                <td><code>+border</code> / <code>-border</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>The frameable surface.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-minipage">
+        <section-title><code>&#x3C;minipage></code></section-title>
+        <sub-section id="sec:general-usage-34">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>minipage</i>. Compiles to eHTML <code>&#x3C;minipage></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;minipage></code></li>
+          </ul><code id="code:sh-minipage-1">&#x3C;minipage | Two panels side by side.></code>
+          <figure id="mp:sh-minipage-1" class="frameable-border">
+            <figure class="frameable-border">
+              <p>Two panels side by side.</p>
+              <figcaption><minipage-label>Minipage 1.</minipage-label></figcaption>
+            </figure>
+            <figcaption><minipage-label>Minipage 74.</minipage-label></figcaption>
+          </figure>
+          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab
+html_output.element <code>minipage</code> is only the lookup key for handler-strategy
+entries — the handler controls the actual element). +border is default on
+for &#x3C;minipage>, so the class appears automatically. The body renders as
+sealed eHTML.</i></p>
+          <pre><code id="code:sh-minipage-2">
+&#x3C;minipage #mp:compare caption="Side-by-side comparison" |
+A figure here counts privately.
+
+&#x3C;fig #fig:left src="left.png" | Left panel.>
+&#x3C;fig #fig:right src="right.png" | Right panel.>
+>
+</code></pre>
+          <figure id="mp:sh-minipage-2" class="frameable-border">
+            <figure id="mp-sh-minipage-2-mp:compare" class="frameable-border">
+              <p>A figure here counts privately.</p>
+              <figure id="mp-sh-minipage-2-mp-compare-fig:left">
+                <img src="left.png" alt="Left panel.">
+                <figcaption><figure-label>Figure 1.</figure-label>
+                  <p>Left panel.</p>
+                </figcaption>
+              </figure>
+              <figure id="mp-sh-minipage-2-mp-compare-fig:right">
+                <img src="right.png" alt="Right panel.">
+                <figcaption><figure-label>Figure 2.</figure-label>
+                  <p>Right panel.</p>
+                </figcaption>
+              </figure>
+              <figcaption><minipage-label>Minipage 1.</minipage-label> Side-by-side comparison</figcaption>
+            </figure>
+            <figcaption><minipage-label>Minipage 75.</minipage-label></figcaption>
+          </figure>
+          <p><i>Numbered by default (#272). It counts in its own
+“Minipage N” series — <code>&#x26;lt;ref @mp:compare&#x26;gt;</code> resolves to “minipage 1”. The two
+inner figures number 1 and 2 in the minipage’s PRIVATE figure counter, NOT
+the document’s: a document &#x3C;fig> elsewhere is unaffected, and an outside
+<code>&#x26;lt;ref @fig:left&#x26;gt;</code> is a normal not-found ref-error (the seal forbids inbound
+references to the body).</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-21">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional title rendered at the top of the minipage (the frameable title-top convention).</td>
+              </tr>
+              <tr>
+                <td><code>caption</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional caption rendered at the bottom of the minipage (the frameable caption-bottom convention), with the “Minipage N.” label folded in when numbered.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Whether this minipage is numbered.</td>
+              </tr>
+              <tr>
+                <td><code>+border</code> / <code>-border</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>The frameable surface.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-svg">
+        <section-title><code>&#x3C;svg></code></section-title>
+        <sub-section id="sec:general-usage-35">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>svg</i>. Compiles to eHTML <code>&#x3C;svg></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;svg></code></li>
+          </ul>
+          <pre><code id="code:sh-svg-1">
+&#x3C;svg -numbered viewBox="0 0 100 100" width=200 height=200 |
+  &#x3C;circle cx="50" cy="50" r="40" fill="blue" />
+>
+</code></pre>
+          <figure id="mp:sh-svg-1" class="frameable-border">
+            <svg viewBox="0 0 100 100" width="200" height="200">
+  <circle cx="50" cy="50" r="40" fill="blue" />
+</svg>
+            <figcaption><minipage-label>Minipage 76.</minipage-label></figcaption>
+          </figure>
+          <p><i>A lone inline SVG. <code>&#x26;lt;svg&#x26;gt;</code> is numbered by default (it shares the
+figure counter), so <code>-numbered</code> is what opts out of framing for a
+purely inline graphic. The source is opaque pipe content; the
+attributes pass through to the rendered &#x3C;svg> element.</i></p>
+          <pre><code id="code:sh-svg-2">
+&#x3C;svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
+  &#x3C;circle cx="50" cy="50" r="40" />
+>
+</code></pre>
+          <figure id="mp:sh-svg-2" class="frameable-border">
+            <figure>
+              <svg id="mp-sh-svg-2-fig:diagram" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" />
+</svg>
+              <figcaption><figure-label>Figure 1.</figure-label> A simple circle</figcaption>
+            </figure>
+            <figcaption><minipage-label>Minipage 77.</minipage-label></figcaption>
+          </figure>
+          <p><i>Captioned and numbered → framed by the ordinary frameable rule: the
+handler wraps the &#x3C;svg> in a &#x3C;figure> with the &#x3C;figcaption> as a
+sibling inside the wrapper (figcaption is not a valid child of &#x3C;svg>).
+Shares the figure counter with &#x3C;fig>; <code>&#x26;lt;ref @fig:diagram&#x26;gt;</code> resolves
+to “Figure N”.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-22">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>width</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>SVG width attribute.</td>
+              </tr>
+              <tr>
+                <td><code>height</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>SVG height attribute.</td>
+              </tr>
+              <tr>
+                <td><code>viewBox</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>SVG viewBox attribute.</td>
+              </tr>
+              <tr>
+                <td><code>caption</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional caption text rendered in a sibling &#x3C;figcaption>.</td>
+              </tr>
+              <tr>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Whether this SVG participates in the document-wide figure sequence (shares the <code>figure</code> counter with &#x3C;fig>, &#x3C;mermaid>, &#x3C;abc>).</td>
+              </tr>
+              <tr>
+                <td><code>+border</code> / <code>-border</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>The frameable surface.</td>
               </tr>
             </tbody>
           </table></section>
@@ -1565,7 +1960,7 @@ Quarterly revenue for fiscal year 2024.
       </section>
       <section id="sh-table">
         <section-title><code>&#x3C;table></code></section-title>
-        <sub-section id="sec:general-usage-30">
+        <sub-section id="sec:general-usage-36">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>table</i>. Compiles to eHTML <code>&#x3C;table></code>.</p>
           <p>Registers:</p>
@@ -1598,9 +1993,10 @@ Quarterly revenue for fiscal year 2024.
                 </tr>
               </tbody>
             </table>
-            <figcaption><minipage-label>Minipage 61.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 78.</minipage-label></figcaption>
           </figure>
-          <p><i>Plain markdown table syntax (via remark-gfm). The most common authoring path for simple tables. No explicit enscribe tags needed.</i></p>
+          <p><i>Plain markdown table syntax (via remark-gfm). The most common
+authoring path for simple tables. No explicit enscribe tags needed.</i></p>
           <pre><code id="code:sh-table-2">
 &#x3C;csv | name,price
 foo,1
@@ -1627,9 +2023,16 @@ bar,2
                 </tr>
               </tbody>
             </table>
-            <figcaption><minipage-label>Minipage 62.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 79.</minipage-label></figcaption>
           </figure>
-          <p><i>The <code>&#x26;lt;csv&#x26;gt;</code> shorthand lowers to <code>&#x26;lt;table csv&#x26;gt;</code> (the standalone <code>&#x26;lt;csv&#x26;gt;</code> / <code>&#x26;lt;tsv&#x26;gt;</code> tags were retired to these gate shorthands) and renders today — the table above is its output, parsed from the CSV source by the table handler’s csv engine. <code>&#x26;lt;csv | ... &#x26;gt;</code> and the qualifying form <code>&#x26;lt;table csv | ... &#x26;gt;</code> converge to the same parsed table; only the authoring shorthand differs. JSON data uses the qualifying <code>&#x26;lt;table json | ... &#x26;gt;</code> form — there is no standalone <code>&#x26;lt;json&#x26;gt;</code> shorthand. See the <code>&#x26;lt;csv&#x26;gt;</code> vocabulary entry for engine attributes (header control, alignment, etc.).</i></p>
+          <p><i>The <code>&#x26;lt;csv&#x26;gt;</code> shorthand lowers to <code>&#x26;lt;table csv&#x26;gt;</code> (the standalone <code>&#x26;lt;csv&#x26;gt;</code> /
+<code>&#x26;lt;tsv&#x26;gt;</code> tags were retired to these gate shorthands) and renders today —
+the table above is its output, parsed from the CSV source by the table
+handler’s csv engine. <code>&#x26;lt;csv | ... &#x26;gt;</code> and the qualifying form
+<code>&#x26;lt;table csv | ... &#x26;gt;</code> converge to the same parsed table; only the authoring
+shorthand differs. JSON data uses the qualifying <code>&#x26;lt;table json | ... &#x26;gt;</code> form
+— there is no standalone <code>&#x26;lt;json&#x26;gt;</code> shorthand. See the <code>&#x26;lt;csv&#x26;gt;</code> vocabulary
+entry for engine attributes (header control, alignment, etc.).</i></p>
           <pre><code id="code:sh-table-3">
 &#x3C;table #revenue type=results>
   &#x3C;caption | Quarterly revenue>
@@ -1656,223 +2059,10 @@ bar,2
                 </tr>
               </tbody>
             </table>
-            <figcaption><minipage-label>Minipage 63.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 80.</minipage-label></figcaption>
           </figure>
-          <p><i>Explicit table with cells, used when fine control over structure or attributes is needed.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-20">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>parse-columns</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>#21: comma-separated list of column names (by header) whose cells parse as Enscribe inline markup, leaving the other columns literal — the common mixed case (a prose column among data columns). Adds the named columns on top of the parse-text / config decision. Headerless tables can’t match by name, so use +parse-text there. A parsed column parses in HTML AND JATS; the stored data payload is never mutated (a display directive on the table).</td>
-              </tr>
-              <tr>
-                <td><code>caption</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Short-form caption as a kwarg string. Renders as <code>&#x3C;caption></code> inside the table element. When numbered, a “Table N.” label span is prepended. Long-form caption (<code>&#x3C;caption | ...></code> nested tag) is deferred.</td>
-              </tr>
-              <tr>
-                <td><code>src</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Path to an external data file. Relative to the document’s assets directory (configurable via the assetsDir interpreter option). The content handler reads the file at interpretation time.</td>
-              </tr>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>data</code> <code>layout</code> <code>comparison</code> <code>schedule</code> <code>results</code> <code>other</code></td>
-                <td>Optional semantic classification. Affects styling and JATS export.</td>
-              </tr>
-              <tr>
-                <td><code>+headers</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether the first row of the data is a header row. Default true. Use -headers to suppress thead generation; rows render as tbody only.</td>
-              </tr>
-              <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this table is counted in the numbered table sequence and receives a “Table N.” label prefix in its caption.</td>
-              </tr>
-              <tr>
-                <td><code>+parse-text</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>#21: whether ALL cells of a DATA-format table parse as Enscribe inline markup. Default false (data-format cells are literal — the safe baseline). +parse-text parses every cell; -parse-text forces literal, overriding a document-wide 
-                  <config></config>default. Markdown/pipe tables always parse and ignore this. Resolved by the table-cell-parse plugin (precedence: this attribute > config default > literal baseline).
-                </td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-caption">
-        <section-title><code>&#x3C;caption></code></section-title>
-        <sub-section id="sec:general-usage-31">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>caption</i>. Compiles to eHTML <code>&#x3C;caption></code>.</p>
-          <p>A caption is the descriptive text rendered with a frameable — a figure, table, diagram, or boxed aside. Author it as a <code>&#x3C;caption></code> child of the frameable, or as the <code>caption=</code> kwarg on the frameable; the kwarg lifts to a <code>&#x3C;caption></code> child at the normalize-to-canonical gate, so the two forms are equivalent. (For a figure, the pipe content is the shorthand caption — <code>&#x3C;fig src=… | caption></code> — and the explicit <code>&#x3C;caption></code> child is the long form.)</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;caption></code> (child of a frameable)</li>
-          </ul>
-          <pre><code id="code:sh-caption-1">
-&#x3C;table>
-  &#x3C;caption | Annual rainfall by region, 2020–2024.>
-
-  | region | mm |
-  |---|---|
-  | Congo basin | 1600 |
-  | Serengeti | 800 |
-&#x3C;/table>
-</code></pre>
-          <figure id="mp:sh-caption-1" class="frameable-border"><table>
-<caption | Annual rainfall by region, 2020–2024.>
-
-  | region | mm |
-  |---|---|
-  | Congo basin | 1600 |
-  | Serengeti | 800 |
-</table>
-            <figcaption><minipage-label>Minipage 64.</minipage-label></figcaption>
-          </figure>
-          <p><i>Child-tag form. The caption renders with the frameable, and the “Table N.” / “Figure N.” label folds in when the frameable is numbered.</i></p><code id="code:sh-caption-2">&#x3C;fig src=elephant.jpg caption="A forest elephant in the Congo basin." /></code>
-          <figure id="mp:sh-caption-2" class="frameable-border">
-            <figure>
-              <img src="elephant.jpg" alt="A forest elephant in the Congo basin.">
-              <figcaption><figure-label>Figure 1.</figure-label>
-                <p>A forest elephant in the Congo basin.</p>
-              </figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 65.</minipage-label></figcaption>
-          </figure>
-          <p><i>Kwarg form. Equivalent to the child-tag form — <code>caption=</code> lifts to a <code>&#x3C;caption></code> child at the gate.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-21">
-          <sub-section-title>Arguments</sub-section-title>
-          <p><code>&#x3C;caption></code> takes no attributes of its own. Its content is prose (it may carry inline formatting and cross-references). It is always a child of a frameable; a bare <code>&#x3C;caption></code> outside one has nothing to attach to and renders as an unknown tag.</p></section>
-        </sub-section>
-      </section>
-      <section id="sh-diagram">
-        <section-title><code>&#x3C;diagram></code></section-title>
-        <sub-section id="sec:general-usage-32">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>diagram</i>. Compiles to eHTML <code>&#x3C;diagram></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;diagram></code></li>
-          </ul>
-          <pre><code id="code:sh-diagram-1">
-&#x3C;diagram mermaid>
-graph LR
-  A[Start] --> B{Decision}
-  B -->|yes| C[OK]
-  B -->|no| D[Stop]
-&#x3C;/diagram>
-</code></pre>
-          <figure id="mp:sh-diagram-1" class="frameable-border">
-            
-              <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
-  A[Start] --> B{Decision}
-  B -->|yes| C[OK]
-  B -->|no| D[Stop]</pre>
-              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
-            
-            <figcaption><minipage-label>Minipage 66.</minipage-label></figcaption>
-          </figure>
-          <p><i>The <code>mermaid</code> format word selects the Mermaid engine. The handler emits the same <code>&#x26;lt;pre class="mermaid" data-enscribe-dsl="mermaid"&#x26;gt;</code> contract as the legacy <code>&#x26;lt;mermaid&#x26;gt;</code> shorthand expands to.</i></p>
-          <pre><code id="code:sh-diagram-2">
-&#x3C;diagram abc>
-X:1
-T:Scale
-K:C
-CDEFGABc
-&#x3C;/diagram>
-</code></pre>
-          <figure id="mp:sh-diagram-2" class="frameable-border">
-            
-              <pre class="abc" data-enscribe-dsl="abc">X:1
-T:Scale
-K:C
-CDEFGABc</pre>
-              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
-            
-            <figcaption><minipage-label>Minipage 67.</minipage-label></figcaption>
-          </figure>
-          <p><i>The <code>abc</code> format word selects the abcjs engine.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-22">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>caption</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional caption text. When present the handler emits a <code>&#x3C;figcaption></code> sibling after the rendered diagram (the external-DSL sibling-caption layout). When the diagram participates in figure numbering the caption carries a “Figure N.” label prefix.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-svg">
-        <section-title><code>&#x3C;svg></code></section-title>
-        <sub-section id="sec:general-usage-33">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>svg</i>. Compiles to eHTML <code>&#x3C;svg></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;svg></code></li>
-          </ul>
-          <pre><code id="code:sh-svg-1">
-&#x3C;svg -numbered viewBox="0 0 100 100" width=200 height=200 |
-  &#x3C;circle cx="50" cy="50" r="40" fill="blue" />
->
-</code></pre>
-          <figure id="mp:sh-svg-1" class="frameable-border">
-            <svg viewBox="0 0 100 100" width="200" height="200">
-  <circle cx="50" cy="50" r="40" fill="blue" />
-</svg>
-            <figcaption><minipage-label>Minipage 68.</minipage-label></figcaption>
-          </figure>
-          <p><i>A lone inline SVG. <code>&#x26;lt;svg&#x26;gt;</code> is numbered by default (it shares the figure counter), so <code>-numbered</code> is what opts out of framing for a purely inline graphic. The source is opaque pipe content; the attributes pass through to the rendered &#x3C;svg> element.</i></p>
-          <pre><code id="code:sh-svg-2">
-&#x3C;svg #fig:diagram viewBox="0 0 100 100" caption="A simple circle" |
-  &#x3C;circle cx="50" cy="50" r="40" />
->
-</code></pre>
-          <figure id="mp:sh-svg-2" class="frameable-border">
-            <figure>
-              <svg id="mp-sh-svg-2-fig:diagram" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="40" />
-</svg>
-              <figcaption><figure-label>Figure 1.</figure-label> A simple circle</figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 69.</minipage-label></figcaption>
-          </figure>
-          <p><i>Captioned and numbered → framed by the ordinary frameable rule: the handler wraps the &#x3C;svg> in a &#x3C;figure> with the &#x3C;figcaption> as a sibling inside the wrapper (figcaption is not a valid child of &#x3C;svg>). Shares the figure counter with &#x3C;fig>; <code>&#x26;lt;ref @fig:diagram&#x26;gt;</code> resolves to “Figure N”.</i></p>
+          <p><i>Explicit table with cells, used when fine control over structure
+or attributes is needed.</i></p>
         </sub-section>
         <sub-section id="sec:arguments-23">
           <sub-section-title>Arguments</sub-section-title>
@@ -1887,306 +2077,58 @@ CDEFGABc</pre>
             </thead>
             <tbody>
               <tr>
-                <td><code>width</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>SVG width attribute. CSS length or unitless number. Maps directly to the rendered
-                  <figure>
-                    <svg></svg>
-                    <figcaption><figure-label>Figure 2.</figure-label></figcaption>
-                  </figure>element’s width attribute.
-                </td>
+                <td><code>format</code></td>
+                <td>format-word</td>
+                <td><code>csv</code> <code>tsv</code> <code>json</code> <code>yaml</code> <code>md</code></td>
+                <td>Format of inline pipe content.</td>
               </tr>
               <tr>
-                <td><code>height</code></td>
+                <td><code>parse-columns</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>SVG height attribute. Same shape as width.</td>
-              </tr>
-              <tr>
-                <td><code>viewBox</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>SVG viewBox attribute. Defines the coordinate system. Passes through to the rendered
-                  <figure>
-                    <svg></svg>
-                    <figcaption><figure-label>Figure 3.</figure-label></figcaption>
-                  </figure>element.
-                </td>
+                <td>#21:</td>
               </tr>
               <tr>
                 <td><code>caption</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional caption text rendered in a sibling <code>&#x3C;figcaption></code>. The caption= kwarg lifts to a <code>&#x3C;caption></code> child tag at the normalize-to-canonical gate, matching the frameable convention.</td>
+                <td>Short-form caption as a kwarg string.</td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Whether this SVG participates in the document-wide figure sequence (shares the <code>figure</code> counter with
-                  <figure>
-                    <figcaption><figure-label>Figure 4.</figure-label></figcaption>
-                  </figure>, 
-                  
-                    <pre class="mermaid" data-enscribe-dsl="mermaid"></pre>
-                    <figcaption><figure-label>Figure 5.</figure-label></figcaption>
-                  , 
-                  
-                    <pre class="abc" data-enscribe-dsl="abc"></pre>
-                    <figcaption><figure-label>Figure 6.</figure-label></figcaption>
-                  ). Use +numbered (default) to number, -numbered to suppress.
-                </td>
-              </tr>
-              <tr>
-                <td><code>+border</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>The frameable surface. When +border is set, the rendered
-                  <figure>
-                    <svg></svg>
-                    <figcaption><figure-label>Figure 7.</figure-label></figcaption>
-                  </figure>wrapper gains the <code>frameable-border</code> class.
-                </td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-frame">
-        <section-title><code>&#x3C;frame></code></section-title>
-        <sub-section id="sec:general-usage-34">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>frame</i>. Compiles to eHTML <code>&#x3C;frame></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;frame></code></li>
-          </ul><code id="code:sh-frame-1">&#x3C;frame | A short callout.></code>
-          <figure id="mp:sh-frame-1" class="frameable-border">
-            <figure class="frameable-border">
-              <p>A short callout.</p>
-              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 70.</minipage-label></figcaption>
-          </figure>
-          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>frame</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;frame>, so the class appears automatically.</i></p>
-          <pre><code id="code:sh-frame-2">
-&#x3C;frame type=note title="Important" |
-Make sure to read this carefully.
->
-</code></pre>
-          <figure id="mp:sh-frame-2" class="frameable-border">
-            <figure data-frame-type="note" class="frameable-border">
-              <figcaption class="title">Important</figcaption>
-              <p>Make sure to read this carefully.</p>
-              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 71.</minipage-label></figcaption>
-          </figure>
-          <p><i>With a title rendered at the top.</i></p>
-          <pre><code id="code:sh-frame-3">
-&#x3C;frame #fig:method-box +numbered caption="Workflow steps" |
-1. Collect data.
-2. Clean.
-3. Model.
->
-</code></pre>
-          <figure id="mp:sh-frame-3" class="frameable-border">
-            <figure id="mp-sh-frame-3-fig:method-box" class="frameable-border">
-              <ol>
-                <li>Collect data.</li>
-                <li>Clean.</li>
-                <li>Model.</li>
-              </ol>
-              <figcaption><figure-label>Figure 1.</figure-label>
-                <p>Workflow steps</p>
-              </figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 72.</minipage-label></figcaption>
-          </figure>
-          <p><i>Numbered frame, opted in via +numbered. Shares the figure counter with &#x3C;fig>/&#x3C;svg>/&#x3C;mermaid>/&#x3C;abc>.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-24">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>title</code></td>
+                <td><code>src</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional title rendered at the top of the frame (the frameable title-top convention), as a title= kwarg or a 
-                  <title></title>child tag.
-                </td>
-              </tr>
-              <tr>
-                <td><code>caption</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional caption text rendered at the bottom of the frame (the frameable caption-bottom convention). The caption= kwarg lifts to a <code>&#x3C;caption></code> child tag at the gate.</td>
+                <td>Where the table’s data comes from.</td>
               </tr>
               <tr>
                 <td><code>type</code></td>
                 <td>kwarg</td>
-                <td></td>
-                <td>Optional classification of what the frame contains (note, warning, tip, theorem-block, etc.), preserved as the data-frame-type attribute. Since
-                  <figure class="frameable-border">
-                    <figcaption><figure-label>Figure 8.</figure-label></figcaption>
-                  </figure>renders as
-                  <figure>
-                    <figcaption><figure-label>Figure 9.</figure-label></figcaption>
-                  </figure>(not a custom
-                  <figure class="frameable-border">
-                    <figcaption><figure-label>Figure 10.</figure-label></figcaption>
-                  </figure>element), authors target it with the rendered figure — figure[data-frame-type=”note”] { … } — not a “.frame” selector.
-                </td>
+                <td><code>data</code> <code>layout</code> <code>comparison</code> <code>schedule</code> <code>results</code> <code>other</code></td>
+                <td>Optional semantic classification.</td>
               </tr>
               <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Whether this frame participates in the document-wide figure sequence. <b>Off by default for frame</b> (unlike
-                  <figure>
-                    <figcaption><figure-label>Figure 11.</figure-label></figcaption>
-                  </figure>/
-                  <figure>
-                    <svg></svg>
-                    <figcaption><figure-label>Figure 12.</figure-label></figcaption>
-                  </figure>/etc.) because a generic frame is typically a sidebar / callout / annotation, not a numbered float. Use +numbered to opt in.
-                </td>
+                <td><code>+headers</code> / <code>-headers</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Whether the first row of the data is a header row.</td>
               </tr>
               <tr>
-                <td><code>+border</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>The frameable surface. <b>On by default for frame</b> (unlike
-                  <figure>
-                    <figcaption><figure-label>Figure 13.</figure-label></figcaption>
-                  </figure>/
-                  <figure>
-                    <svg></svg>
-                    <figcaption><figure-label>Figure 14.</figure-label></figcaption>
-                  </figure>/etc.) because the whole point of the generic
-                  <figure class="frameable-border">
-                    <figcaption><figure-label>Figure 15.</figure-label></figcaption>
-                  </figure>element is the visual frame. Use -border to suppress the outline and just use the frame as a semantic grouping wrapper. border=
-                  <name></name> selects a named look (accent / thick / dashed / subtle) and implies the border on; the look renders as a frameable-border-
-                  <name></name> modifier class (document names it, theme defines it — #58; see frameable.md).
-                </td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Whether this table is counted in the numbered table sequence and receives a “Table N.” label prefix in its caption.</td>
+              </tr>
+              <tr>
+                <td><code>+parse-text</code> / <code>-parse-text</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>#21:</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-minipage">
-        <section-title><code>&#x3C;minipage></code></section-title>
-        <sub-section id="sec:general-usage-35">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>minipage</i>. Compiles to eHTML <code>&#x3C;minipage></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;minipage></code></li>
-          </ul><code id="code:sh-minipage-1">&#x3C;minipage | Two panels side by side.></code>
-          <figure id="mp:sh-minipage-1" class="frameable-border">
-            <figure class="frameable-border">
-              <p>Two panels side by side.</p>
-              <figcaption><minipage-label>Minipage 1.</minipage-label></figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 73.</minipage-label></figcaption>
-          </figure>
-          <p><i>The simplest case. The handler emits a &#x3C;figure> wrapper (the vocab html_output.element <code>minipage</code> is only the lookup key for handler-strategy entries — the handler controls the actual element). +border is default on for &#x3C;minipage>, so the class appears automatically. The body renders as sealed eHTML.</i></p>
-          <pre><code id="code:sh-minipage-2">
-&#x3C;minipage #mp:compare +numbered caption="Side-by-side comparison" |
-A figure here counts privately.
-
-&#x3C;fig #fig:left src="left.png" | Left panel.>
-&#x3C;fig #fig:right src="right.png" | Right panel.>
->
-</code></pre>
-          <figure id="mp:sh-minipage-2" class="frameable-border">
-            <figure id="mp-sh-minipage-2-mp:compare" class="frameable-border">
-              <p>A figure here counts privately.</p>
-              <figure id="mp-sh-minipage-2-mp-compare-fig:left">
-                <img src="left.png" alt="Left panel.">
-                <figcaption><figure-label>Figure 1.</figure-label>
-                  <p>Left panel.</p>
-                </figcaption>
-              </figure>
-              <figure id="mp-sh-minipage-2-mp-compare-fig:right">
-                <img src="right.png" alt="Right panel.">
-                <figcaption><figure-label>Figure 2.</figure-label>
-                  <p>Right panel.</p>
-                </figcaption>
-              </figure>
-              <figcaption><minipage-label>Minipage 1.</minipage-label> Side-by-side comparison</figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 74.</minipage-label></figcaption>
-          </figure>
-          <p><i>Numbered minipage, opted in via +numbered. It counts in its own “Minipage N” series — <code>&#x26;lt;ref @mp:compare&#x26;gt;</code> resolves to “minipage 1”. The two inner figures number 1 and 2 in the minipage’s PRIVATE figure counter, NOT the document’s: a document &#x3C;fig> elsewhere is unaffected, and an outside <code>&#x26;lt;ref @fig:left&#x26;gt;</code> is a normal not-found ref-error (the seal forbids inbound references to the body).</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-25">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>title</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional title rendered at the top of the minipage (the frameable title-top convention). Authored as a title= kwarg. Because the body is opaque (a sealed sub-document), the kwarg stays a kwarg — it is not lifted to a 
-                  <title></title>child tag the way it is for prose frameables; a 
-                  <title></title>written inside the pipe would be part of the sealed body, not the box’s outward title. Same opaque-frameable convention as
-                  <figure>
-                    <svg></svg>
-                    <figcaption><figure-label>Figure 16.</figure-label></figcaption>
-                  </figure>/<table>
-
-</table>/
-                  <table></table>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>caption</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional caption rendered at the bottom of the minipage (the frameable caption-bottom convention), with the “Minipage N.” label folded in when numbered. Authored as a caption= kwarg (kwarg-only, for the same opaque-body reason as title).</td>
-              </tr>
-              <tr>
-                <td><code>+numbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Whether this minipage is numbered. <b>Off by default</b> (most minipages are layout boxes, not cross-referenced floats). When +numbered, the minipage counts in its OWN “Minipage N” series (the <code>minipage</code> counter, config key number-minipages, ref-prefix <code>mp</code>) — NOT the figure counter. A sealed sub-document is distinct from a figure, and its private body numbering must not touch the document’s figure sequence (#115).</td>
-              </tr>
-              <tr>
-                <td><code>+border</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>The frameable surface. <b>On by default for minipage</b> — the visual box is the point (a minipage sets its sealed content apart, like
-                  <figure class="frameable-border">
-                    <figcaption><figure-label>Figure 17.</figure-label></figcaption>
-                  </figure>). Use -border to suppress the outline and keep only the seal. border=
-                  <name></name> selects a named look (accent / thick / dashed / subtle) and implies the border on (#58; see frameable.md).
-                </td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="quotation-sourcing.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Quotation &#x26; sourcing</toc-title></a><a class="enscribe-chapter-next" href="formal-statements.html" rel="next"><toc-title>Formal statements</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:exhibit"><ul><li><a href="#sh-fig">&#x3C;fig></a><ul><li><a href="#sec:general-usage-29">General Usage</a></li><li><a href="#sec:arguments-19">Arguments</a></li></ul></li><li><a href="#sh-table">&#x3C;table></a><ul><li><a href="#sec:general-usage-30">General Usage</a></li><li><a href="#sec:arguments-20">Arguments</a></li></ul></li><li><a href="#sh-caption">&#x3C;caption></a><ul><li><a href="#sec:general-usage-31">General Usage</a></li><li><a href="#sec:arguments-21">Arguments</a></li></ul></li><li><a href="#sh-diagram">&#x3C;diagram></a><ul><li><a href="#sec:general-usage-32">General Usage</a></li><li><a href="#sec:arguments-22">Arguments</a></li></ul></li><li><a href="#sh-svg">&#x3C;svg></a><ul><li><a href="#sec:general-usage-33">General Usage</a></li><li><a href="#sec:arguments-23">Arguments</a></li></ul></li><li><a href="#sh-frame">&#x3C;frame></a><ul><li><a href="#sec:general-usage-34">General Usage</a></li><li><a href="#sec:arguments-24">Arguments</a></li></ul></li><li><a href="#sh-minipage">&#x3C;minipage></a><ul><li><a href="#sec:general-usage-35">General Usage</a></li><li><a href="#sec:arguments-25">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="quotation-sourcing.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Quotation &#x26; sourcing</toc-title></a><a class="enscribe-chapter-next" href="formal-statements.html" rel="next"><toc-title>Formal statements</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:exhibit"><ul><li><a href="#sh-caption">&#x3C;caption></a><ul><li><a href="#sec:general-usage-30">General Usage</a></li></ul></li><li><a href="#sh-diagram">&#x3C;diagram></a><ul><li><a href="#sec:general-usage-31">General Usage</a></li><li><a href="#sec:arguments-18">Arguments</a></li></ul></li><li><a href="#sh-fig">&#x3C;fig></a><ul><li><a href="#sec:general-usage-32">General Usage</a></li><li><a href="#sec:arguments-19">Arguments</a></li></ul></li><li><a href="#sh-frame">&#x3C;frame></a><ul><li><a href="#sec:general-usage-33">General Usage</a></li><li><a href="#sec:arguments-20">Arguments</a></li></ul></li><li><a href="#sh-minipage">&#x3C;minipage></a><ul><li><a href="#sec:general-usage-34">General Usage</a></li><li><a href="#sec:arguments-21">Arguments</a></li></ul></li><li><a href="#sh-svg">&#x3C;svg></a><ul><li><a href="#sec:general-usage-35">General Usage</a></li><li><a href="#sec:arguments-22">Arguments</a></li></ul></li><li><a href="#sh-table">&#x3C;table></a><ul><li><a href="#sec:general-usage-36">General Usage</a></li><li><a href="#sec:arguments-23">Arguments</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

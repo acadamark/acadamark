@@ -1417,18 +1417,18 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Stores</book-part-title>
       </meta>
-      <p>Held content — data stores and reference libraries.</p>
-      <section id="l1-data">
+      <p>Opaque data held under an id for a consumer to interpret — the data container, bibliography sources, and datasets.</p>
+      <section id="eh-data">
         <section-title><code>&#x3C;data></code></section-title>
-        <sub-section id="sec:specification-61">
+        <sub-section id="sec:specification-60">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;data></code> · JATS <code>&#x3C;no direct equivalent></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;data></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <p><i>No kwargs or boolean flags.</i></p>
           <p>Produced by: canonical <code>&#x3C;data></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-57">
+        <sub-section id="sec:examples-55">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-data-1">
+          <pre><code id="code:eh-data-1">
 &#x3C;data>
   &#x3C;library format=bibtex>
     @article{goodall2024,
@@ -1440,56 +1440,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
   &#x3C;/library>
 &#x3C;/data>
 </code></pre>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>A library block in BibTeX format. The library plugin parses this, registers entries in the citation system. The &#x3C;data> block itself produces no rendered output.</i></p>
-          <p>A <code>&#x3C;data></code> block can also store a <b>dataset</b> — a payload (CSV/TSV/JSON/…) held under an id with a <code>&#x3C;dataset></code> — that a consuming element pulls in by <code>@id</code>. A <code>&#x3C;dataset></code> is always authored in the <b>long form</b> <code>&#x3C;dataset …>…&#x3C;/dataset></code>; the pipe form would truncate the payload at the first <code>></code>, which tabular/diagram/code data routinely contains. Here a CSV dataset is stored once and a <code>&#x3C;table src="@id" /></code> renders it as a grid:</p>
-          <pre><code id="code:l1-data-2">
-&#x3C;data>
-  &#x3C;dataset #parts-stock format=csv>
-part,code,in_stock
-hex bolt,#HB-08,120
-flat washer,#FW-04,340
-lock nut,#LN-06,210
-&#x3C;/dataset>
-&#x3C;/data>
-
-&#x3C;table src="@parts-stock" />
-</code></pre>
-          <table>
-            <thead>
-              <tr>
-                <th>part</th>
-                <th>code</th>
-                <th>in_stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>hex bolt</td>
-                <td>#HB-08</td>
-                <td>120</td>
-              </tr>
-              <tr>
-                <td>flat washer</td>
-                <td>#FW-04</td>
-                <td>340</td>
-              </tr>
-              <tr>
-                <td>lock nut</td>
-                <td>#LN-06</td>
-                <td>210</td>
-              </tr>
-            </tbody>
-          </table>
-          <p><i>Unlike the front-matter examples above, this one renders a live result: the table grid above is produced from the stored dataset. The dataset is held verbatim as opaque data — never interpreted as markup, so the <code>#</code>-prefixed part codes appear as literal cell text — and the consuming element (here, a <code>&#x26;lt;table&#x26;gt;</code>) decides how to present it. (The <code>&#x26;lt;data&#x26;gt;</code>/<code>&#x26;lt;dataset&#x26;gt;</code> declaration itself renders nothing; only the table does.)</i></p>
-          <p>The <code>&#x3C;table></code> is not the only reader. The same opaque store feeds several consumers, each interpreting the one payload its own way: <code>&#x3C;table src="@id" /></code> renders a grid, <code>&#x3C;diagram engine src="@id" /></code> reads the bytes as its engine source (a Mermaid or abc diagram), <code>&#x3C;code src="@id" /></code> renders them as a verbatim inline code listing, and <code>&#x3C;code-block src="@id" /></code> renders them through <code>&#x3C;pre>&#x3C;code></code> — the whitespace-preserving form, so <b>multi-line code keeps its indentation</b> (an inline <code>&#x3C;code></code> is reflowed, so a multi-line one is warned toward a code block). An <code>@id</code> that is unresolved, or the wrong kind for the reader (a diagram whose dataset format hint disagrees with its engine, say), renders a visible asset-error rather than failing silently. Storage is opaque; interpretation belongs to the consuming element.</p></section>
+          <p><i>(Rendered preview omitted — <code>&#x3C;data></code> / <code>@</code>-references resolve at document scope, not inside a sealed preview.)</i></p>
+          <p><i>A library block in BibTeX format. The library plugin parses this,
+registers entries in the citation system. The &#x3C;data> block itself
+produces no rendered output.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-library">
-        <section-title><code>&#x3C;library></code></section-title>
-        <sub-section id="sec:specification-62">
+      <section id="eh-dataset">
+        <section-title><code>&#x3C;dataset></code></section-title>
+        <sub-section id="sec:specification-61">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;library></code> · JATS <code>&#x3C;no direct equivalent (entries lift into ref-list)></code> · <code>content</code> <code>opaque</code> → <code>&#x3C;parsed entries (registered in citation system)></code></p>
+          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;dataset></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>opaque</code> → <code>&#x3C;harvested></code></p>
           <table>
             <thead>
               <tr>
@@ -1502,23 +1463,81 @@ lock nut,#LN-06,210
             <tbody>
               <tr>
                 <td><code>format</code></td>
+                <td>format-word</td>
+                <td><code>csv</code> <code>tsv</code> <code>json</code> <code>other</code></td>
+                <td>The format word — the canonical way to name the payload language (<code>&#x26;lt;dataset #id csv&#x26;gt;…&#x26;lt;/dataset&#x26;gt;</code>).</td>
+              </tr>
+              <tr>
+                <td><code>format</code></td>
                 <td>kwarg</td>
+                <td><code>csv</code> <code>tsv</code> <code>json</code> <code>other</code></td>
+                <td>Attribute-form equivalent of the format-word positional (<code>&#x26;lt;dataset #id format=csv&#x26;gt;…&#x26;lt;/dataset&#x26;gt;</code>).</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;dataset></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-56">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:eh-dataset-1">
+&#x3C;data>
+  &#x3C;dataset #sales csv>
+quarter,revenue
+Q1,100
+Q2,120
+Q3,145
+  &#x3C;/dataset>
+&#x3C;/data>
+
+&#x3C;table src="@sales" />
+</code></pre>
+          <p><i>(Rendered preview omitted — <code>&#x3C;data></code> / <code>@</code>-references resolve at document scope, not inside a sealed preview.)</i></p>
+          <p><i>A CSV dataset is stored once under #sales and a &#x3C;table src=”@sales” /> pulls
+it in and renders it as a grid. The dataset itself renders nothing; the
+consuming element decides how to present the opaque bytes.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="eh-library">
+        <section-title><code>&#x3C;library></code></section-title>
+        <sub-section id="sec:specification-62">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>storage-hosts</code> · eHTML <code>&#x3C;library></code> · JATS <code>&#x3C;no direct equivalent (entries lift into ref-list)></code> · <code>content</code> <code>empty</code> → <code>&#x3C;parsed entries (registered in citation system)></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>format</code></td>
+                <td>format-word</td>
                 <td><code>bibtex</code> <code>csl-json</code> <code>ris</code> <code>endnote-xml</code> <code>other</code></td>
-                <td>Attribute-form equivalent of the format-word positional. When both the positional and the kwarg are omitted, the library-load plugin auto-detects the format via citation-js (works reliably for BibTeX and CSL-JSON). A named format is passed to citation-js as a forceType.</td>
+                <td>The format word — the canonical way to name the payload language (`&#x3C;library bibtex</td>
+                <td>…>`).</td>
+              </tr>
+              <tr>
+                <td><code>format</code></td>
+                <td>kwarg</td>
+                <td><code>bibtex</code> <code>csl-json</code> <code>ris</code> <code>endnote-xml</code> <code>other</code> (default <code>auto</code>)</td>
+                <td>Attribute-form equivalent of the format-word positional.</td>
               </tr>
               <tr>
                 <td><code>src</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>External source (#133): a filesystem path, an http(s) URL, or any reachable URL (e.g. a GitHub raw link). The reference data is loaded from there and parsed exactly as inline content (same formats; never injected as markup). With src= the node’s own (empty) body is ignored; inline and src libraries are both valid and multiple of either merge. A failed load (unreachable / 404 / CORS-blocked / parse-fail) renders a visible error and never aborts the document (always-renders). Filesystem paths apply on the CLI/build; in the browser a relative path resolves against the document base URL and is fetched (cross-origin URLs are CORS-limited). A URL source needs an async render (the CLI render command / the browser renderAsync); a synchronous render flags it.</td>
+                <td>External source (#133):</td>
               </tr>
             </tbody>
           </table>
           <p>Produced by: canonical <code>&#x3C;library></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-58">
+        <sub-section id="sec:examples-57">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-library-1">
+          <pre><code id="code:eh-library-1">
 &#x3C;library format=bibtex>
   @article{goodall2024,
     author = {Goodall, Jane},
@@ -1535,9 +1554,14 @@ lock nut,#LN-06,210
   }
 &#x3C;/library>
 </code></pre>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>A BibTeX library block. The parser reads the entries and registers goodall2024 and darwin1859 in the citation registry. Citations elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries. The library block itself produces no rendered output.</i></p>
-          <pre><code id="code:l1-library-2">
+          <figure id="mp:eh-library-1" class="frameable-border">
+            <figcaption><minipage-label>Minipage 120.</minipage-label></figcaption>
+          </figure>
+          <p><i>A BibTeX library block. The parser reads the entries and registers
+goodall2024 and darwin1859 in the citation registry. Citations
+elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries.
+The library block itself produces no rendered output.</i></p>
+          <pre><code id="code:eh-library-2">
 &#x3C;library format=csl-json>
   [
     {
@@ -1551,10 +1575,12 @@ lock nut,#LN-06,210
   ]
 &#x3C;/library>
 </code></pre>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p></section>
+          <figure id="mp:eh-library-2" class="frameable-border">
+            <figcaption><minipage-label>Minipage 121.</minipage-label></figcaption>
+          </figure></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="notation.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Notation</toc-title></a><a class="enscribe-chapter-next" href="declarations-metadata.html" rel="next"><toc-title>Declarations &#x26; metadata</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:stores"><ul><li><a href="#l1-data">&#x3C;data></a><ul><li><a href="#sec:specification-61">Specification</a></li><li><a href="#sec:examples-57">Examples</a></li></ul></li><li><a href="#l1-library">&#x3C;library></a><ul><li><a href="#sec:specification-62">Specification</a></li><li><a href="#sec:examples-58">Examples</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="notation.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Notation</toc-title></a><a class="enscribe-chapter-next" href="declarations-metadata.html" rel="next"><toc-title>Declarations &#x26; metadata</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:stores"><ul><li><a href="#eh-data">&#x3C;data></a><ul><li><a href="#sec:specification-60">Specification</a></li><li><a href="#sec:examples-55">Examples</a></li></ul></li><li><a href="#eh-dataset">&#x3C;dataset></a><ul><li><a href="#sec:specification-61">Specification</a></li><li><a href="#sec:examples-56">Examples</a></li></ul></li><li><a href="#eh-library">&#x3C;library></a><ul><li><a href="#sec:specification-62">Specification</a></li><li><a href="#sec:examples-57">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

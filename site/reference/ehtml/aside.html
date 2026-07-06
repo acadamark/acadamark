@@ -1417,12 +1417,12 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <meta>
             <book-part-title>Aside</book-part-title>
           </meta>
-          <p>Content set beside the main flow — notes, note containers, boxed asides, and disclosure.</p>
-          <section id="l1-aside">
+          <p>The author steps aside in their own secondary voice — notes, boxed asides, and disclosure.</p>
+          <section id="eh-aside">
             <section-title><code>&#x3C;aside></code></section-title>
-            <sub-section id="sec:specification-17">
+            <sub-section id="sec:specification-16">
               <sub-section-title>Specification</sub-section-title>
-              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;aside></code> · JATS <code>&#x3C;boxed-text></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;aside></code> · JATS <code>&#x3C;boxed-text></code> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
               <table>
                 <thead>
                   <tr>
@@ -1437,54 +1437,52 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                     <td><code>type</code></td>
                     <td>kwarg</td>
                     <td><code>note</code> <code>sidebar</code> <code>callout</code> <code>warning</code> <code>tip</code> <code>info</code> <code>caution</code></td>
-                    <td>Optional classification of the aside’s role. Affects rendering (callouts get visual emphasis; sidebars get layout treatment). Maps to JATS via boxed-text content-type at export.</td>
+                    <td>Optional classification of the aside’s role.</td>
                   </tr>
                   <tr>
                     <td><code>title</code></td>
                     <td>kwarg</td>
                     <td></td>
-                    <td>Optional title rendered at the top of the aside (the frameable title-top convention, #31). Lifts to a 
-                      <title></title>child tag at the normalize-to-canonical gate; the child form is equivalent.
-                    </td>
+                    <td>Optional title rendered at the top of the aside (the frameable title-top convention, #31).</td>
                   </tr>
                   <tr>
                     <td><code>caption</code></td>
                     <td>kwarg</td>
                     <td></td>
-                    <td>Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the “Box N.” label folded in when numbered. Lifts to a <code>&#x3C;caption></code> child tag at the gate.</td>
+                    <td>Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the “Box N.” label folded in when numbered.</td>
                   </tr>
                   <tr>
-                    <td><code>+numbered</code></td>
-                    <td>boolean</td>
-                    <td>default <code>false</code></td>
-                    <td>Whether this aside is numbered. <b>Off by default</b> (boxed prose is usually a one-off callout). When +numbered, the aside counts in its OWN “Box N” series (the <code>box</code> counter / ref-prefix <code>box</code>), not the figure counter.</td>
+                    <td><code>+numbered</code> / <code>-numbered</code></td>
+                    <td>flag</td>
+                    <td>default off</td>
+                    <td>Whether this aside is numbered.</td>
                   </tr>
                   <tr>
-                    <td><code>+border</code></td>
-                    <td>boolean</td>
-                    <td>default <code>true</code></td>
-                    <td>Frameable surface (#31). <b>On by default for boxed prose</b> — the visual box is the point of a callout / sidebar. Use -border to suppress the outline.</td>
+                    <td><code>+border</code> / <code>-border</code></td>
+                    <td>flag</td>
+                    <td>default on</td>
+                    <td>Frameable surface (#31).</td>
                   </tr>
                 </tbody>
               </table>
               <p>Produced by: canonical <code>&#x3C;aside></code>.</p>
             </sub-section>
-            <sub-section id="sec:examples-17">
-              <sub-section-title>Examples</sub-section-title><code id="code:l1-aside-1">
+            <sub-section id="sec:examples-16">
+              <sub-section-title>Examples</sub-section-title><code id="code:eh-aside-1">
 &#x3C;aside | A side note about the elephant.></code>
-              <figure id="mp:l1-aside-1" class="frameable-border">
+              <figure id="mp:eh-aside-1" class="frameable-border">
                 <aside class="frameable-border">
                   <p>A side note about the elephant.</p>
                 </aside>
-                <figcaption><minipage-label>Minipage 36.</minipage-label></figcaption>
-              </figure><code id="code:l1-aside-2">&#x3C;aside type=warning .important | Be careful here.></code>
-              <figure id="mp:l1-aside-2" class="frameable-border">
+                <figcaption><minipage-label>Minipage 35.</minipage-label></figcaption>
+              </figure><code id="code:eh-aside-2">&#x3C;aside type=warning .important | Be careful here.></code>
+              <figure id="mp:eh-aside-2" class="frameable-border">
                 <aside class="important frameable-border" data-aside-type="warning">
                   <p>Be careful here.</p>
                 </aside>
-                <figcaption><minipage-label>Minipage 37.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 36.</minipage-label></figcaption>
               </figure>
-              <pre><code id="code:l1-aside-3">
+              <pre><code id="code:eh-aside-3">
 &#x3C;aside type=callout |
 This is a multi-line callout.
 
@@ -1492,7 +1490,7 @@ It can contain multiple paragraphs and other content like
 &#x3C;strong | emphasis> and inline references.
 >
 </code></pre>
-              <figure id="mp:l1-aside-3" class="frameable-border">
+              <figure id="mp:eh-aside-3" class="frameable-border">
                 <aside data-aside-type="callout" class="frameable-border">
                   <p>This is a multi-line callout.</p>
                   <p>
@@ -1500,125 +1498,15 @@ It can contain multiple paragraphs and other content like
                     <strong>emphasis</strong> and inline references.
                   </p>
                 </aside>
-                <figcaption><minipage-label>Minipage 38.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 37.</minipage-label></figcaption>
               </figure></section>
             </sub-section>
           </section>
-          <section id="l1-note">
-            <section-title><code>&#x3C;note></code></section-title>
-            <sub-section id="sec:specification-18">
-              <sub-section-title>Specification</sub-section-title>
-              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;note></code> · JATS <code>&#x3C;fn></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-              <table>
-                <thead>
-                  <tr>
-                    <th>attribute</th>
-                    <th>kind</th>
-                    <th>values / default</th>
-                    <th>notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>placement</code></td>
-                    <td>kwarg</td>
-                    <td><code>end</code> <code>foot</code> <code>side</code></td>
-                    <td>Determines where the note content is collected. “end” collects at article-back; “foot” collects at article-back (distinguished from “end” by CSS class on the note-list); “side” renders the content inline-adjacent to the marker. Document-wide default is “end”.</td>
-                  </tr>
-                  <tr>
-                    <td><code>position</code></td>
-                    <td>kwarg</td>
-                    <td><code>end</code> <code>foot</code> <code>side</code></td>
-                    <td>Legacy alias for “placement” (same values, same data-note-placement output). Retained for backwards compatibility; “placement” is preferred for new documents.</td>
-                  </tr>
-                  <tr>
-                    <td><code>type</code></td>
-                    <td>kwarg</td>
-                    <td><code>substantive</code> <code>technical</code> <code>editorial</code> <code>translator</code> <code>other</code></td>
-                    <td>Optional classification. Most notes are substantive (authorial commentary).</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p>Produced by: canonical <code>&#x3C;note></code>.</p>
-            </sub-section>
-            <sub-section id="sec:examples-18">
-              <sub-section-title>Examples</sub-section-title><code id="code:l1-note-1">
-Some text&#x3C;note | A substantive note about the text.>.</code>
-              <figure id="mp:l1-note-1" class="frameable-border">
-                <p>Some text<sup id="mp-l1-note-1-noteref-1" data-note-id="mp-l1-note-1-note-1"><a href="#mp-l1-note-1-note-1">1</a></sup>.</p>
-                <note-list class="endnotes">
-                  <ol>
-                    <li id="mp-l1-note-1-note-1"><sup>1</sup>
-                      <p>A substantive note about the text.</p><a href="#mp-l1-note-1-noteref-1" class="note-backref" aria-label="back to text">↩</a>
-                    </li>
-                  </ol>
-                </note-list>
-                <figcaption><minipage-label>Minipage 39.</minipage-label></figcaption>
-              </figure><code id="code:l1-note-2">A claim&#x3C;note placement=foot | A footnote.>.</code>
-              <figure id="mp:l1-note-2" class="frameable-border">
-                <p>A claim<sup id="mp-l1-note-2-noteref-1" data-note-id="mp-l1-note-2-note-1"><a href="#mp-l1-note-2-note-1">1</a></sup>.</p>
-                <note-list class="footnotes">
-                  <ol>
-                    <li id="mp-l1-note-2-note-1"><sup>1</sup>
-                      <p>A footnote.</p><a href="#mp-l1-note-2-noteref-1" class="note-backref" aria-label="back to text">↩</a>
-                    </li>
-                  </ol>
-                </note-list>
-                <figcaption><minipage-label>Minipage 40.</minipage-label></figcaption>
-              </figure><code id="code:l1-note-3">A definition&#x3C;note placement=side | Inline-adjacent note.>.</code>
-              <figure id="mp:l1-note-3" class="frameable-border">
-                <p>A definition<sup id="mp-l1-note-3-noteref-1" data-note-id="mp-l1-note-3-note-1"><a href="#mp-l1-note-3-note-1">1</a></sup><sidenote><sup>1</sup><p>Inline-adjacent note.</p></sidenote>.</p>
-                <note-list class="notes">
-                  <ol>
-                    <li id="mp-l1-note-3-note-1" class="sidenote-fallback"><sup>1</sup>
-                      <p>Inline-adjacent note.</p><a href="#mp-l1-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a>
-                    </li>
-                  </ol>
-                </note-list>
-                <figcaption><minipage-label>Minipage 41.</minipage-label></figcaption>
-              </figure></section>
-            </sub-section>
-          </section>
-          <section id="l1-note-list">
-            <section-title><code>&#x3C;note-list></code></section-title>
-            <sub-section id="sec:specification-19">
-              <sub-section-title>Specification</sub-section-title>
-              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;note-list></code> · JATS <code>&#x3C;fn-group></code> · <code>content</code> <code>structured</code></p>
-              <table>
-                <thead>
-                  <tr>
-                    <th>attribute</th>
-                    <th>kind</th>
-                    <th>values / default</th>
-                    <th>notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>type</code></td>
-                    <td>kwarg</td>
-                    <td><code>end-notes</code> <code>chapter-notes</code> <code>footnotes-collected</code> <code>other</code></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <p>Produced by: canonical <code>&#x3C;note-list></code>.</p></section>
-            </sub-section>
-          </section>
-          <section id="l1-endnotes">
-            <section-title><code>&#x3C;endnotes></code></section-title>
-            <sub-section id="sec:specification-20">
-              <sub-section-title>Specification</sub-section-title>
-              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;endnotes></code> · JATS <code>&#x3C;fn-group></code> · <code>content</code> <code>structured</code></p>
-              <p><i>No kwargs or boolean flags.</i></p>
-              <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
-            </sub-section>
-          </section>
-          <section id="l1-details">
+          <section id="eh-details">
             <section-title><code>&#x3C;details></code></section-title>
-            <sub-section id="sec:specification-21">
+            <sub-section id="sec:specification-17">
               <sub-section-title>Specification</sub-section-title>
-              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;details></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>structured</code></p>
+              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;details></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
               <table>
                 <thead>
                   <tr>
@@ -1633,24 +1521,22 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
                     <td><code>open</code></td>
                     <td>kwarg</td>
                     <td><code>true</code> <code>false</code></td>
-                    <td>HTML’s open attribute on 
-                      <details></details>. When present, the disclosure is expanded by default. Either +open or open=true form works; absence (or -open / open=false) renders collapsed.
-                    </td>
+                    <td>HTML’s open attribute on &#x3C;details>.</td>
                   </tr>
                 </tbody>
               </table>
               <p>Produced by: canonical <code>&#x3C;details></code>.</p>
             </sub-section>
-            <sub-section id="sec:examples-19">
+            <sub-section id="sec:examples-17">
               <sub-section-title>Examples</sub-section-title>
-              <pre><code id="code:l1-details-1">
+              <pre><code id="code:eh-details-1">
 &#x3C;details>
   &#x3C;summary | More background>
   Additional context for the curious reader. The summary is the
   visible heading; this body shows when the disclosure is opened.
 &#x3C;/details>
 </code></pre>
-              <figure id="mp:l1-details-1" class="frameable-border">
+              <figure id="mp:eh-details-1" class="frameable-border">
                 <details>
                   <summary>More background</summary>
                   <p>
@@ -1658,49 +1544,164 @@ Some text&#x3C;note | A substantive note about the text.>.</code>
                     visible heading; this body shows when the disclosure is opened.
                   </p>
                 </details>
-                <figcaption><minipage-label>Minipage 42.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 38.</minipage-label></figcaption>
               </figure>
-              <p><i>The canonical shape: a &#x3C;summary> for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.</i></p>
-              <pre><code id="code:l1-details-2">
+              <p><i>The canonical shape: a &#x3C;summary> for the visible heading,
+followed by the disclosure body. The body is recursively parsed
+as prose / block content.</i></p>
+              <pre><code id="code:eh-details-2">
 &#x3C;details +open>
   &#x3C;summary | Always-expanded section>
   This disclosure is expanded by default.
 &#x3C;/details>
 </code></pre>
-              <figure id="mp:l1-details-2" class="frameable-border">
+              <figure id="mp:eh-details-2" class="frameable-border">
                 <details open>
                   <summary>Always-expanded section</summary>
                   <p>This disclosure is expanded by default.</p>
                 </details>
-                <figcaption><minipage-label>Minipage 43.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 39.</minipage-label></figcaption>
               </figure>
-              <p><i>The +open boolean kwarg expands the disclosure by default. Maps to HTML’s standard open attribute.</i></p></section>
+              <p><i>The +open boolean kwarg expands the disclosure by default.
+Maps to HTML’s standard open attribute.</i></p></section>
             </sub-section>
           </section>
-          <section id="l1-summary">
+          <section id="eh-endnotes">
+            <section-title><code>&#x3C;endnotes></code></section-title>
+            <sub-section id="sec:specification-18">
+              <sub-section-title>Specification</sub-section-title>
+              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;endnotes></code> · JATS <code>&#x3C;fn-group></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+              <p><i>No kwargs or boolean flags.</i></p>
+              <p>Produced by: canonical <code>&#x3C;endnotes></code>.</p></section>
+            </sub-section>
+          </section>
+          <section id="eh-note">
+            <section-title><code>&#x3C;note></code></section-title>
+            <sub-section id="sec:specification-19">
+              <sub-section-title>Specification</sub-section-title>
+              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;note></code> · JATS <code>&#x3C;fn></code> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>attribute</th>
+                    <th>kind</th>
+                    <th>values / default</th>
+                    <th>notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>placement</code></td>
+                    <td>kwarg</td>
+                    <td><code>end</code> <code>foot</code> <code>margin</code> (default <code>end</code>)</td>
+                    <td>The note’s position — one note type, three positions.</td>
+                  </tr>
+                  <tr>
+                    <td><code>position</code></td>
+                    <td>kwarg</td>
+                    <td><code>end</code> <code>foot</code> <code>margin</code></td>
+                    <td>Alias for “placement” (same values, same data-note-placement output).</td>
+                  </tr>
+                  <tr>
+                    <td><code>type</code></td>
+                    <td>kwarg</td>
+                    <td><code>substantive</code> <code>technical</code> <code>editorial</code> <code>translator</code> <code>other</code> (default <code>substantive</code>)</td>
+                    <td>Optional classification.</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Produced by: canonical <code>&#x3C;note></code>.</p>
+            </sub-section>
+            <sub-section id="sec:examples-18">
+              <sub-section-title>Examples</sub-section-title><code id="code:eh-note-1">
+Some text&#x3C;note | A substantive note about the text.>.</code>
+              <figure id="mp:eh-note-1" class="frameable-border">
+                <p>Some text<sup id="mp-eh-note-1-noteref-1" data-note-id="mp-eh-note-1-note-1"><a href="#mp-eh-note-1-note-1">1</a></sup>.</p>
+                <note-list class="endnotes">
+                  <ol>
+                    <li id="mp-eh-note-1-note-1"><sup>1</sup>
+                      <p>A substantive note about the text.</p><a href="#mp-eh-note-1-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                    </li>
+                  </ol>
+                </note-list>
+                <figcaption><minipage-label>Minipage 40.</minipage-label></figcaption>
+              </figure><code id="code:eh-note-2">A claim&#x3C;note placement=foot | A footnote.>.</code>
+              <figure id="mp:eh-note-2" class="frameable-border">
+                <p>A claim<sup id="mp-eh-note-2-noteref-1" data-note-id="mp-eh-note-2-note-1"><a href="#mp-eh-note-2-note-1">1</a></sup>.</p>
+                <note-list class="footnotes">
+                  <ol>
+                    <li id="mp-eh-note-2-note-1"><sup>1</sup>
+                      <p>A footnote.</p><a href="#mp-eh-note-2-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                    </li>
+                  </ol>
+                </note-list>
+                <figcaption><minipage-label>Minipage 41.</minipage-label></figcaption>
+              </figure><code id="code:eh-note-3">A definition&#x3C;note position=margin | A margin note.>.</code>
+              <figure id="mp:eh-note-3" class="frameable-border">
+                <p>A definition<sup id="mp-eh-note-3-noteref-1" data-note-id="mp-eh-note-3-note-1"><a href="#mp-eh-note-3-note-1">1</a></sup><sidenote><sup>1</sup><p>A margin note.</p></sidenote>.</p>
+                <note-list class="notes">
+                  <ol>
+                    <li id="mp-eh-note-3-note-1" class="sidenote-fallback"><sup>1</sup>
+                      <p>A margin note.</p><a href="#mp-eh-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                    </li>
+                  </ol>
+                </note-list>
+                <figcaption><minipage-label>Minipage 42.</minipage-label></figcaption>
+              </figure></section>
+            </sub-section>
+          </section>
+          <section id="eh-note-list">
+            <section-title><code>&#x3C;note-list></code></section-title>
+            <sub-section id="sec:specification-20">
+              <sub-section-title>Specification</sub-section-title>
+              <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;note-list></code> · JATS <code>&#x3C;fn-group></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>attribute</th>
+                    <th>kind</th>
+                    <th>values / default</th>
+                    <th>notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>type</code></td>
+                    <td>kwarg</td>
+                    <td><code>end-notes</code> <code>chapter-notes</code> <code>footnotes-collected</code> <code>other</code> (default <code>end-notes</code>)</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Produced by: canonical <code>&#x3C;note-list></code>.</p></section>
+            </sub-section>
+          </section>
+          <section id="eh-summary">
             <section-title><code>&#x3C;summary></code></section-title>
-            <sub-section id="sec:specification-22">
+            <sub-section id="sec:specification-21">
               <sub-section-title>Specification</sub-section-title>
               <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;summary></code> · JATS <code>&#x3C;(no direct JATS counterpart; HTML-native)></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
               <p><i>No kwargs or boolean flags.</i></p>
               <p>Produced by: canonical <code>&#x3C;summary></code>.</p>
             </sub-section>
-            <sub-section id="sec:examples-20">
-              <sub-section-title>Examples</sub-section-title><code id="code:l1-summary-1">
+            <sub-section id="sec:examples-19">
+              <sub-section-title>Examples</sub-section-title><code id="code:eh-summary-1">
 &#x3C;summary | More background></code>
-              <figure id="mp:l1-summary-1" class="frameable-border">
+              <figure id="mp:eh-summary-1" class="frameable-border">
                 <summary>More background</summary>
+                <figcaption><minipage-label>Minipage 43.</minipage-label></figcaption>
+              </figure>
+              <p><i>The visible heading of a &#x3C;details> disclosure. Appears as a
+child of &#x3C;details>.</i></p><code id="code:eh-summary-2">&#x3C;summary | Click to reveal the &#x3C;em | hidden> details></code>
+              <figure id="mp:eh-summary-2" class="frameable-border">
+                <summary>Click to reveal the <em>hidden</em> details</summary>
                 <figcaption><minipage-label>Minipage 44.</minipage-label></figcaption>
               </figure>
-              <p><i>The visible heading of a &#x3C;details> disclosure. Appears as a child of &#x3C;details>.</i></p><code id="code:l1-summary-2">&#x3C;summary | Click to reveal the &#x3C;em | hidden> details></code>
-              <figure id="mp:l1-summary-2" class="frameable-border">
-                <summary>Click to reveal the <em>hidden</em> details</summary>
-                <figcaption><minipage-label>Minipage 45.</minipage-label></figcaption>
-              </figure>
-              <p><i>Inline markup in a summary. The recursive-content pass parses the pipe content normally.</i></p></section>
+              <p><i>Inline markup in a summary. The recursive-content pass parses
+the pipe content normally.</i></p></section>
             </sub-section>
           </section>
-        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="emphasis-marking.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Emphasis &#x26; marking</toc-title></a><a class="enscribe-chapter-next" href="quotation-sourcing.html" rel="next"><toc-title>Quotation &#x26; sourcing</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:aside"><ul><li><a href="#l1-aside">&#x3C;aside></a><ul><li><a href="#sec:specification-17">Specification</a></li><li><a href="#sec:examples-17">Examples</a></li></ul></li><li><a href="#l1-note">&#x3C;note></a><ul><li><a href="#sec:specification-18">Specification</a></li><li><a href="#sec:examples-18">Examples</a></li></ul></li><li><a href="#l1-note-list">&#x3C;note-list></a><ul><li><a href="#sec:specification-19">Specification</a></li></ul></li><li><a href="#l1-endnotes">&#x3C;endnotes></a><ul><li><a href="#sec:specification-20">Specification</a></li></ul></li><li><a href="#l1-details">&#x3C;details></a><ul><li><a href="#sec:specification-21">Specification</a></li><li><a href="#sec:examples-19">Examples</a></li></ul></li><li><a href="#l1-summary">&#x3C;summary></a><ul><li><a href="#sec:specification-22">Specification</a></li><li><a href="#sec:examples-20">Examples</a></li></ul></li></ul></div></details></nav></div>
+        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="emphasis-marking.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Emphasis &#x26; marking</toc-title></a><a class="enscribe-chapter-next" href="quotation-sourcing.html" rel="next"><toc-title>Quotation &#x26; sourcing</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:aside"><ul><li><a href="#eh-aside">&#x3C;aside></a><ul><li><a href="#sec:specification-16">Specification</a></li><li><a href="#sec:examples-16">Examples</a></li></ul></li><li><a href="#eh-details">&#x3C;details></a><ul><li><a href="#sec:specification-17">Specification</a></li><li><a href="#sec:examples-17">Examples</a></li></ul></li><li><a href="#eh-endnotes">&#x3C;endnotes></a><ul><li><a href="#sec:specification-18">Specification</a></li></ul></li><li><a href="#eh-note">&#x3C;note></a><ul><li><a href="#sec:specification-19">Specification</a></li><li><a href="#sec:examples-18">Examples</a></li></ul></li><li><a href="#eh-note-list">&#x3C;note-list></a><ul><li><a href="#sec:specification-20">Specification</a></li></ul></li><li><a href="#eh-summary">&#x3C;summary></a><ul><li><a href="#sec:specification-21">Specification</a></li><li><a href="#sec:examples-19">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

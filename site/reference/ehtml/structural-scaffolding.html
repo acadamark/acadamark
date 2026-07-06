@@ -1417,12 +1417,12 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Structural scaffolding</book-part-title>
       </meta>
-      <p>The document skeleton — containers, regions, sections, navigation, and the horizontal rule. Several of these are produced by the render or by import rather than hand-authored; they appear in an eHTML document all the same.</p>
-      <section id="l1-book">
-        <section-title><code>&#x3C;book></code></section-title>
+      <p>The document’s skeleton — containers, regions, sections, the website page-set, and the section break.</p>
+      <section id="eh-article">
+        <section-title><code>&#x3C;article></code></section-title>
         <sub-section id="sec:specification-93">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>document-containers</code> · eHTML <code>&#x3C;book></code> · JATS <code>&#x3C;book></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>document-containers</code> · eHTML <code>&#x3C;article></code> · JATS <code>&#x3C;article></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1436,14 +1436,155 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
               <tr>
                 <td><code>numbering-style</code></td>
                 <td>kwarg</td>
-                <td><code>arabic</code> <code>roman</code> <code>alpha</code></td>
+                <td><code>arabic</code> <code>roman</code> <code>alpha</code> (default <code>arabic</code>)</td>
                 <td></td>
               </tr>
               <tr>
                 <td><code>note-position</code></td>
                 <td>kwarg</td>
-                <td><code>bottom</code> <code>margin</code></td>
-                <td>Document-level note render mode (#33): “bottom” (default) / “margin” (Tufte sidenotes). Where notes COLLECT — including per-chapter — is the per-note <code>placement</code> kwarg plus <code>note-scope</code> (a book defaults to <code>note-scope=chapter</code>), not this attribute. See <sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup>.</td>
+                <td><code>bottom</code> <code>margin</code> (default <code>bottom</code>)</td>
+                <td>Document-level note render mode (#33):</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;article></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-76">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:eh-article-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;author | Jane Goodall>
+  &#x3C;date | 2024-03-15>
+&#x3C;/meta>
+
+&#x3C;section | Introduction>
+The paper begins here.
+
+&#x3C;section | Conclusion>
+The paper concludes here.
+</code></pre>
+          <figure id="mp:eh-article-1" class="frameable-border">
+            <meta data-document-type="article">
+              <article-title>The Effect of Elephants on Climate</article-title>
+              <author>Jane Goodall</author>
+              <date>2024-03-15</date>
+            </meta>
+            <section>
+              <section-title>Introduction</section-title>
+              <p>The paper begins here.</p>
+            </section>
+            <section>
+              <section-title>Conclusion</section-title>
+              <p>The paper concludes here.</p>
+            </section>
+            <figcaption><minipage-label>Minipage 162.</minipage-label></figcaption>
+          </figure>
+          <p><i>Typical authoring path: &#x3C;meta type=article> at the top with no
+&#x3C;article> wrapper. The structural plugin generates the &#x3C;article>
+container and the three region wrappers. &#x3C;title> in &#x3C;meta> is
+promoted to &#x3C;article-title>; &#x3C;meta> itself survives inside
+&#x3C;article-front>.</i></p>
+          <pre><code id="code:eh-article-2">
+&#x3C;article | The Effect of Elephants on Climate>
+&#x3C;meta>
+  &#x3C;author | Jane Goodall>
+&#x3C;/meta>
+
+&#x3C;section | Introduction>
+The paper begins here.
+</code></pre>
+          <figure id="mp:eh-article-2" class="frameable-border">
+            <meta>
+              <article-title>The Effect of Elephants on Climate</article-title>
+              <author>Jane Goodall</author>
+            </meta>
+            <section>
+              <section-title>Introduction</section-title>
+              <p>The paper begins here.</p>
+            </section>
+            <figcaption><minipage-label>Minipage 163.</minipage-label></figcaption>
+          </figure>
+          <p><i>Explicit-form escape hatch: &#x3C;article | Title>. The structural plugin
+respects the explicit wrapper. Pipe content from &#x3C;article> becomes
+&#x3C;article-title>, placed as the first child of &#x3C;meta> (creating
+&#x3C;meta> if absent, or appending if present).</i></p>
+          <pre><code id="code:eh-article-3">
+&#x3C;section | Introduction>
+The introduction.
+
+&#x3C;section | Conclusion>
+The conclusion.
+</code></pre>
+          <figure id="mp:eh-article-3" class="frameable-border">
+            <section>
+              <section-title>Introduction</section-title>
+              <p>The introduction.</p>
+            </section>
+            <section>
+              <section-title>Conclusion</section-title>
+              <p>The conclusion.</p>
+            </section>
+            <figcaption><minipage-label>Minipage 164.</minipage-label></figcaption>
+          </figure>
+          <p><i>No &#x3C;meta> and no &#x3C;article> declared. The structural plugin assumes
+article-shaped (the default) and wraps the sections in an implicit
+article. &#x3C;article-front> is omitted because there’s no metadata.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="eh-article-back">
+        <section-title><code>&#x3C;article-back></code></section-title>
+        <sub-section id="sec:specification-94">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;article-back></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;article-back></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-article-body">
+        <section-title><code>&#x3C;article-body></code></section-title>
+        <sub-section id="sec:specification-95">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;article-body></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;article-body></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-article-front">
+        <section-title><code>&#x3C;article-front></code></section-title>
+        <sub-section id="sec:specification-96">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;article-front></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;article-front></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-book">
+        <section-title><code>&#x3C;book></code></section-title>
+        <sub-section id="sec:specification-97">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>document-containers</code> · eHTML <code>&#x3C;book></code> · JATS <code>&#x3C;book></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>numbering-style</code></td>
+                <td>kwarg</td>
+                <td><code>arabic</code> <code>roman</code> <code>alpha</code> (default <code>arabic</code>)</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>note-position</code></td>
+                <td>kwarg</td>
+                <td><code>bottom</code> <code>margin</code> (default <code>bottom</code>)</td>
+                <td>Document-level note render mode (#33):</td>
               </tr>
             </tbody>
           </table>
@@ -1451,7 +1592,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
         </sub-section>
         <sub-section id="sec:examples-77">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-book-1">
+          <pre><code id="code:eh-book-1">
 &#x3C;meta type=book>
   &#x3C;title | A Natural History of Elephants>
   &#x3C;author | Jane Goodall>
@@ -1465,9 +1606,42 @@ Content here.
 &#x3C;section | African elephants>
 Content here.
 </code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>Typical authoring path: &#x3C;meta type=book> at the top with no &#x3C;book> wrapper. The structural plugin generates &#x3C;book> + the three region wrappers. Each book-part contains its own &#x3C;meta> with the promoted &#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p>
-          <pre><code id="code:l1-book-2">
+          <figure id="mp:eh-book-1" class="frameable-border">
+            <book>
+              <book-front>
+                <meta data-document-type="book">
+                  <book-title>A Natural History of Elephants</book-title>
+                  <author>Jane Goodall</author>
+                </meta>
+              </book-front>
+              <book-body>
+                <book-part book-part-type="chapter">
+                  <meta>
+                    <book-part-title>Origins</book-part-title>
+                  </meta>
+                  <section>
+                    <section-title>Early ancestors</section-title>
+                    <p>Content here.</p>
+                  </section>
+                </book-part>
+                <book-part book-part-type="chapter">
+                  <meta>
+                    <book-part-title>Modern populations</book-part-title>
+                  </meta>
+                  <section>
+                    <section-title>African elephants</section-title>
+                    <p>Content here.</p>
+                  </section>
+                </book-part>
+              </book-body>
+            </book>
+            <figcaption><minipage-label>Minipage 165.</minipage-label></figcaption>
+          </figure>
+          <p><i>Typical authoring path: &#x3C;meta type=book> at the top with no &#x3C;book>
+wrapper. The structural plugin generates &#x3C;book> + the three region
+wrappers. Each book-part contains its own &#x3C;meta> with the promoted
+&#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p>
+          <pre><code id="code:eh-book-2">
 &#x3C;meta type=book>
   &#x3C;title | The Comprehensive Guide>
   &#x3C;author | Author Name>
@@ -1484,41 +1658,81 @@ Content.
 &#x3C;chapter | Practical Examples>
 Content.
 </code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p></section>
+          <figure id="mp:eh-book-2" class="frameable-border">
+            <book>
+              <book-front>
+                <meta data-document-type="book">
+                  <book-title>The Comprehensive Guide</book-title>
+                  <author>Author Name</author>
+                </meta>
+              </book-front>
+              <book-body>
+                <book-part book-part-type="part">
+                  <meta>
+                    <book-part-title>Part I: Foundations</book-part-title>
+                  </meta>
+                </book-part>
+                <book-part book-part-type="chapter">
+                  <meta>
+                    <book-part-title>First Principles</book-part-title>
+                  </meta>
+                  <p>Content.</p>
+                </book-part>
+                <book-part book-part-type="chapter">
+                  <meta>
+                    <book-part-title>Background</book-part-title>
+                  </meta>
+                  <p>Content.</p>
+                </book-part>
+                <book-part book-part-type="part">
+                  <meta>
+                    <book-part-title>Part II: Applications</book-part-title>
+                  </meta>
+                </book-part>
+                <book-part book-part-type="chapter">
+                  <meta>
+                    <book-part-title>Practical Examples</book-part-title>
+                  </meta>
+                  <p>Content.</p>
+                </book-part>
+              </book-body>
+            </book>
+            <figcaption><minipage-label>Minipage 166.</minipage-label></figcaption>
+          </figure></section>
         </sub-section>
       </section>
-      <section id="l1-book-front">
-        <section-title><code>&#x3C;book-front></code></section-title>
-        <sub-section id="sec:specification-94">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;book-front></code> · <code>content</code> <code>structured</code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
-        </sub-section>
-      </section>
-      <section id="l1-book-body">
-        <section-title><code>&#x3C;book-body></code></section-title>
-        <sub-section id="sec:specification-95">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;book-body></code> · <code>content</code> <code>structured</code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
-        </sub-section>
-      </section>
-      <section id="l1-book-back">
+      <section id="eh-book-back">
         <section-title><code>&#x3C;book-back></code></section-title>
-        <sub-section id="sec:specification-96">
+        <sub-section id="sec:specification-98">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;book-back></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;book-back></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
           <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
+          <p>Produced by: canonical <code>&#x3C;book-back></code>.</p></section>
         </sub-section>
       </section>
-      <section id="l1-book-part">
-        <section-title><code>&#x3C;book-part></code></section-title>
-        <sub-section id="sec:specification-97">
+      <section id="eh-book-body">
+        <section-title><code>&#x3C;book-body></code></section-title>
+        <sub-section id="sec:specification-99">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>document-containers</code> · eHTML <code>&#x3C;book-part></code> · JATS <code>&#x3C;book-part></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;book-body></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;book-body></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-book-front">
+        <section-title><code>&#x3C;book-front></code></section-title>
+        <sub-section id="sec:specification-100">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;book-front></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;book-front></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-book-part">
+        <section-title><code>&#x3C;book-part></code></section-title>
+        <sub-section id="sec:specification-101">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>document-containers</code> · eHTML <code>&#x3C;book-part></code> · JATS <code>&#x3C;book-part></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1533,7 +1747,7 @@ Content.
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>chapter</code> <code>part</code> <code>appendix</code> <code>preface</code> <code>foreword</code> <code>introduction</code> <code>conclusion</code> <code>glossary</code> <code>dedication</code> <code>afterword</code> <code>colophon</code> <code>other</code></td>
-                <td>The kind of book-part. Authored as <code>type</code> (the prefix is redundant inside a <code>&#x3C;book-part></code>); renders to the HTML/BITS attribute <code>book-part-type</code> (maps_to). Distinct from <code>&#x3C;meta type></code>, which is the document class. Always present in eHTML; the shorthand layer typically supplies it via a shorthand element name (e.g., <code>&#x3C;chapter></code> sets it to “chapter”).</td>
+                <td>The kind of book-part.</td>
               </tr>
               <tr>
                 <td><code>numbering-style</code></td>
@@ -1545,32 +1759,35 @@ Content.
                 <td><code>note-position</code></td>
                 <td>kwarg</td>
                 <td><code>bottom</code> <code>margin</code></td>
-                <td>Document-level note render mode (#33): “bottom” / “margin”. Collection (the per-note <code>placement</code> kwarg and <code>note-scope</code>) is a separate axis — see <sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup>.</td>
+                <td>Document-level note render mode (#33):</td>
               </tr>
               <tr>
-                <td><code>+unlisted</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g. a preface or an index chapter that should not appear in the contents. Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted.</td>
+                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Skip this book-part’s number, regardless of number-depth (#218) — e.g. an unnumbered “Introduction” chapter. Outside the numbered sequence: no number, no counter advance (the next numbered chapter continues unbroken), subtree unnumbered. (Front-matter and non-appendix back-matter are already unnumbered by region.) See notes/specs/toc-and-numbering.md. Authored as +unnumbered.</td>
+                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Skip this book-part’s number, regardless of number-depth (#218) — e.g.</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;book-part></code> · alias <code>&#x3C;chapter></code> · alias <code>&#x3C;part></code> · alias <code>&#x3C;appendix></code> · alias <code>&#x3C;preface></code> · alias <code>&#x3C;foreword></code> · alias <code>&#x3C;introduction></code> · alias <code>&#x3C;conclusion></code> · alias <code>&#x3C;glossary></code> · alias <code>&#x3C;dedication></code> · alias <code>&#x3C;afterword></code>.</p>
+          <p>Produced by: canonical <code>&#x3C;book-part></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-78">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-book-part-1">
+          <pre><code id="code:eh-book-part-1">
 &#x3C;chapter | Origins>
 Content of the chapter.
 </code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <pre><code id="code:l1-book-part-2">
+          <figure id="mp:eh-book-part-1" class="frameable-border">&#x3C;chapter | Origins>
+            <p>Content of the chapter.</p>
+            <figcaption><minipage-label>Minipage 167.</minipage-label></figcaption>
+          </figure>
+          <pre><code id="code:eh-book-part-2">
 &#x3C;part | Part I: Foundations>
 &#x3C;chapter | First Chapter>
 Content.
@@ -1578,8 +1795,12 @@ Content.
 &#x3C;chapter | Second Chapter>
 Content.
 </code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <pre><code id="code:l1-book-part-3">
+          <figure id="mp:eh-book-part-2" class="frameable-border">&#x3C;part | Part I: Foundations>&#x3C;chapter | First Chapter>
+            <p>Content.</p>&#x3C;chapter | Second Chapter>
+            <p>Content.</p>
+            <figcaption><minipage-label>Minipage 168.</minipage-label></figcaption>
+          </figure>
+          <pre><code id="code:eh-book-part-3">
 &#x3C;preface | A Note from the Author>
 I wrote this book because...
 
@@ -1589,15 +1810,26 @@ Body content.
 &#x3C;appendix | Notation>
 Notation conventions used in this book.
 </code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>The structural plugin places the preface in book-front, the chapter in book-body, and the appendix in book-back based on book-part-type.</i></p></section>
+          <figure id="mp:eh-book-part-3" class="frameable-border">&#x3C;preface | A Note from the Author>
+            <p>I wrote this book because…</p>&#x3C;chapter | Chapter One>
+            <p>Body content.</p>
+            <book-part book-part-type="appendix">
+              <meta>
+                <book-part-title>Notation</book-part-title>
+              </meta>
+              <p>Notation conventions used in this book.</p>
+            </book-part>
+            <figcaption><minipage-label>Minipage 169.</minipage-label></figcaption>
+          </figure>
+          <p><i>The structural plugin places the preface in book-front, the chapter
+in book-body, and the appendix in book-back based on book-part-type.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-article">
-        <section-title><code>&#x3C;article></code></section-title>
-        <sub-section id="sec:specification-98">
+      <section id="eh-hr">
+        <section-title><code>&#x3C;hr></code></section-title>
+        <sub-section id="sec:specification-102">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>document-containers</code> · eHTML <code>&#x3C;article></code> · JATS <code>&#x3C;article></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;hr></code> · JATS <code>&#x3C;hr></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1609,92 +1841,107 @@ Notation conventions used in this book.
             </thead>
             <tbody>
               <tr>
-                <td><code>numbering-style</code></td>
+                <td><code>type</code></td>
                 <td>kwarg</td>
-                <td><code>arabic</code> <code>roman</code> <code>alpha</code></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><code>note-position</code></td>
-                <td>kwarg</td>
-                <td><code>bottom</code> <code>margin</code></td>
-                <td>Document-level note render mode (#33): “bottom” (default) keeps numbered notes at the foot of the document; “margin” projects each note into a margin column beside its marker (Tufte sidenotes). Where notes COLLECT (per-note end/foot/side; per-section or per-chapter) is the per-note <code>placement</code> kwarg plus <code>note-scope</code>, not this attribute — see <sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup>.</td>
+                <td><code>scene-break</code> <code>section-break</code> <code>ornamental</code> <code>decorative</code> <code>other</code></td>
+                <td>Optional classification of the thematic break’s role.</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;article></code>.</p>
+          <p>Produced by: canonical <code>&#x3C;hr></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-79">
-          <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-article-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;author | Jane Goodall>
-  &#x3C;date | 2024-03-15>
-&#x3C;/meta>
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-hr-1">
+&#x3C;hr></code>
+          <figure id="mp:eh-hr-1" class="frameable-border">
+            <hr>
+            <figcaption><minipage-label>Minipage 170.</minipage-label></figcaption>
+          </figure><code id="code:eh-hr-2">&#x3C;hr type=scene-break></code>
+          <figure id="mp:eh-hr-2" class="frameable-border">
+            <hr data-hr-type="scene-break">
+            <figcaption><minipage-label>Minipage 171.</minipage-label></figcaption>
+          </figure>
+          <pre><code id="code:eh-hr-3">
+&#x3C;p | First paragraph.>
 
-&#x3C;section | Introduction>
-The paper begins here.
+&#x3C;hr type=ornamental>
 
-&#x3C;section | Conclusion>
-The paper concludes here.
+&#x3C;p | Second paragraph after a thematic break.>
 </code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>Typical authoring path: &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin generates the &#x3C;article> container and the three region wrappers. &#x3C;title> in &#x3C;meta> is promoted to &#x3C;article-title>; &#x3C;meta> itself survives inside &#x3C;article-front>.</i></p>
-          <pre><code id="code:l1-article-2">
-&#x3C;article | The Effect of Elephants on Climate>
-&#x3C;meta>
-  &#x3C;author | Jane Goodall>
-&#x3C;/meta>
-
-&#x3C;section | Introduction>
-The paper begins here.
-</code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>Explicit-form escape hatch: &#x3C;article | Title>. The structural plugin respects the explicit wrapper. Pipe content from &#x3C;article> becomes &#x3C;article-title>, placed as the first child of &#x3C;meta> (creating &#x3C;meta> if absent, or appending if present).</i></p>
-          <pre><code id="code:l1-article-3">
-&#x3C;section | Introduction>
-The introduction.
-
-&#x3C;section | Conclusion>
-The conclusion.
-</code></pre>
-          <p><i>Renders as a whole document — shown as source; see the Showcase chapter for a live multi-construct example.</i></p>
-          <p><i>No &#x3C;meta> and no &#x3C;article> declared. The structural plugin assumes article-shaped (the default) and wraps the sections in an implicit article. &#x3C;article-front> is omitted because there’s no metadata.</i></p></section>
+          <figure id="mp:eh-hr-3" class="frameable-border">
+            <p>First paragraph.</p>
+            <hr data-hr-type="ornamental">
+            <p>Second paragraph after a thematic break.</p>
+            <figcaption><minipage-label>Minipage 172.</minipage-label></figcaption>
+          </figure></section>
         </sub-section>
       </section>
-      <section id="l1-article-front">
-        <section-title><code>&#x3C;article-front></code></section-title>
-        <sub-section id="sec:specification-99">
+      <section id="eh-item">
+        <section-title><code>&#x3C;item></code></section-title>
+        <sub-section id="sec:specification-103">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;article-front></code> · <code>content</code> <code>structured</code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
+          <p><code>category</code> <code>navigation</code> · eHTML <code>&#x3C;item></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>src</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>For an EXTERNAL page:</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;item></code>.</p></section>
         </sub-section>
       </section>
-      <section id="l1-article-body">
-        <section-title><code>&#x3C;article-body></code></section-title>
-        <sub-section id="sec:specification-100">
+      <section id="eh-nav">
+        <section-title><code>&#x3C;nav></code></section-title>
+        <sub-section id="sec:specification-104">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;article-body></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>navigation</code> · eHTML <code>&#x3C;nav></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
+          <p>Produced by: canonical <code>&#x3C;nav></code>.</p></section>
         </sub-section>
       </section>
-      <section id="l1-article-back">
-        <section-title><code>&#x3C;article-back></code></section-title>
-        <sub-section id="sec:specification-101">
+      <section id="eh-nav-group">
+        <section-title><code>&#x3C;nav-group></code></section-title>
+        <sub-section id="sec:specification-105">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>structural-regions</code> · eHTML <code>&#x3C;article-back></code> · <code>content</code> <code>structured</code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
+          <p><code>category</code> <code>navigation</code> · eHTML <code>&#x3C;nav-group></code> · JATS <i>(no direct JATS counterpart)</i> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The group’s display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node).</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;nav-group></code>.</p></section>
         </sub-section>
       </section>
-      <section id="l1-section">
+      <section id="eh-section">
         <section-title><code>&#x3C;section></code></section-title>
-        <sub-section id="sec:specification-102">
+        <sub-section id="sec:specification-106">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>sections</code> · eHTML <code>&#x3C;section></code> · JATS <code>&#x3C;sec></code></p>
+          <p><code>category</code> <code>sections</code> · eHTML <code>&#x3C;section></code> · JATS <code>&#x3C;sec></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1709,7 +1956,7 @@ The conclusion.
                 <td><code>sec-type</code></td>
                 <td>kwarg</td>
                 <td><code>intro</code> <code>methods</code> <code>results</code> <code>discussion</code> <code>conclusion</code> <code>supplementary</code> <code>materials</code> <code>references</code> <code>other</code></td>
-                <td>Optional classification of the section’s role. Maps to JATS sec-type attribute. Values match common JATS conventions for IMRaD-style papers.</td>
+                <td>Optional classification of the section’s role.</td>
               </tr>
               <tr>
                 <td><code>numbering-style</code></td>
@@ -1718,52 +1965,48 @@ The conclusion.
                 <td>Override the inherited numbering style for this section.</td>
               </tr>
               <tr>
-                <td><code>+unlisted</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Keep this section out of the generated table of contents, regardless of toc-depth (#218). Display-only: the section still renders; it is only absent from the contents listing. The ToC is config-driven (
-                  <config></config>); see notes/specs/toc-and-numbering.md. Authored as +unlisted (the boolean shorthand); renders to the HTML attribute unlisted.
-                </td>
+                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Keep this section out of the generated table of contents, regardless of toc-depth (#218).</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Skip this section’s number, regardless of number-depth (#218). The heading is OUTSIDE the numbered sequence — it gets no number AND does not advance the counter, so the next numbered sibling continues unbroken (the \section* / Quarto .unnumbered behavior); its subtree is unnumbered too. Numbering is config-driven (
-                  <config></config>); see notes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp reads node.booleans.unnumbered in runSync, and the unnumbered attribute also renders on the element.
-                </td>
+                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Skip this section’s number, regardless of number-depth (#218).</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;section></code> · sigil <code>&#x3C;# … #></code> · markdown <code># …</code>.</p>
+          <p>Produced by: canonical <code>&#x3C;section></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-80">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-section-1">
+          <pre><code id="code:eh-section-1">
 &#x3C;section | Introduction>
 The paper begins here.
 </code></pre>
-          <figure id="mp:l1-section-1" class="frameable-border">
+          <figure id="mp:eh-section-1" class="frameable-border">
             <section>
               <section-title>Introduction</section-title>
               <p>The paper begins here.</p>
             </section>
-            <figcaption><minipage-label>Minipage 116.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 173.</minipage-label></figcaption>
           </figure>
-          <pre><code id="code:l1-section-2">
+          <pre><code id="code:eh-section-2">
 &#x3C;section #methods sec-type=methods | Methods>
 &#x3C;section-subtitle | A description of our experimental approach>
 The methods used in this study were as follows.
 </code></pre>
-          <figure id="mp:l1-section-2" class="frameable-border">
-            <section id="mp-l1-section-2-methods" data-sec-type="methods">
+          <figure id="mp:eh-section-2" class="frameable-border">
+            <section id="mp-eh-section-2-methods" data-sec-type="methods">
               <section-title>Methods</section-title>
               <section-subtitle>A description of our experimental approach</section-subtitle>
               <p>The methods used in this study were as follows.</p>
             </section>
-            <figcaption><minipage-label>Minipage 117.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 174.</minipage-label></figcaption>
           </figure>
-          <pre><code id="code:l1-section-3">
+          <pre><code id="code:eh-section-3">
 &#x3C;section | Results>
 Results paragraph.
 
@@ -1773,7 +2016,7 @@ Sub-section content.
 &#x3C;sub-section | Qualitative observations>
 Sub-section content.
 </code></pre>
-          <figure id="mp:l1-section-3" class="frameable-border">
+          <figure id="mp:eh-section-3" class="frameable-border">
             <section>
               <section-title>Results</section-title>
               <p>Results paragraph.</p>
@@ -1786,15 +2029,15 @@ Sub-section content.
                 <p>Sub-section content.</p>
               </sub-section>
             </section>
-            <figcaption><minipage-label>Minipage 118.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 175.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-sub-section">
+      <section id="eh-sub-section">
         <section-title><code>&#x3C;sub-section></code></section-title>
-        <sub-section id="sec:specification-103">
+        <sub-section id="sec:specification-107">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>sections</code> · eHTML <code>&#x3C;sub-section></code> · JATS <code>&#x3C;sec></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>sections</code> · eHTML <code>&#x3C;sub-section></code> · JATS <code>&#x3C;sec></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1809,9 +2052,7 @@ Sub-section content.
                 <td><code>sec-type</code></td>
                 <td>kwarg</td>
                 <td><code>intro</code> <code>methods</code> <code>results</code> <code>discussion</code> <code>conclusion</code> <code>supplementary</code> <code>materials</code> <code>references</code> <code>other</code></td>
-                <td>Same values as
-                  <section></section>. Optional classification of the sub-section role.
-                </td>
+                <td>Same values as &#x3C;section>.</td>
               </tr>
               <tr>
                 <td><code>numbering-style</code></td>
@@ -1820,35 +2061,35 @@ Sub-section content.
                 <td></td>
               </tr>
               <tr>
-                <td><code>+unlisted</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218). Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted.</td>
+                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218).</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Skip this sub-section’s number, regardless of number-depth (#218). Outside the numbered sequence — no number, no counter advance, subtree unnumbered; the next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md. Authored as +unnumbered.</td>
+                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Skip this sub-section’s number, regardless of number-depth (#218).</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;sub-section></code> · sigil <code>&#x3C;## … ##></code> · markdown <code>## …</code>.</p>
+          <p>Produced by: canonical <code>&#x3C;sub-section></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-81">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-sub-section-1">
+          <pre><code id="code:eh-sub-section-1">
 &#x3C;sub-section | Quantitative analysis>
 Sub-section content.
 </code></pre>
-          <figure id="mp:l1-sub-section-1" class="frameable-border">
+          <figure id="mp:eh-sub-section-1" class="frameable-border">
             <sub-section>
               <sub-section-title>Quantitative analysis</sub-section-title>
               <p>Sub-section content.</p>
             </sub-section>
-            <figcaption><minipage-label>Minipage 119.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 176.</minipage-label></figcaption>
           </figure>
-          <pre><code id="code:l1-sub-section-2">
+          <pre><code id="code:eh-sub-section-2">
 &#x3C;section | Results>
 &#x3C;sub-section | Statistical methods>
 Sub-section content.
@@ -1859,7 +2100,7 @@ Sub-sub-section content.
 &#x3C;sub-section | Sensitivity analyses>
 Sub-section content.
 </code></pre>
-          <figure id="mp:l1-sub-section-2" class="frameable-border">
+          <figure id="mp:eh-sub-section-2" class="frameable-border">
             <section>
               <section-title>Results</section-title>
               <sub-section>
@@ -1875,15 +2116,15 @@ Sub-section content.
                 <p>Sub-section content.</p>
               </sub-section>
             </section>
-            <figcaption><minipage-label>Minipage 120.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 177.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-sub-sub-section">
+      <section id="eh-sub-sub-section">
         <section-title><code>&#x3C;sub-sub-section></code></section-title>
-        <sub-section id="sec:specification-104">
+        <sub-section id="sec:specification-108">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>sections</code> · eHTML <code>&#x3C;sub-sub-section></code> · JATS <code>&#x3C;sec></code> · <code>content</code> <code>structured</code></p>
+          <p><code>category</code> <code>sections</code> · eHTML <code>&#x3C;sub-sub-section></code> · JATS <code>&#x3C;sec></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1907,35 +2148,35 @@ Sub-section content.
                 <td></td>
               </tr>
               <tr>
-                <td><code>+unlisted</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218). Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted.</td>
+                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218).</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Skip this sub-sub-section’s number, regardless of number-depth (#218). Outside the numbered sequence — no number, no counter advance, subtree unnumbered; the next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md. Authored as +unnumbered.</td>
+                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td>flag</td>
+                <td>default off</td>
+                <td>Skip this sub-sub-section’s number, regardless of number-depth (#218).</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;sub-sub-section></code> · sigil <code>&#x3C;### … ###></code> · markdown <code>### …</code>.</p>
+          <p>Produced by: canonical <code>&#x3C;sub-sub-section></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-82">
           <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-sub-sub-section-1">
+          <pre><code id="code:eh-sub-sub-section-1">
 &#x3C;sub-sub-section | Regression analysis>
 Detailed methods for the regression.
 </code></pre>
-          <figure id="mp:l1-sub-sub-section-1" class="frameable-border">
+          <figure id="mp:eh-sub-sub-section-1" class="frameable-border">
             <sub-sub-section>
               <sub-sub-section-title>Regression analysis</sub-sub-section-title>
               <p>Detailed methods for the regression.</p>
             </sub-sub-section>
-            <figcaption><minipage-label>Minipage 121.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 178.</minipage-label></figcaption>
           </figure>
-          <pre><code id="code:l1-sub-sub-section-2">
+          <pre><code id="code:eh-sub-sub-section-2">
 &#x3C;section | Methods>
 &#x3C;sub-section | Statistical methods>
 &#x3C;sub-sub-section | Regression>
@@ -1944,7 +2185,7 @@ Linear regression was performed.
 &#x3C;sub-sub-section | Sensitivity testing>
 Sensitivity tests were performed.
 </code></pre>
-          <figure id="mp:l1-sub-sub-section-2" class="frameable-border">
+          <figure id="mp:eh-sub-sub-section-2" class="frameable-border">
             <section>
               <section-title>Methods</section-title>
               <sub-section>
@@ -1959,112 +2200,11 @@ Sensitivity tests were performed.
                 </sub-sub-section>
               </sub-section>
             </section>
-            <figcaption><minipage-label>Minipage 122.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 179.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="l1-nav">
-        <section-title><code>&#x3C;nav></code></section-title>
-        <sub-section id="sec:specification-105">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>navigation</code> · eHTML <code>&#x3C;nav></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;nav></code>.</p></section>
-        </sub-section>
-      </section>
-      <section id="l1-nav-group">
-        <section-title><code>&#x3C;nav-group></code></section-title>
-        <sub-section id="sec:specification-106">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>navigation</code> · eHTML <code>&#x3C;nav-group></code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>title</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>The group’s display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a <code>&#x3C;nav-group></code> is a long-form container (neither <code>|</code> nor <code>/</code>), so the label cannot ride the pipe slot the way a page’s title does.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: canonical <code>&#x3C;nav-group></code>.</p></section>
-        </sub-section>
-      </section>
-      <section id="l1-item">
-        <section-title><code>&#x3C;item></code></section-title>
-        <sub-section id="sec:specification-107">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>navigation</code> · eHTML <code>&#x3C;item></code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>src</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>For an EXTERNAL page: the child <code>.emd</code> file that supplies the page body. The pipe gives the menu label and overrides the child’s own title, exactly as <code>&#x3C;section src | Title></code> does in an article. Omitted for an INLINE page, whose body is authored in the master after the <code>&#x3C;item | Title></code> marker (peer-closed by the next entry, the <code>&#x3C;section | Title></code> model). The website render (S2) loads the child; S1 records the <code>src</code> as a reference only.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: canonical <code>&#x3C;item></code>.</p></section>
-        </sub-section>
-      </section>
-      <section id="l1-hr">
-        <section-title><code>&#x3C;hr></code></section-title>
-        <sub-section id="sec:specification-108">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;hr></code> · JATS <code>&#x3C;hr></code> · <code>content</code> <code>none</code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>scene-break</code> <code>section-break</code> <code>ornamental</code> <code>decorative</code> <code>other</code></td>
-                <td>Optional classification of the thematic break’s role. Affects rendering (scene breaks render as blank space; ornamental breaks render with decorative characters or images).</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: canonical <code>&#x3C;hr></code> · markdown <code>---</code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-83">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-hr-1">
-&#x3C;hr></code>
-          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p><code id="code:l1-hr-2">&#x3C;hr type=scene-break></code>
-          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p>
-          <pre><code id="code:l1-hr-3">
-&#x3C;p | First paragraph.>
-
-&#x3C;hr type=ornamental>
-
-&#x3C;p | Second paragraph after a thematic break.>
-</code></pre>
-          <p><i>Render pending — bare <code>&#x3C;hr></code> / <code>&#x3C;hr type=…></code> parsed as a long-form opener (no self-close) → tag-error (issue #275).</i></p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#l1-book">&#x3C;book></a><ul><li><a href="#sec:specification-93">Specification</a></li><li><a href="#sec:examples-77">Examples</a></li></ul></li><li><a href="#l1-book-front">&#x3C;book-front></a><ul><li><a href="#sec:specification-94">Specification</a></li></ul></li><li><a href="#l1-book-body">&#x3C;book-body></a><ul><li><a href="#sec:specification-95">Specification</a></li></ul></li><li><a href="#l1-book-back">&#x3C;book-back></a><ul><li><a href="#sec:specification-96">Specification</a></li></ul></li><li><a href="#l1-book-part">&#x3C;book-part></a><ul><li><a href="#sec:specification-97">Specification</a></li><li><a href="#sec:examples-78">Examples</a></li></ul></li><li><a href="#l1-article">&#x3C;article></a><ul><li><a href="#sec:specification-98">Specification</a></li><li><a href="#sec:examples-79">Examples</a></li></ul></li><li><a href="#l1-article-front">&#x3C;article-front></a><ul><li><a href="#sec:specification-99">Specification</a></li></ul></li><li><a href="#l1-article-body">&#x3C;article-body></a><ul><li><a href="#sec:specification-100">Specification</a></li></ul></li><li><a href="#l1-article-back">&#x3C;article-back></a><ul><li><a href="#sec:specification-101">Specification</a></li></ul></li><li><a href="#l1-section">&#x3C;section></a><ul><li><a href="#sec:specification-102">Specification</a></li><li><a href="#sec:examples-80">Examples</a></li></ul></li><li><a href="#l1-sub-section">&#x3C;sub-section></a><ul><li><a href="#sec:specification-103">Specification</a></li><li><a href="#sec:examples-81">Examples</a></li></ul></li><li><a href="#l1-sub-sub-section">&#x3C;sub-sub-section></a><ul><li><a href="#sec:specification-104">Specification</a></li><li><a href="#sec:examples-82">Examples</a></li></ul></li><li><a href="#l1-nav">&#x3C;nav></a><ul><li><a href="#sec:specification-105">Specification</a></li></ul></li><li><a href="#l1-nav-group">&#x3C;nav-group></a><ul><li><a href="#sec:specification-106">Specification</a></li></ul></li><li><a href="#l1-item">&#x3C;item></a><ul><li><a href="#sec:specification-107">Specification</a></li></ul></li><li><a href="#l1-hr">&#x3C;hr></a><ul><li><a href="#sec:specification-108">Specification</a></li><li><a href="#sec:examples-83">Examples</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#eh-article">&#x3C;article></a><ul><li><a href="#sec:specification-93">Specification</a></li><li><a href="#sec:examples-76">Examples</a></li></ul></li><li><a href="#eh-article-back">&#x3C;article-back></a><ul><li><a href="#sec:specification-94">Specification</a></li></ul></li><li><a href="#eh-article-body">&#x3C;article-body></a><ul><li><a href="#sec:specification-95">Specification</a></li></ul></li><li><a href="#eh-article-front">&#x3C;article-front></a><ul><li><a href="#sec:specification-96">Specification</a></li></ul></li><li><a href="#eh-book">&#x3C;book></a><ul><li><a href="#sec:specification-97">Specification</a></li><li><a href="#sec:examples-77">Examples</a></li></ul></li><li><a href="#eh-book-back">&#x3C;book-back></a><ul><li><a href="#sec:specification-98">Specification</a></li></ul></li><li><a href="#eh-book-body">&#x3C;book-body></a><ul><li><a href="#sec:specification-99">Specification</a></li></ul></li><li><a href="#eh-book-front">&#x3C;book-front></a><ul><li><a href="#sec:specification-100">Specification</a></li></ul></li><li><a href="#eh-book-part">&#x3C;book-part></a><ul><li><a href="#sec:specification-101">Specification</a></li><li><a href="#sec:examples-78">Examples</a></li></ul></li><li><a href="#eh-hr">&#x3C;hr></a><ul><li><a href="#sec:specification-102">Specification</a></li><li><a href="#sec:examples-79">Examples</a></li></ul></li><li><a href="#eh-item">&#x3C;item></a><ul><li><a href="#sec:specification-103">Specification</a></li></ul></li><li><a href="#eh-nav">&#x3C;nav></a><ul><li><a href="#sec:specification-104">Specification</a></li></ul></li><li><a href="#eh-nav-group">&#x3C;nav-group></a><ul><li><a href="#sec:specification-105">Specification</a></li></ul></li><li><a href="#eh-section">&#x3C;section></a><ul><li><a href="#sec:specification-106">Specification</a></li><li><a href="#sec:examples-80">Examples</a></li></ul></li><li><a href="#eh-sub-section">&#x3C;sub-section></a><ul><li><a href="#sec:specification-107">Specification</a></li><li><a href="#sec:examples-81">Examples</a></li></ul></li><li><a href="#eh-sub-sub-section">&#x3C;sub-sub-section></a><ul><li><a href="#sec:specification-108">Specification</a></li><li><a href="#sec:examples-82">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

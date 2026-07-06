@@ -1417,7 +1417,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Primary prose</book-part-title>
       </meta>
-      <p>The running text of a document — paragraphs, and the block-level list construct that enumerates within prose.</p>
+      <p>The running-text unit — the paragraph.</p>
       <section id="sh-p">
         <section-title><code>&#x3C;p></code></section-title>
         <sub-section id="sec:general-usage">
@@ -1435,7 +1435,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             <p>A paragraph written without explicit tags.</p>
             <figcaption><minipage-label>Minipage 2.</minipage-label></figcaption>
           </figure>
-          <p><i>In most cases, paragraphs do not need to be written with explicit tags. Plain markdown handles paragraph separation: blank lines delineate paragraphs. The explicit &#x3C;p> form is used when attributes (id, classes, type) are needed.</i></p><code id="code:sh-p-3">&#x3C;p type=lead | The opening paragraph of an article.></code>
+          <p><i>In most cases, paragraphs do not need to be written with explicit
+tags. Plain markdown handles paragraph separation: blank lines
+delineate paragraphs. The explicit &#x3C;p> form is used when attributes
+(id, classes, type) are needed.</i></p><code id="code:sh-p-3">&#x3C;p type=lead | The opening paragraph of an article.></code>
           <figure id="mp:sh-p-3" class="frameable-border">
             <p data-paragraph-type="lead">The opening paragraph of an article.</p>
             <figcaption><minipage-label>Minipage 3.</minipage-label></figcaption>
@@ -1457,106 +1460,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>normal</code> <code>lead</code> <code>intro</code> <code>abstract</code> <code>summary</code> <code>other</code></td>
-                <td>Optional classification of the paragraph’s role. Mostly used for styling (lead paragraphs render larger; abstract paragraphs styled distinctly).</td>
+                <td>Optional classification of the paragraph’s role.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-list">
-        <section-title><code>&#x3C;list></code> / <code>&#x3C;li></code></section-title>
-        <sub-section id="sec:general-usage-2">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>list</i> / <i>item</i>. Compiles to eHTML <code>&#x3C;ul></code> / <code>&#x3C;ol></code> + <code>&#x3C;li></code>.</p>
-          <p>A list works like a section: a marker, then content after it. <code>&#x3C;li></code> marks an item; the item’s content is everything after the marker until the next item, a nested <code>&#x3C;list></code>, or <code>&#x3C;/list></code> — there is no pipe and no closing <code>></code> on an item, which is what keeps nesting clean. An item’s content can be several paragraphs; a single-paragraph item stays bare while a multi-paragraph item wraps (the tight/loose content model).</p>
-          <p>An item marker has three interchangeable registers — the canonical <code>&#x3C;li></code>, the sigils <code>&#x3C;-></code> / <code>&#x3C;*></code>, and the markdown <code>-</code> / <code>*</code> — all marking an item the same way. Markers are recognized only at the start of a line; an inline <code>&#x3C;-</code> in prose (an arrow, R’s assignment) is never claimed.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;li></code></li>
-            <li>Sigil: <code>&#x3C;-></code> or <code>&#x3C;*></code></li>
-            <li>Markdown: <code>-</code> or <code>*</code></li>
-          </ul>
-          <pre><code id="code:sh-list-1">
-&#x3C;list>
-&#x3C;li> Fit the model.
-&#x3C;li> Compute residuals.
-&#x3C;li> Inspect their distribution.
-&#x3C;/list>
-</code></pre>
-          <figure id="mp:sh-list-1" class="frameable-border">
-            <ul>
-              <li>Fit the model.</li>
-              <li>Compute residuals.</li>
-              <li>Inspect their distribution.</li>
-            </ul>
-            <figcaption><minipage-label>Minipage 4.</minipage-label></figcaption>
-          </figure>
-          <p><i>Unordered list. <code>&#x3C;list></code> lowers to <code>&#x3C;ul></code>; each <code>&#x3C;li></code> to an <code>&#x3C;li></code>.</i></p>
-          <pre><code id="code:sh-list-2">
-&#x3C;list ordered start=2>
-&#x3C;-> Fit the model.
-&#x3C;-> Compute residuals, then discuss.
-
-  A second paragraph belongs to the same item — no indentation is required.
-&#x3C;/list>
-</code></pre>
-          <figure id="mp:sh-list-2" class="frameable-border">
-            <ol start="2">
-              <li>
-                <p>Fit the model.</p>
-              </li>
-              <li>
-                <p>Compute residuals, then discuss.</p>
-                <p>A second paragraph belongs to the same item — no indentation is required.</p>
-              </li>
-            </ol>
-            <figcaption><minipage-label>Minipage 5.</minipage-label></figcaption>
-          </figure>
-          <p><i><code>ordered</code> makes it an <code>&#x3C;ol></code>; the sigil <code>&#x3C;-></code> marks items. The second item is multi-paragraph, so it wraps.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-2">
-          <sub-section-title>Arguments</sub-section-title>
-          <p>Arguments sit on the <code>&#x3C;list></code> container; <code>&#x3C;li></code> takes none.</p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>ordered</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Ordered vs unordered is the element: <code>&#x3C;list></code> → <code>&#x3C;ul></code>; <code>&#x3C;list ordered></code> → <code>&#x3C;ol></code>.</td>
-              </tr>
-              <tr>
-                <td><code>marker</code></td>
-                <td>kwarg</td>
-                <td><code>decimal</code> <code>lower-roman</code> <code>upper-alpha</code> <code>disc</code> …</td>
-                <td>Sets the CSS <code>list-style-type</code>, passed straight through. An unknown value falls back to the default and is flagged.</td>
-              </tr>
-              <tr>
-                <td><code>start</code></td>
-                <td>kwarg</td>
-                <td>integer</td>
-                <td>First number of an ordered list.</td>
-              </tr>
-              <tr>
-                <td><code>reversed</code></td>
-                <td>boolean</td>
-                <td>default <code>false</code></td>
-                <td>Counts an ordered list down instead of up.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>A <code>&#x3C;list>…&#x3C;/list></code> inside an item nests; the next outer <code>&#x3C;li></code> resumes the outer list. JATS export translates to <code>&#x3C;list list-type></code> / <code>&#x3C;list-item></code>. (Lists are a document-taxonomy enumeration construct — sequence-addressed rather than a semantic family; they appear here among the block-level content an author writes.)</p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-next" href="emphasis-marking.html" rel="next"><toc-title>Emphasis &#x26; marking</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:primary-prose"><ul><li><a href="#sh-p">&#x3C;p></a><ul><li><a href="#sec:general-usage">General Usage</a></li><li><a href="#sec:arguments">Arguments</a></li></ul></li><li><a href="#sh-list">&#x3C;list> / &#x3C;li></a><ul><li><a href="#sec:general-usage-2">General Usage</a></li><li><a href="#sec:arguments-2">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-next" href="emphasis-marking.html" rel="next"><toc-title>Emphasis &#x26; marking</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:primary-prose"><ul><li><a href="#sh-p">&#x3C;p></a><ul><li><a href="#sec:general-usage">General Usage</a></li><li><a href="#sec:arguments">Arguments</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

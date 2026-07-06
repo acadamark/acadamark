@@ -1417,12 +1417,147 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Quotation &#x26; sourcing</book-part-title>
       </meta>
-      <p>Quotation and sourcing — quotations, citations, cross-references, links, identifiers, and the resolved bibliography.</p>
-      <section id="l1-blockquote">
-        <section-title><code>&#x3C;blockquote></code></section-title>
+      <p>Others’ words, and pointers at sources — quotation, citation, cross-reference, and links.</p>
+      <section id="eh-a">
+        <section-title><code>&#x3C;a></code></section-title>
+        <sub-section id="sec:specification-22">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;a></code> · JATS <code>&#x3C;ext-link></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>href</code></td>
+                <td>format-word</td>
+                <td></td>
+                <td>The link target as the first positional argument:</td>
+              </tr>
+              <tr>
+                <td><code>href</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The URL or fragment identifier the anchor points to.</td>
+              </tr>
+              <tr>
+                <td><code>target</code></td>
+                <td>kwarg</td>
+                <td><code>_self</code> <code>_blank</code> <code>_parent</code> <code>_top</code></td>
+                <td>How the link opens.</td>
+              </tr>
+              <tr>
+                <td><code>rel</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Relationship between the current document and the link target.</td>
+              </tr>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Tooltip text shown on hover.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;a></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-20">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-a-1">
+See &#x3C;a https://example.com/docs | the documentation>.</code>
+          <figure id="mp:eh-a-1" class="frameable-border">
+            <p>See <a href="https://example.com/docs">the documentation</a>.</p>
+            <figcaption><minipage-label>Minipage 45.</minipage-label></figcaption>
+          </figure>
+          <p><i>The positional URL form — the target is the first argument, the pipe
+content is the link text. The most common authoring path. (Markdown
+<code>[text](url)</code> is not an enscribe idiom; it renders as literal text.)</i></p><code id="code:eh-a-2">&#x3C;a href=https://example.com | the example site></code>
+          <figure id="mp:eh-a-2" class="frameable-border"><a href="https://example.com">the example site</a>
+            <figcaption><minipage-label>Minipage 46.</minipage-label></figcaption>
+          </figure><code id="code:eh-a-3">&#x3C;a href=https://example.com target=_blank rel=noopener | external link></code>
+          <figure id="mp:eh-a-3" class="frameable-border"><a href="https://example.com" target="_blank" rel="noopener">external link</a>
+            <figcaption><minipage-label>Minipage 47.</minipage-label></figcaption>
+          </figure><code id="code:eh-a-4">&#x3C;a href=#section-2 | jump to Section 2></code>
+          <figure id="mp:eh-a-4" class="frameable-border"><a href="#section-2">jump to Section 2</a>
+            <figcaption><minipage-label>Minipage 48.</minipage-label></figcaption>
+          </figure>
+          <p><i>Internal links use fragment identifiers pointing at element ids.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="eh-bib-entry">
+        <section-title><code>&#x3C;bib-entry></code></section-title>
         <sub-section id="sec:specification-23">
           <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;blockquote></code> · JATS <code>&#x3C;disp-quote or epigraph></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><code>category</code> <code>citations-and-references</code> · eHTML <code>&#x3C;bib-entry></code> · JATS <code>&#x3C;ref (containing element-citation or mixed-citation)></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>article</code> <code>book</code> <code>chapter</code> <code>thesis</code> <code>proceedings</code> <code>report</code> <code>webpage</code> <code>other</code></td>
+                <td>The bibliography entry type.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;bib-entry></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-bibliography">
+        <section-title><code>&#x3C;bibliography></code></section-title>
+        <sub-section id="sec:specification-24">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>citations-and-references</code> · eHTML <code>&#x3C;bibliography></code> · JATS <code>&#x3C;ref-list></code> · <code>content</code> <code>empty</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>style</code></td>
+                <td>kwarg</td>
+                <td><code>author-year</code> <code>numbered</code> <code>footnote</code> <code>custom</code></td>
+                <td>Future — not yet implemented:</td>
+              </tr>
+              <tr>
+                <td><code>sort</code></td>
+                <td>kwarg</td>
+                <td><code>alpha</code> <code>citation-order</code> <code>year</code> <code>none</code> (default <code>alpha</code>)</td>
+                <td>Future — not yet implemented:</td>
+              </tr>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>cited-only</code> <code>full</code> <code>hybrid</code> (default <code>cited-only</code>)</td>
+                <td>Future — not yet implemented:</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;bibliography></code>.</p></section>
+        </sub-section>
+      </section>
+      <section id="eh-blockquote">
+        <section-title><code>&#x3C;blockquote></code></section-title>
+        <sub-section id="sec:specification-25">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>block-prose</code> · eHTML <code>&#x3C;blockquote></code> · JATS <code>&#x3C;disp-quote or epigraph></code> · <code>content</code> <code>structured</code> → <code>&#x3C;children></code></p>
           <table>
             <thead>
               <tr>
@@ -1437,103 +1572,66 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <td><code>cite</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>URL of the source being quoted. Maps to HTML’s standard cite attribute on
-                  <blockquote></blockquote>. For inline citation references (citing a bibliography entry), use a <cite></cite>element inside the blockquote instead.
-                </td>
+                <td>URL of the source being quoted.</td>
               </tr>
               <tr>
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>verse</code> <code>dialogue</code> <code>epigraph</code> <code>pullquote</code> <code>other</code></td>
-                <td>Optional classification of the quotation’s role. Affects styling and may affect JATS export.</td>
+                <td>Optional classification of the quotation’s role.</td>
               </tr>
             </tbody>
           </table>
-          <p>Produced by: canonical <code>&#x3C;blockquote></code> · markdown <code>> …</code> · alias <code>&#x3C;quote></code>.</p>
+          <p>Produced by: canonical <code>&#x3C;blockquote></code>.</p>
         </sub-section>
         <sub-section id="sec:examples-21">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-blockquote-1">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-blockquote-1">
 &#x3C;quote | A short quotation.></code>
-          <figure id="mp:l1-blockquote-1" class="frameable-border">
+          <figure id="mp:eh-blockquote-1" class="frameable-border">
             <blockquote>
               <p>A short quotation.</p>
             </blockquote>
-            <figcaption><minipage-label>Minipage 46.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 49.</minipage-label></figcaption>
           </figure>
           <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at eHTML.</i></p>
-          <pre><code id="code:l1-blockquote-2">
+          <pre><code id="code:eh-blockquote-2">
 &#x3C;quote cite=https://example.com/source |
 A longer quotation that may contain multiple paragraphs.
 
 The second paragraph of the quotation.
 >
 </code></pre>
-          <figure id="mp:l1-blockquote-2" class="frameable-border">
+          <figure id="mp:eh-blockquote-2" class="frameable-border">
             <blockquote cite="https://example.com/source">
               <p>A longer quotation that may contain multiple paragraphs.</p>
               <p>The second paragraph of the quotation.</p>
             </blockquote>
-            <figcaption><minipage-label>Minipage 47.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 50.</minipage-label></figcaption>
           </figure>
-          <pre><code id="code:l1-blockquote-3">
+          <pre><code id="code:eh-blockquote-3">
 &#x3C;quote type=epigraph |
 All happy families are alike; each unhappy family is unhappy in its own way.
 >
 </code></pre>
-          <figure id="mp:l1-blockquote-3" class="frameable-border">
+          <figure id="mp:eh-blockquote-3" class="frameable-border">
             <blockquote data-blockquote-type="epigraph">
               <p>All happy families are alike; each unhappy family is unhappy in its own way.</p>
             </blockquote>
-            <figcaption><minipage-label>Minipage 48.</minipage-label></figcaption>
-          </figure><code id="code:l1-blockquote-4">&#x3C;blockquote | Same as &#x3C;quote> but using the explicit eHTML name.></code>
-          <p><i>Render pending — the example source has an unescaped <code>&#x3C;…></code> tag-mention the parser consumes into an empty nested element (issue #277).</i></p>
-          <p><i>Authors can also write &#x3C;blockquote> directly. Both forms produce the same eHTML output.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-q">
-        <section-title><code>&#x3C;q></code></section-title>
-        <sub-section id="sec:specification-24">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;q></code> · JATS <code>&#x3C;inline-quote or just text with quotation marks></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>cite</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>URL of the source being quoted. Same as
-                  <blockquote></blockquote>‘s cite attribute but for inline quotations.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: canonical <code>&#x3C;q></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-22">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-q-1">
-She said &#x3C;q | hello> in passing.</code>
-          <figure id="mp:l1-q-1" class="frameable-border">
-            <p>She said <q>hello</q> in passing.</p>
-            <figcaption><minipage-label>Minipage 49.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 51.</minipage-label></figcaption>
+          </figure><code id="code:eh-blockquote-4">&#x3C;blockquote | Same as `&#x3C;quote>` but using the explicit eHTML name.></code>
+          <figure id="mp:eh-blockquote-4" class="frameable-border">
+            <blockquote>
+              <p>Same as <code>&#x3C;quote></code> but using the explicit eHTML name.</p>
+            </blockquote>
+            <figcaption><minipage-label>Minipage 52.</minipage-label></figcaption>
           </figure>
-          <p><i>Browsers automatically render &#x3C;q> with quotation marks. Authors do not include quotation marks in the content.</i></p><code id="code:l1-q-2">The phrase &#x3C;q cite=https://example.com | to be or not to be> is iconic.</code>
-          <figure id="mp:l1-q-2" class="frameable-border">
-            <p>The phrase <q cite="https://example.com">to be or not to be</q> is iconic.</p>
-            <figcaption><minipage-label>Minipage 50.</minipage-label></figcaption>
-          </figure></section>
+          <p><i>Authors can also write &#x3C;blockquote> directly. Both forms produce
+the same eHTML output.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-cite">
+      <section id="eh-cite">
         <section-title><code>&#x3C;cite></code></section-title>
-        <sub-section id="sec:specification-25">
+        <sub-section id="sec:specification-26">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>citations-and-references</code> · eHTML <code>&#x3C;cite></code> · JATS <code>&#x3C;xref ref-type="bibr"></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <table>
@@ -1550,13 +1648,13 @@ She said &#x3C;q | hello> in passing.</code>
                 <td><code>keys</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>One or more citation keys, supplied as positional arguments. Multiple keys group into a single citation: <cite></cite>renders as a combined citation (e.g., “(Smith 2020; Jones 2021)”).</td>
+                <td>One or more citation keys, supplied as positional arguments.</td>
               </tr>
               <tr>
                 <td><code>page</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Page number or page range for the citation locator. E.g., <cite></cite>.</td>
+                <td>Page number or page range for the citation locator.</td>
               </tr>
               <tr>
                 <td><code>chapter</code></td>
@@ -1574,7 +1672,7 @@ She said &#x3C;q | hello> in passing.</code>
                 <td><code>prefix</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Text to appear before the citation. E.g., “see also” in “(see also Smith 2020)”.</td>
+                <td>Text to appear before the citation.</td>
               </tr>
               <tr>
                 <td><code>suffix</code></td>
@@ -1585,31 +1683,125 @@ She said &#x3C;q | hello> in passing.</code>
               <tr>
                 <td><code>style</code></td>
                 <td>kwarg</td>
-                <td><code>author-year</code> <code>numbered</code> <code>footnote</code> <code>endnote</code> <code>inline-author-year</code> <code>default</code></td>
-                <td>Override the document-level citation style for this citation. “default” uses the document-level <code>&#x3C;citation-style></code> from <code>&#x3C;config></code>.</td>
+                <td><code>author-year</code> <code>numbered</code> <code>footnote</code> <code>endnote</code> <code>inline-author-year</code> <code>default</code> (default <code>default</code>)</td>
+                <td>Override the document-level citation style for this citation.</td>
               </tr>
             </tbody>
           </table>
           <p>Produced by: canonical <code>&#x3C;cite></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-23">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-cite-1">
+        <sub-section id="sec:examples-22">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-cite-1">
 The argument is supported by data &#x3C;cite goodall2024>.</code>
-          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
-          <p><i>A simple citation. The resolver renders the citation according to the document-level style. For author-year style, this becomes “(Goodall 2024)”. For numbered style, “[1]”. The actual rendered text is generated by the citation resolver, not written by the author.</i></p><code id="code:l1-cite-2">Multiple sources confirm this &#x3C;cite goodall2024 attenborough2020 darwin1859>.</code>
-          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
-          <p><i>Multiple citation keys group into one citation marker. The resolver handles the joining (with separators appropriate to the style).</i></p><code id="code:l1-cite-3">See &#x3C;cite goodall2024 page=42> for details.</code>
-          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
-          <p><i>A citation with a page locator. The locator renders alongside the citation marker.</i></p><code id="code:l1-cite-4">See also &#x3C;cite goodall2024 prefix="cf." page=42-45>.</code>
-          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
-          <p><i>Citation with prefix and page range.</i></p><code id="code:l1-cite-5">A specific work &#x3C;cite goodall2024 style=footnote>.</code>
-          <p><i>Render pending — processSync does not resolve citations — <code>&#x3C;cite></code> renders empty (issue #273).</i></p>
-          <p><i>Per-citation style override. This citation renders as a footnote marker even if the document-level style is something else.</i></p></section>
+          <figure id="mp:eh-cite-1" class="frameable-border">
+            <p>The argument is supported by data <cite></cite>.</p>
+            <figcaption><minipage-label>Minipage 53.</minipage-label></figcaption>
+          </figure>
+          <p><i>A simple citation. The resolver renders the citation according
+to the document-level style. For author-year style, this becomes
+“(Goodall 2024)”. For numbered style, “[1]”. The actual rendered
+text is generated by the citation resolver, not written by the author.</i></p><code id="code:eh-cite-2">Multiple sources confirm this &#x3C;cite goodall2024 attenborough2020 darwin1859>.</code>
+          <figure id="mp:eh-cite-2" class="frameable-border">
+            <p>Multiple sources confirm this <cite></cite>.</p>
+            <figcaption><minipage-label>Minipage 54.</minipage-label></figcaption>
+          </figure>
+          <p><i>Multiple citation keys group into one citation marker. The resolver
+handles the joining (with separators appropriate to the style).</i></p><code id="code:eh-cite-3">See &#x3C;cite goodall2024 page=42> for details.</code>
+          <figure id="mp:eh-cite-3" class="frameable-border">
+            <p>See <cite></cite>for details.</p>
+            <figcaption><minipage-label>Minipage 55.</minipage-label></figcaption>
+          </figure>
+          <p><i>A citation with a page locator. The locator renders alongside the
+citation marker.</i></p><code id="code:eh-cite-4">See also &#x3C;cite goodall2024 prefix="cf." page=42-45>.</code>
+          <figure id="mp:eh-cite-4" class="frameable-border">
+            <p>See also <cite></cite>.</p>
+            <figcaption><minipage-label>Minipage 56.</minipage-label></figcaption>
+          </figure>
+          <p><i>Citation with prefix and page range.</i></p><code id="code:eh-cite-5">A specific work &#x3C;cite goodall2024 style=footnote>.</code>
+          <figure id="mp:eh-cite-5" class="frameable-border">
+            <p>A specific work <cite data-citation-style="footnote"></cite>.</p>
+            <figcaption><minipage-label>Minipage 57.</minipage-label></figcaption>
+          </figure>
+          <p><i>Per-citation style override. This citation renders as a footnote
+marker even if the document-level style is something else.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-ref">
+      <section id="eh-doi">
+        <section-title><code>&#x3C;doi></code></section-title>
+        <sub-section id="sec:specification-27">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>metadata</code> · eHTML <code>&#x3C;doi></code> · JATS <code>&#x3C;article-id></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <p><i>No kwargs or boolean flags.</i></p>
+          <p>Produced by: canonical <code>&#x3C;doi></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-23">
+          <sub-section-title>Examples</sub-section-title>
+          <pre><code id="code:eh-doi-1">
+&#x3C;meta>
+  &#x3C;doi | 10.1234/example.2024>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:eh-doi-1" class="frameable-border">
+            <meta>
+              <doi>10.1234/example.2024</doi>
+            </meta>
+            <figcaption><minipage-label>Minipage 58.</minipage-label></figcaption>
+          </figure>
+          <p><i>Bare DOI as the typical authoring form.</i></p><code id="code:eh-doi-2">&#x3C;meta doi="10.5555/test" /></code>
+          <figure id="mp:eh-doi-2" class="frameable-border">
+            <meta>
+              <doi>10.5555/test</doi>
+            </meta>
+            <figcaption><minipage-label>Minipage 59.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg-form authoring lifts to the child-tag form at the
+normalize-to-canonical gate (per the apparatus-tag reconciliation,
+DESIGN.md §”Apparatus-tag positioning”).</i></p></section>
+        </sub-section>
+      </section>
+      <section id="eh-q">
+        <section-title><code>&#x3C;q></code></section-title>
+        <sub-section id="sec:specification-28">
+          <sub-section-title>Specification</sub-section-title>
+          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;q></code> · JATS <code>&#x3C;inline-quote or just text with quotation marks></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cite</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>URL of the source being quoted.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Produced by: canonical <code>&#x3C;q></code>.</p>
+        </sub-section>
+        <sub-section id="sec:examples-24">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-q-1">
+She said &#x3C;q | hello> in passing.</code>
+          <figure id="mp:eh-q-1" class="frameable-border">
+            <p>She said <q>hello</q> in passing.</p>
+            <figcaption><minipage-label>Minipage 60.</minipage-label></figcaption>
+          </figure>
+          <p><i>Browsers automatically render &#x3C;q> with quotation marks. Authors
+do not include quotation marks in the content.</i></p><code id="code:eh-q-2">The phrase &#x3C;q cite=https://example.com | to be or not to be> is iconic.</code>
+          <figure id="mp:eh-q-2" class="frameable-border">
+            <p>The phrase <q cite="https://example.com">to be or not to be</q> is iconic.</p>
+            <figcaption><minipage-label>Minipage 61.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="eh-ref">
         <section-title><code>&#x3C;ref></code></section-title>
-        <sub-section id="sec:specification-26">
+        <sub-section id="sec:specification-29">
           <sub-section-title>Specification</sub-section-title>
           <p><code>category</code> <code>citations-and-references</code> · eHTML <code>&#x3C;ref></code> · JATS <code>&#x3C;xref ref-type="..."></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
           <table>
@@ -1626,202 +1818,67 @@ The argument is supported by data &#x3C;cite goodall2024>.</code>
                 <td><code>target</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>The id of the element being referenced. The canonical form uses the #id prefix: <a href="#(none)" class="ref-error">??ref: (none)??</a>. A kwarg form is also accepted as legacy: <a href="#eqn:model" class="ref-error">??ref: eqn:model??</a>. IMPORTANT (current implementation): only colon-ids (ids containing a colon, e.g., eqn:model, fig:scatter) are in the label index and can be resolved. Non-colon ids produce an unresolved error marker. This restriction may be relaxed in a future slice.</td>
+                <td>The id of the element being referenced.</td>
               </tr>
               <tr>
                 <td><code>type</code></td>
                 <td>kwarg</td>
-                <td><code>auto</code> <code>figure</code> <code>table</code> <code>equation</code> <code>section</code> <code>sub-section</code> <code>note</code> <code>listing</code> <code>theorem</code> <code>other</code></td>
-                <td>Author-supplied hint about the intended kind of target. Flows through to a data-ref-type attribute on the rendered anchor, available for CSS/JS to use. The resolver-generated display text is still computed from the id prefix and the DEFAULT_PREFIXES dictionary; this kwarg does not currently override that text.</td>
+                <td><code>auto</code> <code>figure</code> <code>table</code> <code>equation</code> <code>section</code> <code>sub-section</code> <code>note</code> <code>listing</code> <code>theorem</code> <code>other</code> (default <code>auto</code>)</td>
+                <td>Author-supplied hint about the intended kind of target.</td>
               </tr>
               <tr>
                 <td><code>format</code></td>
                 <td>kwarg</td>
-                <td><code>number</code> <code>name</code> <code>full</code> <code>label-only</code> <code>default</code></td>
-                <td>Author-supplied formatting hint. Flows through to a data-ref-format attribute on the rendered anchor, available for CSS/JS. The resolver-generated display text is still computed from the prefix dictionary; future enhancements may use this attribute to vary the rendered text.</td>
+                <td><code>number</code> <code>name</code> <code>full</code> <code>label-only</code> <code>default</code> (default <code>default</code>)</td>
+                <td>Author-supplied formatting hint.</td>
               </tr>
               <tr>
-                <td><code>+link</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Controls whether the rendered ref is a navigable hyperlink. Default is +link, producing <code>&#x3C;a href="#targetId" class="ref">...&#x3C;/a></code>. The -link form produces <code>&#x3C;ref>...&#x3C;/ref></code> instead — useful when the author wants the ref’s display text without making it a navigable anchor (e.g. inside a passage that itself describes the cross-reference rather than invoking it).</td>
+                <td><code>+link</code> / <code>-link</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Controls whether the rendered ref is a navigable hyperlink.</td>
               </tr>
               <tr>
-                <td><code>+preview</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Controls the hover preview that attaches to the rendered ref by default. Default +preview attaches a tippy tooltip showing the target element’s content. -preview adds data-no-preview=”true” to the rendered anchor; the hover-preview script’s attacher skips elements with that attribute.</td>
+                <td><code>+preview</code> / <code>-preview</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Controls the hover preview that attaches to the rendered ref by default.</td>
               </tr>
               <tr>
-                <td><code>+title</code></td>
-                <td>boolean</td>
-                <td>default <code>true</code></td>
-                <td>Reserved / unimplemented. The original intent has not been recovered; deliberately set aside until that intent is articulated. Future work, not a current feature.</td>
+                <td><code>+title</code> / <code>-title</code></td>
+                <td>flag</td>
+                <td>default on</td>
+                <td>Reserved / unimplemented.</td>
               </tr>
             </tbody>
           </table>
           <p>Produced by: canonical <code>&#x3C;ref></code>.</p>
         </sub-section>
-        <sub-section id="sec:examples-24">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-ref-1">
-See &#x3C;ref #fig:scatter> for details.</code>
-          <p><i>Render pending — <code>&#x3C;ref #id></code> self-declares instead of referencing (issue #268).</i></p>
-          <p><i>Canonical form: #id prefix. The ref-resolution plugin replaces the &#x3C;ref> node with a __ref-marker before hast conversion. The handler then renders an &#x3C;a> element with computed text. Prefix word is lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.</i></p><code id="code:l1-ref-2">As shown in &#x3C;ref #eqn:model>.</code>
-          <p><i>Render pending — <code>&#x3C;ref #id></code> self-declares instead of referencing (issue #268).</i></p>
-          <p><i>Equation references use the “equation” prefix word by default. Config override: &#x3C;config ref-prefix-eqn=”Eq.”> changes this to “Eq.”.</i></p><code id="code:l1-ref-3">&#x3C;ref #eqn:missing></code>
-          <p><i>Render pending — <code>&#x3C;ref #id></code> self-declares instead of referencing (issue #268).</i></p>
+        <sub-section id="sec:examples-25">
+          <sub-section-title>Examples</sub-section-title><code id="code:eh-ref-1">
+See &#x3C;ref @fig:scatter> for details.</code>
+          <figure id="mp:eh-ref-1" class="frameable-border">
+            <p>See <a href="#fig:scatter" class="ref-error">??ref: fig:scatter??</a> for details.</p>
+            <figcaption><minipage-label>Minipage 62.</minipage-label></figcaption>
+          </figure>
+          <p><i>Canonical form: @id prefix (@ references; # would declare an id on the
+&#x3C;ref> itself). The ref-resolution plugin replaces the
+&#x3C;ref> node with a __ref-marker before hast conversion. The handler
+then renders an &#x3C;a> element with computed text. Prefix word is
+lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.</i></p><code id="code:eh-ref-2">As shown in &#x3C;ref @eqn:model>.</code>
+          <figure id="mp:eh-ref-2" class="frameable-border">
+            <p>As shown in <a href="#eqn:model" class="ref-error">??ref: eqn:model??</a>.</p>
+            <figcaption><minipage-label>Minipage 63.</minipage-label></figcaption>
+          </figure>
+          <p><i>Equation references use the “equation” prefix word by default.
+Config override: &#x3C;config ref-prefix-eqn=”Eq.”> changes this to “Eq.”.</i></p><code id="code:eh-ref-3">&#x3C;ref @eqn:missing></code>
+          <figure id="mp:eh-ref-3" class="frameable-border"><tag-error>??tag: ref — long-form tag has no closing tag??</tag-error>
+            <figcaption><minipage-label>Minipage 64.</minipage-label></figcaption>
+          </figure>
           <p><i>Unresolved target renders a visible error anchor.</i></p></section>
         </sub-section>
       </section>
-      <section id="l1-a">
-        <section-title><code>&#x3C;a></code></section-title>
-        <sub-section id="sec:specification-27">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>inline-formatting</code> · eHTML <code>&#x3C;a></code> · JATS <code>&#x3C;ext-link></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>href</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>The URL or fragment identifier the anchor points to. Required for hyperlinks; optional for anchors used as link targets.</td>
-              </tr>
-              <tr>
-                <td><code>target</code></td>
-                <td>kwarg</td>
-                <td><code>_self</code> <code>_blank</code> <code>_parent</code> <code>_top</code></td>
-                <td>How the link opens. _blank opens in a new tab/window.</td>
-              </tr>
-              <tr>
-                <td><code>rel</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Relationship between the current document and the link target. Common values: nofollow, noopener, noreferrer, external.</td>
-              </tr>
-              <tr>
-                <td><code>title</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Tooltip text shown on hover.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: canonical <code>&#x3C;a></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-25">
-          <sub-section-title>Examples</sub-section-title><code id="code:l1-a-1">
-See &#x3C;a https://example.com/docs | the documentation>.</code>
-          <figure id="mp:l1-a-1" class="frameable-border">
-            <p>See <a href="https://example.com/docs">the documentation</a>.</p>
-            <figcaption><minipage-label>Minipage 51.</minipage-label></figcaption>
-          </figure>
-          <p><i>The positional URL form — the target is the first argument, the pipe content is the link text. The most common authoring path. (Markdown <code>[text](url)</code> is not an enscribe idiom; it renders as literal text.)</i></p><code id="code:l1-a-2">&#x3C;a href=https://example.com | the example site></code>
-          <figure id="mp:l1-a-2" class="frameable-border"><a href="https://example.com">the example site</a>
-            <figcaption><minipage-label>Minipage 52.</minipage-label></figcaption>
-          </figure><code id="code:l1-a-3">&#x3C;a href=https://example.com target=_blank rel=noopener | external link></code>
-          <figure id="mp:l1-a-3" class="frameable-border"><a href="https://example.com" target="_blank" rel="noopener">external link</a>
-            <figcaption><minipage-label>Minipage 53.</minipage-label></figcaption>
-          </figure><code id="code:l1-a-4">&#x3C;a href=#section-2 | jump to Section 2></code>
-          <figure id="mp:l1-a-4" class="frameable-border"><a href="#section-2">jump to Section 2</a>
-            <figcaption><minipage-label>Minipage 54.</minipage-label></figcaption>
-          </figure>
-          <p><i>Internal links use fragment identifiers pointing at element ids.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-doi">
-        <section-title><code>&#x3C;doi></code></section-title>
-        <sub-section id="sec:specification-28">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>metadata</code> · eHTML <code>&#x3C;doi></code> · JATS <code>&#x3C;article-id></code> · <code>content</code> <code>prose</code> → <code>&#x3C;children></code></p>
-          <p><i>No kwargs or boolean flags.</i></p>
-          <p>Produced by: canonical <code>&#x3C;doi></code>.</p>
-        </sub-section>
-        <sub-section id="sec:examples-26">
-          <sub-section-title>Examples</sub-section-title>
-          <pre><code id="code:l1-doi-1">
-&#x3C;meta>
-  &#x3C;doi | 10.1234/example.2024>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Bare DOI as the typical authoring form.</i></p><code id="code:l1-doi-2">&#x3C;meta doi="10.5555/test" /></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>Kwarg-form authoring lifts to the child-tag form at the normalize-to-canonical gate (per the apparatus-tag reconciliation, DESIGN.md §”Apparatus-tag positioning”).</i></p></section>
-        </sub-section>
-      </section>
-      <section id="l1-bibliography">
-        <section-title><code>&#x3C;bibliography></code></section-title>
-        <sub-section id="sec:specification-29">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>citations-and-references</code> · eHTML <code>&#x3C;bibliography></code> · JATS <code>&#x3C;ref-list></code> · <code>content</code> <code>structured</code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>style</code></td>
-                <td>kwarg</td>
-                <td><code>author-year</code> <code>numbered</code> <code>footnote</code> <code>custom</code></td>
-                <td>Future — not yet implemented: the interpreter does not read this kwarg or emit data-bibliography-style. Planned: how the bibliography is rendered; typically inherits from the document-level citation-style, with this kwarg overriding for the bibliography rendering specifically.</td>
-              </tr>
-              <tr>
-                <td><code>sort</code></td>
-                <td>kwarg</td>
-                <td><code>alpha</code> <code>citation-order</code> <code>year</code> <code>none</code></td>
-                <td>Future — not yet implemented: the interpreter does not read this kwarg or emit data-bibliography-sort. Planned: how bibliography entries are sorted. “alpha” is alphabetical by author surname (default for author-year styles); “citation-order” is the order in which entries are first cited (default for numbered styles).</td>
-              </tr>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>cited-only</code> <code>full</code> <code>hybrid</code></td>
-                <td>Future — not yet implemented: the interpreter does not read this kwarg or emit data-bibliography-type. Planned: which entries appear — “cited-only” includes only entries cited in the document; “full” includes all registered entries; “hybrid” includes cited entries with a separate “Further Reading” section.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
-        </sub-section>
-      </section>
-      <section id="l1-bib-entry">
-        <section-title><code>&#x3C;bib-entry></code></section-title>
-        <sub-section id="sec:specification-30">
-          <sub-section-title>Specification</sub-section-title>
-          <p><code>category</code> <code>citations-and-references</code> · eHTML <code>&#x3C;bib-entry></code> · JATS <code>&#x3C;ref (containing element-citation or mixed-citation)></code> · <code>content</code> <code>structured</code></p>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>article</code> <code>book</code> <code>chapter</code> <code>thesis</code> <code>proceedings</code> <code>report</code> <code>webpage</code> <code>other</code></td>
-                <td>The bibliography entry type. Determines required and optional child elements, and how the entry renders in the bibliography.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>Produced by: <i>structural — emitted by the compiler, not authored directly</i>.</p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="aside.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Aside</toc-title></a><a class="enscribe-chapter-next" href="exhibit.html" rel="next"><toc-title>Exhibit</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:quotation-sourcing"><ul><li><a href="#l1-blockquote">&#x3C;blockquote></a><ul><li><a href="#sec:specification-23">Specification</a></li><li><a href="#sec:examples-21">Examples</a></li></ul></li><li><a href="#l1-q">&#x3C;q></a><ul><li><a href="#sec:specification-24">Specification</a></li><li><a href="#sec:examples-22">Examples</a></li></ul></li><li><a href="#l1-cite">&#x3C;cite></a><ul><li><a href="#sec:specification-25">Specification</a></li><li><a href="#sec:examples-23">Examples</a></li></ul></li><li><a href="#l1-ref">&#x3C;ref></a><ul><li><a href="#sec:specification-26">Specification</a></li><li><a href="#sec:examples-24">Examples</a></li></ul></li><li><a href="#l1-a">&#x3C;a></a><ul><li><a href="#sec:specification-27">Specification</a></li><li><a href="#sec:examples-25">Examples</a></li></ul></li><li><a href="#l1-doi">&#x3C;doi></a><ul><li><a href="#sec:specification-28">Specification</a></li><li><a href="#sec:examples-26">Examples</a></li></ul></li><li><a href="#l1-bibliography">&#x3C;bibliography></a><ul><li><a href="#sec:specification-29">Specification</a></li></ul></li><li><a href="#l1-bib-entry">&#x3C;bib-entry></a><ul><li><a href="#sec:specification-30">Specification</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="aside.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Aside</toc-title></a><a class="enscribe-chapter-next" href="exhibit.html" rel="next"><toc-title>Exhibit</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:quotation-sourcing"><ul><li><a href="#eh-a">&#x3C;a></a><ul><li><a href="#sec:specification-22">Specification</a></li><li><a href="#sec:examples-20">Examples</a></li></ul></li><li><a href="#eh-bib-entry">&#x3C;bib-entry></a><ul><li><a href="#sec:specification-23">Specification</a></li></ul></li><li><a href="#eh-bibliography">&#x3C;bibliography></a><ul><li><a href="#sec:specification-24">Specification</a></li></ul></li><li><a href="#eh-blockquote">&#x3C;blockquote></a><ul><li><a href="#sec:specification-25">Specification</a></li><li><a href="#sec:examples-21">Examples</a></li></ul></li><li><a href="#eh-cite">&#x3C;cite></a><ul><li><a href="#sec:specification-26">Specification</a></li><li><a href="#sec:examples-22">Examples</a></li></ul></li><li><a href="#eh-doi">&#x3C;doi></a><ul><li><a href="#sec:specification-27">Specification</a></li><li><a href="#sec:examples-23">Examples</a></li></ul></li><li><a href="#eh-q">&#x3C;q></a><ul><li><a href="#sec:specification-28">Specification</a></li><li><a href="#sec:examples-24">Examples</a></li></ul></li><li><a href="#eh-ref">&#x3C;ref></a><ul><li><a href="#sec:specification-29">Specification</a></li><li><a href="#sec:examples-25">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

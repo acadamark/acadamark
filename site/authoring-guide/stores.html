@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Figures &amp; Frameables — The Enscribe Authoring Guide</title>
+<title>Stores — The Enscribe Authoring Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,277 +1412,81 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=figures-frameables">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html" class="enscribe-toc-active" aria-current="location">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:figures-frameables" book-part-type="chapter">
+<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=stores">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html" class="enscribe-toc-active" aria-current="location">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:stores" book-part-type="chapter">
       <meta>
-        <book-part-title>Figures &#x26; Frameables</book-part-title>
+        <book-part-title>Stores</book-part-title>
       </meta>
-      <section id="sec:figures">
-        <section-title>Figures</section-title>
-        <sub-section id="sec:general-usage-15">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A figure places an image with a numbered caption. The <code>src</code> names the image, the pipe gives the caption, and <code>alt</code> supplies the text alternative. Markdown <code>![](url)</code> is not a register — figures are always tags.</p><code id="code:fig-basic">&#x3C;fig src=revenue-2025.png alt="Bar chart of quarterly revenue" | Quarterly revenue for 2025.></code>
-          <figure id="mp:fig-basic" class="frameable-border">
-            <figure>
-              <img src="revenue-2025.png" alt="Bar chart of quarterly revenue">
-              <figcaption><figure-label>Figure 1.</figure-label>
-                <p>Quarterly revenue for 2025.</p>
-              </figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 15.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-10">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>src (image file or @id of a stored asset)</td>
-                <td>src=revenue-2025.png</td>
-              </tr>
-              <tr>
-                <td>alt (text alternative for the image)</td>
-                <td>alt=”Bar chart of revenue”</td>
-              </tr>
-              <tr>
-                <td>Unnumbered (drop the “Figure N.” label)</td>
-                <td>-numbered</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#fig:revenue</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.wide</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-10">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Figures are numbered “Figure N.” by default and can be cross-referenced by id. A stored asset is declared once — <code>&#x3C;fig #fig:logo png>…base64…&#x3C;/fig></code> — and placed anywhere with <code>&#x3C;fig src="@fig:logo" /></code>.</p>
-          <p>In the live single-page site, all pages draw figure assets from one shared set of filenames. Give <b>distinct images distinct filenames</b> — two different images that share a filename will collide, and one will stand in for both. Reusing the <i>same</i> image under one filename across pages is fine and intended: the pages simply share the single file.</p></section>
-        </sub-section>
-      </section>
-      <section id="sec:diagrams">
-        <section-title>Diagrams</section-title>
-        <sub-section id="sec:general-usage-16">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A diagram is drawn from a text description by an external engine. Name the engine after the tag and put the source in the body; the browser renders it live.</p>
-          <pre><code id="code:diagram-basic">
-&#x3C;diagram mermaid caption="A simple build flow.">
-graph LR
-write --> render --> publish
-&#x3C;/diagram>
+      <p>Opaque data held under an id for a consumer to interpret — the data container, bibliography sources, and datasets.</p>
+      <section id="ag-data">
+        <section-title><code>&#x3C;data></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;data></code>.</p>
+        <pre><code id="code:ag-data-1">
+&#x3C;data>
+  &#x3C;library format=bibtex>
+    @article{goodall2024,
+      author = {Goodall, Jane},
+      title = {The Effect of Elephants on Climate},
+      journal = {Nature},
+      year = {2024}
+    }
+  &#x3C;/library>
+&#x3C;/data>
 </code></pre>
-          <figure id="mp:diagram-basic" class="frameable-border">
-            
-              <pre class="mermaid" data-enscribe-dsl="mermaid">graph LR
-write --> render --> publish</pre>
-              <figcaption><figure-label>Figure 1.</figure-label> A simple build flow.</figcaption>
-            
-            <figcaption><minipage-label>Minipage 16.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-11">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>engine (the renderer)</td>
-                <td>mermaid | abc</td>
-              </tr>
-              <tr>
-                <td>caption (the figure caption)</td>
-                <td>caption=”A build flow.”</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#fig:flow</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.centered</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-11">
-          <sub-section-title>Notes</sub-section-title>
-          <p>The body is opaque — arrows like <code>--></code> and other engine syntax pass through untouched. A captioned diagram joins the figure sequence as “Figure N.”.</p></section>
-        </sub-section>
+        <p><i>(Rendered preview omitted — <code>&#x3C;data></code> / <code>@</code>-references resolve at document scope, not inside a sealed preview.)</i></p>
+        <p><i>A library block in BibTeX format. The library plugin parses this,
+registers entries in the citation system. The &#x3C;data> block itself
+produces no rendered output.</i></p></section>
       </section>
-      <section id="sec:svg">
-        <section-title>Inline SVG</section-title>
-        <sub-section id="sec:general-usage-17">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Inline SVG drops vector graphics straight into the document. Put the SVG body in the tag and size the box with <code>width</code>, <code>height</code>, and <code>viewBox</code>.</p>
-          <pre><code id="code:svg-basic">
-&#x3C;svg width=180 height=32 caption="A progress bar." |
-&#x3C;rect width=180 height=32 rx=6 fill=gainsboro />
-&#x3C;rect width=117 height=32 rx=6 fill=steelblue />
->
+      <section id="ag-dataset">
+        <section-title><code>&#x3C;dataset></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;dataset></code>.</p>
+        <pre><code id="code:ag-dataset-1">
+&#x3C;data>
+  &#x3C;dataset #sales csv>
+quarter,revenue
+Q1,100
+Q2,120
+Q3,145
+  &#x3C;/dataset>
+&#x3C;/data>
+
+&#x3C;table src="@sales" />
 </code></pre>
-          <figure id="mp:svg-basic" class="frameable-border">
-            <figure>
-              <svg width="180" height="32">
-<rect width=180 height=32 rx=6 fill=gainsboro />
-<rect width=117 height=32 rx=6 fill=steelblue />
-</svg>
-              <figcaption><figure-label>Figure 1.</figure-label> A progress bar.</figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 17.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-12">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>width / height (the SVG box)</td>
-                <td>width=180 height=32</td>
-              </tr>
-              <tr>
-                <td>viewBox (the coordinate system)</td>
-                <td>viewBox=”0 0 180 32”</td>
-              </tr>
-              <tr>
-                <td>caption (the figure caption)</td>
-                <td>caption=”A progress bar.”</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#fig:progress</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
+        <p><i>(Rendered preview omitted — <code>&#x3C;data></code> / <code>@</code>-references resolve at document scope, not inside a sealed preview.)</i></p>
+        <p><i>A CSV dataset is stored once under #sales and a &#x3C;table src=”@sales” /> pulls
+it in and renders it as a grid. The dataset itself renders nothing; the
+consuming element decides how to present the opaque bytes.</i></p></section>
       </section>
-      <section id="sec:frames">
-        <section-title>Frames</section-title>
-        <sub-section id="sec:general-usage-18">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A frame draws a border around its content as a self-contained box. Unlike a figure it is an unnumbered annotation by default; add <code>+numbered</code> to fold it into the figure sequence.</p>
-          <pre><code id="code:frame-basic">
-&#x3C;frame |
-This note sits in a bordered box, set apart from
-the main flow but not numbered.
->
+      <section id="ag-library">
+        <section-title><code>&#x3C;library></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;library></code>.</p>
+        <pre><code id="code:ag-library-1">
+&#x3C;library format=bibtex>
+  @article{goodall2024,
+    author = {Goodall, Jane},
+    title = {The Effect of Elephants on Climate},
+    journal = {Nature},
+    year = {2024}
+  }
+
+  @book{darwin1859,
+    author = {Darwin, Charles},
+    title = {On the Origin of Species},
+    publisher = {John Murray},
+    year = {1859}
+  }
+&#x3C;/library>
 </code></pre>
-          <figure id="mp:frame-basic" class="frameable-border">
-            <figure class="frameable-border">
-              <p>
-                This note sits in a bordered box, set apart from
-                the main flow but not numbered.
-              </p>
-              <figcaption><figure-label>Figure 1.</figure-label></figcaption>
-            </figure>
-            <figcaption><minipage-label>Minipage 18.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-13">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>caption (caption at the foot of the frame)</td>
-                <td>caption=”An exhibit.”</td>
-              </tr>
-              <tr>
-                <td>Numbered (join the figure sequence as “Figure N.”)</td>
-                <td>+numbered</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#frame:note</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.tinted</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
+        <figure id="mp:ag-library-1" class="frameable-border">
+          <figcaption><minipage-label>Minipage 55.</minipage-label></figcaption>
+        </figure>
+        <p><i>A BibTeX library block. The parser reads the entries and registers
+goodall2024 and darwin1859 in the citation registry. Citations
+elsewhere (e.g., &#x3C;cite goodall2024>) resolve against these entries.
+The library block itself produces no rendered output.</i></p></section>
       </section>
-      <section id="sec:minipages">
-        <section-title>Minipages</section-title>
-        <sub-section id="sec:general-usage-19">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A minipage is a sealed, self-contained box: whatever renders inside it — sections, numbers, footnotes — stays inside and never leaks into the surrounding document. Every rendered example in this guide sits in one.</p>
-          <pre><code id="code:minipage-basic">
-&#x3C;minipage>
-&#x3C;section | A self-contained section>
-Its heading and numbering stay inside the box.
-&#x3C;/minipage>
-</code></pre>
-          <figure id="mp:minipage-basic" class="frameable-border">
-            <section>
-              <section-title>A self-contained section</section-title>
-              <p>Its heading and numbering stay inside the box.</p>
-            </section>
-            <figcaption><minipage-label>Minipage 19.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-14">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>caption (caption at the foot of the box)</td>
-                <td>caption=”Two panels.”</td>
-              </tr>
-              <tr>
-                <td>Numbered (number the box as “Minipage N.”)</td>
-                <td>+numbered</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#mp:panels</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.columns</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-12">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Minipages are unnumbered by default — most are layout boxes, not cross-referenced floats. Reach for one whenever a self-contained fragment (a demo, a panel, a worked example) must render without disturbing the host document.</p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="citations-notes-cross-references.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Citations, Notes &#x26; Cross-References</toc-title></a><a class="enscribe-chapter-next" href="tables.html" rel="next"><toc-title>Tables</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:figures-frameables"><ul><li><a href="#sec:figures">Figures</a><ul><li><a href="#sec:general-usage-15">General Usage</a></li><li><a href="#sec:arguments-10">Arguments</a></li><li><a href="#sec:notes-10">Notes</a></li></ul></li><li><a href="#sec:diagrams">Diagrams</a><ul><li><a href="#sec:general-usage-16">General Usage</a></li><li><a href="#sec:arguments-11">Arguments</a></li><li><a href="#sec:notes-11">Notes</a></li></ul></li><li><a href="#sec:svg">Inline SVG</a><ul><li><a href="#sec:general-usage-17">General Usage</a></li><li><a href="#sec:arguments-12">Arguments</a></li></ul></li><li><a href="#sec:frames">Frames</a><ul><li><a href="#sec:general-usage-18">General Usage</a></li><li><a href="#sec:arguments-13">Arguments</a></li></ul></li><li><a href="#sec:minipages">Minipages</a><ul><li><a href="#sec:general-usage-19">General Usage</a></li><li><a href="#sec:arguments-14">Arguments</a></li><li><a href="#sec:notes-12">Notes</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="notation.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Notation</toc-title></a><a class="enscribe-chapter-next" href="declarations-metadata.html" rel="next"><toc-title>Declarations &#x26; metadata</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:stores"><ul><li><a href="#ag-data">&#x3C;data></a></li><li><a href="#ag-dataset">&#x3C;dataset></a></li><li><a href="#ag-library">&#x3C;library></a></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

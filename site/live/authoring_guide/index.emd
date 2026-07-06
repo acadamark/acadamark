@@ -1,19 +1,20 @@
 <meta type=book slug=authoring-guide>
 <title | The Enscribe Authoring Guide>
-<subtitle | A Task-Oriented Reference>
+<subtitle | The common path, family by family — lighter than the full reference>
 <author>
-<name | The Enscribe Project>
+<name | Generated from the Enscribe vocabulary source (docs-gen/generate-docs.mjs)>
 </author>
 </meta>
 
-<chapter src="block-level.emd" | Block-Level Content>
-<chapter src="inline-formatting.emd" | Inline Formatting>
-<chapter src="citations.emd" | Citations, Notes & Cross-References>
-<chapter src="figures.emd" | Figures & Frameables>
-<chapter src="tables.emd" | Tables>
-<chapter src="theorems.emd" | Theorem Environments>
-<chapter src="math.emd" | Mathematics>
-<chapter src="code.emd" | Code>
-<chapter src="authoring-guide.emd" | Section Headings>
+<config number-tables=false />
 
-<appendix src="appendices.emd" | Appendices>
+<chapter src="primary-prose.emd" | Primary prose>
+<chapter src="emphasis-and-marking.emd" | Emphasis & marking>
+<chapter src="aside.emd" | Aside>
+<chapter src="quotation-and-sourcing.emd" | Quotation & sourcing>
+<chapter src="exhibit.emd" | Exhibit>
+<chapter src="formal-statements.emd" | Formal statements>
+<chapter src="notation.emd" | Notation>
+<chapter src="stores.emd" | Stores>
+<chapter src="declarations-and-metadata.emd" | Declarations & metadata>
+<chapter src="structural-scaffolding.emd" | Structural scaffolding>

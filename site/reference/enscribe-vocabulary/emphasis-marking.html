@@ -1417,55 +1417,54 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Emphasis &#x26; marking</book-part-title>
       </meta>
-      <p>Marking words and phrases inside prose — emphasis, and the small typographic and semantic marks.</p>
-      <section id="sh-strong">
-        <section-title><code>&#x3C;strong></code></section-title>
-        <sub-section id="sec:general-usage-3">
+      <p>Marks the author places on their own words — emphasis and the small typographic and semantic marks.</p>
+      <section id="sh-abbr">
+        <section-title><code>&#x3C;abbr></code></section-title>
+        <sub-section id="sec:general-usage-2">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>strong</i>. Compiles to eHTML <code>&#x3C;strong></code>.</p>
+          <p>Semantic role: <i>abbr</i>. Compiles to eHTML <code>&#x3C;abbr></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;strong></code></li>
-          </ul><code id="code:sh-strong-1">This is **strongly emphasized** content.</code>
-          <figure id="mp:sh-strong-1" class="frameable-border">
-            <p>This is <b>strongly emphasized</b> content.</p>
-            <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
+            <li>Canonical: <code>&#x3C;abbr></code></li>
+          </ul><code id="code:sh-abbr-1">The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.</code>
+          <figure id="mp:sh-abbr-1" class="frameable-border">
+            <p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>
+            <figcaption><minipage-label>Minipage 4.</minipage-label></figcaption>
           </figure>
-          <p><i>Plain markdown with double asterisks (or double underscores) produces &#x3C;strong> elements.</i></p><code id="code:sh-strong-2">&#x3C;strong | important></code>
-          <figure id="mp:sh-strong-2" class="frameable-border"><strong>important</strong>
-            <figcaption><minipage-label>Minipage 7.</minipage-label></figcaption>
-          </figure><code id="code:sh-strong-3">&#x3C;strong #critical .warning | This is critical.></code>
-          <figure id="mp:sh-strong-3" class="frameable-border"><strong id="mp-sh-strong-3-critical" class="warning">This is critical.</strong>
-            <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
-          </figure></section>
+          <p><i>Standard pattern — abbreviation with its expansion as the title
+kwarg. Browsers show the expansion in a hover tooltip.</i></p><code id="code:sh-abbr-2">Using &#x3C;abbr | CSS> selectors.</code>
+          <figure id="mp:sh-abbr-2" class="frameable-border">
+            <p>Using <abbr>CSS</abbr> selectors.</p>
+            <figcaption><minipage-label>Minipage 5.</minipage-label></figcaption>
+          </figure>
+          <p><i>Bare abbreviation, no title. Acceptable when the expansion
+has already been introduced earlier in the document.</i></p>
         </sub-section>
-      </section>
-      <section id="sh-em">
-        <section-title><code>&#x3C;em></code></section-title>
-        <sub-section id="sec:general-usage-4">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>em</i>. Compiles to eHTML <code>&#x3C;em></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;em></code></li>
-          </ul><code id="code:sh-em-1">This has *emphasized* content.</code>
-          <figure id="mp:sh-em-1" class="frameable-border">
-            <p>This has <i>emphasized</i> content.</p>
-            <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
-          </figure>
-          <p><i>Plain markdown emphasis with single asterisks (or single underscores) produces &#x3C;em> elements. This is the most common authoring path.</i></p><code id="code:sh-em-2">&#x3C;em | emphasized></code>
-          <figure id="mp:sh-em-2" class="frameable-border"><em>emphasized</em>
-            <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
-          </figure>
-          <p><i>The explicit form is reached for when attributes are needed.</i></p><code id="code:sh-em-3">&#x3C;em #key-term .highlighted | distinguishing feature></code>
-          <figure id="mp:sh-em-3" class="frameable-border"><em id="mp-sh-em-3-key-term" class="highlighted">distinguishing feature</em>
-            <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
-          </figure></section>
+        <sub-section id="sec:arguments-2">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>title</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The abbreviation’s expansion.</td>
+              </tr>
+            </tbody>
+          </table></section>
         </sub-section>
       </section>
       <section id="sh-b">
         <section-title><code>&#x3C;b></code></section-title>
-        <sub-section id="sec:general-usage-5">
+        <sub-section id="sec:general-usage-3">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>b</i>. Compiles to eHTML <code>&#x3C;b></code>.</p>
           <p>Registers:</p>
@@ -1475,11 +1474,11 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </ul><code id="code:sh-b-1">The keyword &#x3C;b type=keyword | recursion> is fundamental.</code>
           <figure id="mp:sh-b-1" class="frameable-border">
             <p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>
-            <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
           </figure><code id="code:sh-b-2">Use &#x3C;b type=product-name | Acrobat> to read the file.</code>
           <figure id="mp:sh-b-2" class="frameable-border">
             <p>Use <b data-bold-type="product-name">Acrobat</b> to read the file.</p>
-            <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 7.</minipage-label></figcaption>
           </figure>
         </sub-section>
         <sub-section id="sec:arguments-3">
@@ -1504,27 +1503,52 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </table></section>
         </sub-section>
       </section>
+      <section id="sh-em">
+        <section-title><code>&#x3C;em></code></section-title>
+        <sub-section id="sec:general-usage-4">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>em</i>. Compiles to eHTML <code>&#x3C;em></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;em></code></li>
+          </ul><code id="code:sh-em-1">This has *emphasized* content.</code>
+          <figure id="mp:sh-em-1" class="frameable-border">
+            <p>This has <i>emphasized</i> content.</p>
+            <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
+          </figure>
+          <p><i>Plain markdown with single asterisks (or single underscores) produces the
+visual &#x3C;i>, not the semantic &#x3C;em> — markdown emphasis maps to the visual
+tag. &#x3C;em> is reached only by the explicit form.</i></p><code id="code:sh-em-2">&#x3C;em | emphasized></code>
+          <figure id="mp:sh-em-2" class="frameable-border"><em>emphasized</em>
+            <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
+          </figure>
+          <p><i>The explicit form is reached for when attributes are needed.</i></p><code id="code:sh-em-3">&#x3C;em #key-term .highlighted | distinguishing feature></code>
+          <figure id="mp:sh-em-3" class="frameable-border"><em id="mp-sh-em-3-key-term" class="highlighted">distinguishing feature</em>
+            <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
       <section id="sh-i">
         <section-title><code>&#x3C;i></code></section-title>
-        <sub-section id="sec:general-usage-6">
+        <sub-section id="sec:general-usage-5">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>i</i>. Compiles to eHTML <code>&#x3C;i></code>.</p>
           <p>Registers:</p>
           <ul>
             <li>Canonical: <code>&#x3C;i></code></li>
-            <li>Markdown: <code>*…* (or _…_)</code></li>
+            <li>Markdown: <code>*…*</code> (or <code>_…_</code>)</li>
           </ul><code id="code:sh-i-1">The species is &#x3C;i type=taxonomic | Loxodonta africana>.</code>
           <figure id="mp:sh-i-1" class="frameable-border">
             <p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>
-            <figcaption><minipage-label>Minipage 14.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
           </figure><code id="code:sh-i-2">The French &#x3C;i type=foreign | tour de force> is impressive.</code>
           <figure id="mp:sh-i-2" class="frameable-border">
             <p>The French <i data-italic-type="foreign">tour de force</i> is impressive.</p>
-            <figcaption><minipage-label>Minipage 15.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
           </figure><code id="code:sh-i-3">The technical term &#x3C;i type=technical | mitochondria> refers to organelles.</code>
           <figure id="mp:sh-i-3" class="frameable-border">
             <p>The technical term <i data-italic-type="technical">mitochondria</i> refers to organelles.</p>
-            <figcaption><minipage-label>Minipage 16.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
           </figure>
         </sub-section>
         <sub-section id="sec:arguments-4">
@@ -1543,50 +1567,54 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <td><code>type</code></td>
                 <td>kwarg</td>
                 <td><code>foreign</code> <code>taxonomic</code> <code>technical</code> <code>thought</code> <code>ship-name</code> <code>other</code></td>
-                <td>Optional classification of the italic’s role. Useful for accessibility tools and stylesheet targeting.</td>
+                <td>Optional classification of the italic’s role.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-u">
-        <section-title><code>&#x3C;u></code></section-title>
-        <sub-section id="sec:general-usage-7">
+      <section id="sh-kbd">
+        <section-title><code>&#x3C;kbd></code></section-title>
+        <sub-section id="sec:general-usage-6">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>u</i>. Compiles to eHTML <code>&#x3C;u></code>.</p>
+          <p>Semantic role: <i>kbd</i>. Compiles to eHTML <code>&#x3C;kbd></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;u></code></li>
-          </ul><code id="code:sh-u-1">The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
-          <figure id="mp:sh-u-1" class="frameable-border">
-            <p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>
-            <figcaption><minipage-label>Minipage 17.</minipage-label></figcaption>
-          </figure><code id="code:sh-u-2">The Chinese name &#x3C;u type=proper-name | 王明> appears here.</code>
-          <figure id="mp:sh-u-2" class="frameable-border">
-            <p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>
-            <figcaption><minipage-label>Minipage 18.</minipage-label></figcaption>
+            <li>Canonical: <code>&#x3C;kbd></code></li>
+          </ul><code id="code:sh-kbd-1">Press &#x3C;kbd | Ctrl+C> to copy.</code>
+          <figure id="mp:sh-kbd-1" class="frameable-border">
+            <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
+            <figcaption><minipage-label>Minipage 14.</minipage-label></figcaption>
           </figure>
+          <p><i>Single chord as a kbd block. Browsers render &#x3C;kbd> in a
+monospace font by default, distinguishing it from surrounding
+prose.</i></p><code id="code:sh-kbd-2">Press &#x3C;kbd | &#x3C;kbd | Ctrl>+&#x3C;kbd | C>> to copy.</code>
+          <figure id="mp:sh-kbd-2" class="frameable-border">
+            <p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>
+            <figcaption><minipage-label>Minipage 15.</minipage-label></figcaption>
+          </figure>
+          <p><i>Nested &#x3C;kbd> distinguishes individual keys in a chord. Browsers
+render the outer block as the chord and the inner blocks as
+individual keys, both monospace.</i></p></section>
         </sub-section>
-        <sub-section id="sec:arguments-5">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>misspelling</code> <code>proper-name</code> <code>editorial-correction</code> <code>other</code></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table></section>
+      </section>
+      <section id="sh-output">
+        <section-title><code>&#x3C;output></code></section-title>
+        <sub-section id="sec:general-usage-7">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>output</i>. Compiles to eHTML <code>&#x3C;output></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;output></code></li>
+          </ul><code id="code:sh-output-1">The function returns &#x3C;output | 42> for the test input.</code>
+          <figure id="mp:sh-output-1" class="frameable-border">
+            <p>The function returns <output>42</output> for the test input.</p>
+            <figcaption><minipage-label>Minipage 16.</minipage-label></figcaption>
+          </figure>
+          <p><i>Result of a calculation in prose. &#x3C;output> is semantically
+distinct from &#x3C;samp> — &#x3C;samp> is what a program prints (a
+display artifact); &#x3C;output> is the result of a computation
+(a semantic value). Browsers render both similarly.</i></p></section>
         </sub-section>
       </section>
       <section id="sh-s">
@@ -1601,15 +1629,16 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </ul><code id="code:sh-s-1">The price is ~~$50~~ now $40.</code>
           <figure id="mp:sh-s-1" class="frameable-border">
             <p>The price is ~~<inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace nobreak"> </span><span class="mspace nobreak"> </span><span class="mord mathnormal">n</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.0269em;">w</span></span></span></span></inline-math>40.</p>
-            <figcaption><minipage-label>Minipage 19.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 17.</minipage-label></figcaption>
           </figure>
-          <p><i>GFM’s tilde syntax produces &#x3C;s> elements. The most common authoring path for casual strikethrough.</i></p><code id="code:sh-s-2">The claim &#x3C;s type=retracted | was unsupported> has been corrected.</code>
+          <p><i>GFM’s tilde syntax produces &#x3C;s> elements. The most common
+authoring path for casual strikethrough.</i></p><code id="code:sh-s-2">The claim &#x3C;s type=retracted | was unsupported> has been corrected.</code>
           <figure id="mp:sh-s-2" class="frameable-border">
             <p>The claim <s data-strikethrough-type="retracted">was unsupported</s> has been corrected.</p>
-            <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 18.</minipage-label></figcaption>
           </figure>
         </sub-section>
-        <sub-section id="sec:arguments-6">
+        <sub-section id="sec:arguments-5">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1631,9 +1660,58 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </table></section>
         </sub-section>
       </section>
+      <section id="sh-samp">
+        <section-title><code>&#x3C;samp></code></section-title>
+        <sub-section id="sec:general-usage-9">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>samp</i>. Compiles to eHTML <code>&#x3C;samp></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;samp></code></li>
+          </ul><code id="code:sh-samp-1">The command prints &#x3C;samp | Hello, world!> to stdout.</code>
+          <figure id="mp:sh-samp-1" class="frameable-border">
+            <p>The command prints <samp>Hello, world!</samp> to stdout.</p>
+            <figcaption><minipage-label>Minipage 19.</minipage-label></figcaption>
+          </figure>
+          <p><i>Sample output from a program. Browsers render &#x3C;samp> in a
+monospace font by default, distinguishing it from surrounding
+prose.</i></p><code id="code:sh-samp-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
+          <figure id="mp:sh-samp-2" class="frameable-border">
+            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
+            <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
+          </figure>
+          <p><i>&#x3C;samp> for the sample value paired with &#x3C;var> for the variable
+name — the natural pair for documenting configuration in
+technical writing.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-strong">
+        <section-title><code>&#x3C;strong></code></section-title>
+        <sub-section id="sec:general-usage-10">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>strong</i>. Compiles to eHTML <code>&#x3C;strong></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;strong></code></li>
+          </ul><code id="code:sh-strong-1">This is **strongly emphasized** content.</code>
+          <figure id="mp:sh-strong-1" class="frameable-border">
+            <p>This is <b>strongly emphasized</b> content.</p>
+            <figcaption><minipage-label>Minipage 21.</minipage-label></figcaption>
+          </figure>
+          <p><i>Plain markdown with double asterisks (or double underscores) produces the
+visual &#x3C;b>, not the semantic &#x3C;strong> — markdown emphasis maps to the
+visual tag. &#x3C;strong> is reached only by the explicit form.</i></p><code id="code:sh-strong-2">&#x3C;strong | important></code>
+          <figure id="mp:sh-strong-2" class="frameable-border"><strong>important</strong>
+            <figcaption><minipage-label>Minipage 22.</minipage-label></figcaption>
+          </figure><code id="code:sh-strong-3">&#x3C;strong #critical .warning | This is critical.></code>
+          <figure id="mp:sh-strong-3" class="frameable-border"><strong id="mp-sh-strong-3-critical" class="warning">This is critical.</strong>
+            <figcaption><minipage-label>Minipage 23.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
       <section id="sh-sub">
         <section-title><code>&#x3C;sub></code></section-title>
-        <sub-section id="sec:general-usage-9">
+        <sub-section id="sec:general-usage-11">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>sub</i>. Compiles to eHTML <code>&#x3C;sub></code>.</p>
           <p>Registers:</p>
@@ -1642,17 +1720,17 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </ul><code id="code:sh-sub-1">Water is H&#x3C;sub | 2>O.</code>
           <figure id="mp:sh-sub-1" class="frameable-border">
             <p>Water is H<sub>2</sub>O.</p>
-            <figcaption><minipage-label>Minipage 21.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 24.</minipage-label></figcaption>
           </figure><code id="code:sh-sub-2">The vector x&#x3C;sub | i> represents the i-th component.</code>
           <figure id="mp:sh-sub-2" class="frameable-border">
             <p>The vector x<sub>i</sub> represents the i-th component.</p>
-            <figcaption><minipage-label>Minipage 22.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 25.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
       <section id="sh-sup">
         <section-title><code>&#x3C;sup></code></section-title>
-        <sub-section id="sec:general-usage-10">
+        <sub-section id="sec:general-usage-12">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>sup</i>. Compiles to eHTML <code>&#x3C;sup></code>.</p>
           <p>Registers:</p>
@@ -1661,39 +1739,63 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </ul><code id="code:sh-sup-1">The 1&#x3C;sup | st> edition of the work.</code>
           <figure id="mp:sh-sup-1" class="frameable-border">
             <p>The 1<sup>st</sup> edition of the work.</p>
-            <figcaption><minipage-label>Minipage 23.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 26.</minipage-label></figcaption>
           </figure><code id="code:sh-sup-2">The function f(x) = x&#x3C;sup | 2>.</code>
           <figure id="mp:sh-sup-2" class="frameable-border">
             <p>The function f(x) = x<sup>2</sup>.</p>
-            <figcaption><minipage-label>Minipage 24.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 27.</minipage-label></figcaption>
           </figure><code id="code:sh-sup-3">The isotope &#x3C;sup | 12>C is abundant.</code>
           <figure id="mp:sh-sup-3" class="frameable-border">
             <p>The isotope <sup>12</sup>C is abundant.</p>
-            <figcaption><minipage-label>Minipage 25.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 28.</minipage-label></figcaption>
           </figure></section>
         </sub-section>
       </section>
-      <section id="sh-abbr">
-        <section-title><code>&#x3C;abbr></code></section-title>
-        <sub-section id="sec:general-usage-11">
+      <section id="sh-term">
+        <section-title><code>&#x3C;term></code></section-title>
+        <sub-section id="sec:general-usage-13">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>abbr</i>. Compiles to eHTML <code>&#x3C;abbr></code>.</p>
+          <p>Semantic role: <i>term</i>. Compiles to eHTML <code>&#x3C;term></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;abbr></code></li>
-          </ul><code id="code:sh-abbr-1">The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.</code>
-          <figure id="mp:sh-abbr-1" class="frameable-border">
-            <p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>
-            <figcaption><minipage-label>Minipage 26.</minipage-label></figcaption>
+            <li>Canonical: <code>&#x3C;term></code></li>
+          </ul><code id="code:sh-term-1">An &#x3C;term | eigenvector> is a non-zero vector that scales under a linear transformation.</code>
+          <figure id="mp:sh-term-1" class="frameable-border">
+            <p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>
+            <figcaption><minipage-label>Minipage 29.</minipage-label></figcaption>
           </figure>
-          <p><i>Standard pattern — abbreviation with its expansion as the title kwarg. Browsers show the expansion in a hover tooltip.</i></p><code id="code:sh-abbr-2">Using &#x3C;abbr | CSS> selectors.</code>
-          <figure id="mp:sh-abbr-2" class="frameable-border">
-            <p>Using <abbr>CSS</abbr> selectors.</p>
-            <figcaption><minipage-label>Minipage 27.</minipage-label></figcaption>
+          <p><i>Standard term introduction. The element marks the word as
+“this is a term being introduced,” typically rendered in italic
+or bold by default CSS.</i></p><code id="code:sh-term-2">An &#x3C;term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize &#x3C;term | eigenvector>s to operators.</code>
+          <figure id="mp:sh-term-2" class="frameable-border">
+            <p>An <term id="mp-sh-term-2-term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>
+            <figcaption><minipage-label>Minipage 30.</minipage-label></figcaption>
           </figure>
-          <p><i>Bare abbreviation, no title. Acceptable when the expansion has already been introduced earlier in the document.</i></p>
+          <p><i>First introduction carries an id so later references can link
+back to it. Subsequent uses of the same term (without an id)
+still mark it as a term being referenced, distinct from running
+prose, without re-asserting the introduction.</i></p></section>
         </sub-section>
-        <sub-section id="sec:arguments-7">
+      </section>
+      <section id="sh-u">
+        <section-title><code>&#x3C;u></code></section-title>
+        <sub-section id="sec:general-usage-14">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>u</i>. Compiles to eHTML <code>&#x3C;u></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;u></code></li>
+          </ul><code id="code:sh-u-1">The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
+          <figure id="mp:sh-u-1" class="frameable-border">
+            <p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>
+            <figcaption><minipage-label>Minipage 31.</minipage-label></figcaption>
+          </figure><code id="code:sh-u-2">The Chinese name &#x3C;u type=proper-name | 王明> appears here.</code>
+          <figure id="mp:sh-u-2" class="frameable-border">
+            <p>The Chinese name <u data-underline-type="proper-name">王明</u> appears here.</p>
+            <figcaption><minipage-label>Minipage 32.</minipage-label></figcaption>
+          </figure>
+        </sub-section>
+        <sub-section id="sec:arguments-6">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1706,10 +1808,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
             </thead>
             <tbody>
               <tr>
-                <td><code>title</code></td>
+                <td><code>type</code></td>
                 <td>kwarg</td>
+                <td><code>misspelling</code> <code>proper-name</code> <code>editorial-correction</code> <code>other</code></td>
                 <td></td>
-                <td>The abbreviation’s expansion. Standard HTML <abbr title="..."></abbr>— browsers display the expansion as a tooltip on hover. Strongly recommended on first use of an abbreviation; optional on subsequent uses if the expansion is already in scope.</td>
               </tr>
             </tbody>
           </table></section>
@@ -1717,7 +1819,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       </section>
       <section id="sh-var">
         <section-title><code>&#x3C;var></code></section-title>
-        <sub-section id="sec:general-usage-12">
+        <sub-section id="sec:general-usage-15">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>var</i>. Compiles to eHTML <code>&#x3C;var></code>.</p>
           <p>Registers:</p>
@@ -1726,96 +1828,19 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           </ul><code id="code:sh-var-1">The function takes a parameter &#x3C;var | n> and returns &#x3C;var | n>²+1.</code>
           <figure id="mp:sh-var-1" class="frameable-border">
             <p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>
-            <figcaption><minipage-label>Minipage 28.</minipage-label></figcaption>
-          </figure>
-          <p><i>Variable names in prose. Browsers render &#x3C;var> in italic by default, distinguishing it from surrounding prose.</i></p><code id="code:sh-var-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
-          <figure id="mp:sh-var-2" class="frameable-border">
-            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
-            <figcaption><minipage-label>Minipage 29.</minipage-label></figcaption>
-          </figure>
-          <p><i>&#x3C;var> for the variable name and &#x3C;samp> for a sample value — the natural pair for documenting configuration in technical writing.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="sh-samp">
-        <section-title><code>&#x3C;samp></code></section-title>
-        <sub-section id="sec:general-usage-13">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>samp</i>. Compiles to eHTML <code>&#x3C;samp></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;samp></code></li>
-          </ul><code id="code:sh-samp-1">The command prints &#x3C;samp | Hello, world!> to stdout.</code>
-          <figure id="mp:sh-samp-1" class="frameable-border">
-            <p>The command prints <samp>Hello, world!</samp> to stdout.</p>
-            <figcaption><minipage-label>Minipage 30.</minipage-label></figcaption>
-          </figure>
-          <p><i>Sample output from a program. Browsers render &#x3C;samp> in a monospace font by default, distinguishing it from surrounding prose.</i></p><code id="code:sh-samp-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
-          <figure id="mp:sh-samp-2" class="frameable-border">
-            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
-            <figcaption><minipage-label>Minipage 31.</minipage-label></figcaption>
-          </figure>
-          <p><i>&#x3C;samp> for the sample value paired with &#x3C;var> for the variable name — the natural pair for documenting configuration in technical writing.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="sh-kbd">
-        <section-title><code>&#x3C;kbd></code></section-title>
-        <sub-section id="sec:general-usage-14">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>kbd</i>. Compiles to eHTML <code>&#x3C;kbd></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;kbd></code></li>
-          </ul><code id="code:sh-kbd-1">Press &#x3C;kbd | Ctrl+C> to copy.</code>
-          <figure id="mp:sh-kbd-1" class="frameable-border">
-            <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
-            <figcaption><minipage-label>Minipage 32.</minipage-label></figcaption>
-          </figure>
-          <p><i>Single chord as a kbd block. Browsers render &#x3C;kbd> in a monospace font by default, distinguishing it from surrounding prose.</i></p><code id="code:sh-kbd-2">Press &#x3C;kbd | &#x3C;kbd | Ctrl>+&#x3C;kbd | C>> to copy.</code>
-          <figure id="mp:sh-kbd-2" class="frameable-border">
-            <p>Press <kbd><kbd>Ctrl</kbd>+<kbd>C</kbd></kbd> to copy.</p>
             <figcaption><minipage-label>Minipage 33.</minipage-label></figcaption>
           </figure>
-          <p><i>Nested &#x3C;kbd> distinguishes individual keys in a chord. Browsers render the outer block as the chord and the inner blocks as individual keys, both monospace.</i></p></section>
-        </sub-section>
-      </section>
-      <section id="sh-output">
-        <section-title><code>&#x3C;output></code></section-title>
-        <sub-section id="sec:general-usage-15">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>output</i>. Compiles to eHTML <code>&#x3C;output></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;output></code></li>
-          </ul><code id="code:sh-output-1">The function returns &#x3C;output | 42> for the test input.</code>
-          <figure id="mp:sh-output-1" class="frameable-border">
-            <p>The function returns <output>42</output> for the test input.</p>
+          <p><i>Variable names in prose. Browsers render &#x3C;var> in italic by
+default, distinguishing it from surrounding prose.</i></p><code id="code:sh-var-2">Set &#x3C;var | threshold> to &#x3C;samp | 0.05>.</code>
+          <figure id="mp:sh-var-2" class="frameable-border">
+            <p>Set <var>threshold</var> to <samp>0.05</samp>.</p>
             <figcaption><minipage-label>Minipage 34.</minipage-label></figcaption>
           </figure>
-          <p><i>Result of a calculation in prose. &#x3C;output> is semantically distinct from &#x3C;samp> — &#x3C;samp> is what a program prints (a display artifact); &#x3C;output> is the result of a computation (a semantic value). Browsers render both similarly.</i></p></section>
+          <p><i>&#x3C;var> for the variable name and &#x3C;samp> for a sample value —
+the natural pair for documenting configuration in technical writing.</i></p></section>
         </sub-section>
       </section>
-      <section id="sh-term">
-        <section-title><code>&#x3C;term></code></section-title>
-        <sub-section id="sec:general-usage-16">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>term</i>. Compiles to eHTML <code>&#x3C;term></code>.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;term></code></li>
-          </ul><code id="code:sh-term-1">An &#x3C;term | eigenvector> is a non-zero vector that scales under a linear transformation.</code>
-          <figure id="mp:sh-term-1" class="frameable-border">
-            <p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>
-            <figcaption><minipage-label>Minipage 35.</minipage-label></figcaption>
-          </figure>
-          <p><i>Standard term introduction. The element marks the word as “this is a term being introduced,” typically rendered in italic or bold by default CSS.</i></p><code id="code:sh-term-2">An &#x3C;term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize &#x3C;term | eigenvector>s to operators.</code>
-          <figure id="mp:sh-term-2" class="frameable-border">
-            <p>An <term id="mp-sh-term-2-term:eigenvector">eigenvector</term> is a non-zero vector that scales under a linear transformation. Later we generalize <term>eigenvector</term>s to operators.</p>
-            <figcaption><minipage-label>Minipage 36.</minipage-label></figcaption>
-          </figure>
-          <p><i>First introduction carries an id so later references can link back to it. Subsequent uses of the same term (without an id) still mark it as a term being referenced, distinct from running prose, without re-asserting the introduction.</i></p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Primary prose</toc-title></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><toc-title>Aside</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#sh-strong">&#x3C;strong></a><ul><li><a href="#sec:general-usage-3">General Usage</a></li></ul></li><li><a href="#sh-em">&#x3C;em></a><ul><li><a href="#sec:general-usage-4">General Usage</a></li></ul></li><li><a href="#sh-b">&#x3C;b></a><ul><li><a href="#sec:general-usage-5">General Usage</a></li><li><a href="#sec:arguments-3">Arguments</a></li></ul></li><li><a href="#sh-i">&#x3C;i></a><ul><li><a href="#sec:general-usage-6">General Usage</a></li><li><a href="#sec:arguments-4">Arguments</a></li></ul></li><li><a href="#sh-u">&#x3C;u></a><ul><li><a href="#sec:general-usage-7">General Usage</a></li><li><a href="#sec:arguments-5">Arguments</a></li></ul></li><li><a href="#sh-s">&#x3C;s></a><ul><li><a href="#sec:general-usage-8">General Usage</a></li><li><a href="#sec:arguments-6">Arguments</a></li></ul></li><li><a href="#sh-sub">&#x3C;sub></a><ul><li><a href="#sec:general-usage-9">General Usage</a></li></ul></li><li><a href="#sh-sup">&#x3C;sup></a><ul><li><a href="#sec:general-usage-10">General Usage</a></li></ul></li><li><a href="#sh-abbr">&#x3C;abbr></a><ul><li><a href="#sec:general-usage-11">General Usage</a></li><li><a href="#sec:arguments-7">Arguments</a></li></ul></li><li><a href="#sh-var">&#x3C;var></a><ul><li><a href="#sec:general-usage-12">General Usage</a></li></ul></li><li><a href="#sh-samp">&#x3C;samp></a><ul><li><a href="#sec:general-usage-13">General Usage</a></li></ul></li><li><a href="#sh-kbd">&#x3C;kbd></a><ul><li><a href="#sec:general-usage-14">General Usage</a></li></ul></li><li><a href="#sh-output">&#x3C;output></a><ul><li><a href="#sec:general-usage-15">General Usage</a></li></ul></li><li><a href="#sh-term">&#x3C;term></a><ul><li><a href="#sec:general-usage-16">General Usage</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Primary prose</toc-title></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><toc-title>Aside</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#sh-abbr">&#x3C;abbr></a><ul><li><a href="#sec:general-usage-2">General Usage</a></li><li><a href="#sec:arguments-2">Arguments</a></li></ul></li><li><a href="#sh-b">&#x3C;b></a><ul><li><a href="#sec:general-usage-3">General Usage</a></li><li><a href="#sec:arguments-3">Arguments</a></li></ul></li><li><a href="#sh-em">&#x3C;em></a><ul><li><a href="#sec:general-usage-4">General Usage</a></li></ul></li><li><a href="#sh-i">&#x3C;i></a><ul><li><a href="#sec:general-usage-5">General Usage</a></li><li><a href="#sec:arguments-4">Arguments</a></li></ul></li><li><a href="#sh-kbd">&#x3C;kbd></a><ul><li><a href="#sec:general-usage-6">General Usage</a></li></ul></li><li><a href="#sh-output">&#x3C;output></a><ul><li><a href="#sec:general-usage-7">General Usage</a></li></ul></li><li><a href="#sh-s">&#x3C;s></a><ul><li><a href="#sec:general-usage-8">General Usage</a></li><li><a href="#sec:arguments-5">Arguments</a></li></ul></li><li><a href="#sh-samp">&#x3C;samp></a><ul><li><a href="#sec:general-usage-9">General Usage</a></li></ul></li><li><a href="#sh-strong">&#x3C;strong></a><ul><li><a href="#sec:general-usage-10">General Usage</a></li></ul></li><li><a href="#sh-sub">&#x3C;sub></a><ul><li><a href="#sec:general-usage-11">General Usage</a></li></ul></li><li><a href="#sh-sup">&#x3C;sup></a><ul><li><a href="#sec:general-usage-12">General Usage</a></li></ul></li><li><a href="#sh-term">&#x3C;term></a><ul><li><a href="#sec:general-usage-13">General Usage</a></li></ul></li><li><a href="#sh-u">&#x3C;u></a><ul><li><a href="#sec:general-usage-14">General Usage</a></li><li><a href="#sec:arguments-6">Arguments</a></li></ul></li><li><a href="#sh-var">&#x3C;var></a><ul><li><a href="#sec:general-usage-15">General Usage</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

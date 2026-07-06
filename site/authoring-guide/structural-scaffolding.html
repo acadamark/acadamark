@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Code — The Enscribe Authoring Guide</title>
+<title>Structural scaffolding — The Enscribe Authoring Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,74 +1412,205 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=code">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html" class="enscribe-toc-active" aria-current="location">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:code" book-part-type="chapter">
+<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=structural-scaffolding">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html" class="enscribe-toc-active" aria-current="location">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:structural-scaffolding" book-part-type="chapter">
       <meta>
-        <book-part-title>Code</book-part-title>
+        <book-part-title>Structural scaffolding</book-part-title>
       </meta>
-      <section id="sec:inline-code">
-        <section-title>Inline Code</section-title>
-        <sub-section id="sec:general-usage-27">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Mark a snippet inside running text with backticks, or with the mirrored sigil when you want to tag its language. Both render to an inline <code>code</code> element.</p><code id="code:inline-basic">Assign with `x = 1`, and call &#x3C;`python | factorial(n)`> to recurse.</code>
-          <figure id="mp:inline-basic" class="frameable-border">
-            <p>Assign with <code>x = 1</code>, and call <code class="language-python">factorial(n)</code> to recurse.</p>
-            <figcaption><minipage-label>Minipage 27.</minipage-label></figcaption>
-          </figure></section>
-        </sub-section>
-      </section>
-      <section id="sec:code-blocks">
-        <section-title>Code Blocks</section-title>
-        <sub-section id="sec:general-usage-28">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A code block holds a verbatim, multi-line listing. Write it with the mirrored triple-backtick sigil — the language goes before the pipe — or with a plain markdown fence.</p>
-          <pre><code id="code:block-basic">
-&#x3C;``` python |
-import math
-radius = 2.0
-area = math.pi * radius ** 2
-```>
+      <p>The document’s skeleton — containers, regions, sections, the website page-set, and the section break.</p>
+      <section id="ag-article">
+        <section-title><code>&#x3C;article></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;article></code>.</p>
+        <pre><code id="code:ag-article-1">
+&#x3C;meta type=article>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;author | Jane Goodall>
+  &#x3C;date | 2024-03-15>
+&#x3C;/meta>
+
+&#x3C;section | Introduction>
+The paper begins here.
+
+&#x3C;section | Conclusion>
+The paper concludes here.
 </code></pre>
-          <figure id="mp:block-basic" class="frameable-border">
-            <pre><code class="language-python">
-import math
-radius = 2.0
-area = math.pi * radius ** 2
-</code></pre>
-            <figcaption><minipage-label>Minipage 28.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:arguments-17">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>language (sets the language-X class for highlighting)</td>
-                <td>python · r · js</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#code:area</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.extra-class</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-18">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Content is verbatim: newlines are preserved and nothing inside is read as a tag — backticks, angle brackets, and pipes all pass through untouched.</p></section>
-        </sub-section>
+        <figure id="mp:ag-article-1" class="frameable-border">
+          <meta data-document-type="article">
+            <article-title>The Effect of Elephants on Climate</article-title>
+            <author>Jane Goodall</author>
+            <date>2024-03-15</date>
+          </meta>
+          <section>
+            <section-title>Introduction</section-title>
+            <p>The paper begins here.</p>
+          </section>
+          <section>
+            <section-title>Conclusion</section-title>
+            <p>The paper concludes here.</p>
+          </section>
+          <figcaption><minipage-label>Minipage 74.</minipage-label></figcaption>
+        </figure>
+        <p><i>Typical authoring path: &#x3C;meta type=article> at the top with no
+&#x3C;article> wrapper. The structural plugin generates the &#x3C;article>
+container and the three region wrappers. &#x3C;title> in &#x3C;meta> is
+promoted to &#x3C;article-title>; &#x3C;meta> itself survives inside
+&#x3C;article-front>.</i></p></section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="mathematics.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Mathematics</toc-title></a><a class="enscribe-chapter-next" href="section-headings.html" rel="next"><toc-title>Section Headings</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:code"><ul><li><a href="#sec:inline-code">Inline Code</a><ul><li><a href="#sec:general-usage-27">General Usage</a></li></ul></li><li><a href="#sec:code-blocks">Code Blocks</a><ul><li><a href="#sec:general-usage-28">General Usage</a></li><li><a href="#sec:arguments-17">Arguments</a></li><li><a href="#sec:notes-18">Notes</a></li></ul></li></ul></div></details></nav></div>
+      <section id="ag-article-back">
+        <section-title><code>&#x3C;article-back></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;article-back></code>.</p></section>
+      </section>
+      <section id="ag-article-body">
+        <section-title><code>&#x3C;article-body></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;article-body></code>.</p></section>
+      </section>
+      <section id="ag-article-front">
+        <section-title><code>&#x3C;article-front></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;article-front></code>.</p></section>
+      </section>
+      <section id="ag-book">
+        <section-title><code>&#x3C;book></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;book></code>.</p>
+        <pre><code id="code:ag-book-1">
+&#x3C;meta type=book>
+  &#x3C;title | A Natural History of Elephants>
+  &#x3C;author | Jane Goodall>
+&#x3C;/meta>
+
+&#x3C;chapter | Origins>
+&#x3C;section | Early ancestors>
+Content here.
+
+&#x3C;chapter | Modern populations>
+&#x3C;section | African elephants>
+Content here.
+</code></pre>
+        <figure id="mp:ag-book-1" class="frameable-border">
+          <book>
+            <book-front>
+              <meta data-document-type="book">
+                <book-title>A Natural History of Elephants</book-title>
+                <author>Jane Goodall</author>
+              </meta>
+            </book-front>
+            <book-body>
+              <book-part book-part-type="chapter">
+                <meta>
+                  <book-part-title>Origins</book-part-title>
+                </meta>
+                <section>
+                  <section-title>Early ancestors</section-title>
+                  <p>Content here.</p>
+                </section>
+              </book-part>
+              <book-part book-part-type="chapter">
+                <meta>
+                  <book-part-title>Modern populations</book-part-title>
+                </meta>
+                <section>
+                  <section-title>African elephants</section-title>
+                  <p>Content here.</p>
+                </section>
+              </book-part>
+            </book-body>
+          </book>
+          <figcaption><minipage-label>Minipage 75.</minipage-label></figcaption>
+        </figure>
+        <p><i>Typical authoring path: &#x3C;meta type=book> at the top with no &#x3C;book>
+wrapper. The structural plugin generates &#x3C;book> + the three region
+wrappers. Each book-part contains its own &#x3C;meta> with the promoted
+&#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p></section>
+      </section>
+      <section id="ag-book-back">
+        <section-title><code>&#x3C;book-back></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;book-back></code>.</p></section>
+      </section>
+      <section id="ag-book-body">
+        <section-title><code>&#x3C;book-body></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;book-body></code>.</p></section>
+      </section>
+      <section id="ag-book-front">
+        <section-title><code>&#x3C;book-front></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;book-front></code>.</p></section>
+      </section>
+      <section id="ag-book-part">
+        <section-title><code>&#x3C;book-part></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;book-part></code>.</p>
+        <pre><code id="code:ag-book-part-1">
+&#x3C;chapter | Origins>
+Content of the chapter.
+</code></pre>
+        <figure id="mp:ag-book-part-1" class="frameable-border">&#x3C;chapter | Origins>
+          <p>Content of the chapter.</p>
+          <figcaption><minipage-label>Minipage 76.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-hr">
+        <section-title><code>&#x3C;hr></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;hr></code>.</p><code id="code:ag-hr-1">&#x3C;hr></code>
+        <figure id="mp:ag-hr-1" class="frameable-border">
+          <hr>
+          <figcaption><minipage-label>Minipage 77.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-item">
+        <section-title><code>&#x3C;item></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;item></code>.</p></section>
+      </section>
+      <section id="ag-nav">
+        <section-title><code>&#x3C;nav></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;nav></code>.</p></section>
+      </section>
+      <section id="ag-nav-group">
+        <section-title><code>&#x3C;nav-group></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;nav-group></code>.</p></section>
+      </section>
+      <section id="ag-section">
+        <section-title><code>&#x3C;section></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;section></code>.</p>
+        <pre><code id="code:ag-section-1">
+&#x3C;section | Introduction>
+The paper begins here.
+</code></pre>
+        <figure id="mp:ag-section-1" class="frameable-border">
+          <section>
+            <section-title>Introduction</section-title>
+            <p>The paper begins here.</p>
+          </section>
+          <figcaption><minipage-label>Minipage 78.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-sub-section">
+        <section-title><code>&#x3C;sub-section></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;sub-section></code>.</p>
+        <pre><code id="code:ag-sub-section-1">
+&#x3C;sub-section | Quantitative analysis>
+Sub-section content.
+</code></pre>
+        <figure id="mp:ag-sub-section-1" class="frameable-border">
+          <sub-section>
+            <sub-section-title>Quantitative analysis</sub-section-title>
+            <p>Sub-section content.</p>
+          </sub-section>
+          <figcaption><minipage-label>Minipage 79.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-sub-sub-section">
+        <section-title><code>&#x3C;sub-sub-section></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;sub-sub-section></code>.</p>
+        <pre><code id="code:ag-sub-sub-section-1">
+&#x3C;sub-sub-section | Regression analysis>
+Detailed methods for the regression.
+</code></pre>
+        <figure id="mp:ag-sub-sub-section-1" class="frameable-border">
+          <sub-sub-section>
+            <sub-sub-section-title>Regression analysis</sub-sub-section-title>
+            <p>Detailed methods for the regression.</p>
+          </sub-sub-section>
+          <figcaption><minipage-label>Minipage 80.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#ag-article">&#x3C;article></a></li><li><a href="#ag-article-back">&#x3C;article-back></a></li><li><a href="#ag-article-body">&#x3C;article-body></a></li><li><a href="#ag-article-front">&#x3C;article-front></a></li><li><a href="#ag-book">&#x3C;book></a></li><li><a href="#ag-book-back">&#x3C;book-back></a></li><li><a href="#ag-book-body">&#x3C;book-body></a></li><li><a href="#ag-book-front">&#x3C;book-front></a></li><li><a href="#ag-book-part">&#x3C;book-part></a></li><li><a href="#ag-hr">&#x3C;hr></a></li><li><a href="#ag-item">&#x3C;item></a></li><li><a href="#ag-nav">&#x3C;nav></a></li><li><a href="#ag-nav-group">&#x3C;nav-group></a></li><li><a href="#ag-section">&#x3C;section></a></li><li><a href="#ag-sub-section">&#x3C;sub-section></a></li><li><a href="#ag-sub-sub-section">&#x3C;sub-sub-section></a></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

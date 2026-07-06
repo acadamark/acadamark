@@ -1417,10 +1417,665 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
       <meta>
         <book-part-title>Declarations &#x26; metadata</book-part-title>
       </meta>
-      <p>The document’s front-matter declarations — the <code>&#x3C;meta></code> block and the fields an author writes inside it.</p>
+      <p>Statements about the work, not part of its discourse — titles, contributors, provenance, and configuration.</p>
+      <section id="sh-abstract">
+        <section-title><code>&#x3C;abstract></code></section-title>
+        <sub-section id="sec:general-usage-63">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>abstract</i>. Compiles to eHTML <code>&#x3C;abstract></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;abstract></code></li>
+          </ul>
+          <pre><code id="code:sh-abstract-1">
+&#x3C;abstract |
+This paper presents new evidence that elephant populations
+significantly affect regional climate patterns through their
+role in shaping vegetation and carbon storage.
+>
+</code></pre>
+          <figure id="mp:sh-abstract-1" class="frameable-border">
+            <abstract>
+              <p>
+                This paper presents new evidence that elephant populations
+                significantly affect regional climate patterns through their
+                role in shaping vegetation and carbon storage.
+              </p>
+            </abstract>
+            <figcaption><minipage-label>Minipage 122.</minipage-label></figcaption>
+          </figure>
+          <p><i>Unstructured abstract (the default). Single paragraph of summary prose.</i></p>
+          <pre><code id="code:sh-abstract-2">
+&#x3C;abstract type=structured |
+**Background:** Elephant populations have declined significantly.
+
+**Methods:** We surveyed 50 forest sites over 10 years.
+
+**Results:** Decline correlates with vegetation loss.
+
+**Conclusion:** Conservation efforts are essential.
+>
+</code></pre>
+          <figure id="mp:sh-abstract-2" class="frameable-border">
+            <abstract data-abstract-type="structured">
+              <p><b>Background:</b> Elephant populations have declined significantly.</p>
+              <p><b>Methods:</b> We surveyed 50 forest sites over 10 years.</p>
+              <p><b>Results:</b> Decline correlates with vegetation loss.</p>
+              <p><b>Conclusion:</b> Conservation efforts are essential.</p>
+            </abstract>
+            <figcaption><minipage-label>Minipage 123.</minipage-label></figcaption>
+          </figure>
+          <p><i>Structured abstract using markdown bold for section headings.
+Common in medical and scientific journals. The structure is
+visible in the rendered output via the bold prefixes.</i></p>
+          <pre><code id="code:sh-abstract-3">
+&#x3C;abstract word-limit=250 |
+This paper presents...
+>
+</code></pre>
+          <figure id="mp:sh-abstract-3" class="frameable-border">
+            <abstract data-word-limit="250">
+              <p>This paper presents…</p>
+            </abstract>
+            <figcaption><minipage-label>Minipage 124.</minipage-label></figcaption>
+          </figure>
+        </sub-section>
+        <sub-section id="sec:arguments-37">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>unstructured</code> <code>structured</code> <code>graphical</code> <code>executive-summary</code> <code>other</code> (default <code>unstructured</code>)</td>
+                <td>Distinguishes abstract types.</td>
+              </tr>
+              <tr>
+                <td><code>word-limit</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional documentation of the journal’s word limit for this abstract.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-affiliation">
+        <section-title><code>&#x3C;affiliation></code></section-title>
+        <sub-section id="sec:general-usage-64">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>affiliation</i>. Compiles to eHTML <code>&#x3C;affiliation></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;affiliation></code></li>
+          </ul>
+          <pre><code id="code:sh-affiliation-1">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation | Anthropic>
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-affiliation-1" class="frameable-border">
+            <author>
+              <name>Jane Goodall</name>
+              <affiliation>Anthropic</affiliation>
+            </author>
+            <figcaption><minipage-label>Minipage 125.</minipage-label></figcaption>
+          </figure>
+          <p><i>Simple author affiliation. The affiliation sits as a sub-element
+of &#x3C;author>, parallel to other rich-author-metadata elements
+(&#x3C;orcid>, &#x3C;email>).</i></p>
+          <pre><code id="code:sh-affiliation-2">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation #aff1 | Anthropic, San Francisco, USA>
+&#x3C;/author>
+&#x3C;author>
+  &#x3C;name | David Attenborough>
+  &#x3C;affiliation #aff1 />
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-affiliation-2" class="frameable-border">
+            <author>
+              <name>Jane Goodall</name>
+              <affiliation id="mp-sh-affiliation-2-aff1">Anthropic, San Francisco, USA</affiliation>
+            </author>
+            <author>
+              <name>David Attenborough</name>
+              <affiliation id="mp-sh-affiliation-2-aff1"></affiliation>
+            </author>
+            <figcaption><minipage-label>Minipage 126.</minipage-label></figcaption>
+          </figure>
+          <p><i>Shared affiliation. The id on the first affiliation lets
+subsequent authors reference the same one by id via a
+self-closing tag. JATS exporter generates the appropriate
+&#x3C;xref ref-type=”aff” rid=”aff1”> structure.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-article-subtitle">
+        <section-title><code>&#x3C;article-subtitle></code></section-title>
+        <sub-section id="sec:general-usage-65">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>article-subtitle</i>. Compiles to eHTML <code>&#x3C;article-subtitle></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;article-subtitle></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-article-title">
+        <section-title><code>&#x3C;article-title></code></section-title>
+        <sub-section id="sec:general-usage-66">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>article-title</i>. Compiles to eHTML <code>&#x3C;article-title></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;article-title></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-author">
+        <section-title><code>&#x3C;author></code></section-title>
+        <sub-section id="sec:general-usage-67">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>author</i>. Compiles to eHTML <code>&#x3C;author></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;author></code></li>
+          </ul><code id="code:sh-author-1">&#x3C;author | Jane Goodall></code>
+          <figure id="mp:sh-author-1" class="frameable-border">
+            <author>Jane Goodall</author>
+            <figcaption><minipage-label>Minipage 127.</minipage-label></figcaption>
+          </figure>
+          <p><i>Backward-compatible casual form (carried forward from before the
+structured-interface reconciliation). The pipe content sits as
+text content of &#x3C;author>; it is NOT lifted to a &#x3C;name> child —
+authors who want the structured shape use the kwarg form below
+or the child-tag form. JATS export reads the name string either
+way.</i></p><code id="code:sh-author-2">&#x3C;author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding /></code>
+          <figure id="mp:sh-author-2" class="frameable-border">
+            <author corresponding>
+              <name>Jane Goodall</name>
+              <orcid>0000-0001-2345-6789</orcid>
+              <affiliation>Cambridge University</affiliation>
+            </author>
+            <figcaption><minipage-label>Minipage 128.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate;
++corresponding stays as a boolean kwarg on the canonical
+eHTML &#x3C;author>.</i></p>
+          <pre><code id="code:sh-author-3">
+&#x3C;author +corresponding>
+  &#x3C;name | Jane Goodall>
+  &#x3C;affiliation | Cambridge University>
+  &#x3C;orcid | 0000-0001-2345-6789>
+  &#x3C;email | jane@example.com>
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-author-3" class="frameable-border">
+            <author corresponding>
+              <name>Jane Goodall</name>
+              <affiliation>Cambridge University</affiliation>
+              <orcid>0000-0001-2345-6789</orcid>
+              <email><a href="mailto:jane@example.com">jane@example.com</a></email>
+            </author>
+            <figcaption><minipage-label>Minipage 129.</minipage-label></figcaption>
+          </figure>
+          <p><i>Child-tag form. The canonical eHTML shape. Both this form and
+the equivalent kwarg form above produce the same eHTML output.</i></p>
+          <pre><code id="code:sh-author-4">
+&#x3C;meta>
+  &#x3C;author | Jane Goodall>
+  &#x3C;author | David Attenborough>
+  &#x3C;author +corresponding | Charles Darwin>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-author-4" class="frameable-border">
+            <meta>
+              <author>Jane Goodall</author>
+              <author>David Attenborough</author>
+              <author corresponding>Charles Darwin</author>
+            </meta>
+            <figcaption><minipage-label>Minipage 130.</minipage-label></figcaption>
+          </figure>
+          <p><i>Multiple authors are sibling &#x3C;author> elements inside &#x3C;meta>.
+The third is the corresponding author. JATS export groups them
+as &#x3C;contrib-group>.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-38">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The author’s name.</td>
+              </tr>
+              <tr>
+                <td><code>affiliation</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Author’s institutional affiliation.</td>
+              </tr>
+              <tr>
+                <td><code>orcid</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Author’s ORCID identifier (e.g., 0000-0000-0000-0000).</td>
+              </tr>
+              <tr>
+                <td><code>email</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Author’s contact email address.</td>
+              </tr>
+              <tr>
+                <td><code>corresponding</code></td>
+                <td>kwarg</td>
+                <td><code>true</code> <code>false</code></td>
+                <td>Marks this author as the corresponding author (JATS contrib corresp=”yes”).</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-book-part-subtitle">
+        <section-title><code>&#x3C;book-part-subtitle></code></section-title>
+        <sub-section id="sec:general-usage-68">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>book-part-subtitle</i>. Compiles to eHTML <code>&#x3C;book-part-subtitle></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;book-part-subtitle></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-book-part-title">
+        <section-title><code>&#x3C;book-part-title></code></section-title>
+        <sub-section id="sec:general-usage-69">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>book-part-title</i>. Compiles to eHTML <code>&#x3C;book-part-title></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;book-part-title></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-book-subtitle">
+        <section-title><code>&#x3C;book-subtitle></code></section-title>
+        <sub-section id="sec:general-usage-70">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>book-subtitle</i>. Compiles to eHTML <code>&#x3C;book-subtitle></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;book-subtitle></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-book-title">
+        <section-title><code>&#x3C;book-title></code></section-title>
+        <sub-section id="sec:general-usage-71">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>book-title</i>. Compiles to eHTML <code>&#x3C;book-title></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;book-title></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-config">
+        <section-title><code>&#x3C;config></code></section-title>
+        <sub-section id="sec:general-usage-72">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>config</i>. Compiles to eHTML <code>&#x3C;config></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;config></code></li>
+          </ul><code id="code:sh-config-1">&#x3C;config citation-style=author-year number-sections=true /></code>
+          <figure id="mp:sh-config-1" class="frameable-border">
+            <config></config>
+            <figcaption><minipage-label>Minipage 131.</minipage-label></figcaption>
+          </figure>
+          <p><i>The authoring form for &#x3C;config> is kwargs. Settings are read at the
+discovery pass into the configuration registry; the element itself
+produces no body output (it renders as an empty &#x3C;config>).</i></p><code id="code:sh-config-2">&#x3C;config number-figures=true number-tables=true show-source=true /></code>
+          <figure id="mp:sh-config-2" class="frameable-border">
+            <config></config>
+            <figcaption><minipage-label>Minipage 132.</minipage-label></figcaption>
+          </figure>
+          <p><i>More operational options, all from the live kwarg allowlist
+(citation-style, number-sections, number-figures, number-tables,
+number-equations, show-source, parse-data-tables, ref-prefix-</i>).*</p>
+        </sub-section>
+        <sub-section id="sec:arguments-39">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>notes</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-date">
+        <section-title><code>&#x3C;date></code></section-title>
+        <sub-section id="sec:general-usage-73">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>date</i>. Compiles to eHTML <code>&#x3C;date></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;date></code></li>
+          </ul><code id="code:sh-date-1">&#x3C;date | 2024-03-15></code>
+          <figure id="mp:sh-date-1" class="frameable-border">
+            <date>2024-03-15</date>
+            <figcaption><minipage-label>Minipage 133.</minipage-label></figcaption>
+          </figure>
+          <p><i>A bare &#x3C;date> is UNTYPED (no data-date-type) — an authoring date is
+“when you wrote it” (like the date on a letter), not a publication
+date (cf. Quarto/Pandoc/Bookdown preamble date slots). Use an explicit
+type= (e.g. &#x3C;date type=publication | …>) for a typed date. (#325)</i></p><code id="code:sh-date-2">&#x3C;date type=submission | 2023-11-01></code>
+          <figure id="mp:sh-date-2" class="frameable-border">
+            <date data-date-type="submission">2023-11-01</date>
+            <figcaption><minipage-label>Minipage 134.</minipage-label></figcaption>
+          </figure>
+          <pre><code id="code:sh-date-3">
+&#x3C;meta>
+  &#x3C;date type=submission | 2023-11-01>
+  &#x3C;date type=acceptance | 2024-02-10>
+  &#x3C;date type=publication | 2024-03-15>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-date-3" class="frameable-border">
+            <meta>
+              <date data-date-type="submission">2023-11-01</date>
+              <date data-date-type="acceptance">2024-02-10</date>
+              <date data-date-type="publication">2024-03-15</date>
+            </meta>
+            <figcaption><minipage-label>Minipage 135.</minipage-label></figcaption>
+          </figure>
+          <p><i>Multiple dates of different types. The publication date is the
+primary; submission, acceptance, etc., go in JATS history.</i></p><code id="code:sh-date-4">&#x3C;date | March 15, 2024></code>
+          <figure id="mp:sh-date-4" class="frameable-border">
+            <date>March 15, 2024</date>
+            <figcaption><minipage-label>Minipage 136.</minipage-label></figcaption>
+          </figure>
+          <p><i>Free-form date format. Acceptable but ISO 8601 is preferred for
+machine readability and for predictable JATS export.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-40">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>type</code></td>
+                <td>kwarg</td>
+                <td><code>publication</code> <code>submission</code> <code>acceptance</code> <code>revision</code> <code>retraction</code> <code>embargo</code> <code>other</code> (default <code>publication</code>)</td>
+                <td>Distinguishes different kinds of dates.</td>
+              </tr>
+              <tr>
+                <td><code>format</code></td>
+                <td>kwarg</td>
+                <td><code>iso</code> <code>ymd</code> <code>ymd-time</code> <code>mdy</code> <code>dmy</code> <code>custom</code></td>
+                <td>Optional hint about how the date should be parsed and formatted.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-editor">
+        <section-title><code>&#x3C;editor></code></section-title>
+        <sub-section id="sec:general-usage-74">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>editor</i>. Compiles to eHTML <code>&#x3C;editor></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;editor></code></li>
+          </ul><code id="code:sh-editor-1">&#x3C;editor | The Editor></code>
+          <figure id="mp:sh-editor-1" class="frameable-border">
+            <editor>The Editor</editor>
+            <figcaption><minipage-label>Minipage 137.</minipage-label></figcaption>
+          </figure>
+          <p><i>Casual form — the pipe content is the editor’s name (text content,
+not lifted to a &#x3C;name> child), mirroring &#x3C;author | …>.</i></p><code id="code:sh-editor-2">&#x3C;editor role=series-editor name="Jane Goodall" affiliation="Cambridge University" /></code>
+          <figure id="mp:sh-editor-2" class="frameable-border">
+            <editor data-role="series-editor">
+              <name>Jane Goodall</name>
+              <affiliation>Cambridge University</affiliation>
+            </editor>
+            <figcaption><minipage-label>Minipage 138.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg form. name / affiliation / orcid / email lift to child tags at
+the gate (unified to &#x3C;author>’s shape, #338); role stays a scalar
+attribute (data-role) — the one field that differs from &#x3C;author>.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-41">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>name</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The editor’s name.</td>
+              </tr>
+              <tr>
+                <td><code>affiliation</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Editor’s institutional affiliation.</td>
+              </tr>
+              <tr>
+                <td><code>orcid</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Editor’s ORCID identifier.</td>
+              </tr>
+              <tr>
+                <td><code>email</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Editor’s contact email address.</td>
+              </tr>
+              <tr>
+                <td><code>role</code></td>
+                <td>kwarg</td>
+                <td><code>editor</code> <code>co-editor</code> <code>series-editor</code> <code>volume-editor</code> <code>guest-editor</code> <code>other</code> (default <code>editor</code>)</td>
+                <td>The editorial role — the one field that distinguishes an &#x3C;editor> from an &#x3C;author>.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
+      <section id="sh-email">
+        <section-title><code>&#x3C;email></code></section-title>
+        <sub-section id="sec:general-usage-75">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>email</i>. Compiles to eHTML <code>&#x3C;email></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;email></code></li>
+          </ul>
+          <pre><code id="code:sh-email-1">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;email | jane@example.org>
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-email-1" class="frameable-border">
+            <author>
+              <name>Jane Goodall</name>
+              <email><a href="mailto:jane@example.org">jane@example.org</a></email>
+            </author>
+            <figcaption><minipage-label>Minipage 139.</minipage-label></figcaption>
+          </figure>
+          <p><i>Author contact email. Common in journal article metadata for
+the corresponding author (see also the +corresponding boolean
+kwarg on &#x3C;author>).</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-keywords">
+        <section-title><code>&#x3C;keywords></code></section-title>
+        <sub-section id="sec:general-usage-76">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>keywords</i>. Compiles to eHTML <code>&#x3C;keywords></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;keywords></code></li>
+          </ul>
+          <pre><code id="code:sh-keywords-1">
+&#x3C;meta>
+  &#x3C;keywords | elephants, conservation, climate, carbon storage>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-keywords-1" class="frameable-border">
+            <meta>
+              <keywords>elephants, conservation, climate, carbon storage</keywords>
+            </meta>
+            <figcaption><minipage-label>Minipage 140.</minipage-label></figcaption>
+          </figure>
+          <p><i>Comma-separated keyword list — the simpler and more common
+authoring form. The exporter splits on commas when emitting JATS.</i></p><code id="code:sh-keywords-2">&#x3C;meta keywords="elephants, conservation, climate" /></code>
+          <figure id="mp:sh-keywords-2" class="frameable-border">
+            <meta>
+              <keywords>elephants, conservation, climate</keywords>
+            </meta>
+            <figcaption><minipage-label>Minipage 141.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg-form authoring lifts to the child-tag form at the gate.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-lang">
+        <section-title><code>&#x3C;lang></code></section-title>
+        <sub-section id="sec:general-usage-77">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>lang</i>. Compiles to eHTML <code>&#x3C;lang></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;lang></code></li>
+          </ul>
+          <pre><code id="code:sh-lang-1">
+&#x3C;meta>
+  &#x3C;lang | en-US>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-lang-1" class="frameable-border">
+            <meta>
+              <lang>en-US</lang>
+            </meta>
+            <figcaption><minipage-label>Minipage 142.</minipage-label></figcaption>
+          </figure>
+          <p><i>BCP 47 language tag. The eHTML form preserves the value as a
+child element of &#x3C;meta>; downstream consumers (the JATS exporter,
+the render-mode lowering) project it where each format expects.</i></p><code id="code:sh-lang-2">&#x3C;meta lang="fr" /></code>
+          <figure id="mp:sh-lang-2" class="frameable-border">
+            <meta>
+              <lang>fr</lang>
+            </meta>
+            <figcaption><minipage-label>Minipage 143.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg-form authoring lifts to the child-tag form at the gate.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-license">
+        <section-title><code>&#x3C;license></code></section-title>
+        <sub-section id="sec:general-usage-78">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>license</i>. Compiles to eHTML <code>&#x3C;license></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;license></code></li>
+          </ul>
+          <pre><code id="code:sh-license-1">
+&#x3C;meta>
+  &#x3C;license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-license-1" class="frameable-border">
+            <meta>
+              <license href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</license>
+            </meta>
+            <figcaption><minipage-label>Minipage 144.</minipage-label></figcaption>
+          </figure>
+          <p><i>License name with canonical URL.</i></p><code id="code:sh-license-2">&#x3C;meta license="MIT License" /></code>
+          <figure id="mp:sh-license-2" class="frameable-border">
+            <meta>
+              <license>MIT License</license>
+            </meta>
+            <figcaption><minipage-label>Minipage 145.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg-form authoring (license name only) lifts to the child-tag
+form at the normalize-to-canonical gate.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-42">
+          <sub-section-title>Arguments</sub-section-title>
+          <table>
+            <thead>
+              <tr>
+                <th>attribute</th>
+                <th>kind</th>
+                <th>values / default</th>
+                <th>notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>href</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>Optional URL of the license terms (e.g.</td>
+              </tr>
+            </tbody>
+          </table></section>
+        </sub-section>
+      </section>
       <section id="sh-meta">
         <section-title><code>&#x3C;meta></code></section-title>
-        <sub-section id="sec:general-usage-61">
+        <sub-section id="sec:general-usage-79">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>meta</i>. Compiles to eHTML <code>&#x3C;meta></code>.</p>
           <p>Registers:</p>
@@ -1447,9 +2102,21 @@ The paper begins.
               <section-title>Introduction</section-title>
               <p>The paper begins.</p>
             </section>
-            <figcaption><minipage-label>Minipage 113.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 146.</minipage-label></figcaption>
           </figure>
-          <p><i>Author writes &#x3C;meta type=article> at the top with no &#x3C;article> wrapper. The structural plugin reads type=article and generates: - the &#x3C;article> container - &#x3C;article-front> wrapping the original &#x3C;meta> - &#x3C;article-body> wrapping the section content &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>. &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.</i></p>
+          <p>
+            *Author writes &#x3C;meta type=article> at the top with no &#x3C;article>
+            wrapper. The structural plugin reads type=article and generates:
+          </p>
+          <ul>
+            <li>the &#x3C;article> container</li>
+            <li>&#x3C;article-front> wrapping the original &#x3C;meta></li>
+            <li>
+              &#x3C;article-body> wrapping the section content
+              &#x3C;title> is promoted to &#x3C;article-title> as the first child of &#x3C;meta>.
+              &#x3C;meta> itself survives in the output, inside &#x3C;article-front>.*
+            </li>
+          </ul>
           <pre><code id="code:sh-meta-2">
 &#x3C;meta type=book>
   &#x3C;title | A Natural History of Elephants>
@@ -1476,11 +2143,14 @@ Content.
                 </book-part>
               </book-body>
             </book>
-            <figcaption><minipage-label>Minipage 114.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 147.</minipage-label></figcaption>
           </figure>
-          <p><i>type=book generates the book-shaped wrapper instead. Changing the single kwarg switches the entire output structure. Each book-part contains its own &#x3C;meta> with &#x3C;book-part-title>; no &#x3C;book-part-meta> wrapper.</i></p>
+          <p><i>type=book generates the book-shaped wrapper instead. Changing the
+single kwarg switches the entire output structure. Each book-part
+contains its own &#x3C;meta> with &#x3C;book-part-title>; no &#x3C;book-part-meta>
+wrapper.</i></p>
         </sub-section>
-        <sub-section id="sec:arguments-37">
+        <sub-section id="sec:arguments-43">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1495,52 +2165,137 @@ Content.
               <tr>
                 <td><code>type</code></td>
                 <td>kwarg</td>
-                <td><code>article</code> <code>book</code> <code>book-part</code> <code>website</code></td>
-                <td>Declares the document class. Resolved ONCE before structuring by enscribeDocTypeResolve: the value is validated against this set, stored on file.data, and an explicitly-set unknown type (a typo, an unbuilt class) is reported with a non-fatal diagnostic and falls back to “article” (always-renders). The structural plugins (enscribeArticleStructuring / enscribeBookStructuring) read the resolved class to decide which eHTML wrapper to generate around the document: type=article →
-                  <article></article>with 
-                  <article-front></article-front>/
-                  <article-body></article-body>/
-                  <article-back></article-back>; type=book → 
-                  <book></book>with 
-                  <book-front></book-front>/
-                  <book-body></book-body>/
-                  <book-back></book-back>; type=book-part → 
-                  <book-part></book-part>containing 
-                  <meta>and body content directly (no nested front/body/back wrappers). type=website → no eHTML wrapper; enscribeWebsiteStructuring builds a nav model on file.data from the master’s
-                  <nav></nav>(#246). HTML render only — no JATS/BITS (a site is not a scholarly document). Default is “article” — the most common case. An absent type kwarg is the normal article case: silent default, no diagnostic.
-                </td>
+                <td><code>article</code> <code>book</code> <code>book-part</code> <code>website</code> (default <code>article</code>)</td>
+                <td>Declares the document class.</td>
               </tr>
               <tr>
                 <td><code>book-part-type</code></td>
                 <td>kwarg</td>
-                <td><code>chapter</code> <code>part</code> <code>introduction</code> <code>conclusion</code> <code>other</code> <code>preface</code> <code>foreword</code> <code>dedication</code> <code>appendix</code> <code>glossary</code> <code>colophon</code> <code>afterword</code></td>
-                <td>For a single-file book-part (type=book-part) only: sets the book-part-type on the generated <code>&#x3C;book-part></code> wrapper (#176). This is how a standalone book-part file declares whether it is an appendix, preface, etc. — a single-file appendix needs book-part-type=appendix (#100), so it is not always “chapter”. Read by enscribeBookStructuring; allowlisted but not lifted (a structural kwarg, like type — it configures the wrapper, it is not a descriptive <code>&#x3C;meta></code> field). Default “chapter” when unset. An unknown value is reported with a non-fatal diagnostic and the document still renders (always-renders). Ignored on type=article / type=book documents, which route their book-parts by the <code>&#x3C;chapter></code> / <code>&#x3C;appendix></code> / … shorthand instead.</td>
+                <td><code>chapter</code> <code>part</code> <code>introduction</code> <code>conclusion</code> <code>other</code> <code>preface</code> <code>foreword</code> <code>dedication</code> <code>appendix</code> <code>glossary</code> <code>colophon</code> <code>afterword</code> (default <code>chapter</code>)</td>
+                <td>For a single-file book-part (type=book-part) only:</td>
               </tr>
               <tr>
                 <td><code>icon</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional brand icon for a website’s top bar (#246): the path or URL of the site icon, read by the website chrome (S2). Descriptive metadata, like the title; ignored by article/book documents. The brand NAME is <code>&#x3C;meta></code>’s title — there is no in-header <code>&#x3C;icon></code>/<code>&#x3C;title></code> tag.</td>
+                <td>Optional brand icon for a website’s top bar (#246):</td>
+              </tr>
+              <tr>
+                <td><code>slug</code></td>
+                <td>kwarg</td>
+                <td></td>
+                <td>The page’s stable public SLUG (#289) — its identity, independent of title and of where it sits in a website’s &#x3C;nav>.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-config">
-        <section-title><code>&#x3C;config></code></section-title>
-        <sub-section id="sec:general-usage-62">
+      <section id="sh-name">
+        <section-title><code>&#x3C;name></code></section-title>
+        <sub-section id="sec:general-usage-80">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>config</i>. Compiles to eHTML <code>&#x3C;config></code>.</p>
+          <p>Semantic role: <i>name</i>. Compiles to eHTML <code>&#x3C;name></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;config></code></li>
-          </ul><code id="code:sh-config-1">&#x3C;config citation-style=author-year number-sections=true /></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>The authoring form for &#x3C;config> is kwargs. Settings are read at the discovery pass into the configuration registry; the element itself produces no body output (it renders as an empty &#x3C;config>).</i></p><code id="code:sh-config-2">&#x3C;config number-figures=true number-tables=true show-source=true /></code>
-          <p><i>Structural / front-matter — shown as source. It carries metadata or apparatus (configuration, stored data, document front matter), not standalone body content, so there is no in-flow live box.</i></p>
-          <p><i>More operational options, all from the live kwarg allowlist (citation-style, number-sections, number-figures, number-tables, number-equations, show-source, parse-data-tables, ref-prefix-).</i></p>
+            <li>Canonical: <code>&#x3C;name></code></li>
+          </ul>
+          <pre><code id="code:sh-name-1">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-name-1" class="frameable-border">
+            <author>
+              <name>Jane Goodall</name>
+            </author>
+            <figcaption><minipage-label>Minipage 148.</minipage-label></figcaption>
+          </figure>
+          <p><i>The common case. Pipe content becomes the name string.</i></p><code id="code:sh-name-2">&#x3C;author name="Jane Goodall" orcid="0000-0001-2345-6789" +corresponding></code>
+          <figure id="mp:sh-name-2" class="frameable-border"><tag-error>??tag: author — long-form tag has no closing tag??</tag-error>
+            <figcaption><minipage-label>Minipage 149.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg form of &#x3C;author>. The <code>name</code> kwarg lifts to a &#x3C;name> child
+tag at the normalize-to-canonical gate, parallel to &#x3C;meta>’s
+kwarg-to-child-tag lift. The <code>+corresponding</code> boolean stays as
+a kwarg/attribute on the canonical eHTML &#x3C;author> (it is a
+scalar marker, not a structured field).</i></p></section>
         </sub-section>
-        <sub-section id="sec:arguments-38">
+      </section>
+      <section id="sh-orcid">
+        <section-title><code>&#x3C;orcid></code></section-title>
+        <sub-section id="sec:general-usage-81">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>orcid</i>. Compiles to eHTML <code>&#x3C;orcid></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;orcid></code></li>
+          </ul>
+          <pre><code id="code:sh-orcid-1">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;orcid | 0000-0002-1825-0097>
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-orcid-1" class="frameable-border">
+            <author>
+              <name>Jane Goodall</name>
+              <orcid>0000-0002-1825-0097</orcid>
+            </author>
+            <figcaption><minipage-label>Minipage 150.</minipage-label></figcaption>
+          </figure>
+          <p><i>Bare 16-digit ORCID — the canonical form.</i></p>
+          <pre><code id="code:sh-orcid-2">
+&#x3C;author>
+  &#x3C;name | Jane Goodall>
+  &#x3C;orcid | https://orcid.org/0000-0002-1825-0097>
+&#x3C;/author>
+</code></pre>
+          <figure id="mp:sh-orcid-2" class="frameable-border">
+            <author>
+              <name>Jane Goodall</name>
+              <orcid><a href="https://orcid.org/0000-0002-1825-0097">https://orcid.org/0000-0002-1825-0097</a></orcid>
+            </author>
+            <figcaption><minipage-label>Minipage 151.</minipage-label></figcaption>
+          </figure>
+          <p><i>URL form is accepted but bare form is preferred.</i></p></section>
+        </sub-section>
+      </section>
+      <section id="sh-publication-date">
+        <section-title><code>&#x3C;publication-date></code></section-title>
+        <sub-section id="sec:general-usage-82">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>publication-date</i>. Compiles to eHTML <code>&#x3C;publication-date></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;publication-date></code></li>
+          </ul>
+          <pre><code id="code:sh-publication-date-1">
+&#x3C;meta>
+  &#x3C;publication-date | 2024-03-15>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-publication-date-1" class="frameable-border">
+            <meta>
+              <publication-date>2024-03-15</publication-date>
+            </meta>
+            <figcaption><minipage-label>Minipage 152.</minipage-label></figcaption>
+          </figure>
+          <p><i>ISO 8601 publication date — the preferred form.</i></p>
+          <pre><code id="code:sh-publication-date-2">
+&#x3C;meta>
+  &#x3C;publication-date | March 15, 2024>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-publication-date-2" class="frameable-border">
+            <meta>
+              <publication-date>March 15, 2024</publication-date>
+            </meta>
+            <figcaption><minipage-label>Minipage 153.</minipage-label></figcaption>
+          </figure>
+          <p><i>Free-form publication date. Acceptable but ISO 8601 is preferred
+for predictable JATS export and machine readability.</i></p>
+        </sub-section>
+        <sub-section id="sec:arguments-44">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1553,153 +2308,120 @@ Content.
             </thead>
             <tbody>
               <tr>
-                <td><code>notes</code></td>
+                <td><code>format</code></td>
                 <td>kwarg</td>
-                <td></td>
-                <td></td>
+                <td><code>iso</code> <code>ymd</code> <code>ymd-time</code> <code>mdy</code> <code>dmy</code> <code>custom</code></td>
+                <td>Optional hint about how the date should be parsed and formatted.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-title">
-        <section-title><code>&#x3C;title></code></section-title>
-        <sub-section id="sec:general-usage-63">
+      <section id="sh-section-subtitle">
+        <section-title><code>&#x3C;section-subtitle></code></section-title>
+        <sub-section id="sec:general-usage-83">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>title</i>. Compiles to eHTML <code>&#x3C;title></code>.</p>
-          <p>The document (or section) title, authored as a child of <code>&#x3C;meta></code>. One authored <code>&#x3C;title></code> resolves to the right eHTML element by context: inside an article it is promoted to <code>&#x3C;article-title></code>, inside a book to <code>&#x3C;book-title></code>, inside a section’s <code>&#x3C;meta></code> to the matching section-title. You write <code>&#x3C;title></code>; the compiler picks the variant.</p>
+          <p>Semantic role: <i>section-subtitle</i>. Compiles to eHTML <code>&#x3C;section-subtitle></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;title></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-title-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;author | Jane Goodall>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source (it carries document metadata, not body content). Titles may contain inline formatting.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-39">
-          <sub-section-title>Arguments</sub-section-title>
-          <p><code>&#x3C;title></code> takes no attributes. Its content is inline prose. Pair it with <code>&#x3C;subtitle></code> for a secondary line.</p></section>
+            <li>Canonical: <code>&#x3C;section-subtitle></code></li>
+          </ul></section>
         </sub-section>
       </section>
-      <section id="sh-subtitle">
-        <section-title><code>&#x3C;subtitle></code></section-title>
-        <sub-section id="sec:general-usage-64">
+      <section id="sh-section-title">
+        <section-title><code>&#x3C;section-title></code></section-title>
+        <sub-section id="sec:general-usage-84">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>subtitle</i>. Compiles to eHTML <code>&#x3C;subtitle></code>.</p>
-          <p>A secondary title line, authored as a child of <code>&#x3C;meta></code> alongside <code>&#x3C;title></code>. Like <code>&#x3C;title></code>, it resolves to the contextual variant — <code>&#x3C;article-subtitle></code>, <code>&#x3C;book-subtitle></code>, or the matching section-subtitle.</p>
+          <p>Semantic role: <i>section-title</i>. Compiles to eHTML <code>&#x3C;section-title></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;subtitle></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-subtitle-1">
-&#x3C;meta type=article>
-  &#x3C;title | On the Convergence of Iterative Maps>
-  &#x3C;subtitle | A Fixed-Point Perspective>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-40">
-          <sub-section-title>Arguments</sub-section-title>
-          <p><code>&#x3C;subtitle></code> takes no attributes. Its content is inline prose.</p></section>
+            <li>Canonical: <code>&#x3C;section-title></code></li>
+          </ul></section>
         </sub-section>
       </section>
-      <section id="sh-abstract">
-        <section-title><code>&#x3C;abstract></code></section-title>
-        <sub-section id="sec:general-usage-65">
+      <section id="sh-sub-section-subtitle">
+        <section-title><code>&#x3C;sub-section-subtitle></code></section-title>
+        <sub-section id="sec:general-usage-85">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>abstract</i>. Compiles to eHTML <code>&#x3C;abstract></code>.</p>
-          <p>The document abstract, authored as a child of <code>&#x3C;meta></code>. Its content is block prose (one or more paragraphs); a structured abstract uses markdown bold for its sub-headings.</p>
+          <p>Semantic role: <i>sub-section-subtitle</i>. Compiles to eHTML <code>&#x3C;sub-section-subtitle></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;abstract></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-abstract-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;abstract |
-  Elephant populations shape vegetation and carbon storage, and so
-  affect regional climate. We quantify the effect across 50 sites.
-  >
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-41">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>unstructured</code> <code>structured</code> <code>graphical</code> <code>executive-summary</code> <code>other</code></td>
-                <td>Distinguishes abstract types. A structured abstract has explicit sub-headings (Background, Methods, Results, Conclusion); the default is unstructured flowing prose.</td>
-              </tr>
-              <tr>
-                <td><code>word-limit</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional documentation of the journal’s word limit. Informational only — it does not enforce.</td>
-              </tr>
-            </tbody>
-          </table></section>
+            <li>Canonical: <code>&#x3C;sub-section-subtitle></code></li>
+          </ul></section>
         </sub-section>
       </section>
-      <section id="sh-keywords">
-        <section-title><code>&#x3C;keywords></code></section-title>
-        <sub-section id="sec:general-usage-66">
+      <section id="sh-sub-section-title">
+        <section-title><code>&#x3C;sub-section-title></code></section-title>
+        <sub-section id="sec:general-usage-86">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>keywords</i>. Compiles to eHTML <code>&#x3C;keywords></code> (JATS <code>&#x3C;kwd-group></code>).</p>
-          <p>The document’s keyword set, authored as a child of <code>&#x3C;meta></code>. Author the terms as the content; they are the discovery keywords a journal or index lists.</p>
+          <p>Semantic role: <i>sub-section-title</i>. Compiles to eHTML <code>&#x3C;sub-section-title></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;keywords></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-keywords-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;keywords | elephants; carbon storage; regional climate; conservation>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
+            <li>Canonical: <code>&#x3C;sub-section-title></code></li>
+          </ul></section>
         </sub-section>
-        <sub-section id="sec:arguments-42">
-          <sub-section-title>Arguments</sub-section-title>
-          <p><code>&#x3C;keywords></code> takes no attributes. Its content is the keyword list as inline text.</p></section>
+      </section>
+      <section id="sh-sub-sub-section-subtitle">
+        <section-title><code>&#x3C;sub-sub-section-subtitle></code></section-title>
+        <sub-section id="sec:general-usage-87">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>sub-sub-section-subtitle</i>. Compiles to eHTML <code>&#x3C;sub-sub-section-subtitle></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;sub-sub-section-subtitle></code></li>
+          </ul></section>
+        </sub-section>
+      </section>
+      <section id="sh-sub-sub-section-title">
+        <section-title><code>&#x3C;sub-sub-section-title></code></section-title>
+        <sub-section id="sec:general-usage-88">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>sub-sub-section-title</i>. Compiles to eHTML <code>&#x3C;sub-sub-section-title></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;sub-sub-section-title></code></li>
+          </ul></section>
         </sub-section>
       </section>
       <section id="sh-subject">
         <section-title><code>&#x3C;subject></code></section-title>
-        <sub-section id="sec:general-usage-67">
+        <sub-section id="sec:general-usage-89">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>subject</i>. Compiles to eHTML <code>&#x3C;subject></code>.</p>
-          <p>A subject classification for the document — a discipline, category, or subject-scheme term — authored as a child of <code>&#x3C;meta></code>. Repeat it for multiple classifications.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;subject></code> (child of <code>&#x3C;meta></code>)</li>
+            <li>Canonical: <code>&#x3C;subject></code></li>
           </ul>
           <pre><code id="code:sh-subject-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;subject | Ecology>
-  &#x3C;subject scheme=msc | 92D40>
+&#x3C;meta>
+  &#x3C;subject | Ecology of large mammals>
 &#x3C;/meta>
 </code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
+          <figure id="mp:sh-subject-1" class="frameable-border">
+            <meta>
+              <subject>Ecology of large mammals</subject>
+            </meta>
+            <figcaption><minipage-label>Minipage 154.</minipage-label></figcaption>
+          </figure>
+          <p><i>Free-form subject. Common for general-interest documents.</i></p>
+          <pre><code id="code:sh-subject-2">
+&#x3C;meta>
+  &#x3C;subject scheme=MSC2020 | 92D40>
+  &#x3C;subject scheme=MSC2020 | 92D25>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-subject-2" class="frameable-border">
+            <meta>
+              <subject data-subject-scheme="MSC2020">92D40</subject>
+              <subject data-subject-scheme="MSC2020">92D25</subject>
+            </meta>
+            <figcaption><minipage-label>Minipage 155.</minipage-label></figcaption>
+          </figure>
+          <p><i>Multiple subjects from a controlled vocabulary. The scheme
+identifies the classification system; the JATS exporter
+generates the appropriate &#x3C;subj-group subj-group-type=”…”> wrapper.</i></p>
         </sub-section>
-        <sub-section id="sec:arguments-43">
+        <sub-section id="sec:arguments-45">
           <sub-section-title>Arguments</sub-section-title>
           <table>
             <thead>
@@ -1715,374 +2437,120 @@ Content.
                 <td><code>scheme</code></td>
                 <td>kwarg</td>
                 <td></td>
-                <td>Optional classification scheme the subject term belongs to (e.g. a subject-classification code list).</td>
+                <td>Optional classification scheme this subject belongs to (e.g.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-      <section id="sh-author">
-        <section-title><code>&#x3C;author></code></section-title>
-        <sub-section id="sec:general-usage-68">
+      <section id="sh-subtitle">
+        <section-title><code>&#x3C;subtitle></code></section-title>
+        <sub-section id="sec:general-usage-90">
           <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>author</i>. Compiles to eHTML <code>&#x3C;author></code>.</p>
+          <p>Semantic role: <i>subtitle</i>. Compiles to eHTML <code>&#x3C;subtitle></code>.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;author></code></li>
-          </ul><code id="code:sh-author-1">&#x3C;author | Jane Goodall></code>
-          <figure id="mp:sh-author-1" class="frameable-border">
-            <author>Jane Goodall</author>
-            <figcaption><minipage-label>Minipage 115.</minipage-label></figcaption>
-          </figure>
-          <p><i>Backward-compatible casual form (carried forward from before the structured-interface reconciliation). The pipe content sits as text content of &#x3C;author>; it is NOT lifted to a &#x3C;name> child — authors who want the structured shape use the kwarg form below or the child-tag form. JATS export reads the name string either way.</i></p><code id="code:sh-author-2">&#x3C;author name="Jane Goodall" orcid="0000-0001-2345-6789" affiliation="Cambridge University" +corresponding /></code>
-          <figure id="mp:sh-author-2" class="frameable-border">
-            <author corresponding>
-              <name>Jane Goodall</name>
-              <orcid>0000-0001-2345-6789</orcid>
-              <affiliation>Cambridge University</affiliation>
-            </author>
-            <figcaption><minipage-label>Minipage 116.</minipage-label></figcaption>
-          </figure>
-          <p><i>Kwarg form. Each lifted kwarg becomes a child tag at the gate; +corresponding stays as a boolean kwarg on the canonical eHTML &#x3C;author>.</i></p>
-          <pre><code id="code:sh-author-3">
-&#x3C;author +corresponding>
-  &#x3C;name | Jane Goodall>
-  &#x3C;affiliation | Cambridge University>
-  &#x3C;orcid | 0000-0001-2345-6789>
-  &#x3C;email | jane@example.com>
-&#x3C;/author>
-</code></pre>
-          <figure id="mp:sh-author-3" class="frameable-border">
-            <author corresponding>
-              <name>Jane Goodall</name>
-              <affiliation>Cambridge University</affiliation>
-              <orcid>0000-0001-2345-6789</orcid>
-              <email><a href="mailto:jane@example.com">jane@example.com</a></email>
-            </author>
-            <figcaption><minipage-label>Minipage 117.</minipage-label></figcaption>
-          </figure>
-          <p><i>Child-tag form. The canonical eHTML shape. Both this form and the equivalent kwarg form above produce the same eHTML output.</i></p>
-          <pre><code id="code:sh-author-4">
+            <li>Canonical: <code>&#x3C;subtitle></code></li>
+          </ul>
+          <pre><code id="code:sh-subtitle-1">
 &#x3C;meta>
-  &#x3C;author | Jane Goodall>
-  &#x3C;author | David Attenborough>
-  &#x3C;author +corresponding | Charles Darwin>
+  &#x3C;title | The Effect of Elephants on Climate>
+  &#x3C;subtitle | A Multi-Year Field Study in Tanzania>
 &#x3C;/meta>
 </code></pre>
-          <figure id="mp:sh-author-4" class="frameable-border">
+          <figure id="mp:sh-subtitle-1" class="frameable-border">
             <meta>
-              <author>Jane Goodall</author>
-              <author>David Attenborough</author>
-              <author corresponding>Charles Darwin</author>
+              <article-title>The Effect of Elephants on Climate</article-title>
+              <article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle>
             </meta>
-            <figcaption><minipage-label>Minipage 118.</minipage-label></figcaption>
+            <figcaption><minipage-label>Minipage 156.</minipage-label></figcaption>
+          </figure></section>
+        </sub-section>
+      </section>
+      <section id="sh-title">
+        <section-title><code>&#x3C;title></code></section-title>
+        <sub-section id="sec:general-usage-91">
+          <sub-section-title>General Usage</sub-section-title>
+          <p>Semantic role: <i>title</i>. Compiles to eHTML <code>&#x3C;title></code>.</p>
+          <p>Registers:</p>
+          <ul>
+            <li>Canonical: <code>&#x3C;title></code></li>
+          </ul>
+          <pre><code id="code:sh-title-1">
+&#x3C;meta>
+  &#x3C;title | The Effect of Elephants on Climate>
+&#x3C;/meta>
+</code></pre>
+          <figure id="mp:sh-title-1" class="frameable-border">
+            <meta>
+              <article-title>The Effect of Elephants on Climate</article-title>
+            </meta>
+            <figcaption><minipage-label>Minipage 157.</minipage-label></figcaption>
           </figure>
-          <p><i>Multiple authors are sibling &#x3C;author> elements inside &#x3C;meta>. The third is the corresponding author. JATS export groups them as &#x3C;contrib-group>.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-44">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>The author’s name. Authored as a kwarg, lifted at the normalize-to-canonical gate to a 
-                  <name></name>child tag. Equivalent to authoring 
-                  <name>…</name> inside the 
-                  <author></author>‘s child-tag form.
-                </td>
-              </tr>
-              <tr>
-                <td><code>affiliation</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Author’s institutional affiliation. Lifts to 
-                  <affiliation></affiliation>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>orcid</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Author’s ORCID identifier (e.g., 0000-0000-0000-0000). Lifts to 
-                  <orcid></orcid>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>email</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Author’s contact email address. Lifts to 
-                  <email></email>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>corresponding</code></td>
-                <td>kwarg</td>
-                <td><code>true</code> <code>false</code></td>
-                <td>Marks this author as the corresponding author (JATS contrib corresp=”yes”). A scalar marker — stays as a kwarg/ attribute on the canonical eHTML 
-                  <author></author>; never lifted to a child tag. Both surface forms are accepted: +corresponding (boolean shorthand) and corresponding=true (explicit kwarg) both normalize to a <code>corresponding="true"</code> attribute on the canonical eHTML node. The structured-element gate promotes the +form into the kwarg surface so the schema renderer’s attribute mapping fires uniformly.
-                </td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-editor">
-        <section-title><code>&#x3C;editor></code></section-title>
-        <sub-section id="sec:general-usage-69">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>editor</i>. Compiles to eHTML <code>&#x3C;editor></code>.</p>
-          <p>An editor of the document — a contributor, parallel to <code>&#x3C;author></code> — authored as a child of <code>&#x3C;meta></code>. It takes the same surface forms as <code>&#x3C;author></code>: a casual pipe name, a kwarg form, or the structured child-tag form. Repeat it for multiple editors.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;editor></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-editor-1">
-&#x3C;meta type=book>
-  &#x3C;title | A Natural History of Elephants>
-  &#x3C;editor | Jane Goodall>
-  &#x3C;editor name="David Attenborough" affiliation="BBC" />
+          <p><i>Inside &#x3C;article>, &#x3C;title> in &#x3C;meta> becomes &#x3C;article-title>.</i></p>
+          <pre><code id="code:sh-title-2">
+&#x3C;book>
+  &#x3C;meta>
+    &#x3C;title | A Comprehensive Guide>
+  &#x3C;/meta>
+&#x3C;/book>
+</code></pre>
+          <figure id="mp:sh-title-2" class="frameable-border">
+            <book>
+              <meta>
+                <title>A Comprehensive Guide</title>
+              </meta>
+            </book>
+            <figcaption><minipage-label>Minipage 158.</minipage-label></figcaption>
+          </figure>
+          <p><i>Inside &#x3C;book>, &#x3C;title> in &#x3C;meta> becomes &#x3C;book-title>.</i></p>
+          <pre><code id="code:sh-title-3">
+&#x3C;meta>
+  &#x3C;title | The role of &#x3C;i type=taxonomic | Loxodonta africana> in ecosystem dynamics>
 &#x3C;/meta>
 </code></pre>
-          <pre><code id="code:sh-editor-2">
-&#x3C;editor>
-  &#x3C;name | Jane Goodall>
-  &#x3C;affiliation | Cambridge University>
-  &#x3C;orcid | 0000-0001-2345-6789>
-&#x3C;/editor>
-</code></pre>
-          <p><i>Front-matter — shown as source. Like <code>&#x3C;author></code>, each lifted kwarg becomes a child tag at the gate; the child-tag form is the canonical eHTML shape. JATS export groups editors in the <code>&#x3C;contrib-group></code> with <code>contrib-type="editor"</code>.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-45">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>The editor’s name. Lifts to a <code>&#x3C;name></code> child.</td>
-              </tr>
-              <tr>
-                <td><code>affiliation</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Institutional affiliation. Lifts to <code>&#x3C;affiliation></code>.</td>
-              </tr>
-              <tr>
-                <td><code>orcid</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>ORCID identifier. Lifts to <code>&#x3C;orcid></code>.</td>
-              </tr>
-              <tr>
-                <td><code>email</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Contact email. Lifts to <code>&#x3C;email></code>.</td>
-              </tr>
-              <tr>
-                <td><code>role</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional editorial role (e.g. <code>series</code> for a series editor).</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-date">
-        <section-title><code>&#x3C;date></code></section-title>
-        <sub-section id="sec:general-usage-70">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>date</i>. Compiles to eHTML <code>&#x3C;date></code>.</p>
-          <p>A date associated with the document, authored as a child of <code>&#x3C;meta></code>. Author the date as an ISO string in the content; the <code>type</code> kwarg says which date it is (publication, received, accepted, …).</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;date></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-date-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;date | 2024-03-15>
-  &#x3C;date type=received | 2023-11-02>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-46">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>type</code></td>
-                <td>kwarg</td>
-                <td><code>published</code> <code>received</code> <code>accepted</code> …</td>
-                <td>Which date this is. A publication date maps to JATS <code>&#x3C;pub-date></code>; other types map to <code>&#x3C;date></code> entries in the article history. Default is the publication date.</td>
-              </tr>
-              <tr>
-                <td><code>format</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional display-format hint for the rendered date.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-publication-date">
-        <section-title><code>&#x3C;publication-date></code></section-title>
-        <sub-section id="sec:general-usage-71">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>publication-date</i>. Compiles to eHTML <code>&#x3C;publication-date></code> (JATS <code>&#x3C;pub-date></code>).</p>
-          <p>The document’s publication date, authored as a child of <code>&#x3C;meta></code>. It is the explicit, named form of the publication date (equivalent to <code>&#x3C;date type=published></code>); use it when you want the publication date to read unambiguously in the source.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;publication-date></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-publication-date-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;publication-date | 2024-03-15>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-47">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>format</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>Optional display-format hint for the rendered date.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-license">
-        <section-title><code>&#x3C;license></code></section-title>
-        <sub-section id="sec:general-usage-72">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>license</i>. Compiles to eHTML <code>&#x3C;license></code>.</p>
-          <p>The document’s license, authored as a child of <code>&#x3C;meta></code>. Author the human-readable license name as the content; the <code>href</code> kwarg carries the canonical license URL.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;license></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-license-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;license href="https://creativecommons.org/licenses/by/4.0/" | CC BY 4.0>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-48">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>attribute</th>
-                <th>kind</th>
-                <th>values / default</th>
-                <th>notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>href</code></td>
-                <td>kwarg</td>
-                <td></td>
-                <td>The canonical URL of the license. Renders as a link on the license name.</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
-      </section>
-      <section id="sh-lang">
-        <section-title><code>&#x3C;lang></code></section-title>
-        <sub-section id="sec:general-usage-73">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>Semantic role: <i>lang</i>. Compiles to eHTML <code>&#x3C;lang></code>.</p>
-          <p>The document’s primary language, authored as a child of <code>&#x3C;meta></code>. Author a BCP-47 language tag (<code>en</code>, <code>en-GB</code>, <code>fr</code>) as the content. On the HTML surface it becomes the <code>xml:lang</code> / <code>lang</code> attribute of the document.</p>
-          <p>Registers:</p>
-          <ul>
-            <li>Canonical: <code>&#x3C;lang></code> (child of <code>&#x3C;meta></code>)</li>
-          </ul>
-          <pre><code id="code:sh-lang-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;lang | en>
-&#x3C;/meta>
-</code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-49">
-          <sub-section-title>Arguments</sub-section-title>
-          <p><code>&#x3C;lang></code> takes no attributes. Its content is the language tag.</p></section>
+          <figure id="mp:sh-title-3" class="frameable-border">
+            <meta>
+              <article-title>The role of <i data-italic-type="taxonomic">Loxodonta africana</i> in ecosystem dynamics</article-title>
+            </meta>
+            <figcaption><minipage-label>Minipage 159.</minipage-label></figcaption>
+          </figure>
+          <p><i>Titles can contain inline elements. The recursive content parsing
+handles nested constructs.</i></p></section>
         </sub-section>
       </section>
       <section id="sh-version">
         <section-title><code>&#x3C;version></code></section-title>
-        <sub-section id="sec:general-usage-74">
+        <sub-section id="sec:general-usage-92">
           <sub-section-title>General Usage</sub-section-title>
           <p>Semantic role: <i>version</i>. Compiles to eHTML <code>&#x3C;version></code>.</p>
-          <p>A version string for the document, authored as a child of <code>&#x3C;meta></code>. Useful for preprints and living documents that are revised over time.</p>
           <p>Registers:</p>
           <ul>
-            <li>Canonical: <code>&#x3C;version></code> (child of <code>&#x3C;meta></code>)</li>
+            <li>Canonical: <code>&#x3C;version></code></li>
           </ul>
           <pre><code id="code:sh-version-1">
-&#x3C;meta type=article>
-  &#x3C;title | The Effect of Elephants on Climate>
-  &#x3C;version | 2.1>
+&#x3C;meta>
+  &#x3C;version | 1.0.0>
 &#x3C;/meta>
 </code></pre>
-          <p><i>Front-matter — shown as source.</i></p>
-        </sub-section>
-        <sub-section id="sec:arguments-50">
-          <sub-section-title>Arguments</sub-section-title>
-          <p><code>&#x3C;version></code> takes no attributes. Its content is the version string.</p></section>
+          <figure id="mp:sh-version-1" class="frameable-border">
+            <meta>
+              <version>1.0.0</version>
+            </meta>
+            <figcaption><minipage-label>Minipage 160.</minipage-label></figcaption>
+          </figure>
+          <p><i>Semantic version. Other formats are equally valid as a free-form
+string.</i></p><code id="code:sh-version-2">&#x3C;meta version="draft-2" /></code>
+          <figure id="mp:sh-version-2" class="frameable-border">
+            <meta>
+              <version>draft-2</version>
+            </meta>
+            <figcaption><minipage-label>Minipage 161.</minipage-label></figcaption>
+          </figure>
+          <p><i>Kwarg-form authoring lifts to the child-tag form at the gate.</i></p></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="stores.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Stores</toc-title></a><a class="enscribe-chapter-next" href="structural-scaffolding.html" rel="next"><toc-title>Structural scaffolding</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:declarations-metadata"><ul><li><a href="#sh-meta">&#x3C;meta></a><ul><li><a href="#sec:general-usage-61">General Usage</a></li><li><a href="#sec:arguments-37">Arguments</a></li></ul></li><li><a href="#sh-config">&#x3C;config></a><ul><li><a href="#sec:general-usage-62">General Usage</a></li><li><a href="#sec:arguments-38">Arguments</a></li></ul></li><li><a href="#sh-title">&#x3C;title></a><ul><li><a href="#sec:general-usage-63">General Usage</a></li><li><a href="#sec:arguments-39">Arguments</a></li></ul></li><li><a href="#sh-subtitle">&#x3C;subtitle></a><ul><li><a href="#sec:general-usage-64">General Usage</a></li><li><a href="#sec:arguments-40">Arguments</a></li></ul></li><li><a href="#sh-abstract">&#x3C;abstract></a><ul><li><a href="#sec:general-usage-65">General Usage</a></li><li><a href="#sec:arguments-41">Arguments</a></li></ul></li><li><a href="#sh-keywords">&#x3C;keywords></a><ul><li><a href="#sec:general-usage-66">General Usage</a></li><li><a href="#sec:arguments-42">Arguments</a></li></ul></li><li><a href="#sh-subject">&#x3C;subject></a><ul><li><a href="#sec:general-usage-67">General Usage</a></li><li><a href="#sec:arguments-43">Arguments</a></li></ul></li><li><a href="#sh-author">&#x3C;author></a><ul><li><a href="#sec:general-usage-68">General Usage</a></li><li><a href="#sec:arguments-44">Arguments</a></li></ul></li><li><a href="#sh-editor">&#x3C;editor></a><ul><li><a href="#sec:general-usage-69">General Usage</a></li><li><a href="#sec:arguments-45">Arguments</a></li></ul></li><li><a href="#sh-date">&#x3C;date></a><ul><li><a href="#sec:general-usage-70">General Usage</a></li><li><a href="#sec:arguments-46">Arguments</a></li></ul></li><li><a href="#sh-publication-date">&#x3C;publication-date></a><ul><li><a href="#sec:general-usage-71">General Usage</a></li><li><a href="#sec:arguments-47">Arguments</a></li></ul></li><li><a href="#sh-license">&#x3C;license></a><ul><li><a href="#sec:general-usage-72">General Usage</a></li><li><a href="#sec:arguments-48">Arguments</a></li></ul></li><li><a href="#sh-lang">&#x3C;lang></a><ul><li><a href="#sec:general-usage-73">General Usage</a></li><li><a href="#sec:arguments-49">Arguments</a></li></ul></li><li><a href="#sh-version">&#x3C;version></a><ul><li><a href="#sec:general-usage-74">General Usage</a></li><li><a href="#sec:arguments-50">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="stores.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Stores</toc-title></a><a class="enscribe-chapter-next" href="structural-scaffolding.html" rel="next"><toc-title>Structural scaffolding</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:declarations-metadata"><ul><li><a href="#sh-abstract">&#x3C;abstract></a><ul><li><a href="#sec:general-usage-63">General Usage</a></li><li><a href="#sec:arguments-37">Arguments</a></li></ul></li><li><a href="#sh-affiliation">&#x3C;affiliation></a><ul><li><a href="#sec:general-usage-64">General Usage</a></li></ul></li><li><a href="#sh-article-subtitle">&#x3C;article-subtitle></a><ul><li><a href="#sec:general-usage-65">General Usage</a></li></ul></li><li><a href="#sh-article-title">&#x3C;article-title></a><ul><li><a href="#sec:general-usage-66">General Usage</a></li></ul></li><li><a href="#sh-author">&#x3C;author></a><ul><li><a href="#sec:general-usage-67">General Usage</a></li><li><a href="#sec:arguments-38">Arguments</a></li></ul></li><li><a href="#sh-book-part-subtitle">&#x3C;book-part-subtitle></a><ul><li><a href="#sec:general-usage-68">General Usage</a></li></ul></li><li><a href="#sh-book-part-title">&#x3C;book-part-title></a><ul><li><a href="#sec:general-usage-69">General Usage</a></li></ul></li><li><a href="#sh-book-subtitle">&#x3C;book-subtitle></a><ul><li><a href="#sec:general-usage-70">General Usage</a></li></ul></li><li><a href="#sh-book-title">&#x3C;book-title></a><ul><li><a href="#sec:general-usage-71">General Usage</a></li></ul></li><li><a href="#sh-config">&#x3C;config></a><ul><li><a href="#sec:general-usage-72">General Usage</a></li><li><a href="#sec:arguments-39">Arguments</a></li></ul></li><li><a href="#sh-date">&#x3C;date></a><ul><li><a href="#sec:general-usage-73">General Usage</a></li><li><a href="#sec:arguments-40">Arguments</a></li></ul></li><li><a href="#sh-editor">&#x3C;editor></a><ul><li><a href="#sec:general-usage-74">General Usage</a></li><li><a href="#sec:arguments-41">Arguments</a></li></ul></li><li><a href="#sh-email">&#x3C;email></a><ul><li><a href="#sec:general-usage-75">General Usage</a></li></ul></li><li><a href="#sh-keywords">&#x3C;keywords></a><ul><li><a href="#sec:general-usage-76">General Usage</a></li></ul></li><li><a href="#sh-lang">&#x3C;lang></a><ul><li><a href="#sec:general-usage-77">General Usage</a></li></ul></li><li><a href="#sh-license">&#x3C;license></a><ul><li><a href="#sec:general-usage-78">General Usage</a></li><li><a href="#sec:arguments-42">Arguments</a></li></ul></li><li><a href="#sh-meta">&#x3C;meta></a><ul><li><a href="#sec:general-usage-79">General Usage</a></li><li><a href="#sec:arguments-43">Arguments</a></li></ul></li><li><a href="#sh-name">&#x3C;name></a><ul><li><a href="#sec:general-usage-80">General Usage</a></li></ul></li><li><a href="#sh-orcid">&#x3C;orcid></a><ul><li><a href="#sec:general-usage-81">General Usage</a></li></ul></li><li><a href="#sh-publication-date">&#x3C;publication-date></a><ul><li><a href="#sec:general-usage-82">General Usage</a></li><li><a href="#sec:arguments-44">Arguments</a></li></ul></li><li><a href="#sh-section-subtitle">&#x3C;section-subtitle></a><ul><li><a href="#sec:general-usage-83">General Usage</a></li></ul></li><li><a href="#sh-section-title">&#x3C;section-title></a><ul><li><a href="#sec:general-usage-84">General Usage</a></li></ul></li><li><a href="#sh-sub-section-subtitle">&#x3C;sub-section-subtitle></a><ul><li><a href="#sec:general-usage-85">General Usage</a></li></ul></li><li><a href="#sh-sub-section-title">&#x3C;sub-section-title></a><ul><li><a href="#sec:general-usage-86">General Usage</a></li></ul></li><li><a href="#sh-sub-sub-section-subtitle">&#x3C;sub-sub-section-subtitle></a><ul><li><a href="#sec:general-usage-87">General Usage</a></li></ul></li><li><a href="#sh-sub-sub-section-title">&#x3C;sub-sub-section-title></a><ul><li><a href="#sec:general-usage-88">General Usage</a></li></ul></li><li><a href="#sh-subject">&#x3C;subject></a><ul><li><a href="#sec:general-usage-89">General Usage</a></li><li><a href="#sec:arguments-45">Arguments</a></li></ul></li><li><a href="#sh-subtitle">&#x3C;subtitle></a><ul><li><a href="#sec:general-usage-90">General Usage</a></li></ul></li><li><a href="#sh-title">&#x3C;title></a><ul><li><a href="#sec:general-usage-91">General Usage</a></li></ul></li><li><a href="#sh-version">&#x3C;version></a><ul><li><a href="#sec:general-usage-92">General Usage</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

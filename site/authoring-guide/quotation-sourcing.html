@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Appendices — The Enscribe Authoring Guide</title>
+<title>Quotation &amp; sourcing — The Enscribe Authoring Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,193 +1412,94 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=appendices">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html" class="enscribe-toc-active" aria-current="location">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:appendices" book-part-type="appendix">
+<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=quotation-sourcing">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html" class="enscribe-toc-active" aria-current="location">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:quotation-sourcing" book-part-type="chapter">
       <meta>
-        <book-part-title>Appendices</book-part-title>
+        <book-part-title>Quotation &#x26; sourcing</book-part-title>
       </meta>
-      <section id="sec:appendix-meta">
-        <section-title>Document Metadata</section-title>
-        <sub-section id="sec:general-usage-30">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>The <code>&#x3C;meta></code> block holds the document’s front matter — its class, title, authors, and abstract — at the top of the file. Its <code>type</code> selects the document class.</p>
-          <pre><code id="code:meta-basic">
-&#x3C;meta type=article>
-&#x3C;title | On the Spectra of Linear Operators>
-&#x3C;subtitle | A Survey>
-&#x3C;author>
-&#x3C;name | Ada Lovelace>
-&#x3C;affiliation | Analytical Society>
-&#x3C;email | ada@example.org>
-&#x3C;/author>
-&#x3C;date | 2025-06-01>
-&#x3C;abstract | We survey the eigenstructure of bounded operators.>
-&#x3C;keywords | eigenvalues, operators, spectra>
+      <p>Others’ words, and pointers at sources — quotation, citation, cross-reference, and links.</p>
+      <section id="ag-a">
+        <section-title><code>&#x3C;a></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;a></code>.</p><code id="code:ag-a-1">See &#x3C;a https://example.com/docs | the documentation>.</code>
+        <figure id="mp:ag-a-1" class="frameable-border">
+          <p>See <a href="https://example.com/docs">the documentation</a>.</p>
+          <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
+        </figure>
+        <p><i>The positional URL form — the target is the first argument, the pipe
+content is the link text. The most common authoring path. (Markdown
+<code>[text](url)</code> is not an enscribe idiom; it renders as literal text.)</i></p></section>
+      </section>
+      <section id="ag-bib-entry">
+        <section-title><code>&#x3C;bib-entry></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;bib-entry></code>.</p></section>
+      </section>
+      <section id="ag-bibliography">
+        <section-title><code>&#x3C;bibliography></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;bibliography></code>.</p></section>
+      </section>
+      <section id="ag-blockquote">
+        <section-title><code>&#x3C;blockquote></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;blockquote></code>.</p><code id="code:ag-blockquote-1">&#x3C;quote | A short quotation.></code>
+        <figure id="mp:ag-blockquote-1" class="frameable-border">
+          <blockquote>
+            <p>A short quotation.</p>
+          </blockquote>
+          <figcaption><minipage-label>Minipage 21.</minipage-label></figcaption>
+        </figure>
+        <p><i>The &#x3C;quote> shorthand expands to &#x3C;blockquote> at eHTML.</i></p></section>
+      </section>
+      <section id="ag-cite">
+        <section-title><code>&#x3C;cite></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;cite></code>.</p><code id="code:ag-cite-1">The argument is supported by data &#x3C;cite goodall2024>.</code>
+        <figure id="mp:ag-cite-1" class="frameable-border">
+          <p>The argument is supported by data <cite></cite>.</p>
+          <figcaption><minipage-label>Minipage 22.</minipage-label></figcaption>
+        </figure>
+        <p><i>A simple citation. The resolver renders the citation according
+to the document-level style. For author-year style, this becomes
+“(Goodall 2024)”. For numbered style, “[1]”. The actual rendered
+text is generated by the citation resolver, not written by the author.</i></p></section>
+      </section>
+      <section id="ag-doi">
+        <section-title><code>&#x3C;doi></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;doi></code>.</p>
+        <pre><code id="code:ag-doi-1">
+&#x3C;meta>
+  &#x3C;doi | 10.1234/example.2024>
 &#x3C;/meta>
 </code></pre>
-          <figure id="mp:meta-basic" class="frameable-border">
-            <meta data-document-type="article">
-              <article-title>On the Spectra of Linear Operators</article-title>
-              <article-subtitle>A Survey</article-subtitle>
-              <author>
-                <name>Ada Lovelace</name>
-                <affiliation>Analytical Society</affiliation>
-                <email><a href="mailto:ada@example.org">ada@example.org</a></email>
-              </author>
-              <date>2025-06-01</date>
-              <abstract>
-                <p>We survey the eigenstructure of bounded operators.</p>
-              </abstract>
-              <keywords>eigenvalues, operators, spectra</keywords>
-            </meta>
-            <figcaption><minipage-label>Minipage 31.</minipage-label></figcaption>
-          </figure>
-        </sub-section>
-        <sub-section id="sec:fields">
-          <sub-section-title>Fields</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>type</td>
-                <td>article | book | website</td>
-              </tr>
-              <tr>
-                <td>title / subtitle</td>
-                <td>the document’s heading and tagline</td>
-              </tr>
-              <tr>
-                <td>author (repeatable)</td>
-                <td>a name with optional affiliation / email / orcid</td>
-              </tr>
-              <tr>
-                <td>date</td>
-                <td>the publication date</td>
-              </tr>
-              <tr>
-                <td>abstract</td>
-                <td>a summary paragraph</td>
-              </tr>
-              <tr>
-                <td>keywords</td>
-                <td>index terms</td>
-              </tr>
-              <tr>
-                <td>doi / license / lang</td>
-                <td>identifiers and rights metadata</td>
-              </tr>
-            </tbody>
-          </table></section>
-        </sub-section>
+        <figure id="mp:ag-doi-1" class="frameable-border">
+          <meta>
+            <doi>10.1234/example.2024</doi>
+          </meta>
+          <figcaption><minipage-label>Minipage 23.</minipage-label></figcaption>
+        </figure>
+        <p><i>Bare DOI as the typical authoring form.</i></p></section>
       </section>
-      <section id="sec:appendix-config">
-        <section-title>Configuration</section-title>
-        <sub-section id="sec:general-usage-31">
-          <sub-section-title>General Usage</sub-section-title>
-          <p><code>&#x3C;config></code> sets document-wide options. It is self-closing — note the trailing slash — and each entry is a flag or a <code>key=value</code>.</p>
-          <pre><code id="code:config-basic">
-&#x3C;config number-sections />
-&#x3C;config toc />
-&#x3C;config note-position=margin />
-</code></pre>
-        </sub-section>
-        <sub-section id="sec:options">
-          <sub-section-title>Options</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Option</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>number-sections / number-figures / number-tables / …</td>
-                <td>turn on numbering for each kind of element</td>
-              </tr>
-              <tr>
-                <td>number-depth</td>
-                <td>how many heading levels carry numbers</td>
-              </tr>
-              <tr>
-                <td>toc</td>
-                <td>generate a table of contents</td>
-              </tr>
-              <tr>
-                <td>toc-depth / toc-title</td>
-                <td>the contents depth and its heading</td>
-              </tr>
-              <tr>
-                <td>note-position</td>
-                <td>bottom (default) or margin for sidenotes</td>
-              </tr>
-              <tr>
-                <td>citation-style</td>
-                <td>the bibliography style</td>
-              </tr>
-              <tr>
-                <td>strict-mode</td>
-                <td>on (default) | literal | strict</td>
-              </tr>
-              <tr>
-                <td>theme</td>
-                <td>the visual theme</td>
-              </tr>
-              <tr>
-                <td>sidebar / on-this-page</td>
-                <td>website navigation chrome</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-20">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Each numbering family is off by default, so a document is unnumbered until you opt in. The website-chrome options apply only to a <code>type=website</code> document.</p></section>
-        </sub-section>
+      <section id="ag-q">
+        <section-title><code>&#x3C;q></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;q></code>.</p><code id="code:ag-q-1">She said &#x3C;q | hello> in passing.</code>
+        <figure id="mp:ag-q-1" class="frameable-border">
+          <p>She said <q>hello</q> in passing.</p>
+          <figcaption><minipage-label>Minipage 24.</minipage-label></figcaption>
+        </figure>
+        <p><i>Browsers automatically render &#x3C;q> with quotation marks. Authors
+do not include quotation marks in the content.</i></p></section>
       </section>
-      <section id="sec:appendix-data">
-        <section-title>Embedded Data</section-title>
-        <sub-section id="sec:general-usage-32">
-          <sub-section-title>General Usage</sub-section-title>
-          <p><code>&#x3C;data></code> is an invisible store for assets the document embeds — images and datasets — declared once with an id and pulled in by <code>@id</code>. It keeps a whole document self-contained in a single file.</p>
-          <pre><code id="code:data-basic">
-&#x3C;data>
-&#x3C;fig #fig:logo png>iVBORw0KGgo…base64…&#x3C;/fig>
-&#x3C;/data>
-
-Later, in the body:
-
-&#x3C;fig src="@fig:logo" | The project logo.>
-</code></pre>
-        </sub-section>
-        <sub-section id="sec:notes-21">
-          <sub-section-title>Notes</sub-section-title>
-          <p>The data block renders nothing itself — it holds the bytes. Reference an embedded asset by setting <code>src</code> to its id behind the <code>@</code> sigil.</p></section>
-        </sub-section>
+      <section id="ag-ref">
+        <section-title><code>&#x3C;ref></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;ref></code>.</p><code id="code:ag-ref-1">See &#x3C;ref @fig:scatter> for details.</code>
+        <figure id="mp:ag-ref-1" class="frameable-border">
+          <p>See <a href="#fig:scatter" class="ref-error">??ref: fig:scatter??</a> for details.</p>
+          <figcaption><minipage-label>Minipage 25.</minipage-label></figcaption>
+        </figure>
+        <p><i>Canonical form: @id prefix (@ references; # would declare an id on the
+&#x3C;ref> itself). The ref-resolution plugin replaces the
+&#x3C;ref> node with a __ref-marker before hast conversion. The handler
+then renders an &#x3C;a> element with computed text. Prefix word is
+lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.</i></p></section>
       </section>
-      <section id="sec:appendix-library">
-        <section-title>Reference Library</section-title>
-        <sub-section id="sec:general-usage-33">
-          <sub-section-title>General Usage</sub-section-title>
-          <p><code>&#x3C;library></code> is an invisible store for bibliographic references, pasted straight from a reference manager. Citations resolve against it, and <code>&#x3C;bibliography></code> prints the list.</p>
-          <pre><code id="code:library-basic">
-&#x3C;library format=bibtex>
-@book{strang2016, author={Gilbert Strang}, title={Introduction to Linear Algebra}, year={2016}}
-@article{goodall2024, author={Jane Goodall}, title={Field Notes}, year={2024}}
-&#x3C;/library>
-</code></pre>
-        </sub-section>
-        <sub-section id="sec:notes-22">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Cite an entry by its key — <code>&#x3C;cite strang2016></code> — anywhere in the body. <code>format</code> may be <code>bibtex</code> or another supported form, and <code>src</code> loads the entries from an external file instead of inline.</p></section>
-        </sub-section>
-      </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="section-headings.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Section Headings</toc-title></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:appendices"><ul><li><a href="#sec:appendix-meta">Document Metadata</a><ul><li><a href="#sec:general-usage-30">General Usage</a></li><li><a href="#sec:fields">Fields</a></li></ul></li><li><a href="#sec:appendix-config">Configuration</a><ul><li><a href="#sec:general-usage-31">General Usage</a></li><li><a href="#sec:options">Options</a></li><li><a href="#sec:notes-20">Notes</a></li></ul></li><li><a href="#sec:appendix-data">Embedded Data</a><ul><li><a href="#sec:general-usage-32">General Usage</a></li><li><a href="#sec:notes-21">Notes</a></li></ul></li><li><a href="#sec:appendix-library">Reference Library</a><ul><li><a href="#sec:general-usage-33">General Usage</a></li><li><a href="#sec:notes-22">Notes</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="aside.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Aside</toc-title></a><a class="enscribe-chapter-next" href="exhibit.html" rel="next"><toc-title>Exhibit</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:quotation-sourcing"><ul><li><a href="#ag-a">&#x3C;a></a></li><li><a href="#ag-bib-entry">&#x3C;bib-entry></a></li><li><a href="#ag-bibliography">&#x3C;bibliography></a></li><li><a href="#ag-blockquote">&#x3C;blockquote></a></li><li><a href="#ag-cite">&#x3C;cite></a></li><li><a href="#ag-doi">&#x3C;doi></a></li><li><a href="#ag-q">&#x3C;q></a></li><li><a href="#ag-ref">&#x3C;ref></a></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

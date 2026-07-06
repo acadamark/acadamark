@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tables — The Enscribe Authoring Guide</title>
+<title>Emphasis &amp; marking — The Enscribe Authoring Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,112 +1412,150 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=tables">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html" class="enscribe-toc-active" aria-current="location">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:tables-2" book-part-type="chapter">
+<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=emphasis-marking">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html" class="enscribe-toc-active" aria-current="location">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:emphasis-marking" book-part-type="chapter">
       <meta>
-        <book-part-title>Tables</book-part-title>
+        <book-part-title>Emphasis &#x26; marking</book-part-title>
       </meta>
-      <section id="sec:tables">
-        <section-title>Tables</section-title>
-        <sub-section id="sec:general-usage-20">
-          <sub-section-title>General Usage</sub-section-title>
-          <p>A table is <code>&#x3C;table></code> with a format and the data written inline. The first row is the header by default, and a <code>caption</code> titles it:</p>
-          <pre><code id="code:table-basic">
-&#x3C;table csv caption="Quarterly revenue">
-Quarter, Revenue, Growth
-Q1, 1.2M, —
-Q2, 1.5M, 25%
-Q3, 1.9M, 27%
-&#x3C;/table>
-</code></pre>
-          <figure id="mp:table-basic" class="frameable-border">
-            <table>
-              <caption><table-label>Table 1.</table-label> Quarterly revenue</caption>
-              <thead>
-                <tr>
-                  <th>Quarter</th>
-                  <th>Revenue</th>
-                  <th>Growth</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Q1</td>
-                  <td>1.2M</td>
-                  <td>—</td>
-                </tr>
-                <tr>
-                  <td>Q2</td>
-                  <td>1.5M</td>
-                  <td>25%</td>
-                </tr>
-                <tr>
-                  <td>Q3</td>
-                  <td>1.9M</td>
-                  <td>27%</td>
-                </tr>
-              </tbody>
-            </table>
-            <figcaption><minipage-label>Minipage 20.</minipage-label></figcaption>
-          </figure>
-          <p>The same data can be written as <code>tsv</code>, <code>json</code>, <code>yaml</code>, or <code>md</code> — the format names the shape of the inline content.</p>
-        </sub-section>
-        <sub-section id="sec:arguments-15">
-          <sub-section-title>Arguments</sub-section-title>
-          <table>
-            <thead>
-              <tr>
-                <th>Attribute</th>
-                <th>Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>format (the shape of the inline data)</td>
-                <td>csv | tsv | json | yaml | md</td>
-              </tr>
-              <tr>
-                <td>caption (the table’s title)</td>
-                <td>caption=”Quarterly revenue”</td>
-              </tr>
-              <tr>
-                <td>type (a semantic class)</td>
-                <td>data | layout | comparison | schedule | results | other</td>
-              </tr>
-              <tr>
-                <td>No header row</td>
-                <td>-headers</td>
-              </tr>
-              <tr>
-                <td>Unnumbered (drop the “Table N.” label)</td>
-                <td>-numbered</td>
-              </tr>
-              <tr>
-                <td>parse-columns (named columns parse as Enscribe markup)</td>
-                <td>parse-columns=Notes</td>
-              </tr>
-              <tr>
-                <td>src (load the data from an external file)</td>
-                <td>src=data/revenue.csv</td>
-              </tr>
-              <tr>
-                <td>Id</td>
-                <td>#tab:revenue</td>
-              </tr>
-              <tr>
-                <td>Class</td>
-                <td>.striped</td>
-              </tr>
-            </tbody>
-          </table>
-        </sub-section>
-        <sub-section id="sec:notes-13">
-          <sub-section-title>Notes</sub-section-title>
-          <p>Tables are numbered by default and captioned “Table N.” — add <code>-numbered</code> for a plain reference table.</p>
-          <p>In the data formats (csv, tsv, json, yaml) cells are literal by default; <code>+parse-text</code> parses every cell as Enscribe markup, or name specific columns with <code>parse-columns</code>. Markdown (<code>md</code>) tables always parse.</p></section>
-        </sub-section>
+      <p>Marks the author places on their own words — emphasis and the small typographic and semantic marks.</p>
+      <section id="ag-abbr">
+        <section-title><code>&#x3C;abbr></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;abbr></code>.</p><code id="code:ag-abbr-1">The &#x3C;abbr title="Document Object Model" | DOM> is the browser API for HTML.</code>
+        <figure id="mp:ag-abbr-1" class="frameable-border">
+          <p>The <abbr title="Document Object Model">DOM</abbr> is the browser API for HTML.</p>
+          <figcaption><minipage-label>Minipage 2.</minipage-label></figcaption>
+        </figure>
+        <p><i>Standard pattern — abbreviation with its expansion as the title
+kwarg. Browsers show the expansion in a hover tooltip.</i></p></section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="figures-frameables.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Figures &#x26; Frameables</toc-title></a><a class="enscribe-chapter-next" href="theorem-environments.html" rel="next"><toc-title>Theorem Environments</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:tables-2"><ul><li><a href="#sec:tables">Tables</a><ul><li><a href="#sec:general-usage-20">General Usage</a></li><li><a href="#sec:arguments-15">Arguments</a></li><li><a href="#sec:notes-13">Notes</a></li></ul></li></ul></div></details></nav></div>
+      <section id="ag-b">
+        <section-title><code>&#x3C;b></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;b></code>; markdown <code>**…**</code>.</p><code id="code:ag-b-1">The keyword &#x3C;b type=keyword | recursion> is fundamental.</code>
+        <figure id="mp:ag-b-1" class="frameable-border">
+          <p>The keyword <b data-bold-type="keyword">recursion</b> is fundamental.</p>
+          <figcaption><minipage-label>Minipage 3.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-em">
+        <section-title><code>&#x3C;em></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;em></code>.</p><code id="code:ag-em-1">This has *emphasized* content.</code>
+        <figure id="mp:ag-em-1" class="frameable-border">
+          <p>This has <i>emphasized</i> content.</p>
+          <figcaption><minipage-label>Minipage 4.</minipage-label></figcaption>
+        </figure>
+        <p><i>Plain markdown with single asterisks (or single underscores) produces the
+visual &#x3C;i>, not the semantic &#x3C;em> — markdown emphasis maps to the visual
+tag. &#x3C;em> is reached only by the explicit form.</i></p></section>
+      </section>
+      <section id="ag-i">
+        <section-title><code>&#x3C;i></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;i></code>; markdown <code>*…*</code> (or <code>_…_</code>).</p><code id="code:ag-i-1">The species is &#x3C;i type=taxonomic | Loxodonta africana>.</code>
+        <figure id="mp:ag-i-1" class="frameable-border">
+          <p>The species is <i data-italic-type="taxonomic">Loxodonta africana</i>.</p>
+          <figcaption><minipage-label>Minipage 5.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-kbd">
+        <section-title><code>&#x3C;kbd></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;kbd></code>.</p><code id="code:ag-kbd-1">Press &#x3C;kbd | Ctrl+C> to copy.</code>
+        <figure id="mp:ag-kbd-1" class="frameable-border">
+          <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
+          <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
+        </figure>
+        <p><i>Single chord as a kbd block. Browsers render &#x3C;kbd> in a
+monospace font by default, distinguishing it from surrounding
+prose.</i></p></section>
+      </section>
+      <section id="ag-output">
+        <section-title><code>&#x3C;output></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;output></code>.</p><code id="code:ag-output-1">The function returns &#x3C;output | 42> for the test input.</code>
+        <figure id="mp:ag-output-1" class="frameable-border">
+          <p>The function returns <output>42</output> for the test input.</p>
+          <figcaption><minipage-label>Minipage 7.</minipage-label></figcaption>
+        </figure>
+        <p><i>Result of a calculation in prose. &#x3C;output> is semantically
+distinct from &#x3C;samp> — &#x3C;samp> is what a program prints (a
+display artifact); &#x3C;output> is the result of a computation
+(a semantic value). Browsers render both similarly.</i></p></section>
+      </section>
+      <section id="ag-s">
+        <section-title><code>&#x3C;s></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;s></code>; markdown <code>~~…~~</code>.</p><code id="code:ag-s-1">The price is ~~$50~~ now $40.</code>
+        <figure id="mp:ag-s-1" class="frameable-border">
+          <p>The price is ~~<inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace nobreak"> </span><span class="mspace nobreak"> </span><span class="mord mathnormal">n</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.0269em;">w</span></span></span></span></inline-math>40.</p>
+          <figcaption><minipage-label>Minipage 8.</minipage-label></figcaption>
+        </figure>
+        <p><i>GFM’s tilde syntax produces &#x3C;s> elements. The most common
+authoring path for casual strikethrough.</i></p></section>
+      </section>
+      <section id="ag-samp">
+        <section-title><code>&#x3C;samp></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;samp></code>.</p><code id="code:ag-samp-1">The command prints &#x3C;samp | Hello, world!> to stdout.</code>
+        <figure id="mp:ag-samp-1" class="frameable-border">
+          <p>The command prints <samp>Hello, world!</samp> to stdout.</p>
+          <figcaption><minipage-label>Minipage 9.</minipage-label></figcaption>
+        </figure>
+        <p><i>Sample output from a program. Browsers render &#x3C;samp> in a
+monospace font by default, distinguishing it from surrounding
+prose.</i></p></section>
+      </section>
+      <section id="ag-strong">
+        <section-title><code>&#x3C;strong></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;strong></code>.</p><code id="code:ag-strong-1">This is **strongly emphasized** content.</code>
+        <figure id="mp:ag-strong-1" class="frameable-border">
+          <p>This is <b>strongly emphasized</b> content.</p>
+          <figcaption><minipage-label>Minipage 10.</minipage-label></figcaption>
+        </figure>
+        <p><i>Plain markdown with double asterisks (or double underscores) produces the
+visual &#x3C;b>, not the semantic &#x3C;strong> — markdown emphasis maps to the
+visual tag. &#x3C;strong> is reached only by the explicit form.</i></p></section>
+      </section>
+      <section id="ag-sub">
+        <section-title><code>&#x3C;sub></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;sub></code>.</p><code id="code:ag-sub-1">Water is H&#x3C;sub | 2>O.</code>
+        <figure id="mp:ag-sub-1" class="frameable-border">
+          <p>Water is H<sub>2</sub>O.</p>
+          <figcaption><minipage-label>Minipage 11.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-sup">
+        <section-title><code>&#x3C;sup></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;sup></code>.</p><code id="code:ag-sup-1">The 1&#x3C;sup | st> edition of the work.</code>
+        <figure id="mp:ag-sup-1" class="frameable-border">
+          <p>The 1<sup>st</sup> edition of the work.</p>
+          <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-term">
+        <section-title><code>&#x3C;term></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;term></code>.</p><code id="code:ag-term-1">An &#x3C;term | eigenvector> is a non-zero vector that scales under a linear transformation.</code>
+        <figure id="mp:ag-term-1" class="frameable-border">
+          <p>An <term>eigenvector</term> is a non-zero vector that scales under a linear transformation.</p>
+          <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
+        </figure>
+        <p><i>Standard term introduction. The element marks the word as
+“this is a term being introduced,” typically rendered in italic
+or bold by default CSS.</i></p></section>
+      </section>
+      <section id="ag-u">
+        <section-title><code>&#x3C;u></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;u></code>.</p><code id="code:ag-u-1">The author wrote &#x3C;u type=misspelling | recieve> in the original.</code>
+        <figure id="mp:ag-u-1" class="frameable-border">
+          <p>The author wrote <u data-underline-type="misspelling">recieve</u> in the original.</p>
+          <figcaption><minipage-label>Minipage 14.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-var">
+        <section-title><code>&#x3C;var></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;var></code>.</p><code id="code:ag-var-1">The function takes a parameter &#x3C;var | n> and returns &#x3C;var | n>²+1.</code>
+        <figure id="mp:ag-var-1" class="frameable-border">
+          <p>The function takes a parameter <var>n</var> and returns <var>n</var>²+1.</p>
+          <figcaption><minipage-label>Minipage 15.</minipage-label></figcaption>
+        </figure>
+        <p><i>Variable names in prose. Browsers render &#x3C;var> in italic by
+default, distinguishing it from surrounding prose.</i></p></section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="primary-prose.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Primary prose</toc-title></a><a class="enscribe-chapter-next" href="aside.html" rel="next"><toc-title>Aside</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:emphasis-marking"><ul><li><a href="#ag-abbr">&#x3C;abbr></a></li><li><a href="#ag-b">&#x3C;b></a></li><li><a href="#ag-em">&#x3C;em></a></li><li><a href="#ag-i">&#x3C;i></a></li><li><a href="#ag-kbd">&#x3C;kbd></a></li><li><a href="#ag-output">&#x3C;output></a></li><li><a href="#ag-s">&#x3C;s></a></li><li><a href="#ag-samp">&#x3C;samp></a></li><li><a href="#ag-strong">&#x3C;strong></a></li><li><a href="#ag-sub">&#x3C;sub></a></li><li><a href="#ag-sup">&#x3C;sup></a></li><li><a href="#ag-term">&#x3C;term></a></li><li><a href="#ag-u">&#x3C;u></a></li><li><a href="#ag-var">&#x3C;var></a></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

@@ -1,80 +1,42 @@
-Marking words and phrases inside prose — emphasis, and the small typographic and semantic marks.
+Marks the author places on their own words — emphasis and the small typographic and semantic marks.
 
-<section #sh-strong | `<strong>`>
-
-<sub-section | General Usage>
-
-Semantic role: *strong*. Compiles to eHTML `<strong>`.
-
-Registers:
-
-- Canonical: `<strong>`
-
-<code #code:sh-strong-1>
-This is **strongly emphasized** content.
-</code>
-
-<minipage #mp:sh-strong-1>
-This is **strongly emphasized** content.
-</minipage>
-
-*Plain markdown with double asterisks (or double underscores) produces &lt;strong&gt; elements.*
-
-<code #code:sh-strong-2>
-<strong | important>
-</code>
-
-<minipage #mp:sh-strong-2>
-<strong | important>
-</minipage>
-
-<code #code:sh-strong-3>
-<strong #critical .warning | This is critical.>
-</code>
-
-<minipage #mp:sh-strong-3>
-<strong #critical .warning | This is critical.>
-</minipage>
-
-</section>
-
-<section #sh-em | `<em>`>
+<section #sh-abbr | `<abbr>`>
 
 <sub-section | General Usage>
 
-Semantic role: *em*. Compiles to eHTML `<em>`.
+Semantic role: *abbr*. Compiles to eHTML `<abbr>`.
 
 Registers:
 
-- Canonical: `<em>`
+- Canonical: `<abbr>`
 
-<code #code:sh-em-1>
-This has *emphasized* content.
+<code #code:sh-abbr-1>
+The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
 </code>
 
-<minipage #mp:sh-em-1>
-This has *emphasized* content.
+<minipage #mp:sh-abbr-1>
+The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
 </minipage>
 
-*Plain markdown emphasis with single asterisks (or single underscores) produces &lt;em&gt; elements. This is the most common authoring path.*
+*Standard pattern — abbreviation with its expansion as the title
+kwarg. Browsers show the expansion in a hover tooltip.*
 
-<code #code:sh-em-2>
-<em | emphasized>
+<code #code:sh-abbr-2>
+Using <abbr | CSS> selectors.
 </code>
 
-<minipage #mp:sh-em-2>
-<em | emphasized>
+<minipage #mp:sh-abbr-2>
+Using <abbr | CSS> selectors.
 </minipage>
 
-*The explicit form is reached for when attributes are needed.*
+*Bare abbreviation, no title. Acceptable when the expansion
+has already been introduced earlier in the document.*
 
-<code #code:sh-em-3>
-<em #key-term .highlighted | distinguishing feature>
-</code>
+<sub-section | Arguments>
 
-<minipage #mp:sh-em-3>
-<em #key-term .highlighted | distinguishing feature>
-</minipage>
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `title` | kwarg |  | The abbreviation's expansion. |
 
 </section>
 
@@ -113,6 +75,48 @@ Use <b type=product-name | Acrobat> to read the file.
 
 </section>
 
+<section #sh-em | `<em>`>
+
+<sub-section | General Usage>
+
+Semantic role: *em*. Compiles to eHTML `<em>`.
+
+Registers:
+
+- Canonical: `<em>`
+
+<code #code:sh-em-1>
+This has *emphasized* content.
+</code>
+
+<minipage #mp:sh-em-1>
+This has *emphasized* content.
+</minipage>
+
+*Plain markdown with single asterisks (or single underscores) produces the
+visual &lt;i&gt;, not the semantic &lt;em&gt; — markdown emphasis maps to the visual
+tag. &lt;em&gt; is reached only by the explicit form.*
+
+<code #code:sh-em-2>
+<em | emphasized>
+</code>
+
+<minipage #mp:sh-em-2>
+<em | emphasized>
+</minipage>
+
+*The explicit form is reached for when attributes are needed.*
+
+<code #code:sh-em-3>
+<em #key-term .highlighted | distinguishing feature>
+</code>
+
+<minipage #mp:sh-em-3>
+<em #key-term .highlighted | distinguishing feature>
+</minipage>
+
+</section>
+
 <section #sh-i | `<i>`>
 
 <sub-section | General Usage>
@@ -122,7 +126,7 @@ Semantic role: *i*. Compiles to eHTML `<i>`.
 Registers:
 
 - Canonical: `<i>`
-- Markdown: `*…*  (or _…_)`
+- Markdown: `*…*` (or `_…_`)
 
 <code #code:sh-i-1>
 The species is <i type=taxonomic | Loxodonta africana>.
@@ -152,41 +156,68 @@ The technical term <i type=technical | mitochondria> refers to organelles.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `foreign` `taxonomic` `technical` `thought` `ship-name` `other` | Optional classification of the italic's role. Useful for accessibility tools and stylesheet targeting. |
+| `type` | kwarg | `foreign` `taxonomic` `technical` `thought` `ship-name` `other` | Optional classification of the italic's role. |
 
 </section>
 
-<section #sh-u | `<u>`>
+<section #sh-kbd | `<kbd>`>
 
 <sub-section | General Usage>
 
-Semantic role: *u*. Compiles to eHTML `<u>`.
+Semantic role: *kbd*. Compiles to eHTML `<kbd>`.
 
 Registers:
 
-- Canonical: `<u>`
+- Canonical: `<kbd>`
 
-<code #code:sh-u-1>
-The author wrote <u type=misspelling | recieve> in the original.
+<code #code:sh-kbd-1>
+Press <kbd | Ctrl+C> to copy.
 </code>
 
-<minipage #mp:sh-u-1>
-The author wrote <u type=misspelling | recieve> in the original.
+<minipage #mp:sh-kbd-1>
+Press <kbd | Ctrl+C> to copy.
 </minipage>
 
-<code #code:sh-u-2>
-The Chinese name <u type=proper-name | 王明> appears here.
+*Single chord as a kbd block. Browsers render &lt;kbd&gt; in a
+monospace font by default, distinguishing it from surrounding
+prose.*
+
+<code #code:sh-kbd-2>
+Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 </code>
 
-<minipage #mp:sh-u-2>
-The Chinese name <u type=proper-name | 王明> appears here.
+<minipage #mp:sh-kbd-2>
+Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 </minipage>
 
-<sub-section | Arguments>
+*Nested &lt;kbd&gt; distinguishes individual keys in a chord. Browsers
+render the outer block as the chord and the inner blocks as
+individual keys, both monospace.*
 
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `type` | kwarg | `misspelling` `proper-name` `editorial-correction` `other` |  |
+</section>
+
+<section #sh-output | `<output>`>
+
+<sub-section | General Usage>
+
+Semantic role: *output*. Compiles to eHTML `<output>`.
+
+Registers:
+
+- Canonical: `<output>`
+
+<code #code:sh-output-1>
+The function returns <output | 42> for the test input.
+</code>
+
+<minipage #mp:sh-output-1>
+The function returns <output | 42> for the test input.
+</minipage>
+
+*Result of a calculation in prose. &lt;output&gt; is semantically
+distinct from &lt;samp&gt; — &lt;samp&gt; is what a program prints (a
+display artifact); &lt;output&gt; is the result of a computation
+(a semantic value). Browsers render both similarly.*
 
 </section>
 
@@ -209,7 +240,8 @@ The price is ~~$50~~ now $40.
 The price is ~~$50~~ now $40.
 </minipage>
 
-*GFM's tilde syntax produces &lt;s&gt; elements. The most common authoring path for casual strikethrough.*
+*GFM's tilde syntax produces &lt;s&gt; elements. The most common
+authoring path for casual strikethrough.*
 
 <code #code:sh-s-2>
 The claim <s type=retracted | was unsupported> has been corrected.
@@ -224,6 +256,82 @@ The claim <s type=retracted | was unsupported> has been corrected.
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `type` | kwarg | `outdated` `retracted` `deleted` `other` |  |
+
+</section>
+
+<section #sh-samp | `<samp>`>
+
+<sub-section | General Usage>
+
+Semantic role: *samp*. Compiles to eHTML `<samp>`.
+
+Registers:
+
+- Canonical: `<samp>`
+
+<code #code:sh-samp-1>
+The command prints <samp | Hello, world!> to stdout.
+</code>
+
+<minipage #mp:sh-samp-1>
+The command prints <samp | Hello, world!> to stdout.
+</minipage>
+
+*Sample output from a program. Browsers render &lt;samp&gt; in a
+monospace font by default, distinguishing it from surrounding
+prose.*
+
+<code #code:sh-samp-2>
+Set <var | threshold> to <samp | 0.05>.
+</code>
+
+<minipage #mp:sh-samp-2>
+Set <var | threshold> to <samp | 0.05>.
+</minipage>
+
+*&lt;samp&gt; for the sample value paired with &lt;var&gt; for the variable
+name — the natural pair for documenting configuration in
+technical writing.*
+
+</section>
+
+<section #sh-strong | `<strong>`>
+
+<sub-section | General Usage>
+
+Semantic role: *strong*. Compiles to eHTML `<strong>`.
+
+Registers:
+
+- Canonical: `<strong>`
+
+<code #code:sh-strong-1>
+This is **strongly emphasized** content.
+</code>
+
+<minipage #mp:sh-strong-1>
+This is **strongly emphasized** content.
+</minipage>
+
+*Plain markdown with double asterisks (or double underscores) produces the
+visual &lt;b&gt;, not the semantic &lt;strong&gt; — markdown emphasis maps to the
+visual tag. &lt;strong&gt; is reached only by the explicit form.*
+
+<code #code:sh-strong-2>
+<strong | important>
+</code>
+
+<minipage #mp:sh-strong-2>
+<strong | important>
+</minipage>
+
+<code #code:sh-strong-3>
+<strong #critical .warning | This is critical.>
+</code>
+
+<minipage #mp:sh-strong-3>
+<strong #critical .warning | This is critical.>
+</minipage>
 
 </section>
 
@@ -291,41 +399,74 @@ The isotope <sup | 12>C is abundant.
 
 </section>
 
-<section #sh-abbr | `<abbr>`>
+<section #sh-term | `<term>`>
 
 <sub-section | General Usage>
 
-Semantic role: *abbr*. Compiles to eHTML `<abbr>`.
+Semantic role: *term*. Compiles to eHTML `<term>`.
 
 Registers:
 
-- Canonical: `<abbr>`
+- Canonical: `<term>`
 
-<code #code:sh-abbr-1>
-The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
+<code #code:sh-term-1>
+An <term | eigenvector> is a non-zero vector that scales under a linear transformation.
 </code>
 
-<minipage #mp:sh-abbr-1>
-The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
+<minipage #mp:sh-term-1>
+An <term | eigenvector> is a non-zero vector that scales under a linear transformation.
 </minipage>
 
-*Standard pattern — abbreviation with its expansion as the title kwarg. Browsers show the expansion in a hover tooltip.*
+*Standard term introduction. The element marks the word as
+"this is a term being introduced," typically rendered in italic
+or bold by default CSS.*
 
-<code #code:sh-abbr-2>
-Using <abbr | CSS> selectors.
+<code #code:sh-term-2>
+An <term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize <term | eigenvector>s to operators.
 </code>
 
-<minipage #mp:sh-abbr-2>
-Using <abbr | CSS> selectors.
+<minipage #mp:sh-term-2>
+An <term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize <term | eigenvector>s to operators.
 </minipage>
 
-*Bare abbreviation, no title. Acceptable when the expansion has already been introduced earlier in the document.*
+*First introduction carries an id so later references can link
+back to it. Subsequent uses of the same term (without an id)
+still mark it as a term being referenced, distinct from running
+prose, without re-asserting the introduction.*
+
+</section>
+
+<section #sh-u | `<u>`>
+
+<sub-section | General Usage>
+
+Semantic role: *u*. Compiles to eHTML `<u>`.
+
+Registers:
+
+- Canonical: `<u>`
+
+<code #code:sh-u-1>
+The author wrote <u type=misspelling | recieve> in the original.
+</code>
+
+<minipage #mp:sh-u-1>
+The author wrote <u type=misspelling | recieve> in the original.
+</minipage>
+
+<code #code:sh-u-2>
+The Chinese name <u type=proper-name | 王明> appears here.
+</code>
+
+<minipage #mp:sh-u-2>
+The Chinese name <u type=proper-name | 王明> appears here.
+</minipage>
 
 <sub-section | Arguments>
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `title` | kwarg |  | The abbreviation's expansion. Standard HTML <abbr title="..."> — browsers display the expansion as a tooltip on hover. Strongly recommended on first use of an abbreviation; optional on subsequent uses if the expansion is already in scope. |
+| `type` | kwarg | `misspelling` `proper-name` `editorial-correction` `other` |  |
 
 </section>
 
@@ -347,7 +488,8 @@ The function takes a parameter <var | n> and returns <var | n>²+1.
 The function takes a parameter <var | n> and returns <var | n>²+1.
 </minipage>
 
-*Variable names in prose. Browsers render &lt;var&gt; in italic by default, distinguishing it from surrounding prose.*
+*Variable names in prose. Browsers render &lt;var&gt; in italic by
+default, distinguishing it from surrounding prose.*
 
 <code #code:sh-var-2>
 Set <var | threshold> to <samp | 0.05>.
@@ -357,124 +499,7 @@ Set <var | threshold> to <samp | 0.05>.
 Set <var | threshold> to <samp | 0.05>.
 </minipage>
 
-*&lt;var&gt; for the variable name and &lt;samp&gt; for a sample value — the natural pair for documenting configuration in technical writing.*
-
-</section>
-
-<section #sh-samp | `<samp>`>
-
-<sub-section | General Usage>
-
-Semantic role: *samp*. Compiles to eHTML `<samp>`.
-
-Registers:
-
-- Canonical: `<samp>`
-
-<code #code:sh-samp-1>
-The command prints <samp | Hello, world!> to stdout.
-</code>
-
-<minipage #mp:sh-samp-1>
-The command prints <samp | Hello, world!> to stdout.
-</minipage>
-
-*Sample output from a program. Browsers render &lt;samp&gt; in a monospace font by default, distinguishing it from surrounding prose.*
-
-<code #code:sh-samp-2>
-Set <var | threshold> to <samp | 0.05>.
-</code>
-
-<minipage #mp:sh-samp-2>
-Set <var | threshold> to <samp | 0.05>.
-</minipage>
-
-*&lt;samp&gt; for the sample value paired with &lt;var&gt; for the variable name — the natural pair for documenting configuration in technical writing.*
-
-</section>
-
-<section #sh-kbd | `<kbd>`>
-
-<sub-section | General Usage>
-
-Semantic role: *kbd*. Compiles to eHTML `<kbd>`.
-
-Registers:
-
-- Canonical: `<kbd>`
-
-<code #code:sh-kbd-1>
-Press <kbd | Ctrl+C> to copy.
-</code>
-
-<minipage #mp:sh-kbd-1>
-Press <kbd | Ctrl+C> to copy.
-</minipage>
-
-*Single chord as a kbd block. Browsers render &lt;kbd&gt; in a monospace font by default, distinguishing it from surrounding prose.*
-
-<code #code:sh-kbd-2>
-Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
-</code>
-
-<minipage #mp:sh-kbd-2>
-Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
-</minipage>
-
-*Nested &lt;kbd&gt; distinguishes individual keys in a chord. Browsers render the outer block as the chord and the inner blocks as individual keys, both monospace.*
-
-</section>
-
-<section #sh-output | `<output>`>
-
-<sub-section | General Usage>
-
-Semantic role: *output*. Compiles to eHTML `<output>`.
-
-Registers:
-
-- Canonical: `<output>`
-
-<code #code:sh-output-1>
-The function returns <output | 42> for the test input.
-</code>
-
-<minipage #mp:sh-output-1>
-The function returns <output | 42> for the test input.
-</minipage>
-
-*Result of a calculation in prose. &lt;output&gt; is semantically distinct from &lt;samp&gt; — &lt;samp&gt; is what a program prints (a display artifact); &lt;output&gt; is the result of a computation (a semantic value). Browsers render both similarly.*
-
-</section>
-
-<section #sh-term | `<term>`>
-
-<sub-section | General Usage>
-
-Semantic role: *term*. Compiles to eHTML `<term>`.
-
-Registers:
-
-- Canonical: `<term>`
-
-<code #code:sh-term-1>
-An <term | eigenvector> is a non-zero vector that scales under a linear transformation.
-</code>
-
-<minipage #mp:sh-term-1>
-An <term | eigenvector> is a non-zero vector that scales under a linear transformation.
-</minipage>
-
-*Standard term introduction. The element marks the word as "this is a term being introduced," typically rendered in italic or bold by default CSS.*
-
-<code #code:sh-term-2>
-An <term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize <term | eigenvector>s to operators.
-</code>
-
-<minipage #mp:sh-term-2>
-An <term #term:eigenvector | eigenvector> is a non-zero vector that scales under a linear transformation. Later we generalize <term | eigenvector>s to operators.
-</minipage>
-
-*First introduction carries an id so later references can link back to it. Subsequent uses of the same term (without an id) still mark it as a term being referenced, distinct from running prose, without re-asserting the introduction.*
+*&lt;var&gt; for the variable name and &lt;samp&gt; for a sample value —
+the natural pair for documenting configuration in technical writing.*
 
 </section>

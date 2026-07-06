@@ -93,8 +93,9 @@ This has *emphasized* content.
 This has *emphasized* content.
 </minipage>
 
-*Plain markdown emphasis with single asterisks (or single underscores)
-produces &lt;em&gt; elements. This is the most common authoring path.*
+*Plain markdown with single asterisks (or single underscores) produces the
+visual &lt;i&gt;, not the semantic &lt;em&gt; — markdown emphasis maps to the visual
+tag. &lt;em&gt; is reached only by the explicit form.*
 
 <code #code:sh-em-2>
 <em | emphasized>
@@ -312,8 +313,9 @@ This is **strongly emphasized** content.
 This is **strongly emphasized** content.
 </minipage>
 
-*Plain markdown with double asterisks (or double underscores) produces
-&lt;strong&gt; elements.*
+*Plain markdown with double asterisks (or double underscores) produces the
+visual &lt;b&gt;, not the semantic &lt;strong&gt; — markdown emphasis maps to the
+visual tag. &lt;strong&gt; is reached only by the explicit form.*
 
 <code #code:sh-strong-2>
 <strong | important>

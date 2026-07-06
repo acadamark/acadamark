@@ -1417,10 +1417,10 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
           <meta>
             <book-part-title>Aside</book-part-title>
           </meta>
-          <p>Content set beside the main flow — notes, boxed asides, and the expandable disclosure.</p>
+          <p>The author steps aside in their own secondary voice — notes, boxed asides, and disclosure.</p>
           <section id="sh-aside">
             <section-title><code>&#x3C;aside></code></section-title>
-            <sub-section id="sec:general-usage-17">
+            <sub-section id="sec:general-usage-16">
               <sub-section-title>General Usage</sub-section-title>
               <p>Semantic role: <i>aside</i>. Compiles to eHTML <code>&#x3C;aside></code>.</p>
               <p>Registers:</p>
@@ -1431,13 +1431,13 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
                 <aside class="frameable-border">
                   <p>A side note about the elephant.</p>
                 </aside>
-                <figcaption><minipage-label>Minipage 37.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 35.</minipage-label></figcaption>
               </figure><code id="code:sh-aside-2">&#x3C;aside type=warning .important | Be careful here.></code>
               <figure id="mp:sh-aside-2" class="frameable-border">
                 <aside class="important frameable-border" data-aside-type="warning">
                   <p>Be careful here.</p>
                 </aside>
-                <figcaption><minipage-label>Minipage 38.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 36.</minipage-label></figcaption>
               </figure>
               <pre><code id="code:sh-aside-3">
 &#x3C;aside type=callout |
@@ -1455,10 +1455,10 @@ It can contain multiple paragraphs and other content like
                     <strong>emphasis</strong> and inline references.
                   </p>
                 </aside>
-                <figcaption><minipage-label>Minipage 39.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 37.</minipage-label></figcaption>
               </figure>
             </sub-section>
-            <sub-section id="sec:arguments-8">
+            <sub-section id="sec:arguments-7">
               <sub-section-title>Arguments</sub-section-title>
               <table>
                 <thead>
@@ -1474,41 +1474,117 @@ It can contain multiple paragraphs and other content like
                     <td><code>type</code></td>
                     <td>kwarg</td>
                     <td><code>note</code> <code>sidebar</code> <code>callout</code> <code>warning</code> <code>tip</code> <code>info</code> <code>caution</code></td>
-                    <td>Optional classification of the aside’s role. Affects rendering (callouts get visual emphasis; sidebars get layout treatment). Maps to JATS via boxed-text content-type at export.</td>
+                    <td>Optional classification of the aside’s role.</td>
                   </tr>
                   <tr>
                     <td><code>title</code></td>
                     <td>kwarg</td>
                     <td></td>
-                    <td>Optional title rendered at the top of the aside (the frameable title-top convention, #31). Lifts to a 
-                      <title></title>child tag at the normalize-to-canonical gate; the child form is equivalent.
-                    </td>
+                    <td>Optional title rendered at the top of the aside (the frameable title-top convention, #31).</td>
                   </tr>
                   <tr>
                     <td><code>caption</code></td>
                     <td>kwarg</td>
                     <td></td>
-                    <td>Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the “Box N.” label folded in when numbered. Lifts to a <code>&#x3C;caption></code> child tag at the gate.</td>
+                    <td>Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the “Box N.” label folded in when numbered.</td>
                   </tr>
                   <tr>
-                    <td><code>+numbered</code></td>
-                    <td>boolean</td>
-                    <td>default <code>false</code></td>
-                    <td>Whether this aside is numbered. <b>Off by default</b> (boxed prose is usually a one-off callout). When +numbered, the aside counts in its OWN “Box N” series (the <code>box</code> counter / ref-prefix <code>box</code>), not the figure counter.</td>
+                    <td><code>+numbered</code> / <code>-numbered</code></td>
+                    <td>flag</td>
+                    <td>default off</td>
+                    <td>Whether this aside is numbered.</td>
                   </tr>
                   <tr>
-                    <td><code>+border</code></td>
-                    <td>boolean</td>
-                    <td>default <code>true</code></td>
-                    <td>Frameable surface (#31). <b>On by default for boxed prose</b> — the visual box is the point of a callout / sidebar. Use -border to suppress the outline.</td>
+                    <td><code>+border</code> / <code>-border</code></td>
+                    <td>flag</td>
+                    <td>default on</td>
+                    <td>Frameable surface (#31).</td>
                   </tr>
                 </tbody>
               </table></section>
             </sub-section>
           </section>
+          <section id="sh-details">
+            <section-title><code>&#x3C;details></code></section-title>
+            <sub-section id="sec:general-usage-17">
+              <sub-section-title>General Usage</sub-section-title>
+              <p>Semantic role: <i>details</i>. Compiles to eHTML <code>&#x3C;details></code>.</p>
+              <p>Registers:</p>
+              <ul>
+                <li>Canonical: <code>&#x3C;details></code></li>
+              </ul>
+              <pre><code id="code:sh-details-1">
+&#x3C;details>
+  &#x3C;summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+&#x3C;/details>
+</code></pre>
+              <figure id="mp:sh-details-1" class="frameable-border">
+                <details>
+                  <summary>More background</summary>
+                  <p>
+                    Additional context for the curious reader. The summary is the
+                    visible heading; this body shows when the disclosure is opened.
+                  </p>
+                </details>
+                <figcaption><minipage-label>Minipage 38.</minipage-label></figcaption>
+              </figure>
+              <p><i>The canonical shape: a &#x3C;summary> for the visible heading,
+followed by the disclosure body. The body is recursively parsed
+as prose / block content.</i></p>
+              <pre><code id="code:sh-details-2">
+&#x3C;details +open>
+  &#x3C;summary | Always-expanded section>
+  This disclosure is expanded by default.
+&#x3C;/details>
+</code></pre>
+              <figure id="mp:sh-details-2" class="frameable-border">
+                <details open>
+                  <summary>Always-expanded section</summary>
+                  <p>This disclosure is expanded by default.</p>
+                </details>
+                <figcaption><minipage-label>Minipage 39.</minipage-label></figcaption>
+              </figure>
+              <p><i>The +open boolean kwarg expands the disclosure by default.
+Maps to HTML’s standard open attribute.</i></p>
+            </sub-section>
+            <sub-section id="sec:arguments-8">
+              <sub-section-title>Arguments</sub-section-title>
+              <table>
+                <thead>
+                  <tr>
+                    <th>attribute</th>
+                    <th>kind</th>
+                    <th>values / default</th>
+                    <th>notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>open</code></td>
+                    <td>kwarg</td>
+                    <td><code>true</code> <code>false</code></td>
+                    <td>HTML’s open attribute on &#x3C;details>.</td>
+                  </tr>
+                </tbody>
+              </table></section>
+            </sub-section>
+          </section>
+          <section id="sh-endnotes">
+            <section-title><code>&#x3C;endnotes></code></section-title>
+            <sub-section id="sec:general-usage-18">
+              <sub-section-title>General Usage</sub-section-title>
+              <p>Semantic role: <i>endnotes</i>. Compiles to eHTML <code>&#x3C;endnotes></code>.</p>
+              <p>Registers:</p>
+              <ul>
+                <li>Canonical: <code>&#x3C;endnotes></code></li>
+              </ul></section>
+            </sub-section>
+          </section>
           <section id="sh-note">
             <section-title><code>&#x3C;note></code></section-title>
-            <sub-section id="sec:general-usage-18">
+            <sub-section id="sec:general-usage-19">
               <sub-section-title>General Usage</sub-section-title>
               <p>Semantic role: <i>note</i>. Compiles to eHTML <code>&#x3C;note></code>.</p>
               <p>Registers:</p>
@@ -1536,13 +1612,13 @@ It can contain multiple paragraphs and other content like
                   </ol>
                 </note-list>
                 <figcaption><minipage-label>Minipage 41.</minipage-label></figcaption>
-              </figure><code id="code:sh-note-3">A definition&#x3C;note placement=side | Inline-adjacent note.>.</code>
+              </figure><code id="code:sh-note-3">A definition&#x3C;note position=margin | A margin note.>.</code>
               <figure id="mp:sh-note-3" class="frameable-border">
-                <p>A definition<sup id="mp-sh-note-3-noteref-1" data-note-id="mp-sh-note-3-note-1"><a href="#mp-sh-note-3-note-1">1</a></sup><sidenote><sup>1</sup><p>Inline-adjacent note.</p></sidenote>.</p>
+                <p>A definition<sup id="mp-sh-note-3-noteref-1" data-note-id="mp-sh-note-3-note-1"><a href="#mp-sh-note-3-note-1">1</a></sup><sidenote><sup>1</sup><p>A margin note.</p></sidenote>.</p>
                 <note-list class="notes">
                   <ol>
                     <li id="mp-sh-note-3-note-1" class="sidenote-fallback"><sup>1</sup>
-                      <p>Inline-adjacent note.</p><a href="#mp-sh-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a>
+                      <p>A margin note.</p><a href="#mp-sh-note-3-noteref-1" class="note-backref" aria-label="back to text">↩</a>
                     </li>
                   </ol>
                 </note-list>
@@ -1564,20 +1640,20 @@ It can contain multiple paragraphs and other content like
                   <tr>
                     <td><code>placement</code></td>
                     <td>kwarg</td>
-                    <td><code>end</code> <code>foot</code> <code>side</code></td>
-                    <td>Determines where the note content is collected. “end” collects at article-back; “foot” collects at article-back (distinguished from “end” by CSS class on the note-list); “side” renders the content inline-adjacent to the marker. Document-wide default is “end”.</td>
+                    <td><code>end</code> <code>foot</code> <code>margin</code> (default <code>end</code>)</td>
+                    <td>The note’s position — one note type, three positions.</td>
                   </tr>
                   <tr>
                     <td><code>position</code></td>
                     <td>kwarg</td>
-                    <td><code>end</code> <code>foot</code> <code>side</code></td>
-                    <td>Legacy alias for “placement” (same values, same data-note-placement output). Retained for backwards compatibility; “placement” is preferred for new documents.</td>
+                    <td><code>end</code> <code>foot</code> <code>margin</code></td>
+                    <td>Alias for “placement” (same values, same data-note-placement output).</td>
                   </tr>
                   <tr>
                     <td><code>type</code></td>
                     <td>kwarg</td>
-                    <td><code>substantive</code> <code>technical</code> <code>editorial</code> <code>translator</code> <code>other</code></td>
-                    <td>Optional classification. Most notes are substantive (authorial commentary).</td>
+                    <td><code>substantive</code> <code>technical</code> <code>editorial</code> <code>translator</code> <code>other</code> (default <code>substantive</code>)</td>
+                    <td>Optional classification.</td>
                   </tr>
                 </tbody>
               </table></section>
@@ -1585,14 +1661,13 @@ It can contain multiple paragraphs and other content like
           </section>
           <section id="sh-note-list">
             <section-title><code>&#x3C;note-list></code></section-title>
-            <sub-section id="sec:general-usage-19">
+            <sub-section id="sec:general-usage-20">
               <sub-section-title>General Usage</sub-section-title>
               <p>Semantic role: <i>note-list</i>. Compiles to eHTML <code>&#x3C;note-list></code>.</p>
               <p>Registers:</p>
               <ul>
                 <li>Canonical: <code>&#x3C;note-list></code></li>
               </ul>
-              <p><i>No standalone example — see the registers above and the related constructs in this chapter.</i></p>
             </sub-section>
             <sub-section id="sec:arguments-10">
               <sub-section-title>Arguments</sub-section-title>
@@ -1609,111 +1684,8 @@ It can contain multiple paragraphs and other content like
                   <tr>
                     <td><code>type</code></td>
                     <td>kwarg</td>
-                    <td><code>end-notes</code> <code>chapter-notes</code> <code>footnotes-collected</code> <code>other</code></td>
+                    <td><code>end-notes</code> <code>chapter-notes</code> <code>footnotes-collected</code> <code>other</code> (default <code>end-notes</code>)</td>
                     <td></td>
-                  </tr>
-                </tbody>
-              </table></section>
-            </sub-section>
-          </section>
-          <section id="sh-endnotes">
-            <section-title><code>&#x3C;endnotes></code></section-title>
-            <sub-section id="sec:general-usage-20">
-              <sub-section-title>General Usage</sub-section-title>
-              <p>Semantic role: <i>endnotes</i>. Compiles to eHTML <code>&#x3C;endnotes></code>.</p>
-              <p>A placement marker: write <code>&#x3C;endnotes></code> where you want the document’s collected end-notes to appear, and the note-placement plugin replaces it with the collected end-notes block (which renders as a <code>&#x3C;note-list></code>). It is the end-note counterpart to letting foot-notes collect at the page. Author it once, typically near the end of the document; the notes themselves are authored inline with <code>&#x3C;note></code>.</p>
-              <p>Registers:</p>
-              <ul>
-                <li>Canonical: <code>&#x3C;endnotes></code></li>
-              </ul>
-              <pre><code id="code:sh-endnotes-1">
-The claim holds&#x3C;note | A note collected at the end.>.
-
-&#x3C;section | Notes>
-&#x3C;endnotes>
-</code></pre>
-              <figure id="mp:sh-endnotes-1" class="frameable-border">
-                <p>The claim holds<sup id="mp-sh-endnotes-1-noteref-1" data-note-id="mp-sh-endnotes-1-note-1"><a href="#mp-sh-endnotes-1-note-1">1</a></sup>.</p>
-                <section>
-                  <section-title>Notes</section-title><tag-error>??tag: endnotes — long-form tag has no closing tag??</tag-error>
-                </section>
-                <note-list class="endnotes">
-                  <ol>
-                    <li id="mp-sh-endnotes-1-note-1"><sup>1</sup>
-                      <p>A note collected at the end.</p><a href="#mp-sh-endnotes-1-noteref-1" class="note-backref" aria-label="back to text">↩</a>
-                    </li>
-                  </ol>
-                </note-list>
-                <figcaption><minipage-label>Minipage 43.</minipage-label></figcaption>
-              </figure>
-              <p><i>The inline <code>&#x3C;note></code> collects at the <code>&#x3C;endnotes></code> marker instead of at the article back’s default position.</i></p>
-            </sub-section>
-            <sub-section id="sec:arguments-11">
-              <sub-section-title>Arguments</sub-section-title>
-              <p><code>&#x3C;endnotes></code> takes no attributes. It is a marker — its content is generated (the collected notes), not authored.</p></section>
-            </sub-section>
-          </section>
-          <section id="sh-details">
-            <section-title><code>&#x3C;details></code></section-title>
-            <sub-section id="sec:general-usage-21">
-              <sub-section-title>General Usage</sub-section-title>
-              <p>Semantic role: <i>details</i>. Compiles to eHTML <code>&#x3C;details></code>.</p>
-              <p>Registers:</p>
-              <ul>
-                <li>Canonical: <code>&#x3C;details></code></li>
-              </ul>
-              <pre><code id="code:sh-details-1">
-&#x3C;details>
-  &#x3C;summary | More background>
-  Additional context for the curious reader. The summary is the
-  visible heading; this body shows when the disclosure is opened.
-&#x3C;/details>
-</code></pre>
-              <figure id="mp:sh-details-1" class="frameable-border">
-                <details>
-                  <summary>More background</summary>
-                  <p>
-                    Additional context for the curious reader. The summary is the
-                    visible heading; this body shows when the disclosure is opened.
-                  </p>
-                </details>
-                <figcaption><minipage-label>Minipage 44.</minipage-label></figcaption>
-              </figure>
-              <p><i>The canonical shape: a &#x3C;summary> for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.</i></p>
-              <pre><code id="code:sh-details-2">
-&#x3C;details +open>
-  &#x3C;summary | Always-expanded section>
-  This disclosure is expanded by default.
-&#x3C;/details>
-</code></pre>
-              <figure id="mp:sh-details-2" class="frameable-border">
-                <details open>
-                  <summary>Always-expanded section</summary>
-                  <p>This disclosure is expanded by default.</p>
-                </details>
-                <figcaption><minipage-label>Minipage 45.</minipage-label></figcaption>
-              </figure>
-              <p><i>The +open boolean kwarg expands the disclosure by default. Maps to HTML’s standard open attribute.</i></p>
-            </sub-section>
-            <sub-section id="sec:arguments-12">
-              <sub-section-title>Arguments</sub-section-title>
-              <table>
-                <thead>
-                  <tr>
-                    <th>attribute</th>
-                    <th>kind</th>
-                    <th>values / default</th>
-                    <th>notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>open</code></td>
-                    <td>kwarg</td>
-                    <td><code>true</code> <code>false</code></td>
-                    <td>HTML’s open attribute on 
-                      <details></details>. When present, the disclosure is expanded by default. Either +open or open=true form works; absence (or -open / open=false) renders collapsed.
-                    </td>
                   </tr>
                 </tbody>
               </table></section>
@@ -1721,7 +1693,7 @@ The claim holds&#x3C;note | A note collected at the end.>.
           </section>
           <section id="sh-summary">
             <section-title><code>&#x3C;summary></code></section-title>
-            <sub-section id="sec:general-usage-22">
+            <sub-section id="sec:general-usage-21">
               <sub-section-title>General Usage</sub-section-title>
               <p>Semantic role: <i>summary</i>. Compiles to eHTML <code>&#x3C;summary></code>.</p>
               <p>Registers:</p>
@@ -1730,17 +1702,19 @@ The claim holds&#x3C;note | A note collected at the end.>.
               </ul><code id="code:sh-summary-1">&#x3C;summary | More background></code>
               <figure id="mp:sh-summary-1" class="frameable-border">
                 <summary>More background</summary>
-                <figcaption><minipage-label>Minipage 46.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 43.</minipage-label></figcaption>
               </figure>
-              <p><i>The visible heading of a &#x3C;details> disclosure. Appears as a child of &#x3C;details>.</i></p><code id="code:sh-summary-2">&#x3C;summary | Click to reveal the &#x3C;em | hidden> details></code>
+              <p><i>The visible heading of a &#x3C;details> disclosure. Appears as a
+child of &#x3C;details>.</i></p><code id="code:sh-summary-2">&#x3C;summary | Click to reveal the &#x3C;em | hidden> details></code>
               <figure id="mp:sh-summary-2" class="frameable-border">
                 <summary>Click to reveal the <em>hidden</em> details</summary>
-                <figcaption><minipage-label>Minipage 47.</minipage-label></figcaption>
+                <figcaption><minipage-label>Minipage 44.</minipage-label></figcaption>
               </figure>
-              <p><i>Inline markup in a summary. The recursive-content pass parses the pipe content normally.</i></p></section>
+              <p><i>Inline markup in a summary. The recursive-content pass parses
+the pipe content normally.</i></p></section>
             </sub-section>
           </section>
-        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="emphasis-marking.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Emphasis &#x26; marking</toc-title></a><a class="enscribe-chapter-next" href="quotation-sourcing.html" rel="next"><toc-title>Quotation &#x26; sourcing</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:aside"><ul><li><a href="#sh-aside">&#x3C;aside></a><ul><li><a href="#sec:general-usage-17">General Usage</a></li><li><a href="#sec:arguments-8">Arguments</a></li></ul></li><li><a href="#sh-note">&#x3C;note></a><ul><li><a href="#sec:general-usage-18">General Usage</a></li><li><a href="#sec:arguments-9">Arguments</a></li></ul></li><li><a href="#sh-note-list">&#x3C;note-list></a><ul><li><a href="#sec:general-usage-19">General Usage</a></li><li><a href="#sec:arguments-10">Arguments</a></li></ul></li><li><a href="#sh-endnotes">&#x3C;endnotes></a><ul><li><a href="#sec:general-usage-20">General Usage</a></li><li><a href="#sec:arguments-11">Arguments</a></li></ul></li><li><a href="#sh-details">&#x3C;details></a><ul><li><a href="#sec:general-usage-21">General Usage</a></li><li><a href="#sec:arguments-12">Arguments</a></li></ul></li><li><a href="#sh-summary">&#x3C;summary></a><ul><li><a href="#sec:general-usage-22">General Usage</a></li></ul></li></ul></div></details></nav></div>
+        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="emphasis-marking.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Emphasis &#x26; marking</toc-title></a><a class="enscribe-chapter-next" href="quotation-sourcing.html" rel="next"><toc-title>Quotation &#x26; sourcing</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:aside"><ul><li><a href="#sh-aside">&#x3C;aside></a><ul><li><a href="#sec:general-usage-16">General Usage</a></li><li><a href="#sec:arguments-7">Arguments</a></li></ul></li><li><a href="#sh-details">&#x3C;details></a><ul><li><a href="#sec:general-usage-17">General Usage</a></li><li><a href="#sec:arguments-8">Arguments</a></li></ul></li><li><a href="#sh-endnotes">&#x3C;endnotes></a><ul><li><a href="#sec:general-usage-18">General Usage</a></li></ul></li><li><a href="#sh-note">&#x3C;note></a><ul><li><a href="#sec:general-usage-19">General Usage</a></li><li><a href="#sec:arguments-9">Arguments</a></li></ul></li><li><a href="#sh-note-list">&#x3C;note-list></a><ul><li><a href="#sec:general-usage-20">General Usage</a></li><li><a href="#sec:arguments-10">Arguments</a></li></ul></li><li><a href="#sh-summary">&#x3C;summary></a><ul><li><a href="#sec:general-usage-21">General Usage</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

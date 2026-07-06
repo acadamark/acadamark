@@ -25,13 +25,14 @@
 <script src="./enscribe.browser.global.js"></script>
 
 <script type="module">
-  // The default editor adapter ships with the package (CodeMirror loaded host-side, only when
-  // editing is on — importing this module loads nothing). A host could pass its own factory.
-  import { codeMirrorEditorFactory } from './editor-codemirror.js';
+  // The default editor adapter ships with the package with CodeMirror BUNDLED into it. It is loaded
+  // LAZILY: the factory dynamically imports the editor asset, so mountLiveShell fetches it only when
+  // editing is on — a read-mode page never downloads the (large) bundled CodeMirror asset. A host
+  // could pass its own factory.
 
   // The #213 host switch: `?edit` flips it at runtime; otherwise the `data-enscribe-edit` on the
   // mount <div> decides (default: read). The engine is unchanged.
-  const opts = { editorFactory: codeMirrorEditorFactory };
+  const opts = { editorFactory: () => import('./editor-codemirror.js').then((m) => m.codeMirrorEditorFactory()) };
   if (new URLSearchParams(location.search).has('edit')) opts.edit = true;
 
   window.enscribe

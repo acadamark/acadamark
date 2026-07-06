@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Citations, Notes &amp; Cross-References — The Enscribe Authoring Guide</title>
+<title>Formal statements — The Enscribe Authoring Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
 <style>
@@ -1412,142 +1412,222 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <div class="enscribe-site">
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../">Home</a><a class="enscribe-site-nav-link" href="../design/">Design</a><a class="enscribe-site-nav-link" href="../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../try-it/">Try It!</a></nav></header>
 <div class="content">
-<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=citations-notes-cross-references">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="block-level-content.html">Block-Level Content</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="inline-formatting.html">Inline Formatting</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="citations-notes-cross-references.html" class="enscribe-toc-active" aria-current="location">Citations, Notes &#x26; Cross-References</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="figures-frameables.html">Figures &#x26; Frameables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="tables.html">Tables</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="theorem-environments.html">Theorem Environments</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="mathematics.html">Mathematics</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="code.html">Code</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="section-headings.html">Section Headings</a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="appendices.html">Appendices</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:citations-notes-cross-references" book-part-type="chapter">
-          <meta>
-            <book-part-title>Citations, Notes &#x26; Cross-References</book-part-title>
-          </meta>
-          <section id="sec:citations">
-            <section-title>Citations</section-title>
-            <sub-section id="sec:general-usage-11">
-              <sub-section-title>General Usage</sub-section-title>
-              <p>A citation points at a source by key with <code>&#x3C;cite key></code>. References are loaded once with <code>&#x3C;library></code> — paste entries straight from a reference manager — and the reference list is printed with <code>&#x3C;bibliography></code>. Citations resolve at build time against the loaded library.</p>
-              <pre><code id="code:cite-basic">
-&#x3C;library format=bibtex>
-@article{goodall2024, author={Jane Goodall}, title={Field Notes}, journal={Nature}, year={2024}}
-&#x3C;/library>
-
-The data supports this claim &#x3C;cite goodall2024>.
-
-&#x3C;bibliography>
-&#x3C;/bibliography>
+<div class="enscribe-playground-cta"><a href="../live/?page=authoring-guide&amp;chapter=formal-statements">Open in playground ↗</a></div>
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Authoring Guide</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html" class="enscribe-toc-active" aria-current="location">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html">Structural scaffolding</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:formal-statements" book-part-type="chapter">
+      <meta>
+        <book-part-title>Formal statements</book-part-title>
+      </meta>
+      <p>Labeled formal units asserted in the argument — theorems, proofs, definitions, and the definitional structures.</p>
+      <section id="ag-corollary">
+        <section-title><code>&#x3C;corollary></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;corollary></code>.</p><code id="code:ag-corollary-1">&#x3C;corollary | Every prime greater than 2 is odd.></code>
+        <figure id="mp:ag-corollary-1" class="frameable-border">
+          <corollary><corollary-label>Corollary 1.</corollary-label>
+            <p>Every prime greater than 2 is odd.</p>
+          </corollary>
+          <figcaption><minipage-label>Minipage 32.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-dd">
+        <section-title><code>&#x3C;dd></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;dd></code>.</p><code id="code:ag-dd-1">&#x3C;dd | An academic publishing system built on HTML+CSS+JS.></code>
+        <figure id="mp:ag-dd-1" class="frameable-border">
+          <dd>
+            <p>An academic publishing system built on HTML+CSS+JS.</p>
+          </dd>
+          <figcaption><minipage-label>Minipage 33.</minipage-label></figcaption>
+        </figure>
+        <p><i>A definition-list description. Appears as a child of &#x3C;dl>,
+following the term it defines.</i></p></section>
+      </section>
+      <section id="ag-definition">
+        <section-title><code>&#x3C;definition></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;definition></code>.</p><code id="code:ag-definition-1">&#x3C;definition | A *group* is a set with an associative binary operation, identity, and inverses.></code>
+        <figure id="mp:ag-definition-1" class="frameable-border">
+          <definition><definition-label>Definition 1.</definition-label>
+            <p>A <i>group</i> is a set with an associative binary operation, identity, and inverses.</p>
+          </definition>
+          <figcaption><minipage-label>Minipage 34.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-dl">
+        <section-title><code>&#x3C;dl></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;dl></code>.</p>
+        <pre><code id="code:ag-dl-1">
+&#x3C;dl>
+  &#x3C;dt | enscribe>
+  &#x3C;dd | An academic publishing system built on HTML+CSS+JS.>
+  &#x3C;dt | eHTML>
+  &#x3C;dd | The canonical semantic HTML vocabulary.>
+  &#x3C;dt | Enscribe shorthand>
+  &#x3C;dd | The shorthand authoring syntax that compiles to eHTML.>
+&#x3C;/dl>
 </code></pre>
-              <p>The <code>&#x3C;cite goodall2024></code> marker renders as “(Goodall 2024)”, and <code>&#x3C;bibliography></code> prints the full entry. Cite several sources at once by listing keys: <code>&#x3C;cite smith2020 jones2021></code>.</p>
-            </sub-section>
-            <sub-section id="sec:arguments-9">
-              <sub-section-title>Arguments</sub-section-title>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Attribute</th>
-                    <th>Example</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>keys (one or more source keys)</td>
-                    <td>goodall2024 · smith2020 jones2021</td>
-                  </tr>
-                  <tr>
-                    <td>library — format (the entry format)</td>
-                    <td>format=bibtex</td>
-                  </tr>
-                  <tr>
-                    <td>library — src (load from an external file)</td>
-                    <td>src=references.bib</td>
-                  </tr>
-                </tbody>
-              </table></section>
-            </sub-section>
-          </section>
-          <section id="sec:cross-references">
-            <section-title>Cross-References</section-title>
-            <sub-section id="sec:general-usage-12">
-              <sub-section-title>General Usage</sub-section-title>
-              <p>A cross-reference links to any numbered target — a figure, table, equation, theorem, or section — by its id, using the <code>@</code> reference sigil. The link text and number fill in automatically.</p>
-              <pre><code id="code:ref-basic">
-&#x3C;fig #fig:scatter src=scatter.png | A scatter plot of the data.>
-
-As shown in &#x3C;ref @fig:scatter>, the trend is clear.
-</code></pre>
-              <figure id="mp:ref-basic" class="frameable-border">
-                <figure id="mp-ref-basic-fig:scatter">
-                  <img src="scatter.png" alt="A scatter plot of the data.">
-                  <figcaption><figure-label>Figure 1.</figure-label>
-                    <p>A scatter plot of the data.</p>
-                  </figcaption>
-                </figure>
-                <p>As shown in <a href="#mp-ref-basic-fig:scatter" class="ref">figure 1</a>, the trend is clear.</p>
-                <figcaption><minipage-label>Minipage 12.</minipage-label></figcaption>
-              </figure>
-            </sub-section>
-            <sub-section id="sec:notes-8">
-              <sub-section-title>Notes</sub-section-title>
-              <p>The <code>#</code> sigil <i>declares</i> an id (<code>&#x3C;fig #fig:scatter></code>); the <code>@</code> sigil <i>references</i> it (<code>&#x3C;ref @fig:scatter></code>). On screen a reference shows a hover preview of its target — add <code>-preview</code> to switch that off.</p></section>
-            </sub-section>
-          </section>
-          <section id="sec:notes">
-            <section-title>Notes</section-title>
-            <sub-section id="sec:general-usage-13">
-              <sub-section-title>General Usage</sub-section-title>
-              <p>A note attaches a comment to the text — one note type with three positions. <code>&#x3C;note></code> (position <code>foot</code>/<code>end</code>) becomes a numbered footnote collected at the foot of the document; <code>&#x3C;note position=margin></code> places the same numbered note beside the text in the margin.</p>
-              <pre><code id="code:notes-basic">
-The result holds in general&#x3C;note | With the usual regularity assumptions.>. A lighter
-note can sit in the margin instead.&#x3C;note position=margin | Margins suit short, glanceable remarks.>
-</code></pre>
-              <figure id="mp:notes-basic" class="frameable-border">
-                <p>
-                  The result holds in general<sup id="mp-notes-basic-noteref-1" data-note-id="mp-notes-basic-note-1"><a href="#mp-notes-basic-note-1">1</a></sup>. A lighter
-                  note can sit in the margin instead.<sup id="mp-notes-basic-noteref-2" data-note-id="mp-notes-basic-note-2"><a href="#mp-notes-basic-note-2">2</a></sup><sidenote><sup>2</sup><p>Margins suit short, glanceable remarks.</p></sidenote>
-                </p>
-                <note-list class="notes">
-                  <ol>
-                    <li id="mp-notes-basic-note-1"><sup>1</sup>
-                      <p>With the usual regularity assumptions.</p><a href="#mp-notes-basic-noteref-1" class="note-backref" aria-label="back to text">↩</a>
-                    </li>
-                    <li id="mp-notes-basic-note-2" class="sidenote-fallback"><sup>2</sup>
-                      <p>Margins suit short, glanceable remarks.</p><a href="#mp-notes-basic-noteref-2" class="note-backref" aria-label="back to text">↩</a>
-                    </li>
-                  </ol>
-                </note-list>
-                <figcaption><minipage-label>Minipage 13.</minipage-label></figcaption>
-              </figure>
-            </sub-section>
-            <sub-section id="sec:notes-9">
-              <sub-section-title>Notes</sub-section-title>
-              <p>Footnotes hover-preview their content on screen. Set <code>&#x3C;config note-position=margin /></code> to render numbered notes as Tufte-style sidenotes instead of at the foot.</p></section>
-            </sub-section>
-          </section>
-          <section id="sec:terms-glossaries">
-            <section-title>Defined Terms &#x26; Glossaries</section-title>
-            <sub-section id="sec:general-usage-14">
-              <sub-section-title>General Usage</sub-section-title>
-              <p><code>&#x3C;term></code> marks a defined term inline where you introduce it. A <code>&#x3C;glossary></code> collects terms and their definitions, each in a <code>&#x3C;glossary-entry></code> built from a <code>&#x3C;dt></code> term and a <code>&#x3C;dd></code> definition.</p>
-              <pre><code id="code:term-basic">
-An &#x3C;term | eigenvector> is a non-zero vector that scales under a transformation.
-
-&#x3C;glossary>
-&#x3C;glossary-entry #g:eigenvector>
-&#x3C;dt | Eigenvector>
-&#x3C;dd | A non-zero vector whose direction a transformation preserves.>
-&#x3C;/glossary-entry>
+        <figure id="mp:ag-dl-1" class="frameable-border">
+          <dl>
+            <dt>enscribe</dt>
+            <dd>
+              <p>An academic publishing system built on HTML+CSS+JS.</p>
+            </dd>
+            <dt>eHTML</dt>
+            <dd>
+              <p>The canonical semantic HTML vocabulary.</p>
+            </dd>
+            <dt>Enscribe shorthand</dt>
+            <dd>
+              <p>The shorthand authoring syntax that compiles to eHTML.</p>
+            </dd>
+          </dl>
+          <figcaption><minipage-label>Minipage 35.</minipage-label></figcaption>
+        </figure>
+        <p><i>Long-form &#x3C;dl> with short-form &#x3C;dt>/&#x3C;dd> children. The natural
+authoring pattern.</i></p></section>
+      </section>
+      <section id="ag-dt">
+        <section-title><code>&#x3C;dt></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;dt></code>.</p><code id="code:ag-dt-1">&#x3C;dt | enscribe></code>
+        <figure id="mp:ag-dt-1" class="frameable-border">
+          <dt>enscribe</dt>
+          <figcaption><minipage-label>Minipage 36.</minipage-label></figcaption>
+        </figure>
+        <p><i>A definition-list term. Appears as a child of &#x3C;dl>.</i></p></section>
+      </section>
+      <section id="ag-example">
+        <section-title><code>&#x3C;example></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;example></code>.</p><code id="code:ag-example-1">&#x3C;example | The integers under addition form a group.></code>
+        <figure id="mp:ag-example-1" class="frameable-border">
+          <example><example-label>Example 1.</example-label>
+            <p>The integers under addition form a group.</p>
+          </example>
+          <figcaption><minipage-label>Minipage 37.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-glossary">
+        <section-title><code>&#x3C;glossary></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;glossary></code>.</p>
+        <pre><code id="code:ag-glossary-1">
+&#x3C;glossary #project-terms>
+  &#x3C;glossary-entry>
+    &#x3C;dt | enscribe>
+    &#x3C;dd | An academic publishing system built on HTML+CSS+JS.>
+  &#x3C;/glossary-entry>
+  &#x3C;glossary-entry>
+    &#x3C;dt | eHTML>
+    &#x3C;dd | The canonical semantic HTML vocabulary.>
+  &#x3C;/glossary-entry>
 &#x3C;/glossary>
 </code></pre>
-              <figure id="mp:term-basic" class="frameable-border">
-                <p>An <term>eigenvector</term> is a non-zero vector that scales under a transformation.</p>
-                <glossary>
-                  <glossary-entry id="mp-term-basic-g:eigenvector">
-                    <dt>Eigenvector</dt>
-                    <dd>
-                      <p>A non-zero vector whose direction a transformation preserves.</p>
-                    </dd>
-                  </glossary-entry>
-                </glossary>
-                <figcaption><minipage-label>Minipage 14.</minipage-label></figcaption>
-              </figure></section>
-            </sub-section>
-          </section>
-        </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="inline-formatting.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Inline Formatting</toc-title></a><a class="enscribe-chapter-next" href="figures-frameables.html" rel="next"><toc-title>Figures &#x26; Frameables</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:citations-notes-cross-references"><ul><li><a href="#sec:citations">Citations</a><ul><li><a href="#sec:general-usage-11">General Usage</a></li><li><a href="#sec:arguments-9">Arguments</a></li></ul></li><li><a href="#sec:cross-references">Cross-References</a><ul><li><a href="#sec:general-usage-12">General Usage</a></li><li><a href="#sec:notes-8">Notes</a></li></ul></li><li><a href="#sec:notes">Notes</a><ul><li><a href="#sec:general-usage-13">General Usage</a></li><li><a href="#sec:notes-9">Notes</a></li></ul></li><li><a href="#sec:terms-glossaries">Defined Terms &#x26; Glossaries</a><ul><li><a href="#sec:general-usage-14">General Usage</a></li></ul></li></ul></div></details></nav></div>
+        <figure id="mp:ag-glossary-1" class="frameable-border">
+          <glossary id="mp-ag-glossary-1-project-terms">
+            <glossary-entry>
+              <dt>enscribe</dt>
+              <dd>
+                <p>An academic publishing system built on HTML+CSS+JS.</p>
+              </dd>
+            </glossary-entry>
+            <glossary-entry>
+              <dt>eHTML</dt>
+              <dd>
+                <p>The canonical semantic HTML vocabulary.</p>
+              </dd>
+            </glossary-entry>
+          </glossary>
+          <figcaption><minipage-label>Minipage 38.</minipage-label></figcaption>
+        </figure>
+        <p><i>A glossary with two entries. Each &#x3C;glossary-entry> uses &#x3C;dt>/&#x3C;dd>
+for its term and definition (the same shapes &#x3C;dl> uses), wrapped
+in the entry’s own envelope for cross-reference / styling.</i></p></section>
+      </section>
+      <section id="ag-glossary-entry">
+        <section-title><code>&#x3C;glossary-entry></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;glossary-entry></code>.</p>
+        <pre><code id="code:ag-glossary-entry-1">
+&#x3C;glossary-entry #term:enscribe>
+  &#x3C;dt | enscribe>
+  &#x3C;dd | An academic publishing system built on HTML+CSS+JS.>
+&#x3C;/glossary-entry>
+</code></pre>
+        <figure id="mp:ag-glossary-entry-1" class="frameable-border">
+          <glossary-entry id="mp-ag-glossary-entry-1-term:enscribe">
+            <dt>enscribe</dt>
+            <dd>
+              <p>An academic publishing system built on HTML+CSS+JS.</p>
+            </dd>
+          </glossary-entry>
+          <figcaption><minipage-label>Minipage 39.</minipage-label></figcaption>
+        </figure>
+        <p><i>A single glossary entry. The id uses the “term:” colon-prefix
+convention so cross-references like &#x3C;ref @term:enscribe> can
+resolve into the entry.</i></p></section>
+      </section>
+      <section id="ag-lemma">
+        <section-title><code>&#x3C;lemma></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;lemma></code>.</p><code id="code:ag-lemma-1">&#x3C;lemma | Every continuous function on a compact set attains its maximum.></code>
+        <figure id="mp:ag-lemma-1" class="frameable-border">
+          <lemma><lemma-label>Lemma 1.</lemma-label>
+            <p>Every continuous function on a compact set attains its maximum.</p>
+          </lemma>
+          <figcaption><minipage-label>Minipage 40.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-proof">
+        <section-title><code>&#x3C;proof></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;proof></code>.</p>
+        <pre><code id="code:ag-proof-1">
+&#x3C;theorem | The sum of two even integers is even.>
+
+&#x3C;proof>
+Let $a = 2m$ and $b = 2n$. Then $a + b = 2(m + n)$, which is
+even. $\square$
+&#x3C;/proof>
+</code></pre>
+        <figure id="mp:ag-proof-1" class="frameable-border">
+          <theorem><theorem-label>Theorem 1.</theorem-label>
+            <p>The sum of two even integers is even.</p>
+          </theorem>
+          <proof><proof-label>Proof.</proof-label>
+            <p>
+              Let <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">m</span></span></span></span></inline-math> and <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mord mathnormal">n</span></span></span></span></inline-math>. Then <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mopen">(</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></inline-math>, which is
+              even. <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.675em;"></span><span class="mord amsrm">□</span></span></span></span></inline-math>
+            </p>
+          </proof>
+          <figcaption><minipage-label>Minipage 41.</minipage-label></figcaption>
+        </figure>
+        <p><i>The canonical pattern: &#x3C;theorem> followed by sibling &#x3C;proof>.
+The proof is NOT nested inside the theorem.</i></p></section>
+      </section>
+      <section id="ag-proposition">
+        <section-title><code>&#x3C;proposition></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;proposition></code>.</p><code id="code:ag-proposition-1">&#x3C;proposition | The sum of two even integers is even.></code>
+        <figure id="mp:ag-proposition-1" class="frameable-border">
+          <proposition><proposition-label>Proposition 1.</proposition-label>
+            <p>The sum of two even integers is even.</p>
+          </proposition>
+          <figcaption><minipage-label>Minipage 42.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-remark">
+        <section-title><code>&#x3C;remark></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;remark></code>.</p><code id="code:ag-remark-1">&#x3C;remark | The converse does not hold in general.></code>
+        <figure id="mp:ag-remark-1" class="frameable-border">
+          <remark><remark-label>Remark.</remark-label>
+            <p>The converse does not hold in general.</p>
+          </remark>
+          <figcaption><minipage-label>Minipage 43.</minipage-label></figcaption>
+        </figure></section>
+      </section>
+      <section id="ag-theorem">
+        <section-title><code>&#x3C;theorem></code></section-title>
+        <p>Compiles to eHTML <code>&#x3C;theorem></code>.</p><code id="code:ag-theorem-1">&#x3C;theorem | If $a^2 + b^2 = c^2$ then the triangle is right-angled.></code>
+        <figure id="mp:ag-theorem-1" class="frameable-border">
+          <theorem><theorem-label>Theorem 1.</theorem-label>
+            <p>If <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> then the triangle is right-angled.</p>
+          </theorem>
+          <figcaption><minipage-label>Minipage 44.</minipage-label></figcaption>
+        </figure>
+        <p><i>Short-form with pipe content. The body is parsed normally.</i></p></section>
+      </section>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="exhibit.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Exhibit</toc-title></a><a class="enscribe-chapter-next" href="notation.html" rel="next"><toc-title>Notation</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:formal-statements"><ul><li><a href="#ag-corollary">&#x3C;corollary></a></li><li><a href="#ag-dd">&#x3C;dd></a></li><li><a href="#ag-definition">&#x3C;definition></a></li><li><a href="#ag-dl">&#x3C;dl></a></li><li><a href="#ag-dt">&#x3C;dt></a></li><li><a href="#ag-example">&#x3C;example></a></li><li><a href="#ag-glossary">&#x3C;glossary></a></li><li><a href="#ag-glossary-entry">&#x3C;glossary-entry></a></li><li><a href="#ag-lemma">&#x3C;lemma></a></li><li><a href="#ag-proof">&#x3C;proof></a></li><li><a href="#ag-proposition">&#x3C;proposition></a></li><li><a href="#ag-remark">&#x3C;remark></a></li><li><a href="#ag-theorem">&#x3C;theorem></a></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {
