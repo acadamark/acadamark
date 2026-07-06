@@ -100,13 +100,17 @@ defines the single-file mode below.
   at `<src>/<child>` — so two books with same-named chapters (e.g. each a `frameables.emd`) do not collide
   last-wins in a flat namespace and serve the wrong book's content. The runtime fetches the master at
   `<src>/index.emd` and resolves children with the one `new URL(child, masterUrl)` rule (no fetch fork).
-  Co-located ASSETS, by contrast, are copied FLAT — `<fig src>` figure images, data files — because a
-  rendered `<img src="elephant.jpg">` resolves against the SPA's single shell/document location, not the
-  chapter source, so the image must sit flat beside the shell (without this they 404); namespacing an
-  asset would require rewriting its `<img src>` for Live only, which would break live≡static render parity.
-  A same-named DISTINCT asset across pages therefore still collides last-wins — harmless for shared
-  identical assets, otherwise an asset-IDENTITY follow-up (the data-store `@id` model, #313-adjacent),
-  not a deploy move.
+  Co-located ASSETS — `<fig src>` figure images, data files, local `<a href>` targets — are deployed the
+  SAME way (#352): **per-folder under the page's own `<src>/`**, mirroring the static dir-per-page tree and
+  the source layout, NOT flattened to the shell root. At render the live SPA resolves a page's page-relative
+  content references (`<img src>`, `<a href>`, …) against the page's own source dir — a runtime DOM pass
+  (`resolveWebsitePageAssets`) scoped to the content region only, so nav / chrome / engine / CSS (and a
+  document `<base>`, which would re-target the `?page=` nav and break middle-click / open-in-new-tab) are
+  untouched. This does NOT break parity: the website contract compares the display number + scheme-normalized
+  owner, *never the raw href* (raw hrefs already differ by design between the `.html`-path and `?page=`-route
+  schemes; `render-parity.md` "The website path"). And because each page's assets live under its own `<src>/`
+  and resolve page-relative, two pages' same-named DISTINCT assets stay distinct — the old last-wins collision
+  is resolved (a deploy move + a page-relative resolve, not the deferred `@id`-store follow-up).
 - *CDN* — the same shell with asset hrefs pointing at a CDN instead of siblings (smaller folder,
   network dependency). Display assets (fonts, KaTeX) are already CDN by default; the engine/CSS are too
   under **`--assets cdn`** (#363), which points the emitter's `assets` at the pinned jsDelivr package.
@@ -122,10 +126,13 @@ view is single-sourced across article and book so the two cannot drift.
 
 **Invariants.**
 - The shell body is empty by design; all content arrives at runtime by fetch.
-- Content and (sibling/CDN) assets resolve **relative to the shell's location** (`document.baseURI`
-  / a relative asset base), so the folder is portable to any served sub-path — e.g. served at
-  `/live/` it resolves `/live/…`. Routing is query-string (`?page=`), which is path-agnostic. (This
-  portability is what lets the live folder be a sub-path demo of a static site.)
+- The CHROME (engine bundle, sibling/CDN CSS) resolves **relative to the shell's location**
+  (`document.baseURI` / a relative asset base), so the folder is portable to any served sub-path — e.g.
+  served at `/live/` it resolves `/live/…`. A page's own CONTENT references, by contrast, resolve relative
+  to that page's source dir `<src>/` (#352, `resolveWebsitePageAssets`) — the shell-relative default would
+  send `<img src=elephant.jpg>` to the shell root where the per-folder asset no longer sits. Routing is
+  query-string (`?page=`), which is path-agnostic. (This portability is what lets the live folder be a
+  sub-path demo of a static site.)
 - A live render is equivalent to the static render of the same source on display number and
   scheme-normalized owner (the parity contract; `render-parity.md`).
 

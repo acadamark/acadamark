@@ -103,7 +103,8 @@ export function resolvePageSource(masterDir, src) {
  * masterDir` guard is deliberate: a flat page shares the master directory, and scanning that would copy
  * unrelated top-level files (built site chrome, READMEs) — only a page with its OWN subdirectory has a
  * private asset set. SINGLE AUTHORITY for "what co-located files travel with a page": the live build
- * (build-live.js) calls this with `destPrefix=''` to copy the SAME set FLAT into its folder.
+ * (build-live.js) calls this with `destPrefix=`${src}/`` to copy the SAME set PER-FOLDER under the page's
+ * dir (#352 — the live SPA resolves a page's `<img src>` against `<src>/`, matching the static tree).
  */
 export function pageDirAssets(pageDir, masterDir, destPrefix) {
   if (pageDir === masterDir) return []; // a flat page has no private dir of its own

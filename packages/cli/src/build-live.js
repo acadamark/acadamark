@@ -6,9 +6,10 @@
 // with `assetBase: './'`. Layout (#331): the chrome assets copy FLAT; for a WEBSITE master each page is
 // deployed in its OWN directory — master at `<src>/index.emd`, a book page's `<chapter src>` children
 // BESIDE it at `<src>/<child>` — so same-named children across pages don't collide last-wins (the runtime
-// fetches `<src>/index.emd` and resolves children master-relative). Co-located figure ASSETS stay FLAT
-// (a rendered `<img src>` resolves against the /live/ shell location, not the chapter source). A
-// standalone book/article folder stays flat (its children already sit beside their own master). The
+// fetches `<src>/index.emd` and resolves children master-relative). Co-located figure ASSETS are copied
+// PER-FOLDER under the page's `<src>/` too (#352 — the live SPA resolves a page's `<img src>` against that
+// dir), so two pages' same-named assets stay distinct. A standalone book/article folder stays flat (its
+// children already sit beside their own master). The
 // result is a portable, self-standing LIVE FOLDER — open it (served over HTTP) to read; `?edit` mounts
 // the #211 edit loop — with no CDN dependency for the chrome (the CodeMirror-from-CDN load inside the
 // editor factory is the #117-deferred asset concern).
@@ -230,15 +231,15 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
         copyInto(join(resolved.pageDir, childSrc), join(src, childSrc));
       }
 
-      // Co-located non-source assets (figure images, data files) stay FLAT under outDir (#fig-404) — NOT
-      // under the page dir. A `<fig src=elephant.jpg>` renders `<img src="elephant.jpg">`, and the SPA
-      // resolves that relative URL against the `/live/` DOCUMENT base (one shell page for all chapters), NOT
-      // the chapter SOURCE's location — so the image must sit flat at `/live/elephant.jpg` wherever the source
-      // now lives. (Namespacing assets would need an `<img src>` rewrite, which would break live≡static render
-      // parity; a same-named DISTINCT asset across books still collides last-wins — harmless for shared
-      // identical assets like the docs' elephant.jpg, and otherwise an asset-IDENTITY follow-up (#313-adjacent,
-      // the data-store `@id` model), not a deploy move.) pageDirAssets with destPrefix='' yields the flat names.
-      for (const { from, to } of pageDirAssets(resolved.pageDir, masterDir, '')) {
+      // #352: co-located page assets (figure images, data files) are deployed PER-FOLDER under the page's
+      // own `<src>/` — mirroring the static tree AND the source, NOT flattened to the outDir root. A
+      // `<fig src=elephant.jpg>` renders `<img src="elephant.jpg">`, which the live SPA now resolves against
+      // the page's `<src>/` (browser.js `resolveWebsitePageAssets`), so the per-folder copy is exactly where
+      // it looks. This keeps two books' same-named DISTINCT assets distinct (retiring the last-wins flatten
+      // collision) and holds live≡static parity on the terms render-parity.md states (display number +
+      // scheme-normalized owner, never the raw href). pageDirAssets with destPrefix=`${src}/` yields the
+      // per-folder names.
+      for (const { from, to } of pageDirAssets(resolved.pageDir, masterDir, `${src}/`)) {
         copyInto(from, to);
       }
     }

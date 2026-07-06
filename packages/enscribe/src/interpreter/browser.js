@@ -591,7 +591,7 @@ function wireEditSave(root, { pristineHtml, getSource }) {
  * keeping CodeMirror (a browser-only dependency) out of the engine and out of jsdom — the
  * gate drives this loop through a fake adapter.
  */
-function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs, embedded = false, pageSlug = null }) {
+function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor, debounceMs, embedded = false, pageSlug = null, pageSrcDir = null }) {
   const loaded = loadedFile.data[ENSCRIBE_LOADED_SOURCES] || {};
   // The editable in-memory source map (structure children), seeded from the fetched sources.
   const sources = new Map();
@@ -622,7 +622,7 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
   // page-embedded interactivity (scrollspy / on-this-page) so the preview's rail spies like read mode.
   const runPreviewAssets = () => {
     const pane = root.querySelector('[data-edit-pane="preview"]');
-    if (pane) executeAssets(pane).catch(() => {});
+    if (pane) { resolveWebsitePageAssets(pane, pageSrcDir); executeAssets(pane).catch(() => {}); }  // #352: page-relative figures in a website book-page edit preview (pageSrcDir is null for a standalone book → no-op)
   };
   const updatePreview = () => {
     if (currentKey === 'cover' || currentIndex < 0) return;
@@ -895,6 +895,34 @@ function masterType(proc, source) {
   return classifyDocType(proc.parse(source)).type;
 }
 
+// #352: a website page's figure assets live in the page's OWN source dir (`<src>/elephant.jpg`), and the
+// live shell is a SINGLE document at the site root — so a rendered `<img src="elephant.jpg">` (emitted
+// page-relative, byte-identical to the static build) resolves against the shell root and 404s. Resolve the
+// injected page CONTENT's relative asset URLs against the page's source dir, so the per-folder-deployed
+// asset loads (build-live.js copies each page's assets under `<src>/`, mirroring the static tree + the
+// source). SCOPED to the content region only — nav / chrome / engine / CSS stay untouched (a document
+// `<base>` was rejected: it re-targets the `?page=` nav hrefs and breaks middle-click / open-in-new-tab).
+// Parity holds on the terms render-parity.md states — display number + scheme-normalized owner, never the
+// raw href — so resolving an asset src (a resource addressed via each surface's scheme) is within contract.
+function resolveWebsitePageAssets(container, pageSrcDir) {
+  if (!pageSrcDir || !container || typeof container.querySelectorAll !== 'function') return;
+  const base = `${String(pageSrcDir).replace(/\/+$/, '')}/`;
+  // A PAGE-RELATIVE reference gets the page-dir prefix; a scheme (data:/http:), a root or protocol-relative
+  // path, an in-page `#anchor`, a `?page=` route/ref query, or an unresolved `@id` is left exactly as
+  // authored. Covers EVERY page-relative content reference the copy side (pageDirAssets) moves per-folder —
+  // a figure `<img src>`, a `<source src>`, a local `<a href>` download, an inline-SVG `<image>/<use href>`
+  // — so the live content matches the static per-page-dir layout (#352). `?`/`#` are skipped so a content
+  // cross-page `<ref>` (`?page=owner#x`) and an in-page anchor stay base-agnostic (never a document `<base>`).
+  const NON_RELATIVE = /^(?:[a-z][a-z0-9+.-]*:|\/\/|\/|[#?]|@)/i;
+  for (const el of container.querySelectorAll('[src], [href]')) {
+    for (const attr of ['src', 'href']) {
+      const raw = el.getAttribute(attr);
+      if (raw == null || NON_RELATIVE.test(raw)) continue;
+      el.setAttribute(attr, base + raw);
+    }
+  }
+}
+
 /**
  * The ONE configurable live-shell entry (#213/#216): read↔edit from a HOST-side switch, dispatching
  * book ↔ article by the master's own `<meta type>`. Editability is a property of the DEPLOYMENT, not
@@ -995,8 +1023,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // chapter children MASTER-RELATIVE (`new URL(childSrc, masterUrl)` → `<src>/<childSrc>`) via the
     // loadAndAssembleMaster `loadSource` seam — NOT against `document.baseURI` (the flat `/live/` root, where
     // two books' same-named `frameables.emd` collided and served the wrong book). Same `new URL(rel, base)`
-    // rule everywhere; no fork in fetchSourceText. (Figure ASSETS stay flat — a rendered `<img src>` resolves
-    // against the /live/ document base, not the chapter source; see build-live.js + the #331 report.)
+    // rule everywhere; no fork in fetchSourceText. (Figure ASSETS are now deployed PER-FOLDER under each
+    // page's `<src>/` (build-live.js), and `resolveWebsitePageAssets` resolves a page's `<img src>` against
+    // that dir at inject time — so the two books' distinct same-named assets stay distinct, #352.)
     const masterPath = `${p.src}/index.emd`;
     const masterUrl = baseUrl ? new URL(masterPath, baseUrl) : undefined;
     const src = await fetchSourceText(masterPath, baseUrl);
@@ -1152,6 +1181,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
       articleCache.set(pd.slug, resolveRefs(String(proc.stringify(proc.runSync(proc.parse(pd.source), f), f)), pd.slug));
     }
     contentRegion.innerHTML = articleCache.get(pd.slug);
+    resolveWebsitePageAssets(contentRegion, pd.resolved.sourcePath);   // #352: figure assets resolve page-relative
     if (!executed.has(pd.slug)) { executeAssets(contentRegion); executed.add(pd.slug); }
     // No shell on-this-page rail (maintainer decision): the article owns its layout. A `<config toc>`
     // article renders its OWN contents rail inside the content (exactly as the static site does); a
@@ -1173,6 +1203,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
         b.chapterCache.set(key, resolveRefs(view, b.pd.slug));
       }
       contentRegion.innerHTML = b.chapterCache.get(key);
+      resolveWebsitePageAssets(contentRegion, b.pd.resolved.sourcePath);   // #352: figure assets resolve page-relative
       b.currentKey = key;
       executeAssets(contentRegion);
     }
@@ -1246,7 +1277,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
         root: contentRegion, proc, masterSource: pd.source,
         childSrcs: discoverChildSrcs(proc, pd.source),
         loadedFile: { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } },
-        editor, debounceMs, embedded: true, pageSlug: pd.slug,
+        editor, debounceMs, embedded: true, pageSlug: pd.slug, pageSrcDir: pd.resolved.sourcePath,
       });
       return;
     }
@@ -1259,7 +1290,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // scripts (innerHTML does not). Re-run after each edit so the new render's script re-attaches.
     const runPreviewAssets = () => {
       const pane = contentRegion.querySelector('[data-edit-pane="preview"]');
-      if (pane) executeAssets(pane).catch(() => {});
+      if (pane) { resolveWebsitePageAssets(pane, pd.resolved.sourcePath); executeAssets(pane).catch(() => {}); }  // #352: figures resolve page-relative in the edit preview too
     };
     runPreviewAssets();
     const updatePreview = () => {
