@@ -1,0 +1,12 @@
+<meta type=article title="Delivery Modes Test Document" />
+
+<data>
+   <fig #fig:pixel png>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</fig>
+</data>
+
+<section #sec:intro | Introduction>
+
+A short paragraph of prose to exercise the body font, with inline math $E = mc^2$ so KaTeX
+and the math fonts are involved in the render.
+
+<fig src="@fig:pixel" | A tiny embedded test figure.>
