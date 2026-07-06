@@ -1,0 +1,214 @@
+The document’s skeleton — containers, regions, sections, the website page-set, and the section break.
+
+<section #ag-article | `<article>`>
+
+Compiles to eHTML `<article>`.
+
+<code-block #code:ag-article-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins here.
+
+<section | Conclusion>
+The paper concludes here.
+</code-block>
+
+<minipage #mp:ag-article-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins here.
+
+<section | Conclusion>
+The paper concludes here.
+</minipage>
+
+*Typical authoring path: &lt;meta type=article&gt; at the top with no
+&lt;article&gt; wrapper. The structural plugin generates the &lt;article&gt;
+container and the three region wrappers. &lt;title&gt; in &lt;meta&gt; is
+promoted to &lt;article-title&gt;; &lt;meta&gt; itself survives inside
+&lt;article-front&gt;.*
+
+</section>
+
+<section #ag-article-back | `<article-back>`>
+
+Compiles to eHTML `<article-back>`.
+
+</section>
+
+<section #ag-article-body | `<article-body>`>
+
+Compiles to eHTML `<article-body>`.
+
+</section>
+
+<section #ag-article-front | `<article-front>`>
+
+Compiles to eHTML `<article-front>`.
+
+</section>
+
+<section #ag-book | `<book>`>
+
+Compiles to eHTML `<book>`.
+
+<code-block #code:ag-book-1>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+<section | Early ancestors>
+Content here.
+
+<chapter | Modern populations>
+<section | African elephants>
+Content here.
+</code-block>
+
+<minipage #mp:ag-book-1>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+<section | Early ancestors>
+Content here.
+
+<chapter | Modern populations>
+<section | African elephants>
+Content here.
+</minipage>
+
+*Typical authoring path: &lt;meta type=book&gt; at the top with no &lt;book&gt;
+wrapper. The structural plugin generates &lt;book&gt; + the three region
+wrappers. Each book-part contains its own &lt;meta&gt; with the promoted
+&lt;book-part-title&gt;; no &lt;book-part-meta&gt; wrapper.*
+
+</section>
+
+<section #ag-book-back | `<book-back>`>
+
+Compiles to eHTML `<book-back>`.
+
+</section>
+
+<section #ag-book-body | `<book-body>`>
+
+Compiles to eHTML `<book-body>`.
+
+</section>
+
+<section #ag-book-front | `<book-front>`>
+
+Compiles to eHTML `<book-front>`.
+
+</section>
+
+<section #ag-book-part | `<book-part>`>
+
+Compiles to eHTML `<book-part>`.
+
+<code-block #code:ag-book-part-1>
+<chapter | Origins>
+Content of the chapter.
+</code-block>
+
+<minipage #mp:ag-book-part-1>
+<chapter | Origins>
+Content of the chapter.
+</minipage>
+
+</section>
+
+<section #ag-hr | `<hr>`>
+
+Compiles to eHTML `<hr>`.
+
+<code #code:ag-hr-1>
+<hr>
+</code>
+
+<minipage #mp:ag-hr-1>
+<hr>
+</minipage>
+
+</section>
+
+<section #ag-item | `<item>`>
+
+Compiles to eHTML `<item>`.
+
+</section>
+
+<section #ag-nav | `<nav>`>
+
+Compiles to eHTML `<nav>`.
+
+</section>
+
+<section #ag-nav-group | `<nav-group>`>
+
+Compiles to eHTML `<nav-group>`.
+
+</section>
+
+<section #ag-section | `<section>`>
+
+Compiles to eHTML `<section>`.
+
+<code-block #code:ag-section-1>
+<section | Introduction>
+The paper begins here.
+</code-block>
+
+<minipage #mp:ag-section-1>
+<section | Introduction>
+The paper begins here.
+</minipage>
+
+</section>
+
+<section #ag-sub-section | `<sub-section>`>
+
+Compiles to eHTML `<sub-section>`.
+
+<code-block #code:ag-sub-section-1>
+<sub-section | Quantitative analysis>
+Sub-section content.
+</code-block>
+
+<minipage #mp:ag-sub-section-1>
+<sub-section | Quantitative analysis>
+Sub-section content.
+</minipage>
+
+</section>
+
+<section #ag-sub-sub-section | `<sub-sub-section>`>
+
+Compiles to eHTML `<sub-sub-section>`.
+
+<code-block #code:ag-sub-sub-section-1>
+<sub-sub-section | Regression analysis>
+Detailed methods for the regression.
+</code-block>
+
+<minipage #mp:ag-sub-sub-section-1>
+<sub-sub-section | Regression analysis>
+Detailed methods for the regression.
+</minipage>
+
+</section>

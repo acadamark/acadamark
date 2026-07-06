@@ -1,20 +1,22 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 367,
+    "cells": 368,
     "fixtures": 96,
     "annexed": 19
   },
   "byStatus": {
     "gap": 285,
     "pass": 64,
-    "deferred": 18
+    "deferred": 18,
+    "needs-review": 1
   },
   "byDisposition": {
     "specified": 320,
     "generic-implicit": 19,
     "deferred-presentation": 18,
     "no-output": 8,
+    "needs-review": 1,
     "alias": 2
   },
   "cells": [
@@ -2168,6 +2170,16 @@
         "sweep/swp-meta.emd"
       ],
       "status": "pass"
+    },
+    {
+      "key": "dataset/base",
+      "element": "dataset",
+      "behavior": "base",
+      "area": "?",
+      "disposition": "needs-review",
+      "predicates": [],
+      "coveredBy": [],
+      "status": "needs-review"
     },
     {
       "key": "date/deferred",

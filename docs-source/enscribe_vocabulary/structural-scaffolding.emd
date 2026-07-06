@@ -1,4 +1,437 @@
-The document skeleton an author writes — sections, navigation, and the horizontal rule.
+The document’s skeleton — containers, regions, sections, the website page-set, and the section break.
+
+<section #sh-article | `<article>`>
+
+<sub-section | General Usage>
+
+Semantic role: *article*. Compiles to eHTML `<article>`.
+
+Registers:
+
+- Canonical: `<article>`
+
+<code-block #code:sh-article-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins here.
+
+<section | Conclusion>
+The paper concludes here.
+</code-block>
+
+<minipage #mp:sh-article-1>
+<meta type=article>
+  <title | The Effect of Elephants on Climate>
+  <author | Jane Goodall>
+  <date | 2024-03-15>
+</meta>
+
+<section | Introduction>
+The paper begins here.
+
+<section | Conclusion>
+The paper concludes here.
+</minipage>
+
+*Typical authoring path: &lt;meta type=article&gt; at the top with no
+&lt;article&gt; wrapper. The structural plugin generates the &lt;article&gt;
+container and the three region wrappers. &lt;title&gt; in &lt;meta&gt; is
+promoted to &lt;article-title&gt;; &lt;meta&gt; itself survives inside
+&lt;article-front&gt;.*
+
+<code-block #code:sh-article-2>
+<article | The Effect of Elephants on Climate>
+<meta>
+  <author | Jane Goodall>
+</meta>
+
+<section | Introduction>
+The paper begins here.
+</code-block>
+
+<minipage #mp:sh-article-2>
+<article | The Effect of Elephants on Climate>
+<meta>
+  <author | Jane Goodall>
+</meta>
+
+<section | Introduction>
+The paper begins here.
+</minipage>
+
+*Explicit-form escape hatch: &lt;article | Title&gt;. The structural plugin
+respects the explicit wrapper. Pipe content from &lt;article&gt; becomes
+&lt;article-title&gt;, placed as the first child of &lt;meta&gt; (creating
+&lt;meta&gt; if absent, or appending if present).*
+
+<code-block #code:sh-article-3>
+<section | Introduction>
+The introduction.
+
+<section | Conclusion>
+The conclusion.
+</code-block>
+
+<minipage #mp:sh-article-3>
+<section | Introduction>
+The introduction.
+
+<section | Conclusion>
+The conclusion.
+</minipage>
+
+*No &lt;meta&gt; and no &lt;article&gt; declared. The structural plugin assumes
+article-shaped (the default) and wraps the sections in an implicit
+article. &lt;article-front&gt; is omitted because there's no metadata.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `numbering-style` | kwarg | `arabic` `roman` `alpha` (default `arabic`) |  |
+| `note-position` | kwarg | `bottom` `margin` (default `bottom`) | Document-level note render mode (#33): |
+
+</section>
+
+<section #sh-article-back | `<article-back>`>
+
+<sub-section | General Usage>
+
+Semantic role: *article-back*. Compiles to eHTML `<article-back>`.
+
+Registers:
+
+- Canonical: `<article-back>`
+
+</section>
+
+<section #sh-article-body | `<article-body>`>
+
+<sub-section | General Usage>
+
+Semantic role: *article-body*. Compiles to eHTML `<article-body>`.
+
+Registers:
+
+- Canonical: `<article-body>`
+
+</section>
+
+<section #sh-article-front | `<article-front>`>
+
+<sub-section | General Usage>
+
+Semantic role: *article-front*. Compiles to eHTML `<article-front>`.
+
+Registers:
+
+- Canonical: `<article-front>`
+
+</section>
+
+<section #sh-book | `<book>`>
+
+<sub-section | General Usage>
+
+Semantic role: *book*. Compiles to eHTML `<book>`.
+
+Registers:
+
+- Canonical: `<book>`
+
+<code-block #code:sh-book-1>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+<section | Early ancestors>
+Content here.
+
+<chapter | Modern populations>
+<section | African elephants>
+Content here.
+</code-block>
+
+<minipage #mp:sh-book-1>
+<meta type=book>
+  <title | A Natural History of Elephants>
+  <author | Jane Goodall>
+</meta>
+
+<chapter | Origins>
+<section | Early ancestors>
+Content here.
+
+<chapter | Modern populations>
+<section | African elephants>
+Content here.
+</minipage>
+
+*Typical authoring path: &lt;meta type=book&gt; at the top with no &lt;book&gt;
+wrapper. The structural plugin generates &lt;book&gt; + the three region
+wrappers. Each book-part contains its own &lt;meta&gt; with the promoted
+&lt;book-part-title&gt;; no &lt;book-part-meta&gt; wrapper.*
+
+<code-block #code:sh-book-2>
+<meta type=book>
+  <title | The Comprehensive Guide>
+  <author | Author Name>
+</meta>
+
+<part | Part I: Foundations>
+<chapter | First Principles>
+Content.
+
+<chapter | Background>
+Content.
+
+<part | Part II: Applications>
+<chapter | Practical Examples>
+Content.
+</code-block>
+
+<minipage #mp:sh-book-2>
+<meta type=book>
+  <title | The Comprehensive Guide>
+  <author | Author Name>
+</meta>
+
+<part | Part I: Foundations>
+<chapter | First Principles>
+Content.
+
+<chapter | Background>
+Content.
+
+<part | Part II: Applications>
+<chapter | Practical Examples>
+Content.
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `numbering-style` | kwarg | `arabic` `roman` `alpha` (default `arabic`) |  |
+| `note-position` | kwarg | `bottom` `margin` (default `bottom`) | Document-level note render mode (#33): |
+
+</section>
+
+<section #sh-book-back | `<book-back>`>
+
+<sub-section | General Usage>
+
+Semantic role: *book-back*. Compiles to eHTML `<book-back>`.
+
+Registers:
+
+- Canonical: `<book-back>`
+
+</section>
+
+<section #sh-book-body | `<book-body>`>
+
+<sub-section | General Usage>
+
+Semantic role: *book-body*. Compiles to eHTML `<book-body>`.
+
+Registers:
+
+- Canonical: `<book-body>`
+
+</section>
+
+<section #sh-book-front | `<book-front>`>
+
+<sub-section | General Usage>
+
+Semantic role: *book-front*. Compiles to eHTML `<book-front>`.
+
+Registers:
+
+- Canonical: `<book-front>`
+
+</section>
+
+<section #sh-book-part | `<book-part>`>
+
+<sub-section | General Usage>
+
+Semantic role: *book-part*. Compiles to eHTML `<book-part>`.
+
+Registers:
+
+- Canonical: `<book-part>`
+
+<code-block #code:sh-book-part-1>
+<chapter | Origins>
+Content of the chapter.
+</code-block>
+
+<minipage #mp:sh-book-part-1>
+<chapter | Origins>
+Content of the chapter.
+</minipage>
+
+<code-block #code:sh-book-part-2>
+<part | Part I: Foundations>
+<chapter | First Chapter>
+Content.
+
+<chapter | Second Chapter>
+Content.
+</code-block>
+
+<minipage #mp:sh-book-part-2>
+<part | Part I: Foundations>
+<chapter | First Chapter>
+Content.
+
+<chapter | Second Chapter>
+Content.
+</minipage>
+
+<code-block #code:sh-book-part-3>
+<preface | A Note from the Author>
+I wrote this book because...
+
+<chapter | Chapter One>
+Body content.
+
+<appendix | Notation>
+Notation conventions used in this book.
+</code-block>
+
+<minipage #mp:sh-book-part-3>
+<preface | A Note from the Author>
+I wrote this book because...
+
+<chapter | Chapter One>
+Body content.
+
+<appendix | Notation>
+Notation conventions used in this book.
+</minipage>
+
+*The structural plugin places the preface in book-front, the chapter
+in book-body, and the appendix in book-back based on book-part-type.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `chapter` `part` `appendix` `preface` `foreword` `introduction` `conclusion` `glossary` `dedication` `afterword` `colophon` `other` | The kind of book-part. |
+| `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
+| `note-position` | kwarg | `bottom` `margin` | Document-level note render mode (#33): |
+| `+unlisted` / `-unlisted` | flag | default off | Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g. |
+| `+unnumbered` / `-unnumbered` | flag | default off | Skip this book-part's number, regardless of number-depth (#218) — e.g. |
+
+</section>
+
+<section #sh-hr | `<hr>`>
+
+<sub-section | General Usage>
+
+Semantic role: *hr*. Compiles to eHTML `<hr>`.
+
+Registers:
+
+- Canonical: `<hr>`
+
+<code #code:sh-hr-1>
+<hr>
+</code>
+
+<minipage #mp:sh-hr-1>
+<hr>
+</minipage>
+
+<code #code:sh-hr-2>
+<hr type=scene-break>
+</code>
+
+<minipage #mp:sh-hr-2>
+<hr type=scene-break>
+</minipage>
+
+<code-block #code:sh-hr-3>
+<p | First paragraph.>
+
+<hr type=ornamental>
+
+<p | Second paragraph after a thematic break.>
+</code-block>
+
+<minipage #mp:sh-hr-3>
+<p | First paragraph.>
+
+<hr type=ornamental>
+
+<p | Second paragraph after a thematic break.>
+</minipage>
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `type` | kwarg | `scene-break` `section-break` `ornamental` `decorative` `other` | Optional classification of the thematic break's role. |
+
+</section>
+
+<section #sh-item | `<item>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation-item*. Compiles to eHTML `<item>`.
+
+Registers:
+
+- Canonical: `<item>`
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `src` | kwarg |  | For an EXTERNAL page: |
+
+</section>
+
+<section #sh-nav | `<nav>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation*. Compiles to eHTML `<nav>`.
+
+Registers:
+
+- Canonical: `<nav>`
+
+</section>
+
+<section #sh-nav-group | `<nav-group>`>
+
+<sub-section | General Usage>
+
+Semantic role: *navigation-group*. Compiles to eHTML `<nav-group>`.
+
+Registers:
+
+- Canonical: `<nav-group>`
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `title` | kwarg |  | The group's display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). |
+
+</section>
 
 <section #sh-section | `<section>`>
 
@@ -9,8 +442,6 @@ Semantic role: *section*. Compiles to eHTML `<section>`.
 Registers:
 
 - Canonical: `<section>`
-- Sigil: `<# … #>`
-- Markdown: `# …`
 
 <code-block #code:sh-section-1>
 <section | Introduction>
@@ -60,10 +491,10 @@ Sub-section content.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Optional classification of the section's role. Maps to JATS sec-type attribute. Values match common JATS conventions for IMRaD-style papers. |
+| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Optional classification of the section's role. |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` | Override the inherited numbering style for this section. |
-| `+unlisted` | boolean | default `false` | Keep this section out of the generated table of contents, regardless of toc-depth (#218). Display-only: the section still renders; it is only absent from the contents listing. The ToC is config-driven (<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as +unlisted (the boolean shorthand); renders to the HTML attribute unlisted. |
-| `+unnumbered` | boolean | default `false` | Skip this section's number, regardless of number-depth (#218). The heading is OUTSIDE the numbered sequence — it gets no number AND does not advance the counter, so the next numbered sibling continues unbroken (the \\section* / Quarto .unnumbered behavior); its subtree is unnumbered too. Numbering is config-driven (<config number-sections=true>); see notes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp reads node.booleans.unnumbered in runSync, and the unnumbered attribute also renders on the element. |
+| `+unlisted` / `-unlisted` | flag | default off | Keep this section out of the generated table of contents, regardless of toc-depth (#218). |
+| `+unnumbered` / `-unnumbered` | flag | default off | Skip this section's number, regardless of number-depth (#218). |
 
 </section>
 
@@ -76,8 +507,6 @@ Semantic role: *sub-section*. Compiles to eHTML `<sub-section>`.
 Registers:
 
 - Canonical: `<sub-section>`
-- Sigil: `<## … ##>`
-- Markdown: `## …`
 
 <code-block #code:sh-sub-section-1>
 <sub-section | Quantitative analysis>
@@ -117,10 +546,10 @@ Sub-section content.
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Same values as <section>. Optional classification of the sub-section role. |
+| `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Same values as &lt;section&gt;. |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
-| `+unlisted` | boolean | default `false` | Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218). Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted. |
-| `+unnumbered` | boolean | default `false` | Skip this sub-section's number, regardless of number-depth (#218). Outside the numbered sequence — no number, no counter advance, subtree unnumbered; the next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md. Authored as +unnumbered. |
+| `+unlisted` / `-unlisted` | flag | default off | Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218). |
+| `+unnumbered` / `-unnumbered` | flag | default off | Skip this sub-section's number, regardless of number-depth (#218). |
 
 </section>
 
@@ -133,8 +562,6 @@ Semantic role: *sub-sub-section*. Compiles to eHTML `<sub-sub-section>`.
 Registers:
 
 - Canonical: `<sub-sub-section>`
-- Sigil: `<### … ###>`
-- Markdown: `### …`
 
 <code-block #code:sh-sub-sub-section-1>
 <sub-sub-section | Regression analysis>
@@ -172,102 +599,7 @@ Sensitivity tests were performed.
 |---|---|---|---|
 | `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` |  |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
-| `+unlisted` | boolean | default `false` | Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218). Display-only: it still renders; it is only absent from the contents listing. See notes/specs/toc-and-numbering.md. Authored as +unlisted; renders to the HTML attribute unlisted. |
-| `+unnumbered` | boolean | default `false` | Skip this sub-sub-section's number, regardless of number-depth (#218). Outside the numbered sequence — no number, no counter advance, subtree unnumbered; the next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md. Authored as +unnumbered. |
-
-</section>
-
-<section #sh-nav | `<nav>`>
-
-<sub-section | General Usage>
-
-Semantic role: *navigation*. Compiles to eHTML `<nav>`.
-
-Registers:
-
-- Canonical: `<nav>`
-
-*No standalone example — see the registers above and the related constructs in this chapter.*
-
-</section>
-
-<section #sh-nav-group | `<nav-group>`>
-
-<sub-section | General Usage>
-
-Semantic role: *navigation-group*. Compiles to eHTML `<nav-group>`.
-
-Registers:
-
-- Canonical: `<nav-group>`
-
-*No standalone example — see the registers above and the related constructs in this chapter.*
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `title` | kwarg |  | The group's display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). Supplied as a kwarg, NOT a pipe: a `<nav-group>` is a long-form container (neither `\|` nor `/`), so the label cannot ride the pipe slot the way a page's title does. |
-
-</section>
-
-<section #sh-item | `<item>`>
-
-<sub-section | General Usage>
-
-Semantic role: *navigation-item*. Compiles to eHTML `<item>`.
-
-Registers:
-
-- Canonical: `<item>`
-
-*No standalone example — see the registers above and the related constructs in this chapter.*
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `src` | kwarg |  | For an EXTERNAL page: the child `.emd` file that supplies the page body. The pipe gives the menu label and overrides the child's own title, exactly as `<section src \| Title>` does in an article. Omitted for an INLINE page, whose body is authored in the master after the `<item \| Title>` marker (peer-closed by the next entry, the `<section \| Title>` model). The website render (S2) loads the child; S1 records the `src` as a reference only. |
-
-</section>
-
-<section #sh-hr | `<hr>`>
-
-<sub-section | General Usage>
-
-Semantic role: *hr*. Compiles to eHTML `<hr>`.
-
-Registers:
-
-- Canonical: `<hr>`
-- Markdown: `---`
-
-<code #code:sh-hr-1>
-<hr>
-</code>
-
-*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
-
-<code #code:sh-hr-2>
-<hr type=scene-break>
-</code>
-
-*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
-
-<code-block #code:sh-hr-3>
-<p | First paragraph.>
-
-<hr type=ornamental>
-
-<p | Second paragraph after a thematic break.>
-</code-block>
-
-*Render pending — bare `<hr>` / `<hr type=…>` parsed as a long-form opener (no self-close) → tag-error (issue #275).*
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `type` | kwarg | `scene-break` `section-break` `ornamental` `decorative` `other` | Optional classification of the thematic break's role. Affects rendering (scene breaks render as blank space; ornamental breaks render with decorative characters or images). |
+| `+unlisted` / `-unlisted` | flag | default off | Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218). |
+| `+unnumbered` / `-unnumbered` | flag | default off | Skip this sub-sub-section's number, regardless of number-depth (#218). |
 
 </section>

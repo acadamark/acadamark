@@ -24,7 +24,8 @@
   "scripts": {
     "test": "npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",
-    "build:site": "rm -rf site && node packages/cli/bin/enscribe.js build docs-source/index.emd -o site",
+    "docs:gen": "npm run build -w @enscribejs/ehtml && node docs-gen/generate-docs.mjs",
+    "build:site": "npm run docs:gen && rm -rf site && node packages/cli/bin/enscribe.js build docs-source/index.emd -o site",
     "build:site-live": "npm run build:lib -w @enscribejs/enscribe && node packages/cli/bin/enscribe.js build docs-source/index.emd --live -o site/live",
     "build:site-all": "npm run build:site && npm run build:site-live"
   },

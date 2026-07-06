@@ -2,7 +2,7 @@
 <title | The eHTML Vocabulary>
 <subtitle | Every eHTML element — semantic role, HTML projection, attributes, and JATS counterpart>
 <author>
-<name | Generated from the Enscribe vocabulary source>
+<name | Generated from the Enscribe vocabulary source (docs-gen/generate-docs.mjs)>
 </author>
 </meta>
 

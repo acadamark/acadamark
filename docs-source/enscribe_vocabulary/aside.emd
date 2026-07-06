@@ -1,4 +1,4 @@
-Content set beside the main flow — notes, boxed asides, and the expandable disclosure.
+The author steps aside in their own secondary voice — notes, boxed asides, and disclosure.
 
 <section #sh-aside | `<aside>`>
 
@@ -48,11 +48,78 @@ It can contain multiple paragraphs and other content like
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `note` `sidebar` `callout` `warning` `tip` `info` `caution` | Optional classification of the aside's role. Affects rendering (callouts get visual emphasis; sidebars get layout treatment). Maps to JATS via boxed-text content-type at export. |
-| `title` | kwarg |  | Optional title rendered at the top of the aside (the frameable title-top convention, #31). Lifts to a <title> child tag at the normalize-to-canonical gate; the child form is equivalent. |
-| `caption` | kwarg |  | Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the "Box N." label folded in when numbered. Lifts to a `<caption>` child tag at the gate. |
-| `+numbered` | boolean | default `false` | Whether this aside is numbered. **Off by default** (boxed prose is usually a one-off callout). When +numbered, the aside counts in its OWN "Box N" series (the `box` counter / ref-prefix `box`), not the figure counter. |
-| `+border` | boolean | default `true` | Frameable surface (#31). **On by default for boxed prose** — the visual box is the point of a callout / sidebar. Use -border to suppress the outline. |
+| `type` | kwarg | `note` `sidebar` `callout` `warning` `tip` `info` `caution` | Optional classification of the aside's role. |
+| `title` | kwarg |  | Optional title rendered at the top of the aside (the frameable title-top convention, #31). |
+| `caption` | kwarg |  | Optional caption rendered at the foot of the aside (frameable caption-bottom convention, #31), with the "Box N." label folded in when numbered. |
+| `+numbered` / `-numbered` | flag | default off | Whether this aside is numbered. |
+| `+border` / `-border` | flag | default on | Frameable surface (#31). |
+
+</section>
+
+<section #sh-details | `<details>`>
+
+<sub-section | General Usage>
+
+Semantic role: *details*. Compiles to eHTML `<details>`.
+
+Registers:
+
+- Canonical: `<details>`
+
+<code-block #code:sh-details-1>
+<details>
+  <summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+</details>
+</code-block>
+
+<minipage #mp:sh-details-1>
+<details>
+  <summary | More background>
+  Additional context for the curious reader. The summary is the
+  visible heading; this body shows when the disclosure is opened.
+</details>
+</minipage>
+
+*The canonical shape: a &lt;summary&gt; for the visible heading,
+followed by the disclosure body. The body is recursively parsed
+as prose / block content.*
+
+<code-block #code:sh-details-2>
+<details +open>
+  <summary | Always-expanded section>
+  This disclosure is expanded by default.
+</details>
+</code-block>
+
+<minipage #mp:sh-details-2>
+<details +open>
+  <summary | Always-expanded section>
+  This disclosure is expanded by default.
+</details>
+</minipage>
+
+*The +open boolean kwarg expands the disclosure by default.
+Maps to HTML's standard open attribute.*
+
+<sub-section | Arguments>
+
+| attribute | kind | values / default | notes |
+|---|---|---|---|
+| `open` | kwarg | `true` `false` | HTML's open attribute on &lt;details&gt;. |
+
+</section>
+
+<section #sh-endnotes | `<endnotes>`>
+
+<sub-section | General Usage>
+
+Semantic role: *endnotes*. Compiles to eHTML `<endnotes>`.
+
+Registers:
+
+- Canonical: `<endnotes>`
 
 </section>
 
@@ -83,20 +150,20 @@ A claim<note placement=foot | A footnote.>.
 </minipage>
 
 <code #code:sh-note-3>
-A definition<note placement=side | Inline-adjacent note.>.
+A definition<note position=margin | A margin note.>.
 </code>
 
 <minipage #mp:sh-note-3>
-A definition<note placement=side | Inline-adjacent note.>.
+A definition<note position=margin | A margin note.>.
 </minipage>
 
 <sub-section | Arguments>
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `placement` | kwarg | `end` `foot` `side` | Determines where the note content is collected. "end" collects at article-back; "foot" collects at article-back (distinguished from "end" by CSS class on the note-list); "side" renders the content inline-adjacent to the marker. Document-wide default is "end". |
-| `position` | kwarg | `end` `foot` `side` | Legacy alias for "placement" (same values, same data-note-placement output). Retained for backwards compatibility; "placement" is preferred for new documents. |
-| `type` | kwarg | `substantive` `technical` `editorial` `translator` `other` | Optional classification. Most notes are substantive (authorial commentary). |
+| `placement` | kwarg | `end` `foot` `margin` (default `end`) | The note's position — one note type, three positions. |
+| `position` | kwarg | `end` `foot` `margin` | Alias for "placement" (same values, same data-note-placement output). |
+| `type` | kwarg | `substantive` `technical` `editorial` `translator` `other` (default `substantive`) | Optional classification. |
 
 </section>
 
@@ -110,99 +177,11 @@ Registers:
 
 - Canonical: `<note-list>`
 
-*No standalone example — see the registers above and the related constructs in this chapter.*
-
 <sub-section | Arguments>
 
 | attribute | kind | values / default | notes |
 |---|---|---|---|
-| `type` | kwarg | `end-notes` `chapter-notes` `footnotes-collected` `other` |  |
-
-</section>
-
-<section #sh-endnotes | `<endnotes>`>
-
-<sub-section | General Usage>
-
-Semantic role: *endnotes*. Compiles to eHTML `<endnotes>`.
-
-A placement marker: write `<endnotes>` where you want the document's collected end-notes to appear, and the note-placement plugin replaces it with the collected end-notes block (which renders as a `<note-list>`). It is the end-note counterpart to letting foot-notes collect at the page. Author it once, typically near the end of the document; the notes themselves are authored inline with `<note>`.
-
-Registers:
-
-- Canonical: `<endnotes>`
-
-<code-block #code:sh-endnotes-1>
-The claim holds<note | A note collected at the end.>.
-
-<section | Notes>
-<endnotes>
-</code-block>
-
-<minipage #mp:sh-endnotes-1>
-The claim holds<note | A note collected at the end.>.
-
-<section | Notes>
-<endnotes>
-</minipage>
-
-*The inline `<note>` collects at the `<endnotes>` marker instead of at the article back's default position.*
-
-<sub-section | Arguments>
-
-`<endnotes>` takes no attributes. It is a marker — its content is generated (the collected notes), not authored.
-
-</section>
-
-<section #sh-details | `<details>`>
-
-<sub-section | General Usage>
-
-Semantic role: *details*. Compiles to eHTML `<details>`.
-
-Registers:
-
-- Canonical: `<details>`
-
-<code-block #code:sh-details-1>
-<details>
-  <summary | More background>
-  Additional context for the curious reader. The summary is the
-  visible heading; this body shows when the disclosure is opened.
-</details>
-</code-block>
-
-<minipage #mp:sh-details-1>
-<details>
-  <summary | More background>
-  Additional context for the curious reader. The summary is the
-  visible heading; this body shows when the disclosure is opened.
-</details>
-</minipage>
-
-*The canonical shape: a &lt;summary&gt; for the visible heading, followed by the disclosure body. The body is recursively parsed as prose / block content.*
-
-<code-block #code:sh-details-2>
-<details +open>
-  <summary | Always-expanded section>
-  This disclosure is expanded by default.
-</details>
-</code-block>
-
-<minipage #mp:sh-details-2>
-<details +open>
-  <summary | Always-expanded section>
-  This disclosure is expanded by default.
-</details>
-</minipage>
-
-*The +open boolean kwarg expands the disclosure by default. Maps to HTML's standard open attribute.*
-
-<sub-section | Arguments>
-
-| attribute | kind | values / default | notes |
-|---|---|---|---|
-| `open` | kwarg | `true` `false` | HTML's open attribute on <details>. When present, the disclosure is expanded by default. Either +open or open=true form works; absence (or -open / open=false) renders collapsed. |
+| `type` | kwarg | `end-notes` `chapter-notes` `footnotes-collected` `other` (default `end-notes`) |  |
 
 </section>
 
@@ -224,7 +203,8 @@ Registers:
 <summary | More background>
 </minipage>
 
-*The visible heading of a &lt;details&gt; disclosure. Appears as a child of &lt;details&gt;.*
+*The visible heading of a &lt;details&gt; disclosure. Appears as a
+child of &lt;details&gt;.*
 
 <code #code:sh-summary-2>
 <summary | Click to reveal the <em | hidden> details>
@@ -234,6 +214,7 @@ Registers:
 <summary | Click to reveal the <em | hidden> details>
 </minipage>
 
-*Inline markup in a summary. The recursive-content pass parses the pipe content normally.*
+*Inline markup in a summary. The recursive-content pass parses
+the pipe content normally.*
 
 </section>

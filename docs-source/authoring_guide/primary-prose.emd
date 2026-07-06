@@ -1,0 +1,15 @@
+The running-text unit — the paragraph.
+
+<section #ag-p | `<p>`>
+
+Compiles to eHTML `<p>`.
+
+<code #code:ag-p-1>
+<p | A simple paragraph.>
+</code>
+
+<minipage #mp:ag-p-1>
+<p | A simple paragraph.>
+</minipage>
+
+</section>
