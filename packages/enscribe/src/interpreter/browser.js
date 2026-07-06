@@ -43,6 +43,7 @@ import {
   WEBSITE_SHELL_CSS,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
+import { serializeSavedFile, writeSavedFile, suggestedFileName } from '../master-document/save-single-file.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
 import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL, ENSCRIBE_CONFIG, ENSCRIBE_PAGE_LINK_RESOLVER } from '../core/file-data-keys.js';
 import { readConfigBool } from './lib/config-helpers.js';
@@ -530,6 +531,53 @@ function wireEditTabs(root) {
 }
 
 /**
+ * Wire the single-file Save button (#351). Present only for a single-file vessel (the edit view rendered
+ * it because `saveContext` was threaded in). On click: serialize the pristine vessel with the CURRENT
+ * edited source (reusing the exact structure — asset-delivery mode preserved) and write it out via the
+ * File System Access API (in place, overwriting a persisted handle after the first save) or a download
+ * fallback. Dirty tracking: `markDirty()` (called from the editor's onChange) flips the status to
+ * `unsaved`; a successful save flips it back to `saved`. A cancelled save picker (AbortError) stays dirty.
+ *
+ * @param {Element} root - the mounted edit view (holds `[data-edit-save]` / `[data-edit-status]`).
+ * @param {{pristineHtml:string, getSource:() => string}} ctx - the vessel snapshot + current-source getter.
+ * @returns {{markDirty:() => void}} the dirty-tracking hook for the edit loop's onChange.
+ */
+function wireEditSave(root, { pristineHtml, getSource }) {
+  const btn = root.querySelector('[data-edit-save]');
+  const status = root.querySelector('[data-edit-status]');
+  const setStatus = (dirty) => {
+    if (!status) return;
+    status.textContent = dirty ? 'unsaved' : 'saved';
+    status.title = dirty
+      ? 'Unsaved edits — click Save to write them into this self-contained HTML file.'
+      : 'Saved — the edited source is written into this self-contained HTML file.';
+  };
+  const markDirty = () => setStatus(true);
+  if (!btn) return { markDirty };
+
+  let fileHandle = null;   // persisted after the first File System Access save → in-place overwrite next time
+  const docTitle = (typeof document !== 'undefined' && document.title) || '';
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    try {
+      const html = serializeSavedFile(pristineHtml, getSource());
+      const res = await writeSavedFile(html, { fileHandle, suggestedName: suggestedFileName(docTitle) });
+      if (res.method === 'fsa' && res.handle) fileHandle = res.handle;
+      setStatus(false);   // clean — the file now matches the edited source
+    } catch (err) {
+      // The user dismissing the save picker (AbortError) is not a failure — stay dirty, silently.
+      if (!(err && err.name === 'AbortError')) {
+        // eslint-disable-next-line no-console
+        console.error('enscribe: save failed:', err);
+      }
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  return { markDirty };
+}
+
+/**
  * The edit loop (#203). Given the fetched master + children, stand up the incremental
  * rebuilder over an in-memory source map and drive a hash-routed Write/Preview editor:
  * chapter views mount the editor adapter; a debounced edit re-parses only that chapter
@@ -690,7 +738,7 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
  * @returns {Promise<Element>} the mounted element (after the article renders).
  */
 export async function mountLiveArticle(target, source, options = {}) {
-  const { editor = null, editDebounceMs, ...pipelineOptions } = options;
+  const { editor = null, editDebounceMs, saveContext = null, ...pipelineOptions } = options;
   const root = typeof target === 'string' ? document.querySelector(target) : target;
   if (!root) {
     throw new Error(`mountLiveArticle: target not found: ${String(target)}`);
@@ -712,7 +760,7 @@ export async function mountLiveArticle(target, source, options = {}) {
   const { loadedFile } = await loadAndAssembleMaster(proc, source, childSrcs);
   return mountArticleEditLoop({
     root, proc, masterSource: source, loadedFile, editor,
-    debounceMs: editDebounceMs ?? 250,
+    debounceMs: editDebounceMs ?? 250, saveContext,
   });
 }
 
@@ -726,7 +774,7 @@ export async function mountLiveArticle(target, source, options = {}) {
  * the fetch — children ride in memory on `loaded`), so the preview matches the published article and
  * the single global pass keeps every in-article cross-reference correct after each edit.
  */
-function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, debounceMs }) {
+function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, debounceMs, saveContext = null }) {
   const loaded = loadedFile.data[ENSCRIBE_LOADED_SOURCES] || {};
   let currentSource = masterSource;   // the single editable unit (the master)
 
@@ -752,8 +800,13 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
     return String(proc.stringify(proc.runSync(tree, file), file));
   };
 
-  root.innerHTML = renderLiveArticleEditView(renderArticle(currentSource));
+  const saveable = !!saveContext;
+  root.innerHTML = renderLiveArticleEditView(renderArticle(currentSource), undefined, saveable);
   wireEditTabs(root);
+  // #351 — a single-file vessel serializes edits back into itself; wire the Save button + dirty tracking.
+  const save = saveable
+    ? wireEditSave(root, { pristineHtml: saveContext.pristineHtml, getSource: () => currentSource })
+    : null;
   // Run the page-embedded interactivity (scrollspy / on-this-page) in the preview so its rail spies
   // exactly as read mode (executeAssets runs the page's scripts; innerHTML does not).
   const runPreviewAssets = () => {
@@ -782,7 +835,7 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
     // The adapter reports every edit; swap the source in synchronously and debounce the re-render.
     editor.mount(mountEl, {
       value: currentSource,
-      onChange: (newSource) => { currentSource = newSource; debouncedRender(); },
+      onChange: (newSource) => { currentSource = newSource; if (save) save.markDirty(); debouncedRender(); },
     });
   }
   return root;
@@ -1327,6 +1380,17 @@ export async function mountLiveDocument(target, source, options = {}) {
     ? (typeof document !== 'undefined' ? document.querySelector(target) : null)
     : target;
   const editEnabled = edit !== undefined ? !!edit : editAttrOn(el);
+  // #351 — SAVE context for a single-file vessel. The embedded-source `<template id="enscribe-source">`
+  // is present ONLY in emitSingleFileShell's output (a served shell fetches its master instead), so it is
+  // the definitive "this is a self-contained, saveable single-file document" signal. Snapshot the vessel
+  // HTML NOW — before the editor mounts or the render fills `#enscribe-book-root` — so SAVE reuses the
+  // exact pristine structure (its asset-delivery mode preserved) and swaps ONLY the embedded source. Only
+  // an article single-file is editable (editable ⟺ self-contained ⟺ no `<… src>` children; a book's edit
+  // loop is a per-`<chapter src>` source map, which a self-contained file has none of), so only the
+  // article branch receives it.
+  const saveContext = (editEnabled && typeof document !== 'undefined' && document.getElementById('enscribe-source'))
+    ? { pristineHtml: '<!DOCTYPE html>\n' + document.documentElement.outerHTML }
+    : null;
   // Build the editor adapter on demand (READ mode never loads it), then dispatch 3-way on the master's
   // `<meta type>`. editor === null → read mode (byte-identical to #209 / the article render); an
   // adapter → the edit loop: #211 (book) / #216 (article) / #246 S2c (the website per-page loop).
@@ -1342,7 +1406,7 @@ export async function mountLiveDocument(target, source, options = {}) {
   const mountOptions = { ...pipelineOptions, editor, editDebounceMs };
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
     : type === 'website' ? mountLiveWebsite(target, source, mountOptions)
-    : mountLiveArticle(target, source, mountOptions);
+    : mountLiveArticle(target, source, { ...mountOptions, saveContext });
 }
 
 /**

@@ -176,6 +176,20 @@ instead of fetch) and forecloses the server.
   `childSrcs.length === 0` test). A self-contained doc wires the editor + honors `?edit`; a master
   with children (or a website) is emitted **render-only** with a warning (its children/pages are not
   embedded — see the widenings below).
+- **Save — the self-saving document (#351).** A single-file document's edits are no longer preview-only.
+  **Save** serializes the edited source back into the vessel by REUSING its exact structure: the pristine
+  file HTML (snapshotted at mount, before the render / editor mutate the DOM) with ONLY the
+  `<template id="enscribe-source">` content swapped for the edited source (`serializeSavedFile`). So the
+  saved file is the original vessel with a new embedded source — its asset-delivery mode is preserved by
+  construction (inlined stays inlined, CDN stays CDN) and it self-renders when reopened; no re-build, no
+  re-render. It writes via the **File System Access API** (Chromium/Edge — overwrite the opened file IN
+  PLACE, the handle persisted for the session so later saves need no prompt) with a **download fallback**
+  everywhere else (Firefox/Safari — a fresh self-contained file); feature-detected, never hard-failing.
+  Save is offered ONLY for the single-file vessel — a served/live document stays preview-only (there is
+  no file to write back into) — and only when self-contained (editable). The edit-view status
+  dirty-tracks `saved` ↔ `unsaved`. The write path (`writeSavedFile`) lives beside `serializeSavedFile`
+  in `master-document/save-single-file.js`; the vessel structure is unchanged (no `emitSingleFileShell`
+  edit — the pristine HTML is snapshotted at runtime).
 - **Assets from the web.** The chrome + display assets (engine, CSS, KaTeX, fonts, CodeMirror) load
   by URL — the file is small (shell + content), no engine inlined. The default source is the
   **pinned, published npm package** on jsDelivr — `cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/`,

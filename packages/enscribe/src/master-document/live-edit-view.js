@@ -18,17 +18,31 @@ export const DEFAULT_TAB = 'preview';
 const TAB_LABELS = { source: 'Source', preview: 'Preview' };
 
 // The Write/Preview tab bar, derived from `defaultTab`: that tab is `--active` / `aria-selected="true"`,
-// the other inactive. The "unsaved" marker states edits are preview-only (no save this slice). Identical
-// for book + article. (With `defaultTab='source'` this emits exactly the pre-#editability markup.)
-function editTabs(defaultTab) {
+// the other inactive. Identical for book + article. (With `defaultTab='source'` this emits exactly the
+// pre-#editability markup.)
+//
+// `saveable` (#351) — the single-file vessel case: edits serialize back into the self-contained file, so
+// the bar carries a Save button + a dirty-tracked status (`saved` ↔ `unsaved`, driven imperatively by
+// browser.js `wireEditSave`, initial `saved` = matches the embedded source). Otherwise (a served/live
+// document) editing stays preview-only — saving writes a self-contained file, which only the single-file
+// vessel is — and the status keeps the preview-only marker.
+function editTabs(defaultTab, saveable = false) {
   const tab = (name) => {
     const active = name === defaultTab;
     return `<button type="button" class="enscribe-edit-tab${active ? ' enscribe-edit-tab--active' : ''}" ` +
       `data-edit-tab="${name}" role="tab" aria-selected="${active ? 'true' : 'false'}">${TAB_LABELS[name]}</button>`;
   };
-  return '<div class="enscribe-edit-tabs" role="tablist">' +
-      tab('source') + tab('preview') +
-      '<span class="enscribe-edit-status" title="Edits are preview-only — they live in memory and are lost on reload (no save this slice).">preview — unsaved</span>' +
+  const tabs = tab('source') + tab('preview');
+  if (saveable) {
+    return '<div class="enscribe-edit-tabs" role="tablist">' + tabs +
+        '<button type="button" class="enscribe-edit-save" data-edit-save>Save</button>' +
+        '<span class="enscribe-edit-status" data-edit-status ' +
+          'title="Saved — the edited source is written into this self-contained HTML file.">saved</span>' +
+      '</div>';
+  }
+  return '<div class="enscribe-edit-tabs" role="tablist">' + tabs +
+      '<span class="enscribe-edit-status" title="Edits are preview-only — they live in memory and are lost ' +
+        'on reload. Saving writes a self-contained file, which only a single-file document is.">preview — unsaved</span>' +
     '</div>';
 }
 
@@ -41,10 +55,11 @@ function editTabs(defaultTab) {
  *
  * @param {string} previewBody - the initial preview pane inner HTML (the live-rendered document)
  * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
+ * @param {boolean} [saveable=false] - single-file vessel: render the Save button + dirty status (#351)
  * @returns {string} the `<main class="enscribe-edit-main">…</main>` fragment
  */
-export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB) {
-  return `<main class="enscribe-edit-main">${buildEditMainInner(previewBody, defaultTab)}</main>`;
+export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB, saveable = false) {
+  return `<main class="enscribe-edit-main">${buildEditMainInner(previewBody, defaultTab, saveable)}</main>`;
 }
 
 /**
@@ -56,9 +71,10 @@ export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB) {
  *
  * @param {string} previewBody - the initial preview pane inner HTML (the live-rendered document)
  * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
+ * @param {boolean} [saveable=false] - single-file vessel: render the Save button + dirty status (#351)
  * @returns {string} the tab bar + panes (no wrapper element)
  */
-export function buildEditMainInner(previewBody, defaultTab = DEFAULT_TAB) {
+export function buildEditMainInner(previewBody, defaultTab = DEFAULT_TAB, saveable = false) {
   const pane = (name, cls, inner) =>
     `<div class="enscribe-edit-pane ${cls}" data-edit-pane="${name}"${name === defaultTab ? '' : ' hidden'}>${inner}</div>`;
   // The PREVIEW pane carries the `content` class so the page's render is framed EXACTLY as read mode
@@ -71,7 +87,7 @@ export function buildEditMainInner(previewBody, defaultTab = DEFAULT_TAB) {
   const panes =
     pane('source', 'enscribe-edit-pane--source', '') +
     pane('preview', 'enscribe-edit-pane--preview enscribe-body content', previewBody);
-  return `${editTabs(defaultTab)}${panes}`;
+  return `${editTabs(defaultTab, saveable)}${panes}`;
 }
 
 /**
@@ -83,8 +99,9 @@ export function buildEditMainInner(previewBody, defaultTab = DEFAULT_TAB) {
  *
  * @param {string} previewBody - the live-rendered `<article>` HTML for the preview pane
  * @param {'preview'|'source'} [defaultTab=DEFAULT_TAB] - the landing pane/tab (default: preview)
+ * @param {boolean} [saveable=false] - single-file vessel: render the Save button + dirty status (#351)
  * @returns {string} the mounted article edit-view HTML
  */
-export function renderLiveArticleEditView(previewBody, defaultTab = DEFAULT_TAB) {
-  return buildEditMain(previewBody, defaultTab);
+export function renderLiveArticleEditView(previewBody, defaultTab = DEFAULT_TAB, saveable = false) {
+  return buildEditMain(previewBody, defaultTab, saveable);
 }

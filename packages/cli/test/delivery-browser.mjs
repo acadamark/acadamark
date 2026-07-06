@@ -153,6 +153,75 @@ export async function runBrowserTier({ FIXTURE, buildSingleFile }) {
       console.log(`PASS: #369 Tier 2 — the inlined editor MOUNTS and accepts input OFFLINE in ${driver.name} (CodeMirror, blob-imported)`);
     }
 
+    // (C) SELF-SAVE (#351) — edit an inlined single-file, SAVE via the download path, then re-open the
+    //     saved artifact OFFLINE and assert it (a) carries the edited .emd and (b) still self-renders.
+    //     The File System Access path (save back to the opened file) cannot be driven headlessly — it is
+    //     named for a human below. Here we FORCE the download fallback (delete showSaveFilePicker) and
+    //     capture the exact bytes the Save button writes (override URL.createObjectURL → read the Blob).
+    {
+      const { html } = buildSingleFile({ master: FIXTURE, delivery: 'inlined', edit: true, warn: () => {} });
+      const file = join(dir, 'save-edit.html');
+      writeFileSync(file, html, 'utf8');
+      const page = await browser.page(/* offline */ true);
+      await page.goto(pathToFileURL(file).href);
+      await page.waitFor('.cm-editor', 8000);
+      await page.click('[data-edit-tab="source"]');
+      await page.waitFor('.cm-content', 3000);
+
+      // Edit: type a unique marker into the editor (the onChange updates the current source + marks dirty).
+      await page.type('.cm-content', 'SAVEMARK_351 ');
+      const dirty = await page.eval(() => document.querySelector('[data-edit-status]')?.textContent ?? '');
+      if (dirty !== 'unsaved') throw new Error(`Tier 2 save: status did not flip to "unsaved" after an edit (got "${dirty}")`);
+
+      // Force the download fallback and capture the Blob the Save button produces (its exact bytes).
+      // showSaveFilePicker lives on Window.prototype, so `delete` won't remove it — shadow it as undefined.
+      await page.eval(() => {
+        Object.defineProperty(window, 'showSaveFilePicker', { value: undefined, configurable: true, writable: true });
+        window.__savedBlob = null;
+        window.__saveErr = null;
+        window.addEventListener('error', (e) => { window.__saveErr = String(e.message || e.error); });
+        const orig = URL.createObjectURL.bind(URL);
+        URL.createObjectURL = (blob) => { window.__savedBlob = blob; return orig(blob); };
+      });
+      await page.click('[data-edit-save]');
+      const savedHtml = await page.eval(async () => {
+        for (let i = 0; i < 100 && !window.__savedBlob; i++) await new Promise((r) => setTimeout(r, 20));
+        return window.__savedBlob ? await window.__savedBlob.text() : null;
+      });
+      if (!savedHtml) {
+        const err = await page.eval(() => window.__saveErr);
+        throw new Error(`Tier 2 save: the download path produced no file (no Blob captured)${err ? ` — page error: ${err}` : ''}`);
+      }
+
+      // (a) carries the edited .emd; (b) is a self-contained vessel; status flips back to "saved".
+      if (!savedHtml.includes('SAVEMARK_351')) throw new Error('Tier 2 save: the saved file does not carry the edited source');
+      if (!savedHtml.includes('<template id="enscribe-source">')) throw new Error('Tier 2 save: the saved file is not a single-file vessel');
+      const clean = await page.eval(() => document.querySelector('[data-edit-status]')?.textContent ?? '');
+      if (clean !== 'saved') throw new Error(`Tier 2 save: status did not flip to "saved" after saving (got "${clean}")`);
+
+      // Re-open the SAVED artifact OFFLINE — it must still self-render (math + figure) AND show the edit.
+      const savedFile = join(dir, 'save-reopened.html');
+      writeFileSync(savedFile, savedHtml, 'utf8');
+      const page2 = await browser.page(/* offline */ true);
+      await page2.goto(pathToFileURL(savedFile).href);
+      await page2.waitFor('.katex', 6000);
+      const reopened = await page2.eval(() => ({
+        katex: !!document.querySelector('.katex'),
+        figure: !!document.querySelector('img[src^="data:"]'),
+        hasMarker: document.body.textContent.includes('SAVEMARK_351'),
+      }));
+      const A = (c, m) => { if (!c) throw new Error(`Tier 2 self-save reopen: ${m}`); };
+      A(reopened.katex, 'the reopened saved file did not render the inline math (offline)');
+      A(reopened.figure, 'the reopened saved file did not render the embedded figure (offline)');
+      A(reopened.hasMarker, 'the reopened saved file does not show the edited content (SAVEMARK_351)');
+      console.log(`PASS: #351 Tier 2 — self-save (download path): edit → save → re-open renders the EDITED single-file OFFLINE in ${driver.name}`);
+      console.log(
+        'NOTE: #351 the File System Access path (save-in-place back to the opened file) is NOT automatable headlessly. ' +
+        'Human check, in Chromium/Edge: open an editable single-file via ?edit, edit, click Save → a save picker appears; ' +
+        'choose/overwrite the file; edit again + Save → it overwrites IN PLACE with no picker (the handle persisted).',
+      );
+    }
+
     return { ran: true, driver: driver.name };
   } finally {
     if (browser) await browser.close().catch(() => {});
