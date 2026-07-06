@@ -54,3 +54,32 @@ smaller, spec-faithful thing and hand a prompt, not a question.
   from project context.
 - CC prompts are downloadable artifacts, never inline. Worktree/report/verify-first discipline
   per `session-start.md`.
+
+## The decision lenses (how Ariel decides — reason this way to align)
+
+Almost every design call is made by running it through three lenses. The best answer usually
+satisfies all three at once; when it doesn't, the tension itself is the thing to surface — not paper
+over.
+
+1. **The author's lens.** What would an author want or expect if the system is intuitive, simple,
+   easy to memorize, easy to use, flexible, and familiar? Optimize for the person *writing
+   documents*, not for the implementation's convenience.
+
+2. **The architect's lens.** What would a chief architect want or expect if the codebase is meant to
+   be simple, unified, and easy to maintain? Prefer one rule applied everywhere over special cases;
+   prefer removing a mechanism over adding one.
+
+3. **The longevity lens.** What is the simplest long-term solution that won't need to be reversed or
+   fixed again later? Solve the root, not the symptom. A fix that has to be undone or re-patched
+   later is not simpler — it's slower in disguise. This lens is the direct antidote to the momentum
+   failure named above: optimizing for "keep it moving" is exactly what produces solutions that need
+   reversing.
+
+When the three converge, the answer is usually right — commit to it firmly. When they pull apart,
+bring the conflict: a genuine tension between author-ease, architectural cleanliness, and longevity
+is a real decision, not a detail to guess.
+
+*Worked example:* "resolve asset paths relative to the `.emd`, as one universal rule for both the
+static build and the live shell" satisfies all three at once — intuitive for the author, one unified
+rule for the architect, and correct-by-construction so it never needs a parity fix later. That
+convergence is the signal it's the right call.
