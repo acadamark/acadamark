@@ -36,6 +36,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Provision a Chromium the delivery-modes browser tests (Tier 2, #369) can drive. puppeteer-core
+      # (a packages/cli devDependency) ships no browser, and the test's findChromium() resolves the
+      # PLAYWRIGHT cache layout (~/.cache/ms-playwright/chromium-*/…) — it ignores
+      # PUPPETEER_EXECUTABLE_PATH — so `playwright install` is the zero-test-change provisioning path.
+      # `--with-deps` also apt-installs the shared libraries headless Chromium needs on a clean runner.
+      # Without this the Tier 2 checks skip (green); with it they RUN (offline render + editor mount).
+      - name: Provision Chromium for the browser tests (delivery Tier 2)
+        run: npx playwright install --with-deps chromium
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 
