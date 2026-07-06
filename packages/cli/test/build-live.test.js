@@ -193,7 +193,8 @@ export function run_tests() {
     // that against its `/live/` location, i.e. FLAT under outDir. Before this, build --live copied the
     // master + sources + shell assets but NOT the co-located images, so every example figure 404'd. The
     // fix copies each page-directory's non-source files (pageDirAssets, shared with the static build)
-    // flat. Fixture: a page-directory page with a co-located image + a book page whose chapter has one.
+    // PER-FOLDER under the page's dir (#352). Fixture: a page-directory page with a co-located image + a
+    // book page whose chapter has one.
     const siteDir = mkdtempSync(join(tmpdir(), 'enscribe-live-figassets-'));
     const out = mkdtempSync(join(tmpdir(), 'enscribe-live-figassets-out-'));
     try {
@@ -216,18 +217,19 @@ export function run_tests() {
 
       buildLiveFolder({ master: join(siteDir, 'site.emd'), outDir: out });
 
-      // Both images land FLAT in the live folder — a rendered `<img src>` resolves against the /live/
-      // DOCUMENT base, not the chapter source, so assets MUST stay flat (#331 keeps them flat on purpose;
-      // namespacing them would 404 or break live≡static parity).
-      assert.ok(existsSync(join(out, 'pic.png')), 'the home page co-located image is copied flat (out/pic.png)');
-      assert.ok(existsSync(join(out, 'plot.png')), 'the book chapter co-located image is copied flat (out/plot.png)');
-      assert.strictEqual(readFileSync(join(out, 'pic.png')).toString('binary'), '\x89PNG\r\n\x1a\n-home-pic',
+      // #352: both images land PER-FOLDER under their page's own dir — a rendered `<img src=pic.png>` now
+      // resolves against the page's `<src>/` (browser.js resolveWebsitePageAssets), so the asset must sit
+      // there. Two pages' same-named assets stay distinct (retiring the last-wins flatten collision); parity
+      // holds on the contract's terms (display number + scheme-normalized owner, never the raw href).
+      assert.ok(existsSync(join(out, 'home', 'pic.png')), 'the home page co-located image is copied per-folder (out/home/pic.png)');
+      assert.ok(existsSync(join(out, 'book', 'plot.png')), 'the book chapter co-located image is copied per-folder (out/book/plot.png)');
+      assert.strictEqual(readFileSync(join(out, 'home', 'pic.png')).toString('binary'), '\x89PNG\r\n\x1a\n-home-pic',
         'the copied image is byte-for-byte the source');
       // #331: the chapter SOURCE is now nested under the book page's own dir (out/book/ch.emd), where the
       // master-relative runtime fetch finds it — while the image stays flat.
       assert.ok(existsSync(join(out, 'book', 'ch.emd')), 'the book chapter source is copied under its page dir (out/book/ch.emd)');
 
-      console.log('PASS: #fig-404/#331 cli — figure assets stay FLAT; chapter sources nest under the page dir');
+      console.log('PASS: #fig-404/#331/#352 cli — figure assets copied PER-FOLDER; chapter sources nest under the page dir');
     } finally {
       rmSync(siteDir, { recursive: true, force: true });
       rmSync(out, { recursive: true, force: true });
