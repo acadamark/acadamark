@@ -22,9 +22,10 @@
     "katex": "0.16.45"
   },
   "scripts": {
-    "test": "npm test --workspaces --if-present",
+    "test": "npm run docs:check && npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",
     "docs:gen": "npm run build -w @enscribejs/ehtml && node docs-gen/generate-docs.mjs",
+    "docs:check": "node docs-gen/check-docs-fresh.mjs",
     "build:site": "npm run docs:gen && rm -rf site && node packages/cli/bin/enscribe.js build docs-source/index.emd -o site",
     "build:site-live": "npm run build:lib -w @enscribejs/enscribe && node packages/cli/bin/enscribe.js build docs-source/index.emd --live -o site/live",
     "build:site-all": "npm run build:site && npm run build:site-live"

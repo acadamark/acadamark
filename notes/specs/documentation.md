@@ -16,7 +16,11 @@ The vocabulary guides **and** the authoring guide are **generated** from the ele
 definitions (`packages/ehtml/elements/*.md`) plus the semantic taxonomy
 (`notes/taxonomies/semantic-taxonomy.md`), by a docs generator run as part of the site build.
 They are **generator output** — never hand-edited. This is the whole point of #223: docs
-derived from the spec are correct and complete by construction and cannot drift from it.
+derived from the spec are correct and complete by construction and cannot drift from it. A
+CI/test **freshness guard** (`docs-gen/check-docs-fresh.mjs`, the root `docs:check` script, #373)
+enforces this: it regenerates the pages and fails if a committed `docs-source` page no longer
+matches generator output — the analogue of each package's `check-data-fresh`, so a hand-edit or a
+spec change committed without regenerating is caught rather than silently drifting.
 
 This supersedes the current state, in which `docs-source/**/*.emd` are hand-maintained. Those
 pages become generator output. (Prior generators — `gen-reference.js`, `vocab-extract.js`,

@@ -47,6 +47,12 @@ jobs:
       - name: Provision Chromium for the browser tests (delivery Tier 2)
         run: npx playwright install --with-deps chromium
 
+      # #373: guard the GENERATED docs pages (docs-source/) against drift from the generator — the
+      # repo-level analogue of each package's check-data-fresh pretest. Fails loudly (with a "run the
+      # docs generator" message) if a committed docs page no longer matches docs-gen/generate-docs.mjs.
+      - name: Docs-source freshness guard (#373)
+        run: npm run docs:check
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 
