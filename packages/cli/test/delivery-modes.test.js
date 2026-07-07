@@ -57,8 +57,17 @@ export async function run_tests() {
     assert.strictEqual(delivery, 'inlined', 'sf inlined: delivery recorded');
     assert.ok(editable, 'sf inlined: the fixture is self-contained → editable');
     assert.deepStrictEqual(netRefs(html), [], 'sf inlined: ZERO external URLs (no jsDelivr / Google Fonts / KaTeX CDN / esm.sh)');
-    assert.ok(html.includes('@font-face') && html.includes('base64,'), 'sf inlined: document + KaTeX fonts inlined (@font-face base64)');
-    assert.ok(html.includes('.katex'), 'sf inlined: KaTeX CSS inlined');
+    // THE OFFLINE FONT GUARANTEE (moved here from a flaky Tier-2 browser probe — #381): the inlined
+    // single-file EMBEDS the document fonts as base64 `@font-face` rules, so Inter + Source Code Pro render
+    // with no network. This is a BUILD fact, so it is checked DETERMINISTICALLY here — reading the built
+    // bytes, not the browser — with no dependence on lazy `@font-face` loading, headless quirks, or a
+    // system-installed font (which is exactly what made `document.fonts.check('Inter')` green locally / red
+    // in CI). `embedsFont(family)` requires that family's `@font-face` src be an `url(data:font…;base64,…)`
+    // (within the one rule) — so it FAILS if the offline build ever stops embedding the bytes.
+    const embedsFont = (family) => new RegExp(`font-family:\\s*'${family}'[^}]*url\\(data:font[^)]*base64,`).test(html);
+    assert.ok(embedsFont('Inter'), 'sf inlined: the Inter document font is embedded as a base64 @font-face (renders offline, no network)');
+    assert.ok(embedsFont('Source Code Pro'), 'sf inlined: the Source Code Pro code font is embedded as a base64 @font-face (renders offline)');
+    assert.ok(html.includes('.katex') && /url\(data:font[^)]*base64,/.test(html), 'sf inlined: KaTeX CSS + its fonts inlined (base64)');
     assert.ok(!stripEngine(html).includes('<script src='), 'sf inlined: the engine is an inline <script>, not a src reference');
     assert.ok(html.length > 3_000_000, 'sf inlined: the ~3.4 MB engine bundle is embedded (large file)');
     assert.ok(html.includes('<template id="enscribe-editor-src">'), 'sf inlined: the bundled editor is inlined (template)');
@@ -78,6 +87,10 @@ export async function run_tests() {
     assert.ok(/fonts\.googleapis\.com/.test(refs), 'sf cdn: document fonts from Google Fonts');
     assert.ok(/cdn\.jsdelivr\.net\/npm\/katex@/.test(refs), 'sf cdn: KaTeX CSS from the pinned CDN');
     assert.ok(!html.includes('<template id="enscribe-editor-src">'), 'sf cdn: the editor is referenced, not inlined');
+    // Negative counterpart to the inlined font check (#381): a cdn build LINKS the fonts (Google Fonts /
+    // KaTeX CDN above), so it embeds NO base64 font bytes. This makes the inlined `embedsFont` assertion
+    // meaningful — it is not trivially true of every build; only the offline (inlined) one embeds the bytes.
+    assert.ok(!/url\(data:font/.test(html), 'sf cdn: fonts are LINKED (no embedded base64 font bytes) — the offline embedding is inlined-only');
   }
 
   const liveDir = (tag) => mkdtempSync(join(tmpdir(), `enscribe-deliv-${tag}-`));
