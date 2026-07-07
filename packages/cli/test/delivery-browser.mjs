@@ -60,6 +60,8 @@ async function openBrowser(driver, executablePath) {
           eval: (fn, ...a) => p.evaluate(fn, ...a),
           click: (sel) => p.evaluate((s) => document.querySelector(s)?.click(), sel),
           type: async (sel, text) => { await p.evaluate((s) => document.querySelector(s)?.focus(), sel); await p.keyboard.type(text); },
+          focus: (sel) => p.evaluate((s) => document.querySelector(s)?.focus(), sel),
+          press: (key) => p.keyboard.press(key),
         };
       },
       close: () => browser.close(),
@@ -78,6 +80,8 @@ async function openBrowser(driver, executablePath) {
         eval: (fn, ...a) => p.evaluate(fn, ...a),
         click: (sel) => p.evaluate((s) => document.querySelector(s)?.click(), sel),
         type: async (sel, text) => { await p.evaluate((s) => document.querySelector(s)?.focus(), sel); await p.keyboard.type(text); },
+        focus: (sel) => p.evaluate((s) => document.querySelector(s)?.focus(), sel),
+        press: (key) => p.keyboard.press(key),
       };
     },
     close: () => browser.close(),
@@ -151,6 +155,21 @@ export async function runBrowserTier({ FIXTURE, buildSingleFile }) {
         throw new Error(`Tier 2 editor: typing did not update the CodeMirror document (before ${before} chars, after "${after.slice(0, 40)}…")`);
       }
       console.log(`PASS: #369 Tier 2 — the inlined editor MOUNTS and accepts input OFFLINE in ${driver.name} (CodeMirror, blob-imported)`);
+
+      // Tab INDENTS in the editor (regression for the "code-block doesn't work / indent in a list
+      // breaks" report): without an indentWithTab keymap, Tab moves focus OUT of the editor and inserts
+      // nothing, so an author cannot type the indentation a <code-block> or list needs. Assert Tab (a)
+      // keeps focus in the editor and (b) inserts leading whitespace at the cursor.
+      await page.focus('.cm-content');
+      const focusBefore = await page.eval(() => !!document.activeElement?.closest('.cm-editor'));
+      const docBefore = await page.eval(() => [...document.querySelectorAll('.cm-line')].map((l) => l.textContent).join('\n'));
+      await page.press('Tab');
+      const focusAfter = await page.eval(() => !!document.activeElement?.closest('.cm-editor'));
+      const docAfter = await page.eval(() => [...document.querySelectorAll('.cm-line')].map((l) => l.textContent).join('\n'));
+      if (!focusBefore) throw new Error('Tier 2 Tab-indent: precondition failed — the editor was not focused before Tab');
+      if (!focusAfter) throw new Error('Tier 2 Tab-indent: Tab MOVED FOCUS OUT of the editor (no indentWithTab keymap) — an author cannot indent code-block / list content');
+      if (docAfter.length <= docBefore.length) throw new Error('Tier 2 Tab-indent: Tab inserted no indentation into the document');
+      console.log(`PASS: #369 Tier 2 — Tab INDENTS in the editor (keeps focus + inserts whitespace) OFFLINE in ${driver.name} (code-block / list authoring regression)`);
     }
 
     // (C) SELF-SAVE (#351) — edit an inlined single-file, SAVE via the download path, then re-open the

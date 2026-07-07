@@ -191,9 +191,10 @@ export async function codeMirrorEditorFactory() {
   // and @codemirror/state resolve to the SAME modules `codemirror` bundles (deduped in node_modules), so
   // the helper extensions compose with basicSetup without a second CodeMirror instance.
   const { EditorView, basicSetup } = await import('codemirror');
-  const { Decoration, ViewPlugin } = await import('@codemirror/view');
+  const { Decoration, ViewPlugin, keymap } = await import('@codemirror/view');
   const { RangeSetBuilder } = await import('@codemirror/state');
   const { autocompletion } = await import('@codemirror/autocomplete');
+  const { indentWithTab } = await import('@codemirror/commands');
 
   const tagHighlighting = makeTagHighlighter({ Decoration, ViewPlugin, RangeSetBuilder, EditorView });
   // Provide the helper completion sources via `override` — the explicit source list autocompletion honours.
@@ -209,6 +210,16 @@ export async function codeMirrorEditorFactory() {
         parent: el,
         extensions: [
           basicSetup,
+          // Tab INDENTS / Shift-Tab DEDENTS (insert one indent unit at the cursor, or shift the
+          // selected lines). Without this, `basicSetup` leaves Tab to the browser default — which
+          // MOVES FOCUS OUT of the editor, so an author cannot indent code inside a <code-block> or
+          // a continuation/sub-point inside a <list> at all (the "code-block doesn't work" / "indent
+          // in a list breaks" reports — the render was always correct; the editor gave no way to type
+          // the indentation). The accepted tradeoff is that Tab no longer tabs out of the editor for
+          // keyboard navigation; the escape hatch is Esc-then-Tab (CodeMirror's default). The render
+          // path is untouched, so live≡static holds: the editor now lets you AUTHOR the indentation
+          // the renderer already preserves.
+          keymap.of([indentWithTab]),
           ...tagHighlighting,          // helper 1 (highlighting + theme)
           completion,                  // helpers 2 + 3 (cite / tag-name completion)
           EditorView.lineWrapping,
