@@ -16,7 +16,7 @@ enscribe_attributes:
       maps_to: data-name
       notes: |
         Optional name suffix for the remark's label. Honored by the
-        Phase-2 handler even though <remark> is unnumbered (a named
+        Phase-2 handler even though <remark> is not numbered (a named
         remark may render as "Remark (Name):" without a number).
   booleans:
     numbered:
@@ -24,8 +24,8 @@ enscribe_attributes:
       default: false
       notes: |
         Whether this remark is numbered. Default false — <remark> is
-        conventionally unnumbered (the "remark" theorem-style family
-        in amsthm is unnumbered). An author who wants numbering can
+        conventionally not numbered (the "remark" theorem-style family
+        in amsthm carries no number). An author who wants numbering can
         opt-in per instance with +numbered, but most usage relies on
         the default.
 content:
@@ -55,7 +55,7 @@ handler_module: ./handlers/theorem.js
 
 # `<remark>`
 
-A remark — a tangential observation accompanying a definition, theorem, or proof. A theorem-family element that is conventionally unnumbered.
+A remark — a tangential observation accompanying a definition, theorem, or proof. A theorem-family element that is conventionally not numbered.
 
 ## Semantic intent
 
@@ -65,7 +65,7 @@ The element is block-level; its content is body content directly.
 
 ## Numbering
 
-`<remark>` is **unnumbered by default**, matching amsthm's conventional remark family. An author who wants numbering can opt-in with `+numbered`, but most usage relies on the default. The Phase-2 handler will render the label as "Remark:" (no number) or "Remark (Name):" when the optional `name` kwarg is set.
+`<remark>` is **not numbered by default**, matching amsthm's conventional remark family. An author who wants numbering can opt-in with `+numbered`, but most usage relies on the default. The Phase-2 handler will render the label as "Remark:" (no number) or "Remark (Name):" when the optional `name` kwarg is set.
 
 ## JATS mapping
 

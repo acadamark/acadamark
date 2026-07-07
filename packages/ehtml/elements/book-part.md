@@ -53,9 +53,9 @@ enscribe_attributes:
       notes: |
         Whether this book-part participates in numbering. On by default; -numbered
         puts it outside the numbered sequence, regardless of number-depth (#218) —
-        e.g. an unnumbered "Introduction" chapter: no number, no counter advance
-        (the next numbered chapter continues unbroken), subtree unnumbered.
-        (Front-matter and non-appendix back-matter are already unnumbered by
+        e.g. an "Introduction" chapter with no number: no number, no counter advance
+        (the next numbered chapter continues unbroken), the subtree carries no number.
+        (Front-matter and non-appendix back-matter already carry no number by
         region.) See notes/specs/toc-and-numbering.md. The default renders no
         attribute; -numbered renders numbered="false".
 content:

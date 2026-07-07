@@ -100,7 +100,7 @@ The optional `name` kwarg becomes the "(Pythagoras)" suffix to the rendered labe
 
 ## Numbering
 
-`<theorem>` shares a counter with `<lemma>`, `<corollary>`, and `<proposition>` — the four propositional theorem-family elements run on one document-wide sequence. So a document reads "Theorem 1, Lemma 2, Corollary 3, Theorem 4, …" rather than each type starting from 1 independently. This matches the most common amsthm configuration (one shared counter for the propositional family); the rhetorically-distinct families (`<definition>`, `<example>`) get their own counters, and `<remark>`/`<proof>` are unnumbered.
+`<theorem>` shares a counter with `<lemma>`, `<corollary>`, and `<proposition>` — the four propositional theorem-family elements run on one document-wide sequence. So a document reads "Theorem 1, Lemma 2, Corollary 3, Theorem 4, …" rather than each type starting from 1 independently. This matches the most common amsthm configuration (one shared counter for the propositional family); the rhetorically-distinct families (`<definition>`, `<example>`) get their own counters, and `<remark>`/`<proof>` are not numbered.
 
 The shared-counter wiring is a Phase-2 handler concern (the vocab schema has no mechanism for declaring "shares a counter with these other elements" today; the convention is recorded in prose and the handler implements it). Per-instance suppression via `-numbered` is honored.
 
@@ -135,4 +135,4 @@ The proof sits at sibling level and may follow any theorem-family element or sta
 
 - [`<lemma>`](lemma.md), [`<corollary>`](corollary.md), [`<proposition>`](proposition.md) — siblings sharing the propositional counter.
 - [`<definition>`](definition.md), [`<example>`](example.md) — theorem-family elements with their own counters.
-- [`<remark>`](remark.md), [`<proof>`](proof.md) — unnumbered theorem-family elements.
+- [`<remark>`](remark.md), [`<proof>`](proof.md) — theorem-family elements that are not numbered.

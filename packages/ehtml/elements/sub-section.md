@@ -35,8 +35,8 @@ enscribe_attributes:
       notes: |
         Whether this sub-section participates in heading numbering. On by default;
         -numbered puts it outside the numbered sequence, regardless of number-depth
-        (#218) — no number, no counter advance, subtree unnumbered; the next
-        numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md.
+        (#218) — no number, no counter advance, the subtree carries no number; the
+        next numbered sibling continues unbroken. See notes/specs/toc-and-numbering.md.
         The default renders no attribute; -numbered renders numbered="false".
 content:
   shape:

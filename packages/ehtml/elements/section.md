@@ -42,7 +42,7 @@ enscribe_attributes:
         -numbered puts the heading OUTSIDE the numbered sequence, regardless of
         number-depth (#218) — it gets no number AND does not advance the counter,
         so the next numbered sibling continues unbroken (the \\section* / Quarto
-        .unnumbered behavior); its subtree is unnumbered too. Numbering is
+        .unnumbered behavior); its subtree carries no number either. Numbering is
         config-driven (<config number-sections=true>); see
         notes/specs/toc-and-numbering.md. The number stamp reads
         node.booleans.numbered === false in runSync; -numbered renders the

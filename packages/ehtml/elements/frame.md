@@ -93,7 +93,7 @@ shorthand_examples:
     ehtml: '<figure class="frameable-border" id="fig:method-box"><ol><li>Collect data.</li><li>Clean.</li><li>Model.</li></ol><figcaption><figure-label>Figure 1.</figure-label><p>Workflow steps</p></figcaption></figure>'
     notes: |
       Numbered by default (#272). Shares the figure counter with
-      <fig>/<svg>/<mermaid>/<abc>; use -numbered for an unnumbered frame.
+      <fig>/<svg>/<mermaid>/<abc>; use -numbered for a frame that is not numbered.
 interpreter_strategy: handler
 handler_module: ./handlers/frame.js
 handler_responsibilities:
@@ -147,7 +147,7 @@ The title renders at the top of the frame; the `type` is preserved as a data att
 >
 ```
 
-Frames are numbered by default and share the figure counter; `<ref @fig:setup>` resolves to "Figure N". Add `-numbered` for an unnumbered callout.
+Frames are numbered by default and share the figure counter; `<ref @fig:setup>` resolves to "Figure N". Add `-numbered` for a callout that is not numbered.
 
 ## Attributes
 
@@ -156,7 +156,7 @@ Frames are numbered by default and share the figure counter; `<ref @fig:setup>` 
 - `type` — classification (note / warning / tip / methodology / etc.). Renders as `data-frame-type` for CSS targeting.
 - `+border` / `-border` — the frameable surface. **Default: on.**
 - `border=<name>` — select a named border look — `accent`, `thick`, `dashed`, or `subtle` (the default theme's starter menu); implies the border on. The document names the look; the theme defines how it renders (#58). Emitted as a `frameable-border-<name>` modifier class. See `frameable.md`.
-- `+numbered` / `-numbered` — the frameable surface. **Default: on** (#272). Use `-numbered` for an unnumbered callout.
+- `+numbered` / `-numbered` — the frameable surface. **Default: on** (#272). Use `-numbered` for a callout that is not numbered.
 
 ## JATS mapping
 

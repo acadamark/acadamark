@@ -166,7 +166,7 @@ For a labeled element that is numbered, the rendered text is the prefix word fol
 
 The prefix word comes from the built-in prefix dictionary keyed by the id prefix (see [Cross-reference types](#cross-reference-types)). Override per-document with `<config ref-prefix-eqn="Eq.">` to render "Eq. 1" instead of "equation 1".
 
-**Unnumbered labeled element.**
+**Labeled element that is not numbered.**
 
 If the target is labeled but authored with `-numbered`, it has no number in the registry. The rendered text is the label-tail — the part of the id after the colon:
 

@@ -23,7 +23,7 @@ enscribe_attributes:
       default: false
       notes: |
         Whether this proof is numbered. Default false — proofs are
-        conventionally unnumbered (a proof's identity comes from the
+        conventionally not numbered (a proof's identity comes from the
         theorem it proves, not from a counter). An author who wants
         numbering can opt-in per instance with +numbered.
 content:
@@ -104,7 +104,7 @@ The peer pattern matches LaTeX and JATS; the parser does not enforce this conven
 
 ## Numbering
 
-`<proof>` is **unnumbered**. A proof's identity comes from the theorem it proves, not from a counter; cross-references to a proof typically target the theorem, not the proof itself. An author who wants numbering can opt-in per instance with `+numbered`.
+`<proof>` is **not numbered by default**. A proof's identity comes from the theorem it proves, not from a counter; cross-references to a proof typically target the theorem, not the proof itself. An author who wants numbering can opt-in per instance with `+numbered`.
 
 The optional `name` kwarg lets the proof identify what it proves (e.g. `<proof name="of Theorem 1.2">`), useful when the proof is separated from its theorem by intervening text. The Phase-2 handler renders the kwarg as "(of Theorem 1.2)" appended to the "Proof" label.
 

@@ -38,16 +38,16 @@ for `<figure>`.
 
 Numbering ("Fig. 3", "Table 2") is **folded into the caption/title
 rendering** — it is not a separate authored field. A numbered frameable
-gets its label prepended to the caption ("Figure 1. …"); an unnumbered
-one does not.
+gets its label prepended to the caption ("Figure 1. …"); one that is not
+numbered does not.
 
 ## The shared surface
 
 Every frameable element carries the identical attribute set:
 
 - **`id`** — cross-reference target. Optional; always carried through.
-  A `<ref @id>` elsewhere resolves to the element's number (or, for an
-  unnumbered target, its label tail).
+  A `<ref @id>` elsewhere resolves to the element's number (or, for a
+  target that is not numbered, its label tail).
 - **`title`** — optional title rendered at the top of the element.
 - **`caption`** — optional caption rendered at the foot of the element,
   with the number-and-label prefix folded in when numbered.
@@ -149,8 +149,8 @@ The rule (#272): **numbered by default is now universal across the
 frameables** — a content float wants a number, and a boxed float (`<frame>`,
 `<minipage>`) is numbered too so authors don't have to remember a per-member
 exception. The lone hold-out is `<aside>`: boxed prose is, by convention, a
-one-off callout that needs no cross-reference number, so it stays
-unnumbered-by-default. Any member's number is switchable: `-numbered` on a
+one-off callout that needs no cross-reference number, so it is **not
+numbered by default**. Any member's number is switchable: `-numbered` on a
 float/box that should not count, `+numbered` on an `<aside>` that should.
 Border defaults split the other way: floats start unframed and switch a
 border *on* when wanted; boxes are framed by default.
@@ -248,7 +248,7 @@ members: JATS import maps `<boxed-text>` back to `<aside>` (carrying
 <fig #fig:elephant src=elephant.jpg | An adult African elephant.>
 ```
 
-**Callout (boxed prose; framed by default, unnumbered by default).**
+**Callout (boxed prose; framed by default, not numbered by default).**
 
 ```
 <aside type=warning | Calibrate before every run.>
@@ -314,7 +314,7 @@ These were the genuinely-undecided points; the #31 build resolved them:
   that child at the normalize-to-canonical gate. Same treatment the caption gets.
 - **A numbered `<aside>` gets its OWN counter** — the **`box`** series
   ("Box N"), with config key `number-boxes` and ref-prefix `box`. It does *not*
-  share the `figure` counter. `<aside>` is **unnumbered by default**;
+  share the `figure` counter. `<aside>` is **not numbered by default**;
   `+numbered` opts it into the box series. (Per-type callout numbering —
   "Note 1" / "Tip 1" — is deferred; a numbered aside counts in the single `box`
   series regardless of `type`.)

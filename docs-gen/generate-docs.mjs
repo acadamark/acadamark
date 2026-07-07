@@ -65,6 +65,18 @@ const FAMILY_INTRO = {
   'structural-scaffolding':   'The document’s skeleton — containers, regions, sections, the website page-set, and the section break.',
 };
 
+// A cover lede teaching the one argument convention every element shares (#230). Placed on the
+// covers of the surfaces where authors learn/look up syntax, so the generated guide states the
+// positive-boolean rule plainly (source of record: notes/specs/shorthand-syntax.md).
+const ARGUMENT_CONVENTIONS =
+  'Every element takes the same shape of arguments — **positionals**, **keywords** (`key=value`), ' +
+  'and **boolean flags**. A boolean is always named for its positive (on) sense and toggled with the ' +
+  'sign: `+name` turns it on, `-name` turns it off (`+numbered` / `-numbered`, `+listed` / `-listed`), ' +
+  'and a bare `name` means `+name`. There is never a negatively-named boolean to guess. The **default ' +
+  'is chosen per element, independent of the name**: a positively-named boolean may default *on* — a ' +
+  '`<section>` is `listed` and `numbered`, so you opt out with `-listed` / `-numbered` — or *off* — a ' +
+  '`<proof>` is numbered only when you add `+numbered`.';
+
 // ── canonical elements + alias map ───────────────────────────────────────────
 const canonicalNames = readdirSync(ELEMENTS_DIR).filter((f) => f.endsWith('.md')).map((f) => f.slice(0, -3));
 const canonicalSet = new Set(canonicalNames);
@@ -230,9 +242,12 @@ function familyChapter(fam, title, sectionFn, includeArgs) {
   return out;
 }
 
-function bookIndex({ slug, title, subtitle, extraChapters = [] }) {
+function bookIndex({ slug, title, subtitle, introChapter = null, extraChapters = [] }) {
   let out = `<meta type=book slug=${slug}>\n<title | ${title}>\n<subtitle | ${subtitle}>\n<author>\n<name | Generated from the Enscribe vocabulary source (docs-gen/generate-docs.mjs)>\n</author>\n</meta>\n\n`;
   out += `<config number-tables=false />\n\n`;
+  // The book cover renders a fixed template (book-scaffold.js coverBodyHtml), not authored body
+  // prose, so a shared teaching lives in a real leading CHAPTER, not on the cover (#230/boolean-docs).
+  if (introChapter) out += `<chapter src="${introChapter[0]}" | ${introChapter[1]}>\n`;
   for (const [fam, ftitle, fslug] of FAMILY_ORDER) {
     out += `<chapter src="${fslug}.emd" | ${ftitle}>\n`;
   }
@@ -252,6 +267,7 @@ const surfaces = [
     dir: join(DOCS, 'enscribe_vocabulary'), slug: 'enscribe-vocabulary',
     title: 'The Enscribe Vocabulary',
     subtitle: 'Every author-facing construct — registers, arguments, and live examples',
+    intro: ARGUMENT_CONVENTIONS,
     sectionFn: shorthandSection,
     // Preserve the curated Showcase page if it exists (not generated per-element).
     extra: existsSync(join(DOCS, 'enscribe_vocabulary', 'showcase.emd')) ? [['showcase.emd', 'Showcase']] : [],
@@ -267,6 +283,7 @@ const surfaces = [
     dir: join(DOCS, 'authoring_guide'), slug: 'authoring-guide',
     title: 'The Enscribe Authoring Guide',
     subtitle: 'The common path, family by family — lighter than the full reference',
+    intro: ARGUMENT_CONVENTIONS,
     sectionFn: guideSection,
     extra: [],
   },
@@ -279,7 +296,12 @@ for (const s of surfaces) {
     const p = join(s.dir, `${fslug}.emd`);
     if (existsSync(p)) rmSync(p);
   }
-  writeFile(s.dir, 'index.emd', bookIndex({ slug: s.slug, title: s.title, subtitle: s.subtitle, extraChapters: s.extra }));
+  if (s.intro) writeFile(s.dir, 'argument-conventions.emd', s.intro + '\n');
+  writeFile(s.dir, 'index.emd', bookIndex({
+    slug: s.slug, title: s.title, subtitle: s.subtitle,
+    introChapter: s.intro ? ['argument-conventions.emd', 'Argument conventions'] : null,
+    extraChapters: s.extra,
+  }));
   for (const [fam, title, fslug] of FAMILY_ORDER) {
     const members = familyMembers(fam);
     elementCount += members.length;

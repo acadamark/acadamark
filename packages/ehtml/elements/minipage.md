@@ -123,7 +123,7 @@ Everything a minipage does follows from "process the body as its own sealed sub-
 
 `<minipage>` is a frameable member. Like `<fig>`/`<svg>` it is **numbered by default** (#272), and like `<frame>`/`<aside>` it is **bordered by default**: **border default-true** (the box is the point) and **numbered default-true** (a layout-only box opts out with `-numbered`).
 
-A numbered minipage counts in its OWN "Minipage N" series — the `minipage` counter and the `mp` ref-prefix — not the figure counter (a sealed sub-document is distinct from a figure, and must not consume document figure numbers). `<minipage #mp:setup>` makes `<ref @mp:setup>` resolve to "minipage N"; add `-numbered` for an unnumbered layout box.
+A numbered minipage counts in its OWN "Minipage N" series — the `minipage` counter and the `mp` ref-prefix — not the figure counter (a sealed sub-document is distinct from a figure, and must not consume document figure numbers). `<minipage #mp:setup>` makes `<ref @mp:setup>` resolve to "minipage N"; add `-numbered` for a layout box that is not numbered.
 
 ## No external files
 
