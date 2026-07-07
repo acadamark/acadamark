@@ -401,21 +401,26 @@ export function chapterNavBar(parts, i, chapterHref = (p) => `#${p.id}`) {
   return el('nav', { className: ['enscribe-chapter-nav'], ariaLabel: 'Chapter navigation' }, links);
 }
 
-/** A single persistent edge arrow (#293) — `‹` prev / `›` next — a compact affordance that names
- *  its destination chapter for hover (`title`) and assistive tech (`aria-label`). The glyph is
- *  aria-hidden (the label carries the meaning). Reuses the same `chapterHref`/`rel` the bottom link
- *  uses, so both resolve to the same page. */
+/** A single prev/next chapter arrow (#293) — `‹` prev / `›` next. ONE control with two responsive
+ *  renderings (styled in CHAPTER_ARROWS_CSS): a compact fixed GUTTER chevron on the desktop reading
+ *  layout, and an in-flow tappable FOOT button on mobile that also shows the destination chapter
+ *  title (the FPP3 pattern). So the markup carries BOTH a glyph span (always) and a title-label span
+ *  (shown only in the mobile foot rendering; hidden in the desktop gutter). The glyph is aria-hidden
+ *  and the label is decorative — the authoritative accessible name is the `aria-label`. Reuses the
+ *  same `chapterHref`/`rel` the bottom link uses, so both resolve to the same page. */
 function chapterArrow(dir, part, chapterHref) {
   const glyph = dir === 'prev' ? '‹' : '›';
   const dest = part.number ? `${part.number} ${part.clean || 'Untitled'}` : (part.clean || 'Untitled');
   const label = `${dir === 'prev' ? 'Previous' : 'Next'} chapter: ${dest}`;
+  const glyphSpan = el('span', { className: ['enscribe-chapter-arrow-glyph'], ariaHidden: 'true' }, [text(glyph)]);
+  const labelSpan = el('span', { className: ['enscribe-chapter-arrow-label'] }, [text(dest)]);
   return el('a', {
     className: ['enscribe-chapter-arrow', `enscribe-chapter-arrow--${dir}`],
     href: chapterHref(part),
     rel: dir === 'prev' ? 'prev' : 'next',
     ariaLabel: label,
     title: label,
-  }, [el('span', { ariaHidden: 'true' }, [text(glyph)])]);
+  }, dir === 'prev' ? [glyphSpan, labelSpan] : [labelSpan, glyphSpan]);
 }
 
 /** Persistent left/right edge arrows for the chapter at index `i` (#293) — the Bookdown-style

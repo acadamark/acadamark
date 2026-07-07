@@ -178,9 +178,17 @@ c`;
     assert.equal(mid.children[0].properties.href, 'a.html', 'prev arrow → the previous chapter page');
     assert.equal(mid.children[1].properties.rel, 'next');
     assert.equal(mid.children[1].properties.href, 'c.html', 'next arrow → the next chapter page');
-    assert.equal(mid.children[0].children[0].children[0].value, '‹', 'prev glyph is ‹');
-    assert.equal(mid.children[1].children[0].children[0].value, '›', 'next glyph is ›');
-    assert.equal(mid.children[0].children[0].properties.ariaHidden, 'true', 'the glyph is aria-hidden (the label carries meaning)');
+    // Each arrow carries a glyph span (aria-hidden) + a destination-title label span (shown in the
+    // mobile foot rendering, hidden in the desktop gutter). Prev = [glyph, label]; next = [label, glyph].
+    const [prevGlyph, prevLabel] = mid.children[0].children;
+    const [nextLabel, nextGlyph] = mid.children[1].children;
+    assert.equal(prevGlyph.children[0].value, '‹', 'prev glyph is ‹');
+    assert.equal(nextGlyph.children[0].value, '›', 'next glyph is ›');
+    assert.equal(prevGlyph.properties.ariaHidden, 'true', 'the glyph is aria-hidden (the label carries meaning)');
+    assert.deepEqual(prevGlyph.properties.className, ['enscribe-chapter-arrow-glyph'], 'glyph span is class-tagged for styling');
+    assert.deepEqual(prevLabel.properties.className, ['enscribe-chapter-arrow-label'], 'label span is class-tagged (shown at the mobile foot)');
+    assert.equal(prevLabel.children[0].value, '1 Alpha', 'prev label shows the destination chapter title');
+    assert.equal(nextLabel.children[0].value, '3 Gamma', 'next label shows the destination chapter title');
     assert.match(mid.children[0].properties.ariaLabel, /Previous chapter: 1 Alpha/, 'prev arrow names its destination for assistive tech');
     assert.match(mid.children[1].properties.ariaLabel, /Next chapter: 3 Gamma/, 'next arrow names its destination');
 

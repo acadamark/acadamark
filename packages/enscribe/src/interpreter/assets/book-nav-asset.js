@@ -54,51 +54,56 @@ export const BOOK_NAV_DEPTH_CSS = `.enscribe-chapter-rail .enscribe-rail-section
 }
 .enscribe-chapter-rail .enscribe-rail-section a:hover { color: var(--enscribe-link); }`;
 
-// #293 — persistent prev/next chapter arrows (`‹` / `›`), the Bookdown-style edge affordance so a
-// reader navigates chapters without scrolling to the footer. Gated on `page-navigation` (the SAME flag
-// as the bottom prev/next bar — one capability, one gate), so it is injected only when that nav is on;
-// it lives here (not default.css) so a `page-navigation=false` book stays byte-identical.
+// #293 (+ the mobile follow-up) — prev/next chapter arrows (`‹` / `›`). ONE control (chapterNavArrows),
+// reading ONE prev/next source (prevNextParts), with TWO responsive renderings. Gated on
+// `page-navigation` (the SAME flag as the bottom prev/next bar); lives here (not default.css) so a
+// `page-navigation=false` book stays byte-identical.
 //
-// Positioning honors the hard constraint: NEVER overlap the rail or the content. The arrows are a
-// DESKTOP reading-layout affordance (>=984px — the breakpoint where the centered reading grid appears
-// with a 14rem left rail and, in 3-col, a 13rem right rail): each arrow tucks into the GUTTER just
-// outside the text column, anchored to the centered grid via inherited per-variant vars
-// (`--enscribe-book-gridw` / `-lrail` / `-rrail`), so it tracks the grid as the viewport widens.
-// BELOW 984px the layout is a single full-width column with no gutter — a persistent side arrow there
-// would cover the text — so the arrows are HIDDEN and the bottom prev/next bar remains the affordance.
-// (Verified with a headless overlap check across widths; the mobile tradeoff is recorded in the report.)
-export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrow {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
-  display: none;
+//  - MOBILE (< 984px, single full-width column, no gutter): the arrows render IN-FLOW at the FOOT of the
+//    chapter as tappable buttons showing the chevron + the destination chapter title (the FPP3 pattern —
+//    a reader who finishes the chapter lands right on them). The redundant text foot links
+//    (`.enscribe-chapter-nav`) are HIDDEN below 984px, so the foot has ONE coherent affordance (the
+//    arrows REPLACE the text links on mobile). No overlap, no shrinking the narrow column.
+//  - DESKTOP (>= 984px): unchanged from #293 — each arrow is a fixed GUTTER chevron tucked just outside
+//    the centered reading grid (14rem left rail, 13rem right rail in 3-col), tracking the grid via
+//    inherited per-variant vars, never over the rail or the content; the text foot links stay. The
+//    mobile title label is hidden here (bare chevron in the gutter).
+//
+// (Verified with a headless overlap check across widths; the responsive split is recorded in the report.)
+export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
+  display: flex;
+  align-items: stretch;
+  gap: var(--enscribe-space-3);
+  margin-top: var(--enscribe-space-8);
+}
+.enscribe-chapter-arrow {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  gap: var(--enscribe-space-2);
+  max-width: 48%;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: var(--enscribe-space-2) var(--enscribe-space-3);
   border: 1px solid var(--enscribe-border);
-  border-radius: 50%;
+  border-radius: var(--enscribe-radius, 6px);
   background: var(--enscribe-bg-raised, #fff);
   color: var(--enscribe-text-secondary);
-  font-size: 1.4rem;
-  line-height: 1;
+  font-size: var(--enscribe-text-sm, 0.875rem);
+  line-height: 1.2;
   text-decoration: none;
-  opacity: 0.5;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
+.enscribe-chapter-arrow--next { margin-left: auto; text-align: right; }
+.enscribe-chapter-arrow-glyph { flex: none; font-size: 1.4rem; line-height: 1; }
+.enscribe-chapter-arrow-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .enscribe-chapter-arrow:hover,
-.enscribe-chapter-arrow:focus-visible {
-  opacity: 1;
-  color: var(--enscribe-link);
-  border-color: var(--enscribe-link);
-}
-.enscribe-chapter-arrow:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.35);
+.enscribe-chapter-arrow:focus-visible { color: var(--enscribe-link); border-color: var(--enscribe-link); }
+.enscribe-chapter-arrow:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.35); }
+@media (max-width: 983.98px) {
+  .enscribe-chapter-nav { display: none; }   /* on mobile the foot arrows REPLACE the text links (no stacking) */
 }
 @media (min-width: 984px) {
+  .enscribe-chapter-arrows { margin-top: 0; }   /* fixed children → no in-flow foot row */
   .enscribe-layout--book {
     --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
     --enscribe-book-lrail: 14rem;
@@ -113,7 +118,29 @@ export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrow {
     --enscribe-book-lrail: 0px;
     --enscribe-book-rrail: 13rem;
   }
-  .enscribe-chapter-arrow { display: flex; }
+  .enscribe-chapter-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    justify-content: center;
+    gap: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    line-height: 1;
+    opacity: 0.5;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .enscribe-chapter-arrow--next { margin-left: 0; }
+  .enscribe-chapter-arrow-label { display: none; }   /* bare chevron in the gutter */
+  .enscribe-chapter-arrow:hover,
+  .enscribe-chapter-arrow:focus-visible { opacity: 1; }
   .enscribe-chapter-arrow--prev {
     left: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-lrail, 0px) + var(--enscribe-space-2));
   }
