@@ -19,8 +19,11 @@ export const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout
  *  when neither rail is present. The back-to-top control rides inside `<main>` (it is
  *  fixed-positioned, so DOM location is immaterial). Shared by the static separate-pages
  *  build (publish-pages.js) and the live render (live-book.js). */
-export function composeBookBody({ rail = '', content = '', prevNext = '', onThisPage = '', backToTop = '' }) {
-  const main = `<main class="enscribe-body">${content}${prevNext}${backToTop}</main>`;
+export function composeBookBody({ rail = '', content = '', prevNext = '', onThisPage = '', backToTop = '', arrows = '' }) {
+  // `arrows` (#293): the persistent edge prev/next chapter arrows. Like back-to-top they are
+  // fixed-positioned, so DOM location is immaterial — they ride inside `<main>` (per-chapter, so the
+  // live router re-renders them with the right targets on each chapter swap).
+  const main = `<main class="enscribe-body">${content}${prevNext}${backToTop}${arrows}</main>`;
   if (rail && onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-3col">${rail}${main}${onThisPage}</div>`;
   if (rail) return `<div class="${BOOK_LAYOUT}">${rail}${main}</div>`;
   if (onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-noleft">${main}${onThisPage}</div>`;
@@ -50,6 +53,101 @@ export const BOOK_NAV_DEPTH_CSS = `.enscribe-chapter-rail .enscribe-rail-section
   color: var(--enscribe-text-muted);
 }
 .enscribe-chapter-rail .enscribe-rail-section a:hover { color: var(--enscribe-link); }`;
+
+// #293 (+ the mobile follow-up) — prev/next chapter arrows (`‹` / `›`). ONE control (chapterNavArrows),
+// reading ONE prev/next source (prevNextParts), with TWO responsive renderings. Gated on
+// `page-navigation` (the SAME flag as the bottom prev/next bar); lives here (not default.css) so a
+// `page-navigation=false` book stays byte-identical.
+//
+//  - MOBILE (< 984px, single full-width column, no gutter): the arrows render IN-FLOW at the FOOT of the
+//    chapter as tappable buttons showing the chevron + the destination chapter title (the FPP3 pattern —
+//    a reader who finishes the chapter lands right on them). The redundant text foot links
+//    (`.enscribe-chapter-nav`) are HIDDEN below 984px, so the foot has ONE coherent affordance (the
+//    arrows REPLACE the text links on mobile). No overlap, no shrinking the narrow column.
+//  - DESKTOP (>= 984px): unchanged from #293 — each arrow is a fixed GUTTER chevron tucked just outside
+//    the centered reading grid (14rem left rail, 13rem right rail in 3-col), tracking the grid via
+//    inherited per-variant vars, never over the rail or the content; the text foot links stay. The
+//    mobile title label is hidden here (bare chevron in the gutter).
+//
+// (Verified with a headless overlap check across widths; the responsive split is recorded in the report.)
+export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
+  display: flex;
+  align-items: stretch;
+  gap: var(--enscribe-space-3);
+  margin-top: var(--enscribe-space-8);
+}
+.enscribe-chapter-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--enscribe-space-2);
+  max-width: 48%;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: var(--enscribe-space-2) var(--enscribe-space-3);
+  border: 1px solid var(--enscribe-border);
+  border-radius: var(--enscribe-radius, 6px);
+  background: var(--enscribe-bg-raised, #fff);
+  color: var(--enscribe-text-secondary);
+  font-size: var(--enscribe-text-sm, 0.875rem);
+  line-height: 1.2;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.enscribe-chapter-arrow--next { margin-left: auto; text-align: right; }
+.enscribe-chapter-arrow-glyph { flex: none; font-size: 1.4rem; line-height: 1; }
+.enscribe-chapter-arrow-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.enscribe-chapter-arrow:hover,
+.enscribe-chapter-arrow:focus-visible { color: var(--enscribe-link); border-color: var(--enscribe-link); }
+.enscribe-chapter-arrow:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.35); }
+@media (max-width: 983.98px) {
+  .enscribe-chapter-nav { display: none; }   /* on mobile the foot arrows REPLACE the text links (no stacking) */
+}
+@media (min-width: 984px) {
+  .enscribe-chapter-arrows { margin-top: 0; }   /* fixed children → no in-flow foot row */
+  .enscribe-layout--book {
+    --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
+    --enscribe-book-lrail: 14rem;
+    --enscribe-book-rrail: 0px;
+  }
+  .enscribe-layout--book.enscribe-layout--book-3col {
+    --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+    --enscribe-book-rrail: 13rem;
+  }
+  .enscribe-layout--book.enscribe-layout--book-noleft {
+    --enscribe-book-gridw: calc(var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+    --enscribe-book-lrail: 0px;
+    --enscribe-book-rrail: 13rem;
+  }
+  .enscribe-chapter-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    justify-content: center;
+    gap: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    line-height: 1;
+    opacity: 0.5;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .enscribe-chapter-arrow--next { margin-left: 0; }
+  .enscribe-chapter-arrow-label { display: none; }   /* bare chevron in the gutter */
+  .enscribe-chapter-arrow:hover,
+  .enscribe-chapter-arrow:focus-visible { opacity: 1; }
+  .enscribe-chapter-arrow--prev {
+    left: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-lrail, 0px) + var(--enscribe-space-2));
+  }
+  .enscribe-chapter-arrow--next {
+    right: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-rrail, 0px) + var(--enscribe-space-2));
+  }
+}`;
 
 // back-to-top ON: a fixed scroll-to-top control, hidden until the reader scrolls down
 // past one viewport. JS off → the control stays `hidden` (no broken affordance).
@@ -102,8 +200,9 @@ export const BACK_TO_TOP_JS = `(${bindBackToTop.toString()})();`;
 
 /** Inject the active book-nav CSS as a single <style> in the document head — the live
  *  path, where chapter views are swapped via innerHTML (so they can't carry head CSS).
- *  A NO-OP at defaults (chapter-nav on, depth 1, back-to-top off), so a default live book
- *  is byte-unchanged. Idempotent via a fixed element id. */
+ *  At defaults a book injects only the chapter-arrows CSS (#293 — `page-navigation` is on by
+ *  default); with page-navigation off (and chapter-nav on, depth 1, back-to-top off) it is a
+ *  no-op. Idempotent via a fixed element id. */
 export function injectBookNavStyles(bookNav, doc) {
   const d = doc || (typeof document !== 'undefined' ? document : null);
   if (!d || d.getElementById('enscribe-book-nav-style')) return;
@@ -111,6 +210,7 @@ export function injectBookNavStyles(bookNav, doc) {
   if (!bookNav.chapterNav) css.push(BOOK_NAV_NOLEFT_CSS);
   if (bookNav.chapterNavDepth >= 2) css.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) css.push(BACK_TO_TOP_CSS);
+  if (bookNav.pageNavigation) css.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   if (!css.length) return;
   const style = d.createElement('style');
   style.id = 'enscribe-book-nav-style';

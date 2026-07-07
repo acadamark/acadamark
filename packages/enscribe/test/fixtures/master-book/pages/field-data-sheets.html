@@ -1232,6 +1232,84 @@ toc-num {
 
 .enscribe-layout--book .enscribe-toc a.enscribe-book-home { display: block; font-family: var(--enscribe-font-sans); font-weight: 700; font-size: 1rem; line-height: var(--enscribe-line-height-tight); color: var(--enscribe-text-primary); text-decoration: none; padding: 0 0 var(--enscribe-space-3); margin-bottom: var(--enscribe-space-3); border-left: 0; border-radius: 0; border-bottom: 1px solid var(--enscribe-border); }
 .enscribe-layout--book .enscribe-toc a.enscribe-book-home:hover { color: var(--enscribe-link); }
+.enscribe-chapter-arrows {
+  display: flex;
+  align-items: stretch;
+  gap: var(--enscribe-space-3);
+  margin-top: var(--enscribe-space-8);
+}
+.enscribe-chapter-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--enscribe-space-2);
+  max-width: 48%;
+  min-height: 2.75rem;
+  box-sizing: border-box;
+  padding: var(--enscribe-space-2) var(--enscribe-space-3);
+  border: 1px solid var(--enscribe-border);
+  border-radius: var(--enscribe-radius, 6px);
+  background: var(--enscribe-bg-raised, #fff);
+  color: var(--enscribe-text-secondary);
+  font-size: var(--enscribe-text-sm, 0.875rem);
+  line-height: 1.2;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.enscribe-chapter-arrow--next { margin-left: auto; text-align: right; }
+.enscribe-chapter-arrow-glyph { flex: none; font-size: 1.4rem; line-height: 1; }
+.enscribe-chapter-arrow-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.enscribe-chapter-arrow:hover,
+.enscribe-chapter-arrow:focus-visible { color: var(--enscribe-link); border-color: var(--enscribe-link); }
+.enscribe-chapter-arrow:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.35); }
+@media (max-width: 983.98px) {
+  .enscribe-chapter-nav { display: none; }   /* on mobile the foot arrows REPLACE the text links (no stacking) */
+}
+@media (min-width: 984px) {
+  .enscribe-chapter-arrows { margin-top: 0; }   /* fixed children → no in-flow foot row */
+  .enscribe-layout--book {
+    --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
+    --enscribe-book-lrail: 14rem;
+    --enscribe-book-rrail: 0px;
+  }
+  .enscribe-layout--book.enscribe-layout--book-3col {
+    --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+    --enscribe-book-rrail: 13rem;
+  }
+  .enscribe-layout--book.enscribe-layout--book-noleft {
+    --enscribe-book-gridw: calc(var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+    --enscribe-book-lrail: 0px;
+    --enscribe-book-rrail: 13rem;
+  }
+  .enscribe-chapter-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    justify-content: center;
+    gap: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    line-height: 1;
+    opacity: 0.5;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .enscribe-chapter-arrow--next { margin-left: 0; }
+  .enscribe-chapter-arrow-label { display: none; }   /* bare chevron in the gutter */
+  .enscribe-chapter-arrow:hover,
+  .enscribe-chapter-arrow:focus-visible { opacity: 1; }
+  .enscribe-chapter-arrow--prev {
+    left: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-lrail, 0px) + var(--enscribe-space-2));
+  }
+  .enscribe-chapter-arrow--next {
+    right: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-rrail, 0px) + var(--enscribe-space-2));
+  }
+}
 </style>
 </head>
 <body>
@@ -1240,7 +1318,7 @@ toc-num {
         <book-part-title><section-number>A</section-number>Field Data Sheets</book-part-title>
       </meta>
       <p>Reproducible blank data sheets for transect counts, placed in the book’s back matter.</p>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="estimating-browse-pressure.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></nav></main></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="estimating-browse-pressure.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></nav><nav class="enscribe-chapter-arrows" aria-label="Chapter navigation (previous / next)"><a class="enscribe-chapter-arrow enscribe-chapter-arrow--prev" href="estimating-browse-pressure.html" rel="prev" aria-label="Previous chapter: 2 Estimating Browse Pressure" title="Previous chapter: 2 Estimating Browse Pressure"><span class="enscribe-chapter-arrow-glyph" aria-hidden="true">‹</span><span class="enscribe-chapter-arrow-label">2 Estimating Browse Pressure</span></a></nav></main></div>
 <script>(function () {
   function init() {
     var nav = document.querySelector('nav.enscribe-toc');
