@@ -71,6 +71,7 @@ import { run as runBookNavConfig } from './book-nav-config.test.js';
 import { run as runMasterBookLive } from './master-book-live.test.js';
 import { run as runMasterWebsiteLive } from './master-website-live.test.js';
 import { run as runSingleFileDoc } from './single-file-doc.test.js';
+import { run as runAlwaysRenderRecovery } from './always-render-recovery.test.js';
 import { run as runSaveSingleFile } from './save-single-file.test.js';
 import { run as runLiveEditLoop } from './live-edit-loop.test.js';
 import { run as runLiveEditSmoke } from './live-edit-smoke.test.js';
@@ -103,6 +104,7 @@ const suites = [
   ['handlers/math',                runMathHandler],
   ['handlers/ref',                 runRefHandler],
   ['handlers/code-block',          runCodeBlockHandler],
+  ['always-render-recovery',       runAlwaysRenderRecovery],
   ['handlers/inline-code',         runInlineCodeHandler],
   ['handlers/table',               runTableHandler],
   ['katex-css',                    runKatexCss],

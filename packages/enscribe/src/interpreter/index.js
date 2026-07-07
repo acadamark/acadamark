@@ -115,6 +115,7 @@ import remarkGfm from 'remark-gfm';
 // Relative path import: @enscribejs/enscribe/parser does not re-export this module via
 // its package exports field; we access it directly within the workspace.
 import remarkRecursiveContent from '../parser/recursive-content.js';
+import remarkRecoverUnclosedTags from './plugins/recover-unclosed-tags.js';
 import { FLOW_TAGNAMES } from './lib/content-model.js';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
@@ -615,6 +616,16 @@ export function enscribeInterpreter(options = {}) {
   // same mode. A strict no-op for 'off' → the default parse is used unchanged
   // (byte-identical).
   this.use(resolveStrictMode, { sigilProcessor, canonicalProcessor, option: options.strictMode });
+
+  // 0.5 (always-render). Recover an unclosed long-form tag: the finder consumes everything after an
+  // unclosed `<tag>` to EOF and from-markdown flags it as ONE error whose handler drops the content —
+  // so the rest of the document vanishes. Split each such error into the flagged opener marker + the
+  // swallowed content re-parsed as document flow (siblings), so malformed input flags inline and the
+  // rest still renders. The recovery re-parse mirrors the TOP-LEVEL document parse (remarkParse +
+  // remarkEnscribe + remarkMath + remarkGfm), so recovered blocks parse identically to top-level flow;
+  // it runs BEFORE recursive-content so the recovered tags get their own content parsed normally.
+  const recoveryProcessor = unified().use(remarkParse).use(remarkEnscribe).use(remarkMath).use(remarkGfm);
+  this.use(remarkRecoverUnclosedTags, { processor: recoveryProcessor, processorSigil: sigilProcessor, processorCanonical: canonicalProcessor });
 
   // 1. Parse pipe-content strings into mdast children. In sigil/canonical mode the
   //    inner processor is the matching registers-off one (the register(s) stay off
