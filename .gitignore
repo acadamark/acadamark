@@ -22,27 +22,14 @@ node_modules/
 dist/
 
 # ─── THIS site's build output (docs-source/ → site/) ────────────────────────
-# `site/` is the built docs site (enscribe.org). It is a deploy fact of THIS repo
-# only: the STATIC build writes to `site/` (home at the root), the portable LIVE
-# folder to `site/live/`. The engine's output is purely `-o`-driven and knows
-# nothing of these paths. The built tree is deliberately COMMITTED so GitHub Pages
-# serves it with no build step; rebuild with `npm run build:site-all` (which does
-# `rm -rf site` first — a clean rebuild, never additive staleness). Committed build
-# output is an accepted tradeoff: the tree can lag `docs-source/` until the next
-# rebuild + commit (or until CI automates it).
-#
-# The ONE exception (the same rationale the retired `site/dist/` rules carried,
-# repointed to the new layout): the STATIC pages are self-contained — they inline
-# their CSS, with no local <link>/<script> — so the large machine-built engine
-# assets copyShellAssets drops at the static root are UNUSED there, the same ~3 MB
-# bundles the `dist/` policy keeps untracked everywhere else. They are ignored at
-# the static root ONLY. The LIVE folder's copies (site/live/*) ARE referenced by
-# the live shell and stay tracked; the leading-slash paths below anchor to the
-# static root, so they never match site/live/.
-/site/enscribe.browser.global.js
-/site/enscribe-shell.css
-/site/editor-codemirror.js
-/site/default.css
+# `site/` is the built docs site (enscribe.org), produced by `npm run build:site-all`
+# (which does `rm -rf site` first — a clean rebuild). It is a GENERATED artifact:
+# source (docs-source/ + the emitters) is the single truth, so the built tree is NOT
+# tracked. CI builds it the same way and deploys it to GitHub Pages
+# (`.github/workflows/static.yml`, manual trigger). Untracking `site/` ended the
+# merge-churn that repeatedly blocked merges while it was committed during
+# development — see notes/decisions.md ("Build is committed during development…").
+/site/
 
 # ─── Working prompt files ───────────────────────────────────────────────────
 # `ghc-prompt-*.md` files are crafted prompts the user pastes into the repo
