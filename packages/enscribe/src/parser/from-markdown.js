@@ -330,6 +330,15 @@ function exitEnscribeLongFormTag(token) {
     // EOF reached before `</tagname>` — the finder emitted no close token.
     node.type = 'enscribeTagError'
     node.error = 'long-form tag has no closing tag'
+  } else if (node.contentHandler === 'code-block' && typeof node.content === 'string') {
+    // A `<code-block>…</code-block>` and its `` ``` `` fence equivalent are the SAME construct and must
+    // render byte-identically. The multi-line long-form captures the opener's own trailing newline as a
+    // leading newline of the content (`<code-block>\nCODE` → content `\nCODE…`), which the fence does
+    // not (the sigil finder starts content after `` ```\n ``). Strip that single leading newline — the
+    // syntactic "content on the next line" artifact — so the two forms produce identical content. Only
+    // the FIRST newline is removed, so an intentional leading blank line survives, matching the fence.
+    // The trailing newline (before the closer) is kept: the fence keeps it too, so they already agree.
+    node.content = node.content.replace(/^\n/, '')
   }
   delete node._hasClose
   delete node._inOpener
