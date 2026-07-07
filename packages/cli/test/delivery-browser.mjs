@@ -95,7 +95,7 @@ export async function runBrowserTier({ FIXTURE, buildSingleFile }) {
       'SKIP: #369 Tier 2 (in-browser offline render + editor mount) — no headless-browser driver ' +
       '(playwright / puppeteer) is importable. A Chromium binary ' + (findChromium() ? 'IS cached but has no driver' : 'was not found') +
       '. These checks REQUIRE a real browser and are left for a human:\n' +
-      '  • the inlined single-file renders with the NETWORK BLOCKED: KaTeX math, the embedded figure, a document font applied;\n' +
+      '  • the inlined single-file renders with the NETWORK BLOCKED: KaTeX math + the embedded data: figure;\n' +
       '  • the editor MOUNTS (CodeMirror) and accepts typed input.\n' +
       '  To run them: `npm i -D puppeteer-core` (a Chromium is already cached) or `npm i -D playwright`, then re-run the cli suite.',
     );
@@ -122,17 +122,20 @@ export async function runBrowserTier({ FIXTURE, buildSingleFile }) {
       const page = await browser.page(/* offline */ true);
       await page.goto(pathToFileURL(file).href);
       await page.waitFor('.katex', 5000);            // KaTeX rendered the inline math (needs the inline KaTeX CSS)
+      // Only assert what a BROWSER uniquely proves: the engine renders the embedded source offline —
+      // KaTeX math and the embedded data: figure appear. The FONT guarantee (the bytes are embedded so it
+      // renders offline) is a build fact, checked deterministically in Tier 1 (delivery-modes.test.js) —
+      // NOT via `document.fonts.check(Inter)`, which is lazy-load- and system-font-sensitive (an unused
+      // embedded font reads false; it was passing locally only because dev machines have Inter installed,
+      // and failing in CI's clean headless Chromium — #381).
       const probe = await page.eval(() => ({
         katex: !!document.querySelector('.katex'),
         figure: !!document.querySelector('img[src^="data:"]'),
-        bodyFont: getComputedStyle(document.body).fontFamily,
-        interLoaded: (document.fonts && document.fonts.check) ? document.fonts.check('16px Inter') : null,
       }));
       const A = (c, m) => { if (!c) throw new Error(`Tier 2 offline render: ${m}`); };
       A(probe.katex, 'the inline math did not render via KaTeX (offline)');
       A(probe.figure, 'the embedded figure (img[src^="data:"]) is not present (offline)');
-      A(/Inter/i.test(probe.bodyFont) || probe.interLoaded, `the document font (Inter) is not applied/loaded (offline); body font-family = ${probe.bodyFont}, Inter loaded = ${probe.interLoaded}`);
-      console.log(`PASS: #369 Tier 2 — inlined single-file renders OFFLINE in ${driver.name} (KaTeX math, figure, document font — network blocked)`);
+      console.log(`PASS: #369 Tier 2 — inlined single-file renders OFFLINE in ${driver.name} (KaTeX math + embedded figure — network blocked)`);
     }
 
     // (B) EDITOR MOUNT — an inlined editable file must mount the (inlined) editor and accept input,
