@@ -30,6 +30,7 @@ import {
   buildOnThisPage,
   buildContentsListing,
   chapterNavBar,
+  chapterNavArrows,
 } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
@@ -55,6 +56,7 @@ import {
   BACK_TO_TOP_CSS,
   BACK_TO_TOP_HTML,
   BACK_TO_TOP_JS,
+  CHAPTER_ARROWS_CSS,
 } from '../interpreter/assets/book-nav-asset.js';
 
 /** P1 projection: each chapter's PAGE URL is the shared neutral stem + `.html`
@@ -115,6 +117,7 @@ function pageShell(body, title, defaultCss, bookNav) {
   if (!bookNav.chapterNav) extraCss.push(BOOK_NAV_NOLEFT_CSS);
   if (bookNav.chapterNavDepth >= 2) extraCss.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) extraCss.push(BACK_TO_TOP_CSS);
+  if (bookNav.pageNavigation) extraCss.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   const css = extraCss.length ? `\n${extraCss.join('\n')}` : '';
   const extraJs = bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '';
   return `<!DOCTYPE html>
@@ -156,9 +159,9 @@ function redirectPage(targetUrl, title) {
 
 /** Compose a chapter/cover body from the chrome pieces present — delegates to the shared
  *  composeBookBody (single-sourced with the live render) with the back-to-top control. */
-function bookBodyHtml(rail, content, prevNext, onThisPage, bookNav) {
+function bookBodyHtml(rail, content, prevNext, onThisPage, bookNav, arrows = '') {
   return composeBookBody({
-    rail, content, prevNext, onThisPage,
+    rail, content, prevNext, onThisPage, arrows,
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
   });
 }
@@ -190,8 +193,12 @@ function renderPageBody(part, parts, idx, registry, idToUrl, opts) {
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, chapterHref);
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
+  // #293 — the persistent edge arrows read the SAME prevNext targets (chapterNavArrows → prevNextParts)
+  // and share the page-navigation gate, so they cannot point to a different chapter than the bottom bar.
+  const arrowsNav = chapterNavArrows(parts, idx, chapterHref);
+  const arrows = (bookNav.pageNavigation && arrowsNav) ? toHtml(arrowsNav) : '';
 
-  const body = bookBodyHtml(rail, content, prevNext, onThisPage, bookNav);
+  const body = bookBodyHtml(rail, content, prevNext, onThisPage, bookNav, arrows);
   const title = part.number ? `${part.number} · ${part.clean} — ${bookTitle}` : `${part.clean} — ${bookTitle}`;
   return { body, title };
 }
