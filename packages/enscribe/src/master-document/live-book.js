@@ -27,7 +27,7 @@
 // One mount, one hash space: the router IS the cross-page link.
 
 import { toHtml } from 'hast-util-to-html';
-import { buildChapterRail, buildOnThisPage, buildContentsListing, chapterNavBar } from '../interpreter/lib/toc.js';
+import { buildChapterRail, buildOnThisPage, buildContentsListing, chapterNavBar, chapterNavArrows } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
@@ -215,9 +215,13 @@ export function renderLiveChapterView(model, idx, ctx) {
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, (p) => chapterHref(p, pageSlug));
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
+  // #293 — persistent edge arrows, symmetric with the static build (publish-pages.js): the SAME
+  // prevNext targets + the same page-navigation gate, so static≡live and the arrows can't drift.
+  const arrowsNav = chapterNavArrows(parts, idx, (p) => chapterHref(p, pageSlug));
+  const arrows = (bookNav.pageNavigation && arrowsNav) ? toHtml(arrowsNav) : '';
 
   return composeBookBody({
-    rail, content, prevNext, onThisPage,
+    rail, content, prevNext, onThisPage, arrows,
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
   }) + BOOK_LIVE_RAIL_SCRIPTS;
 }

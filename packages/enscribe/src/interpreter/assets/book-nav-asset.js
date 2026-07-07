@@ -19,8 +19,11 @@ export const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout
  *  when neither rail is present. The back-to-top control rides inside `<main>` (it is
  *  fixed-positioned, so DOM location is immaterial). Shared by the static separate-pages
  *  build (publish-pages.js) and the live render (live-book.js). */
-export function composeBookBody({ rail = '', content = '', prevNext = '', onThisPage = '', backToTop = '' }) {
-  const main = `<main class="enscribe-body">${content}${prevNext}${backToTop}</main>`;
+export function composeBookBody({ rail = '', content = '', prevNext = '', onThisPage = '', backToTop = '', arrows = '' }) {
+  // `arrows` (#293): the persistent edge prev/next chapter arrows. Like back-to-top they are
+  // fixed-positioned, so DOM location is immaterial — they ride inside `<main>` (per-chapter, so the
+  // live router re-renders them with the right targets on each chapter swap).
+  const main = `<main class="enscribe-body">${content}${prevNext}${backToTop}${arrows}</main>`;
   if (rail && onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-3col">${rail}${main}${onThisPage}</div>`;
   if (rail) return `<div class="${BOOK_LAYOUT}">${rail}${main}</div>`;
   if (onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-noleft">${main}${onThisPage}</div>`;
@@ -50,6 +53,74 @@ export const BOOK_NAV_DEPTH_CSS = `.enscribe-chapter-rail .enscribe-rail-section
   color: var(--enscribe-text-muted);
 }
 .enscribe-chapter-rail .enscribe-rail-section a:hover { color: var(--enscribe-link); }`;
+
+// #293 — persistent prev/next chapter arrows (`‹` / `›`), the Bookdown-style edge affordance so a
+// reader navigates chapters without scrolling to the footer. Gated on `page-navigation` (the SAME flag
+// as the bottom prev/next bar — one capability, one gate), so it is injected only when that nav is on;
+// it lives here (not default.css) so a `page-navigation=false` book stays byte-identical.
+//
+// Positioning honors the hard constraint: NEVER overlap the rail or the content. The arrows are a
+// DESKTOP reading-layout affordance (>=984px — the breakpoint where the centered reading grid appears
+// with a 14rem left rail and, in 3-col, a 13rem right rail): each arrow tucks into the GUTTER just
+// outside the text column, anchored to the centered grid via inherited per-variant vars
+// (`--enscribe-book-gridw` / `-lrail` / `-rrail`), so it tracks the grid as the viewport widens.
+// BELOW 984px the layout is a single full-width column with no gutter — a persistent side arrow there
+// would cover the text — so the arrows are HIDDEN and the bottom prev/next bar remains the affordance.
+// (Verified with a headless overlap check across widths; the mobile tradeoff is recorded in the report.)
+export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--enscribe-border);
+  border-radius: 50%;
+  background: var(--enscribe-bg-raised, #fff);
+  color: var(--enscribe-text-secondary);
+  font-size: 1.4rem;
+  line-height: 1;
+  text-decoration: none;
+  opacity: 0.5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.enscribe-chapter-arrow:hover,
+.enscribe-chapter-arrow:focus-visible {
+  opacity: 1;
+  color: var(--enscribe-link);
+  border-color: var(--enscribe-link);
+}
+.enscribe-chapter-arrow:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.35);
+}
+@media (min-width: 984px) {
+  .enscribe-layout--book {
+    --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
+    --enscribe-book-lrail: 14rem;
+    --enscribe-book-rrail: 0px;
+  }
+  .enscribe-layout--book.enscribe-layout--book-3col {
+    --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+    --enscribe-book-rrail: 13rem;
+  }
+  .enscribe-layout--book.enscribe-layout--book-noleft {
+    --enscribe-book-gridw: calc(var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
+    --enscribe-book-lrail: 0px;
+    --enscribe-book-rrail: 13rem;
+  }
+  .enscribe-chapter-arrow { display: flex; }
+  .enscribe-chapter-arrow--prev {
+    left: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-lrail, 0px) + var(--enscribe-space-2));
+  }
+  .enscribe-chapter-arrow--next {
+    right: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-rrail, 0px) + var(--enscribe-space-2));
+  }
+}`;
 
 // back-to-top ON: a fixed scroll-to-top control, hidden until the reader scrolls down
 // past one viewport. JS off → the control stays `hidden` (no broken affordance).
@@ -102,8 +173,9 @@ export const BACK_TO_TOP_JS = `(${bindBackToTop.toString()})();`;
 
 /** Inject the active book-nav CSS as a single <style> in the document head — the live
  *  path, where chapter views are swapped via innerHTML (so they can't carry head CSS).
- *  A NO-OP at defaults (chapter-nav on, depth 1, back-to-top off), so a default live book
- *  is byte-unchanged. Idempotent via a fixed element id. */
+ *  At defaults a book injects only the chapter-arrows CSS (#293 — `page-navigation` is on by
+ *  default); with page-navigation off (and chapter-nav on, depth 1, back-to-top off) it is a
+ *  no-op. Idempotent via a fixed element id. */
 export function injectBookNavStyles(bookNav, doc) {
   const d = doc || (typeof document !== 'undefined' ? document : null);
   if (!d || d.getElementById('enscribe-book-nav-style')) return;
@@ -111,6 +183,7 @@ export function injectBookNavStyles(bookNav, doc) {
   if (!bookNav.chapterNav) css.push(BOOK_NAV_NOLEFT_CSS);
   if (bookNav.chapterNavDepth >= 2) css.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) css.push(BACK_TO_TOP_CSS);
+  if (bookNav.pageNavigation) css.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   if (!css.length) return;
   const style = d.createElement('style');
   style.id = 'enscribe-book-nav-style';
