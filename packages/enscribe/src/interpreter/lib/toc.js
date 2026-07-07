@@ -475,7 +475,7 @@ export function applyToc(hast, toc, onThisPage = true) {
 // Three placements (toc-location): `body` (default) inserts a full listing at the top of
 // the document body, after the title block; `left` / `right` render a sticky sidebar — a
 // collapsible listing whose initial expansion is `toc-expand`. `toc-depth` bounds the
-// listed levels; a `+unlisted` heading is dropped from the listing (with its subtree).
+// listed levels; a `-listed` heading is dropped from the listing (with its subtree).
 
 /** Coerce `toc-depth` to a positive integer (default 3). Accepts a number or a string. */
 function tocDepth(v) {
@@ -513,13 +513,15 @@ export function readTocConfig(configMap) {
   };
 }
 
-/** Prune a collected entry tree for the listing: drop `+unlisted` headings (with their
- *  subtree — prefatory/appendix material opts out wholesale) and any level past `depth`. */
+/** Prune a collected entry tree for the listing: drop `-listed` headings (with their
+ *  subtree — prefatory/appendix material opts out wholesale) and any level past `depth`.
+ *  #230: a listed heading (the default) carries no attribute; an opted-out heading renders
+ *  the transparent `listed="false"` form, so the prune test is `properties.listed === 'false'`. */
 function pruneForToc(entries, depth, level = 1) {
   if (level > depth) return [];
   const out = [];
   for (const e of entries) {
-    if (e.el.properties?.unlisted) continue;
+    if (e.el.properties?.listed === 'false') continue;
     out.push({ ...e, children: pruneForToc(e.children, depth, level + 1) });
   }
   return out;

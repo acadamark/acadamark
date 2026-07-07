@@ -642,9 +642,10 @@ function numberSectionLevel(nodes, prefix, registry, maxDepth = Infinity, level 
   let i = 0;
   for (const n of nodes) {
     if (isEnscribeTag(n) && SECTION_TAG_SET.has(n.tagname)) {
-      // #218 +unnumbered: outside the numbered sequence — no number, the counter does NOT advance
+      // #218 -numbered: outside the numbered sequence — no number, the counter does NOT advance
       // (the next numbered sibling continues unbroken), and the subtree is unnumbered (not recursed).
-      if (n.booleans?.unnumbered) continue;
+      // Default (numbered) is absent from node.booleans; only an explicit -numbered opts out (#230).
+      if (n.booleans?.numbered === false) continue;
       i += 1;
       const num = prefix ? `${prefix}.${i}` : String(i);
       stampSection(n, num, registry);
@@ -673,7 +674,7 @@ export function numberSections(tree, file) {
   if (!docRoot) return;
 
   // A top book-part heading (chapter / appendix / article-appendix) is level 1, its sections level 2.
-  // #218: skip a `+unnumbered` part (no label, the counter does NOT advance — caller `continue`s
+  // #218: skip a `-numbered` part (no label, the counter does NOT advance — caller `continue`s
   // before the idx bump); number the heading only within number-depth (level 1 ≤ maxDepth); its
   // sections recurse at level 2 (so number-depth=2 numbers chapters + their direct sections).
   const numberBookPart = (part, label) => {
@@ -694,7 +695,7 @@ export function numberSections(tree, file) {
       for (const part of structuralChildren(articleBack)) {
         if (!isEnscribeTag(part, 'book-part')) continue;
         if ((part.kwargs?.type ?? 'other') !== 'appendix') continue;
-        if (part.booleans?.unnumbered) continue; // #218: outside the sequence — no letter, no advance.
+        if (part.booleans?.numbered === false) continue; // #218/#230: -numbered — no letter, no advance.
         const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
         appendixIdx += 1;
         numberBookPart(part, letter);
@@ -716,7 +717,7 @@ export function numberSections(tree, file) {
       if (!isEnscribeTag(part, 'book-part')) continue;
       const partType = part.kwargs?.type ?? 'other';
       if (!isBodyBookPart(partType)) continue;
-      if (part.booleans?.unnumbered) continue; // #218: +unnumbered chapter — no number, no advance.
+      if (part.booleans?.numbered === false) continue; // #218/#230: -numbered chapter — no number, no advance.
       chapterIdx += 1;
       numberBookPart(part, String(chapterIdx)); // chapter number → its sections "N.1"
     }
@@ -728,7 +729,7 @@ export function numberSections(tree, file) {
     for (const part of structuralChildren(back)) {
       if (!isEnscribeTag(part, 'book-part')) continue;
       if ((part.kwargs?.type ?? 'other') !== 'appendix') continue;
-      if (part.booleans?.unnumbered) continue; // #218: outside the sequence — no letter, no advance.
+      if (part.booleans?.numbered === false) continue; // #218/#230: -numbered — no letter, no advance.
       const letter = String.fromCharCode(65 + appendixIdx); // A, B, C, …
       appendixIdx += 1;
       numberBookPart(part, letter); // appendix letter → its sections "A.1"

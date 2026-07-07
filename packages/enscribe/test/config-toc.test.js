@@ -3,10 +3,10 @@
 // The contents LISTING is config-driven (`<config toc …>`), read in the SHARED compiler so
 // the static build and the live render honor it identically — the property the docs site's
 // live-ToC parity fix (#207) depends on. This gate covers: body placement + toc-depth,
-// the right sticky sidebar + toc-expand, the +unlisted per-heading override, default-off
+// the right sticky sidebar + toc-expand, the -listed per-heading override, default-off
 // additivity, and the load-bearing static≡live parity from the same `<config>`.
 //
-// The numbering half (number-sections / number-depth / +unnumbered) is the sibling slice.
+// The numbering half (number-sections / number-depth / -numbered) is the sibling slice.
 
 import assert from 'node:assert';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
@@ -19,13 +19,13 @@ const staticRender = (src) => String(buildEnscribePipeline(BROWSER_DEFAULTS).pro
 const liveRender = (src) => render(src); // render() resolves over BROWSER_DEFAULTS internally
 
 const META = '<meta type=article>\n<title | T>\n</meta>\n\n';
-// Three levels + a normal sibling + an +unlisted section, exercising depth and unlisted.
+// Three levels + a normal sibling + a -listed section, exercising depth and listing opt-out.
 const BODY = [
   '<section #sec:intro | Introduction>', '', 'x.', '',
   '<sub-section | Background>', '', 'y.', '',
   '<sub-sub-section | Deep>', '', 'z.', '',
   '<section | Methods>', '', 'm.', '',
-  '<section +unlisted | Secret>', '', 's.',
+  '<section -listed | Secret>', '', 's.',
 ].join('\n');
 
 const bodyNav = (h) => (h.match(/<nav class="enscribe-contents"[\s\S]*?<\/nav>/) || [''])[0];
@@ -61,14 +61,14 @@ export async function run() {
     console.log('PASS: #218 — right location is a sticky sidebar; toc-expand controls initial expansion');
   }
 
-  // ── Gate 3: +unlisted is absent from the listing (but still renders) ──────────────────
+  // ── Gate 3: -listed is absent from the listing (but still renders) ──────────────────
   {
     const h = staticRender(META + '<config toc=true toc-location=body />\n\n' + BODY);
     const nav = bodyNav(h);
     assert.ok(/Methods/.test(nav), 'a normal section is listed');
-    assert.ok(!/Secret/.test(nav), 'the +unlisted section is absent from the listing');
-    assert.ok(h.replace(nav, '').includes('Secret'), 'the +unlisted section still renders in the document body');
-    console.log('PASS: #218 — +unlisted keeps a heading out of the listing, regardless of depth');
+    assert.ok(!/Secret/.test(nav), 'the -listed section is absent from the listing');
+    assert.ok(h.replace(nav, '').includes('Secret'), 'the -listed section still renders in the document body');
+    console.log('PASS: #218 — -listed keeps a heading out of the listing, regardless of depth');
   }
 
   // ── Gate 4: default OFF — additive, no listing without the config ──────────────────────

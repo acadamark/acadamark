@@ -17,17 +17,17 @@ A numbered section (1).
 
 A numbered sub-section (1.1).
 
-<section unlisted | Colophon>
+<section -listed | Colophon>
 
-`<section unlisted>` (bare) ≡ `<section +unlisted>` — kept out of the contents listing, but still
-**numbered** (2) and rendered. (`unlisted` is listing-only; it does not affect numbering.)
+`listed` defaults on, so its opt-out is the signed `-listed` — kept out of the contents listing, but
+still **numbered** (2) and rendered. (`listed` is listing-only; it does not affect numbering.)
 
-<section unnumbered | A Note on Method>
+<section -numbered | A Note on Method>
 
-`<section unnumbered>` (bare) ≡ `<section +unnumbered>` — outside the numbered sequence: no number,
-and the counter does not advance. (`unnumbered` is numbering-only; it is still *listed*.)
+`numbered` defaults on, so its opt-out is `-numbered` — outside the numbered sequence: no number,
+and the counter does not advance. (`numbered` is numbering-only; it is still *listed*.)
 
 <section | Methods>
 
-A numbered section (3) — Colophon took 2 (unlisted is still numbered); the unnumbered note did not
-advance the counter.
+A numbered section (3) — Colophon took 2 (a -listed section is still numbered); the -numbered note
+did not advance the counter.

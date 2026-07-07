@@ -2,7 +2,7 @@
 //
 // Numbering is config-driven (`<config number-sections …>`), stamped in the shared `runSync`
 // (numberSections), so the static build and the live render number identically. This gate covers:
-// hierarchical numbers (1 / 1.1 / 1.1.1), `number-depth` (the deepest numbered level), `+unnumbered`
+// hierarchical numbers (1 / 1.1 / 1.1.1), `number-depth` (the deepest numbered level), `-numbered`
 // (outside the sequence — no number AND no counter advance), independence from `toc-depth`, the
 // composition with the ToC listing (numbers show un-glued), default-off, and static≡live parity.
 
@@ -60,16 +60,16 @@ export async function run() {
     console.log('PASS: #218 — number-depth=2 numbers only levels 1-2');
   }
 
-  // ── Gate 3: +unnumbered — no number AND the counter does not advance ───────────────────────────
+  // ── Gate 3: -numbered — no number AND the counter does not advance ───────────────────────────
   {
     const UN = META + '<config number-sections=true />\n\n' +
-      '<section | First>\n\nx.\n\n<section +unnumbered | Skip>\n\ny.\n\n<section | Third>\n\nz.';
+      '<section | First>\n\nx.\n\n<section -numbered | Skip>\n\ny.\n\n<section | Third>\n\nz.';
     const h = staticRender(UN);
     assert.strictEqual(numFor(h, 'section', 'First'), '1');
-    assert.strictEqual(numFor(h, 'section', 'Skip'), null, '+unnumbered heading carries no number');
+    assert.strictEqual(numFor(h, 'section', 'Skip'), null, '-numbered heading carries no number');
     assert.strictEqual(numFor(h, 'section', 'Third'), '2',
-      'the next numbered sibling continues unbroken — the +unnumbered heading did not advance the counter');
-    console.log('PASS: #218 — +unnumbered: no number, no counter advance (next sibling continues)');
+      'the next numbered sibling continues unbroken — the -numbered heading did not advance the counter');
+    console.log('PASS: #218 — -numbered: no number, no counter advance (next sibling continues)');
   }
 
   // ── Gate 4: number-depth and toc-depth are INDEPENDENT (both directions) ───────────────────────
@@ -109,7 +109,7 @@ export async function run() {
     for (const cfg of [
       '<config number-sections=true />',
       '<config number-sections=true number-depth=2 toc=true toc-location=right />',
-      '<config number-sections=true />\n\n<section | First>\n\nx.\n\n<section +unnumbered | Skip>\n\ny.\n\n<section | Third>\n\nz.',
+      '<config number-sections=true />\n\n<section | First>\n\nx.\n\n<section -numbered | Skip>\n\ny.\n\n<section | Third>\n\nz.',
     ]) {
       const src = cfg.includes('section') ? META + cfg : META + cfg + '\n\n' + LEVELS;
       assert.strictEqual(staticRender(src), liveRender(src),

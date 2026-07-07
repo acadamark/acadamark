@@ -70,22 +70,25 @@ than the top — is deferred, not part of this spec.)
 
 ## Per-heading overrides
 
-Two kwargs on an individual heading override the global depths for that heading only:
+Two per-heading booleans override the global depths for that heading only. Both are **named in the
+positive and default on**; the opt-out is the `-` sign (see the boolean-naming rule in
+`shorthand-syntax.md`):
 
-| kwarg | effect |
+| flag | effect |
 |---|---|
-| `unlisted` | Keep this heading out of the contents, regardless of `toc-depth`. |
-| `unnumbered` | Skip this heading's number, regardless of `number-depth`. |
+| `-listed` | Keep this heading out of the contents, regardless of `toc-depth`. |
+| `-numbered` | Skip this heading's number, regardless of `number-depth`. |
 
 These let prefatory or appendix material (a preface, an unnumbered index chapter) opt out without
-moving the document-wide depths. `unlisted` drops the heading **and its subtree** from the listing —
+moving the document-wide depths. `-listed` drops the heading **and its subtree** from the listing —
 a prefatory part opts out wholesale, not leaving orphaned subsections behind.
 
-The overrides are boolean attributes on the heading, authored either as the bare canonical form the
-tables above show — `<section unlisted | …>`, `<book-part type="appendix" unnumbered | …>` — or with
-the `+flag` boolean shorthand (`<section +unlisted | …>`); the two are equivalent. A bare *known*
-boolean parses as `true` ([#219](https://github.com/enscribejs/enscribe/issues/219)); a bare unknown
-name stays unrecognized, so a typo never becomes a phantom boolean.
+The overrides are boolean attributes on the heading. `listed` and `numbered` default **on**, so the
+meaningful authored form is the opt-out — `<section -listed | …>`,
+`<book-part type="appendix" -numbered | …>`. The `+flag` / bare forms set the default (on) explicitly
+and are therefore redundant: a bare *known* boolean parses as `true`
+([#219](https://github.com/enscribejs/enscribe/issues/219)), and a bare unknown name stays
+unrecognized, so a typo never becomes a phantom boolean.
 
 ## eHTML form
 
@@ -100,10 +103,11 @@ eHTML:  <config toc number-sections toc-depth="2" number-depth="3">
 
 Two consequences for the eHTML reference:
 
-- The per-heading overrides are **not** config — `unlisted`/`unnumbered` are boolean attributes on the
-  sectioning elements themselves (`<section unnumbered>`, `<book-part type="appendix" unlisted>`). So
-  this touches two vocabulary entries: `<config>` gains the contents/numbering attributes, and the
-  sectioning elements gain the two override booleans.
+- The per-heading overrides are **not** config — `listed`/`numbered` are boolean attributes on the
+  sectioning elements themselves. Both default **on**, so a normal heading carries no attribute; an
+  opted-out heading records the deviation in the transparent valued form (`<section listed="false">`,
+  `<book-part type="appendix" numbered="false">`). So this touches two vocabulary entries: `<config>`
+  gains the contents/numbering attributes, and the sectioning elements gain the two override booleans.
 - eHTML stays **declarative** — it never holds the materialized contents listing or the stamped
   section numbers. Those are computable from the config plus the heading tree, so by Rule 2 they stay
   out of the source; the render generates the listing and stamps the numbers (the same destructive pass
@@ -134,22 +138,24 @@ Two consequences for the eHTML reference:
 
 *Implementation status:* the **table-of-contents** half is wired (#218) — the config-driven contents
 listing, read in the shared compiler so the static build and the live render honor it identically.
-Authoring: valued kwargs take a value (`toc-depth=2 toc-location=right`); boolean kwargs and the
-heading overrides take the **bare** canonical form (`<config toc>`, `<section unlisted>`) or,
-equivalently, `=true` / `+flag` — the bare known-boolean form now parses
-([#219](https://github.com/enscribejs/enscribe/issues/219)). The gate-tested behaviors — off-by-default,
-`toc-depth`, `toc-location` body/left/right, `toc-expand` initial expansion, `+unlisted`, and the
+Authoring: valued kwargs take a value (`toc-depth=2 toc-location=right`); a boolean `<config>` kwarg
+takes the **bare** canonical form (`<config toc>`) or, equivalently, `=true` / `+flag` — the bare
+known-boolean form now parses ([#219](https://github.com/enscribejs/enscribe/issues/219)). The
+per-heading `listed` override defaults on, so its authored form is the opt-out `<section -listed | …>`.
+The gate-tested behaviors — off-by-default,
+`toc-depth`, `toc-location` body/left/right, `toc-expand` initial expansion, `-listed`, and the
 static≡live parity — are checked in `packages/enscribe/test/config-toc.test.js` (and the new
 `document-62`/`document-63`/`document-64` fixtures ride the standing render-parity guard).
 
 The **section-numbering** half is also wired (#218) — the destructive number stamp in the shared
 `runSync` (`numberSections`), so static and live number identically. `number-sections` (default off
 for ALL types — #246/core) stamps hierarchical 1 / 1.1 / 1.1.1; `number-depth` bounds the numbered levels,
-**independent of `toc-depth`**; `<section +unnumbered>` puts a heading outside the sequence (no number,
+**independent of `toc-depth`**; `<section -numbered>` puts a heading outside the sequence (no number,
 the counter does not advance, the subtree is unnumbered). Numbered headings show their numbers in the
 contents listing (the un-glue path). Gate-tested in `packages/enscribe/test/config-numbering.test.js`
-(+ `document-65`). Authoring: `<config number-sections number-depth=2>` (the boolean kwarg bare, the
-valued one `=`) and `<section unnumbered>` / `+unnumbered` — bare known booleans parse since #219.
+(+ `document-65`). Authoring: `<config number-sections number-depth=2>` (the boolean `<config>` kwarg
+bare, the valued one `=`); the per-heading `numbered` override defaults on, so its authored form is the
+opt-out `<section -numbered | …>`.
 
 *Spec note for whoever wires this:* the user-facing docs (the authoring guide and the eHTML
 reference) should describe these settings by role and link back here for the authoritative list,

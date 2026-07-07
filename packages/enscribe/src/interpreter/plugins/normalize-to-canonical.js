@@ -1057,13 +1057,13 @@ function validateHostAcceptSet(node, file) {
 // ─── Bare boolean authoring forms (#219) ──────────────────────────────────────
 //
 // The parser parses a bare attribute name (no `=value`, no `+`/`-` sigil) as a POSITIONAL
-// — `<config toc>` → positional ['toc']; `<section unlisted>` → positional ['unlisted'].
+// — `<config toc>` → positional ['toc']; `<details open>` → positional ['open'].
 // Bare is the canonical HTML / eHTML spelling of a boolean attribute (`<config toc>`),
 // so this promotes a bare positional that is a KNOWN boolean to the same `true` the +/=true
 // forms produce, byte-identically:
 //   - on `<config>`: a BOOLEAN config kwarg (isBooleanConfigKwarg, from the typed CONFIG_KWARGS Map — `toc`, `number-sections`,
 //     …) → `node.kwargs[name] = 'true'` (identical to `name=true`, which config-discovery reads).
-//   - on any other element: a name declared in its vocab `booleans:` (`unlisted`, `unnumbered`,
+//   - on any other element: a name declared in its vocab `booleans:` (`open`, `numbered`, `listed`,
 //     …) → `node.booleans[name] = true` (identical to `+name`, which mapAttributes / handlers read).
 // A bare name that is NOT a known boolean stays positional — unrecognized exactly as today (so a
 // typo never becomes a phantom boolean, and a bare VALUED kwarg like `<config toc-depth>` is inert).
@@ -1137,7 +1137,7 @@ function promoteBareBooleans(nodes) {
 
 export function enscribeNormalizeToCanonical() {
   return function normalizeToCanonical(tree, file) {
-    // #219: promote bare known-boolean positionals (`<config toc>`, `<section unlisted>`) to the
+    // #219: promote bare known-boolean positionals (`<config toc>`, `<details open>`) to the
     // same `true` the +/=true forms produce, BEFORE the rule walk + every downstream reader.
     promoteBareBooleans(tree.children ?? []);
     // Phase 4 slice 4a (2026-05-29): set per-document book-context flag

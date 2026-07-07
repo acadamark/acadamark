@@ -23,27 +23,30 @@ enscribe_attributes:
       values: [arabic, roman, alpha, none]
       notes: 'Override the inherited numbering style for this section.'
   booleans:
-    unlisted:
-      maps_to: unlisted
-      default: false
+    listed:
+      maps_to: listed
+      default: true
       notes: |
-        Keep this section out of the generated table of contents, regardless of
+        Whether this section appears in the generated table of contents. On by
+        default; -listed keeps the section OUT of the contents, regardless of
         toc-depth (#218). Display-only: the section still renders; it is only
         absent from the contents listing. The ToC is config-driven
-        (<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as
-        +unlisted (the boolean shorthand); renders to the HTML attribute unlisted.
-    unnumbered:
-      maps_to: unnumbered
-      default: false
+        (<config toc=true>); see notes/specs/toc-and-numbering.md. The default
+        (listed) renders no attribute; -listed renders the transparent
+        listed="false" form (an opt-out records its deviation from the default).
+    numbered:
+      maps_to: numbered
+      default: true
       notes: |
-        Skip this section's number, regardless of number-depth (#218). The heading
-        is OUTSIDE the numbered sequence — it gets no number AND does not advance the
-        counter, so the next numbered sibling continues unbroken (the \\section* /
-        Quarto .unnumbered behavior); its subtree is unnumbered too. Numbering is
+        Whether this section participates in heading numbering. On by default;
+        -numbered puts the heading OUTSIDE the numbered sequence, regardless of
+        number-depth (#218) — it gets no number AND does not advance the counter,
+        so the next numbered sibling continues unbroken (the \\section* / Quarto
+        .unnumbered behavior); its subtree is unnumbered too. Numbering is
         config-driven (<config number-sections=true>); see
-        notes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp
-        reads node.booleans.unnumbered in runSync, and the unnumbered attribute also
-        renders on the element.
+        notes/specs/toc-and-numbering.md. The number stamp reads
+        node.booleans.numbered === false in runSync; -numbered renders the
+        transparent numbered="false" form (the default renders no attribute).
 content:
   shape:
     - element: section-title

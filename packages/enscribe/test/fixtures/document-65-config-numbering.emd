@@ -20,11 +20,11 @@ A level-2 heading, numbered 1.1.
 
 A level-3 heading, numbered 1.1.1.
 
-<section +unnumbered | A Note on Notation>
+<section -numbered | A Note on Notation>
 
-An `+unnumbered` heading — outside the numbered sequence: it gets no number, and the
+A `-numbered` heading — outside the numbered sequence: it gets no number, and the
 counter does not advance, so the next section continues unbroken. (It is still *listed*
-— `+unnumbered` is numbering-only; `+unlisted` is the listing override.)
+— `-numbered` is numbering-only; `-listed` is the listing override. Both default on.)
 
 <section | Methods>
 

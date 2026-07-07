@@ -19,22 +19,25 @@ enscribe_attributes:
       maps_to: data-numbering-style
       values: [arabic, roman, alpha, none]
   booleans:
-    unlisted:
-      maps_to: unlisted
-      default: false
+    listed:
+      maps_to: listed
+      default: true
       notes: |
-        Keep this sub-sub-section out of the generated table of contents,
-        regardless of toc-depth (#218). Display-only: it still renders; it is only
-        absent from the contents listing. See notes/specs/toc-and-numbering.md.
-        Authored as +unlisted; renders to the HTML attribute unlisted.
-    unnumbered:
-      maps_to: unnumbered
-      default: false
+        Whether this sub-sub-section appears in the generated table of contents. On
+        by default; -listed keeps it OUT of the contents, regardless of toc-depth
+        (#218). Display-only: it still renders; it is only absent from the contents
+        listing. See notes/specs/toc-and-numbering.md. The default renders no
+        attribute; -listed renders the transparent listed="false" form.
+    numbered:
+      maps_to: numbered
+      default: true
       notes: |
-        Skip this sub-sub-section's number, regardless of number-depth (#218).
-        Outside the numbered sequence — no number, no counter advance, subtree
-        unnumbered; the next numbered sibling continues unbroken. See
-        notes/specs/toc-and-numbering.md. Authored as +unnumbered.
+        Whether this sub-sub-section participates in heading numbering. On by
+        default; -numbered puts it outside the numbered sequence, regardless of
+        number-depth (#218) — no number, no counter advance, subtree unnumbered;
+        the next numbered sibling continues unbroken. See
+        notes/specs/toc-and-numbering.md. The default renders no attribute;
+        -numbered renders numbered="false".
 content:
   shape:
     - element: sub-sub-section-title

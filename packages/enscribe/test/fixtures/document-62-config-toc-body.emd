@@ -24,7 +24,7 @@ A third-level heading. Below `toc-depth`, so it is absent from the contents list
 
 A first-level heading, listed.
 
-<section +unlisted | Acknowledgements>
+<section -listed | Acknowledgements>
 
-An `+unlisted` section: present in the document, absent from the contents listing,
-regardless of `toc-depth`.
+A `-listed` section: present in the document, absent from the contents listing,
+regardless of `toc-depth`. (`listed` defaults on; `-listed` opts out.)

@@ -152,6 +152,12 @@ Sigil tags and named tags are distinguished by their first non-`<` character: if
 
 Attributes can appear in any order. Multiple positional, multiple flags, multiple classes are all allowed. Multiple `id` attributes or multiple of the same keyword is an error (parser may report or take last value, implementation choice).
 
+### Boolean argument naming (one rule)
+
+A boolean argument is always **named for its positive (on) sense**, and toggled with the sign: `+name` sets it true, `-name` sets it false, and a bare `name` is the canonical `true` spelling. **Never name a boolean for its off/exception state** (no `unlisted`, no `nohover`), and never an ad-hoc on/off spelling — one uniform rule across the whole vocabulary. Examples: `+numbered`/`-numbered`, `+listed`/`-listed`, `+border`/`-border`, `+open`/`-open`.
+
+The **default is chosen independently of the name** (naming ≠ default). A positively-named boolean may default *on* — `listed`, `numbered` on a `<section>` (opt out with `-listed`/`-numbered`) — or *off* — `numbered` on a `<proof>`, `open` on `<details>` (opt in with `+numbered`/`+open`). The name records the axis; the vocabulary entry's `default` records the resting value. In the archival eHTML, a boolean attribute records the value only when it **deviates from that default**: a deviating `true` is the bare presence form (`<details open>`), a deviating `false` is the transparent valued form (`<section listed="false">`) — so what the author types corresponds to what the eHTML carries.
+
 ### Identifiers
 
 Identifiers are the values of `#id` attributes, `@ref` attributes, `key=value` keyword values (when unquoted), positional arguments, and bracketed list items. An identifier is a sequence of non-delimiter characters where the first character is not a syntactic prefix (`+`, `-`, `#`, `.`, `@`, `=`). Mid-identifier, prefix characters including `=` are allowed as literal data — so `fig:body-cross-section`, `my-cool-id`, `v1.2.3`, and `https://example.com?q=value` are all valid identifiers. Whitespace and the structural delimiters (`<`, `>`, `|`, `"`, `'`, `[`, `]`, `,`) are never allowed in identifiers; values containing those characters must be quoted.

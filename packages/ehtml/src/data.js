@@ -1426,19 +1426,19 @@ const _book_part = Object.freeze({
         },
       },
       "booleans": {
-        "unlisted": {
+        "listed": {
           "maps_to": {
-            "html": "unlisted",
+            "html": "listed",
           },
-          "default": false,
-          "notes": "Keep this book-part out of the generated table of contents, regardless of\ntoc-depth (#218) — e.g. a preface or an index chapter that should not\nappear in the contents. Display-only: it still renders; it is only absent\nfrom the contents listing. See notes/specs/toc-and-numbering.md. Authored\nas +unlisted; renders to the HTML attribute unlisted.\n",
+          "default": true,
+          "notes": "Whether this book-part appears in the generated table of contents. On by\ndefault; -listed keeps it OUT of the contents, regardless of toc-depth\n(#218) — e.g. a preface or an index chapter that should not appear in the\ncontents. Display-only: it still renders; it is only absent from the\ncontents listing. See notes/specs/toc-and-numbering.md. The default renders\nno attribute; -listed renders the transparent listed=\"false\" form.\n",
         },
-        "unnumbered": {
+        "numbered": {
           "maps_to": {
-            "html": "unnumbered",
+            "html": "numbered",
           },
-          "default": false,
-          "notes": "Skip this book-part's number, regardless of number-depth (#218) — e.g. an\nunnumbered \"Introduction\" chapter. Outside the numbered sequence: no number,\nno counter advance (the next numbered chapter continues unbroken), subtree\nunnumbered. (Front-matter and non-appendix back-matter are already unnumbered\nby region.) See notes/specs/toc-and-numbering.md. Authored as +unnumbered.\n",
+          "default": true,
+          "notes": "Whether this book-part participates in numbering. On by default; -numbered\nputs it outside the numbered sequence, regardless of number-depth (#218) —\ne.g. an unnumbered \"Introduction\" chapter: no number, no counter advance\n(the next numbered chapter continues unbroken), subtree unnumbered.\n(Front-matter and non-appendix back-matter are already unnumbered by\nregion.) See notes/specs/toc-and-numbering.md. The default renders no\nattribute; -numbered renders numbered=\"false\".\n",
         },
       },
     },
@@ -5696,19 +5696,19 @@ const _section = Object.freeze({
         },
       },
       "booleans": {
-        "unlisted": {
+        "listed": {
           "maps_to": {
-            "html": "unlisted",
+            "html": "listed",
           },
-          "default": false,
-          "notes": "Keep this section out of the generated table of contents, regardless of\ntoc-depth (#218). Display-only: the section still renders; it is only\nabsent from the contents listing. The ToC is config-driven\n(<config toc=true>); see notes/specs/toc-and-numbering.md. Authored as\n+unlisted (the boolean shorthand); renders to the HTML attribute unlisted.\n",
+          "default": true,
+          "notes": "Whether this section appears in the generated table of contents. On by\ndefault; -listed keeps the section OUT of the contents, regardless of\ntoc-depth (#218). Display-only: the section still renders; it is only\nabsent from the contents listing. The ToC is config-driven\n(<config toc=true>); see notes/specs/toc-and-numbering.md. The default\n(listed) renders no attribute; -listed renders the transparent\nlisted=\"false\" form (an opt-out records its deviation from the default).\n",
         },
-        "unnumbered": {
+        "numbered": {
           "maps_to": {
-            "html": "unnumbered",
+            "html": "numbered",
           },
-          "default": false,
-          "notes": "Skip this section's number, regardless of number-depth (#218). The heading\nis OUTSIDE the numbered sequence — it gets no number AND does not advance the\ncounter, so the next numbered sibling continues unbroken (the \\\\section* /\nQuarto .unnumbered behavior); its subtree is unnumbered too. Numbering is\nconfig-driven (<config number-sections=true>); see\nnotes/specs/toc-and-numbering.md. Authored as +unnumbered; the number stamp\nreads node.booleans.unnumbered in runSync, and the unnumbered attribute also\nrenders on the element.\n",
+          "default": true,
+          "notes": "Whether this section participates in heading numbering. On by default;\n-numbered puts the heading OUTSIDE the numbered sequence, regardless of\nnumber-depth (#218) — it gets no number AND does not advance the counter,\nso the next numbered sibling continues unbroken (the \\\\section* / Quarto\n.unnumbered behavior); its subtree is unnumbered too. Numbering is\nconfig-driven (<config number-sections=true>); see\nnotes/specs/toc-and-numbering.md. The number stamp reads\nnode.booleans.numbered === false in runSync; -numbered renders the\ntransparent numbered=\"false\" form (the default renders no attribute).\n",
         },
       },
     },
@@ -5942,19 +5942,19 @@ const _sub_section = Object.freeze({
         },
       },
       "booleans": {
-        "unlisted": {
+        "listed": {
           "maps_to": {
-            "html": "unlisted",
+            "html": "listed",
           },
-          "default": false,
-          "notes": "Keep this sub-section out of the generated table of contents, regardless\nof toc-depth (#218). Display-only: it still renders; it is only absent\nfrom the contents listing. See notes/specs/toc-and-numbering.md. Authored\nas +unlisted; renders to the HTML attribute unlisted.\n",
+          "default": true,
+          "notes": "Whether this sub-section appears in the generated table of contents. On by\ndefault; -listed keeps it OUT of the contents, regardless of toc-depth\n(#218). Display-only: it still renders; it is only absent from the contents\nlisting. See notes/specs/toc-and-numbering.md. The default renders no\nattribute; -listed renders the transparent listed=\"false\" form.\n",
         },
-        "unnumbered": {
+        "numbered": {
           "maps_to": {
-            "html": "unnumbered",
+            "html": "numbered",
           },
-          "default": false,
-          "notes": "Skip this sub-section's number, regardless of number-depth (#218). Outside\nthe numbered sequence — no number, no counter advance, subtree unnumbered;\nthe next numbered sibling continues unbroken. See\nnotes/specs/toc-and-numbering.md. Authored as +unnumbered.\n",
+          "default": true,
+          "notes": "Whether this sub-section participates in heading numbering. On by default;\n-numbered puts it outside the numbered sequence, regardless of number-depth\n(#218) — no number, no counter advance, subtree unnumbered; the next\nnumbered sibling continues unbroken. See notes/specs/toc-and-numbering.md.\nThe default renders no attribute; -numbered renders numbered=\"false\".\n",
         },
       },
     },
@@ -6129,19 +6129,19 @@ const _sub_sub_section = Object.freeze({
         },
       },
       "booleans": {
-        "unlisted": {
+        "listed": {
           "maps_to": {
-            "html": "unlisted",
+            "html": "listed",
           },
-          "default": false,
-          "notes": "Keep this sub-sub-section out of the generated table of contents,\nregardless of toc-depth (#218). Display-only: it still renders; it is only\nabsent from the contents listing. See notes/specs/toc-and-numbering.md.\nAuthored as +unlisted; renders to the HTML attribute unlisted.\n",
+          "default": true,
+          "notes": "Whether this sub-sub-section appears in the generated table of contents. On\nby default; -listed keeps it OUT of the contents, regardless of toc-depth\n(#218). Display-only: it still renders; it is only absent from the contents\nlisting. See notes/specs/toc-and-numbering.md. The default renders no\nattribute; -listed renders the transparent listed=\"false\" form.\n",
         },
-        "unnumbered": {
+        "numbered": {
           "maps_to": {
-            "html": "unnumbered",
+            "html": "numbered",
           },
-          "default": false,
-          "notes": "Skip this sub-sub-section's number, regardless of number-depth (#218).\nOutside the numbered sequence — no number, no counter advance, subtree\nunnumbered; the next numbered sibling continues unbroken. See\nnotes/specs/toc-and-numbering.md. Authored as +unnumbered.\n",
+          "default": true,
+          "notes": "Whether this sub-sub-section participates in heading numbering. On by\ndefault; -numbered puts it outside the numbered sequence, regardless of\nnumber-depth (#218) — no number, no counter advance, subtree unnumbered;\nthe next numbered sibling continues unbroken. See\nnotes/specs/toc-and-numbering.md. The default renders no attribute;\n-numbered renders numbered=\"false\".\n",
         },
       },
     },

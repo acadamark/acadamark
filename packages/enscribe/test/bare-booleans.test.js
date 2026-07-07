@@ -1,7 +1,7 @@
 // Bare boolean authoring forms (#219).
 //
 // A BARE attribute name (no `=value`, no `+`/`-`) means boolean `true` — but only for a name that is
-// a KNOWN boolean: a vocab `booleans:` name on an element (`unlisted`, `unnumbered`), or a boolean
+// a KNOWN boolean: a vocab `booleans:` name on an element (`listed`, `numbered`, `open`), or a boolean
 // `<config>` kwarg (`toc`, `number-sections`). Bare is the canonical HTML / eHTML spelling, so it
 // renders byte-identically to the `+name` / `name=true` forms. A bare name that is NOT a known boolean
 // stays unrecognized (so a typo never becomes a phantom boolean; a bare valued kwarg is inert). It is a
@@ -33,29 +33,30 @@ export async function run() {
 
   // ── Gate: bare ≡ the +flag form — element booleans ────────────────────────────────────────────
   {
-    eq('<section unlisted | A>', '<section +unlisted | A>', '<section unlisted> ≡ <section +unlisted>');
+    // #230: listed / numbered default ON, so bare ≡ +form is a redundant explicit-on (both the
+    // default) — which still exercises the element-boolean promotion branch. A MEANINGFUL bare
+    // element boolean (default-off) is covered by the <details open> block below.
+    eq('<section listed | A>', '<section +listed | A>', '<section listed> ≡ <section +listed>');
     const N = META + '<config number-sections=true />\n\n';
-    eq(N + '<section unnumbered | A>\n\nx.\n\n<section | B>\n\ny.',
-       N + '<section +unnumbered | A>\n\nx.\n\n<section | B>\n\ny.',
-       '<section unnumbered> ≡ <section +unnumbered>');
+    eq(N + '<section numbered | A>\n\nx.\n\n<section | B>\n\ny.',
+       N + '<section +numbered | A>\n\nx.\n\n<section | B>\n\ny.',
+       '<section numbered> ≡ <section +numbered>');
     console.log('PASS: #219 — a bare element boolean ≡ its +flag form');
   }
 
-  // ── Back-compat: the existing forms still work, unchanged ─────────────────────────────────────
+  // ── Opt-out behavior: -listed keeps a section out of the listing ──────────────────────────────
   {
-    // For an ELEMENT boolean the working forms are `+flag` and (now) bare; `=true` is a KWARG form
-    // and was never an element-boolean spelling (it stays an unknown kwarg) — my change doesn't touch
-    // it. So `+unlisted` and bare `unlisted` keep a section out of the listing; both still work.
+    // #230: listed defaults ON; the opt-out is the -flag (a signed form, not bare). -listed keeps a
+    // section out of the contents listing; a default (listed) section stays in.
     const base = META + '<config toc=true toc-location=body />\n\n';
-    for (const form of ['+unlisted', 'unlisted']) {
-      const h = R(base + `<section ${form} | Secret>\n\nx.\n\n<section | Public>\n\ny.`);
-      const nav = (h.match(/<nav class="enscribe-contents"[\s\S]*?<\/nav>/) || [''])[0];
-      assert.ok(!nav.includes('Secret') && nav.includes('Public'), `the element '${form}' form keeps the section out of the listing`);
-    }
+    const h = R(base + `<section -listed | Secret>\n\nx.\n\n<section | Public>\n\ny.`);
+    const nav = (h.match(/<nav class="enscribe-contents"[\s\S]*?<\/nav>/) || [''])[0];
+    assert.ok(!nav.includes('Secret') && nav.includes('Public'),
+      '-listed keeps the section out of the listing; a default (listed) section stays in');
     // For a CONFIG boolean kwarg, `=true` IS a working form (kwargs) and keeps working alongside bare.
     eq(META + '<config toc=true />\n\n<section | A>\n\nx.', META + '<config toc />\n\n<section | A>\n\nx.',
       'the config =true form still works (and equals bare)');
-    console.log('PASS: #219 — the existing +flag / =true forms still work (back-compat)');
+    console.log('PASS: #230 — -listed opts out of the listing; the config +/= forms still work');
   }
 
   // ── Negative: a bare UNKNOWN name is not turned true (no phantom boolean) ──────────────────────
@@ -81,8 +82,8 @@ export async function run() {
 
   // ── static ≡ live: a parse-level promotion → both paths see the same booleans ─────────────────
   {
-    const src = META + '<config toc number-sections />\n\n<section unlisted | Colophon>\n\nx.\n\n' +
-      '<section unnumbered | Note>\n\ny.\n\n<section | Methods>\n\nz.';
+    const src = META + '<config toc number-sections />\n\n<section -listed | Colophon>\n\nx.\n\n' +
+      '<section -numbered | Note>\n\ny.\n\n<section | Methods>\n\nz.';
     assert.ok(staticRender(src).includes('enscribe-contents'), 'the bare-form document renders the listing');
     assert.strictEqual(staticRender(src), liveRender(src),
       'static ≡ live for the bare boolean forms (parse-level promotion in the shared gate)');

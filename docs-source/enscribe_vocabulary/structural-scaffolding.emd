@@ -330,8 +330,8 @@ in book-body, and the appendix in book-back based on book-part-type.*
 | `type` | kwarg | `chapter` `part` `appendix` `preface` `foreword` `introduction` `conclusion` `glossary` `dedication` `afterword` `colophon` `other` | The kind of book-part. |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
 | `note-position` | kwarg | `bottom` `margin` | Document-level note render mode (#33): |
-| `+unlisted` / `-unlisted` | flag | default off | Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g. |
-| `+unnumbered` / `-unnumbered` | flag | default off | Skip this book-part's number, regardless of number-depth (#218) — e.g. |
+| `+listed` / `-listed` | flag | default on | Whether this book-part appears in the generated table of contents. |
+| `+numbered` / `-numbered` | flag | default on | Whether this book-part participates in numbering. |
 
 </section>
 
@@ -493,8 +493,8 @@ Sub-section content.
 |---|---|---|---|
 | `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Optional classification of the section's role. |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` | Override the inherited numbering style for this section. |
-| `+unlisted` / `-unlisted` | flag | default off | Keep this section out of the generated table of contents, regardless of toc-depth (#218). |
-| `+unnumbered` / `-unnumbered` | flag | default off | Skip this section's number, regardless of number-depth (#218). |
+| `+listed` / `-listed` | flag | default on | Whether this section appears in the generated table of contents. |
+| `+numbered` / `-numbered` | flag | default on | Whether this section participates in heading numbering. |
 
 </section>
 
@@ -548,8 +548,8 @@ Sub-section content.
 |---|---|---|---|
 | `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` | Same values as &lt;section&gt;. |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
-| `+unlisted` / `-unlisted` | flag | default off | Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218). |
-| `+unnumbered` / `-unnumbered` | flag | default off | Skip this sub-section's number, regardless of number-depth (#218). |
+| `+listed` / `-listed` | flag | default on | Whether this sub-section appears in the generated table of contents. |
+| `+numbered` / `-numbered` | flag | default on | Whether this sub-section participates in heading numbering. |
 
 </section>
 
@@ -599,7 +599,7 @@ Sensitivity tests were performed.
 |---|---|---|---|
 | `sec-type` | kwarg | `intro` `methods` `results` `discussion` `conclusion` `supplementary` `materials` `references` `other` |  |
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
-| `+unlisted` / `-unlisted` | flag | default off | Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218). |
-| `+unnumbered` / `-unnumbered` | flag | default off | Skip this sub-sub-section's number, regardless of number-depth (#218). |
+| `+listed` / `-listed` | flag | default on | Whether this sub-sub-section appears in the generated table of contents. |
+| `+numbered` / `-numbered` | flag | default on | Whether this sub-sub-section participates in heading numbering. |
 
 </section>

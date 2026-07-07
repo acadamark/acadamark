@@ -1316,25 +1316,25 @@ number-sections=true></code>. Only a <i>known</i> boolean promotes; a bare typo 
         <p>A numbered sub-section (1.1).</p>
       </sub-section>
     </section>
-    <section unlisted><section-number>2</section-number>
+    <section listed="false"><section-number>2</section-number>
       <section-title><section-number>2</section-number>Colophon</section-title>
       <p>
-        <code>&#x3C;section unlisted></code> (bare) ≡ <code>&#x3C;section +unlisted></code> — kept out of the contents listing, but still
-        <b>numbered</b> (2) and rendered. (<code>unlisted</code> is listing-only; it does not affect numbering.)
+        <code>listed</code> defaults on, so its opt-out is the signed <code>-listed</code> — kept out of the contents listing, but
+        still <b>numbered</b> (2) and rendered. (<code>listed</code> is listing-only; it does not affect numbering.)
       </p>
     </section>
-    <section unnumbered id="sec:a-note-on-method">
+    <section numbered="false" id="sec:a-note-on-method">
       <section-title>A Note on Method</section-title>
       <p>
-        <code>&#x3C;section unnumbered></code> (bare) ≡ <code>&#x3C;section +unnumbered></code> — outside the numbered sequence: no number,
-        and the counter does not advance. (<code>unnumbered</code> is numbering-only; it is still <i>listed</i>.)
+        <code>numbered</code> defaults on, so its opt-out is <code>-numbered</code> — outside the numbered sequence: no number,
+        and the counter does not advance. (<code>numbered</code> is numbering-only; it is still <i>listed</i>.)
       </p>
     </section>
     <section id="sec:methods"><section-number>3</section-number>
       <section-title><section-number>3</section-number>Methods</section-title>
       <p>
-        A numbered section (3) — Colophon took 2 (unlisted is still numbered); the unnumbered note did not
-        advance the counter.
+        A numbered section (3) — Colophon took 2 (a -listed section is still numbered); the -numbered note
+        did not advance the counter.
       </p>
     </section>
   </article-body>

@@ -37,24 +37,27 @@ enscribe_attributes:
         (the per-note `placement` kwarg and `note-scope`) is a separate axis —
         see <note>.
   booleans:
-    unlisted:
-      maps_to: unlisted
-      default: false
+    listed:
+      maps_to: listed
+      default: true
       notes: |
-        Keep this book-part out of the generated table of contents, regardless of
-        toc-depth (#218) — e.g. a preface or an index chapter that should not
-        appear in the contents. Display-only: it still renders; it is only absent
-        from the contents listing. See notes/specs/toc-and-numbering.md. Authored
-        as +unlisted; renders to the HTML attribute unlisted.
-    unnumbered:
-      maps_to: unnumbered
-      default: false
+        Whether this book-part appears in the generated table of contents. On by
+        default; -listed keeps it OUT of the contents, regardless of toc-depth
+        (#218) — e.g. a preface or an index chapter that should not appear in the
+        contents. Display-only: it still renders; it is only absent from the
+        contents listing. See notes/specs/toc-and-numbering.md. The default renders
+        no attribute; -listed renders the transparent listed="false" form.
+    numbered:
+      maps_to: numbered
+      default: true
       notes: |
-        Skip this book-part's number, regardless of number-depth (#218) — e.g. an
-        unnumbered "Introduction" chapter. Outside the numbered sequence: no number,
-        no counter advance (the next numbered chapter continues unbroken), subtree
-        unnumbered. (Front-matter and non-appendix back-matter are already unnumbered
-        by region.) See notes/specs/toc-and-numbering.md. Authored as +unnumbered.
+        Whether this book-part participates in numbering. On by default; -numbered
+        puts it outside the numbered sequence, regardless of number-depth (#218) —
+        e.g. an unnumbered "Introduction" chapter: no number, no counter advance
+        (the next numbered chapter continues unbroken), subtree unnumbered.
+        (Front-matter and non-appendix back-matter are already unnumbered by
+        region.) See notes/specs/toc-and-numbering.md. The default renders no
+        attribute; -numbered renders numbered="false".
 content:
   shape:
     - element: meta

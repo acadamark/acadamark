@@ -77,6 +77,17 @@ The rule is binding, not advisory. Before specifying a new eHTML element:
 3. Adopt sensible attribute conventions from the mirrors. For example, JATS uses `<xref ref-type="bibr">` for citations and `<xref ref-type="fig">` for figure references; enscribe may use `<ref>` (for brevity) but could carry the same `ref-type` attribute, or use `data-ref-type`, depending on what the interpreter needs.
 4. Document any deliberate divergences in the spec for that element, with rationale.
 
+**Boolean attributes are named in the positive and record the deviation from their default.** A boolean
+attribute is named for its positive (on) sense — never its exception: `listed` / `numbered`, not
+`unlisted` / `unnumbered` — matching the shorthand boolean-naming rule ([`shorthand-syntax.md`](shorthand-syntax.md)),
+because an Enscribe boolean attribute and its `+name` / `-name` authoring form are the same axis under
+one name (what the author types is what the eHTML carries). The attribute appears only when the value
+**deviates from the element's declared default**: a default-off boolean marks its on-state by bare
+presence (HTML's own idiom — `<details open>`), and a default-on boolean marks its off-state in the
+transparent valued form (`<section listed="false">`). These are Enscribe's own attributes where the
+mirrors name no counterpart, so Enscribe defines the shape; where a mirror *does* name a boolean
+(HTML's `open`), defer to it (Rule 2).
+
 This rule means that as the eHTML vocabulary grows, it stays close to what the established academic-document models can express rather than drifting into a parallel naming universe — which keeps the exit ramps to those formats tractable. Concretely today, that exit ramp is the shipped `enscribeToJats` export, the one built exporter: staying mirror-aligned keeps it a mostly-mechanical transform rather than a deep restructuring. That JATS is the exporter that exists is a fact about the machinery, not a privileging of JATS in the vocabulary; the other mirrors are prospective export targets on the same footing.
 
 The mirrors also include elements enscribe may not need (JATS's `<related-article>`, `<funding-source>`, `<contrib-group>` with full nesting; TEI's deep editorial apparatus; and so on). Don't add them speculatively. Add elements when authors actually need them.

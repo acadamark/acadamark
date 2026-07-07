@@ -94,8 +94,9 @@ export function mapAttributes(node, vocab, target, emit) {
   // booleans (handled_by: 'handler' — e.g. +numbered on figures/tables, +link
   // on refs) flow through their element's handler and are skipped here so they
   // are not double-mapped. A boolean with a target maps_to emits its attribute
-  // when true; a false boolean is omitted (HTML boolean-attribute semantics)
-  // unless a false mapping is declared (not yet a supported vocab shape).
+  // only when the value DEVIATES from the attribute's declared default (#230):
+  // a deviating true → the bare presence form; a deviating false → the
+  // transparent `name="false"` form. See the loop below for the polarity detail.
   //
   // #270: a boolean attribute may be declared either under enscribe_attributes.
   // booleans (the common shape) OR as a boolean-VALUED kwarg — `values:
@@ -115,10 +116,19 @@ export function mapAttributes(node, vocab, target, emit) {
     if (!def || def.handled_by === 'handler') continue;
     const name = def.maps_to?.[target];
     if (!name) continue;
-    if (value === true) {
-      const r = emit('boolean', name, true);
-      if (r) results.push(r);
-    }
+    // #230: an eHTML boolean attribute records its value only when it DEVIATES from
+    // the attribute's declared default. A deviating `true` emits the bare presence
+    // form (`name`); a deviating `false` emits the transparent `name="false"` form —
+    // as the STRING 'false' (hast omits a boolean-`false` property from serialization,
+    // so the string is what serializes to `name="false"` and is readable downstream).
+    // This is byte-identical for every default-false boolean (open / corresponding:
+    // +open → bare `open`, -open → nothing — and `open="false"` would wrongly read as
+    // open), and gives the transparent listed="false" / numbered="false" for the
+    // default-true section booleans on opt-out (-listed / -numbered).
+    const dflt = def.default === true;
+    if (value === dflt) continue;
+    const r = emit('boolean', name, value === true ? true : 'false');
+    if (r) results.push(r);
   }
 
   return results;
