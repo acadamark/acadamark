@@ -50,6 +50,8 @@ const DEFAULT_PREFIXES = {
   prop: 'proposition',   // Phase 3 slice 3a (2026-05-28)
   def:  'definition',
   ex:   'example',
+  rem:  'remark',        // #374: a numbered remark's xref shows "remark N", not a bare number
+  prf:  'proof',         // #374: a numbered proof's xref shows "proof N", not a bare number
   box:  'box',           // #31: numbered <aside> own counter (in-text "box 1"; caption label "Box 1.")
   mp:   'minipage',      // #115: numbered <minipage> own counter (in-text "minipage 1"; caption label "Minipage 1.")
   // #57 Layer 2: book-part headings (registered + numbered when section

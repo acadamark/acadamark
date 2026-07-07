@@ -61,6 +61,26 @@ export function run() {
     console.log('PASS: ref-resolution: resolved numbered ref → __ref-marker with "equation N"');
   }
 
+  // --- #374: a numbered remark / proof ref shows the labelled word, not a bare number ---
+  {
+    const file = { data: {} };
+    const registry = ensureRegistry(file);
+    // remark/proof share the theorem-family counter; the abbreviated id prefixes are rem:/prf:.
+    registry.assign('remark', 'rem:obs', { numbered: true, data: {} });
+    registry.assign('proof', 'prf:main', { numbered: true, data: {} });
+    registry.numberRegistry();
+
+    const tree = makeArticleTree(para(makeRef('rem:obs')), para(makeRef('prf:main')));
+    enscribeRefResolution()(tree, file);
+
+    const [remMarker, prfMarker] = getBodyChildren(tree).map((p) => p.children[0]);
+    // The bug was a BARE NUMBER (no word); the fix is the labelled word from the prefix dict. Assert the
+    // word + a number (not a specific counter value — the theorem-family numbering is numbering.js's job).
+    assert.match(remMarker.kwargs.text, /^remark \d+$/, '#374: <ref @rem:…> shows "remark N", not a bare number');
+    assert.match(prfMarker.kwargs.text, /^proof \d+$/, '#374: <ref @prf:…> shows "proof N", not a bare number');
+    console.log('PASS: #374 ref-resolution: numbered remark/proof refs show "remark N" / "proof N"');
+  }
+
   // --- unnumbered labeled ref produces __ref-marker with label-tail text ---
   {
     const file = { data: {} };
