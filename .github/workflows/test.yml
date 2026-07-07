@@ -1,6 +1,8 @@
 # CI — run the full test suite on every push and pull request (#49).
 #
-# One job on a current Node LTS (20; the packages declare engines ">=18").
+# One job on a current Node LTS (22; the packages declare engines ">=18"). Node 22 ships a global
+# `navigator`, so the Node-20 abcjs `navigator` shim (#371) is a harmless no-op here. (Was Node 20,
+# which GitHub is retiring on runners — #382.)
 # It installs from the committed root lockfile, runs every workspace's `test`
 # script (each package's own `pretest` compiles the Peggy grammar / runs the
 # data-freshness guard first), then the enscribe `verify` script — which adds
@@ -30,7 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
