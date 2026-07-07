@@ -1762,16 +1762,16 @@ Content.
                 <td>Document-level note render mode (#33):</td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g.</td>
+                <td>default on</td>
+                <td>Whether this book-part appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this book-part’s number, regardless of number-depth (#218) — e.g.</td>
+                <td>default on</td>
+                <td>Whether this book-part participates in numbering.</td>
               </tr>
             </tbody>
           </table>
@@ -1965,16 +1965,16 @@ in book-body, and the appendix in book-back based on book-part-type.</i></p></se
                 <td>Override the inherited numbering style for this section.</td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this section out of the generated table of contents, regardless of toc-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this section appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this section’s number, regardless of number-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this section participates in heading numbering.</td>
               </tr>
             </tbody>
           </table>
@@ -2061,16 +2061,16 @@ Sub-section content.
                 <td></td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-section appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this sub-section’s number, regardless of number-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-section participates in heading numbering.</td>
               </tr>
             </tbody>
           </table>
@@ -2148,16 +2148,16 @@ Sub-section content.
                 <td></td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-sub-section appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this sub-sub-section’s number, regardless of number-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-sub-section participates in heading numbering.</td>
               </tr>
             </tbody>
           </table>
@@ -2204,7 +2204,7 @@ Sensitivity tests were performed.
           </figure></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#eh-article">&#x3C;article></a><ul><li><a href="#sec:specification-93">Specification</a></li><li><a href="#sec:examples-76">Examples</a></li></ul></li><li><a href="#eh-article-back">&#x3C;article-back></a><ul><li><a href="#sec:specification-94">Specification</a></li></ul></li><li><a href="#eh-article-body">&#x3C;article-body></a><ul><li><a href="#sec:specification-95">Specification</a></li></ul></li><li><a href="#eh-article-front">&#x3C;article-front></a><ul><li><a href="#sec:specification-96">Specification</a></li></ul></li><li><a href="#eh-book">&#x3C;book></a><ul><li><a href="#sec:specification-97">Specification</a></li><li><a href="#sec:examples-77">Examples</a></li></ul></li><li><a href="#eh-book-back">&#x3C;book-back></a><ul><li><a href="#sec:specification-98">Specification</a></li></ul></li><li><a href="#eh-book-body">&#x3C;book-body></a><ul><li><a href="#sec:specification-99">Specification</a></li></ul></li><li><a href="#eh-book-front">&#x3C;book-front></a><ul><li><a href="#sec:specification-100">Specification</a></li></ul></li><li><a href="#eh-book-part">&#x3C;book-part></a><ul><li><a href="#sec:specification-101">Specification</a></li><li><a href="#sec:examples-78">Examples</a></li></ul></li><li><a href="#eh-hr">&#x3C;hr></a><ul><li><a href="#sec:specification-102">Specification</a></li><li><a href="#sec:examples-79">Examples</a></li></ul></li><li><a href="#eh-item">&#x3C;item></a><ul><li><a href="#sec:specification-103">Specification</a></li></ul></li><li><a href="#eh-nav">&#x3C;nav></a><ul><li><a href="#sec:specification-104">Specification</a></li></ul></li><li><a href="#eh-nav-group">&#x3C;nav-group></a><ul><li><a href="#sec:specification-105">Specification</a></li></ul></li><li><a href="#eh-section">&#x3C;section></a><ul><li><a href="#sec:specification-106">Specification</a></li><li><a href="#sec:examples-80">Examples</a></li></ul></li><li><a href="#eh-sub-section">&#x3C;sub-section></a><ul><li><a href="#sec:specification-107">Specification</a></li><li><a href="#sec:examples-81">Examples</a></li></ul></li><li><a href="#eh-sub-sub-section">&#x3C;sub-sub-section></a><ul><li><a href="#sec:specification-108">Specification</a></li><li><a href="#sec:examples-82">Examples</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a></nav><nav class="enscribe-chapter-arrows" aria-label="Chapter navigation (previous / next)"><a class="enscribe-chapter-arrow enscribe-chapter-arrow--prev" href="declarations-metadata.html" rel="prev" aria-label="Previous chapter: Declarations &#x26; metadata" title="Previous chapter: Declarations &#x26; metadata"><span class="enscribe-chapter-arrow-glyph" aria-hidden="true">‹</span><span class="enscribe-chapter-arrow-label">Declarations &#x26; metadata</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#eh-article">&#x3C;article></a><ul><li><a href="#sec:specification-93">Specification</a></li><li><a href="#sec:examples-76">Examples</a></li></ul></li><li><a href="#eh-article-back">&#x3C;article-back></a><ul><li><a href="#sec:specification-94">Specification</a></li></ul></li><li><a href="#eh-article-body">&#x3C;article-body></a><ul><li><a href="#sec:specification-95">Specification</a></li></ul></li><li><a href="#eh-article-front">&#x3C;article-front></a><ul><li><a href="#sec:specification-96">Specification</a></li></ul></li><li><a href="#eh-book">&#x3C;book></a><ul><li><a href="#sec:specification-97">Specification</a></li><li><a href="#sec:examples-77">Examples</a></li></ul></li><li><a href="#eh-book-back">&#x3C;book-back></a><ul><li><a href="#sec:specification-98">Specification</a></li></ul></li><li><a href="#eh-book-body">&#x3C;book-body></a><ul><li><a href="#sec:specification-99">Specification</a></li></ul></li><li><a href="#eh-book-front">&#x3C;book-front></a><ul><li><a href="#sec:specification-100">Specification</a></li></ul></li><li><a href="#eh-book-part">&#x3C;book-part></a><ul><li><a href="#sec:specification-101">Specification</a></li><li><a href="#sec:examples-78">Examples</a></li></ul></li><li><a href="#eh-hr">&#x3C;hr></a><ul><li><a href="#sec:specification-102">Specification</a></li><li><a href="#sec:examples-79">Examples</a></li></ul></li><li><a href="#eh-item">&#x3C;item></a><ul><li><a href="#sec:specification-103">Specification</a></li></ul></li><li><a href="#eh-nav">&#x3C;nav></a><ul><li><a href="#sec:specification-104">Specification</a></li></ul></li><li><a href="#eh-nav-group">&#x3C;nav-group></a><ul><li><a href="#sec:specification-105">Specification</a></li></ul></li><li><a href="#eh-section">&#x3C;section></a><ul><li><a href="#sec:specification-106">Specification</a></li><li><a href="#sec:examples-80">Examples</a></li></ul></li><li><a href="#eh-sub-section">&#x3C;sub-section></a><ul><li><a href="#sec:specification-107">Specification</a></li><li><a href="#sec:examples-81">Examples</a></li></ul></li><li><a href="#eh-sub-sub-section">&#x3C;sub-sub-section></a><ul><li><a href="#sec:specification-108">Specification</a></li><li><a href="#sec:examples-82">Examples</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

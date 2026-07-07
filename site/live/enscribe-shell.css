@@ -25,6 +25,12 @@
 .enscribe-edit-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--enscribe-space-2, 0.5rem) var(--enscribe-space-3, 0.75rem); margin-bottom: -1px; font: inherit; font-family: var(--enscribe-font-sans); font-weight: 600; font-size: var(--enscribe-text-sm, 0.875rem); color: var(--enscribe-text-secondary, #555); cursor: pointer; }
 .enscribe-edit-tab--active { color: var(--enscribe-text-primary, #1a1a1a); border-bottom-color: var(--enscribe-link, #0052cc); }
 .enscribe-edit-status { margin-left: auto; font-size: var(--enscribe-text-xs, 0.75rem); font-style: italic; color: var(--enscribe-text-secondary, #555); }
+/* #351 — the single-file Save button. `margin-left:auto` right-aligns the Save + status group; when a
+   Save button precedes the status, the status sits just after it (a normal gap, not its own auto-push). */
+.enscribe-edit-save { appearance: none; margin-left: auto; background: var(--enscribe-link, #0052cc); color: #fff; border: 0; border-radius: var(--enscribe-radius, 4px); padding: var(--enscribe-space-1, 0.25rem) var(--enscribe-space-3, 0.75rem); font: inherit; font-family: var(--enscribe-font-sans); font-weight: 600; font-size: var(--enscribe-text-sm, 0.875rem); cursor: pointer; }
+.enscribe-edit-save:hover { filter: brightness(0.94); }
+.enscribe-edit-save:disabled { opacity: 0.6; cursor: default; }
+.enscribe-edit-save + .enscribe-edit-status { margin-left: var(--enscribe-space-2, 0.5rem); }
 /* The SOURCE pane is width-matched to the PREVIEW pane's reading column (the preview carries
    `enscribe-body content`, so its render sits in the reading column). Without this the editor was
    full-width and toggling Write↔Preview jumped the text column; now both panes are the same width so

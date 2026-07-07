@@ -45,7 +45,7 @@ Every other document system ships a compiler you run at a command line or inside
 
 - *Markdown-like shorthand* for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.
 
-- *Tag shorthand* for anything that needs attributes, identifiers, or academic semantics. The form is `<tag #id .class attr=value | content>` — attributes first, then a pipe, then content — read as "tag with these attributes containing this content." Tags don't require explicit closing — like LaTeX's `\section{}`, a new peer-level tag implicitly ends the previous one.
+- *Tag shorthand* for anything that needs attributes, identifiers, or academic semantics. The form is `<tag #id .class attr=value +flag | content>` — attributes first, then a pipe, then content — read as "tag with these attributes containing this content." A boolean option is a **flag**, always named for its positive (on) sense: `+name` turns it on, `-name` turns it off (`+numbered`/`-numbered`, `+listed`/`-listed`) — there is never a negative spelling to guess, and each element sets its own default independent of the name. Tags don't require explicit closing — like LaTeX's `\section{}`, a new peer-level tag implicitly ends the previous one.
 
 Both registers compile to the same eHTML.
 

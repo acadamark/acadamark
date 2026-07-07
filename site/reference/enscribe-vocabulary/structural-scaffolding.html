@@ -1413,7 +1413,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
 <header class="enscribe-site-header"><a class="enscribe-site-brand" href="../../">Enscribe</a><nav class="enscribe-site-nav"><a class="enscribe-site-nav-link" href="../../">Home</a><a class="enscribe-site-nav-link" href="../../design/">Design</a><a class="enscribe-site-nav-link" href="../../authoring-guide/">Authoring Guide</a><details class="enscribe-site-dropdown"><summary class="enscribe-site-dropdown-toggle">Reference</summary><div class="enscribe-site-dropdown-panel"><a class="enscribe-site-dropdown-item" href="../../reference/enscribe-vocabulary/">Enscribe Shorthand Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/ehtml/">eHTML Vocabulary</a><a class="enscribe-site-dropdown-item" href="../../reference/jats/">JATS Import and Export</a></div></details><a class="enscribe-site-nav-link" href="../../try-it/">Try It!</a></nav></header>
 <div class="content">
 <div class="enscribe-playground-cta"><a href="../../live/?page=enscribe-vocabulary&amp;chapter=structural-scaffolding">Open in playground ↗</a></div>
-<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Vocabulary</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html" class="enscribe-toc-active" aria-current="location">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:structural-scaffolding" book-part-type="chapter">
+<div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>The Enscribe Vocabulary</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--body"><a href="argument-conventions.html">Argument conventions</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="primary-prose.html">Primary prose</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="emphasis-marking.html">Emphasis &#x26; marking</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="aside.html">Aside</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="quotation-sourcing.html">Quotation &#x26; sourcing</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="exhibit.html">Exhibit</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="formal-statements.html">Formal statements</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="notation.html">Notation</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="stores.html">Stores</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="declarations-metadata.html">Declarations &#x26; metadata</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="structural-scaffolding.html" class="enscribe-toc-active" aria-current="location">Structural scaffolding</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="showcase.html">Showcase</a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:structural-scaffolding" book-part-type="chapter">
       <meta>
         <book-part-title>Structural scaffolding</book-part-title>
       </meta>
@@ -1831,16 +1831,16 @@ in book-body, and the appendix in book-back based on book-part-type.</i></p>
                 <td>Document-level note render mode (#33):</td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this book-part out of the generated table of contents, regardless of toc-depth (#218) — e.g.</td>
+                <td>default on</td>
+                <td>Whether this book-part appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this book-part’s number, regardless of number-depth (#218) — e.g.</td>
+                <td>default on</td>
+                <td>Whether this book-part participates in numbering.</td>
               </tr>
             </tbody>
           </table></section>
@@ -2058,16 +2058,16 @@ Sub-section content.
                 <td>Override the inherited numbering style for this section.</td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this section out of the generated table of contents, regardless of toc-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this section appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this section’s number, regardless of number-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this section participates in heading numbering.</td>
               </tr>
             </tbody>
           </table></section>
@@ -2148,16 +2148,16 @@ Sub-section content.
                 <td></td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this sub-section out of the generated table of contents, regardless of toc-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-section appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this sub-section’s number, regardless of number-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-section participates in heading numbering.</td>
               </tr>
             </tbody>
           </table></section>
@@ -2235,22 +2235,22 @@ Sensitivity tests were performed.
                 <td></td>
               </tr>
               <tr>
-                <td><code>+unlisted</code> / <code>-unlisted</code></td>
+                <td><code>+listed</code> / <code>-listed</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Keep this sub-sub-section out of the generated table of contents, regardless of toc-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-sub-section appears in the generated table of contents.</td>
               </tr>
               <tr>
-                <td><code>+unnumbered</code> / <code>-unnumbered</code></td>
+                <td><code>+numbered</code> / <code>-numbered</code></td>
                 <td>flag</td>
-                <td>default off</td>
-                <td>Skip this sub-sub-section’s number, regardless of number-depth (#218).</td>
+                <td>default on</td>
+                <td>Whether this sub-sub-section participates in heading numbering.</td>
               </tr>
             </tbody>
           </table></section>
         </sub-section>
       </section>
-    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a><a class="enscribe-chapter-next" href="showcase.html" rel="next"><toc-title>Showcase</toc-title><chapter-arrow>→</chapter-arrow></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#sh-article">&#x3C;article></a><ul><li><a href="#sec:general-usage-93">General Usage</a></li><li><a href="#sec:arguments-46">Arguments</a></li></ul></li><li><a href="#sh-article-back">&#x3C;article-back></a><ul><li><a href="#sec:general-usage-94">General Usage</a></li></ul></li><li><a href="#sh-article-body">&#x3C;article-body></a><ul><li><a href="#sec:general-usage-95">General Usage</a></li></ul></li><li><a href="#sh-article-front">&#x3C;article-front></a><ul><li><a href="#sec:general-usage-96">General Usage</a></li></ul></li><li><a href="#sh-book">&#x3C;book></a><ul><li><a href="#sec:general-usage-97">General Usage</a></li><li><a href="#sec:arguments-47">Arguments</a></li></ul></li><li><a href="#sh-book-back">&#x3C;book-back></a><ul><li><a href="#sec:general-usage-98">General Usage</a></li></ul></li><li><a href="#sh-book-body">&#x3C;book-body></a><ul><li><a href="#sec:general-usage-99">General Usage</a></li></ul></li><li><a href="#sh-book-front">&#x3C;book-front></a><ul><li><a href="#sec:general-usage-100">General Usage</a></li></ul></li><li><a href="#sh-book-part">&#x3C;book-part></a><ul><li><a href="#sec:general-usage-101">General Usage</a></li><li><a href="#sec:arguments-48">Arguments</a></li></ul></li><li><a href="#sh-hr">&#x3C;hr></a><ul><li><a href="#sec:general-usage-102">General Usage</a></li><li><a href="#sec:arguments-49">Arguments</a></li></ul></li><li><a href="#sh-item">&#x3C;item></a><ul><li><a href="#sec:general-usage-103">General Usage</a></li><li><a href="#sec:arguments-50">Arguments</a></li></ul></li><li><a href="#sh-nav">&#x3C;nav></a><ul><li><a href="#sec:general-usage-104">General Usage</a></li></ul></li><li><a href="#sh-nav-group">&#x3C;nav-group></a><ul><li><a href="#sec:general-usage-105">General Usage</a></li><li><a href="#sec:arguments-51">Arguments</a></li></ul></li><li><a href="#sh-section">&#x3C;section></a><ul><li><a href="#sec:general-usage-106">General Usage</a></li><li><a href="#sec:arguments-52">Arguments</a></li></ul></li><li><a href="#sh-sub-section">&#x3C;sub-section></a><ul><li><a href="#sec:general-usage-107">General Usage</a></li><li><a href="#sec:arguments-53">Arguments</a></li></ul></li><li><a href="#sh-sub-sub-section">&#x3C;sub-sub-section></a><ul><li><a href="#sec:general-usage-108">General Usage</a></li><li><a href="#sec:arguments-54">Arguments</a></li></ul></li></ul></div></details></nav></div>
+    </book-part><nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="declarations-metadata.html" rel="prev"><chapter-arrow>←</chapter-arrow><toc-title>Declarations &#x26; metadata</toc-title></a><a class="enscribe-chapter-next" href="showcase.html" rel="next"><toc-title>Showcase</toc-title><chapter-arrow>→</chapter-arrow></a></nav><nav class="enscribe-chapter-arrows" aria-label="Chapter navigation (previous / next)"><a class="enscribe-chapter-arrow enscribe-chapter-arrow--prev" href="declarations-metadata.html" rel="prev" aria-label="Previous chapter: Declarations &#x26; metadata" title="Previous chapter: Declarations &#x26; metadata"><span class="enscribe-chapter-arrow-glyph" aria-hidden="true">‹</span><span class="enscribe-chapter-arrow-label">Declarations &#x26; metadata</span></a><a class="enscribe-chapter-arrow enscribe-chapter-arrow--next" href="showcase.html" rel="next" aria-label="Next chapter: Showcase" title="Next chapter: Showcase"><span class="enscribe-chapter-arrow-label">Showcase</span><span class="enscribe-chapter-arrow-glyph" aria-hidden="true">›</span></a></nav></main><nav class="enscribe-onthispage" aria-label="On this page"><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">On this page</summary><div class="enscribe-onthispage-chapter" data-chapter="sec:structural-scaffolding"><ul><li><a href="#sh-article">&#x3C;article></a><ul><li><a href="#sec:general-usage-93">General Usage</a></li><li><a href="#sec:arguments-46">Arguments</a></li></ul></li><li><a href="#sh-article-back">&#x3C;article-back></a><ul><li><a href="#sec:general-usage-94">General Usage</a></li></ul></li><li><a href="#sh-article-body">&#x3C;article-body></a><ul><li><a href="#sec:general-usage-95">General Usage</a></li></ul></li><li><a href="#sh-article-front">&#x3C;article-front></a><ul><li><a href="#sec:general-usage-96">General Usage</a></li></ul></li><li><a href="#sh-book">&#x3C;book></a><ul><li><a href="#sec:general-usage-97">General Usage</a></li><li><a href="#sec:arguments-47">Arguments</a></li></ul></li><li><a href="#sh-book-back">&#x3C;book-back></a><ul><li><a href="#sec:general-usage-98">General Usage</a></li></ul></li><li><a href="#sh-book-body">&#x3C;book-body></a><ul><li><a href="#sec:general-usage-99">General Usage</a></li></ul></li><li><a href="#sh-book-front">&#x3C;book-front></a><ul><li><a href="#sec:general-usage-100">General Usage</a></li></ul></li><li><a href="#sh-book-part">&#x3C;book-part></a><ul><li><a href="#sec:general-usage-101">General Usage</a></li><li><a href="#sec:arguments-48">Arguments</a></li></ul></li><li><a href="#sh-hr">&#x3C;hr></a><ul><li><a href="#sec:general-usage-102">General Usage</a></li><li><a href="#sec:arguments-49">Arguments</a></li></ul></li><li><a href="#sh-item">&#x3C;item></a><ul><li><a href="#sec:general-usage-103">General Usage</a></li><li><a href="#sec:arguments-50">Arguments</a></li></ul></li><li><a href="#sh-nav">&#x3C;nav></a><ul><li><a href="#sec:general-usage-104">General Usage</a></li></ul></li><li><a href="#sh-nav-group">&#x3C;nav-group></a><ul><li><a href="#sec:general-usage-105">General Usage</a></li><li><a href="#sec:arguments-51">Arguments</a></li></ul></li><li><a href="#sh-section">&#x3C;section></a><ul><li><a href="#sec:general-usage-106">General Usage</a></li><li><a href="#sec:arguments-52">Arguments</a></li></ul></li><li><a href="#sh-sub-section">&#x3C;sub-section></a><ul><li><a href="#sec:general-usage-107">General Usage</a></li><li><a href="#sec:arguments-53">Arguments</a></li></ul></li><li><a href="#sh-sub-sub-section">&#x3C;sub-sub-section></a><ul><li><a href="#sec:general-usage-108">General Usage</a></li><li><a href="#sec:arguments-54">Arguments</a></li></ul></li></ul></div></details></nav></div>
 </div>
 </div>
 <script>(function () {

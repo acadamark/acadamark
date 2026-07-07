@@ -1608,7 +1608,7 @@ body:has(.enscribe-site) { max-width: none; margin: 0; padding: 0; }
               <p><i>Markdown-like shorthand</i> for casual prose. Standard markdown syntax works for the things markdown does well — headings, emphasis, lists, links, fenced code.</p>
             </li>
             <li>
-              <p><i>Tag shorthand</i> for anything that needs attributes, identifiers, or academic semantics. The form is <code>&#x3C;tag #id .class attr=value | content></code> — attributes first, then a pipe, then content — read as “tag with these attributes containing this content.” Tags don’t require explicit closing — like LaTeX’s <code>\section{}</code>, a new peer-level tag implicitly ends the previous one.</p>
+              <p><i>Tag shorthand</i> for anything that needs attributes, identifiers, or academic semantics. The form is <code>&#x3C;tag #id .class attr=value +flag | content></code> — attributes first, then a pipe, then content — read as “tag with these attributes containing this content.” A boolean option is a <b>flag</b>, always named for its positive (on) sense: <code>+name</code> turns it on, <code>-name</code> turns it off (<code>+numbered</code>/<code>-numbered</code>, <code>+listed</code>/<code>-listed</code>) — there is never a negative spelling to guess, and each element sets its own default independent of the name. Tags don’t require explicit closing — like LaTeX’s <code>\section{}</code>, a new peer-level tag implicitly ends the previous one.</p>
             </li>
           </ul>
           <p>Both registers compile to the same eHTML.</p>

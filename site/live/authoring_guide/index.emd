@@ -8,6 +8,7 @@
 
 <config number-tables=false />
 
+<chapter src="argument-conventions.emd" | Argument conventions>
 <chapter src="primary-prose.emd" | Primary prose>
 <chapter src="emphasis-and-marking.emd" | Emphasis & marking>
 <chapter src="aside.emd" | Aside>

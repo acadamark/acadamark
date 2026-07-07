@@ -218,7 +218,7 @@ Make sure to read this carefully.
 </minipage>
 
 *Numbered by default (#272). Shares the figure counter with
-&lt;fig&gt;/&lt;svg&gt;/&lt;mermaid&gt;/&lt;abc&gt;; use -numbered for an unnumbered frame.*
+&lt;fig&gt;/&lt;svg&gt;/&lt;mermaid&gt;/&lt;abc&gt;; use -numbered for a frame that is not numbered.*
 
 <sub-section | Arguments>
 
