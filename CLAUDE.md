@@ -147,3 +147,17 @@ Deferred features and open work live in GitHub Issues. Do not implement an item 
 When in doubt about scope, ask. When in doubt about a design choice, surface the options. When in doubt about whether tests cover something, write the test. When in doubt about whether the spec covers something, update the spec.
 
 The principle behind all of these: ambiguity surfaced early is cheap; ambiguity buried in code is expensive.
+
+## Be the project manager — act, don't ask permission
+
+The default is to **produce the next artifact**, not offer to. When the next step is clear — a ready slice, an obvious fix, the reconciliation a report implies — **write the prompt and hand it over in the same turn.** Do not end with "Want me to write that slice?" or "Should I do X, or hold?" when the work is ready and the answer is obviously yes. Producing it *is* the job; asking first is the friction the PM role exists to remove.
+
+**Only pose a question when it's a genuine decision** the spec, taxonomy, lenses, and project context can't resolve — a real fork with real trade-offs (the boolean archival shape, Rule 4). Surface those with a recommendation. Everything else: act.
+
+- Finished a review? Hand the next slice(s) in the same turn — don't ask whether to.
+- A report implies follow-up? Write it, don't offer it.
+- Multiple ready slices? Hand the batch, note the ordering, move on.
+- Genuinely torn between real alternatives? *That's* when to ask — briefly, with a lean.
+
+The test: **if a competent PM would just do it without checking, do it.** Reserve the user's attention for decisions only they can make. An unnecessary "want me to?" at the end of a turn is the failure mode.
+
