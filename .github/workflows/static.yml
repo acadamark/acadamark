@@ -1,15 +1,22 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Deploy the docs site to GitHub Pages — BUILT in CI from source.
+#
+# Adapted from GitHub's "Static HTML" template. The site (`site/`) is no longer committed: it is
+# gitignored and BUILT here the same way as locally (`npm run build:site-all`), so source
+# (docs-source/ + the emitters) is the single truth. This ends the site/ merge-churn that blocked
+# merges during development (see notes/decisions.md). Only the BUILT `site/` is uploaded, not the repo.
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
+  # Manual trigger only — Ariel controls when the public site updates while main is still active.
+  # (Run it from the Actions tab → "Deploy static content to Pages" → "Run workflow".)
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+  # To auto-deploy on every push to main later, uncomment the two lines below:
+  # push:
+  #   branches: [main]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages.
+# (pages: write + id-token: write are REQUIRED by actions/deploy-pages, or the deploy step fails.)
 permissions:
   contents: read
   pages: write
@@ -22,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  # Single deploy job: build the site from source, then upload + deploy the built output.
   deploy:
     environment:
       name: github-pages
@@ -31,13 +38,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the docs site (static + live)
+        run: npm run build:site-all
+      - name: Add .nojekyll and CNAME to the built site
+        # .nojekyll stops Pages Jekyll-processing the built tree (which has underscore-prefixed paths a
+        # Jekyll build would drop). CNAME prepares the custom domain — it takes effect only once DNS for
+        # enscribe.org points at Pages; until then the deploy serves on the default *.github.io URL.
+        run: |
+          touch site/.nojekyll
+          echo 'enscribe.org' > site/CNAME
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Upload the BUILT site, not the repo root.
+          path: 'site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

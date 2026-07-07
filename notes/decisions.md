@@ -285,10 +285,15 @@ it permits a `node:` import **only** in those tsup-aliased `interpreter/assets/`
 the live path. (Two narrow live lags remain — `<a {slug}>` link resolution and book-page edit mode — see
 `notes/specs/website.md` §"Relationships and the live deviation".)
 
-**Build is committed during development, built in CI once served.** While the docs site is under active
-development, the built output is rebuilt and committed on each emitter change (so the tree never drifts
-stale). Once it is served via GitHub Pages, the committed build is dropped and `.gitignore`d, and CI
-rebuilds it on push — the standard pattern. *(Process as much as design; may instead belong in
+**Build is CI-built and deployed; no longer committed. (Transition done.)** During active development
+the built `site/` was rebuilt and committed on each emitter change, to keep the served tree from
+drifting stale. That phase is over: `site/` is now **`.gitignore`d and no longer tracked**, and CI
+builds it from source and deploys it to GitHub Pages the same way as a local `npm run build:site-all`
+(`.github/workflows/static.yml`) — so source (docs-source/ + the emitters) is the single truth and the
+tree can never drift again. The deploy is a **manual trigger** (`workflow_dispatch`) for now, so the
+public site updates only when Ariel runs it while main is still active; flipping to auto-deploy on push
+to main is two uncommented lines away. This ended the recurring `site/` merge-churn that had blocked
+merges three times during development. *(Process as much as design; may instead belong in
 `notes/coding-conventions.md`.)*
 
 
