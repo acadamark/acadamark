@@ -97,8 +97,8 @@ content:
     The structured-child content above is one of two equivalent authoring
     forms for <meta>. The other is the kwarg form: <meta title="..."
     author="..." doi="...">. The normalize-to-canonical gate lifts the
-    kwarg form to the canonical child-tag form per the META_KWARGS
-    allowlist (title / subtitle / author / date / doi / license / lang /
+    kwarg form to the canonical child-tag form per this element's lifted
+    set (title / subtitle / author / date / doi / license / lang /
     version / keywords). Unknown kwargs are dropped with a diagnostic;
     <config>-shaped kwargs (e.g. citation-style) on <meta> get a
     "did you mean <config>?" misuse hint.

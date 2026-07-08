@@ -130,7 +130,6 @@ shorthand_examples:
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeLibraryLoad
-    location: packages/enscribe/src/interpreter/plugins/library-load.js
     runs_before: enscribeCiteResolution
     purpose: |
       The actual library processing happens at PLUGIN time, not at handler

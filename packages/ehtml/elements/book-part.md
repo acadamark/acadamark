@@ -239,7 +239,7 @@ The `enscribeBookStructuring` plugin places book-parts automatically based on th
 | colophon | book-back |
 | other | book-body (default) |
 
-This placement is machine-readable: the `type.regions` map in this element's frontmatter lists the front- and back-matter types (body is the default — the complement), and `book-regions.js` derives its routing sets from it, so the table and the structural plugin cannot disagree.
+This placement is machine-readable: the `type.regions` map in this element's frontmatter lists the front- and back-matter types (body is the default — the complement), and the engine derives its book-region routing sets from it, so the table and the structural plugin cannot disagree.
 
 Authors who want a book-part placed differently can use `<book-front>`, `<book-body>`, or `<book-back>` wrappers explicitly.
 

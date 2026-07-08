@@ -20,27 +20,26 @@ enscribe_attributes:
     notes: |
       <config> accepts an allowlisted set of kwargs as its flat authoring
       form (the settled register for flat config; #134). The current
-      allowlist (interpreter-side, see
-      packages/enscribe/src/interpreter/lib/apparatus-allowlists.js):
+      allowlist (enforced interpreter-side):
         - citation-style          (live; consumed by cite-resolution)
         - number-equations        (live; consumed by numbering)
         - number-figures          (live; consumed by numbering)
         - number-tables           (live; consumed by numbering)
         - number-sections         (live; consumed by numbering; default off for articles, on for books)
         - number-depth            (live; consumed by numbering; deepest heading level that receives a number, #218; default all levels; INDEPENDENT of toc-depth)
-        - toc                     (live; consumed by index.js compiler → lib/toc.js; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)
+        - toc                     (live; consumed by the contents-listing stage; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)
         - toc-depth               (live; deepest heading level the contents lists; default 3)
         - toc-title               (live; the heading shown above the listing; default "Contents")
         - toc-location            (live; body | left | right; default body — body is inline near the top, left/right a sticky sidebar)
         - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)
-        - show-source             (live; consumed by index.js compileToHtml → diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)
+        - show-source             (live; consumed by the diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)
         - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)
-        - quiet                   (live; boolean; consumed by interpreter/index.js enscribeQuietSuppression — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)
+        - quiet                   (live; boolean; consumed by the enscribeQuietSuppression stage — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)
         - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)
-        - theme                   (live; consumed by index.js compileToHtml — injects a theme's :root token overrides, Phase 8 Slice 2)
+        - theme                   (live; consumed at compile time — injects a theme's :root token overrides, Phase 8 Slice 2)
         - display-style           (reserved; future)
-        - note-position           (live; consumed by index.js compileToHtml → sidenotes — the #33 margin render mode, 'bottom' default / 'margin')
-        - strict-mode             (live; consumed by strict-mode.js #36: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)
+        - note-position           (live; consumed by the sidenotes render stage — the #33 margin render mode, 'bottom' default / 'margin'; see notes/specs/sidenotes.md)
+        - strict-mode             (live; consumed by the strict-mode gate, #36 — see notes/specs/strict-mode.md: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)
         - bibliography-position   (reserved; future)
         (the reserved `reference-library` was retired: #133 makes external library
         sources the body element `<library src=…>`, never a <config> kwarg)
