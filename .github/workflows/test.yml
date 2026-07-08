@@ -53,6 +53,12 @@ jobs:
       - name: Docs-source freshness guard (#373)
         run: npm run docs:check
 
+      # Repo-split Stage 0 (notes/enscribe-split-migration-plan.md): the language layer
+      # (packages/ehtml + the notes/ prose surface) never imports the engine, and nothing outside
+      # it reaches language internals by path — cross-boundary consumption is by package name only.
+      - name: Language/engine boundary check (repo-split Stage 0)
+        run: npm run check:boundary
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 

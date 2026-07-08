@@ -49,6 +49,25 @@ Do this before anything moves. It makes the eventual split a non-event.
   Converting them to consume `@enscribe/language` by name is Stage 2's dependency-map turned into an
   actual refactor. Do it now, against the boundary, while everything's in one testable repo.
 
+### Stage 0 — as built
+The named package is the existing **`@enscribejs/ehtml`** (no umbrella `packages/language` package
+earned itself yet — ehtml is the only code-consumable language artifact; the specs-as-artifact
+question is Stage 2's). The guard is `scripts/check-boundary.mjs`, wired as `npm run check:boundary`
+into the root `test` script and CI. It enforces four rules: language code never imports the engine
+(imports, not substrings); language manifests never depend on engine packages; nothing outside the
+language layer reaches `packages/ehtml` internals by path (consumption is by package name only); and
+engine-side code never reads the prose surface (`notes/`, `DESIGN.md`) by filesystem path — comments
+citing specs as source-of-record are fine.
+
+Two crossings exist today, carried as named allowlist entries in the guard:
+- `packages/ehtml/test/example-render.test.js` (+ its `@enscribejs/enscribe` devDependency) — the
+  engine-conformance test; relocates to the engine at the physical split. **The allowlist must be
+  empty before Stage 1 begins.**
+- `packages/enscribe/test/coverage/gen-spec-data.mjs` — the spec→artifact generator reads three
+  `notes/specs/` files at generation/drift-check time (never on the shipped test path). This is the
+  Stage-2 "specs as a published artifact" question in live form; **the Stage 2 dependency map
+  decides its home, and the entry must be resolved before the physical split.**
+
 ## Stage 1 — split out the non-code (notes + docs) → into `enscribe-language`
 Safest first move: notes/docs have no imports, no build, nothing depends on them at runtime. Decided:
 **docs + notes live in the language repo** (they're the open, non-code side of the real thing).
