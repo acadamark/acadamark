@@ -59,6 +59,12 @@ jobs:
       - name: Language/engine boundary check (repo-split Stage 0)
         run: npm run check:boundary
 
+      # #390: guard the committed live-example pages (examples/*/index.html are emitter-generated
+      # and committed) against emitter drift — regenerate-to-temp and byte-compare, the examples/
+      # analogue of the docs-source guard above. Needs the built browser bundle (npm ci's prepare).
+      - name: Live-examples freshness guard (#390)
+        run: npm run examples:check
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 

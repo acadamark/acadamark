@@ -14,8 +14,8 @@
 -->
 <link rel="stylesheet" href="./default.css">
 <link rel="stylesheet" href="./enscribe-shell.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&amp;family=Source+Code+Pro:wght@400&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Source+Code+Pro:wght@400&display=swap">
 </head>
 <body>
 <!-- Read by default; add `data-enscribe-edit` to default to the editor, or use `?edit`. -->
@@ -25,13 +25,14 @@
 <script src="./enscribe.browser.global.js"></script>
 
 <script type="module">
-  // The default editor adapter ships with the package (CodeMirror loaded host-side, only when
-  // editing is on — importing this module loads nothing). A host could pass its own factory.
-  import { codeMirrorEditorFactory } from './editor-codemirror.js';
+  // The default editor adapter ships with the package with CodeMirror BUNDLED into it. It is loaded
+  // LAZILY: the factory dynamically imports the editor asset, so mountLiveShell fetches it only when
+  // editing is on — a read-mode page never downloads the (large) bundled CodeMirror asset. A host
+  // could pass its own factory.
 
   // The #213 host switch: `?edit` flips it at runtime; otherwise the `data-enscribe-edit` on the
   // mount <div> decides (default: read). The engine is unchanged.
-  const opts = { editorFactory: codeMirrorEditorFactory };
+  const opts = { editorFactory: () => import('./editor-codemirror.js').then((m) => m.codeMirrorEditorFactory()) };
   if (new URLSearchParams(location.search).has('edit')) opts.edit = true;
 
   window.enscribe
