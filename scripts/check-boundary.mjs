@@ -72,8 +72,27 @@ const RULE2B_ALLOW = new Set(['packages/enscribe/test/coverage/gen-spec-data.mjs
 
 // Never scanned: installed/derived/build trees, VCS internals, and this guard itself
 // (its constants necessarily name both sides of the boundary).
+//
+// SKIP_FILE_NAMES — generated browser bundles, skipped by identity WHEREVER they land.
+// The engine bundle embeds the eHTML VOCABULARY (packages/ehtml/src/data.js), whose
+// `notes` prose fields cite spec files in the repo's markdown-backtick style
+// (`DESIGN.md`, `notes/specs/data-store.md`). Minified into JS string literals those
+// citations survive comment-stripping, and a backtick is a quote char to the Rule 2b
+// bare-path scan — so the bundled form of language-side prose trips Rule 2b. At its
+// source home (data.js, a language dir) that same text is Rule-1-only; the trip is
+// pure relocation — the CLI's `--live` build (build-live.js) copies the bundle into
+// engine-side scan scope (examples/*-live/, docs-live asset dirs). The skip fires in
+// walk(), before the language/engine branch, so it covers Rule 1 too. Filename skip,
+// not a git-check-ignore skip, is deliberate: the scan scope stays explicit and
+// self-contained (plain Node, no git subprocess) and cannot be silently narrowed by a
+// .gitignore edit elsewhere — the one failure direction this guard must not have is the
+// silent green. Only enscribe.browser.global.js is copied out of dist/ today
+// (SHELL_ASSET_SPECS); the ESM sibling enscribe.browser.js carries the same data but no
+// mechanism ships it, so it is intentionally not listed — a future copier of it would
+// fail loud (red), the acceptable direction, and earn its own entry then.
 const SKIP_DIR_NAMES = new Set(['node_modules', '.git', 'dist']);
 const SKIP_ROOT_DIRS = new Set(['site']); // Pages build output (build:site)
+const SKIP_FILE_NAMES = new Set(['enscribe.browser.global.js']);
 const SELF = 'scripts/check-boundary.mjs';
 
 // ── Scanning ─────────────────────────────────────────────────────────────────
@@ -96,6 +115,7 @@ function* walk(dir) {
       yield* walk(abs);
     } else if (entry.isFile()) {
       if (rel === SELF || isProse(rel)) continue;
+      if (SKIP_FILE_NAMES.has(entry.name)) continue; // generated bundle — never scanned, wherever it lands
       if (rel.endsWith('.js') || rel.endsWith('.mjs') || rel.endsWith('.cjs')) yield rel;
     }
   }
