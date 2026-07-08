@@ -9,7 +9,7 @@ html_output:
   notes: |
     Figures are HTML-shaped at eHTML (#147): the rendered eHTML
     element is the HTML5-native `<figure>`. The figure handler
-    (`handlers/figure.js`) hardcodes its output tagName to `'figure'`,
+    hardcodes its output tagName to `'figure'`,
     so `is_html_native: true` describes that rendered element — the same
     way `<table>` / `<svg>` / `<aside>` are native handler-strategy
     frameables. `html_output.element` retains `fig` as the vocab key
@@ -229,7 +229,7 @@ The `<fig>` transformation cannot be expressed as pure schema:
 - The `alt` kwarg, when not specified, falls back to the figcaption text — this fallback logic lives in the handler.
 - The "Figure N." label is prepended to the figcaption when the figure is numbered (the frameable number-folded-into-label rendering).
 
-The handler at `handlers/figure.js` constructs the appropriate child structure based on which attributes are present and what content the figure contains.
+The figure handler constructs the appropriate child structure based on which attributes are present and what content the figure contains.
 
 ## Authoring patterns
 

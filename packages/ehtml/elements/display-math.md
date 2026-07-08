@@ -79,7 +79,7 @@ kwarg controls per-equation numbering (default true); `-numbered` suppresses
 the number. The document-level config key `number-equations=false` suppresses
 all equations. A per-element `+numbered` override takes priority over config.
 
-The numbering plugin (`plugins/numbering.js`) sets `node.computedNumber` on
+The numbering plugin sets `node.computedNumber` on
 each display-math node before the hast conversion step. The math handler then
 appends `<equation-number>(N)</equation-number>` after the KaTeX children.
 

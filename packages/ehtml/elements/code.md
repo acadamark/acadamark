@@ -63,7 +63,7 @@ handler_responsibilities:
     downstream syntax highlighters).
   - Apply id / classes on the rendered `<code>` element.
   - Emit a `<code>` element with the code text as a single text child.
-  - Mirrors handlers/inline-code.js's shape so long-form and sigil
+  - Mirrors the inline-code handler's shape so long-form and sigil
     forms produce consistent output.
 ---
 
