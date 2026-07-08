@@ -50,13 +50,17 @@ const ENGINE_DIRS = ['packages/enscribe', 'packages/cli'];
 // emitted by docs-gen (guarded by docs-gen/check-docs-fresh.mjs).
 
 // ── Allowlist ────────────────────────────────────────────────────────────────
-// The ONE permitted language→engine crossing: the engine-conformance test (it renders each
-// vocabulary example through the real pipeline, #304). It relocates to the engine layer at
-// the physical split (Stage 1/2). This list must be EMPTY before Stage 1 begins.
-const RULE1_ALLOW = new Set(['packages/ehtml/test/example-render.test.js']);
-// Its manifest counterpart: the devDependency backing that test. Same rationale, same
-// shrink-to-zero condition. (Runtime `dependencies` get NO allowlist — always zero.)
-const RULE1B_DEV_ALLOW = { 'packages/ehtml/package.json': ['@enscribejs/enscribe'] };
+// EMPTY — and the standing rule is that the Rule 1/1b allowlists must be empty for the
+// split to proceed (the Stage 1 precondition). The one crossing that ever lived here —
+// the engine-conformance test (#304) plus the `@enscribejs/enscribe` devDependency backing
+// it — was relocated to the engine layer (packages/enscribe/test/example-render.test.js),
+// where it consumes the vocabulary in the sanctioned direction, by package name. The
+// constants remain as the declared mechanism should a future crossing ever need tracking;
+// any entry added is temporary by definition and must shrink back to zero.
+const RULE1_ALLOW = new Set([]);
+// Manifest counterpart (engine devDependencies in a language manifest) — same standing
+// rule. (Runtime `dependencies` get NO allowlist — always zero.)
+const RULE1B_DEV_ALLOW = {};
 // The ONE permitted engine→prose read: the spec→artifact generator for the committed
 // spec-data.generated.json (CLAUDE.md §"Generated artifacts and their sources"). It reads
 // notes/specs/{render-quality,tag-forms-reference,idioms}.md at generation/drift-check time
@@ -198,7 +202,7 @@ for (const rel of walk(ROOT)) {
 
   if (isLanguageCode(rel)) {
     // Rule 1 — the firewall: language never imports engine.
-    if (RULE1_ALLOW.has(rel)) continue; // engine-conformance test; must shrink to zero before Stage 1
+    if (RULE1_ALLOW.has(rel)) continue; // empty today; any future entry must shrink back to zero
     for (const { index, spec } of importSpecifiers(content)) {
       if (namesPackage(spec, ENGINE_PACKAGES) || resolvesInto(rel, spec, ENGINE_DIRS)) {
         violations.push({ file: rel, line: lineOf(content, index), rule: 'Rule 1 (language must not import engine)', detail: `'${spec}'` });

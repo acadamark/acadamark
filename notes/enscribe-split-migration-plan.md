@@ -59,14 +59,18 @@ language layer reaches `packages/ehtml` internals by path (consumption is by pac
 engine-side code never reads the prose surface (`notes/`, `DESIGN.md`) by filesystem path — comments
 citing specs as source-of-record are fine.
 
-Two crossings exist today, carried as named allowlist entries in the guard:
-- `packages/ehtml/test/example-render.test.js` (+ its `@enscribejs/enscribe` devDependency) — the
-  engine-conformance test; relocates to the engine at the physical split. **The allowlist must be
-  empty before Stage 1 begins.**
-- `packages/enscribe/test/coverage/gen-spec-data.mjs` — the spec→artifact generator reads three
-  `notes/specs/` files at generation/drift-check time (never on the shipped test path). This is the
-  Stage-2 "specs as a published artifact" question in live form; **the Stage 2 dependency map
-  decides its home, and the entry must be resolved before the physical split.**
+The crossings, as tracked by the guard's allowlists:
+- Rule 1/1b (language→engine): **empty — the Stage 1 precondition is met.** The one crossing that
+  existed — `packages/ehtml/test/example-render.test.js` plus its `@enscribejs/enscribe`
+  devDependency, the engine-conformance test — was relocated to the engine layer
+  (`packages/enscribe/test/example-render.test.js`), where it consumes the vocabulary in the
+  sanctioned direction, by package name. The standing rule: the Rule 1/1b allowlists must be
+  empty for the split to proceed; any future entry is temporary by definition.
+- Rule 2b (engine→prose): `packages/enscribe/test/coverage/gen-spec-data.mjs` — the spec→artifact
+  generator reads three `notes/specs/` files at generation/drift-check time (never on the shipped
+  test path). This is the Stage-2 "specs as a published artifact" question in live form; **the
+  Stage 2 dependency map decides its home, and the entry must be resolved before the physical
+  split.**
 
 ## Stage 1 — split out the non-code (notes + docs) → into `enscribe-language`
 Safest first move: notes/docs have no imports, no build, nothing depends on them at runtime. Decided:
