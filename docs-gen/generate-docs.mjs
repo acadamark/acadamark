@@ -25,12 +25,11 @@
 // which drifted — audit D1/D2): `**`→<b>, `*`/`_`→<i>, `~~`→<s>.
 
 import { VOCABULARY } from '@enscribejs/ehtml';
-import { readdirSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const ELEMENTS_DIR = join(ROOT, 'packages/ehtml/elements');
 const DOCS = join(ROOT, 'docs-source');
 
 // Taxonomy family order (notes/taxonomies/semantic-taxonomy.md, families 1–10) →
@@ -78,7 +77,15 @@ const ARGUMENT_CONVENTIONS =
   '`<proof>` is numbered only when you add `+numbered`.';
 
 // ── canonical elements + alias map ───────────────────────────────────────────
-const canonicalNames = readdirSync(ELEMENTS_DIR).filter((f) => f.endsWith('.md')).map((f) => f.slice(0, -3));
+// Canonical = the VOCABULARY keys that name their own source file. Aliases (quote, figure)
+// share the canonical entry's object — and its _sourceFile — so `basename(_sourceFile, '.md')
+// === key` picks out exactly the canonical names. Derived from the compiled registry, not a
+// filesystem read of packages/ehtml/elements/, so the language layer is consumed only via
+// @enscribejs/ehtml (repo-split Stage 0; scripts/check-boundary.mjs Rule 2). Sorted explicitly
+// so the order is deterministic by construction, not by the OS's readdir order.
+const canonicalNames = Object.keys(VOCABULARY)
+  .filter((k) => basename(VOCABULARY[k]._sourceFile ?? '', '.md') === k)
+  .sort();
 const canonicalSet = new Set(canonicalNames);
 const aliasesByCanonical = {};                 // canonical tag → [alias tag, …] (e.g. fig → [figure])
 for (const key of Object.keys(VOCABULARY)) {
