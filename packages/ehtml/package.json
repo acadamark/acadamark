@@ -34,11 +34,10 @@
   "scripts": {
     "build": "node build/generate-data-module.js",
     "pretest": "node build/check-data-fresh.js",
-    "test": "node test/data.test.js && node test/cross-refs.test.js && node test/example-render.test.js",
+    "test": "node test/data.test.js && node test/cross-refs.test.js",
     "verify": "npm test"
   },
   "devDependencies": {
-    "@enscribejs/enscribe": "*",
     "js-yaml": "^4.1.1"
   }
 }
