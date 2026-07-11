@@ -22,7 +22,9 @@ import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, pre
 import { emitDocumentShell } from '@enscribejs/enscribe/shell/document-shell.js';
 import { escapeHtmlAttr } from '@enscribejs/enscribe/core/escape-html';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
-import { renderArticleDocument, assembleAndNumber } from './render-document.js';
+import { VFile } from 'vfile';
+import { renderArticleFile, assembleAndNumber } from './render-document.js';
+import { createDiagnostics, diagnosticsScript } from './diagnostics.js';
 import { buildLiveFolder, buildSingleFile, copyShellAssets } from './build-live.js';
 import { buildStaticWebsite } from './static-website.js';
 import { enscribeToJats } from './jats-export/index.js';
@@ -391,13 +393,16 @@ function standaloneDslMode(opts, embedResources) {
 //                     <title>; fallback: the input filename)
 // default.css is ~40 KB — small enough to inline under both embed modes (--no-embed
 // governs the ~260 KB font/KaTeX payload, not the stylesheet).
-function wrapStandalone(html, opts, deriveTitle) {
+function wrapStandalone(html, opts, deriveTitle, messages = []) {
   if (opts.fragment) return html;
   const title = opts.title ?? (deriveTitle() || basename(opts.input, extname(opts.input)));
   const stylesheet = opts.css
     ? `<link rel="stylesheet" href="${escapeHtmlAttr(opts.css)}">`
     : `<style>\n${readDefaultCss()}\n</style>`;
-  return emitDocumentShell(html, { title, stylesheet });
+  // #415 (channel 3): the run's diagnostics ride the artifact — a script block that
+  // recapitulates them to the viewer's console. Zero messages ⇒ zero bytes. A
+  // --fragment output carries none (the shell furniture belongs to the host page).
+  return emitDocumentShell(html + diagnosticsScript(messages), { title, stylesheet });
 }
 
 // #414: the flag-contradiction checks shared by the three standalone commands.
@@ -413,7 +418,7 @@ function checkStandaloneFlags(opts) {
   }
 }
 
-function doRender(opts) {
+function doRender(opts, diag) {
   const src = readInput(opts.input);
   // CLI default is self-contained (--embed); the library default is external.
   const pipeOpts = { embedResources: opts.embed ?? true, assetsDir: dirname(resolve(opts.input)) };
@@ -432,18 +437,24 @@ function doRender(opts) {
   // #395 D2 (audit W3): the DEFAULT output is a complete, styled, standalone document.
   // The wrap and its option surface are shared with import / import-jats (#414) —
   // see wrapStandalone below for the full rationale.
-  const wrap = (html) => wrapStandalone(html, opts, () => extractDocumentTitle(src));
+  const wrap = (html, messages) => wrapStandalone(html, opts, () => extractDocumentTitle(src), messages);
 
   // #133: external <library src> loading. Filesystem paths are read synchronously
   // inside the pipeline (assetsDir, unchanged). URL sources need an async fetch, so
   // when any are present this returns a Promise the dispatcher awaits; otherwise it
   // stays synchronous (so the 33 existing sync test call sites are unaffected).
+  // #402: the vfile is seeded with the input path (filename provenance on every
+  // message) and handed to the diagnostics seam after the run.
   const urlSrcs = collectLibrarySources(src).filter((s) => URL_SCHEME.test(s));
-  const renderSync = (input) =>
-    wrap(withQuiet(opts.quiet, () => renderArticleDocument(input, pipeOpts)));
-  if (urlSrcs.length === 0) return renderSync(src);
+  const renderSync = (data) => {
+    const file = withQuiet(opts.quiet, () =>
+      renderArticleFile({ value: src, path: opts.input, ...(data ? { data } : {}) }, pipeOpts));
+    diag?.report(file);
+    return wrap(String(file), file.messages);
+  };
+  if (urlSrcs.length === 0) return renderSync();
   return preloadSources(urlSrcs, fetchSourceText).then((loaded) =>
-    renderSync({ value: src, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
+    renderSync({ [ENSCRIBE_LOADED_SOURCES]: loaded }),
   );
 }
 
@@ -473,7 +484,7 @@ function doLower(opts) {
   return withQuiet(opts.quiet, () => serializeCanonical(liftToCanonicalMdast(src), { target }));
 }
 
-function doImportJats(opts) {
+function doImportJats(opts, diag) {
   const xml = readInput(opts.input);
   return withQuiet(opts.quiet, () => {
     const tree = importJats(xml);
@@ -488,11 +499,17 @@ function doImportJats(opts) {
     // BEFORE runSync — the interpreter transforms mutate the tree in place and
     // consume the <meta><title> on the way to hast.
     const derivedTitle = extractTitleFromTree(tree);
-    return wrapStandalone(proc.stringify(proc.runSync(tree)), opts, () => derivedTitle);
+    // #402: a real VFile (with the input path) rides the run so transform diagnostics
+    // are kept — runSync with no file used to accumulate them on an internal vfile
+    // that was thrown away.
+    const file = new VFile({ path: opts.input });
+    const html = proc.stringify(proc.runSync(tree, file), file);
+    diag?.report(file);
+    return wrapStandalone(html, opts, () => derivedTitle, file.messages);
   });
 }
 
-function doImport(opts) {
+function doImport(opts, diag) {
   if (!opts.input) throw new CliError('no input file given (a .tex / .qmd / .docx / … to import)');
   if (!existsSync(opts.input)) throw new CliError(`input file not found: ${opts.input}`);
   let ast;
@@ -514,7 +531,11 @@ function doImport(opts) {
     // the interpreter transforms mutate the tree in place and consume the
     // <meta><title> on the way to hast.
     const derivedTitle = extractTitleFromTree(tree);
-    return wrapStandalone(proc.stringify(proc.runSync(tree)), opts, () => derivedTitle);
+    // #402: a real VFile keeps the transform diagnostics (see doImportJats).
+    const file = new VFile({ path: opts.input });
+    const html = proc.stringify(proc.runSync(tree, file), file);
+    diag?.report(file);
+    return wrapStandalone(html, opts, () => derivedTitle, file.messages);
   });
 }
 
@@ -525,7 +546,7 @@ function readDefaultCss() {
   return _defaultCss;
 }
 
-function doBuild(opts) {
+function doBuild(opts, diag) {
   // #190 — multi-file master document. Parse the master, load and parse each `src`
   // structure child (`<section src>` / `<chapter src>` / …; paths relative to the
   // master file), assemble into one flat tree, then run the existing render path
@@ -542,11 +563,13 @@ function doBuild(opts) {
   return withQuiet(opts.quiet, () => {
     // Assemble + number once via the shared render path. An explicit VFile (here, the master's path)
     // keeps file.data.enscribeRegistry reachable for the separate-pages publisher's registry harvest.
+    // #402: assembler diagnostics join the document's message stream (the warn sink defaults to
+    // file.message inside assembleAndNumber) instead of a bare console.warn — they reach all
+    // three channels with the master's filename as provenance.
     const { numbered, file, proc } = assembleAndNumber({
       source,
       sourcePath: opts.input ?? 'input.emd',
       masterDir,
-      warn: (m) => console.warn(m),
       pipeOpts: { embedResources, assetsDir: masterDir, dslMode: standaloneDslMode(opts, embedResources) },
     });
     const isBook = file.data?.enscribeDocType === 'book';
@@ -557,25 +580,36 @@ function doBuild(opts) {
     // silent no-op — a website fell through to the single-page path and stringified an empty wrapper.)
     const isWebsite = file.data?.enscribeDocType === 'website';
     if (isWebsite) {
+      // #402: the website builder reports each page's diagnostics through the seam as it
+      // renders (channel 1 per page) and injects each page's own recap script (channel 3);
+      // its warnings[] account (assembler/nav-level, site-scoped) keeps its console print.
       const { pages, assets, warnings } = buildStaticWebsite({
         masterSource: source,
         masterDir,
         defaultCss: readDefaultCss(),
+        diagnostics: diag,
       });
       for (const w of warnings) console.warn(`enscribe build (website): ${w}`);
       return { mode: 'website', pages, assets };
     }
+    diag?.report(file);
+    // #415 (channel 3): the document's diagnostics ride every emitted page — a
+    // separate-pages book is one document split across pages, and any page is an entry
+    // point, so each carries the full stream. Zero messages ⇒ zero bytes.
+    const script = diagnosticsScript(file.messages);
     const separate = opts.pages === 'separate' || (opts.pages !== 'single' && isBook);
     if (separate) {
       if (!isBook) {
         throw new CliError('--separate-pages is a book-only build; this document is not a <meta type=book>');
       }
-      return { mode: 'separate', pages: publishBookPages({ numbered, file, proc, defaultCss: readDefaultCss() }) };
+      const pages = publishBookPages({ numbered, file, proc, defaultCss: readDefaultCss() });
+      if (script) for (const [name, html] of pages) pages.set(name, html + script);
+      return { mode: 'separate', pages };
     }
     // Single-page (the retained whole-book / article mode) — the unchanged render path.
     // An assembled-source (--emd) emit is deferred (#190): section titles live in
     // `.content`, which serializeCanonical does not round-trip.
-    return { mode: 'single', html: String(proc.stringify(numbered, file)) };
+    return { mode: 'single', html: String(proc.stringify(numbered, file)) + script };
   });
 }
 
@@ -705,13 +739,15 @@ export function run(argv, io = {}) {
         // references must be obtainable). Needs no input document.
         if (opts.emitCss) { emit(readDefaultCss(), opts, out); return 0; }
         checkStandaloneFlags(opts);
-        const rendered = doRender(opts);
+        const diag = createDiagnostics({ quiet: opts.quiet, err });
+        const rendered = doRender(opts, diag);
         // #133: doRender returns a Promise only when URL <library src> sources need
         // fetching; otherwise it is the rendered string (the sync path, unchanged).
         if (rendered && typeof rendered.then === 'function') {
-          return rendered.then((html) => { emit(html, opts, out); return 0; });
+          return rendered.then((html) => { emit(html, opts, out); diag.summary(); return 0; });
         }
         emit(rendered, opts, out);
+        diag.summary();
         return 0;
       }
       case 'build': {
@@ -758,9 +794,11 @@ export function run(argv, io = {}) {
           }
           return 0;
         }
-        const result = doBuild(opts);
+        const diag = createDiagnostics({ quiet: opts.quiet, err });
+        const result = doBuild(opts, diag);
         if (result.mode === 'single') {
           emit(result.html, opts, out);
+          diag.summary();
           return 0;
         }
         // Website (#278): a dir-per-page static site — many files, so -o is required. Each page's
@@ -790,6 +828,7 @@ export function run(argv, io = {}) {
           if (!opts.quiet) {
             out.write(`Wrote ${result.pages.size} website pages to ${opts.output}/ (home at root; ${result.assets.length} page assets)\n`);
           }
+          diag.summary();
           return 0;
         }
         // Separate-pages: write one standalone HTML file per chapter + index.html to
@@ -802,6 +841,7 @@ export function run(argv, io = {}) {
           writeFileSync(join(opts.output, name), html, 'utf8');
         }
         if (!opts.quiet) out.write(`Wrote ${result.pages.size} pages to ${opts.output}/ (chapter pages + index.html)\n`);
+        diag.summary();
         return 0;
       }
       case 'export-jats': {
@@ -833,14 +873,18 @@ export function run(argv, io = {}) {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(IMPORT_JATS_HELP); return 0; }
         checkStandaloneFlags(opts);
-        emit(doImportJats(opts), opts, out);
+        const diag = createDiagnostics({ quiet: opts.quiet, err });
+        emit(doImportJats(opts, diag), opts, out);
+        diag.summary();
         return 0;
       }
       case 'import': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(IMPORT_HELP); return 0; }
         checkStandaloneFlags(opts);
-        emit(doImport(opts), opts, out);
+        const diag = createDiagnostics({ quiet: opts.quiet, err });
+        emit(doImport(opts, diag), opts, out);
+        diag.summary();
         return 0;
       }
       default:

@@ -15,6 +15,7 @@ import { run_tests as runDeliveryModesTests } from './delivery-modes.test.js';
 import { run_tests as runStaticWebsiteTests } from './static-website.test.js';
 import { run_tests as runWebsiteXrefTests } from './website-xref.test.js';
 import { run_tests as runWebsiteAssetLinksTests } from './website-asset-links.test.js';
+import { run_tests as runDiagnosticsTests } from './diagnostics.test.js';
 
 try {
   runCliTests();
@@ -27,7 +28,8 @@ try {
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   await runDeliveryModesTests(); // #369: delivery-modes regression matrix + offline render/editor (async: Tier 2 browser)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
-  await runWebsiteXrefTests(); // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)
+  await runWebsiteXrefTests();
+  await runDiagnosticsTests(); // #402/#415: the reporting seam (three channels; Tier 2 browser recap) // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)
   runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);
