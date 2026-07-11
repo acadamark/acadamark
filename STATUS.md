@@ -90,6 +90,7 @@ Legend: `[x]` works and is tested · `[ ]` planned, not started.
 - [x] `enscribe lift` — mixed markdown/sigil/canonical source → canonical named-tag form
 - [x] `enscribe lower` — canonical source → shorthand sigils, or markdown idioms (`--markdown`)
 - [x] `enscribe import` — LaTeX / Quarto / DOCX / … via a pandoc bridge
+- [x] Diagnostics reach the author, three ways ([#402](https://github.com/enscribejs/enscribe/issues/402)/[#415](https://github.com/enscribejs/enscribe/issues/415)) — every document-emitting command surfaces the pipeline's message stream through one reporting seam: printed to stderr per document as it renders (vfile-reporter format), summarized at end of run (grouped by file and kind, silent when clean), and carried into the emitted page as a script that recapitulates the messages — with file/line/kind provenance — to the browser console when the document is viewed; a live render routes the same stream to the console directly. `<config quiet>` opts a document out entirely; `--quiet` silences the terminal but the artifact keeps its record
 
 ## Interoperability — JATS
 
