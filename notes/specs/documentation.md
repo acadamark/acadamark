@@ -72,10 +72,12 @@ code, headerless tables, stale content — cannot recur:
    quotation-and-sourcing chapter carries a "When citation resolution fails" passage that
    renders the visible `??cite: …??` markers live: a cite with no `<library>` in scope (a
    sealed preview is exactly that, stated honestly), and a key missing from a real in-scope
-   library (rendered in the chapter body against the chapter's own small `<library>`, whose
-   resolved cite also demonstrates the auto-placed References list). Resolution failure is
-   part of the authored surface; the docs show it the way they show every other rendered
-   result.
+   library (rendered in the chapter body against the chapter's own small `<library>`, the
+   found key resolving beside the missing key's marker). The passage claims only what
+   renders on every surface — the auto-placed References list does not land on a
+   book-in-website page (the bibliography-placement gap in the #395 inventory), so the
+   docs do not claim it. Resolution failure is part of the authored surface; the docs show
+   it the way they show every other rendered result.
 
 ---
 

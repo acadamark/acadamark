@@ -172,7 +172,7 @@ That source, rendered live on this page against this chapter's own library:
 
 Known <cite mead1972>, unknown <cite bateson1904>.
 
-*(The resolved citation also places the References list at the end of this chapter — the
-full citation loop, demonstrated by the page itself.)*
+*(The found key renders its formatted citation; the missing key renders its marker beside
+it — a failure never hides a neighboring success.)*
 
 </section>
