@@ -106,18 +106,22 @@ do not include quotation marks in the content.*
 
 Compiles to eHTML `<ref>`.
 
-<code #code:ag-ref-1>
+<code-block #code:ag-ref-1>
+<fig #fig:scatter | A scatter plot of the results.>
 See <ref @fig:scatter> for details.
-</code>
+</code-block>
 
 <minipage #mp:ag-ref-1>
+<fig #fig:scatter | A scatter plot of the results.>
 See <ref @fig:scatter> for details.
 </minipage>
 
 *Canonical form: @id prefix (@ references; # would declare an id on the
-&lt;ref&gt; itself). The ref-resolution plugin replaces the
-&lt;ref&gt; node with a __ref-marker before hast conversion. The handler
-then renders an &lt;a&gt; element with computed text. Prefix word is
-lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.*
+&lt;ref&gt; itself). A &lt;ref&gt; resolves only against a target in scope, so the
+demo declares &lt;fig #fig:scatter&gt; first; the ref-resolution plugin then
+replaces the &lt;ref&gt; node with a __ref-marker before hast conversion, and
+the handler renders an &lt;a&gt; whose text ("figure 1") is computed from the
+target's kind and number. Prefix word is lowercase, from the
+DEFAULT_PREFIXES dictionary keyed by id prefix.*
 
 </section>

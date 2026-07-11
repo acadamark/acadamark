@@ -69,10 +69,16 @@ shorthand_examples:
     ehtml: '<a href="https://example.com">the example site</a>'
   - source: '<a href=https://example.com target=_blank rel=noopener | external link>'
     ehtml: '<a href="https://example.com" target="_blank" rel="noopener">external link</a>'
-  - source: '<a href=#section-2 | jump to Section 2>'
-    ehtml: '<a href="#section-2">jump to Section 2</a>'
+  - source: |
+      <a href=#section-2 | jump to Section 2>
+
+      <section #section-2 | Section 2>
+    ehtml: |
+      <a href="#section-2">jump to Section 2</a>
+      <section id="section-2"><section-title>Section 2</section-title></section>
     notes: |
-      Internal links use fragment identifiers pointing at element ids.
+      Internal links use fragment identifiers pointing at element ids — here
+      the in-scope <section #section-2> the link targets.
 interpreter_strategy: handler
 handler_module: ./handlers/a.js
 ---
