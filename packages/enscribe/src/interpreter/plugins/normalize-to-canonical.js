@@ -419,8 +419,10 @@ function headingToPassThroughHN(node, file) {
 //              are common; per-occurrence notices would be noise)
 //   html     → pass through with a diagnostic about round-trip non-guarantee
 //
-// linkReference / imageReference / footnoteReference are unsupported authoring
-// forms — they pass through unchanged, no lift.
+// linkReference / imageReference are unsupported authoring forms — they pass
+// through unchanged, no lift. footnoteReference / footnoteDefinition / definition
+// are NOT idioms either, but they DO get a lift — to their literal source text
+// (#407, below), so no content is lost and no dead marker is minted.
 
 function liftEmphasis(node) {
   return makeTag('i', node.children ?? []);
@@ -488,6 +490,49 @@ function liftLink(node) {
 function liftImage(node) {
   const title = node.title ? ` "${node.title}"` : '';
   return { type: 'text', value: `![${node.alt ?? ''}](${node.url ?? ''}${title})` };
+}
+
+// GFM footnotes are NOT an enscribe idiom (#407): the native footnote is the
+// <note> tag (and its sigil <^ …>, #416). All three GFM footnote/definition forms
+// render as their LITERAL source — the honest degrade every unsupported markdown
+// form gets — so no live-looking marker is minted and, crucially, no authored
+// content is lost. (Before #407 a footnote reference half-processed into a dead
+// `<sup><a href="#user-content-fn-1">` while its definition body vanished — the
+// content-loss trap the issue names.) These normalize to *text*, not to an
+// enscribe element, so they have no canonical-node row in idioms.md.
+
+// `[^1]` → the literal characters `[^1]`. Label preserves the author's casing
+// (mdast `identifier` is lowercased; `label` is as-typed).
+function liftFootnoteReference(node) {
+  return { type: 'text', value: `[^${node.label ?? node.identifier ?? ''}]` };
+}
+
+// `[^1]: body` → literal. A block node whose children are the body's blocks; emit
+// the `[^label]: ` prefix as literal text merged into the body's FIRST paragraph
+// (the common single-paragraph case → one paragraph), any further blocks
+// following. The body's own inline formatting still renders — parallel to liftLink,
+// which shows the brackets while keeping the link text's formatting. 1-to-N so a
+// multi-paragraph body splices cleanly; the returned nodes never re-match the
+// predicate (paragraph/text), so the walker's re-visit terminates.
+function liftFootnoteDefinition(node) {
+  const prefix = { type: 'text', value: `[^${node.label ?? node.identifier ?? ''}]: ` };
+  const blocks = node.children ?? [];
+  if (blocks.length > 0 && blocks[0].type === 'paragraph') {
+    const [first, ...rest] = blocks;
+    return [{ ...first, children: [prefix, ...(first.children ?? [])] }, ...rest];
+  }
+  // Empty or block-first body: the prefix stands on its own paragraph.
+  return [{ type: 'paragraph', children: [prefix] }, ...blocks];
+}
+
+// `[label]: url` → literal. The reference `[text][label]` already renders literally
+// (markdown links are not an idiom); its definition line must MATCH rather than
+// silently vanish — an orphan mdast `definition` otherwise renders to nothing. Emit
+// the source line as a paragraph of literal text (a block replacing a block).
+function liftDefinition(node) {
+  const title = node.title ? ` "${node.title}"` : '';
+  const label = node.label ?? node.identifier ?? '';
+  return { type: 'paragraph', children: [{ type: 'text', value: `[${label}]: ${node.url ?? ''}${title}` }] };
 }
 
 function liftHardBreak(_node) {
@@ -971,6 +1016,10 @@ const NORMALIZATIONS = [
   { predicate: (node) => node.type === 'image',       normalize: liftImage       },
   { predicate: (node) => node.type === 'break',       normalize: liftHardBreak   },
   { predicate: (node) => node.type === 'html',        normalize: (n, f) => liftRawHtml(n, f) },
+  // #407: GFM footnotes / reference-link definitions are not idioms — render literal.
+  { predicate: (node) => node.type === 'footnoteReference',  normalize: liftFootnoteReference  },
+  { predicate: (node) => node.type === 'footnoteDefinition', normalize: liftFootnoteDefinition },
+  { predicate: (node) => node.type === 'definition',         normalize: liftDefinition         },
 ];
 
 // Combined predicate: true if any entry handles this node.

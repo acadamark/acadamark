@@ -129,8 +129,10 @@ export function enscribeSyntax({ sigils = true } = {}) {
     { tokenize: makeItemMarkerTokenizer({ sigils }), concrete: true },
     { tokenize: makeLongFormTokenizer({ multiLine: true }), concrete: true },
   ]
-  // Sigil tags `<# #>` / `<$ $>` / `` <` `> `` — admitted only when sigils is on.
+  // Sigil tags `<# #>` / `<$ $>` / `` <` `> `` and the `<^ …>` footnote sigil (#416)
+  // — admitted only when the sigil register is on.
   if (sigils) flowConstructs.push({ tokenize: tokenizeSigilTagFlow, concrete: true })
+  if (sigils) flowConstructs.push({ tokenize: tokenizeCaretTagFlow, concrete: true })
   flowConstructs.push({ tokenize: tokenizeNamedTagFlow, concrete: true })
 
   // Same-line long-form (`<b>bold</b>`) must be tried before the named-tag
@@ -142,6 +144,7 @@ export function enscribeSyntax({ sigils = true } = {}) {
     { tokenize: makeLongFormTokenizer({ multiLine: false }) },
   ]
   if (sigils) textConstructs.push({ tokenize: tokenizeSigilTagText })
+  if (sigils) textConstructs.push({ tokenize: tokenizeCaretTagText })
   textConstructs.push({ tokenize: tokenizeNamedTagText })
 
   return {
@@ -424,6 +427,7 @@ function makeNamedTagTokenizer({ multiLine }) {
       if (
         isAsciiAlphaCode(code) ||
         (code !== null && SIGIL_CHARS.has(code)) ||
+        code === CARET ||   // a nested `<^ …>` footnote sigil (#416) balances like any tag
         code === SLASH
       ) {
         depth++
@@ -447,6 +451,106 @@ function makeNamedTagTokenizer({ multiLine }) {
     }
   }
 }
+
+// ─── Caret (footnote) sigil-tag tokenizer ─────────────────────────────────────
+
+/**
+ * Builds the `<^ … >` footnote-sigil tokenizer (#416). The `^` sigil opens like a
+ * named tag but the whole span after `<^` up to the closing `>` is content — no
+ * attr section, no `|` (content-only in v1). It shares the named tag's `>`-close /
+ * depth-aware content model exactly (a nested `<…>` balances; a `>` at depth 0
+ * closes), which is what lets the parse-time desugar `<^ X>` → `<note | X>`
+ * (from-markdown.js) parse content byte-identically to the longhand `<note>`.
+ *
+ * Registered ONLY when the sigil register is on (like `<# … #>`): in `canonical`
+ * strict mode it rejects and `<^ …>` passes through as literal text, flagged.
+ *
+ * @param {{ multiLine: boolean }} opts — multiLine: flow position (scan across
+ *   line endings); false: text position (a bare line ending rejects).
+ * @returns {Tokenizer}
+ */
+function makeCaretTagTokenizer({ multiLine }) {
+  return function tokenizeCaretTag(effects, ok, nok) {
+    let depth = 0
+
+    return start
+
+    /** @param {Code} code */
+    function start(code) {
+      if (code !== LT) return nok(code)
+      effects.enter('enscribeTag')
+      effects.enter('enscribeTagRaw')
+      effects.consume(code) // <
+      return afterLt
+    }
+
+    /** @param {Code} code — char after `<` */
+    function afterLt(code) {
+      if (code !== CARET) return nok(code)
+      effects.consume(code) // ^
+      return content
+    }
+
+    /** @param {Code} code — content between `<^` and the closing `>` (depth-aware) */
+    function content(code) {
+      if (code === null) {
+        // EOF without closer: emit what we have; the desugar → grammar fails; error node set.
+        effects.exit('enscribeTagRaw')
+        effects.exit('enscribeTag')
+        return ok(code)
+      }
+      if (markdownLineEnding(code)) {
+        if (!multiLine) return nok(code) // text position: a line ending rejects (mirrors named-tag text)
+        effects.exit('enscribeTagRaw')
+        effects.enter('lineEnding')
+        effects.consume(code)
+        effects.exit('lineEnding')
+        effects.enter('enscribeTagRaw')
+        return content
+      }
+      if (code === GT) {
+        if (depth === 0) {
+          effects.consume(code)
+          return afterGt
+        }
+        effects.consume(code)
+        depth--
+        return content
+      }
+      if (code === LT) {
+        effects.consume(code)
+        return afterContentLt
+      }
+      effects.consume(code)
+      return content
+    }
+
+    /** @param {Code} code — char immediately after a `<` in content */
+    function afterContentLt(code) {
+      if (
+        isAsciiAlphaCode(code) ||
+        (code !== null && SIGIL_CHARS.has(code)) ||
+        code === CARET ||
+        code === SLASH
+      ) {
+        depth++
+      }
+      return content(code)
+    }
+
+    /** @param {Code} code — char immediately after the closing `>` */
+    function afterGt(code) {
+      const ws = tolerateTrailingFlowWhitespace(effects, code, multiLine, afterGt, nok)
+      if (ws !== null) return ws
+      effects.exit('enscribeTagRaw')
+      effects.exit('enscribeTag')
+      return ok(code)
+    }
+  }
+}
+
+const tokenizeCaretTagFlow = makeCaretTagTokenizer({ multiLine: true })
+const tokenizeCaretTagText = makeCaretTagTokenizer({ multiLine: false })
 
 // ─── List item-marker tokenizer (flow only) ───────────────────────────────────
 

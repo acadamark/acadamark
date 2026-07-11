@@ -674,4 +674,44 @@ export function run() {
     assert.equal(acceptSetMsgs.length, 0, '<data> is excluded from format-word validation');
     console.log('PASS: normalize-to-canonical: <data> is excluded from format-word validation');
   }
+
+  // ── #407: GFM footnotes / reference-link definitions are not idioms — literal ──
+  {
+    const parseGfm = (src) => {
+      const tree = unified().use(remarkParse).use(remarkGfm).parse(src);
+      enscribeNormalizeMarkdown()(tree);
+      return tree;
+    };
+    // Collect all rendered text, and flag any raw footnote/definition node that survived.
+    const texts = (tree) => {
+      const out = [];
+      (function walk(nodes) {
+        for (const n of nodes ?? []) {
+          if (n.type === 'text') out.push(n.value);
+          if (n.type === 'footnoteReference' || n.type === 'footnoteDefinition' || n.type === 'definition') {
+            out.push(`__RAW_${n.type}__`);
+          }
+          walk(n.children);
+        }
+      })(tree.children);
+      return out.join('|');
+    };
+    // GFM footnote reference + definition → literal source; body PRESERVED; no live marker.
+    {
+      const t = texts(parseGfm('The effect was significant.[^1]\n\n[^1]: Wilcoxon, p = 0.003.'));
+      assert.ok(t.includes('[^1]'), '#407: footnote reference renders literal [^1]');
+      assert.ok(t.includes('[^1]: ') && t.includes('Wilcoxon, p = 0.003.'),
+        '#407: footnote definition renders literal, body PRESERVED (not lost)');
+      assert.ok(!/__RAW_footnote/.test(t), '#407: no raw footnoteReference/Definition survives normalization');
+      console.log('PASS: normalize-to-canonical: #407 GFM footnotes render literal, no content lost');
+    }
+    // Reference-link definition line → literal source; url PRESERVED; no vanish.
+    {
+      const t = texts(parseGfm('See [text][ref].\n\n[ref]: https://example.com/paper'));
+      assert.ok(t.includes('[ref]: https://example.com/paper'),
+        '#407: reference-link definition renders literal, url PRESERVED (not vanished)');
+      assert.ok(!/__RAW_definition/.test(t), '#407: no raw definition node survives normalization');
+      console.log('PASS: normalize-to-canonical: #407 reference-link definition renders literal');
+    }
+  }
 }

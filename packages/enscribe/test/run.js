@@ -92,6 +92,7 @@ import { run as runSpecDataDrift } from './coverage/spec-data.test.js';
 import { run as runCoverageFresh } from './coverage/coverage-fresh.test.js';
 import { run as runRegistriesGuard } from './registries-guard.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
+import { run as runCaretFootnoteSigil } from './caret-footnote-sigil.test.js';
 
 const suites = [
   ['plugins/doc-type',             runDocType],
@@ -151,6 +152,7 @@ const suites = [
   ['note-margin',                  runNoteMargin],
   ['library-src',                  runLibrarySrc],
   ['strict-mode',                  runStrictMode],
+  ['caret-footnote-sigil',         runCaretFootnoteSigil],
   ['lib/chapter-nav',              runChapterNav],
   ['config-options',               runConfigOptions],
   ['plugins/html-table-cells',     runHtmlTableCells],

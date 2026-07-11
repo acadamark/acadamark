@@ -109,8 +109,20 @@ function exitEnscribeTag(token) {
     return
   }
 
+  // `<^ …>` footnote sigil (#416): sugar for `<note | …>`. A thin parse-time
+  // DESUGAR — rewrite the source prefix `<^` to `<note |` and parse the NOTE
+  // longhand, so the footnote reuses the note machinery entirely (grammar,
+  // content handler, recursive-content, numbering, JATS) and is byte-identical
+  // to `<note | …>` by construction. The caret tokenizer (syntax.js) already
+  // claimed the span with the same `>`-close / depth-aware content model the note
+  // uses, so the rewritten source parses cleanly. v1 is content-only: everything
+  // after `<^ ` becomes the note's pipe content (an `#id` / `| ` in the body is
+  // literal text, not an attribute). NB source[0] is `<` here, so the `^{…}` sup
+  // shortcut (handled above by the source[0] === '^' branch) is unaffected.
+  const parseSource = source.startsWith('<^') ? '<note |' + source.slice(2) : source;
+
   try {
-    const parsed = peggyParse(source)
+    const parsed = peggyParse(parseSource)
     Object.assign(node, parsed)
     // Set contentHandler for all short-form tags (named and sigil). The grammar
     // doesn't call getContentHandler; we do it here, mirroring the long-form path.

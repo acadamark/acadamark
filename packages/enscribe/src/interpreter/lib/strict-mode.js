@@ -148,15 +148,22 @@ export function resolveStrictMode({ sigilProcessor, canonicalProcessor, option }
 // `!` flags the image form too (#317/2-F): it is markdown sugar with a canonical equivalent
 // (`<fig>` / `<img>`), so it belongs in the would-be-markdown flag set exactly like a link. The `!`
 // is only consumed when immediately followed by a `[…](…)`, so a bare `!` in prose is never flagged.
-const INLINE_MD_SRC = '\\*[^*\\n]+\\*|`[^`\\n]+`|!?\\[[^\\]\\n]+\\]\\([^)\\n]+\\)';
+// A GFM footnote REFERENCE `[^1]` (#407): not an enscribe idiom, always literal,
+// canonical replacement `<note>` / `<^ …>`. Flagged inline like a markdown link.
+// Distinct from the link pattern (which requires a trailing `(…)`) and from a
+// `[label]` link-reference (which has no leading `^`).
+const INLINE_MD_SRC = '\\*[^*\\n]+\\*|`[^`\\n]+`|!?\\[[^\\]\\n]+\\]\\([^)\\n]+\\)|\\[\\^[^\\]\\n]+\\]';
 // sigil tags `<# … #>` / `<$ … $>` / `` <` … `> `` and the `<->` / `<*>` item
 // markers — flagged only in canonical mode (where the sigil register is off too).
 // `<li>` is canonical and never matched here.
-const SIGIL_SRC = '<#+[^\\n]*?#+>|<\\$+[^\\n]*?\\$+>|<`+[^\\n]*?`+>|<->|<\\*>';
+const SIGIL_SRC = '<#+[^\\n]*?#+>|<\\$+[^\\n]*?\\$+>|<`+[^\\n]*?`+>|<->|<\\*>|<\\^[^\\n]*?>';
 const INLINE_MD = new RegExp(`(${INLINE_MD_SRC})`, 'g');
 const INLINE_MD_SIGIL = new RegExp(`(${INLINE_MD_SRC}|${SIGIL_SRC})`, 'g');
-// leading heading / quote / bullet / ordered-list markers (anchored per line).
-const LEADING_MD = /^(\s*(?:#{1,6}|>|[-+*]|\d+\.)\s)/;
+// leading heading / quote / bullet / ordered-list markers, plus a line-start
+// definition marker `[label]: ` — a GFM footnote definition `[^1]: …` or a
+// reference-link definition `[label]: url` (#407): both are always-literal
+// non-idioms whose canonical form is `<note>` / `<^ …>` / `<a>`. Anchored per line.
+const LEADING_MD = /^(\s*(?:#{1,6}|>|[-+*]|\d+\.|\[[^\]\n]+\]:)\s)/;
 
 function flagSpan(text) {
   return {
