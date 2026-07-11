@@ -59,13 +59,20 @@ See <ref @fig:elephant> for context.
 ## Methods
 
 We followed the protocol described in <cite jones2024>.
+
+<data>
+<library format=bibtex |
+@article{smith2023, author={Smith, Jane}, title={Elephants and Ecosystems}, journal={Nature}, year={2023}}
+@article{jones2024, author={Jones, Kwame}, title={Megafauna and Climate}, journal={Science}, year={2024}}
+>
+</data>
 ```
 
-Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, and a cross-reference to that figure. Referenceable elements take a typed colon-id (`#fig:elephant`), so a reference names both the kind of target and the target itself. The whole example compiles to standard, semantic HTML that any browser can render and any converter can process.
+Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, a cross-reference to that figure, and a small bibliography (the `<data>`/`<library>` block) the citations resolve against. Referenceable elements take a typed colon-id (`#fig:elephant`), so a reference names both the kind of target and the target itself. The whole example is self-contained: it compiles to standard, semantic HTML that any browser can render and any converter can process, with the citations, cross-reference, and figure all resolving from the source above.
 
 ## Status
 
-**enscribe v0.4.0 is released.** The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool. (v0.3.5 — the v0.3.0-close consolidation pass — shipped between.)
+**enscribe is released and usable today.** The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
 The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for the capability checklist (what works today), [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/`](notes/specs/) for the architecture. A full documentation site — guides, an authoring reference, and an in-browser playground — is authored in [`docs-source/`](docs-source/) and built (static + live) into [`site/`](site/) via `npm run build:site-all`.
 
@@ -73,7 +80,8 @@ Found a bug, or want a feature? Open an issue at [github.com/enscribejs/enscribe
 
 ## Install
 
-enscribe ships as three npm packages: **`@enscribejs/enscribe`** (the library — the eHTML vocabulary, the shorthand parser, and the interpreter), **`@enscribejs/cli`** (the `enscribe` command), and **`@enscribejs/ehtml`** (the vocabulary definitions, as data).
+<!-- re-true with #394 release: restore the "three npm packages" sentence once @enscribejs/ehtml publishes to the registry as an installable package -->
+enscribe installs as two npm packages today: **`@enscribejs/enscribe`** (the library — the eHTML vocabulary, the shorthand parser, and the interpreter) and **`@enscribejs/cli`** (the `enscribe` command). The vocabulary definitions are factored out as a third package, **`@enscribejs/ehtml`** (the vocabulary as data), which publishes to the registry with the next release.
 
 ```sh
 # The library, for use in a Node or browser project:
