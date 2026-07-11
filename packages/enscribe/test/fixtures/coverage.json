@@ -1,18 +1,18 @@
 {
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
-    "cells": 368,
+    "cells": 366,
     "fixtures": 96,
     "annexed": 19
   },
   "byStatus": {
-    "gap": 285,
+    "gap": 283,
     "pass": 64,
     "deferred": 18,
     "needs-review": 1
   },
   "byDisposition": {
-    "specified": 320,
+    "specified": 318,
     "generic-implicit": 19,
     "deferred-presentation": 18,
     "no-output": 8,
@@ -1838,43 +1838,9 @@
       "status": "gap"
     },
     {
-      "key": "cite/form:pipe",
-      "element": "cite",
-      "behavior": "form:pipe",
-      "area": "RQ-XREF",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-XREF-M1",
-        "RQ-XREF-M2",
-        "RQ-XREF-M3",
-        "RQ-XREF-M4",
-        "RQ-XREF-S1",
-        "RQ-XREF-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
       "key": "cite/form:slash",
       "element": "cite",
       "behavior": "form:slash",
-      "area": "RQ-XREF",
-      "disposition": "specified",
-      "predicates": [
-        "RQ-XREF-M1",
-        "RQ-XREF-M2",
-        "RQ-XREF-M3",
-        "RQ-XREF-M4",
-        "RQ-XREF-S1",
-        "RQ-XREF-S2"
-      ],
-      "coveredBy": [],
-      "status": "gap"
-    },
-    {
-      "key": "cite/form:long",
-      "element": "cite",
-      "behavior": "form:long",
       "area": "RQ-XREF",
       "disposition": "specified",
       "predicates": [

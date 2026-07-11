@@ -25,14 +25,14 @@
   }
 
   function emptyAttrs() {
-    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [] }
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], rawArgs: '' }
   }
 
   // #256: the default-attribute block for the shortcut rules, matching
   // from-markdown.js's defaultEnscribeTagAttrs() field-for-field (the two surfaces
   // must emit the same node shape). A fresh object per call (mutable [] / {} unaliased).
   function defaultAttrs() {
-    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], selfClosing: false }
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], rawArgs: '', selfClosing: false }
   }
 
   function applyAttributes(attrList) {
@@ -487,9 +487,15 @@ function peg$parse(input, options) {
   var peg$f47 = function(c) { return { type: 'enscribeParseError', subtype: 'unknown-escape-sequence', source: "\\" + c } };
   var peg$f48 = function() { return { type: 'enscribeParseError', subtype: 'unknown-escape-sequence', source: "\\" } };
   var peg$f49 = function(head, tail) {
-      return applyAttributes([head, ...tail.map(([, , , a]) => a)])
+      // #409: alongside the parsed attrs, capture the region's raw text verbatim
+      // (rawArgs). The generic parse treats commas as optional separators; a tag
+      // with a scoped interior grammar (cite) re-reads rawArgs under its own rules
+      // at the semantic layer. Capture-only — the parser stays meaning-free.
+      const result = applyAttributes([head, ...tail.map(([, , , a]) => a)])
+      result.rawArgs = text()
+      return result
     };
-  var peg$f50 = function() { return emptyAttrs() };
+  var peg$f50 = function() { const result = emptyAttrs(); result.rawArgs = text(); return result };
   var peg$f51 = function(v) { return { t: 'id', v } };
   var peg$f52 = function(v) { return { t: 'atref', v } };
   var peg$f53 = function(v) { return { t: 'class', v } };

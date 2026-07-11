@@ -211,6 +211,18 @@ Whitespace separates attributes from each other. Between attributes, any amount 
 
 A `|` cannot appear in long form. A construct uses one form or the other, not both.
 
+### Per-tag argument interiors (`rawArgs`)
+
+Commas between attributes are optional separators (whitespace-equivalent), and the
+generic attribute parse does not preserve them. Some tags give their **arguments
+region** its own scoped mini-language where commas and semicolons carry meaning —
+the same per-tag-interior move as opaque DSL content, applied to the args region.
+To support this, the parser captures the arguments region's raw text verbatim on
+every node (`rawArgs`, below); the tag's semantic layer re-reads it under the
+tag's own grammar. The parser itself stays meaning-free — it captures, never
+interprets. First consumer: `<cite>`'s citation item grammar (#409, Pandoc's
+`prefix @key, locator suffix; …` — specified in `cite.md`).
+
 ## Closing rules
 
 ### Short form
@@ -420,6 +432,8 @@ For each parsed construct, the parser produces a structured node with the follow
   id: "elephant",              // string or null
   classes: ["numbered"],       // array of strings
   atRefs: ["smith2023"],       // array of strings — @-references (e.g. <ref @fig:x>)
+  rawArgs: " csv align=right",  // the arguments region's raw text, verbatim (#409 —
+                               // consumed by per-tag interior grammars, e.g. <cite>)
   content: <child nodes or opaque string>,
   isOpaqueContent: false,      // false for prose-bearing tags; true for DSL/math/code
   selfClosing: false           // true for `<tag />` self-closing form, else false

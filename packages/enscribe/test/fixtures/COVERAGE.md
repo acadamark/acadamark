@@ -7,10 +7,10 @@
 
 ## Summary
 
-- **Behavior cells:** 368  ·  **fixtures:** 96  ·  **annexed (generated) elements:** 19
+- **Behavior cells:** 366  ·  **fixtures:** 96  ·  **annexed (generated) elements:** 19
 - **Covered:** 64 (17%)
-- **By status:** `deferred` 18 · `gap` 285 · `needs-review` 1 · `pass` 64
-- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 19 · `needs-review` 1 · `no-output` 8 · `specified` 320
+- **By status:** `deferred` 18 · `gap` 283 · `needs-review` 1 · `pass` 64
+- **By disposition:** `alias` 2 · `deferred-presentation` 18 · `generic-implicit` 19 · `needs-review` 1 · `no-output` 8 · `specified` 318
 
 An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` cell links a filed render-quality bug. A `deferred` cell is a marked boundary, not a hole.
 
@@ -392,9 +392,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 | `cite` | kwarg:prefix | specified | — | 🔴 gap |
 | `cite` | kwarg:suffix | specified | — | 🔴 gap |
 | `cite` | kwarg:style | specified | — | 🔴 gap |
-| `cite` | form:pipe | specified | — | 🔴 gap |
 | `cite` | form:slash | specified | — | 🔴 gap |
-| `cite` | form:long | specified | — | 🔴 gap |
 | `ref` | base | specified | — | 🔴 gap |
 | `ref` | id | specified | — | 🔴 gap |
 | `ref` | class | specified | — | 🔴 gap |

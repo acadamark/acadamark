@@ -29,8 +29,10 @@ enscribe_attributes:
     page:
       handled_by: handler
       notes: |
-        Page number or page range for the citation locator.
-        E.g., <cite goodall2024 page=42>.
+        Page number or range — the kwarg long form of the locator (#409),
+        the escape hatch for values the inline grammar cannot express
+        (page="iv, vi-xi"). E.g., <cite @goodall2024 page=42>. Single-key
+        cites only; see cite.md §"The citation item grammar".
     chapter:
       handled_by: handler
       notes: |
@@ -53,8 +55,10 @@ enscribe_attributes:
       values: [author-year, numbered, footnote, endnote, inline-author-year, default]
       default: default
       notes: |
-        Override the document-level citation style for this citation.
-        "default" uses the document-level <citation-style> from <config>.
+        RESERVED — accepted but unwired (#409): the per-citation style
+        override is a future slice; today the document-level style
+        always applies. Documented here so the acceptance is not read
+        as support.
 content:
   shape:
     contains: [inline]
@@ -87,20 +91,23 @@ shorthand_examples:
     notes: |
       Multiple citation keys group into one citation marker. The resolver
       handles the joining (with separators appropriate to the style).
-  - source: 'See <cite goodall2024 page=42> for details.'
-    ehtml: '<p>See <cite data-cite-keys="goodall2024" data-page="42">(Goodall 2024, p. 42)</cite> for details.</p>'
+  - source: 'See <cite @goodall2024, p. 42> for details.'
+    ehtml: '<p>See <cite class="cite" data-keys="goodall2024">(Goodall, 2024, p. 42)</cite> for details.</p>'
     notes: |
-      A citation with a page locator. The locator renders alongside the
+      A citation with a page locator (the #409 item grammar; the kwarg long
+      form `<cite @goodall2024 page=42>` renders identically). The locator
+      flows through the CSL style, which renders alongside the
       citation marker.
-  - source: 'See also <cite goodall2024 prefix="cf." page=42-45>.'
-    ehtml: '<p>See also <cite data-cite-keys="goodall2024" data-prefix="cf." data-page="42-45">(cf. Goodall 2024, pp. 42-45)</cite>.</p>'
+  - source: 'See also <cite cf. @goodall2024, pp. 42-45>.'
+    ehtml: '<p>See also <cite class="cite" data-keys="goodall2024">(cf. Goodall, 2024, pp. 42–45)</cite>.</p>'
     notes: |
-      Citation with prefix and page range.
+      Citation with a positional prefix and a page range (Pandoc grammar).
   - source: 'A specific work <cite goodall2024 style=footnote>.'
-    ehtml: '<p>A specific work <cite data-cite-keys="goodall2024" data-citation-style="footnote">¹</cite>.</p>'
+    ehtml: '<p>A specific work <cite class="cite" data-keys="goodall2024">(Goodall, 2024)</cite>.</p>'
     notes: |
-      Per-citation style override. This citation renders as a footnote
-      marker even if the document-level style is something else.
+      style= is RESERVED and unwired (#409): the per-citation style
+      override is its own future slice. Today the kwarg is accepted and
+      has no effect — the citation renders in the document-level style.
 # <cite> is resolved by the cite-resolution plugin into an internal marker node
 # (__cite-marker / __cite-error, dispatched via INTERNAL_REGISTRY) — it is NOT
 # dispatched through HANDLER_REGISTRY, so it declares no handler_module. Its
@@ -129,49 +136,107 @@ For cross-references to numbered elements within the document (figures, equation
 
 ## Authoring
 
-The basic form takes one or more citation keys as positional arguments:
+The basic form takes one or more citation keys:
 
 ```
 <cite goodall2024>
+<cite @goodall2024>
 ```
 
-The key (`goodall2024`) must match the id of a bibliography entry, whether the entry comes from an external `.bib` file, a `<library>` block in `<data>`, or a `<bib-entry>` element.
+The key must match the id of a bibliography entry, whether the entry comes from an external `.bib` file, a `<library>` block in `<data>`, or a `<bib-entry>` element. The `@` marker is the canonical form and is what makes the item grammar below unambiguous; bare keys remain accepted as a plain key list.
 
 **Multiple citations grouped.**
 
 ```
 <cite goodall2024 attenborough2020 darwin1859>
+<cite @goodall2024, @attenborough2020>
 ```
 
 The resolver joins them with style-appropriate separators (semicolons in author-year, commas in numbered).
 
-**Citation with locator.**
+## The citation item grammar (#409 — Pandoc's, adopted)
+
+Inside `<cite>`, the arguments region is a small citation-specific language — the same
+per-tag-interior move as `<library bibtex | …>`, math, and code — with **Pandoc's grammar**
+(what Quarto and RMarkdown authors already have in their fingers), using enscribe's `@` as
+the key marker:
 
 ```
-<cite goodall2024 page=42>
-<cite goodall2024 page=42-45>
-<cite goodall2024 chapter=3 section="3.2">
+cite-interior = item (';' item)*          ; also: ',' before '@' starts a new item
+item          = [prefix] '@' key [',' locator-part]
+locator-part  = locator-term locator-value [suffix]   ; recognized locator
+              | number [suffix]                        ; bare number ⇒ page
+              | suffix                                 ; no locator, prose suffix
+prefix        = prose (no '@')            ; e.g. "see", "cf."
+suffix        = prose to the item's end   ; e.g. "and passim"
 ```
 
-The locator information (page, chapter, section) is included in the rendered citation.
-
-**Citation with prefix or suffix.**
+Worked forms (with the document's citation style rendering the result):
 
 ```
-<cite goodall2024 prefix="see also">
-<cite goodall2024 prefix="cf." page=42>
-<cite goodall2024 suffix="; emphasis added">
+<cite @smith2023, p. 42>                     →  (Smith, 2023, p. 42)
+<cite @smith2023, p. 42; @jones2024, ch. 3>  →  (Jones, 2024, chap. 3; Smith, 2023, p. 42)
+<cite see @smith2023, pp. 33-35>             →  (see Smith, 2023, pp. 33–35)
+<cite @smith2023, p. 42 and passim>          →  (Smith, 2023, p. 42 and passim)
+<cite @smith2023, 42>                        →  (Smith, 2023, p. 42)   (bare number ⇒ page)
 ```
 
-Prefix appears before the citation; suffix appears after.
+Each item's `{prefix, key, locator, label, suffix}` flows through the CSL renderer
+(citation-js) as a citeproc citation item, so the style — not enscribe — renders locator
+labels, punctuation, and ordering.
 
-**Per-citation style override.**
+**Locator vocabulary (v1)** — the recognized locator terms and the CSL label each maps to:
+
+| CSL label | Recognized terms |
+|---|---|
+| page | `p.` `pp.` `p` `pp` `page` `pages` (and a bare number) |
+| chapter | `ch.` `chap.` `ch` `chapter` `chapters` |
+| section | `sec.` `sec` `section` `sections` `§` |
+| figure | `fig.` `fig` `figure` `figures` |
+| note | `n.` `n` `note` `notes` |
+| volume | `vol.` `vol` `volume` `volumes` |
+| paragraph | `para.` `para` `paragraph` `¶` |
+
+The locator value is the maximal following run of page-like tokens (digits, ranges,
+roman numerals, colons); anything after it is the suffix. A value the run heuristic
+cannot express (e.g. `iv, vi-xi` — a comma inside the value) uses the kwarg long form
+below, the same escape-hatch role as Pandoc's `{…}`.
+
+**The disambiguation rule (precise).** An interior with no `@` anywhere is a plain
+key list, exactly as before (`<cite a, b>` = keys `a`,`b`). With `@` present: `;`
+always separates items, and a `,` followed by an `@`-key starts a new item — so
+`<cite @a, @b>` stays a two-key group and a locator can never silently eat a key.
+Conversely a key can never silently eat a locator: within one item the locator part
+begins only after the item's single `@`-key's comma. An item containing more than one
+`@`-key (no separator between them) is malformed — it renders the visible
+`??cite: …??` marker carrying the raw item text (always-renders; the other items in
+the same `<cite>` still resolve), so ambiguity is flagged, never guessed.
+
+**The kwarg long form** (the explicit escape hatch — kept per #409, now wired):
 
 ```
-<cite goodall2024 style=footnote>
+<cite @goodall2024 page=42>
+<cite @goodall2024 page="iv, vi-xi">
+<cite @goodall2024 chapter=3>
+<cite @goodall2024 prefix="see also" suffix="and passim">
 ```
 
-Overrides the document-level style for this citation only. Useful for mixed-style documents.
+`page=` / `chapter=` / `section=` / `figure=` / `note=` / `volume=` / `paragraph=`
+set the locator (label = the kwarg name); `prefix=` / `suffix=` set the item prose.
+The kwarg form addresses a SINGLE-key cite; on a multi-key cite a locator/prefix/suffix
+kwarg is ambiguous and renders the visible marker instead of guessing an owner.
+When the inline grammar and a kwarg both carry a locator, the citation renders with
+the inline locator and a visible marker flags the ignored kwarg beside it — nothing
+is silently merged or dropped.
+
+**Migration note (previously silent forms).** Before #409 these kwargs — and inline
+locator prose — were accepted and silently dropped. They now work as specified above.
+The custom-text pipe form (`<cite @key | some text>`) is retired: it never worked
+(the content was read as a key list), Pandoc's model has no replace-the-citation
+override, and prefix/suffix cover the intent — a `<cite>` carrying pipe/long-form
+content renders the visible marker naming the unsupported form. The `style=` kwarg
+remains **reserved and unwired** (per-citation style override is its own future
+slice); it is not a locator and is not claimed to work.
 
 ## Citation styles
 

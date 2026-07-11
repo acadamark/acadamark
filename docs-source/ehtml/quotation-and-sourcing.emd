@@ -168,12 +168,12 @@ the same eHTML output.*
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `keys` | kwarg |  | One or more citation keys, supplied as positional arguments. |
-| `page` | kwarg |  | Page number or page range for the citation locator. |
+| `page` | kwarg |  | Page number or range — the kwarg long form of the locator (#409), the escape hatch for values the inline grammar cannot express (page="iv, vi-xi"). |
 | `chapter` | kwarg |  | Chapter reference within the cited work. |
 | `section` | kwarg |  | Section reference within the cited work. |
 | `prefix` | kwarg |  | Text to appear before the citation. |
 | `suffix` | kwarg |  | Text to appear after the citation. |
-| `style` | kwarg | `author-year` `numbered` `footnote` `endnote` `inline-author-year` `default` (default `default`) | Override the document-level citation style for this citation. |
+| `style` | kwarg | `author-year` `numbered` `footnote` `endnote` `inline-author-year` `default` (default `default`) | RESERVED — accepted but unwired (#409): |
 
 Produced by: canonical `<cite>`.
 
@@ -200,21 +200,23 @@ Multiple sources confirm this <cite goodall2024 attenborough2020 darwin1859>.
 handles the joining (with separators appropriate to the style).*
 
 <code #code:eh-cite-3>
-See <cite goodall2024 page=42> for details.
+See <cite @goodall2024, p. 42> for details.
 </code>
 
 *(Rendered preview omitted — a `<cite>` resolves against a document-scope `<library>`, which a sealed preview cannot carry; a cite that cannot resolve renders a visible `??cite: …??` marker.)*
 
-*A citation with a page locator. The locator renders alongside the
+*A citation with a page locator (the #409 item grammar; the kwarg long
+form `&lt;cite @goodall2024 page=42&gt;` renders identically). The locator
+flows through the CSL style, which renders alongside the
 citation marker.*
 
 <code #code:eh-cite-4>
-See also <cite goodall2024 prefix="cf." page=42-45>.
+See also <cite cf. @goodall2024, pp. 42-45>.
 </code>
 
 *(Rendered preview omitted — a `<cite>` resolves against a document-scope `<library>`, which a sealed preview cannot carry; a cite that cannot resolve renders a visible `??cite: …??` marker.)*
 
-*Citation with prefix and page range.*
+*Citation with a positional prefix and a page range (Pandoc grammar).*
 
 <code #code:eh-cite-5>
 A specific work <cite goodall2024 style=footnote>.
@@ -222,8 +224,9 @@ A specific work <cite goodall2024 style=footnote>.
 
 *(Rendered preview omitted — a `<cite>` resolves against a document-scope `<library>`, which a sealed preview cannot carry; a cite that cannot resolve renders a visible `??cite: …??` marker.)*
 
-*Per-citation style override. This citation renders as a footnote
-marker even if the document-level style is something else.*
+*style= is RESERVED and unwired (#409): the per-citation style
+override is its own future slice. Today the kwarg is accepted and
+has no effect — the citation renders in the document-level style.*
 
 </section>
 

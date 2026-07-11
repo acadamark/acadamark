@@ -20,6 +20,7 @@ export function defaultEnscribeTagAttrs() {
     id: null,
     classes: [],
     atRefs: [],
+    rawArgs: '',
     selfClosing: false,
   };
 }

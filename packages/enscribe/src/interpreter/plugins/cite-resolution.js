@@ -28,6 +28,7 @@
 import { makeInternalMarker } from '../../core/tag.js';
 import { walkReplace } from '../../core/walkers/walk-replace.js';
 import { ENSCRIBE_CITATIONS } from '../../core/file-data-keys.js';
+import { parseCiteInterior, mergeKwargLocators } from '../lib/cite-items.js';
 import { extractPlainText } from '../lib/ast-helpers.js';
 
 // ─── Key extraction ───────────────────────────────────────────────────────────
@@ -102,11 +103,50 @@ export function enscribeCiteResolution() {
     const { cite, order, style } = citations ?? {};
 
     function processCite(node) {
-      const keys = extractCiteKeys(node);
+      // #409: the retired custom-text form — pipe/long content on <cite> was silently
+      // read as a key list before; it now flags visibly (prefix/suffix carry the intent).
+      const contentText = typeof node.content === 'string' ? node.content.trim()
+        : Array.isArray(node.content) && node.content.length > 0 ? extractPlainText(node.content, { trim: true })
+        : '';
+      if (contentText) {
+        file?.message?.(`cite-resolution: custom text is not a citation form (use prefix/suffix, #409): "${contentText}"`, node);
+        return [makeCiteError([`${contentText} — custom text is not supported; use prefix/suffix`])];
+      }
 
-      if (keys.length === 0) {
+      // #409: parse the interior under the citation item grammar (cite.md). rawArgs is
+      // the parser's verbatim capture of the args region; a node without one (synthesized
+      // trees) falls back to the legacy key channels.
+      let items;
+      let malformed = [];
+      if (typeof node.rawArgs === 'string' && node.rawArgs.trim() !== '') {
+        const parsed = parseCiteInterior(node.rawArgs);
+        if (parsed.kind === 'legacy') items = parsed.keys.map((key) => ({ key, prefix: '', locator: '', label: '', suffix: '' }));
+        else { items = parsed.items; malformed = parsed.malformed; }
+      } else {
+        items = extractCiteKeys(node).map((key) => ({ key, prefix: '', locator: '', label: '', suffix: '' }));
+      }
+
+      // The kwarg long form (page=/chapter=/…, prefix=, suffix=) merges onto a
+      // single-item cite; conflicts and multi-item ambiguity flag, never guess.
+      const merged = mergeKwargLocators(items, node.kwargs);
+      items = merged.items;
+      for (const conflict of merged.conflicts) {
+        file?.message?.(`cite-resolution: ${conflict}`, node);
+        malformed.push(conflict);
+      }
+      for (const bad of malformed) {
+        file?.message?.(`cite-resolution: malformed citation item (see cite.md's item grammar): "${bad}"`, node);
+      }
+
+      const keys = items.map((it) => it.key);
+
+      if (keys.length === 0 && malformed.length === 0) {
         file?.message?.('cite-resolution: <cite> has no keys', node);
         return [makeCiteError(['(empty)'])];
+      }
+      if (keys.length === 0) {
+        // Only malformed items: every one renders its visible marker.
+        return malformed.map((bad) => makeCiteError([bad]));
       }
 
       // #395 D1 (always-renders): no library in scope is not a no-op. The
@@ -117,17 +157,15 @@ export function enscribeCiteResolution() {
         return [makeCiteError(keys)];
       }
 
-      // Partition into found and missing.
-      const foundKeys = [];
+      // Partition into found and missing (by each item's key).
+      const foundItems = [];
       const missingKeys = [];
-      for (const key of keys) {
-        const entry = cite.data.find(e => e.id === key);
-        if (entry) {
-          foundKeys.push(key);
-        } else {
-          missingKeys.push(key);
-        }
+      for (const item of items) {
+        const entry = cite.data.find(e => e.id === item.key);
+        if (entry) foundItems.push(item);
+        else missingKeys.push(item.key);
       }
+      const foundKeys = foundItems.map((it) => it.key);
 
       // Warn about missing keys.
       for (const key of missingKeys) {
@@ -143,10 +181,21 @@ export function enscribeCiteResolution() {
       const replacements = [];
 
       if (foundKeys.length > 0) {
+        // #409: an item with locator/prefix/suffix flows through citation-js as a full
+        // citeproc citation item — the CSL style renders labels, punctuation, and order
+        // (Phase 0: 0.7.22 supports this natively). Bare-key cites keep the plain
+        // key-array call, byte-identical to the pre-#409 render.
+        const bare = foundItems.every((it) => !it.locator && !it.prefix && !it.suffix);
+        const entry = bare ? foundKeys : foundItems.map((it) => ({
+          id: it.key,
+          ...(it.locator ? { locator: it.locator, label: it.label || 'page' } : {}),
+          ...(it.prefix ? { prefix: it.prefix.endsWith(' ') ? it.prefix : it.prefix + ' ' } : {}),
+          ...(it.suffix ? { suffix: it.suffix.startsWith(' ') ? it.suffix : ' ' + it.suffix } : {}),
+        }));
         let html;
         try {
           html = cite.format('citation', {
-            entry: foundKeys,
+            entry,
             template: style,
             format: 'html',
             lang: 'en-US',
@@ -161,6 +210,9 @@ export function enscribeCiteResolution() {
 
       if (missingKeys.length > 0) {
         replacements.push(makeCiteError(missingKeys));
+      }
+      for (const bad of malformed) {
+        replacements.push(makeCiteError([bad]));
       }
 
       // If all keys were missing, replacements = [__cite-error]. Good.

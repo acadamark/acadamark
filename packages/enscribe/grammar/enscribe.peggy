@@ -58,14 +58,14 @@
   }
 
   function emptyAttrs() {
-    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [] }
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], rawArgs: '' }
   }
 
   // #256: the default-attribute block for the shortcut rules, matching
   // from-markdown.js's defaultEnscribeTagAttrs() field-for-field (the two surfaces
   // must emit the same node shape). A fresh object per call (mutable [] / {} unaliased).
   function defaultAttrs() {
-    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], selfClosing: false }
+    return { positional: [], booleans: {}, kwargs: {}, id: null, classes: [], atRefs: [], rawArgs: '', selfClosing: false }
   }
 
   function applyAttributes(attrList) {
@@ -443,9 +443,15 @@ BraceContentItem
 
 Attributes
   = _ head:Attribute tail:(_ ","? _ Attribute)* _ {
-      return applyAttributes([head, ...tail.map(([, , , a]) => a)])
+      // #409: alongside the parsed attrs, capture the region's raw text verbatim
+      // (rawArgs). The generic parse treats commas as optional separators; a tag
+      // with a scoped interior grammar (cite) re-reads rawArgs under its own rules
+      // at the semantic layer. Capture-only — the parser stays meaning-free.
+      const result = applyAttributes([head, ...tail.map(([, , , a]) => a)])
+      result.rawArgs = text()
+      return result
     }
-  / _ { return emptyAttrs() }
+  / _ { const result = emptyAttrs(); result.rawArgs = text(); return result }
 
 Attribute
   = Id
