@@ -30,6 +30,12 @@ For v1, CSS float places each note in the margin near its marker. **Precise top-
 - **Markers / numbering** — the existing footnote markers and numbering, reused as-is.
 - **JATS / semantics** — a sidenote exports identically to a footnote; the margin placement is display-only and never reaches the archival channel.
 
+## Placement — the note-list always finds a home (#406)
+
+The default (`note-position=bottom`) collects a document's notes into one computed `<note-list>` placed in the back-matter region (`<article-back>` / `<book-back>`), or at an authored `<endnotes>` placement marker. A `<note-list>` is a render *product*, never authored (Rule 2), so it must always find a home — a note body is never dropped for want of one (always-renders). When a document has collected notes but **neither an `<article>` nor a `<book>` root** to hold a back-matter region — the three confirmed rootless shapes: a website master rendered directly, a standalone `<meta type=book-part>` chapter, and a root-level canonical `<book-part>` in an untyped document — the renderer **improvises a home at the document's end**, emitting the *same* `<note-list>` as the last element (not a parallel variant). This is not exempted by margin mode: margin notes still render a below-breakpoint fallback `<note-list>`, which lands in the improvised home too, so both the margin projection and the fallback survive.
+
+An **empty note apparatus renders nothing**, not an empty shell. A document (or chapter) with zero notes emits no `<note-list>` — and any authored `<endnotes>` placement marker with nothing to place is swept so it never reaches output as a raw `<endnotes></endnotes>` (a placement marker must never render raw). This matches the by-design empty-apparatus suppression that an authored `<bibliography>` with zero resolved citations gets — empty apparatus stays invisible.
+
 ## Margin notes — `<note position=margin>` (#333)
 
 A **margin note** is a note positioned in the margin — one note type, three positions (`foot`, `end`, `margin`), not a separate element. The former `<marginnote>` element was collapsed into `<note position=margin>` (#333); numbering is independent of position.

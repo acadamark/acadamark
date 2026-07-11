@@ -25,6 +25,7 @@ import { run as runWalkNormalize } from './lib/walk-normalize.test.js';
 import { run as runAstHelpers } from './lib/ast-helpers.test.js';
 import { run as runNotes } from './plugins/notes.test.js';
 import { run as runNotePlacement } from './plugins/note-placement.test.js';
+import { run as runNoteHomelessHome } from './note-homeless-home.test.js';
 import { run as runLibraryLoad } from './plugins/library-load.test.js';
 import { run as runAssetLoad } from './plugins/asset-load.test.js';
 import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
@@ -123,6 +124,7 @@ const suites = [
   ['lib/ast-helpers',              runAstHelpers],
   ['plugins/notes',                runNotes],
   ['plugins/note-placement',        runNotePlacement],
+  ['note-homeless-home',           runNoteHomelessHome],
   ['plugins/library-load',         runLibraryLoad],
   ['plugins/asset-load',           runAssetLoad],
   ['plugins/cite-resolution',      runCiteResolution],
