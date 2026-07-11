@@ -48,6 +48,43 @@ export function run_tests() {
     console.log('PASS: render → self-contained HTML');
   }
 
+  // ── render default → complete styled standalone page (#395 D2 / audit W3) ───
+  {
+    const { out } = invoke(['render', FIXTURE]);
+    assert.ok(out.startsWith('<!DOCTYPE html>'), 'default output opens with the doctype (standards mode)');
+    assert.ok(out.includes('<meta charset="UTF-8">'), 'charset present');
+    assert.match(out, /<title>[^<]+<\/title>/, 'a real <title> derived from the document');
+    assert.ok(out.includes('--enscribe-content-width'), 'default stylesheet inlined (styled by default)');
+    assert.ok(out.trimEnd().endsWith('</html>'), 'the page closes properly');
+
+    // --fragment: the pre-#395 bare-eHTML output, demoted to an explicit choice.
+    const frag = invoke(['render', FIXTURE, '--fragment']);
+    assert.equal(frag.code, 0, '--fragment exits 0');
+    assert.ok(!frag.out.includes('<!DOCTYPE') && !frag.out.includes('<title>'), '--fragment has no shell');
+    assert.ok(!frag.out.includes('--enscribe-content-width'), '--fragment inlines no default stylesheet');
+    assert.ok(frag.out.includes('<article>'), '--fragment still carries the document');
+
+    // --css replaces the inlined default stylesheet with a link.
+    const linked = invoke(['render', FIXTURE, '--css', 'house.css']);
+    assert.ok(linked.out.includes('<link rel="stylesheet" href="house.css">'), '--css links the given sheet');
+    assert.ok(!linked.out.includes('--enscribe-content-width'), '--css REPLACES the default sheet (not adds)');
+
+    // --emit-css makes the default stylesheet obtainable (audit W3); no input needed.
+    const css = invoke(['render', '--emit-css']);
+    assert.equal(css.code, 0, '--emit-css exits 0 without an input document');
+    assert.ok(css.out.includes('--enscribe-content-width') && !css.out.includes('<!DOCTYPE'), '--emit-css prints the raw stylesheet');
+
+    // --fragment + --css is a contradiction, refused helpfully.
+    const clash = invoke(['render', FIXTURE, '--fragment', '--css', 'x.css']);
+    assert.equal(clash.code, 1, '--fragment --css exits 1');
+    assert.ok(clash.err.includes('--fragment'), 'the conflict message names the flags');
+
+    // --title overrides the derived title.
+    const titled = invoke(['render', FIXTURE, '--title', 'My Page']);
+    assert.ok(titled.out.includes('<title>My Page</title>'), '--title overrides the derived title');
+    console.log('PASS: render default → styled standalone; --fragment/--css/--emit-css/--title surface');
+  }
+
   // ── render --no-embed → external asset links ────────────────────────────────
   {
     const { code, out } = invoke(['render', FIXTURE, '--no-embed']);
@@ -63,7 +100,7 @@ export function run_tests() {
     assert.equal(toc.code, 0, 'render --toc exits 0');
     assert.ok(toc.out.includes('<nav class="enscribe-toc"') && toc.out.includes('enscribe-layout--toc'), '--toc adds the ToC nav + layout');
     assert.ok(toc.out.includes('href="#sec:intro"'), '--toc links the sections');
-    assert.ok(!plain.out.includes('enscribe-toc'), 'no --toc → no ToC markup (opt-in)');
+    assert.ok(!plain.out.includes('<nav class="enscribe-toc"'), 'no --toc → no ToC markup (opt-in)');
     // bad value rejected
     const bad = invoke(['render', FIXTURE, '--toc=sidebar']);
     assert.equal(bad.code, 1, "--toc with a bad value exits 1");
@@ -95,7 +132,7 @@ export function run_tests() {
     const withPaging = invoke(['render', BOOK_FIXTURE, '--toc', '--chapter-nav']);
     assert.ok(paging(withPaging.out), '--chapter-nav opts INTO the single-chapter paging view');
     const noToc = invoke(['render', BOOK_FIXTURE]);
-    assert.ok(!paging(noToc.out) && !noToc.out.includes('enscribe-layout--book'), 'no --toc → no chrome, no paging');
+    assert.ok(!paging(noToc.out) && !noToc.out.includes('class="enscribe-layout--book'), 'no --toc → no chrome, no paging');
     console.log('PASS: render book --toc → reading interface; --chapter-nav → opt-in paging');
   }
 

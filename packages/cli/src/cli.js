@@ -16,9 +16,11 @@
 // filesystem-bound CLI surface.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSync } from 'node:fs';
-import { dirname, resolve, join, basename } from 'node:path';
+import { dirname, resolve, join, basename, extname } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages, extractDocumentTitle } from '@enscribejs/enscribe';
+import { emitDocumentShell } from '@enscribejs/enscribe/shell/document-shell.js';
+import { escapeHtmlAttr } from '@enscribejs/enscribe/core/escape-html';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { renderArticleDocument, assembleAndNumber } from './render-document.js';
 import { buildLiveFolder, buildSingleFile, copyShellAssets } from './build-live.js';
@@ -143,24 +145,45 @@ Options:
   -h, --help           Show this help
 `;
 
-const RENDER_HELP = `enscribe render — render an Enscribe document to HTML
+const RENDER_HELP = `enscribe render — render an Enscribe document to a complete, styled HTML page
+
+The default output is a standalone document: doctype, <title> taken from the
+document's own <title> element, and the default stylesheet inlined — pipe it to
+a file and open it, nothing else needed.
 
 Usage:
   enscribe render <input.emd> [options]
 
+Examples:
+  enscribe render paper.emd -o paper.html      # styled, self-contained page
+  enscribe render paper.emd --css house.css    # link YOUR stylesheet instead
+  enscribe render --emit-css > enscribe.css    # obtain the default stylesheet
+  enscribe render paper.emd --fragment         # bare eHTML for embedding
+
 Options:
-  -o, --output <file>  Write HTML to <file> (default: stdout)
-  --embed              Self-contained HTML, assets inlined (default)
-  --no-embed           Link assets externally (fonts / KaTeX CSS from CDNs)
-  --dsl-mode <mode>    DSL rendering mode: skip (default), live-link,
-                       live-inline, static
+  -o, --output <file>  Write to <file> (default: stdout)
+  --fragment           Emit the bare eHTML fragment (no doctype/head/stylesheet)
+                       for embedding in a host page or pipeline — the pre-1.0
+                       default, now opt-in
+  --css <path-or-url>  Link the given stylesheet from <head> INSTEAD of inlining
+                       the default one (theme a set of documents with one file;
+                       pair with --emit-css to start from the default sheet)
+  --emit-css           Print the default stylesheet and exit (no input needed)
+  --title <text>       Override the derived page title
+  --embed              Self-contained math/font assets, inlined (default)
+  --no-embed           Link math/font assets from CDNs instead (smaller file,
+                       needs network; the document stylesheet is inlined either
+                       way — use --css to externalize it)
+  --dsl-mode <mode>    Diagram (Mermaid/ABC) rendering: live-inline (default
+                       when embedding), live-link (default with --no-embed),
+                       static, skip
   --toc                Add a table-of-contents sidebar (--toc=auto to show it
-                       only past three sections). Needs default.css to display.
-  --theme <name>       Apply a theme: default, modern, or compact. Injects the
-                       theme's token overrides inline (needs default.css too).
+                       only past three sections)
+  --theme <name>       Apply a theme: default, modern, or compact (injects the
+                       theme's token overrides after the stylesheet)
   --chapter-nav        For a book with --toc, opt into the single-chapter PAGING
                        view (default off — the book renders as one scrolling
-                       document with chapter-navigation chrome).
+                       document with chapter-navigation chrome)
   --quiet              Suppress warnings
   -h, --help           Show this help
 `;
@@ -238,6 +261,7 @@ function parseCommandArgs(args) {
     embed: undefined, dslMode: undefined, quiet: false, markdown: false, emd: false,
     toc: undefined, theme: undefined, chapterNav: undefined, from: undefined,
     pages: undefined, package: false, assetDelivery: undefined,
+    fragment: false, css: undefined, emitCss: false,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -271,6 +295,12 @@ function parseCommandArgs(args) {
       opts.theme = a.slice('--theme='.length);
     } else if (a === '--chapter-nav') opts.chapterNav = true;
     else if (a === '--no-chapter-nav') opts.chapterNav = false;
+    else if (a === '--fragment') opts.fragment = true;
+    else if (a === '--css') {
+      opts.css = args[++i];
+      if (opts.css == null) throw new CliError('--css needs a stylesheet path or URL');
+    } else if (a.startsWith('--css=')) opts.css = a.slice('--css='.length);
+    else if (a === '--emit-css') opts.emitCss = true;
     else if (a === '--separate-pages') opts.pages = 'separate';
     else if (a === '--single-page') opts.pages = 'single';
     else if (a === '--live') opts.live = true;
@@ -350,13 +380,32 @@ function doRender(opts) {
   if (opts.theme) pipeOpts.theme = opts.theme;
   if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
 
+  // #395 D2 (audit W3): the DEFAULT output is a complete, styled, standalone document —
+  // the fragment wrapped in the minimal document shell (doctype/charset/viewport, a real
+  // <title> derived from the document, default.css inlined). What a newcomer pipes to a
+  // file and opens must look finished, like `quarto render` / `pandoc -s`. The fragment
+  // keeps carrying its own font/KaTeX assets per --embed/--no-embed (the shell adds none).
+  // --fragment restores the bare-eHTML fragment (for embedding into a host page/pipeline);
+  // --css <path-or-url> REPLACES the inlined default stylesheet with a <link> (an author
+  // theming N documents wants one stylesheet, not N inlined copies; the default sheet is
+  // obtainable via --emit-css). default.css is ~40 KB — small enough to inline under both
+  // embed modes (--no-embed governs the ~260 KB font/KaTeX payload, not the stylesheet).
+  const wrap = (html) => {
+    if (opts.fragment) return html;
+    const title = opts.title ?? (extractDocumentTitle(src) || basename(opts.input, extname(opts.input)));
+    const stylesheet = opts.css
+      ? `<link rel="stylesheet" href="${escapeHtmlAttr(opts.css)}">`
+      : `<style>\n${readDefaultCss()}\n</style>`;
+    return emitDocumentShell(html, { title, stylesheet });
+  };
+
   // #133: external <library src> loading. Filesystem paths are read synchronously
   // inside the pipeline (assetsDir, unchanged). URL sources need an async fetch, so
   // when any are present this returns a Promise the dispatcher awaits; otherwise it
   // stays synchronous (so the 33 existing sync test call sites are unaffected).
   const urlSrcs = collectLibrarySources(src).filter((s) => URL_SCHEME.test(s));
   const renderSync = (input) =>
-    withQuiet(opts.quiet, () => renderArticleDocument(input, pipeOpts));
+    wrap(withQuiet(opts.quiet, () => renderArticleDocument(input, pipeOpts)));
   if (urlSrcs.length === 0) return renderSync(src);
   return preloadSources(urlSrcs, fetchSourceText).then((loaded) =>
     renderSync({ value: src, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
@@ -605,6 +654,12 @@ export function run(argv, io = {}) {
       case 'render': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(RENDER_HELP); return 0; }
+        // --emit-css: print the default stylesheet and exit (audit W3 — the sheet the help
+        // references must be obtainable). Needs no input document.
+        if (opts.emitCss) { emit(readDefaultCss(), opts, out); return 0; }
+        if (opts.fragment && opts.css) {
+          throw new CliError('--fragment emits the bare fragment (no <head>), so --css has nowhere to link; use one or the other');
+        }
         const rendered = doRender(opts);
         // #133: doRender returns a Promise only when URL <library src> sources need
         // fetching; otherwise it is the rendered string (the sync path, unchanged).

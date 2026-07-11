@@ -72,6 +72,26 @@ same read-time/author-time boundary the live/static parity contract rests on; `r
 - Static is the canonical/default delivery for a published site; the other modes are demos or
   handoffs of the same source.
 
+**The single-document static render (`enscribe render`, #395 D2 / audit W3).** The CLI's
+first-contact command emits a **complete, styled, standalone page by default**: doctype,
+`<html lang>`, charset/viewport, a `<title>` derived from the document's `<title>` element
+(fallback: the input filename; `--title` overrides), and the default stylesheet **inlined** —
+what an author pipes to a file and opens, matching the expectation set by `quarto render` /
+`pandoc -s` (with the toggle pointing the right way for this audience: standalone is the
+default, the fragment is the opt-in). The frame is the minimal document shell
+(`document-shell.js`, the static sibling of the live shell); the rendered fragment keeps
+carrying its own font/KaTeX assets per `--embed`/`--no-embed`, so the shell never double-loads
+them. The option surface:
+- `--fragment` — the bare eHTML fragment (no doctype/head/stylesheet), for embedding into a
+  host page or pipeline; the pre-#395 default, demoted to an explicit choice.
+- `--css <path-or-url>` — link the given stylesheet from `<head>` **instead of** inlining the
+  default one (replace, not add: an author theming a document set wants one sheet, not N
+  inlined copies). Incompatible with `--fragment` (no `<head>` to link from — the CLI errors).
+- `--emit-css` — print the default stylesheet and exit, making the referenced sheet obtainable
+  (the W3 gap); pairs with `--css` as the customize-from-default workflow.
+- The document stylesheet is inlined under BOTH embed modes (`--no-embed` governs the heavy
+  font/KaTeX payload, not the small structural sheet); `--css` is the externalization path.
+
 ## Mode: Live
 
 **Axis choices:** content = `.emd`, fetched at runtime; engine at read time = yes (in browser);
