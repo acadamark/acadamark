@@ -30,7 +30,7 @@ These belong to downstream plugins.
 
 **Attributes and content are separated by `|`.** No `|` means no content. This makes the boundary explicit and removes any need for the parser to guess.
 
-**Sigil tags use mirrored closers.** `<$...$>`, `<#...#>`, `` <`...`> `` etc. The mirroring resolves verbatim-content ambiguity for math, code, and headings.
+**Sigil tags use mirrored closers.** `<$...$>`, `<#...#>`, `` <`...`> `` etc. The mirroring resolves verbatim-content ambiguity for math, code, and headings. The one exception is the footnote sigil `<^ … >` (#416), which closes with a bare `>` (a footnote body is a single leaf with no closer ambiguity); see §Sigils.
 
 **Named DSL tags use HTML long form.** `<csv>...</csv>`, `<theorem>...</theorem>`, `<matrix>...</matrix>`. This is just standard HTML, and it aligns with LaTeX's environment model.
 
@@ -55,12 +55,24 @@ identical with or without it.
 ## Grammar (EBNF)
 
 ```ebnf
-construct       ::= sigil_tag | named_tag
+construct       ::= sigil_tag | footnote_tag | named_tag
 
 sigil_tag       ::= "<" sigil [ws+ attributes] ["|" content] sigil ">"
 sigil           ::= "#" | "##" | "###" | "$" | "$$" | "`" | "```"
                     (* currently registered levels; extensible, but only these
                        lengths are accepted — the `+` form is not open-ended *)
+
+footnote_tag    ::= "<" "^" content ">"
+                    (* #416: the footnote sigil. Unlike sigil_tag it does NOT
+                       use a mirrored closer — the whole span after `<^` up to a
+                       `>` at nesting depth 0 is content, closed by that bare `>`
+                       (the same `>`-close / depth-aware content model named_tag
+                       uses). v1 is content-only: no attributes, id, or `|` — an
+                       `#id` / `|` inside the body is literal content. It is SUGAR
+                       whose canonical expansion is `<note | content>` — a thin
+                       parse-time rewrite (`<^` → `<note |`), so it reuses the
+                       note machinery entirely and is byte-identical to the
+                       longhand by construction. *)
 
 named_tag       ::= short_form | long_form
 short_form      ::= "<" tag_name [ws+ attributes] ["|" content] ">"
@@ -132,9 +144,11 @@ The distinction matters for cross-references and ids: `<ref @fig:body-cross-sect
 
 ### Sigils
 
-A *sigil* is one or more occurrences of a registered sigil character. The current registered sigils are `#`, `$`, and `` ` ``. The set is extensible; new sigils are registered alongside their tag-name expansion.
+A *sigil* is one or more occurrences of a registered sigil character. The current registered sigils are `#`, `$`, and `` ` `` (mirrored-closer tags, above), plus `^` — the footnote sigil (#416). The set is extensible; new sigils are registered alongside their tag-name expansion.
 
 Sigil tags and named tags are distinguished by their first non-`<` character: if it's a sigil character, it's a sigil tag; otherwise, it's a named tag.
+
+**The `^` footnote sigil (#416).** `<^ content>` is the ergonomic native footnote — the sugar that makes the disable of GFM's `[^1]` (#407) costless. It is a sigil (bannable in strict mode's `canonical` rung, like `<# … #>`; the canonical longhand `<note>` is its always-available fallback, so turning the sigil register off loses nothing), but it is **not** a mirrored-closer sigil: `<^ …>` closes with a bare `>`, not `^>`, because a footnote's content is a single leaf body with no ambiguity about where it ends. Its **canonical expansion is `<note | content>`** — everything after `<^ ` becomes the note's pipe content, so `<^ x>` and `<note | x>` produce byte-identical output (the expansion is a thin parse-time source rewrite, `<^` → `<note |`; it reuses the note machinery entirely, so numbering, placement via `note-position`, cross-references, and JATS `<fn>` export are exactly a note's). The note's rendered position follows the document's `note-position` config just as a longhand `<note>`'s does (bottom-of-document footnote by default; a margin sidenote under `note-position=margin`). **v1 is content-only:** there is no attribute/id/pipe form — an `#id` or `|` inside the body is literal content, not an attribute (`<note>` longhand remains the way to id or otherwise attribute a footnote). The `^{…}` / `_{…}` TeX sup/sub shortcuts are unrelated: they are text-position shortcuts (a `^` **not** after `<`), live in every mode, and never collide with the tag-position `<^`.
 
 ### Attribute forms
 

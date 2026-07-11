@@ -152,10 +152,25 @@ A claim<note placement=foot | A footnote.>.
 </minipage>
 
 <code #code:eh-note-3>
-A definition<note position=margin | A margin note.>.
+A claim<^ A footnote written with the sigil.>.
 </code>
 
 <minipage #mp:eh-note-3>
+A claim<^ A footnote written with the sigil.>.
+</minipage>
+
+*The &lt;^ …&gt; footnote sigil (#416): ergonomic sugar for &lt;note | …&gt;. It desugars
+to &lt;note | A footnote written with the sigil.&gt; — byte-identical output, and
+the note's position follows the document note-position config just like any
+&lt;note&gt; (a bottom footnote by default). v1 is content-only; use the &lt;note&gt;
+longhand to id or otherwise attribute a footnote. (No stored golden: the
+render is exactly the &lt;note&gt; examples above.)*
+
+<code #code:eh-note-4>
+A definition<note position=margin | A margin note.>.
+</code>
+
+<minipage #mp:eh-note-4>
 A definition<note position=margin | A margin note.>.
 </minipage>
 

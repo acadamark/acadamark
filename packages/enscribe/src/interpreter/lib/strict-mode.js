@@ -156,7 +156,7 @@ const INLINE_MD_SRC = '\\*[^*\\n]+\\*|`[^`\\n]+`|!?\\[[^\\]\\n]+\\]\\([^)\\n]+\\
 // sigil tags `<# … #>` / `<$ … $>` / `` <` … `> `` and the `<->` / `<*>` item
 // markers — flagged only in canonical mode (where the sigil register is off too).
 // `<li>` is canonical and never matched here.
-const SIGIL_SRC = '<#+[^\\n]*?#+>|<\\$+[^\\n]*?\\$+>|<`+[^\\n]*?`+>|<->|<\\*>';
+const SIGIL_SRC = '<#+[^\\n]*?#+>|<\\$+[^\\n]*?\\$+>|<`+[^\\n]*?`+>|<->|<\\*>|<\\^[^\\n]*?>';
 const INLINE_MD = new RegExp(`(${INLINE_MD_SRC})`, 'g');
 const INLINE_MD_SIGIL = new RegExp(`(${INLINE_MD_SRC}|${SIGIL_SRC})`, 'g');
 // leading heading / quote / bullet / ordered-list markers, plus a line-start
