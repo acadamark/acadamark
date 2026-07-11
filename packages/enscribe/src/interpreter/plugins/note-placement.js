@@ -213,6 +213,17 @@ function findEndnotesWithParent(root) {
   return null;
 }
 
+// #406: a placement marker must never render raw. Remove every remaining <endnotes>
+// marker (deep) so a stray, extra, or (on the zero-notes path) empty <endnotes>
+// renders NOTHING rather than leaking a bare `<endnotes></endnotes>` shell. Used
+// both on the zero-notes early return and after residual placement below.
+function sweepStrayEndnotes(treeChildren) {
+  let stray;
+  while ((stray = findEndnotesWithParent({ content: treeChildren }))) {
+    stray.parent.splice(stray.index, 1);
+  }
+}
+
 // ─── List-item builder (shared by per-section + residual passes) ──────────────
 
 /**
@@ -270,7 +281,14 @@ function listClassFor(placements) {
 export function enscribeNotePlacement() {
   return (tree, file) => {
     const pending = file?.data?.[ENSCRIBE_NOTES_PENDING];
-    if (!pending || pending.length === 0) return;
+    if (!pending || pending.length === 0) {
+      // #406: with zero notes there is no list to place, but an authored <endnotes>
+      // placement marker must still not render raw ("a marker must never render raw").
+      // Sweep any stray marker(s) so the zero-notes path renders NOTHING, not a bare
+      // <endnotes></endnotes> shell (the leak the #406 investigation found).
+      sweepStrayEndnotes(tree.children);
+      return;
+    }
 
     // Compute each note's marker id (noteref-N) ONCE and stamp it on the registry entry, so the
     // marker (Step 3) and the list-item (makeNoteListItem) read the same `entry.refId` instead of
@@ -416,7 +434,19 @@ export function enscribeNotePlacement() {
         docMarker.parent.splice(docMarker.index, 1, noteList);
       } else {
         const back = findOrCreateBackMatter(tree.children);
-        if (back) back.content.unshift(noteList);
+        if (back) {
+          back.content.unshift(noteList);
+        } else {
+          // #406: findOrCreateBackMatter returns null when the tree has neither an
+          // <article> nor a <book> root — the three rootless shapes the investigation
+          // confirmed: a website master rendered directly, a standalone
+          // <meta type=book-part> chapter, and a root-level <book-part> in an untyped
+          // document. Never lose the note bodies: IMPROVISE a home at the document's
+          // end — the SAME __note-list the normal path emits (heading + items, no
+          // parallel variant), placed as the last root element. (Ariel #406: "End of
+          // the document is correct for all cases.")
+          tree.children.push(noteList);
+        }
       }
     } else if (docMarker) {
       docMarker.parent.splice(docMarker.index, 1); // marker, no residual → drop it
@@ -424,9 +454,6 @@ export function enscribeNotePlacement() {
 
     // Defensive: a document has at most one residual block, so remove any further stray
     // <endnotes> markers — a marker must never render raw.
-    let stray;
-    while ((stray = findEndnotesWithParent({ content: tree.children }))) {
-      stray.parent.splice(stray.index, 1);
-    }
+    sweepStrayEndnotes(tree.children);
   };
 }
