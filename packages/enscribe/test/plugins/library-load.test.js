@@ -4,8 +4,8 @@
 //   - Inline BibTeX content loaded from node.content
 //   - Inline CSL-JSON content loaded from node.content
 //   - External file loaded via kwargs.src
-//   - Missing src file: emits warning, continues
-//   - Malformed BibTeX: citation-js error caught gracefully
+//   - Missing src file: visible __library-error (#133)
+//   - Unparseable inline content: visible __library-error (#395)
 //   - No <data> block: no-op (enscribeCitations not set)
 //   - <data> with no <library>: no-op
 //   - Multiple <library> nodes merged
@@ -189,6 +189,29 @@ export function run() {
     assert.ok(String(errs[0].kwargs?.src).includes('nonexistent.bib'), 'error names the missing source');
     assert.equal(file._warnings.length, 0, 'no warning — the failure renders visibly, not as a log message');
     console.log('PASS: library-load: missing src file → visible __library-error (#133)');
+  }
+
+  // --- Unparseable INLINE content → visible error too (#395 always-renders) ---
+  // Previously warning-only; with unresolvable cites now rendering ??cite:…?? markers,
+  // an invisible inline parse failure would read as "key missing" when the real failure
+  // is "the library never parsed" — the visible error names the real cause.
+  {
+    const lib = makeLibraryTag({ content: '@@@ this is not any citation format @@@' });
+    const tree = makeDataTree([lib]);
+    const file = makeFile();
+    enscribeLibraryLoad({ assetsDir: ASSETS_DIR })(tree, file);
+
+    const errs = [];
+    (function walk(nodes) {
+      for (const n of nodes ?? []) {
+        if (n && n.tagname === '__library-error') errs.push(n);
+        if (Array.isArray(n?.content)) walk(n.content);
+        if (Array.isArray(n?.children)) walk(n.children);
+      }
+    })(tree.children);
+    assert.equal(errs.length, 1, 'exactly one visible __library-error for the unparseable inline content');
+    assert.match(String(errs[0].kwargs?.message), /parse failed/, 'error states the parse failure');
+    console.log('PASS: library-load: unparseable inline content → visible __library-error (#395)');
   }
 
   // --- No <data> block: no-op ---

@@ -195,8 +195,11 @@ export function buildAssetIndex(tree, file) {
       }
       const id = child.id ?? null;
       if (!id) {
-        file?.message?.(`asset-load: <${child.tagname}> in <data> has no #id — not registered in the data store`, child);
-        return true;                                          // malformed: leave it (and warn)
+        // #395 (always-renders): an id-less declaration can never be consumed (no @id
+        // names it) and <data> renders to nothing, so a vfile warning alone is invisible.
+        // Same visible flag its sibling failures (non-long-form, duplicate id) get.
+        errors.push(makeAssetError('', `<${child.tagname}> in <data> has no #id — not registered in the data store`));
+        return true;                                          // malformed: leave it (inert), flagged
       }
       if (assets.has(id)) {
         // #190 cross-file merge: the same id declared in more than one <data>

@@ -51,15 +51,19 @@ export function run() {
     console.log('PASS: asset-load — external <fig #id src> indexed as { src }');
   }
 
-  // 3. a <fig> in <data> with no #id → warns and is LEFT in place (not registered as an asset).
+  // 3. a <fig> in <data> with no #id → a VISIBLE __asset-error flag (#395 always-renders),
+  //    left in place (not registered as an asset).
   {
     const tree = dataTree(makeTag('fig', [{ type: 'text', value: 'X' }], { positional: ['png'] }));
     const file = makeFile();
     buildAssetIndex(tree, file);
     assert.equal(file.data[ENSCRIBE_ASSETS], undefined, 'no id → nothing registered');
-    assert.ok(file._warnings.some((w) => /no #id/.test(w)), 'a no-#id warning is emitted');
-    assert.equal(tree.children[0].content.length, 1, "the un-id'd <fig> is left in <data>");
-    console.log('PASS: asset-load — a <fig> with no #id warns and is left in place');
+    const flags = tree.children.filter((n) => n?.tagname === '__asset-error');
+    assert.equal(flags.length, 1, 'a visible no-#id flag is injected (#395, never warning-only)');
+    assert.match(flags[0].kwargs.message, /<fig> in <data> has no #id/, 'the flag names the tag and the problem');
+    const dataNode = tree.children.find((n) => n?.tagname === 'data');
+    assert.equal(dataNode.content.length, 1, "the un-id'd <fig> is left in <data>");
+    console.log('PASS: asset-load (#395) — a <fig> with no #id renders a visible flag and is left in place');
   }
 
   // 4. DUPLICATE id across two <data> blocks → LAST declaration wins + a visible __asset-error (#316/1-I).
@@ -139,15 +143,19 @@ export function run() {
     console.log('PASS: dataset (#313) — leading-positional format (<dataset #id tsv>…</dataset>) captured');
   }
 
-  // 10. a <dataset> with no #id → warns and is LEFT in place (not registered), like a no-#id <fig>.
+  // 10. a <dataset> with no #id → a VISIBLE __asset-error flag (#395), left in place
+  //     (not registered), like a no-#id <fig>.
   {
     const tree = dataTree(dataset(null, 'x,y', { kwargs: { format: 'csv' } }));
     const file = makeFile();
     buildAssetIndex(tree, file);
     assert.equal(file.data[ENSCRIBE_ASSETS], undefined, 'no id → nothing registered');
-    assert.ok(file._warnings.some((w) => /<dataset> in <data> has no #id/.test(w)), 'a no-#id warning names <dataset>');
-    assert.equal(tree.children[0].content.length, 1, "the un-id'd <dataset> is left in <data>");
-    console.log('PASS: dataset (#313) — a <dataset> with no #id warns and is left in place');
+    const flags = tree.children.filter((n) => n?.tagname === '__asset-error');
+    assert.equal(flags.length, 1, 'a visible no-#id flag is injected (#395)');
+    assert.match(flags[0].kwargs.message, /<dataset> in <data> has no #id/, 'the flag names <dataset>');
+    const dataNode = tree.children.find((n) => n?.tagname === 'data');
+    assert.equal(dataNode.content.length, 1, "the un-id'd <dataset> is left in <data>");
+    console.log('PASS: dataset (#395) — a <dataset> with no #id renders a visible flag and is left in place');
   }
 
   // 11. DUPLICATE id (shared namespace) → LAST wins + a visible "data-store id" collision flag.
