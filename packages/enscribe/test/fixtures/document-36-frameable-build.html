@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1511,12 +1526,16 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Frameable build fixture (Phase 3 slice 3b)</article-title>
+      <article-title>
+        <h1>Frameable build fixture (Phase 3 slice 3b)</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>The frameable class</section-title>
+      <section-title>
+        <h2>The frameable class</h2>
+      </section-title>
       <p>
         Phase 3 slice 3b builds the frameable shared capability. Three new vocab
         entries (<code>&#x3C;fig></code>, <code>&#x3C;svg></code>, <code>&#x3C;frame></code>) join the existing handlers
@@ -1526,7 +1545,9 @@ note-list li {
         rendering.
       </p>
       <sub-section>
-        <sub-section-title>The <code>&#x3C;fig></code> canonical form</sub-section-title>
+        <sub-section-title>
+          <h3>The <code>&#x3C;fig></code> canonical form</h3>
+        </sub-section-title>
         <p>
           <code>&#x3C;fig></code> is the canonical eHTML name; <code>&#x3C;figure></code> is an authoring alias
           that rewrites to <code>&#x3C;fig></code> at the normalize-to-canonical gate.
@@ -1551,7 +1572,9 @@ note-list li {
         </p>
       </sub-section>
       <sub-section>
-        <sub-section-title>DSL counter assignments</sub-section-title>
+        <sub-section-title>
+          <h3>DSL counter assignments</h3>
+        </sub-section-title>
         <p>
           Slice 3a wired the math envs into the equation counter. Slice 3b
           extends NUMBERED_TAGNAMES with the DSL handlers’ counter assignments:
@@ -1603,7 +1626,9 @@ note-list li {
         </p>
       </sub-section>
       <sub-section>
-        <sub-section-title>Theorem-family label rendering</sub-section-title>
+        <sub-section-title>
+          <h3>Theorem-family label rendering</h3>
+        </sub-section-title>
         <p>
           Slice 3b’s theorem-family handler renders the “Theorem N (Name).” label
           spans that slice 3a left deferred (the registry-side numbering landed in
@@ -1624,7 +1649,9 @@ note-list li {
         <p>Cross-reference to <a href="#thm:fundamental" class="ref">theorem 1</a> resolves to “theorem 1”.</p>
       </sub-section>
       <sub-section>
-        <sub-section-title>The +border frameable surface</sub-section-title>
+        <sub-section-title>
+          <h3>The +border frameable surface</h3>
+        </sub-section-title>
         <p>
           The <code>+border</code> flag opts a <code>&#x3C;fig></code> into the frameable-border class. Off
           by default for <code>&#x3C;fig></code>.

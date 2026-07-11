@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <book>
   <book-front>
     <meta data-document-type="book">
-      <book-title>Section numbering off (the default)</book-title>
+      <book-title>
+        <h1>Section numbering off (the default)</h1>
+      </book-title>
     </meta>
   </book-front>
   <book-body>
     <book-part id="ch:methods" book-part-type="chapter">
       <meta>
-        <book-part-title>Methods</book-part-title>
+        <book-part-title>
+          <h2>Methods</h2>
+        </book-part-title>
       </meta>
       <p>
         A book with no <code>&#x3C;config number-sections></code> — the default since #246/core. Headings carry no number, and a
@@ -1523,7 +1542,9 @@ note-list li {
         independent and stays on, so a reference to a figure still resolves: <a href="#fig:plot" class="ref">figure 1</a>.
       </p>
       <section id="sec:setup">
-        <section-title>Setup</section-title>
+        <section-title>
+          <h3>Setup</h3>
+        </section-title>
         <p>Setup details, used throughout.</p>
         <figure id="fig:plot">
           <figcaption><figure-label>Figure 1.</figure-label>
@@ -1534,7 +1555,9 @@ note-list li {
     </book-part>
     <book-part id="ch:results" book-part-type="chapter">
       <meta>
-        <book-part-title>Results</book-part-title>
+        <book-part-title>
+          <h2>Results</h2>
+        </book-part-title>
       </meta>
       <p>The results build on the approach in <a href="#ch:methods" class="ref">Methods</a>.</p>
     </book-part>

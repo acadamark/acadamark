@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Bare pipe table normalization fixture</article-title>
+      <article-title>
+        <h1>Bare pipe table normalization fixture</h1>
+      </article-title>
       <author>Test Author</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Top-level bare pipe table</section-title>
+      <section-title>
+        <h2>Top-level bare pipe table</h2>
+      </section-title>
       <p>A bare GFM pipe table in top-level prose, normalized to a canonical table node:</p>
       <table>
         <caption><table-label>Table 1.</table-label></caption>
@@ -1542,7 +1561,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Aligned columns</section-title>
+      <section-title>
+        <h2>Aligned columns</h2>
+      </section-title>
       <p>A table with explicit column alignment:</p>
       <table>
         <caption><table-label>Table 2.</table-label></caption>
@@ -1571,7 +1592,9 @@ note-list li {
       </table>
     </section>
     <section id="sec:markup-cells">
-      <section-title>Inline markup in cells</section-title>
+      <section-title>
+        <h2>Inline markup in cells</h2>
+      </section-title>
       <p>
         Bare GFM pipe-table body cells preserve inline markup — emphasis, inline code, and
         inline math — instead of flattening to plain text (#280). A cross-reference in a cell
@@ -1622,7 +1645,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Table inside named-tag content</section-title>
+      <section-title>
+        <h2>Table inside named-tag content</h2>
+      </section-title>
       <p>A bare pipe table inside a named tag’s pipe-content (inner processor path):</p><sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup>&#x3C;/content>
       <note-list class="footnotes">
         <ol>

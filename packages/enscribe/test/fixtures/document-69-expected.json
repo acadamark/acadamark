@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Minipage: a sealed frameable (#115)"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Minipage: a sealed frameable (#115)"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -49,20 +56,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Private numbering and inbound references",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 42,
-                          "offset": 41
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Private numbering and inbound references",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 42,
+                              "offset": 41
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -503,20 +517,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Cross-referencing minipages",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 29,
-                          "offset": 28
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Cross-referencing minipages",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 29,
+                              "offset": 28
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -813,20 +834,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Box-local footnotes",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 21,
-                          "offset": 20
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Box-local footnotes",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 21,
+                              "offset": 20
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1072,20 +1100,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Nested minipages",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 18,
-                          "offset": 17
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Nested minipages",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 18,
+                              "offset": 17
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1358,20 +1393,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "External pulls are forbidden",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 30,
-                          "offset": 29
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "External pulls are forbidden",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 30,
+                              "offset": 29
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

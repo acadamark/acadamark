@@ -134,6 +134,7 @@ export const CONFIG_KWARGS = new Map([
   ['theme',                   valued()],            // index.js compiler (Phase 8 Slice 2)
   ['display-style',           valued('reserved')],
   ['note-position',           valued()],            // index.js compiler → sidenotes (#33, margin render mode)
+  ['heading-tags',            boolean()],           // heading-levels.js (#397; DEFAULT ON — native heading wrap on outline titles)
   ['strict-mode',             valued()],            // strict-mode.js → the strictness register switch (#36):
                                                     // off | sigil | canonical (each names the loosest register on).
   ['bibliography-position',   valued('reserved')],

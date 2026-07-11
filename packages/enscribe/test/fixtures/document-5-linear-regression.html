@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1579,13 +1594,17 @@ sidenote { display: none; }
     <article>
       <article-front>
         <meta data-document-type="article">
-          <article-title>Linear Regression: A Brief Introduction</article-title>
+          <article-title>
+            <h1>Linear Regression: A Brief Introduction</h1>
+          </article-title>
           <author>Ariel Balter</author>
         </meta>
       </article-front>
       <article-body>
         <section>
-          <section-title>Introduction</section-title>
+          <section-title>
+            <h2>Introduction</h2>
+          </section-title>
           <p>
             Linear regression is a method for predicting a continuous outcome <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span></span></span></span></inline-math> from
             one or more predictors <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span></inline-math>.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> It is among the most widely used statistical
@@ -1595,7 +1614,9 @@ sidenote { display: none; }
           </p>
         </section>
         <section>
-          <section-title>The Model</section-title>
+          <section-title>
+            <h2>The Model</h2>
+          </section-title>
           <p>The basic linear model relates a single predictor to an outcome as:</p>
           <display-math id="eqn:model"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0528em;">β</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0528em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0528em;">β</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0528em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ε</span></span></span></span></span><equation-number>(1)</equation-number></display-math>
           <p>
@@ -1612,7 +1633,9 @@ sidenote { display: none; }
 </code></pre>
         </section>
         <section>
-          <section-title>Least Squares Estimation</section-title>
+          <section-title>
+            <h2>Least Squares Estimation</h2>
+          </section-title>
           <p>
             The ordinary least squares criterion minimizes residuals relative to the model
             defined in <a href="#eqn:model" class="ref">equation 1</a>. It chooses the parameter values that minimize
@@ -1628,7 +1651,9 @@ sidenote { display: none; }
 </code></pre>
         </section>
         <section>
-          <section-title>Closed-Form Solutions</section-title>
+          <section-title>
+            <h2>Closed-Form Solutions</h2>
+          </section-title>
           <p>
             Differentiating the objective and setting the derivatives to zero yields
             analytic expressions for the optimal parameter estimates. The slope estimate is:
@@ -1645,7 +1670,9 @@ model = LinearRegression().fit(X, y)
 slope, intercept = model.coef_[0], model.intercept_ </code></pre>
         </section>
         <section>
-          <section-title>Goodness of Fit</section-title>
+          <section-title>
+            <h2>Goodness of Fit</h2>
+          </section-title>
           <p>
             The coefficient of determination <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0077em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></inline-math> measures the proportion of variance in
             the outcome explained by the model:<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup>

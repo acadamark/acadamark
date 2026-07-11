@@ -135,14 +135,14 @@ shorthand_examples:
       <article>
         <article-front>
           <meta data-document-type="article">
-            <article-title>The Effect of Elephants on Climate</article-title>
+            <article-title><h1>The Effect of Elephants on Climate</h1></article-title>
             <author>Jane Goodall</author>
             <date>2024-03-15</date>
           </meta>
         </article-front>
         <article-body>
           <section>
-            <section-title>Introduction</section-title>
+            <section-title><h2>Introduction</h2></section-title>
             <p>The paper begins.</p>
           </section>
         </article-body>
@@ -167,14 +167,14 @@ shorthand_examples:
       <book>
         <book-front>
           <meta data-document-type="book">
-            <book-title>A Natural History of Elephants</book-title>
+            <book-title><h1>A Natural History of Elephants</h1></book-title>
             <author>Jane Goodall</author>
           </meta>
         </book-front>
         <book-body>
           <book-part book-part-type="chapter">
             <meta>
-              <book-part-title>Origins</book-part-title>
+              <book-part-title><h2>Origins</h2></book-part-title>
             </meta>
             <p>Content.</p>
           </book-part>

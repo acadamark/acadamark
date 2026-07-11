@@ -310,6 +310,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1315,14 +1330,18 @@ toc-num {
 <body>
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>Field Methods in Savanna Ecology</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--front"><a href="about-this-book.html">About this Book</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="counting-elephants.html" class="enscribe-toc-active" aria-current="location"><toc-num>1</toc-num><toc-title>Counting Elephants</toc-title></a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="estimating-browse-pressure.html"><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="field-data-sheets.html"><toc-num>A</toc-num><toc-title>Field Data Sheets</toc-title></a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:counting-elephants" book-part-type="chapter"><section-number>1</section-number>
       <meta>
-        <book-part-title><section-number>1</section-number>Counting Elephants</book-part-title>
+        <book-part-title>
+          <h2><section-number>1</section-number>Counting Elephants</h2>
+        </book-part-title>
       </meta>
       <p>
         Aerial transects and ground counts are the two standard survey methods for
         savanna elephants.
       </p>
       <sub-section id="sec:aerial-transects"><section-number>1.1</section-number>
-        <sub-section-title><section-number>1.1</section-number>Aerial Transects</sub-section-title>
+        <sub-section-title>
+          <h3><section-number>1.1</section-number>Aerial Transects</h3>
+        </sub-section-title>
         <p>
           Aerial transects remain the standard method. See <a href="#fig:transect" class="ref">figure 1.1</a> for the grid
           layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).
@@ -1335,7 +1354,9 @@ toc-num {
         </figure>
       </sub-section>
       <sub-section id="sec:ground-counts"><section-number>1.2</section-number>
-        <sub-section-title><section-number>1.2</section-number>Ground Counts</sub-section-title>
+        <sub-section-title>
+          <h3><section-number>1.2</section-number>Ground Counts</h3>
+        </sub-section-title>
         <p>
           Ground counts complement the aerial survey at known aggregation points such as
           waterholes during the dry season.

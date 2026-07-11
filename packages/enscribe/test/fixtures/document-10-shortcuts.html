@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1235,34 +1250,46 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Inline TeX Shortcuts — End-to-End Fixture</article-title>
+      <article-title>
+        <h1>Inline TeX Shortcuts — End-to-End Fixture</h1>
+      </article-title>
       <author>Test Suite</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Ordinals in prose</section-title>
+      <section-title>
+        <h2>Ordinals in prose</h2>
+      </section-title>
       <p>
         The 1<sup>st</sup> edition appeared in 1984. The 2<sup>nd</sup> printing followed in 1985,
         and the 3<sup>rd</sup> expanded edition arrived in 1990.
       </p>
     </section>
     <section>
-      <section-title>Chemistry in prose</section-title>
+      <section-title>
+        <h2>Chemistry in prose</h2>
+      </section-title>
       <p>Water is H<sub>2</sub>O. Carbon dioxide is CO<sub>2</sub>. Sulfuric acid is H<sub>2</sub>SO<sub>4</sub>.</p>
     </section>
     <section>
-      <section-title>Nested shortcuts in prose</section-title>
+      <section-title>
+        <h2>Nested shortcuts in prose</h2>
+      </section-title>
       <p>The variable x<sup>y<sub>1</sub></sup> demonstrates nested super- and subscript in flowing text.</p>
     </section>
     <section>
-      <section-title>Shortcuts inside named tags</section-title>
+      <section-title>
+        <h2>Shortcuts inside named tags</h2>
+      </section-title>
       <aside class="frameable-border">
         <p>The 1<sup>st</sup> law of thermodynamics: energy H<sub>2</sub>O is conserved.</p>
       </aside>
     </section>
     <section>
-      <section-title>Mixed prose and tag usage</section-title>
+      <section-title>
+        <h2>Mixed prose and tag usage</h2>
+      </section-title>
       <p>In the body, iron-56 can be written <sup>56</sup>Fe. Inside a tag:
         <aside class="frameable-border">
           <p>the isotope <sup>56</sup>Fe is stable</p>
@@ -1270,7 +1297,9 @@ toc-num {
       </p>
     </section>
     <section>
-      <section-title>Sigil at a paragraph boundary in a tag body</section-title>
+      <section-title>
+        <h2>Sigil at a paragraph boundary in a tag body</h2>
+      </section-title>
       <aside class="frameable-border">
         <p>The mass-energy relation is written E=mc<sup>2</sup></p>
         <p><sup>56</sup>Fe is the most stable isotope, so a sigil may open a paragraph too.</p>

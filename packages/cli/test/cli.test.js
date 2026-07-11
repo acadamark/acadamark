@@ -116,7 +116,7 @@ export function run_tests() {
       assert.ok(html.out.includes('<article>'), 'import → an <article>');
       assert.ok(html.out.includes('<b>bold</b>') && html.out.includes('<i>italic</i>'), 'LaTeX bold/italic imported');
       assert.ok(html.out.includes('katex'), 'LaTeX math rendered via KaTeX');
-      assert.ok(html.out.includes('<section-title>Introduction</section-title>'), 'sections imported');
+      assert.match(html.out, /<section-title>\s*<h2>Introduction<\/h2>/, 'sections imported');
       const emd = invoke(['import', TEX_FIXTURE, '--emd']);
       assert.ok(emd.out.includes('<section #') && (emd.out.includes('<b | bold>') || emd.out.includes('<b>bold</b>')), '--emd → canonical source');
       console.log('PASS: import .tex via pandoc (HTML + --emd)');
@@ -237,9 +237,9 @@ export function run_tests() {
     const html = invoke(['import-jats', JATS_FIXTURE]);
     assert.equal(html.code, 0, 'import-jats exits 0');
     assert.ok(html.out.includes('<article>'), 'import-jats → an <article>');
-    assert.ok(html.out.includes('<article-title>A Small JATS Article</article-title>'), 'title imported');
+    assert.match(html.out, /<article-title>\s*<h1>A Small JATS Article<\/h1>/, 'title imported');
     assert.ok(html.out.includes('<b>bold</b>') && html.out.includes('<i>italic</i>'), 'inline imported');
-    assert.ok(html.out.includes('<section-title>Introduction</section-title>'), 'section imported');
+    assert.match(html.out, /<section-title>\s*<h2>Introduction<\/h2>/, 'section imported');
 
     // citations resolve in the rendered output, and a bibliography is present.
     assert.ok(html.out.includes('data-keys="ref-doe2020"') || html.out.includes('Doe'), 'cite resolved in HTML');

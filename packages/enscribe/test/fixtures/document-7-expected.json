@@ -24,20 +24,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Table test fixture",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 20,
-                          "offset": 19
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Table test fixture",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 20,
+                              "offset": 19
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -84,20 +91,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Inline CSV",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 12,
-                          "offset": 11
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Inline CSV",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 12,
+                              "offset": 11
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -358,20 +372,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "TSV",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 5,
-                          "offset": 4
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "TSV",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 5,
+                              "offset": 4
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -581,20 +602,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "JSON",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 6,
-                          "offset": 5
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "JSON",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 6,
+                              "offset": 5
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -782,20 +810,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "YAML",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 6,
-                          "offset": 5
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "YAML",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 6,
+                              "offset": 5
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -983,20 +1018,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Markdown pipe table",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 21,
-                          "offset": 20
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Markdown pipe table",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 21,
+                              "offset": 20
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1178,20 +1220,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Cross-references",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 18,
-                          "offset": 17
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Cross-references",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 18,
+                              "offset": 17
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1339,20 +1388,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "File source",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 13,
-                          "offset": 12
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "File source",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 13,
+                              "offset": 12
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1613,20 +1669,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Unnumbered table",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 18,
-                          "offset": 17
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Unnumbered table",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 18,
+                              "offset": 17
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

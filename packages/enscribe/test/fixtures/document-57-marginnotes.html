@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1579,13 +1594,17 @@ sidenote { display: none; }
     <article>
       <article-front>
         <meta data-document-type="article">
-          <article-title>Margin notes</article-title>
+          <article-title>
+            <h1>Margin notes</h1>
+          </article-title>
           <author>Enscribe</author>
         </meta>
       </article-front>
       <article-body>
         <section>
-          <section-title>Notes in the page margin</section-title>
+          <section-title>
+            <h2>Notes in the page margin</h2>
+          </section-title>
           <p>A margin note is a note positioned in the page margin — <code>&#x3C;note position=margin></code>.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup><sidenote><sup>1</sup><p>A margin note is numbered and collected like any note; its content is also projected into the margin beside its marker.</p></sidenote>It renders like any other note: one note type, three positions (foot, end, margin).</p>
           <p>The body of a margin note takes normal inline interpretation.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup><sidenote><sup>2</sup><p>Inline markup works here: <i>emphasis</i>, <code>code</code>, and other inline elements all interpret normally.</p></sidenote>So emphasis, code, citations, and cross-references all work inside it.</p>
           <p>Position is a per-note choice, independent of the document <code>note-position</code> default. A footnote collects to the foot of the document instead.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup> The two differ only in position; both are numbered notes.</p>
@@ -1598,7 +1617,9 @@ sidenote { display: none; }
           </note-list>
         </section>
         <section>
-          <section-title>On narrow screens</section-title>
+          <section-title>
+            <h2>On narrow screens</h2>
+          </section-title>
           <p>Below the margin breakpoint (a narrow window) there is no margin to float into, so the projected margin copy hides and the note shows in the bottom note-list instead.<sup id="noteref-4" data-note-id="note-4"><a href="#note-4">4</a></sup><sidenote><sup>4</sup><p>Resize the window narrow to see this margin note fall back to the bottom list.</p></sidenote>The text stays readable either way.</p>
         </section>
       </article-body>

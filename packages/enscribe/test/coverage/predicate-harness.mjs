@@ -65,6 +65,9 @@ const S_CHECKS = {
   'RQ-DOC-S2': () => cssRuleHas(/article-title/, /font-weight\s*:\s*700|var\(--enscribe-h1/) && cssHasSelector(/article-subtitle/),
   'RQ-DOC-S3': () => cssRuleHas(/section-title/, /font-weight\s*:\s*700|--enscribe-h/),
   'RQ-DOC-S4': () => cssRuleHas(/meta\[data-document-type\]|meta/, /display\s*:\s*contents/),
+  // #397: the heading-wrap reset — native headings inside title elements
+  // inherit the title's typography and carry no UA margins (pixel-inert wrap).
+  'RQ-DOC-S5': () => cssRuleHas(/section-title[^{]*>\s*:is\(h1|title[^{]*>\s*:is\(h1, h2/, /font\s*:\s*inherit/),
   'RQ-META-S1': () => cssRuleHas(/author/, /display\s*:\s*inline/) && cssHasSelector(/author\s*\+\s*author::before/),
   'RQ-BLK-S1': () => cssRuleHas(/blockquote/, /border-left/),
   'RQ-BLK-S2': () => cssRuleHas(/\bp\b|paragraph/, /margin-bottom/) || cssRuleHas(/ul|ol|list/, /padding-left/),
@@ -104,6 +107,9 @@ const M_CHECKS = {
   // passes if it holds in at least one marked fixture that exercises it.
   'RQ-DOC-M1': (h) => /<article-front/.test(h) && /<article-body/.test(h),
   'RQ-DOC-M3': (h) => /<section[\s>]/.test(h) && /<sub-section[\s>]/.test(h) && /<sub-sub-section[\s>]/.test(h),
+  // #397: the derived-level heading wrap — outline titles carry their inline
+  // content inside the native heading of their level (default on).
+  'RQ-DOC-M4': (h) => /<article-title[^>]*>\s*<h1[\s>]/.test(h) && /<section-title[^>]*>\s*<h2[\s>]/.test(h),
   'RQ-META-M1': (h) => /<author[\s>]/.test(h),
   'RQ-META-M2': (h) => /<author[^>]*\scorresponding[\s>]/.test(h),
   'RQ-FRM-M1': (h) => /<figure[^>]*>/.test(h) && /<figcaption/.test(h) && /figure-label/.test(h),

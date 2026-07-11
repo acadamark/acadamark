@@ -24,20 +24,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Bare Math Normalization",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 25,
-                          "offset": 24
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Bare Math Normalization",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 25,
+                              "offset": 24
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -84,20 +91,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Inline math in top-level prose",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 32,
-                          "offset": 31
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Inline math in top-level prose",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 32,
+                              "offset": 31
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1288,20 +1302,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Bare math inside named-tag content",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 36,
-                          "offset": 35
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Bare math inside named-tag content",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 36,
+                              "offset": 35
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -2009,20 +2030,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Display math in top-level prose",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 33,
-                          "offset": 32
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Display math in top-level prose",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 33,
+                              "offset": 32
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

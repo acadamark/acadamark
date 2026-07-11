@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Appendices</article-title>
+      <article-title>
+        <h1>Appendices</h1>
+      </article-title>
       <author>Enscribe</author>
     </meta>
   </article-front>
   <article-body>
     <section><section-number>1</section-number>
-      <section-title><section-number>1</section-number>Main body</section-title>
+      <section-title>
+        <h2><section-number>1</section-number>Main body</h2>
+      </section-title>
       <p>
         An article carries appendices in its back matter, after the body. With section
         numbering on, the body sections number 1, 2, … and the appendices are lettered
@@ -1524,7 +1543,9 @@ note-list li {
       </p>
     </section>
     <section><section-number>2</section-number>
-      <section-title><section-number>2</section-number>A second body section</section-title>
+      <section-title>
+        <h2><section-number>2</section-number>A second body section</h2>
+      </section-title>
       <p>More body text, in section 2.</p>
     </section>
   </article-body>
@@ -1532,20 +1553,26 @@ note-list li {
     <config></config>
     <book-part id="app:notation" book-part-type="appendix"><section-number>A</section-number>
       <meta>
-        <book-part-title><section-number>A</section-number>Notation</book-part-title>
+        <book-part-title>
+          <h2><section-number>A</section-number>Notation</h2>
+        </book-part-title>
       </meta>
       <p>
         The first appendix. With numbering on it is lettered “A”, and a <code>&#x3C;ref></code> to it
         reads “Appendix A”.
       </p>
       <sub-section><section-number>A.1</section-number>
-        <sub-section-title><section-number>A.1</section-number>Symbols</sub-section-title>
+        <sub-section-title>
+          <h3><section-number>A.1</section-number>Symbols</h3>
+        </sub-section-title>
         <p>A sub-section inside the appendix, numbered A.1.</p>
       </sub-section>
     </book-part>
     <book-part book-part-type="appendix"><section-number>B</section-number>
       <meta>
-        <book-part-title><section-number>B</section-number>Further details</book-part-title>
+        <book-part-title>
+          <h2><section-number>B</section-number>Further details</h2>
+        </book-part-title>
       </meta>
       <p>
         A second appendix, lettered “B”. The same <code>&#x3C;appendix></code> element works in a book,

@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1250,12 +1265,16 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>External DSL Sweep</article-title>
+      <article-title>
+        <h1>External DSL Sweep</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Mermaid diagrams</section-title>
+      <section-title>
+        <h2>Mermaid diagrams</h2>
+      </section-title>
       <p>
         In the default (skip) render mode each external-DSL block emits only its contract
         markup — a <code>&#x3C;pre></code> carrying the source verbatim and a <code>data-enscribe-dsl</code> hook —
@@ -1274,7 +1293,9 @@ A[Start] --> B[End]</pre>
       </p>
     </section>
     <section>
-      <section-title>ABC music notation</section-title>
+      <section-title>
+        <h2>ABC music notation</h2>
+      </section-title>
       
         <pre class="abc" data-enscribe-dsl="abc" id="fig:tune">X:1
 T:Scale
@@ -1284,7 +1305,9 @@ C D E F | G A B c |</pre>
       
     </section>
     <section>
-      <section-title>Diagram host</section-title>
+      <section-title>
+        <h2>Diagram host</h2>
+      </section-title>
       <p>
         The <code>&#x3C;diagram></code> host element selects its engine by positional; it renders the
         same DSL contract markup as the engine-named tags.

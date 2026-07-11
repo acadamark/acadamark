@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1384,13 +1399,17 @@ toc-num {
     <article>
       <article-front>
         <meta data-document-type="article">
-          <article-title>ToC frame-skip — demo boxes never leak into the contents (#223/#246)</article-title>
+          <article-title>
+            <h1>ToC frame-skip — demo boxes never leak into the contents (#223/#246)</h1>
+          </article-title>
           <author>The Enscribe Team</author>
         </meta>
       </article-front>
       <article-body>
         <section id="sec:real-a">
-          <section-title>First real section</section-title>
+          <section-title>
+            <h2>First real section</h2>
+          </section-title>
           <p>
             A real section. The two boxes below hold live-demo <code>&#x3C;section></code>s — a <code>&#x3C;frame></code>
             (compiled to <code>&#x3C;figure class="frameable-border"></code>) and an <code>&#x3C;aside></code>. Their inner
@@ -1413,7 +1432,9 @@ toc-num {
           </aside>
           <blockquote></blockquote>
           <sub-section id="sub:real">
-            <sub-section-title>A real subsection</sub-section-title>
+            <sub-section-title>
+              <h3>A real subsection</h3>
+            </sub-section-title>
             <p>
               A genuine nested subsection sitting OUTSIDE any box — ordinary section nesting, so
               it still appears in the contents, nested under its parent section.
@@ -1421,7 +1442,9 @@ toc-num {
           </sub-section>
         </section>
         <section id="sec:real-b">
-          <section-title>Second real section</section-title>
+          <section-title>
+            <h2>Second real section</h2>
+          </section-title>
           <p>A second first-level section, outside any box — it still appears.</p>
         </section>
       </article-body>

@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Deferred-vocab sub-slice 2 fixture"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Deferred-vocab sub-slice 2 fixture"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -49,20 +56,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Definition list",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 17,
-                          "offset": 16
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Definition list",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 17,
+                              "offset": 16
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -343,20 +357,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Glossary",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 10,
-                          "offset": 9
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Glossary",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 10,
+                              "offset": 9
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -673,20 +694,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Collapsible disclosure",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 24,
-                          "offset": 23
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Collapsible disclosure",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 24,
+                              "offset": 23
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

@@ -965,7 +965,7 @@ ${dateXml}
   check('no-title: HTML has no <article-title> (blank title is a valid choice)',
     !/<article-title\b/.test(html));
   check('no-title: the heading became a <section-title>, not the title',
-    html.includes('<section-title>A Section</section-title>'));
+    /<section-title>\s*<h2>A Section<\/h2>/.test(html));
 
   // JATS export via the real pipeline (#144).
   const proc = buildEnscribePipeline({ assetsDir: FIXTURES_DIR });

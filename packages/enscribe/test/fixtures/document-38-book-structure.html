@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <book>
   <book-front>
     <meta data-document-type="book">
-      <book-title>A Short Book on Enscribe</book-title>
+      <book-title>
+        <h1>A Short Book on Enscribe</h1>
+      </book-title>
       <book-subtitle>Demonstrating Phase 4 Book Structuring</book-subtitle>
       <author>The Enscribe Team</author>
     </meta>
     <book-part book-part-type="preface">
       <meta>
-        <book-part-title>About this Book</book-part-title>
+        <book-part-title>
+          <h2>About this Book</h2>
+        </book-part-title>
       </meta>
       <p>This preface introduces the book.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup></p>
       <note-list class="endnotes">
@@ -1530,7 +1549,9 @@ note-list li {
   <book-body>
     <book-part book-part-type="chapter"><section-number>1</section-number>
       <meta>
-        <book-part-title><section-number>1</section-number>Introduction</book-part-title>
+        <book-part-title>
+          <h2><section-number>1</section-number>Introduction</h2>
+        </book-part-title>
       </meta>
       <p>
         This is the introduction chapter. It contains some figures, equations,
@@ -1564,7 +1585,9 @@ note-list li {
     </book-part>
     <book-part book-part-type="chapter"><section-number>2</section-number>
       <meta>
-        <book-part-title><section-number>2</section-number>Methods</book-part-title>
+        <book-part-title>
+          <h2><section-number>2</section-number>Methods</h2>
+        </book-part-title>
         <author>Guest Author</author>
       </meta>
       <p>
@@ -1601,7 +1624,9 @@ note-list li {
     <config></config>
     <book-part book-part-type="appendix"><section-number>A</section-number>
       <meta>
-        <book-part-title><section-number>A</section-number>Notation</book-part-title>
+        <book-part-title>
+          <h2><section-number>A</section-number>Notation</h2>
+        </book-part-title>
       </meta>
       <p>
         This appendix appears in book-back. Its footnotes also collect per-

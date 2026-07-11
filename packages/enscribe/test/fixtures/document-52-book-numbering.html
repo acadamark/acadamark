@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,20 +1524,28 @@ note-list li {
 <book>
   <book-front>
     <meta data-document-type="book">
-      <book-title>Numbered book</book-title>
+      <book-title>
+        <h1>Numbered book</h1>
+      </book-title>
     </meta>
   </book-front>
   <book-body>
     <book-part id="chapter:one" book-part-type="chapter"><section-number>1</section-number>
       <meta>
-        <book-part-title><section-number>1</section-number>First Chapter</book-part-title>
+        <book-part-title>
+          <h2><section-number>1</section-number>First Chapter</h2>
+        </book-part-title>
       </meta>
       <p>Body text. The notation is in <a href="#app:notation" class="ref">appendix A</a>.</p>
       <section id="sec:approach"><section-number>1.1</section-number>
-        <section-title><section-number>1.1</section-number>Approach</section-title>
+        <section-title>
+          <h3><section-number>1.1</section-number>Approach</h3>
+        </section-title>
         <p>The approach. See the detail in <a href="#sec:detail" class="ref">section 1.1.1</a>.</p>
         <sub-section id="sec:detail"><section-number>1.1.1</section-number>
-          <sub-section-title><section-number>1.1.1</section-number>Detail</sub-section-title>
+          <sub-section-title>
+            <h4><section-number>1.1.1</section-number>Detail</h4>
+          </sub-section-title>
           <p>Deeper detail.</p>
         </sub-section>
       </section>
@@ -1532,11 +1555,15 @@ note-list li {
     <config></config>
     <book-part id="app:notation" book-part-type="appendix"><section-number>A</section-number>
       <meta>
-        <book-part-title><section-number>A</section-number>Notation</book-part-title>
+        <book-part-title>
+          <h2><section-number>A</section-number>Notation</h2>
+        </book-part-title>
       </meta>
       <p>This appendix is referenced from <a href="#chapter:one" class="ref">chapter 1</a>.</p>
       <section id="sec:symbols"><section-number>A.1</section-number>
-        <section-title><section-number>A.1</section-number>Symbols</section-title>
+        <section-title>
+          <h3><section-number>A.1</section-number>Symbols</h3>
+        </section-title>
         <p>The symbol table.</p>
       </section>
     </book-part>

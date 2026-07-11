@@ -86,7 +86,7 @@ export function run_tests() {
     assert.equal(errorNodes(tree).length, 0, 'imported tree has no error nodes');
     const proc = buildEnscribePipeline({ embedResources: false });
     const html = proc.stringify(proc.runSync(tree));
-    assert.ok(html.includes('<section>') && html.includes('<section-title>S</section-title>'), 'renders a titled section');
+    assert.ok(html.includes('<section>') && /<section-title>\s*<h2>S<\/h2>/.test(html), 'renders a titled section');
     assert.ok(html.includes('<b>b</b>') && html.includes('<i>i</i>'), 'renders inline formatting');
     console.log('PASS: imported tree → HTML, no error nodes');
   }

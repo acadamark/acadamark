@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1235,12 +1250,16 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>CSV/TSV handlers + &#x3C;code> long-form fixture (Phase 2 slice 2a)</article-title>
+      <article-title>
+        <h1>CSV/TSV handlers + &#x3C;code> long-form fixture (Phase 2 slice 2a)</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Standalone CSV</section-title>
+      <section-title>
+        <h2>Standalone CSV</h2>
+      </section-title>
       <p>
         The <code>&#x3C;csv></code> tag parses its content as comma-separated values and renders
         a real HTML <code>&#x3C;table></code>. The handler reuses <code>table.js</code>’s <code>parseCsv</code> parser
@@ -1277,7 +1296,9 @@ toc-num {
       <p>A CSV block with the default header-row treatment.</p>
     </section>
     <section>
-      <section-title>Standalone TSV</section-title>
+      <section-title>
+        <h2>Standalone TSV</h2>
+      </section-title>
       <p>The <code>&#x3C;tsv></code> tag is the tab-separated counterpart.</p>
       <table>
         <caption><table-label>Table 2.</table-label></caption>
@@ -1303,7 +1324,9 @@ toc-num {
       </table>
     </section>
     <section>
-      <section-title>The <code>&#x3C;code></code> long-form bug fix</section-title>
+      <section-title>
+        <h2>The <code>&#x3C;code></code> long-form bug fix</h2>
+      </section-title>
       <p>
         Phase 0 of the Phase 2 handler bundle (commit <code>af7a0a3</code>) surfaced a
         latent bug: <code>&#x3C;code></code> long-form was registered as

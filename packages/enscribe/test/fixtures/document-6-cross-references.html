@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Cross-reference test fixture</article-title>
+      <article-title>
+        <h1>Cross-reference test fixture</h1>
+      </article-title>
       <author>Ariel Balter</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Equations with various numbering states</section-title>
+      <section-title>
+        <h2>Equations with various numbering states</h2>
+      </section-title>
       <p>A numbered labeled equation:</p>
       <display-math id="eqn:newton"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.1389em;">F</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ma</span></span></span></span></span><equation-number>(1)</equation-number></display-math>
       <p>A numbered unlabeled equation:</p>
@@ -1528,14 +1547,18 @@ note-list li {
       <display-math><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></span></display-math>
     </section>
     <section>
-      <section-title>References to equations</section-title>
+      <section-title>
+        <h2>References to equations</h2>
+      </section-title>
       <p>Reference to numbered labeled with config prefix override (renders “Eq. 1”): see <a href="#eqn:newton" class="ref">Eq. 1</a>.</p>
       <p>Reference to numbered labeled without override would use default prefix. The second equation has no label and cannot be referenced. The third is unnumbered labeled (renders label-tail “energy”): see <a href="#eqn:energy" class="ref">energy</a>.</p>
       <p>Reference to a second unnumbered labeled (renders “alt-form”): see <a href="#eqn:alt-form" class="ref">alt-form</a>.</p>
       <p>Reference to missing label (produces error): <a href="#eqn:nonexistent" class="ref-error">??ref: eqn:nonexistent??</a>.</p>
     </section>
     <section>
-      <section-title>Figures</section-title>
+      <section-title>
+        <h2>Figures</h2>
+      </section-title>
       <p>A figure with a colon-id and caption:</p>
       <figure id="fig:elephant">
         <img src="assets/elephant.jpg" alt="An African elephant photographed in Tanzania.">
@@ -1560,7 +1583,9 @@ note-list li {
       <p>Reference to numbered figure (renders “figure 1”): see <a href="#fig:elephant" class="ref">figure 1</a>.</p>
     </section>
     <section>
-      <section-title>Notes</section-title>
+      <section-title>
+        <h2>Notes</h2>
+      </section-title>
       <p>A labeled endnote<sup id="noteref-1" data-note-id="note:galton"><a href="#note:galton">1</a></sup> demonstrating a colon-id note.</p>
       <p>An unlabeled note<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> demonstrating auto-id behavior.</p>
       <p>Reference to labeled note (renders “note 1”): see <a href="#note:galton" class="ref">note 1</a>.</p>
@@ -1573,7 +1598,9 @@ note-list li {
       </note-list>
     </section>
     <section>
-      <section-title>Edge cases</section-title>
+      <section-title>
+        <h2>Edge cases</h2>
+      </section-title>
       <p>A numbered equation with an unregistered prefix (id prefix “custom” is not in the prefix dictionary):</p>
       <display-math id="custom:thing"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span></span></span></span></span><equation-number>(3)</equation-number></display-math>
       <p>Reference to an id with a colon but an unregistered prefix (renders just the number, no word): <a href="#custom:thing" class="ref">3</a>.</p>

@@ -310,6 +310,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1315,7 +1330,9 @@ toc-num {
 <body>
 <div class="enscribe-layout enscribe-layout--toc enscribe-layout--book enscribe-layout--book-3col"><nav class="enscribe-toc enscribe-chapter-rail" aria-label="Book"><a class="enscribe-book-home" href="index.html"><book-home-title>Field Methods in Savanna Ecology</book-home-title></a><details class="enscribe-toc-details" open><summary class="enscribe-toc-summary">Chapters</summary><ul><li class="enscribe-rail-item enscribe-rail-item--front"><a href="about-this-book.html">About this Book</a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="counting-elephants.html"><toc-num>1</toc-num><toc-title>Counting Elephants</toc-title></a></li><li class="enscribe-rail-item enscribe-rail-item--body"><a href="estimating-browse-pressure.html" class="enscribe-toc-active" aria-current="location"><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></li><li class="enscribe-rail-item enscribe-rail-item--back"><a href="field-data-sheets.html"><toc-num>A</toc-num><toc-title>Field Data Sheets</toc-title></a></li></ul></details></nav><main class="enscribe-body"><book-part id="sec:estimating-browse-pressure" book-part-type="chapter"><section-number>2</section-number>
       <meta>
-        <book-part-title><section-number>2</section-number>Estimating Browse Pressure</book-part-title>
+        <book-part-title>
+          <h2><section-number>2</section-number>Estimating Browse Pressure</h2>
+        </book-part-title>
         <author>Guest Contributor</author>
       </meta>
       <p>
@@ -1323,7 +1340,9 @@ toc-num {
         renumbers its figures from one.
       </p>
       <sub-section id="sec:browse-scoring"><section-number>2.1</section-number>
-        <sub-section-title><section-number>2.1</section-number>Browse Scoring</sub-section-title>
+        <sub-section-title>
+          <h3><section-number>2.1</section-number>Browse Scoring</h3>
+        </sub-section-title>
         <p>
           Its own figure is <a href="#fig:browse" class="ref">figure 2.1</a>; a cross-chapter reference to <a href="counting-elephants.html#fig:transect" class="ref">figure 1.1</a>
           still resolves to chapter 1 (figure 1.1).
@@ -1336,7 +1355,9 @@ toc-num {
         </figure>
       </sub-section>
       <sub-section id="sec:limitations"><section-number>2.2</section-number>
-        <sub-section-title><section-number>2.2</section-number>Limitations</sub-section-title>
+        <sub-section-title>
+          <h3><section-number>2.2</section-number>Limitations</h3>
+        </sub-section-title>
         <p>
           Browse scoring is observer-dependent and should be calibrated across surveyors
           before the season’s counts begin.

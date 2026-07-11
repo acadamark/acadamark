@@ -132,6 +132,7 @@ import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
 import { enscribeWebsiteStructuring } from './plugins/website-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
+import { enscribeHeadingLevels } from './plugins/heading-levels.js';
 // #137: lower the `<list>` construct (+ `<-`/`<*` markers, `-`/`*` idiom) to a
 // markdown list node, reusing the existing list render + JATS mapping.
 import { enscribeListStructuring } from './plugins/list-structuring.js';
@@ -665,6 +666,13 @@ export function enscribeInterpreter(options = {}) {
   this.use(enscribeBookStructuring);
   this.use(enscribeArticleStructuring);
   this.use(enscribeSectionNesting);
+  // #397: stamp computedHeadingLevel on outline title nodes (a structural fact —
+  // 1 + enclosing outline containers). Runs after the structurers so nesting is
+  // physical; the render stage (schemaDispatch) materializes the native heading
+  // wrap from the stamp. Gated on <config heading-tags> (default on) inside the
+  // plugin — off means nothing is stamped, so output is byte-identical to the
+  // bare-element form by construction.
+  this.use(enscribeHeadingLevels);
   // #137: lower `<list>` to a markdown list node. Runs after section nesting so
   // a `<list>` (sectionDepth 0, carried as section body content) is lowered
   // wherever it landed; before the semantic plugins, which see a plain list.

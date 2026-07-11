@@ -74,7 +74,7 @@ shorthand_examples:
       The paper begins here.
     ehtml: |
       <section>
-        <section-title>Introduction</section-title>
+        <section-title><h2>Introduction</h2></section-title>
         <p>The paper begins here.</p>
       </section>
   - source: |
@@ -83,7 +83,7 @@ shorthand_examples:
       The methods used in this study were as follows.
     ehtml: |
       <section id="methods" data-sec-type="methods">
-        <section-title>Methods</section-title>
+        <section-title><h2>Methods</h2></section-title>
         <section-subtitle>A description of our experimental approach</section-subtitle>
         <p>The methods used in this study were as follows.</p>
       </section>
@@ -98,14 +98,14 @@ shorthand_examples:
       Sub-section content.
     ehtml: |
       <section>
-        <section-title>Results</section-title>
+        <section-title><h2>Results</h2></section-title>
         <p>Results paragraph.</p>
         <sub-section>
-          <sub-section-title>Quantitative analysis</sub-section-title>
+          <sub-section-title><h3>Quantitative analysis</h3></sub-section-title>
           <p>Sub-section content.</p>
         </sub-section>
         <sub-section>
-          <sub-section-title>Qualitative observations</sub-section-title>
+          <sub-section-title><h3>Qualitative observations</h3></sub-section-title>
           <p>Sub-section content.</p>
         </sub-section>
       </section>

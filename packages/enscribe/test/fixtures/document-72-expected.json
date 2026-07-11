@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Dataset consumers — one <data> store, three readers (#313)"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Dataset consumers — one <data> store, three readers (#313)"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -49,20 +56,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "One store, three readers",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 26,
-                          "offset": 25
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "One store, three readers",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 26,
+                              "offset": 25
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -220,20 +234,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "A table from a CSV dataset",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 28,
-                              "offset": 27
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A table from a CSV dataset",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 28,
+                                  "offset": 27
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -511,20 +532,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "A diagram from a Mermaid dataset",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 34,
-                              "offset": 33
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A diagram from a Mermaid dataset",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 34,
+                                  "offset": 33
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -685,20 +713,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "A code listing from a dataset",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 31,
-                              "offset": 30
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A code listing from a dataset",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 31,
+                                  "offset": 30
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },

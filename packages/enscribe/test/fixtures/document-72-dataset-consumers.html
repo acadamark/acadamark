@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1237,12 +1252,16 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Dataset consumers — one &#x3C;data> store, three readers (#313)</article-title>
+      <article-title>
+        <h1>Dataset consumers — one &#x3C;data> store, three readers (#313)</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>One store, three readers</section-title>
+      <section-title>
+        <h2>One store, three readers</h2>
+      </section-title>
       <p>
         The <code>&#x3C;data></code> block at the back of this document declares three <code>&#x3C;dataset></code>
         stores — a CSV table, a Mermaid diagram source, and a Python snippet — as
@@ -1251,7 +1270,9 @@ toc-num {
         interpretation belongs to the consuming element (<code>notes/specs/data-store.md</code>).
       </p>
       <sub-section>
-        <sub-section-title>A table from a CSV dataset</sub-section-title>
+        <sub-section-title>
+          <h3>A table from a CSV dataset</h3>
+        </sub-section-title>
         <p>
           <code>&#x3C;table src="@sales"></code> pulls the stored <code>&#x3C;dataset #sales csv>…&#x3C;/dataset></code>
           and renders it as a grid. The table names no format word, so the dataset’s
@@ -1282,7 +1303,9 @@ toc-num {
         </table>
       </sub-section>
       <sub-section>
-        <sub-section-title>A diagram from a Mermaid dataset</sub-section-title>
+        <sub-section-title>
+          <h3>A diagram from a Mermaid dataset</h3>
+        </sub-section-title>
         <p>
           <code>&#x3C;diagram mermaid src="@flow"></code> feeds the stored Mermaid source verbatim
           into the engine wrapper. The dataset’s <code>mermaid</code> format hint matches the
@@ -1297,7 +1320,9 @@ toc-num {
         
       </sub-section>
       <sub-section>
-        <sub-section-title>A code listing from a dataset</sub-section-title>
+        <sub-section-title>
+          <h3>A code listing from a dataset</h3>
+        </sub-section-title>
         <p>
           <code>&#x3C;code src="@snippet"></code> renders the stored bytes as a verbatim code body.
           The dataset’s <code>python</code> hint seeds the <code>language-python</code> highlight class; the

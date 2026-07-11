@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,12 +1524,16 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Opt-in Enscribe markup in data-table cells (#21)</article-title>
+      <article-title>
+        <h1>Opt-in Enscribe markup in data-table cells (#21)</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>A parsed prose column</section-title>
+      <section-title>
+        <h2>A parsed prose column</h2>
+      </section-title>
       <p>
         Data-format tables hold data, so cells are literal by default. A <code>parse-columns</code>
         attribute opts a single prose column into Enscribe inline markup while the data
@@ -1557,7 +1576,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Parsing every cell</section-title>
+      <section-title>
+        <h2>Parsing every cell</h2>
+      </section-title>
       <p>With <code>+parse-text</code>, every cell parses — the all-cells opt-in.</p>
       <table>
         <caption><table-label>Table 2.</table-label> Every cell parsed.</caption>
@@ -1576,7 +1597,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Explicit opt-out</section-title>
+      <section-title>
+        <h2>Explicit opt-out</h2>
+      </section-title>
       <p>
         <code>-parse-text</code> keeps a table literal even if a document-wide default turned
         parsing on. Here it is literal (no global default set), demonstrating the

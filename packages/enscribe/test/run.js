@@ -8,6 +8,7 @@ import { run as runDocType } from './plugins/doc-type.test.js';
 import { run as runArticleStructuring } from './plugins/article-structuring.test.js';
 import { run as runWebsiteStructuring } from './plugins/website-structuring.test.js';
 import { run as runSectionNesting } from './plugins/section-nesting.test.js';
+import { run as runHeadingLevels } from './plugins/heading-levels.test.js';
 import { run as runListStructuring } from './plugins/list-structuring.test.js';
 import { run as runNumbering } from './plugins/numbering.test.js';
 import { run as runRefResolution } from './plugins/ref-resolution.test.js';
@@ -98,6 +99,7 @@ const suites = [
   ['plugins/article-structuring',  runArticleStructuring],
   ['plugins/website-structuring',  runWebsiteStructuring],
   ['plugins/section-nesting',      runSectionNesting],
+  ['plugins/heading-levels',       runHeadingLevels],
   ['plugins/list-structuring',     runListStructuring],
   ['plugins/numbering',            runNumbering],
   ['plugins/ref-resolution',       runRefResolution],
