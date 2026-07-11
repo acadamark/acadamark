@@ -103,7 +103,7 @@ const _a = Object.freeze({
       },
       {
         "source": "<a href=#section-2 | jump to Section 2>\n\n<section #section-2 | Section 2>\n",
-        "ehtml": "<a href=\"#section-2\">jump to Section 2</a>\n<section id=\"section-2\"><section-title>Section 2</section-title></section>\n",
+        "ehtml": "<a href=\"#section-2\">jump to Section 2</a>\n<section id=\"section-2\"><section-title><h2>Section 2</h2></section-title></section>\n",
         "notes": "Internal links use fragment identifiers pointing at element ids — here\nthe in-scope <section #section-2> the link targets.\n",
       },
     ],

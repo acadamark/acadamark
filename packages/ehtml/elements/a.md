@@ -75,7 +75,7 @@ shorthand_examples:
       <section #section-2 | Section 2>
     ehtml: |
       <a href="#section-2">jump to Section 2</a>
-      <section id="section-2"><section-title>Section 2</section-title></section>
+      <section id="section-2"><section-title><h2>Section 2</h2></section-title></section>
     notes: |
       Internal links use fragment identifiers pointing at element ids — here
       the in-scope <section #section-2> the link targets.
