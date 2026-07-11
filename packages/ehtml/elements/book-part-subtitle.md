@@ -7,6 +7,12 @@ html_output:
   element: book-part-subtitle
   is_html_native: false
   default_attributes: {}
+  notes: |
+    Renders as the custom element <book-part-subtitle>. It renders with
+    its title's heading group and carries NO heading level of its own —
+    the #397 heading-semantics rule wraps outline titles in native
+    headings, and the subtitle is deliberately not in that outline set
+    (render-quality.md RQ-DOC-M4).
 enscribe_attributes:
   id:
     maps_to: id

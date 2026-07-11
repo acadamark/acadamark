@@ -468,6 +468,7 @@ const _article_subtitle = Object.freeze({
       "element": "article-subtitle",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <article-subtitle>. It renders with\nits title's heading group and carries NO heading level of its own —\nthe #397 heading-semantics rule wraps outline titles in native\nheadings, and the subtitle is deliberately not in that outline set\n(render-quality.md RQ-DOC-M4).\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -501,6 +502,7 @@ const _article_title = Object.freeze({
       "element": "article-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <article-title>. In rendered\nprojections its inline content is additionally wrapped in a native\n<h1> — the document's heading anchor — per the #397 heading-semantics\nrule (level is structural, never authored; render-quality.md\nRQ-DOC-M4). The wrap is derived display, not archival vocabulary,\nand is suppressed by <config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1290,6 +1292,7 @@ const _book_part_subtitle = Object.freeze({
       "element": "book-part-subtitle",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-part-subtitle>. It renders with\nits title's heading group and carries NO heading level of its own —\nthe #397 heading-semantics rule wraps outline titles in native\nheadings, and the subtitle is deliberately not in that outline set\n(render-quality.md RQ-DOC-M4).\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1323,6 +1326,7 @@ const _book_part_title = Object.freeze({
       "element": "book-part-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-part-title>. In rendered\nprojections its inline content (including a materialized\n<section-number>) is additionally wrapped in the native heading of\nits derived level — <h2> for a top-level chapter/part, one deeper\nper book-part nesting level (#397; render-quality.md RQ-DOC-M4).\nDerived display, not archival; suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1569,6 +1573,7 @@ const _book_subtitle = Object.freeze({
       "element": "book-subtitle",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-subtitle>. It renders with its\ntitle's heading group and carries NO heading level of its own — the\n#397 heading-semantics rule wraps outline titles in native headings,\nand the subtitle is deliberately not in that outline set\n(render-quality.md RQ-DOC-M4).\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1602,6 +1607,7 @@ const _book_title = Object.freeze({
       "element": "book-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-title>. In rendered projections\nits inline content is additionally wrapped in a native <h1> — the\nbook's heading anchor — per the #397 heading-semantics rule (level is\nstructural, never authored; render-quality.md RQ-DOC-M4). The wrap is\nderived display, not archival vocabulary, and is suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -2073,7 +2079,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as its flat authoring\nform (the settled register for flat config; #134). The current\nallowlist (enforced interpreter-side):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - number-depth            (live; consumed by numbering; deepest heading level that receives a number, #218; default all levels; INDEPENDENT of toc-depth)\n  - toc                     (live; consumed by the contents-listing stage; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)\n  - toc-depth               (live; deepest heading level the contents lists; default 3)\n  - toc-title               (live; the heading shown above the listing; default \"Contents\")\n  - toc-location            (live; body | left | right; default body — body is inline near the top, left/right a sticky sidebar)\n  - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)\n  - show-source             (live; consumed by the diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - quiet                   (live; boolean; consumed by the enscribeQuietSuppression stage — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed at compile time — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by the sidenotes render stage — the #33 margin render mode, 'bottom' default / 'margin'; see notes/specs/sidenotes.md)\n  - strict-mode             (live; consumed by the strict-mode gate, #36 — see notes/specs/strict-mode.md: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  (the reserved `reference-library` was retired: #133 makes external library\n  sources the body element `<library src=…>`, never a <config> kwarg)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\n<config>'s FLAT authoring form. Structured configuration is settled\n(#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured\nregister is future/unbuilt. <config> takes no\nchild elements today: the retired `<bibliography source=… />` form (#133)\nis replaced by the body element `<library src>` (see library.md /\nbibliography.md). See DESIGN.md \"Configuration and metadata are data\".\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as its flat authoring\nform (the settled register for flat config; #134). The current\nallowlist (enforced interpreter-side):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - number-depth            (live; consumed by numbering; deepest heading level that receives a number, #218; default all levels; INDEPENDENT of toc-depth)\n  - toc                     (live; consumed by the contents-listing stage; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)\n  - toc-depth               (live; deepest heading level the contents lists; default 3)\n  - toc-title               (live; the heading shown above the listing; default \"Contents\")\n  - toc-location            (live; body | left | right; default body — body is inline near the top, left/right a sticky sidebar)\n  - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)\n  - show-source             (live; consumed by the diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - quiet                   (live; boolean; consumed by the enscribeQuietSuppression stage — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed at compile time — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by the sidenotes render stage — the #33 margin render mode, 'bottom' default / 'margin'; see notes/specs/sidenotes.md)\n  - heading-tags            (live; boolean, DEFAULT ON — the one default-on boolean here; consumed by the heading-level stamping stage, #397. Rendered projections wrap each outline title's inline content in the native heading of its structurally derived level (see notes/specs/render-quality.md RQ-DOC-M4). heading-tags=false is a deliberate host-level opt-out: no native heading wrap is emitted at all)\n  - strict-mode             (live; consumed by the strict-mode gate, #36 — see notes/specs/strict-mode.md: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  (the reserved `reference-library` was retired: #133 makes external library\n  sources the body element `<library src=…>`, never a <config> kwarg)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\n<config>'s FLAT authoring form. Structured configuration is settled\n(#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured\nregister is future/unbuilt. <config> takes no\nchild elements today: the retired `<bibliography source=… />` form (#133)\nis replaced by the body element `<library src>` (see library.md /\nbibliography.md). See DESIGN.md \"Configuration and metadata are data\".\n",
       },
     },
     "content": {
@@ -5619,6 +5625,7 @@ const _section_title = Object.freeze({
       "element": "section-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <section-title>. In rendered\nprojections its inline content (including a materialized\n<section-number>) is additionally wrapped in the native heading of\nits derived level — <h2> for a top-level section in an article, one\ndeeper per enclosing outline container (#397; render-quality.md\nRQ-DOC-M4). The wrap is derived display, not archival vocabulary,\nand is suppressed by <config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -5866,6 +5873,7 @@ const _sub_section_title = Object.freeze({
       "element": "sub-section-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <sub-section-title>. In rendered\nprojections its inline content is additionally wrapped in the native\nheading of its derived level — <h3> in an article, one deeper per\nenclosing outline container (#397; render-quality.md RQ-DOC-M4).\nDerived display, not archival; suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -6054,6 +6062,7 @@ const _sub_sub_section_title = Object.freeze({
       "element": "sub-sub-section-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <sub-sub-section-title>. In rendered\nprojections its inline content is additionally wrapped in the native\nheading of its derived level — <h4> in an article, one deeper per\nenclosing outline container (#397; render-quality.md RQ-DOC-M4).\nDerived display, not archival; suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {

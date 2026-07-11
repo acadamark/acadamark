@@ -238,6 +238,29 @@ page; section titles form a visibly descending heading hierarchy.
 - **`RQ-DOC-M3`** — sections render as `<section>` / `<sub-section>` /
   `<sub-sub-section>` (by depth), each with its title as a first-child
   `<section-title>` / `<sub-section-title>` / `<sub-sub-section-title>`.
+- **`RQ-DOC-M4`** (#397, heading semantics) — each outline title element's
+  inline content is wrapped in the native heading of its derived level:
+  `<section-title><h2>…</h2></section-title>`. The heading is a
+  DERIVED-DISPLAY artifact (same category as `<section-number>`, which rides
+  INSIDE the wrap so the number is part of the accessible heading name): the
+  level is computed from container nesting — one plus the count of outline
+  containers (`section` family, `book-part`) enclosing the title — never
+  authored and never archival; the eHTML element stays the outer, canonical
+  element. The outline set: `article-title` and `book-title` (level 1, the
+  anchors), `book-part-title` (its book-part nesting depth + 1),
+  `section-title` / `sub-section-title` / `sub-sub-section-title` (their
+  section nesting depth + 1, counting any enclosing book-part). Subtitles
+  (`article-subtitle`, `book-subtitle`, `book-part-subtitle`) render with
+  their title's heading group and carry NO heading level of their own;
+  captions, theorem-family heads, and list/label heads are not headings. The
+  generated bibliography heading already renders as a native `<h2>` and
+  needs no wrap. A derived level past 6 emits `<h6 aria-level="N">` (ARIA
+  overriding native where native runs out). The wrap is gated by the
+  `heading-tags` config kwarg, DEFAULT ON — emitting native heading
+  semantics is the conforming default; `heading-tags=false` is a deliberate
+  host-level opt-out (for hosts that materialize heading semantics
+  themselves) and suppresses the wrap entirely, restoring the bare-element
+  rendering.
 
 **Stylesheet predicates:**
 
@@ -254,6 +277,12 @@ page; section titles form a visibly descending heading hierarchy.
   `--enscribe-h4-size`), forming a visible hierarchy.
 - **`RQ-DOC-S4`** — `<meta data-document-type>` is `display: contents`, so its
   children flow as direct descendants of `<article-front>` for layout.
+- **`RQ-DOC-S5`** (#397) — `default.css` neutralizes browser heading defaults
+  inside the outline title elements so the RQ-DOC-M4 wrap is visually inert:
+  a rule selecting the native headings as children of the title elements
+  (`section-title > h2` and family) carries `font: inherit` and `margin: 0`,
+  so the title elements' own rules (RQ-DOC-S2/S3) remain the single visual
+  source and the wrapped rendering is pixel-identical to the unwrapped one.
 
 **Out of spec.** Render-mode lowering of titles to `<h1>`/`<h2>` (§0.2);
 visual treatment keyed on `data-sec-type` (theme territory); depth-4+ headings

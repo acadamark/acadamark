@@ -7,6 +7,13 @@ html_output:
   element: book-title
   is_html_native: false
   default_attributes: {}
+  notes: |
+    Renders as the custom element <book-title>. In rendered projections
+    its inline content is additionally wrapped in a native <h1> — the
+    book's heading anchor — per the #397 heading-semantics rule (level is
+    structural, never authored; render-quality.md RQ-DOC-M4). The wrap is
+    derived display, not archival vocabulary, and is suppressed by
+    <config heading-tags=false>.
 enscribe_attributes:
   id:
     maps_to: id

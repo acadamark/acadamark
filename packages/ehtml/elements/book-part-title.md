@@ -7,6 +7,14 @@ html_output:
   element: book-part-title
   is_html_native: false
   default_attributes: {}
+  notes: |
+    Renders as the custom element <book-part-title>. In rendered
+    projections its inline content (including a materialized
+    <section-number>) is additionally wrapped in the native heading of
+    its derived level — <h2> for a top-level chapter/part, one deeper
+    per book-part nesting level (#397; render-quality.md RQ-DOC-M4).
+    Derived display, not archival; suppressed by
+    <config heading-tags=false>.
 enscribe_attributes:
   id:
     maps_to: id

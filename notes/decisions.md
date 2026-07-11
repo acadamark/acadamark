@@ -460,6 +460,36 @@ under-portable: locked in the build engine) are two views of the same gap — eH
 of what the build engine does. Making eHTML a first-class self-sufficient format means closing both: real
 elements (span audit) + full derivation at load (this scope correction).
 
+## Heading semantics — level is structural; the renderer materializes native headings (#397, 2026-07-10)
+
+**The decision.** A title element's outline level is a **structural fact derived from container
+nesting**, never authored: the archival eHTML vocabulary carries no `<h1>`–`<h6>` and no level
+attribute on outline titles. Rendered projections **materialize** the heading semantics — each
+outline title element's inline content is wrapped in the native heading of its derived level
+(`<section-title><h2>…</h2></section-title>`: eHTML outside as the canonical element, native
+heading inside for the platform). The wrap is emitted, never authored, never archival — the same
+category as materialized section numbers and resolved citations. Gated by the `heading-tags`
+config kwarg, **default on**: native heading semantics is the conforming default; off is a
+deliberate host-level opt-out for hosts that materialize heading semantics themselves (no
+ARIA-only middle mode — off means off).
+
+**Anchors and set.** `article-title`/`book-title` = `h1`; top-level sections = `h2`; each nesting
+level (including enclosing `<book-part>`s) adds one. Subtitles ride with their title's heading
+group and carry no level of their own; captions and theorem-family heads are not headings. Derived
+level past 6 → `<h6 aria-level="N">`. Full rule: `notes/specs/render-quality.md` RQ-DOC-M4;
+vocabulary principle: `packages/ehtml/SPEC.md` convention 10.
+
+**Why.** (1) *Structural-level principle* — level is a computed fact; authoring it invites the
+drift HTML's own deleted outline algorithm was meant to fix (a `#`-count is an instruction to a
+compiler, not archival truth). (2) *Projection-materializes principle* — the rendered document is
+where platform semantics live (Rule 2's flavor applied to the accessibility tree): the
+accessibility tree, reader modes, and search engines get real headings without the archival format
+surrendering its semantic element names. (3) *Default-on* — an accessible rendered document must be
+the zero-config output; the #397 finding ("your semantic-HTML substrate isn't accessible semantic
+HTML") is answered by the default, not by an option a user must discover. This resolves the
+heading portion of #40 (render-mode lowering): the default projection is now natively
+heading-semantic; #40's remaining scope is the full lossy lowering for stylesheet-free display.
+
 ## Not a decision — recorded for accuracy
 
 **Citations are not website-broken.** Investigated this session: real citations (with a `<library>`)
