@@ -126,7 +126,7 @@ export function excludeReason(element, ex, rendered, got) {
   if (isPlaceholder(ex.ehtml)) return 'placeholder golden (human-readable, not byte-comparable HTML)';
   if (/class="katex/.test(rendered)) return 'KaTeX-rendered math — large + version-dependent output, not a byte-stable golden (math handler is tested separately)';
   if (/<diagram\b/.test(ex.source)) return 'DSL (mermaid/abc) source — rendered by a runtime/version-dependent engine, not a byte-stable golden';
-  if (/<cite\b[^>]*><\/cite>/.test(got)) return 'a <cite> resolves against a <library>; standalone it renders empty (cite-resolution is tested separately)';
+  if (/<cite class="cite-error"/.test(got)) return 'a <cite> resolves against a <library>; standalone it renders the visible ??cite:…?? marker (#395) — cite-resolution is tested separately';
   if (got === '' && /<(data|library)\b/.test(ex.source)) return 'a <data>/<library> storage host is harvested into the registry and stripped from the body — renders empty by design';
   if (/src=["']?@/.test(ex.source)) return 'a store consumer (@id src) resolves against a <data>/<dataset> store — the consumer render is exercised by the data-store suite; this example demonstrates the store→consumer pattern, not a byte-stable golden';
   if (/&#x3C;(chapter|part|preface|afterword|appendix)\b/.test(got)) return 'a book-part tag renders only inside a <meta type=book> context; standalone it is an unknown-tag marker';

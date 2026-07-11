@@ -1,5 +1,5 @@
 // cite-resolution plugin — replace <cite> nodes with __cite-marker (resolved)
-// or __cite-error (missing keys) internal nodes before hast conversion.
+// or __cite-error (unresolvable) internal nodes before hast conversion.
 //
 // Runs after enscribeLibraryLoad (needs file.data.enscribeCitations) and
 // before enscribeBibliography (which reads the citation order built here).
@@ -7,6 +7,10 @@
 // For each <cite> node:
 //   - Extract citation keys from node.positional (canonical), node.content
 //     string (pipe form), or recursively-parsed content array (text extraction).
+//   - No library in scope (file.data.enscribeCitations unset — no <library>, or
+//     every source failed to load) → __cite-error with the authored keys (#395).
+//     always-renders: an authored cite never silently renders as an empty
+//     <cite></cite>; the same visible ??cite: …?? marker a missing key gets.
 //   - For each key: check file.data.enscribeCitations.cite.data.find(e => e.id === key).
 //     Missing-key format() would throw — pre-check is required.
 //   - Found keys → cite.format('citation', ...) → __cite-marker with the HTML.
@@ -94,10 +98,8 @@ function makeCiteError(keys) {
  */
 export function enscribeCiteResolution() {
   return (tree, file) => {
-    const citations = file?.data?.[ENSCRIBE_CITATIONS];
-    if (!citations) return; // no library loaded → no-op
-
-    const { cite, order, style } = citations;
+    const citations = file?.data?.[ENSCRIBE_CITATIONS] ?? null;
+    const { cite, order, style } = citations ?? {};
 
     function processCite(node) {
       const keys = extractCiteKeys(node);
@@ -105,6 +107,14 @@ export function enscribeCiteResolution() {
       if (keys.length === 0) {
         file?.message?.('cite-resolution: <cite> has no keys', node);
         return [makeCiteError(['(empty)'])];
+      }
+
+      // #395 D1 (always-renders): no library in scope is not a no-op. The
+      // authored keys render the same visible ??cite: …?? marker a missing key
+      // gets — one marker system for both failure shapes, never an empty <cite>.
+      if (!citations) {
+        file?.message?.(`cite-resolution: no <library> in scope for "${keys.join(', ')}"`, node);
+        return [makeCiteError(keys)];
       }
 
       // Partition into found and missing.
