@@ -59,18 +59,25 @@ This claim is supported by recent work <cite smith2023, jones2024>.
 <figure #fig:elephant .wrap align=right src=elephant.jpg |
   An adult African elephant, photographed in Tanzania.>
 
-See <ref #fig:elephant> for context.
+See <ref @fig:elephant> for context.
 
 ## Methods
 
 We followed the protocol described in <cite jones2024>.
+
+<data>
+<library format=bibtex |
+@article{smith2023, author={Smith, Jane}, title={Elephants and Ecosystems}, journal={Nature}, year={2023}}
+@article{jones2024, author={Jones, Kwame}, title={Megafauna and Climate}, journal={Science}, year={2024}}
+>
+</data>
 ```
 
-Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, and a cross-reference to that figure. Referenceable elements take a typed colon-id (`#fig:elephant`), so a reference names both the kind of target and the target itself. The whole example compiles to standard, semantic HTML that any browser can render and any converter can process.
+Standard markdown headings carry the prose structure; tag shorthand is reached for only where academic semantics need it — here, a citation, a captioned and identified figure, a cross-reference to that figure, and a small bibliography (the `<data>`/`<library>` block) the citations resolve against. Referenceable elements take a typed colon-id (`#fig:elephant`), so a reference names both the kind of target and the target itself. The whole example is self-contained: it compiles to standard, semantic HTML that any browser can render and any converter can process, with the citations, cross-reference, and figure all resolving from the source above.
 
 # Status
 
-**enscribe v0.4.0 is released.** The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
+**enscribe is released and usable today.** The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
 The implementation is built on the <a href="https://unifiedjs.com/" | unified> ecosystem (remark/rehype), replacing earlier regex-based prototypes. See <a href="https://github.com/enscribejs/enscribe/blob/main/STATUS.md" | `STATUS.md`> for the capability checklist (what works today), <a design | the Design article> for the design rationale, and <a href="https://github.com/enscribejs/enscribe/tree/main/notes/specs" | `notes/specs/`> for the architecture.
 
