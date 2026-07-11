@@ -198,10 +198,12 @@ export function buildCitationIndex(tree, file, options = {}) {
       try {
         citeInstances.push(forceType ? new Cite(content, { forceType }) : new Cite(content));
       } catch (err) {
-        // A src-loaded source's parse failure is a visible error (#133); an inline
-        // parse failure stays a warning (an authoring mistake, not a load failure).
-        if (libraryNode.kwargs?.src) errors.push(libraryError(libraryNode.kwargs.src, `parse failed: ${err.message}`));
-        else file?.message?.(`library-load: failed to parse library content: ${err.message}`, libraryNode);
+        // #395 (always-renders): EVERY parse failure is a visible error — src-loaded
+        // (#133) and inline alike. (Supersedes the earlier inline-stays-a-warning
+        // split: with unresolvable cites now rendering ??cite:…?? markers, an invisible
+        // inline parse failure would read as "key missing" when the real failure is
+        // "the library never parsed" — a misleading hint, worse than none.)
+        errors.push(libraryError(libraryNode.kwargs?.src ?? '', `parse failed: ${err.message}`));
       }
     }
   }

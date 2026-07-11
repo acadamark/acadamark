@@ -129,6 +129,13 @@ function exampleBlock(id, source, note) {
   // preview is impossible by construction — with a one-line reason.
   if (/<data\b|src=["']?@/.test(src)) {
     out += `*(Rendered preview omitted — ${code('<data>')} / ${code('@')}-references resolve at document scope, not inside a sealed preview.)*\n`;
+  } else if (/<cite\b/.test(src)) {
+    // #395 D1b (documentation.md rule 6): a <cite> resolves against a document-scope
+    // <library>, which the sealed preview cannot carry — the preview would show the
+    // ??cite:…?? failure marker unintentionally. Source only, with the reason stated.
+    // The failure markers themselves are demonstrated deliberately in the authoring
+    // guide's "When citation resolution fails" passage (rule 7).
+    out += `*(Rendered preview omitted — a ${code('<cite>')} resolves against a document-scope ${code('<library>')}, which a sealed preview cannot carry; a cite that cannot resolve renders a visible ${code('??cite: …??')} marker.)*\n`;
   } else {
     out += `<minipage #mp:${id}>\n${src}\n</minipage>\n`;
   }
@@ -240,12 +247,82 @@ function guideSection(name) {
   return out + `</section>\n`;
 }
 
+// ── failure-demonstration passage (#395 D1b, documentation.md rule 7) ────────
+// The always-renders rule is part of the authored surface: a <cite> that cannot resolve
+// renders a visible ??cite: …?? marker, and the docs demonstrate that the way they show
+// every other rendered result. Keyed by surface slug → family. The no-library case runs
+// in a sealed <minipage> (which genuinely has no <library> in scope — stated honestly);
+// the missing-key case renders live in the chapter body against the chapter's own small
+// library, whose resolved cite also demonstrates the auto-placed References list.
+const FAILURE_PASSAGES = {
+  'authoring-guide': {
+    'quotation-and-sourcing': `<section #ag-when-cites-fail | When citation resolution fails>
+
+An authored citation never silently disappears: a \`<cite>\` that cannot resolve renders a
+visible \`??cite: …??\` marker in place — the same marker family as the \`??ref: …??\` an
+unresolved cross-reference renders.
+
+With no \`<library>\` in the document, every citation renders its marker:
+
+<code #code:ag-cite-fail-1>
+Prior work <cite adams2019> anticipated this result.
+</code>
+
+<minipage #mp:ag-cite-fail-1>
+Prior work <cite adams2019> anticipated this result.
+</minipage>
+
+*(The preview box is a sealed sub-document with no &lt;library&gt; in scope, so the marker
+it shows is the real no-library render.)*
+
+When a \`<library>\` is in scope but a key is missing from it, found keys resolve and each
+missing key renders its own marker:
+
+<code-block #code:ag-cite-fail-2>
+<data>
+<library bibtex>
+@book{mead1972,
+  author    = {Mead, Margaret},
+  title     = {Blackberry Winter: My Earlier Years},
+  publisher = {William Morrow},
+  year      = {1972}
+}
+</library>
+</data>
+
+Known <cite mead1972>, unknown <cite bateson1904>.
+</code-block>
+
+That source, rendered live on this page against this chapter's own library:
+
+<data>
+<library bibtex>
+@book{mead1972,
+  author    = {Mead, Margaret},
+  title     = {Blackberry Winter: My Earlier Years},
+  publisher = {William Morrow},
+  year      = {1972}
+}
+</library>
+</data>
+
+Known <cite mead1972>, unknown <cite bateson1904>.
+
+*(The found key renders its formatted citation; the missing key renders its marker beside
+it — a failure never hides a neighboring success.)*
+
+</section>
+`,
+  },
+};
+
 // ── page + index emitters ────────────────────────────────────────────────────
 
-function familyChapter(fam, title, sectionFn, includeArgs) {
+function familyChapter(fam, title, sectionFn, extraSection) {
   const members = familyMembers(fam);
   let out = `${FAMILY_INTRO[fam] ?? ''}\n\n`;
   out += members.map(sectionFn).join('\n');
+  if (extraSection) out += '\n' + extraSection;
   return out;
 }
 
@@ -312,7 +389,7 @@ for (const s of surfaces) {
   for (const [fam, title, fslug] of FAMILY_ORDER) {
     const members = familyMembers(fam);
     elementCount += members.length;
-    writeFile(s.dir, `${fslug}.emd`, familyChapter(fam, title, s.sectionFn));
+    writeFile(s.dir, `${fslug}.emd`, familyChapter(fam, title, s.sectionFn, FAILURE_PASSAGES[s.slug]?.[fam]));
     pageCount++;
   }
   pageCount++; // index

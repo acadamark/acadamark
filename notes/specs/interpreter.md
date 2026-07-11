@@ -900,10 +900,13 @@ still deferred.
 **Source:** `packages/enscribe/src/interpreter/plugins/cite-resolution.js`
 
 **Purpose:** Replace each `<cite>` node with `__cite-marker` (resolved keys)
-and/or `__cite-error` (missing keys) internal nodes.
+and/or `__cite-error` (missing keys — or all authored keys when no library is in
+scope, #395) internal nodes.
 
 **When it runs:** After `buildCitationIndex` (step 5). If `file.data.enscribeCitations`
-is not set (no library was loaded), the plugin is a no-op.
+is not set (no library was loaded, or every source failed), every `<cite>` still
+renders a visible `__cite-error` with its authored keys — never a silent empty
+element (#395 always-renders).
 
 **Key extraction (tries four sources in order):**
 

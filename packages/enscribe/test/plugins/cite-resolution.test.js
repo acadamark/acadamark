@@ -9,7 +9,7 @@
 //   - Partial missing → __cite-marker + __cite-error
 //   - Citation order tracking (order array populated)
 //   - Repeated citations (order not duplicated)
-//   - No citations loaded: no-op (cite nodes unchanged)
+//   - No citations loaded → __cite-error with the authored keys (#395 always-renders)
 
 import assert from 'node:assert/strict';
 import Cite from 'citation-js';
@@ -199,7 +199,10 @@ export function run() {
     console.log('PASS: cite-resolution: repeated citations not duplicated in order');
   }
 
-  // --- No citations loaded: no-op ---
+  // --- No citations loaded → __cite-error with the authored keys (#395) ---
+  // always-renders: with no <library> in scope the authored cite must not
+  // silently render as an empty <cite></cite> — it gets the same visible
+  // ??cite: …?? marker a missing key gets.
   {
     const file = makeFile(null); // no enscribeCitations
     const citeNode = makeCiteNode({ atRefs: ['Smith2020'] });
@@ -207,9 +210,24 @@ export function run() {
     enscribeCiteResolution()(tree, file);
 
     const children = getParagraphChildren(tree);
-    // Plugin is a no-op; original cite node is preserved.
-    assert.equal(children[0].tagname, 'cite', 'original cite preserved when no citations loaded');
-    console.log('PASS: cite-resolution: no-op when no citations loaded');
+    assert.equal(children.length, 1, 'one replacement node');
+    assert.equal(children[0].tagname, '__cite-error', 'no library → __cite-error');
+    assert.equal(children[0].kwargs.keys, 'Smith2020', 'authored keys carried on the error node');
+    console.log('PASS: cite-resolution: no library in scope → visible __cite-error');
+  }
+
+  // --- No citations loaded, multi-key: all authored keys on one error node ---
+  {
+    const file = makeFile(null);
+    const citeNode = makeCiteNode({ atRefs: ['Smith2020', 'Jones2019'] });
+    const tree = makeArticleTree([citeNode]);
+    enscribeCiteResolution()(tree, file);
+
+    const children = getParagraphChildren(tree);
+    assert.equal(children.length, 1, 'one replacement node');
+    assert.equal(children[0].tagname, '__cite-error', 'no library → __cite-error');
+    assert.equal(children[0].kwargs.keys, 'Smith2020,Jones2019', 'all keys listed');
+    console.log('PASS: cite-resolution: no library, multi-key → one __cite-error listing all keys');
   }
 
   // --- Bracketed-list path: <cite [@smith2017, @jones2023]> ---
