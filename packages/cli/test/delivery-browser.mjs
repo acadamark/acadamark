@@ -17,7 +17,7 @@ import { pathToFileURL } from 'node:url';
 
 // Locate a Chromium binary the `-core` drivers can use (they do not download one). Checks the
 // Playwright and Puppeteer caches. Returns a path or null.
-function findChromium() {
+export function findChromium() {
   const roots = [join(homedir(), '.cache', 'ms-playwright'), join(homedir(), '.cache', 'puppeteer')];
   for (const root of roots) {
     if (!existsSync(root)) continue;
@@ -36,7 +36,7 @@ function findChromium() {
   return null;
 }
 
-async function detectDriver() {
+export async function detectDriver() {
   for (const name of ['playwright', 'puppeteer', 'playwright-core', 'puppeteer-core']) {
     try { const mod = await import(name); return { name, mod }; } catch { /* not installed */ }
   }
@@ -44,7 +44,7 @@ async function detectDriver() {
 }
 
 // A tiny uniform page adapter over the two driver families, so the checks below are written once.
-async function openBrowser(driver, executablePath) {
+export async function openBrowser(driver, executablePath) {
   const args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'];
   if (/playwright/.test(driver.name)) {
     const chromium = driver.mod.chromium ?? driver.mod.default?.chromium;
@@ -62,6 +62,7 @@ async function openBrowser(driver, executablePath) {
           type: async (sel, text) => { await p.evaluate((s) => document.querySelector(s)?.focus(), sel); await p.keyboard.type(text); },
           focus: (sel) => p.evaluate((s) => document.querySelector(s)?.focus(), sel),
           press: (key) => p.keyboard.press(key),
+          onConsole: (cb) => p.on('console', (msg) => cb(msg.type(), msg.text())), // #402: capture the recap
         };
       },
       close: () => browser.close(),
@@ -82,6 +83,7 @@ async function openBrowser(driver, executablePath) {
         type: async (sel, text) => { await p.evaluate((s) => document.querySelector(s)?.focus(), sel); await p.keyboard.type(text); },
         focus: (sel) => p.evaluate((s) => document.querySelector(s)?.focus(), sel),
         press: (key) => p.keyboard.press(key),
+        onConsole: (cb) => p.on('console', (msg) => cb(msg.type(), msg.text())), // #402: capture the recap
       };
     },
     close: () => browser.close(),

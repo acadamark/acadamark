@@ -99,6 +99,49 @@ them. The option surface:
   `--emit-css` stays on `render` (it needs no input document). Their `--emd` output is enscribe
   source, not HTML, so combining it with a shell flag is refused rather than silently ignored.
 
+## Diagnostics (the reporting seam — #402/#415)
+
+The pipeline accumulates diagnostics on the vfile (`file.message(...)` — the unified model);
+**every document-emitting command surfaces that one stream through three channels**, all consumed
+at one seam (`packages/cli/src/diagnostics.js`); no pipeline plugin knows channels exist.
+
+1. **Terminal, as they occur.** Each document's messages print to stderr when that document's
+   run completes — per-document granularity (once for a single document; per page as a website
+   builds). Format: **vfile-reporter** (the unified ecosystem's terminal formatter — delegation
+   principle; one convention authors already know from remark/rehype tooling).
+2. **End-of-run summary.** Grouped by file, then by kind (the producer's `source[:ruleId]`, else
+   the `producer:` message-prefix convention), with counts. **Silent when there is nothing to
+   say** — a clean run adds zero lines.
+3. **Carried into the rendered document (#415).** Build-time diagnostics are serialized into the
+   emitted page as a `<script data-enscribe-diagnostics>` block that recapitulates each message
+   to the browser console when the document is viewed — the author who ignored (or never saw)
+   the terminal finds the messages *at the artifact*. Each entry carries every provenance field
+   the producer supplied: `message`, `file`, `line`, `column`, `kind`, `fatal` (#412's
+   as-much-provenance-as-possible principle). Console shape:
+   `[enscribe] file:line:col — message [kind]` (console.error when fatal, console.warn
+   otherwise). **Zero messages ⇒ zero bytes** (no empty script blocks). Escape-safe: every `<`
+   in the JSON payload is emitted as `\u003c`, so `</script>`/`<!--` cannot occur in the block.
+   A `--fragment` output carries no script (shell furniture belongs to the host page). In a
+   separate-pages book, every page carries the document's stream (any page is an entry point);
+   a website page carries its own page-scoped stream.
+
+**Live surfaces.** A live/single-file document renders client-side, so its channel-3 equivalent
+is direct: the engine's public render façades (`render`, `renderAsync`, `renderInto`,
+`renderIntoAsync`, `renderMasterAsync`, `renderMasterIntoAsync`) route the completed run's
+messages to the browser console in the same one-line shape
+(`lib/diagnostics-format.js`). The live-shell **mount/edit-loop** paths (chapter routers, the
+debounced editor re-render) are deliberately not yet wired: a per-keystroke re-render would
+re-print the stream on every edit, so their routing needs a dedup/refresh design — scoped out
+on #402.
+
+**Quiet semantics — two "quiet" notions, two scopes, both pre-existing:**
+- `<config quiet>` (per-document) clears `file.messages` **in-pipeline**
+  (`enscribeQuietSuppression`), so all three channels are naturally silent for that document —
+  the document opts out entirely, artifact included.
+- `--quiet` (per-invocation) silences the **terminal** channels (1 + 2) only. The artifact keeps
+  its record (channel 3): #415's point is that the terminal can be ignored — the artifact
+  travels with its provenance.
+
 ## Mode: Live
 
 **Axis choices:** content = `.emd`, fetched at runtime; engine at read time = yes (in browser);

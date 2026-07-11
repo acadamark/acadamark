@@ -46,7 +46,8 @@ import {
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
-import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
+import { buildDocumentPipeline, renderArticleFile, assembleAndNumber } from './render-document.js';
+import { diagnosticsScript } from './diagnostics.js';
 
 /**
  * Walk the nav tree and map each page slug → its OUTPUT nav-path: the slugified titles of the groups
@@ -190,7 +191,7 @@ function buildHeadMeta({ up, description, ogTitle, siteName, siteBaseUrl }) {
   return lines.join('\n');
 }
 
-export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBaseUrl = DEFAULT_SITE_BASE_URL }) {
+export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBaseUrl = DEFAULT_SITE_BASE_URL, diagnostics = null }) {
   const warnings = [];
 
   // 1. Parse the master → the S1 nav model on file.data. (Nav-model extraction, not a page render —
@@ -199,10 +200,16 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   const navFile = new VFile({ path: 'index.emd', value: masterSource });
   navProc.runSync(navProc.parse(masterSource), navFile);
   // Surface the nav-parse diagnostics — website-structuring raises real ones (a duplicate page slug,
-  // a pipe-label nav-group, a zero-entry nav). They live on navFile.messages; without this the static
-  // build silently dropped them (e.g. a slug collision quietly disambiguated to `…-2`).
-  for (const m of navFile.messages ?? []) {
-    warnings.push(m.ruleId ? `nav: ${m.ruleId}: ${m.reason}` : `nav: ${m.reason ?? m}`);
+  // a pipe-label nav-group, a zero-entry nav). They live on navFile.messages. Through the
+  // diagnostics seam when the caller passed one (#402 — this loop was the seam's one pre-existing
+  // ancestor, the audit's "one exception"); the legacy warnings[] account otherwise (callers and
+  // tests without a collector).
+  if (diagnostics) {
+    diagnostics.report(navFile);
+  } else {
+    for (const m of navFile.messages ?? []) {
+      warnings.push(m.ruleId ? `nav: ${m.ruleId}: ${m.reason}` : `nav: ${m.reason ?? m}`);
+    }
   }
   const navModel = navFile.data?.[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
   const entries = navModel.entries ?? [];
@@ -421,10 +428,15 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         // Authored `<a {slug}>` links resolve in-tree during this render — the resolver rides file.data
         // alongside the read-through seed (#318); the bare-`#anchor` cross-page refs rewrite after (a
         // disjoint href set — slug links carry a path URL, never `href="#…"` — so the order is immaterial).
-        const raw = renderArticleDocument(
-          { value: source, data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) } },
+        // #402: each page renders on its own vfile (path = the page's source file), reported
+        // through the seam as it completes — channel 1's per-document granularity. #415: the
+        // page's own diagnostics ride the page as its recap script ('' when clean).
+        const pageFile = renderArticleFile(
+          { value: source, path: resolved.sourcePath, data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) } },
           { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' },
         );
+        diagnostics?.report(pageFile);
+        const raw = String(pageFile) + diagnosticsScript(pageFile.messages);
         const content = rewriteCrossPageHrefs(raw, slug, {
           ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
         });

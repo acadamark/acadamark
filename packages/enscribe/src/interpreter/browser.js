@@ -43,6 +43,7 @@ import {
   WEBSITE_SHELL_CSS,
 } from './index.js';
 import { preloadSources } from './lib/preload-library-sources.js';
+import { routeMessagesToConsole } from './lib/diagnostics-format.js';
 import { serializeSavedFile, writeSavedFile, suggestedFileName } from '../master-document/save-single-file.js';
 import { HAS_TABLE_SRC } from './lib/table-constants.js';
 import { ENSCRIBE_LOADED_SOURCES, ENSCRIBE_NAV_MODEL, ENSCRIBE_CONFIG, ENSCRIBE_PAGE_LINK_RESOLVER } from '../core/file-data-keys.js';
@@ -115,7 +116,9 @@ export function getPipeline(options = {}) {
  * @returns {string} Serialized HTML.
  */
 export function render(source, options = {}) {
-  return String(getPipeline(options).processSync(source));
+  // #402: a live render's diagnostics channel is the console — route the run's
+  // messages when it completes (the browser half of the CLI's reporting seam).
+  return String(routeMessagesToConsole(getPipeline(options).processSync(source)));
 }
 
 // #133: a <library src> fast-path gate — true only if the source might carry an
@@ -161,7 +164,9 @@ export async function renderAsync(source, options = {}) {
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
   const loaded = await preloadSources(srcs, (src) => fetchSourceText(src, baseUrl));
   return String(
-    getPipeline(options).processSync({ value: source, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
+    routeMessagesToConsole(
+      getPipeline(options).processSync({ value: source, data: { [ENSCRIBE_LOADED_SOURCES]: loaded } }),
+    ),
   );
 }
 
@@ -309,7 +314,9 @@ export async function renderMasterAsync(source, options = {}) {
   // handler reads the data via the compiler, which has the VFile — handlers do not). One
   // file so config set during runSync is consistent at stringify too. #197 library + #195
   // table; mirrors the CLI build path, fetched instead of fs-read.
-  return String(proc.stringify(proc.runSync(tree, loadedFile), loadedFile));
+  const html = String(proc.stringify(proc.runSync(tree, loadedFile), loadedFile));
+  routeMessagesToConsole(loadedFile); // #402: the assembled master's diagnostics → console
+  return html;
 }
 
 /**

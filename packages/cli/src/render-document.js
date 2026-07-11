@@ -29,12 +29,26 @@ export function buildDocumentPipeline(pipeOpts = {}) {
 }
 
 /**
+ * Render a single ARTICLE document and return the processed VFile — the rendered HTML is
+ * `String(file)`, and `file.messages` carries the run's diagnostics for the reporting seam
+ * (#402; before this, the file was stringified here and its messages discarded — the
+ * write-only channel the audit named at exactly this spot).
+ * @param {string|object} source - .emd source text (or a vfile-like `{ value, path, data }`,
+ *   for #133 URL srcs and #402 filename provenance).
+ * @param {object} [pipeOpts]    - pipeline options, passed through to buildDocumentPipeline.
+ * @returns {import('vfile').VFile}
+ */
+export function renderArticleFile(source, pipeOpts = {}) {
+  return buildDocumentPipeline(pipeOpts).processSync(source);
+}
+
+/**
  * Render a single ARTICLE document: source → a full standalone HTML string.
  * @param {string|object} source - .emd source text (or a `{ value, data }` vfile-like, for #133 URL srcs).
  * @param {object} [pipeOpts]    - pipeline options, passed through to buildDocumentPipeline.
  */
 export function renderArticleDocument(source, pipeOpts = {}) {
-  return String(buildDocumentPipeline(pipeOpts).processSync(source));
+  return String(renderArticleFile(source, pipeOpts));
 }
 
 /**
@@ -48,7 +62,10 @@ export function renderArticleDocument(source, pipeOpts = {}) {
  * @param {string}   o.source     - the master .emd source.
  * @param {string}   o.sourcePath - the master's path (→ the VFile path; reachable for the registry harvest).
  * @param {string}   o.masterDir  - directory the children's `src` paths resolve against.
- * @param {Function} o.warn       - (message) => void, for assembler diagnostics.
+ * @param {Function} [o.warn]     - (message) => void, for assembler diagnostics. Default (#402):
+ *   `file.message` — assembler diagnostics join the document's message stream, so the
+ *   reporting seam surfaces them with the master's filename. A caller with its own sink
+ *   (the static website's warnings[] account) still passes one.
  * @param {object}   [o.pipeOpts] - pipeline options, passed through to buildDocumentPipeline.
  * @param {object}   [o.fileData] - seed values for the VFile's `data` BEFORE the run (#300 slice 2: the
  *   static website seeds `enscribeRegistry` with a read-through over the merged SITE registry so a book
@@ -62,7 +79,7 @@ export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpt
     readFile: (p) => readFileSync(p, 'utf8'),
     resolve: (rel) => join(masterDir, rel),
     parse: (s) => proc.parse(s),
-    warn,
+    warn: warn ?? ((m) => file.message(m)),
   });
   const numbered = proc.runSync(tree, file);
   return { numbered, file, proc };
