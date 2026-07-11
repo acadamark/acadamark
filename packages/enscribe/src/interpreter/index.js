@@ -1350,17 +1350,15 @@ export function collectTableSources(source) {
 }
 
 /**
- * #228: the document's `<title>` text, or '' if it has none. The source-introspection
- * analog of collectLibrarySources — used to default a live-shell `<title>` to the
- * document's own title instead of its filename. Uses liftToCanonicalMdast so the
- * `<title>` (raw text inside `<meta>` at parse stage) is structured, then the shared
- * plain-text collector (so inline markup in the title is stripped, not literal).
+ * #414: the `<title>` text of an already-parsed/imported mdast tree, or '' if it has
+ * none. The tree-walking core of extractDocumentTitle (below), split out so callers
+ * that already hold a tree — the CLI import commands convert JATS/pandoc input
+ * straight to mdast — derive the same title without a source round-trip.
  *
- * @param {string} source - enscribe/markdown source text.
+ * @param {{ children?: Array }} tree - an mdast root carrying enscribeTag nodes.
  * @returns {string} the document `<title>` plain text (trimmed), or '' if absent.
  */
-export function extractDocumentTitle(source) {
-  const tree = liftToCanonicalMdast(source);
+export function extractTitleFromTree(tree) {
   let title = '';
   (function walk(nodes) {
     for (const n of nodes ?? []) {
@@ -1372,6 +1370,20 @@ export function extractDocumentTitle(source) {
       if (n?.type === 'enscribeTag' && Array.isArray(n.content)) walk(n.content);
       if (Array.isArray(n?.children)) walk(n.children);
     }
-  })(tree.children ?? []);
+  })(tree?.children ?? []);
   return title;
+}
+
+/**
+ * #228: the document's `<title>` text, or '' if it has none. The source-introspection
+ * analog of collectLibrarySources — used to default a live-shell `<title>` to the
+ * document's own title instead of its filename. Uses liftToCanonicalMdast so the
+ * `<title>` (raw text inside `<meta>` at parse stage) is structured, then the shared
+ * plain-text collector (so inline markup in the title is stripped, not literal).
+ *
+ * @param {string} source - enscribe/markdown source text.
+ * @returns {string} the document `<title>` plain text (trimmed), or '' if absent.
+ */
+export function extractDocumentTitle(source) {
+  return extractTitleFromTree(liftToCanonicalMdast(source));
 }

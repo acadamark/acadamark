@@ -72,8 +72,10 @@ same read-time/author-time boundary the live/static parity contract rests on; `r
 - Static is the canonical/default delivery for a published site; the other modes are demos or
   handoffs of the same source.
 
-**The single-document static render (`enscribe render`, #395 D2 / audit W3).** The CLI's
-first-contact command emits a **complete, styled, standalone page by default**: doctype,
+**The single-document static render (`enscribe render`, #395 D2 / audit W3; extended to the
+import commands by #414).** Every CLI command that emits a document — `render`, `import`,
+`import-jats` — shares one default and one option surface. Each emits a **complete, styled,
+standalone page by default**: doctype,
 `<html lang>`, charset/viewport, a `<title>` derived from the document's `<title>` element
 (fallback: the input filename; `--title` overrides), and the default stylesheet **inlined** —
 what an author pipes to a file and opens, matching the expectation set by `quarto render` /
@@ -91,6 +93,11 @@ them. The option surface:
   (the W3 gap); pairs with `--css` as the customize-from-default workflow.
 - The document stylesheet is inlined under BOTH embed modes (`--no-embed` governs the heavy
   font/KaTeX payload, not the small structural sheet); `--css` is the externalization path.
+- The import commands (#414) share `--fragment` / `--css` / `--title` with the same semantics;
+  their derived title is the imported document's own title (a JATS `<article-title>` / pandoc
+  title metadata becomes the enscribe `<title>` post-conversion; fallback: the input filename).
+  `--emit-css` stays on `render` (it needs no input document). Their `--emd` output is enscribe
+  source, not HTML, so combining it with a shell flag is refused rather than silently ignored.
 
 ## Mode: Live
 
