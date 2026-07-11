@@ -69,23 +69,26 @@ jats_counterpart:
     JATS output.
 shorthand_examples:
   - source: |
-      <library format=bibtex>
-        @article{goodall2024,
-          author = {Goodall, Jane},
-          title = {The Effect of Elephants on Climate},
-          journal = {Nature},
-          year = {2024}
-        }
+      <data>
+        <library format=bibtex>
+          @article{goodall2024,
+            author = {Goodall, Jane},
+            title = {The Effect of Elephants on Climate},
+            journal = {Nature},
+            year = {2024}
+          }
 
-        @book{darwin1859,
-          author = {Darwin, Charles},
-          title = {On the Origin of Species},
-          publisher = {John Murray},
-          year = {1859}
-        }
-      </library>
+          @book{darwin1859,
+            author = {Darwin, Charles},
+            title = {On the Origin of Species},
+            publisher = {John Murray},
+            year = {1859}
+          }
+        </library>
+      </data>
     ehtml: |
-      <library data-format="bibtex">
+      <data>
+        <library data-format="bibtex">
         @article{goodall2024,
           author = {Goodall, Jane},
           title = {The Effect of Elephants on Climate},
@@ -99,34 +102,40 @@ shorthand_examples:
           publisher = {John Murray},
           year = {1859}
         }
-      </library>
+        </library>
+      </data>
     notes: |
-      A BibTeX library block. The parser reads the entries and registers
-      goodall2024 and darwin1859 in the citation registry. Citations
-      elsewhere (e.g., <cite goodall2024>) resolve against these entries.
-      The library block itself produces no rendered output.
+      A BibTeX library block in its canonical <data> wrapper (§Placement —
+      a <library> loads only from inside <data>). The parser reads the
+      entries and registers goodall2024 and darwin1859 in the citation
+      registry. Citations elsewhere (e.g., <cite goodall2024>) resolve
+      against these entries. The block itself produces no rendered output.
   - source: |
-      <library format=csl-json>
-        [
-          {
-            "id": "goodall2024",
-            "type": "article-journal",
-            "author": [{"family": "Goodall", "given": "Jane"}],
-            "title": "The Effect of Elephants on Climate",
-            "container-title": "Nature",
-            "issued": {"date-parts": [[2024]]}
-          }
-        ]
-      </library>
+      <data>
+        <library format=csl-json>
+          [
+            {
+              "id": "goodall2024",
+              "type": "article-journal",
+              "author": [{"family": "Goodall", "given": "Jane"}],
+              "title": "The Effect of Elephants on Climate",
+              "container-title": "Nature",
+              "issued": {"date-parts": [[2024]]}
+            }
+          ]
+        </library>
+      </data>
     ehtml: |
-      <library data-format="csl-json">
-        [
-          {
-            "id": "goodall2024",
-            ...
-          }
-        ]
-      </library>
+      <data>
+        <library data-format="csl-json">
+          [
+            {
+              "id": "goodall2024",
+              ...
+            }
+          ]
+        </library>
+      </data>
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeLibraryLoad
@@ -198,7 +207,21 @@ The content between the opening and closing tags is opaque — preserved verbati
 
 ## Placement
 
-`<library>` blocks belong in `<data>` by convention:
+`<library>` blocks load **only from inside a `<data>` block** — the wrapper is a
+requirement, not a convention (#410). The rule serves the reader first: in a long
+document, the bibliography data is findable in one predictable place — the `<data>`
+block — rather than anywhere a search of the body might have to cover. It serves the
+author the same way, by enforcing the organization it promises: sources live with the
+document's other stored data, not interleaved with prose.
+
+A `<library>` anywhere else is **not loaded**, and the rendered page says so: a
+misplaced `<library>` — at body level, or inside `<config>`/`<meta>` — renders a
+visible misplacement flag naming where a library belongs. The body-level flag also
+counts the document's citations that cannot resolve against the unloaded library, so
+an author whose every `<cite>` shows a `??cite: …??` marker finds the true cause
+(placement, not keys) from the rendered page alone.
+
+The canonical shape:
 
 ```
 <article | My Paper>

@@ -55,15 +55,40 @@ function libraryError(src, message) {
   return makeErrorNode('__library-error', 'src', src, message);
 }
 
-/** Recursively collect every `<library>` node sitting inside a `<config>`/`<meta>`. */
-function collectMisplacedLibraries(nodes, inApparatus = false, out = []) {
+/** Recursively classify every misplaced `<library>` node (#410: a library LOADS only as a
+ * direct child of a `<data>` block — library.md §Placement is a requirement, not a
+ * convention). Two misplacement classes, matching the load loop's actual reach:
+ *   apparatus — inside `<config>`/`<meta>` (the pre-#410 flag case);
+ *   bare      — anywhere else outside a `<data>` block's direct children (body level, or
+ *               nested deeper inside `<data>` than the loop reads). Not loaded either way.
+ * Data-placed libraries are not collected — the load loop handles them. */
+function collectMisplacedLibraries(nodes, ctx = 'body', out = { apparatus: [], bare: [] }) {
   for (const node of nodes ?? []) {
-    const here = inApparatus || isEnscribeTag(node, 'config') || isEnscribeTag(node, 'meta');
-    if (here && isEnscribeTag(node, 'library')) out.push(node);
-    if (isEnscribeTag(node) && Array.isArray(node.content)) collectMisplacedLibraries(node.content, here, out);
-    if (Array.isArray(node.children)) collectMisplacedLibraries(node.children, here, out);
+    if (isEnscribeTag(node, 'library')) {
+      if (ctx === 'apparatus') out.apparatus.push(node);
+      else if (ctx !== 'data') out.bare.push(node);
+    }
+    // Children's context: apparatus is sticky; a <data> node's DIRECT children are 'data'
+    // (the loop loads exactly those); everything else — including a data grandchild's
+    // content — is 'body'.
+    const childCtx = ctx === 'apparatus' || isEnscribeTag(node, 'config') || isEnscribeTag(node, 'meta')
+      ? 'apparatus'
+      : isEnscribeTag(node, 'data') ? 'data' : 'body';
+    if (isEnscribeTag(node) && Array.isArray(node.content)) collectMisplacedLibraries(node.content, childCtx, out);
+    if (Array.isArray(node.children)) collectMisplacedLibraries(node.children, childCtx, out);
   }
   return out;
+}
+
+/** Count the document's `<cite>` nodes (for the misplacement hint — every one of them is
+ * unable to resolve against a library that was not loaded). */
+function countCites(nodes, n = 0) {
+  for (const node of nodes ?? []) {
+    if (isEnscribeTag(node, 'cite')) n++;
+    if (isEnscribeTag(node) && Array.isArray(node.content)) n = countCites(node.content, n);
+    if (Array.isArray(node.children)) n = countCites(node.children, n);
+  }
+  return n;
 }
 
 
@@ -132,13 +157,31 @@ export function buildCitationIndex(tree, file, options = {}) {
   // Visible always-renders errors collected here, injected into the body at the end.
   const errors = [];
 
-  // #133: <library> is a BODY element — never inside <config>/<meta>. Flag any
-  // misplaced ones visibly; they are not loaded.
-  for (const mis of collectMisplacedLibraries(tree.children ?? [])) {
+  // #410 (was #133): a <library> loads ONLY from inside a <data> block — library.md
+  // §Placement is a requirement. Flag every misplaced one visibly; none are loaded.
+  // The bare-placement flag carries the document's cite count — the hint Ariel asked
+  // for lives HERE, at the true cause, rather than on each ??cite:…?? marker: one
+  // visible alert explains all N failing cites, and no new library-load ↔
+  // cite-resolution coupling is needed (the count is a same-plugin tree walk; the
+  // enscribeCitations unset-means-no-library contract stays untouched).
+  const misplaced = collectMisplacedLibraries(tree.children ?? []);
+  for (const mis of misplaced.apparatus) {
     errors.push(libraryError(
       mis.kwargs?.src ?? '',
-      '<library> is not allowed inside <config> or <meta> — it is a body element (place it in a <data> block or the document body)',
+      '<library> is not allowed inside <config> or <meta> — place it inside a <data> block',
     ));
+  }
+  if (misplaced.bare.length > 0) {
+    const cites = countCites(tree.children ?? []);
+    const hint = cites > 0
+      ? `; ${cites} citation${cites === 1 ? '' : 's'} in this document cannot resolve against it`
+      : '';
+    for (const mis of misplaced.bare) {
+      errors.push(libraryError(
+        mis.kwargs?.src ?? '',
+        `a <library> loads only from inside a <data> block — this one was NOT loaded${hint}. Move the <library> into a <data> block.`,
+      ));
+    }
   }
 
   // <data> nodes sit at root level in an article (after article-structuring)

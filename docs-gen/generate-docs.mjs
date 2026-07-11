@@ -311,6 +311,31 @@ Known <cite mead1972>, unknown <cite bateson1904>.
 *(The found key renders its formatted citation; the missing key renders its marker beside
 it — a failure never hides a neighboring success.)*
 
+A third failure looks like the first but has a different cause: the document HAS a
+\`<library>\`, but it sits outside a \`<data>\` block. A library loads only from inside
+\`<data>\` (see the \`<library>\` reference's Placement section), so every citation still
+renders its marker — and the page flags the misplaced library itself, counting the
+citations that cannot resolve against it, so the real cause reads from the page rather
+than from the keys:
+
+<code-block #code:ag-cite-fail-3>
+Prior work <cite adams2019> anticipated this result.
+
+<library bibtex>
+@book{adams2019, author={Adams, Riley}, title={Anticipations}, year={2019}}
+</library>
+</code-block>
+
+<minipage #mp:ag-cite-fail-3>
+Prior work <cite adams2019> anticipated this result.
+
+<library bibtex>
+@book{adams2019, author={Adams, Riley}, title={Anticipations}, year={2019}}
+</library>
+</minipage>
+
+*(Move the \`<library>\` into a \`<data>\` block and the citation resolves.)*
+
 </section>
 `,
   },

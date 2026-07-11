@@ -101,6 +101,38 @@ export async function run() {
   {
     const out = html(`<config>\n<library | ${BIB_A}>\n</config>\n\nBody.`);
     assert.ok(out.includes('enscribe-library-error') && out.includes('not allowed inside'), '<library> inside <config> is flagged visibly');
+    assert.ok(out.includes('inside a &#x3C;data> block'), 'the flag says where a library belongs');
     console.log('PASS: #133 — <library> inside <config> → visible flag');
+  }
+
+  // ── #410: a bare body <library> is NOT loaded → visible flag + cite-count hint ──
+  {
+    const src = `Supported by <cite a1> and <cite a2>.\n\n<library | ${BIB_A}>`;
+    const out = html(src);
+    assert.ok(out.includes('enscribe-library-error') && out.includes('loads only from inside a &#x3C;data> block'),
+      'bare body <library> renders the misplacement flag naming where a library belongs');
+    assert.ok(out.includes('2 citations in this document cannot resolve against it'),
+      'the flag carries the hint — the document’s cite count, at the true cause');
+    assert.ok(out.includes('??cite: a1??') && out.includes('??cite: a2??'),
+      'the cites still render their own markers (the #395 behavior, now attributable)');
+    console.log('PASS: #410 — bare body <library> → misplacement flag + cite-count hint');
+  }
+
+  // ── #410: singular hint; no hint when the document has no cites ─────────────
+  {
+    const one = html(`One <cite a1>.\n\n<library | ${BIB_A}>`);
+    assert.ok(one.includes('1 citation in this document cannot resolve'), 'singular cite count');
+    const none = html(`No cites here.\n\n<library | ${BIB_A}>`);
+    assert.ok(none.includes('loads only from inside a &#x3C;data> block') && !none.includes('cannot resolve against it'),
+      'no cites → flag without the count clause');
+    console.log('PASS: #410 — hint pluralization; count omitted with no cites');
+  }
+
+  // ── #410: a data-placed <library> loads with NO flag (the sanctioned shape) ──
+  {
+    const out = html(`Supported by <cite KeyA>.\n\n<data>\n<library | ${BIB_A}>\n</data>`);
+    assert.ok(!out.includes('enscribe-library-error'), 'no misplacement flag for the canonical <data><library> shape');
+    assert.ok(!out.includes('??cite: KeyA??'), 'the cite resolves');
+    console.log('PASS: #410 — <data>-placed library loads flag-free');
   }
 }

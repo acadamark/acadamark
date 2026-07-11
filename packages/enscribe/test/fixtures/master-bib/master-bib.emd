@@ -5,7 +5,7 @@
 <section | Findings>
 
 The master's own section cites <cite @Loomes2017>, resolved from the master-level
-<library src> that the browser loads live in the same preload pass as the section
+`<library src>` that the browser loads live in the same preload pass as the section
 children (#197). It also embeds a data table loaded from a file, fetched in that
 same pass (#195):
 

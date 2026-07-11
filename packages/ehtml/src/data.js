@@ -4159,13 +4159,13 @@ const _library = Object.freeze({
     },
     "shorthand_examples": [
       {
-        "source": "<library format=bibtex>\n  @article{goodall2024,\n    author = {Goodall, Jane},\n    title = {The Effect of Elephants on Climate},\n    journal = {Nature},\n    year = {2024}\n  }\n\n  @book{darwin1859,\n    author = {Darwin, Charles},\n    title = {On the Origin of Species},\n    publisher = {John Murray},\n    year = {1859}\n  }\n</library>\n",
-        "ehtml": "<library data-format=\"bibtex\">\n  @article{goodall2024,\n    author = {Goodall, Jane},\n    title = {The Effect of Elephants on Climate},\n    journal = {Nature},\n    year = {2024}\n  }\n\n  @book{darwin1859,\n    author = {Darwin, Charles},\n    title = {On the Origin of Species},\n    publisher = {John Murray},\n    year = {1859}\n  }\n</library>\n",
-        "notes": "A BibTeX library block. The parser reads the entries and registers\ngoodall2024 and darwin1859 in the citation registry. Citations\nelsewhere (e.g., <cite goodall2024>) resolve against these entries.\nThe library block itself produces no rendered output.\n",
+        "source": "<data>\n  <library format=bibtex>\n    @article{goodall2024,\n      author = {Goodall, Jane},\n      title = {The Effect of Elephants on Climate},\n      journal = {Nature},\n      year = {2024}\n    }\n\n    @book{darwin1859,\n      author = {Darwin, Charles},\n      title = {On the Origin of Species},\n      publisher = {John Murray},\n      year = {1859}\n    }\n  </library>\n</data>\n",
+        "ehtml": "<data>\n  <library data-format=\"bibtex\">\n  @article{goodall2024,\n    author = {Goodall, Jane},\n    title = {The Effect of Elephants on Climate},\n    journal = {Nature},\n    year = {2024}\n  }\n\n  @book{darwin1859,\n    author = {Darwin, Charles},\n    title = {On the Origin of Species},\n    publisher = {John Murray},\n    year = {1859}\n  }\n  </library>\n</data>\n",
+        "notes": "A BibTeX library block in its canonical <data> wrapper (§Placement —\na <library> loads only from inside <data>). The parser reads the\nentries and registers goodall2024 and darwin1859 in the citation\nregistry. Citations elsewhere (e.g., <cite goodall2024>) resolve\nagainst these entries. The block itself produces no rendered output.\n",
       },
       {
-        "source": "<library format=csl-json>\n  [\n    {\n      \"id\": \"goodall2024\",\n      \"type\": \"article-journal\",\n      \"author\": [{\"family\": \"Goodall\", \"given\": \"Jane\"}],\n      \"title\": \"The Effect of Elephants on Climate\",\n      \"container-title\": \"Nature\",\n      \"issued\": {\"date-parts\": [[2024]]}\n    }\n  ]\n</library>\n",
-        "ehtml": "<library data-format=\"csl-json\">\n  [\n    {\n      \"id\": \"goodall2024\",\n      ...\n    }\n  ]\n</library>\n",
+        "source": "<data>\n  <library format=csl-json>\n    [\n      {\n        \"id\": \"goodall2024\",\n        \"type\": \"article-journal\",\n        \"author\": [{\"family\": \"Goodall\", \"given\": \"Jane\"}],\n        \"title\": \"The Effect of Elephants on Climate\",\n        \"container-title\": \"Nature\",\n        \"issued\": {\"date-parts\": [[2024]]}\n      }\n    ]\n  </library>\n</data>\n",
+        "ehtml": "<data>\n  <library data-format=\"csl-json\">\n    [\n      {\n        \"id\": \"goodall2024\",\n        ...\n      }\n    ]\n  </library>\n</data>\n",
       },
     ],
     "interpreter_strategy": "schema",
