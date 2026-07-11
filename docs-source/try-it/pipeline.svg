@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" role="img"
+     aria-labelledby="pipeline-title pipeline-desc" font-family="Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif">
+  <title id="pipeline-title">The Enscribe pipeline</title>
+  <desc id="pipeline-desc">Enscribe shorthand is parsed and lifted to canonical eHTML, which renders to themed HTML and also exports to JATS.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0052cc"/>
+    </marker>
+  </defs>
+
+  <!-- Nodes: Shorthand -> eHTML -> Themed HTML -->
+  <g stroke="#cccccc" fill="#f7f7f7">
+    <rect x="24"  y="40" width="180" height="86" rx="8"/>
+    <rect x="270" y="40" width="180" height="86" rx="8"/>
+    <rect x="516" y="40" width="180" height="86" rx="8"/>
+  </g>
+  <!-- JATS export node hangs off the canonical form: lighter, to read as a branch -->
+  <rect x="270" y="204" width="180" height="70" rx="8" stroke="#e1e1e1" fill="#ffffff"/>
+
+  <g fill="#1a1a1a" text-anchor="middle" font-size="19" font-weight="600">
+    <text x="114" y="78">Enscribe</text>
+    <text x="114" y="102">shorthand</text>
+    <text x="360" y="78">eHTML</text>
+    <text x="360" y="102">canonical form</text>
+    <text x="606" y="78">Themed HTML</text>
+    <text x="606" y="102">browser render</text>
+  </g>
+  <text x="360" y="245" text-anchor="middle" fill="#555555" font-size="18" font-weight="600">JATS export</text>
+
+  <!-- Flow arrows -->
+  <g stroke="#0052cc" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <line x1="204" y1="83" x2="270" y2="83"/>
+    <line x1="450" y1="83" x2="516" y2="83"/>
+    <line x1="360" y1="126" x2="360" y2="204"/>
+  </g>
+
+  <!-- Edge labels -->
+  <g fill="#555555" text-anchor="middle" font-size="14">
+    <text x="237" y="72">parse · lift</text>
+    <text x="483" y="72">render</text>
+    <text x="392" y="170" text-anchor="start">export</text>
+  </g>
+</svg>

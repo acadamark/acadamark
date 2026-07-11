@@ -46,15 +46,20 @@ content is the link text. The most common authoring path. (Markdown
 <a href=https://example.com target=_blank rel=noopener | external link>
 </minipage>
 
-<code #code:eh-a-4>
+<code-block #code:eh-a-4>
 <a href=#section-2 | jump to Section 2>
-</code>
+
+<section #section-2 | Section 2>
+</code-block>
 
 <minipage #mp:eh-a-4>
 <a href=#section-2 | jump to Section 2>
+
+<section #section-2 | Section 2>
 </minipage>
 
-*Internal links use fragment identifiers pointing at element ids.*
+*Internal links use fragment identifiers pointing at element ids — here
+the in-scope &lt;section #section-2&gt; the link targets.*
 
 </section>
 
@@ -316,29 +321,36 @@ Produced by: canonical `<ref>`.
 
 <sub-section | Examples>
 
-<code #code:eh-ref-1>
+<code-block #code:eh-ref-1>
+<fig #fig:scatter | A scatter plot of the results.>
 See <ref @fig:scatter> for details.
-</code>
+</code-block>
 
 <minipage #mp:eh-ref-1>
+<fig #fig:scatter | A scatter plot of the results.>
 See <ref @fig:scatter> for details.
 </minipage>
 
 *Canonical form: @id prefix (@ references; # would declare an id on the
-&lt;ref&gt; itself). The ref-resolution plugin replaces the
-&lt;ref&gt; node with a __ref-marker before hast conversion. The handler
-then renders an &lt;a&gt; element with computed text. Prefix word is
-lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.*
+&lt;ref&gt; itself). A &lt;ref&gt; resolves only against a target in scope, so the
+demo declares &lt;fig #fig:scatter&gt; first; the ref-resolution plugin then
+replaces the &lt;ref&gt; node with a __ref-marker before hast conversion, and
+the handler renders an &lt;a&gt; whose text ("figure 1") is computed from the
+target's kind and number. Prefix word is lowercase, from the
+DEFAULT_PREFIXES dictionary keyed by id prefix.*
 
-<code #code:eh-ref-2>
+<code-block #code:eh-ref-2>
+<$$ #eqn:model | y = \beta_0 + \beta_1 x $$>
 As shown in <ref @eqn:model>.
-</code>
+</code-block>
 
 <minipage #mp:eh-ref-2>
+<$$ #eqn:model | y = \beta_0 + \beta_1 x $$>
 As shown in <ref @eqn:model>.
 </minipage>
 
-*Equation references use the "equation" prefix word by default.
+*Equation references use the "equation" prefix word by default; the
+display equation &lt;$$ #eqn:model … $$&gt; supplies the in-scope target.
 Config override: &lt;config ref-prefix-eqn="Eq."&gt; changes this to "Eq.".*
 
 <code #code:eh-ref-3>
@@ -349,6 +361,7 @@ Config override: &lt;config ref-prefix-eqn="Eq."&gt; changes this to "Eq.".*
 <ref @eqn:missing>
 </minipage>
 
-*Unresolved target renders a visible error anchor.*
+*Unresolved target renders a visible error anchor. This example is the
+deliberate exception — it teaches the error form on purpose.*
 
 </section>

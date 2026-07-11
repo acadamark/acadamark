@@ -133,7 +133,64 @@ export function pageDirAssets(pageDir, masterDir, destPrefix) {
  * @returns {{ pages: Map<string,string>, assets: Array<{from,to}>, warnings: string[] }}
  *   pages: outputPath → HTML; assets: co-located files to copy; warnings: non-fatal diagnostics.
  */
-export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
+// #393/W12 — per-page head metadata (favicon links, meta description, OpenGraph/Twitter cards). The
+// site's absolute base URL is needed for the ONE head field that cannot be depth-relative: og:image,
+// which a crawler fetches out of page context. Defaults to the production domain the deploy declares
+// (.github/workflows/static.yml commits CNAME=enscribe.org → served at the domain root); a caller may
+// override via the buildStaticWebsite option if the deploy target changes. A trailing slash is assumed.
+const DEFAULT_SITE_BASE_URL = 'https://enscribe.org/';
+
+/** Escape a string for use inside an HTML double-quoted attribute value. */
+function escAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** A meta-description derived from a rendered page's first prose paragraph: the first `<p>…</p>`'s
+ *  text with inline tags stripped, the handful of entities the renderer emits decoded, whitespace
+ *  collapsed, and truncated at a word boundary to ~155 chars. '' when the page has no paragraph — the
+ *  caller then omits the description tags rather than emitting a weak one. */
+function firstParagraphText(contentHtml) {
+  const m = String(contentHtml).match(/<p\b[^>]*>([\s\S]*?)<\/p>/i);
+  if (!m) return '';
+  let text = m[1]
+    .replace(/<[^>]+>/g, '')                                   // strip inline tags (ref/cite anchors, emphasis, …)
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+  if (text.length > 155) text = text.slice(0, 155).replace(/\s+\S*$/, '') + '…';
+  return text;
+}
+
+/** Compose the extra `<head>` tags for one page: favicon links (depth-relative via `up`), a meta
+ *  description (omitted when empty), and OpenGraph/Twitter cards. og:image is the ONE absolute URL
+ *  (siteBaseUrl + the deployed 512px mark) — a share crawler has no page context to resolve a relative
+ *  one. Every attribute value is escaped. */
+function buildHeadMeta({ up, description, ogTitle, siteName, siteBaseUrl }) {
+  const ogImage = escAttr(`${siteBaseUrl}assets/icon-512.png`);
+  const desc = escAttr(description);
+  const lines = [
+    `<link rel="icon" href="${up}assets/favicon.svg" type="image/svg+xml">`,
+    `<link rel="icon" href="${up}assets/favicon.ico" sizes="any">`,
+    `<link rel="apple-touch-icon" href="${up}assets/apple-touch-icon.png">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:site_name" content="${escAttr(siteName)}">`,
+    `<meta property="og:title" content="${escAttr(ogTitle)}">`,
+    `<meta property="og:image" content="${ogImage}">`,
+    `<meta name="twitter:card" content="summary">`,
+    `<meta name="twitter:title" content="${escAttr(ogTitle)}">`,
+    `<meta name="twitter:image" content="${ogImage}">`,
+  ];
+  if (description) {
+    lines.push(
+      `<meta name="description" content="${desc}">`,
+      `<meta property="og:description" content="${desc}">`,
+      `<meta name="twitter:description" content="${desc}">`,
+    );
+  }
+  return lines.join('\n');
+}
+
+export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBaseUrl = DEFAULT_SITE_BASE_URL }) {
   const warnings = [];
 
   // 1. Parse the master → the S1 nav model on file.data. (Nav-model extraction, not a page render —
@@ -391,12 +448,21 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss }) {
   // runtime in its head), then staticize its `?page=` chrome links for the page's depth. (The authored
   // `<a {slug}>` content links were already resolved per fragment in PHASE 2.)
   for (const { outPath, slug, title, content, page, chapterStem } of rendered) {
-    // A redirect stub (cover-OFF book root) is hosted as-is — no shell, no CTA. Every framed page
-    // (article + book chapter) gets the uniform "open in playground" link to its live counterpart
-    // (a book chapter → its exact `?page=<slug>&chapter=<stem>` live twin).
-    const html = page != null
-      ? page
-      : composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead, playgroundHref: liveHrefFor(outPath, slug, chapterStem) });
+    // A redirect stub (cover-OFF book root) is hosted as-is — no shell, no head, no CTA.
+    if (page != null) { pageMap.set(outPath, staticize(page, outPath)); continue; }
+    // #393/W12 — the per-page head: the `<title>` suffixed with the site name (the home page stays the
+    // bare site name, not "Home — Enscribe"), a meta description from the page's first paragraph, favicon
+    // links (depth-relative to site/assets/), and OpenGraph/Twitter cards for a rich link unfurl. Every
+    // framed page (article + book chapter) gets the uniform "open in playground" link to its live twin.
+    const up = '../'.repeat((outPath.match(/\//g) || []).length);
+    const pageTitle = slug === homeSlug || title === masterTitle ? masterTitle : `${title} — ${masterTitle}`;
+    const headMeta = buildHeadMeta({
+      up, description: firstParagraphText(content), ogTitle: pageTitle, siteName: masterTitle, siteBaseUrl,
+    });
+    const html = composeWebsiteShellPage({
+      defaultCss, title: pageTitle, topBar, content, dslHead, headMeta,
+      playgroundHref: liveHrefFor(outPath, slug, chapterStem),
+    });
     pageMap.set(outPath, staticize(html, outPath));
   }
 

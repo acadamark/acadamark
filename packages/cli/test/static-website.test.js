@@ -54,6 +54,40 @@ export function run_tests() {
     console.log('PASS: static-website — nav-path output (home→root, grouped page → <group>/<slug>/index.html, book nested)');
   }
 
+  // ── #393/W12: per-page head metadata — favicon links, site-name-suffixed <title>, meta description,
+  //    OpenGraph/Twitter cards for a rich link unfurl. Home keeps the BARE site name; a nested page
+  //    suffixes it and its favicon links go depth-relative. ──
+  {
+    const home = pages.get('index.html');
+    const about = pages.get('about/index.html');
+    const homeHead = home.slice(0, home.indexOf('</head>'));
+    const aboutHead = about.slice(0, about.indexOf('</head>'));
+    assert.ok(/<title>Mini Site<\/title>/.test(homeHead), 'W12: home <title> is the bare site name (not "Home — …")');
+    assert.ok(/<title>About — Mini Site<\/title>/.test(aboutHead), 'W12: a nested page <title> is suffixed with the site name');
+    // Favicon links are depth-relative: home → assets/…, a nested page → ../assets/…
+    assert.ok(homeHead.includes('<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">'), 'W12: home favicon svg link (root-relative)');
+    assert.ok(homeHead.includes('<link rel="icon" href="assets/favicon.ico"'), 'W12: home favicon .ico fallback');
+    assert.ok(homeHead.includes('<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">'), 'W12: home apple-touch-icon');
+    assert.ok(aboutHead.includes('<link rel="icon" href="../assets/favicon.svg"'), 'W12: a nested page favicon link is depth-relative (../assets/…)');
+    // Meta description (from the first paragraph) + OpenGraph/Twitter cards.
+    assert.ok(/<meta name="description" content="[^"]+">/.test(homeHead), 'W12: a non-empty meta description is emitted');
+    assert.ok(homeHead.includes('<meta property="og:site_name" content="Mini Site">'), 'W12: og:site_name is the site name');
+    assert.ok(homeHead.includes('<meta property="og:title" content="Mini Site">'), 'W12: og:title (home = bare site name)');
+    assert.ok(/<meta property="og:image" content="https:\/\/[^"]+\/assets\/icon-512\.png">/.test(homeHead), 'W12: og:image is an ABSOLUTE URL to the deployed 512px mark');
+    assert.ok(homeHead.includes('<meta property="og:type" content="website">'), 'W12: og:type');
+    assert.ok(/<meta name="twitter:card" content="summary">/.test(homeHead), 'W12: a twitter card is emitted');
+    // The favicon/OG additions must NOT disturb the guarded font/KaTeX head links (still once each).
+    assert.equal((homeHead.match(/fonts\.googleapis\.com/g) || []).length, 1, 'W12: still exactly one document-fonts link in the head');
+    assert.equal((homeHead.match(new RegExp(KATEX_CDN_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length, 1, 'W12: still exactly one KaTeX link in the head');
+  }
+  // The og:image base URL is overridable for a different deploy target (default is the CNAME domain).
+  {
+    const { pages: p2 } = buildStaticWebsite({ masterSource, masterDir: FIX, defaultCss: '/* css */', siteBaseUrl: 'https://example.test/' });
+    assert.ok(p2.get('index.html').includes('<meta property="og:image" content="https://example.test/assets/icon-512.png">'),
+      'W12: the siteBaseUrl option overrides the og:image base');
+  }
+  console.log('PASS: static-website (#393/W12) — favicon links, site-name-suffixed titles, meta description, OpenGraph/Twitter cards, absolute + overridable og:image');
+
   // ── chrome links are PRETTY trailing-slash path URLs, relative to the page's depth (no ?page=) ──
   {
     const home = pages.get('index.html');

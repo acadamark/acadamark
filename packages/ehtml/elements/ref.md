@@ -90,23 +90,35 @@ jats_counterpart:
     (fig, table, sec, equation, fn, etc.). Enscribe's <ref> maps
     to <xref> with the appropriate ref-type derived from the target.
 shorthand_examples:
-  - source: 'See <ref @fig:scatter> for details.'
-    html_output: '<p>See <a href="#fig:scatter" class="ref">figure 1</a> for details.</p>'
+  - source: |
+      <fig #fig:scatter | A scatter plot of the results.>
+      See <ref @fig:scatter> for details.
+    html_output: |
+      <figure id="fig:scatter"><figcaption><figure-label>Figure 1.</figure-label><p>A scatter plot of the results.</p></figcaption></figure>
+      <p>See <a href="#fig:scatter" class="ref">figure 1</a> for details.</p>
     notes: |
       Canonical form: @id prefix (@ references; # would declare an id on the
-      <ref> itself). The ref-resolution plugin replaces the
-      <ref> node with a __ref-marker before hast conversion. The handler
-      then renders an <a> element with computed text. Prefix word is
-      lowercase, from the DEFAULT_PREFIXES dictionary keyed by id prefix.
-  - source: 'As shown in <ref @eqn:model>.'
-    html_output: '<p>As shown in <a href="#eqn:model" class="ref">equation 1</a>.</p>'
+      <ref> itself). A <ref> resolves only against a target in scope, so the
+      demo declares <fig #fig:scatter> first; the ref-resolution plugin then
+      replaces the <ref> node with a __ref-marker before hast conversion, and
+      the handler renders an <a> whose text ("figure 1") is computed from the
+      target's kind and number. Prefix word is lowercase, from the
+      DEFAULT_PREFIXES dictionary keyed by id prefix.
+  - source: |
+      <$$ #eqn:model | y = \beta_0 + \beta_1 x $$>
+      As shown in <ref @eqn:model>.
+    html_output: |
+      <figure id="eqn:model" class="equation">(KaTeX-rendered HTML of the display equation)</figure>
+      <p>As shown in <a href="#eqn:model" class="ref">equation 1</a>.</p>
     notes: |
-      Equation references use the "equation" prefix word by default.
+      Equation references use the "equation" prefix word by default; the
+      display equation <$$ #eqn:model … $$> supplies the in-scope target.
       Config override: <config ref-prefix-eqn="Eq."> changes this to "Eq.".
   - source: '<ref @eqn:missing>'
     html_output: '<a href="#eqn:missing" class="ref-error">??ref: eqn:missing??</a>'
     notes: |
-      Unresolved target renders a visible error anchor.
+      Unresolved target renders a visible error anchor. This example is the
+      deliberate exception — it teaches the error form on purpose.
 # <ref> is resolved by the ref-resolution plugin into an internal marker node
 # (__ref-marker / __ref-error, dispatched via INTERNAL_REGISTRY) — it is NOT
 # dispatched through HANDLER_REGISTRY, so it declares no handler_module. Its

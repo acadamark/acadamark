@@ -200,9 +200,13 @@ export function buildWebsiteDslHead(dslNames) {
  *        depth-relative). When set, a uniform "open in playground" link is emitted at the top of the
  *        content region — the static site's (view-only) path to its live, editable twin. Omitted ⇒ no
  *        link (head byte-unchanged), so a non-website caller is unaffected.
+ * @param {string} [o.headMeta] - a pre-composed block of extra `<head>` tags (favicon links, meta
+ *        description, OpenGraph/Twitter cards — #393/W12), emitted right after `<title>` and before
+ *        HEAD_ASSET_LINKS. The caller owns the content (per-page title suffix, depth-relative favicon
+ *        hrefs, absolute og:image URL); this stays a dumb string-builder. '' (default) ⇒ head unchanged.
  * @returns {string} a standalone `<html>` document.
  */
-export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref }) {
+export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref, headMeta = '' }) {
   const cta = playgroundHref
     ? `<div class="enscribe-playground-cta"><a href="${escapeHtml(playgroundHref)}">Open in playground ↗</a></div>\n`
     : '';
@@ -212,7 +216,7 @@ export function composeWebsiteShellPage({ defaultCss, title, topBar, content, ds
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title || 'Enscribe')}</title>
-${HEAD_ASSET_LINKS}
+${headMeta ? headMeta + '\n' : ''}${HEAD_ASSET_LINKS}
 <style>
 ${universalHeadStyle(defaultCss)}
 </style>${dslHead ? `\n${dslHead}` : ''}
