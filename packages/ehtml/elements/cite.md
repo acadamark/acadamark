@@ -104,8 +104,11 @@ shorthand_examples:
 # <cite> is resolved by the cite-resolution plugin into an internal marker node
 # (__cite-marker / __cite-error, dispatched via INTERNAL_REGISTRY) — it is NOT
 # dispatched through HANDLER_REGISTRY, so it declares no handler_module. Its
-# strategy is `schema` (the always-renders fallback for a raw, unresolved <cite>),
-# mirroring <note> (#345). The resolver is named in related_plugins below.
+# strategy is `schema` (a defensive fallback only: since #395 the resolver replaces
+# EVERY <cite> — resolved keys → __cite-marker, missing keys or no library in scope
+# → __cite-error — so a raw <cite> reaches schema dispatch only in a pipeline that
+# skips cite-resolution), mirroring <note> (#345). The resolver is named in
+# related_plugins below.
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeCiteResolution

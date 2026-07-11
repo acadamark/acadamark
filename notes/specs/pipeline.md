@@ -492,8 +492,10 @@ file.data.enscribeCitations = {
 config). It does **not** require a structuring step to have relocated `<data>`:
 the deep-collect finds `<data>` at root (article) or in `<book-body>` (book).
 
-**No-op case:** If there are no `<data>` nodes, `file.data.enscribeCitations`
-is not set. Cite resolution and bibliography will be no-ops.
+**No-library case:** If there are no `<data>` nodes, `file.data.enscribeCitations`
+is not set. Bibliography is then a no-op; cite resolution is **not** (#395) — every
+authored `<cite>` renders a visible `__cite-error` marker (always-renders: an
+authored citation never silently renders empty).
 
 #### 4.4.5 enscribeTableCellParse
 
@@ -633,7 +635,9 @@ targets produce the label-tail. Config key `ref-prefix-{prefix}` overrides.
 `__cite-error` internal nodes. Builds `citations.order` (first-cited key order).
 
 **Dependency:** `buildCitationIndex` (step 4.4; needs `file.data.enscribeCitations`).
-If citations were not loaded, this plugin is a no-op.
+If citations were not loaded (no `<library>`, or every source failed), every `<cite>`
+is replaced with `__cite-error` carrying its authored keys (#395 always-renders) —
+never a no-op pass-through to an empty element.
 
 **Citation keys:** Extracted from `node.atRefs` (canonical: `<cite @Smith2020>` or `<cite @Smith2020 @Jones2019>`), `node.positional` (bracketed form: `<cite [@Smith2020, @Jones2019]>`, `@` stripped per item), `node.content` as string (pipe form), or parsed content text (defensive path).
 
