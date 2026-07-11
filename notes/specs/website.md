@@ -155,6 +155,35 @@ chapter of the book being served is realized to that chapter's route too (static
 This is the seam `render-parity.md` references for the website path; the substantive parity section
 there is the follow-on (#319).
 
+## Page head metadata (static surface)
+
+Each static page's `<head>` carries, beyond the shared document-asset links (fonts + KaTeX), a block
+of per-page discovery/social metadata so a shared link unfurls richly rather than as a bare page name:
+
+- a **`<title>` suffixed with the site name** — `"<page> — <site>"`, except the home page, which is
+  the **bare site name** (not `"Home — <site>"`). The site name is the master document's `<meta><title>`.
+- a **`<meta name="description">`** derived from the page's **first prose paragraph** (tags stripped,
+  whitespace collapsed, truncated at a word boundary); omitted when the page has no paragraph.
+- **favicon links** — an SVG favicon with an `.ico` fallback and an `apple-touch-icon`, their hrefs
+  **depth-relative** to `assets/` (the same relative scheme every other intra-site URL uses), so the
+  head is subpath-agnostic like the rest of the site.
+- **OpenGraph + Twitter-card** tags (`og:type`/`og:site_name`/`og:title`/`og:description`/`og:image`,
+  `twitter:card`/`twitter:title`/`twitter:description`/`twitter:image`).
+
+`og:image` is the **one absolute URL** in the head — a share crawler fetches it out of page context, so
+a depth-relative href will not do. It is formed from the site's **base URL + the deployed social mark**
+(`assets/icon-512.png`). The base URL defaults to the **deploy domain the repo's Pages CNAME declares**
+and is overridable via the build's `siteBaseUrl` option should the deploy target change.
+
+The favicon/social assets live in **`docs-source/assets/`** and ship into `site/assets/` through the
+site build's author-assets copy (the same mechanism a page's co-located figures use) — not via any
+engine-package asset list, since they are a property of *this site*, not of the engine. The committed
+brand masters and the freeze rule for the rasters are recorded in `brand/README.md`.
+
+The **live surface** renders client-side and is document-type-agnostic at emit time, so a per-page
+description / OpenGraph card is not meaningful there; giving its shell a (self-contained) favicon is a
+tracked follow-on.
+
 ## The internal link layer
 
 An authored internal link is `<a {slug} | label>` (recorded by the `<a>` handler as a `data-page-slug`
