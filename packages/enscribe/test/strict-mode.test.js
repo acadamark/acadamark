@@ -65,6 +65,19 @@ export async function run() {
     console.log('PASS: #317/2-F — strict mode flags the markdown image ![…](…), not just links');
   }
 
+  // ── #407: GFM footnotes + reference-link definitions are flagged (always-literal non-idioms) ─
+  {
+    const h = html(cfg('sigil') + 'The effect held.[^1]\n\n[^1]: Wilcoxon, p = 0.003.\n\n[ref]: http://x');
+    // The footnote reference, the footnote definition line, and the ref-link definition line all
+    // render literally in every mode (#407); in strict mode they are flagged toward <note>/<^>/<a>.
+    assert.ok(!h.includes('user-content-fn'), 'sigil: no live footnote marker is minted (#407)');
+    assert.ok(h.includes('Wilcoxon, p = 0.003.'), 'sigil: the footnote body is preserved, not lost (#407)');
+    assert.ok(/<md-flag[^>]*>\[\^1\]</.test(h), 'sigil: the footnote reference [^1] is flagged');
+    assert.ok(/<md-flag[^>]*>\[\^1\]: </.test(h), 'sigil: the footnote definition line [^1]: is flagged');
+    assert.ok(/<md-flag[^>]*>\[ref\]: </.test(h), 'sigil: the reference-link definition line [ref]: is flagged');
+    console.log('PASS: #407 — strict mode flags GFM footnote references + definition lines toward <note>/<^>/<a>');
+  }
+
   // ── sigil reaches INTO tag pipe bodies (the nested-gap test) ─────────────────
   {
     const h = html(cfg('sigil') + '<aside | *bar* and # nope>');
