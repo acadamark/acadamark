@@ -188,11 +188,18 @@ related_plugins:
       book-parts into the appropriate region (<book-front>, <book-body>,
       <book-back>) based on book-part-type. See notes/specs/pipeline.md.
 deferred_features:
-  - name: book-part-import
+  - name: book-part-transclusion-semantics
     description: |
-      Future support for <book-part src="..."> and shorthand forms
-      (<chapter src="...">, <part src="...">) to reference book-parts from
-      external files.
+      The sourced forms (<chapter src="...">, <part src="...">, and the general
+      <book-part src="...">) assemble per the transclusion model
+      (notes/specs/master-document.md §"Transclusion — substitution before
+      structure"): src splices the child file's content as the part's INITIAL
+      body and the part stays open — interstitial master content after the
+      entry belongs to that part (and numbers within it) until a peer opens.
+      Spec-ahead-of-code: the current assembler stitches children but treats
+      interstitial master content as loose book-body content (rendered on no
+      page by the separate-pages build) — tracked in #404. The <include src>
+      general primitive is specified there and not yet implemented.
 ---
 
 # `<book-part>`

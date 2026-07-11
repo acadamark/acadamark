@@ -15,12 +15,19 @@ enscribe_attributes:
     src:
       maps_to: data-src
       notes: |
-        For an EXTERNAL page: the child `.emd` file that supplies the page body. The
-        pipe gives the menu label and overrides the child's own title, exactly as
-        `<section src | Title>` does in an article. Omitted for an INLINE page, whose
-        body is authored in the master after the `<item | Title>` marker (peer-closed
-        by the next entry, the `<section | Title>` model). The website render (S2)
-        loads the child; S1 records the `src` as a reference only.
+        For an EXTERNAL page: the child `.emd` file that supplies the page's INITIAL
+        body per the transclusion model (notes/specs/master-document.md
+        §"Transclusion — substitution before structure") — the splice does not
+        close the entry, so interstitial master content up to the next entry also
+        belongs to this page. The pipe gives the menu label and overrides the
+        child's own title, exactly as `<section src | Title>` does in an article.
+        Omitted for an INLINE page, whose body is authored in the master after the
+        `<item | Title>` marker (peer-closed by the next entry — the
+        zero-length-splice case of the same rule). The website render (S2) loads
+        the child; S1 records the `src` as a reference only. Spec-ahead-of-code:
+        the current builder ignores interstitial content after an external item
+        (#404) and crashes on an inline item (#417 — a plain bug; inline items are
+        legal by construction).
 content:
   shape:
     - element: body

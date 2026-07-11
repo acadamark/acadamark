@@ -160,6 +160,14 @@ The Methods section's opening implicitly closes the Introduction section. The au
 
 This works only at the same depth. A `<sub-section>` inside a `<section>` doesn't close the section because they're at different depths; the section continues until the next peer `<section>` or the end of its container.
 
+The sourced form has the **same closing semantics**: `<section src=intro.emd | Introduction>` opens
+the section, splices the child file's content as its initial body, and stays open — following
+content in the calling file belongs to the section until a peer opens, exactly as if the child's
+text had been typed at the call site (`notes/specs/master-document.md` §"Transclusion — substitution
+before structure" is normative). `src` supplies initial content; it does not close the element.
+*Spec-ahead-of-code: the current assembler treats content after a `<section src>` entry as loose
+sibling content instead — tracked in #404.*
+
 ## Structure within a section
 
 A section contains:

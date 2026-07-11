@@ -202,6 +202,41 @@ resolves each marker against the site's slug → page map:
 The `<a {slug}>` form, the slug-source tiers, and the degrade marker are owned by
 `spec-internal-links.md`; this section describes the website path's use of them.
 
+## The routing invariant (all multi-page projections)
+
+*(Decided 2026-07-11 with the transclusion model — `notes/specs/master-document.md` §Transclusion,
+`notes/decisions.md` §"Transclusion — substitution before structure". Normative for **every**
+multi-page projection: the website composition on both surfaces, the separate-pages book build, and
+the live book router. Where current behavior differs it is **spec-ahead-of-code, tracked in #404**.)*
+
+Multi-page projections cut the one assembled tree into pages. Three requirements make that cut
+navigation-safe:
+
+1. **Page ownership is a total, deterministic function of assembled tree position.** Every node in
+   the assembled document — under the transclusion model, interstitial content is inside the
+   preceding part, and pre-first-part content is in the parent region — belongs to **exactly one**
+   emitted page, computable from its ancestry alone. There is no "unowned" content and no
+   `owner: null` degrade path: a projection that cannot place a node is a broken projection, not a
+   permitted silent fallback. **Spec-ahead-of-code:** today anchors outside every book-part harvest
+   `chapter: null` and every consumer of null silently gives up — #404.
+
+2. **Anchor URLs are a pure function of ownership + stable slug.** The URL a cross-page reference
+   emits is computed from the target's owner page (point 1) and the owner's stable identity (the
+   slug tiers, `spec-internal-links.md`) — never by consulting the emitted output. Two consequences:
+   URLs are computable before any page is written, and the reference layer cannot disagree with the
+   page layer about where a target lives.
+
+3. **A link whose target page is not yet written routes to a graceful not-found view** — the same
+   view the `?page=` router already has for unknown pages — never a bare dead in-page anchor, never
+   a silent cover fallback, never silence. This is the navigation-layer analogue of the D1
+   resolution markers: every failure a reader can click has a visible, explicable landing.
+
+> **The machine-checkable gate.** The implementation slice ships a check with this exact shape:
+> *every id in the assembled document appears on exactly one emitted page; every emitted href either
+> resolves to an existing anchor or routes to the not-found view.* Green means the invariant holds
+> by construction; the check is the projection layer's analogue of the boundary and freshness
+> guards.
+
 ## Always-render invariants
 
 Every page **always renders**; no website-specific condition halts the build. In particular:

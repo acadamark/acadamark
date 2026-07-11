@@ -45,21 +45,174 @@ The structural vocabulary is type-specific and does **not** mix — matching LaT
 
 A structural element either references a child file or is authored inline:
 
-- `<section src="section_1.emd" />` — content comes from the child file.
+- `<section src="section_1.emd" />` — the child file supplies the section's **initial content** (see
+  §Transclusion below: `src` splices, it does not close).
 - `<section src="section_1.emd" | Title Override>` — the pipe overrides the child file's title.
 - `<section | Inline Title>` + following body — authored inline; an open marker, peer-closed by the next structural element (same model as lists and sections).
 
-A kwarg-only entry with no pipe body self-closes — `<section src="section_1.emd" />`, and likewise `<meta … />` and `<library src="…" />` — so the parser does not read it as an unterminated long-form opener (the #190-skeleton self-close call, settled as decision (a); no parser change). The pipe forms terminate the tag, so they carry no slash.
+**All three forms are open markers with identical closing semantics**: the element stays open after
+its entry — after the spliced child content in the `src` forms, after the marker in the inline form —
+and is peer-closed by the next structural element, per the normal no-explicit-close rule. `src` only
+determines where the element's initial content comes from; it says nothing about where the element
+ends (§Transclusion, below, is normative).
+
+A kwarg-only entry with no pipe body self-closes — `<section src="section_1.emd" />`, and likewise `<meta … />` and `<library src="…" />` — so the parser does not read it as an unterminated long-form opener (the #190-skeleton self-close call, settled as decision (a); no parser change). The pipe forms terminate the tag, so they carry no slash. Self-closing is a **parser-level** fact (the tag token needs no explicit close and opens no long-form container); it does not contradict the open-marker **structural** semantics above — exactly as the inline pipe form is parser-terminated yet structurally open until a peer.
 
 The same `src` / pipe-title forms apply to every structural element the document's `type` allows — in a book, `<chapter src="chapter_1.emd" />`, `<preface src="preface.emd" />`, `<appendix src="appendix.emd" | Notation>`, … assemble exactly as `<section src>` does in an article. The assembler is document-class-agnostic: it stitches the resolved children into one flat tree and the pipeline structures that tree as an `<article>` or a `<book>` (front/body/back) according to `<meta type>`. (A child file's own `<meta>` supplies only its fallback title; per-child author/date in that `<meta>` is not assembled — author a book-part's author as a loose `<author>` in the child body.)
 
 Title precedence: an inline pipe title wins over the child file's title. If neither is present, the title renders as "Title Missing" (always-render).
 
-`src` paths are relative to the master file. `src="chapter_1/chapter_1.emd"` means the directory `chapter_1/` sits beside the master document.
+`src` paths are relative to the **including file** — each file resolves the paths it writes against
+its own directory, recursively (a child that includes further files resolves those against the
+child's directory). For the common one-level case this is the familiar "relative to the master"
+behavior: `src="chapter_1/chapter_1.emd"` means the directory `chapter_1/` sits beside the master
+document. The including-file rule is the same one per-chapter `<library src>` (§Citations) and
+asset paths already follow — one resolution rule everywhere, matching the LaTeX `\input` intuition.
 
 ### Placement markers
 
 `<toc>`, `<endnotes>`, and `<bibliography>` are placement markers: they render their (generated) content where you put them. `<toc auto floating depth="2" />` builds the table of contents from the structure at that position — `auto` derives entries from the structure; `floating`/`depth` are display flags.
+
+## Transclusion — substitution before structure
+
+*(Decided 2026-07-11 — see `notes/decisions.md` §"Transclusion — substitution before structure".
+This section is normative for every sourced form. Where current engine behavior differs it is
+marked **spec-ahead-of-code, tracked in #404**.)*
+
+### The model
+
+1. **Substitution before structure.** Document assembly is a *textual* layer: externally sourced
+   content is spliced in at its call site, as if typed there. The document's structure — element
+   opening, peer-closing, nesting, numbering — is then computed over the **assembled text**, exactly
+   as if the author had written one file. Assembly answers "what is the text?"; structuring answers
+   "what does the text mean?"; assembly always runs first and structuring never knows the seams.
+
+2. **`src=` supplies an element's initial content; it does not close the element.**
+   `<section src=f.emd | Title>` means: open the section with that title, splice `f.emd`'s content
+   as the section's initial body, and continue reading — everything after it in the calling file
+   belongs to that section until a peer opens, per the normal no-explicit-close rule. Worked
+   example (the deciding one):
+
+   ```
+   <section src=section1.emd | Section 1>
+
+   Random text
+
+   <section src=section2.emd | Section 2>
+   ```
+
+   The effective content of *Section 1* is `section1.emd`'s text **followed by** `Random text`;
+   *Section 2* peer-closes it. This applies uniformly to every sourced structural form —
+   `<chapter src>`, `<part src>`, `<preface src>`, `<appendix src>`, the website `<item src>` — with
+   no per-form variation. **Spec-ahead-of-code:** today interstitial master content becomes *loose*
+   sibling content instead of joining the preceding element (and the separate-pages book build then
+   renders it on no page at all) — #404.
+
+3. **`<include src=…>` is the general primitive.** An `<include>` splices a file's content at its
+   own position and is otherwise inert — it opens nothing, closes nothing, and adds no structure.
+   The forward case it exists for: prose, include, more prose, include, more prose — each file
+   splices at its spot, and everything typed between reads normally, as one continuous document.
+   Every sourced structural form is sugar over it:
+
+   > `<section src=f.emd | Title>` ≡ `<section | Title>` immediately followed by `<include src=f.emd>`
+
+   and likewise for every element that accepts `src` content sourcing. **`<include>` itself is not
+   yet implemented** — it is specified now so the model is stated whole; its implementation is
+   scheduled separately from the #404 arc.
+
+### Path resolution
+
+`src`/`include` paths resolve **relative to the including file**, recursively — each file resolves
+the paths it writes against its own directory (§Structure entries states the same rule for the
+one-level case). This is the rule assets and per-chapter libraries already follow, and the LaTeX
+`\input` intuition.
+
+### Recursion and cycles
+
+Includes may include, to any depth — there is **no fixed depth limit**; the only prohibited topology
+is a **cycle**. A cycle is detected at assembly time (the chain of including files is tracked) and
+degrades visibly per always-renders: the offending include renders as a flagged marker naming the
+cycle (`??include cycle: a.emd → b.emd → a.emd??`), that splice is skipped, and assembly continues.
+The same file included at **two different sites** is *not* a cycle and is legal — pure substitution
+means it reads exactly as if its text were typed at both places (each splice is independent; ids
+duplicated by double inclusion are handled by the ordinary duplicate-id diagnostics, not by the
+assembler).
+
+### Structure crosses file boundaries — in both directions
+
+Pure substitution implies both directions, and the spec says so out loud:
+
+- **An element opened inside an included file remains open after the splice.** Following text in the
+  calling file falls into the **deepest container still open** at the end of the spliced content —
+  not automatically into the element the `src=` opened. This is the one surprising consequence;
+  example:
+
+  ```
+  # chapter1.emd ends with:
+  <sub-section | Fine print>
+  Some fine print.
+
+  # master continues after <chapter src=chapter1.emd | One>:
+  More master text.
+  ```
+
+  `More master text` lands inside *Fine print* (the deepest open container), not at the chapter
+  level. An author who wants it at chapter level closes the sub-section in the child, or opens a
+  peer. This is exactly what the same text would mean typed as one file.
+
+- **A peer tag inside an included file closes an element opened in the caller.** If the spliced
+  content opens a `<section>`, that section peer-closes whatever section was open at the call site —
+  the file boundary is invisible to peer-closing.
+
+### Block position (v1 restriction)
+
+Splices occur at **block level**: an `<include>`/`src=` entry stands as its own block, and the
+spliced content begins as block content. Mid-paragraph inclusion (splicing into the middle of a
+sentence) is **out of scope for v1** — a deliberate restriction, not an oversight; it can be lifted
+later without changing the model.
+
+### Projection equivalence
+
+Single-page and multi-page renders are **projections of the same assembled structure** — a node's
+position and ancestry are identical in every projection; projections differ only in how the one
+tree is cut into pages. This is the sentence that kills #404's class: under point 2, interstitial
+master content is *inside the preceding part*, so in a separate-pages build it renders on that
+part's page — **no "loose content" exists to assign**, and no anchor can be resolved-but-unplaced.
+**Spec-ahead-of-code:** today the separate-pages build renders only book-parts and drops loose
+content from the output entirely — #404.
+
+### Content before the first part
+
+Content that precedes the first structural part has no preceding part to join: it belongs to the
+**parent element** — the article lead, or the book's front region. **Spec-ahead-of-code:** current
+book structuring routes such loose content into `book-body` (preserved in the tree but rendered on
+no page by the separate-pages build); under this spec it is front-region content — #404.
+
+### Numbering and float consequences
+
+Because interstitial content is inside the preceding part, it **numbers within that part**: a figure
+in an interlude between chapters 3 and 4 is chapter 3's figure (`figure 3.N`), its notes are chapter
+3's notes, and cross-references to it carry chapter 3's prefix. This is the LaTeX-consistent
+behavior (`\input` between `\chapter` commands contributes to the preceding chapter) — named here
+explicitly so nobody later reads it as a numbering bug.
+
+### Provenance
+
+Implementations **should retain per-node origin (source file and line) through assembly**, so
+diagnostics, cycle reports, and future tooling can name where content came from after the seams have
+dissolved — the #412 principle ("as much provenance as possible should be kept, recorded, and
+carried forward") applied to transclusion.
+
+### Scope note: websites
+
+For a website, substitution operates **within each nav entry**: an `<item src>`'s page content is
+the spliced child followed by any interstitial master content up to the next entry, and an inline
+`<item | Title>` is simply the zero-length-splice case of the same rule (so inline items are legal
+by construction — the current builder crash on them is a plain bug, #417). The *site* remains a
+composition of native page-documents — pages are not spliced into one another, and
+`notes/specs/website.md`'s composition model (number natively, merge registries, never flatten) is
+unchanged by this section. Substitution defines what content a page *contains*; composition defines
+how pages *relate*.
 
 ## Notes and endnotes
 
@@ -181,7 +334,7 @@ Output targets are type-dependent:
 
 ## The assembler
 
-One project-wide pass resolves everything that spans files: it loads `src` children, merges libraries into the single registry, resolves citations and cross-references, computes numbering (chapters, figures, notes), places the toc/endnotes/bibliography markers, applies theme/layout, and — for websites — assembles the nav into pages. Citations, cross-references, and numbering are one problem: a single global registry resolved at assembly time.
+One project-wide pass resolves everything that spans files: it loads `src` children, merges libraries into the single registry, resolves citations and cross-references, computes numbering (chapters, figures, notes), places the toc/endnotes/bibliography markers, applies theme/layout, and — for websites — assembles the nav into pages. Citations, cross-references, and numbering are one problem: a single global registry resolved at assembly time. The splice semantics the loading step obeys are §Transclusion's (substitution before structure): children are spliced as text at their call sites, and every later stage operates on the assembled text with no knowledge of the seams.
 
 The assembler is the multi-file/project system (#72) plus a build model. Its design is led by Claude Code and Claude-Chat with you in the loop on the calls, and it builds in slices, not one pass. The docs site is the worked example for the website assembler (a sidebar-style site).
 

@@ -490,6 +490,36 @@ HTML") is answered by the default, not by an option a user must discover. This r
 heading portion of #40 (render-mode lowering): the default projection is now natively
 heading-semantic; #40's remaining scope is the full lossy lowering for stylesheet-free display.
 
+## Transclusion — substitution before structure
+
+**Decided 2026-07-11 (Ariel).** Document assembly is a **textual substitution layer that runs
+before structure**: externally sourced content is spliced in at its call site as if typed there,
+and the document's structure — element opening, peer-closing, nesting, numbering — is computed over
+the assembled text exactly as if it were one file.
+
+**The three-line model.** (1) Substitution before structure. (2) `src=` supplies an element's
+*initial content* and does not close it — `<section src=section1.emd | Section 1>` followed by
+`Random text` means Section 1's effective content is section1.emd's text *then* `Random text`,
+until a peer section opens; uniform across `<section src>`, `<chapter src>`, `<part src>`, website
+`<item src>`. (3) `<include src=…>` is the named general primitive the `src=` forms are sugar over
+(prose, include, more prose — each splices at its spot); specified now, implemented separately.
+
+**Why (Ariel's rationale).** The generalization to `<include>` is what motivated the model: once
+inclusion is "as if typed here," there is nothing special about structural entries, no per-form
+assembly semantics, and no category of "loose" master content — every character of the master has a
+definite home in the assembled tree. That single property dissolves #404's class at the root:
+multi-page renders become pure projections of one assembled structure (page ownership total and
+deterministic), rather than a partition that can strand resolved-but-unplaced content. It is also
+the LaTeX `\input` intuition, the model the emigrant audience already carries.
+
+**Where it lands.** Normative text: `notes/specs/master-document.md` §"Transclusion — substitution
+before structure" (the model, path resolution, cycles, cross-boundary structure, block-level v1,
+projection equivalence, pre-first-part content, numbering consequences, provenance); the routing
+invariant (ownership total; URLs a pure function of ownership + slug; not-found routing; the
+machine-checkable gate) in `notes/specs/website.md` §"The routing invariant". Current-behavior
+divergences are marked spec-ahead-of-code and tracked in #404; the `<item>` inline-page crash is
+reclassified a plain bug (#417 — an inline item is a zero-length splice, legal by construction).
+
 ## Not a decision — recorded for accuracy
 
 **Citations are not website-broken.** Investigated this session: real citations (with a `<library>`)

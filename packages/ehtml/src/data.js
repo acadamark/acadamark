@@ -1557,8 +1557,8 @@ const _book_part = Object.freeze({
     ],
     "deferred_features": [
       {
-        "name": "book-part-import",
-        "description": "Future support for <book-part src=\"...\"> and shorthand forms\n(<chapter src=\"...\">, <part src=\"...\">) to reference book-parts from\nexternal files.\n",
+        "name": "book-part-transclusion-semantics",
+        "description": "The sourced forms (<chapter src=\"...\">, <part src=\"...\">, and the general\n<book-part src=\"...\">) assemble per the transclusion model\n(notes/specs/master-document.md §\"Transclusion — substitution before\nstructure\"): src splices the child file's content as the part's INITIAL\nbody and the part stays open — interstitial master content after the\nentry belongs to that part (and numbers within it) until a peer opens.\nSpec-ahead-of-code: the current assembler stitches children but treats\ninterstitial master content as loose book-body content (rendered on no\npage by the separate-pages build) — tracked in #404. The <include src>\ngeneral primitive is specified there and not yet implemented.\n",
       },
     ],
     "_sourceFile": "book-part.md",
@@ -3846,7 +3846,7 @@ const _item = Object.freeze({
           "maps_to": {
             "html": "data-src",
           },
-          "notes": "For an EXTERNAL page: the child `.emd` file that supplies the page body. The\npipe gives the menu label and overrides the child's own title, exactly as\n`<section src | Title>` does in an article. Omitted for an INLINE page, whose\nbody is authored in the master after the `<item | Title>` marker (peer-closed\nby the next entry, the `<section | Title>` model). The website render (S2)\nloads the child; S1 records the `src` as a reference only.\n",
+          "notes": "For an EXTERNAL page: the child `.emd` file that supplies the page's INITIAL\nbody per the transclusion model (notes/specs/master-document.md\n§\"Transclusion — substitution before structure\") — the splice does not\nclose the entry, so interstitial master content up to the next entry also\nbelongs to this page. The pipe gives the menu label and overrides the\nchild's own title, exactly as `<section src | Title>` does in an article.\nOmitted for an INLINE page, whose body is authored in the master after the\n`<item | Title>` marker (peer-closed by the next entry — the\nzero-length-splice case of the same rule). The website render (S2) loads\nthe child; S1 records the `src` as a reference only. Spec-ahead-of-code:\nthe current builder ignores interstitial content after an external item\n(#404) and crashes on an inline item (#417 — a plain bug; inline items are\nlegal by construction).\n",
         },
       },
     },
