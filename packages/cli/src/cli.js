@@ -18,7 +18,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSync } from 'node:fs';
 import { dirname, resolve, join, basename, extname } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages, extractDocumentTitle } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages, extractDocumentTitle, extractTitleFromTree } from '@enscribejs/enscribe';
 import { emitDocumentShell } from '@enscribejs/enscribe/shell/document-shell.js';
 import { escapeHtmlAttr } from '@enscribejs/enscribe/core/escape-html';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
@@ -84,13 +84,19 @@ Notes:
 const IMPORT_JATS_HELP = `enscribe import-jats — import a JATS XML article
 
 Parses a JATS 1.3 article and renders it through Enscribe. By default the output
-is self-contained HTML; with --emd it is canonical Enscribe source instead.
+is a complete, styled, standalone HTML page — doctype, <title> taken from the
+article's title, the default stylesheet inlined — pipe it to a file and open it,
+nothing else needed. With --emd it is canonical Enscribe source instead.
 
 Usage:
   enscribe import-jats <input.xml> [options]
 
 Options:
   --emd                Output canonical .emd source instead of HTML
+  --fragment           Emit the bare eHTML fragment (no doctype/head/stylesheet)
+  --css <path-or-url>  Link the given stylesheet from <head> INSTEAD of inlining
+                       the default (obtain the default via 'render --emit-css')
+  --title <text>       Override the derived page title
   -o, --output <file>  Write to <file> (default: stdout)
   --embed              Self-contained HTML (default; ignored with --emd)
   --no-embed           Link assets externally
@@ -104,9 +110,11 @@ are dropped with a note (later Phase 13 slices add them).
 
 const IMPORT_HELP = `enscribe import — import LaTeX / Quarto / DOCX / … via pandoc
 
-Shells out to pandoc to read the input, then converts it to Enscribe: rendered
-HTML by default, or canonical .emd source with --emd. Requires pandoc on PATH
-(https://pandoc.org/installing.html).
+Shells out to pandoc to read the input, then converts it to Enscribe. By default
+the output is a complete, styled, standalone HTML page — doctype, <title> taken
+from the document's title, the default stylesheet inlined — pipe it to a file
+and open it, nothing else needed. With --emd it is canonical Enscribe source
+instead. Requires pandoc on PATH (https://pandoc.org/installing.html).
 
 Usage:
   enscribe import <input> [options]
@@ -114,6 +122,10 @@ Usage:
 Options:
   --from <format>      Override format detection (latex, markdown, docx, rst, …)
   --emd                Output canonical .emd source instead of HTML
+  --fragment           Emit the bare eHTML fragment (no doctype/head/stylesheet)
+  --css <path-or-url>  Link the given stylesheet from <head> INSTEAD of inlining
+                       the default (obtain the default via 'render --emit-css')
+  --title <text>       Override the derived page title
   -o, --output <file>  Write to <file> (default: stdout)
   --embed              Self-contained HTML (default; ignored with --emd)
   --no-embed           Link assets externally
@@ -364,6 +376,43 @@ function standaloneDslMode(opts, embedResources) {
   return opts.dslMode ?? (embedResources ? 'live-inline' : 'live-link');
 }
 
+// #395 D2 / #414: the standalone wrap for every command that emits a document
+// (render, import, import-jats) — one default, one option surface. The DEFAULT
+// output is a complete, styled, standalone page: the rendered fragment wrapped in
+// the minimal document shell (doctype/charset/viewport, a real <title>, default.css
+// inlined). What a newcomer pipes to a file and opens must look finished, like
+// `quarto render` / `pandoc -s`. The fragment keeps carrying its own font/KaTeX
+// assets per --embed/--no-embed (the shell adds none).
+//   --fragment        the bare-eHTML fragment (for embedding into a host page/pipeline)
+//   --css <path-url>  REPLACES the inlined default stylesheet with a <link> (an author
+//                     theming N documents wants one stylesheet, not N inlined copies;
+//                     the default sheet is obtainable via `render --emit-css`)
+//   --title <text>    overrides the derived title (deriveTitle: the document's own
+//                     <title>; fallback: the input filename)
+// default.css is ~40 KB — small enough to inline under both embed modes (--no-embed
+// governs the ~260 KB font/KaTeX payload, not the stylesheet).
+function wrapStandalone(html, opts, deriveTitle) {
+  if (opts.fragment) return html;
+  const title = opts.title ?? (deriveTitle() || basename(opts.input, extname(opts.input)));
+  const stylesheet = opts.css
+    ? `<link rel="stylesheet" href="${escapeHtmlAttr(opts.css)}">`
+    : `<style>\n${readDefaultCss()}\n</style>`;
+  return emitDocumentShell(html, { title, stylesheet });
+}
+
+// #414: the flag-contradiction checks shared by the three standalone commands.
+// --fragment emits no <head> (nothing to link a stylesheet from); --emd emits
+// Enscribe source, not HTML, so none of the shell flags apply — refuse rather
+// than silently ignore authored intent.
+function checkStandaloneFlags(opts) {
+  if (opts.fragment && opts.css) {
+    throw new CliError('--fragment emits the bare fragment (no <head>), so --css has nowhere to link; use one or the other');
+  }
+  if (opts.emd && (opts.fragment || opts.css || opts.title)) {
+    throw new CliError('--emd emits Enscribe source (no HTML shell), so --fragment/--css/--title do not apply');
+  }
+}
+
 function doRender(opts) {
   const src = readInput(opts.input);
   // CLI default is self-contained (--embed); the library default is external.
@@ -380,24 +429,10 @@ function doRender(opts) {
   if (opts.theme) pipeOpts.theme = opts.theme;
   if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
 
-  // #395 D2 (audit W3): the DEFAULT output is a complete, styled, standalone document —
-  // the fragment wrapped in the minimal document shell (doctype/charset/viewport, a real
-  // <title> derived from the document, default.css inlined). What a newcomer pipes to a
-  // file and opens must look finished, like `quarto render` / `pandoc -s`. The fragment
-  // keeps carrying its own font/KaTeX assets per --embed/--no-embed (the shell adds none).
-  // --fragment restores the bare-eHTML fragment (for embedding into a host page/pipeline);
-  // --css <path-or-url> REPLACES the inlined default stylesheet with a <link> (an author
-  // theming N documents wants one stylesheet, not N inlined copies; the default sheet is
-  // obtainable via --emit-css). default.css is ~40 KB — small enough to inline under both
-  // embed modes (--no-embed governs the ~260 KB font/KaTeX payload, not the stylesheet).
-  const wrap = (html) => {
-    if (opts.fragment) return html;
-    const title = opts.title ?? (extractDocumentTitle(src) || basename(opts.input, extname(opts.input)));
-    const stylesheet = opts.css
-      ? `<link rel="stylesheet" href="${escapeHtmlAttr(opts.css)}">`
-      : `<style>\n${readDefaultCss()}\n</style>`;
-    return emitDocumentShell(html, { title, stylesheet });
-  };
+  // #395 D2 (audit W3): the DEFAULT output is a complete, styled, standalone document.
+  // The wrap and its option surface are shared with import / import-jats (#414) —
+  // see wrapStandalone below for the full rationale.
+  const wrap = (html) => wrapStandalone(html, opts, () => extractDocumentTitle(src));
 
   // #133: external <library src> loading. Filesystem paths are read synchronously
   // inside the pipeline (assetsDir, unchanged). URL sources need an async fetch, so
@@ -447,7 +482,13 @@ function doImportJats(opts) {
     // (.runSync) and the HTML compiler (.stringify), self-contained by default.
     const embedResources = opts.embed ?? true;
     const proc = buildEnscribePipeline({ embedResources, dslMode: standaloneDslMode(opts, embedResources) });
-    return proc.stringify(proc.runSync(tree));
+    // #414: same standalone-by-default + --fragment/--css/--title surface as render
+    // (#395 D2). The title comes from the imported tree's <title> (JATS
+    // <article-title> post-conversion); fallback: the input filename. Derived
+    // BEFORE runSync — the interpreter transforms mutate the tree in place and
+    // consume the <meta><title> on the way to hast.
+    const derivedTitle = extractTitleFromTree(tree);
+    return wrapStandalone(proc.stringify(proc.runSync(tree)), opts, () => derivedTitle);
   });
 }
 
@@ -467,7 +508,13 @@ function doImport(opts) {
     if (opts.emd) return serializeCanonical(tree);
     const embedResources = opts.embed ?? true;
     const proc = buildEnscribePipeline({ embedResources, dslMode: standaloneDslMode(opts, embedResources) });
-    return proc.stringify(proc.runSync(tree));
+    // #414: same standalone-by-default + --fragment/--css/--title surface as render
+    // (#395 D2). The title comes from the imported tree's <title> (pandoc metadata
+    // post-conversion); fallback: the input filename. Derived BEFORE runSync —
+    // the interpreter transforms mutate the tree in place and consume the
+    // <meta><title> on the way to hast.
+    const derivedTitle = extractTitleFromTree(tree);
+    return wrapStandalone(proc.stringify(proc.runSync(tree)), opts, () => derivedTitle);
   });
 }
 
@@ -657,9 +704,7 @@ export function run(argv, io = {}) {
         // --emit-css: print the default stylesheet and exit (audit W3 — the sheet the help
         // references must be obtainable). Needs no input document.
         if (opts.emitCss) { emit(readDefaultCss(), opts, out); return 0; }
-        if (opts.fragment && opts.css) {
-          throw new CliError('--fragment emits the bare fragment (no <head>), so --css has nowhere to link; use one or the other');
-        }
+        checkStandaloneFlags(opts);
         const rendered = doRender(opts);
         // #133: doRender returns a Promise only when URL <library src> sources need
         // fetching; otherwise it is the rendered string (the sync path, unchanged).
@@ -787,12 +832,14 @@ export function run(argv, io = {}) {
       case 'import-jats': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(IMPORT_JATS_HELP); return 0; }
+        checkStandaloneFlags(opts);
         emit(doImportJats(opts), opts, out);
         return 0;
       }
       case 'import': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(IMPORT_HELP); return 0; }
+        checkStandaloneFlags(opts);
         emit(doImport(opts), opts, out);
         return 0;
       }

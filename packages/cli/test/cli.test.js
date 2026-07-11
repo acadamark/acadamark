@@ -154,9 +154,16 @@ export function run_tests() {
       assert.ok(html.out.includes('<b>bold</b>') && html.out.includes('<i>italic</i>'), 'LaTeX bold/italic imported');
       assert.ok(html.out.includes('katex'), 'LaTeX math rendered via KaTeX');
       assert.match(html.out, /<section-title>\s*<h2>Introduction<\/h2>/, 'sections imported');
+      // ── #414: import default → the same standalone shell as render (#395 D2) ──
+      assert.ok(html.out.startsWith('<!DOCTYPE html>'), 'import default opens with the doctype (standards mode)');
+      assert.ok(html.out.includes('<title>A Tiny LaTeX Paper</title>'), 'a real <title> derived from the imported document title');
+      assert.ok(html.out.includes('--enscribe-content-width'), 'default stylesheet inlined (styled by default)');
+      const frag = invoke(['import', TEX_FIXTURE, '--fragment']);
+      assert.ok(!frag.out.startsWith('<!DOCTYPE html>') && !frag.out.trimEnd().endsWith('</html>'), 'import --fragment has no shell');
+      assert.ok(frag.out.includes('<article>'), 'import --fragment still carries the document');
       const emd = invoke(['import', TEX_FIXTURE, '--emd']);
       assert.ok(emd.out.includes('<section #') && (emd.out.includes('<b | bold>') || emd.out.includes('<b>bold</b>')), '--emd → canonical source');
-      console.log('PASS: import .tex via pandoc (HTML + --emd)');
+      console.log('PASS: import .tex via pandoc (styled standalone #414, --fragment, --emd)');
     } else {
       const noPandoc = invoke(['import', TEX_FIXTURE]);
       assert.equal(noPandoc.code, 1, 'missing pandoc → exit 1');
@@ -293,6 +300,37 @@ export function run_tests() {
     assert.ok(html.out.includes('Keywords:') && html.out.includes('importing, round-trip'), 'keywords preserved');
     assert.ok(html.out.includes('Funded by Grant 7') && html.out.includes('We thank our collaborators'), 'funding + acknowledgments preserved');
     assert.ok(!html.out.includes('1234-5678') && !html.out.includes('CC-BY'), 'metadata (ISSN, license) dropped, not rendered');
+
+    // ── #414: import-jats default → the same standalone shell as render (#395 D2) ──
+    assert.ok(html.out.startsWith('<!DOCTYPE html>'), 'import-jats default opens with the doctype (standards mode)');
+    assert.ok(html.out.includes('<title>A Small JATS Article</title>'), 'a real <title> derived from the imported article title');
+    assert.ok(html.out.includes('--enscribe-content-width'), 'default stylesheet inlined (styled by default)');
+    assert.ok(html.out.trimEnd().endsWith('</html>'), 'the page closes properly');
+
+    // --fragment: the pre-#414 bare output, demoted to an explicit choice. Position-
+    // anchored needles: the fragment inlines the mermaid bundle, whose minified source
+    // can contain nearly any substring — only the shell's start/end are reliable.
+    const frag = invoke(['import-jats', JATS_FIXTURE, '--fragment']);
+    assert.equal(frag.code, 0, 'import-jats --fragment exits 0');
+    assert.ok(!frag.out.startsWith('<!DOCTYPE html>') && !frag.out.trimEnd().endsWith('</html>'), '--fragment has no shell');
+    assert.ok(!frag.out.includes('--enscribe-content-width'), '--fragment inlines no default stylesheet');
+    assert.ok(frag.out.includes('<article>'), '--fragment still carries the document');
+
+    // --title overrides the derived title; --css links instead of inlining.
+    const titled = invoke(['import-jats', JATS_FIXTURE, '--title', 'My Import']);
+    assert.ok(titled.out.includes('<title>My Import</title>'), '--title overrides the derived title');
+    const linked = invoke(['import-jats', JATS_FIXTURE, '--css', 'house.css']);
+    assert.ok(linked.out.includes('<link rel="stylesheet" href="house.css">'), '--css links the given sheet');
+    assert.ok(!linked.out.includes('--enscribe-content-width'), '--css REPLACES the default sheet (not adds)');
+
+    // Contradictions refused helpfully: --fragment/--css, and --emd with any shell flag.
+    const clash = invoke(['import-jats', JATS_FIXTURE, '--fragment', '--css', 'x.css']);
+    assert.equal(clash.code, 1, 'import-jats --fragment --css exits 1');
+    assert.ok(clash.err.includes('--fragment'), 'the conflict message names the flags');
+    const emdClash = invoke(['import-jats', JATS_FIXTURE, '--emd', '--title', 'X']);
+    assert.equal(emdClash.code, 1, '--emd with a shell flag exits 1');
+    assert.ok(emdClash.err.includes('--emd'), 'the message names --emd');
+    console.log('PASS: import-jats default → styled standalone (#414); --fragment/--css/--title surface');
 
     const emd = invoke(['import-jats', '--emd', JATS_FIXTURE]);
     assert.equal(emd.code, 0);
