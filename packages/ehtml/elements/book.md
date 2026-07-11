@@ -61,26 +61,26 @@ shorthand_examples:
       <book>
         <book-front>
           <meta data-document-type="book">
-            <book-title>A Natural History of Elephants</book-title>
+            <book-title><h1>A Natural History of Elephants</h1></book-title>
             <author>Jane Goodall</author>
           </meta>
         </book-front>
         <book-body>
           <book-part book-part-type="chapter">
             <meta>
-              <book-part-title>Origins</book-part-title>
+              <book-part-title><h2>Origins</h2></book-part-title>
             </meta>
             <section>
-              <section-title>Early ancestors</section-title>
+              <section-title><h3>Early ancestors</h3></section-title>
               <p>Content here.</p>
             </section>
           </book-part>
           <book-part book-part-type="chapter">
             <meta>
-              <book-part-title>Modern populations</book-part-title>
+              <book-part-title><h2>Modern populations</h2></book-part-title>
             </meta>
             <section>
-              <section-title>African elephants</section-title>
+              <section-title><h3>African elephants</h3></section-title>
               <p>Content here.</p>
             </section>
           </book-part>
@@ -107,7 +107,7 @@ shorthand_examples:
       <part | Part II: Applications>
       <chapter | Practical Examples>
       Content.
-    ehtml: '<book><book-front><meta data-document-type="book"><book-title>The Comprehensive Guide</book-title><author>Author Name</author></meta></book-front><book-body><book-part book-part-type="part"><meta><book-part-title>Part I: Foundations</book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title>First Principles</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="chapter"><meta><book-part-title>Background</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="part"><meta><book-part-title>Part II: Applications</book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title>Practical Examples</book-part-title></meta><p>Content.</p></book-part></book-body></book>'
+    ehtml: '<book><book-front><meta data-document-type="book"><book-title><h1>The Comprehensive Guide</h1></book-title><author>Author Name</author></meta></book-front><book-body><book-part book-part-type="part"><meta><book-part-title><h2>Part I: Foundations</h2></book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title><h2>First Principles</h2></book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="chapter"><meta><book-part-title><h2>Background</h2></book-part-title></meta><p>Content.</p></book-part><book-part book-part-type="part"><meta><book-part-title><h2>Part II: Applications</h2></book-part-title></meta></book-part><book-part book-part-type="chapter"><meta><book-part-title><h2>Practical Examples</h2></book-part-title></meta><p>Content.</p></book-part></book-body></book>'
 interpreter_strategy: schema
 related_plugins:
   - name: enscribeBookStructuring

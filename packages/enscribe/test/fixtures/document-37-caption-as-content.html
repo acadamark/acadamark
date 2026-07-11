@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,7 +1524,9 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Caption-as-content + unified frameable helper (Phase 3 slice 3c)</article-title>
+      <article-title>
+        <h1>Caption-as-content + unified frameable helper (Phase 3 slice 3c)</h1>
+      </article-title>
       <author>
         <name>Test</name>
       </author>
@@ -1517,7 +1534,9 @@ note-list li {
   </article-front>
   <article-body>
     <section>
-      <section-title>Caption as child tag</section-title>
+      <section-title>
+        <h2>Caption as child tag</h2>
+      </section-title>
       <p>
         Phase 3 slice 3c implements caption-as-content (Option A from the
         Phase 0 findings): <code>&#x3C;caption></code> is a child tag position on every
@@ -1567,7 +1586,9 @@ note-list li {
       </p>
     </section>
     <section>
-      <section-title>Frame numbering</section-title>
+      <section-title>
+        <h2>Frame numbering</h2>
+      </section-title>
       <p>
         Frames are numbered by default (#272), like figures and tables. A one-off
         callout opts out of the figure counter with <code>-numbered</code>, so no number registers:
@@ -1585,7 +1606,9 @@ note-list li {
       <p>The numbered frame is figure 4 in the document figure sequence.</p>
     </section>
     <section>
-      <section-title>Title wiring</section-title>
+      <section-title>
+        <h2>Title wiring</h2>
+      </section-title>
       <p>
         The slice-3b frameable surface declared <code>title=</code> but didn’t wire it.
         This slice consumes it via the unified renderFrameable helper.

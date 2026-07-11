@@ -468,6 +468,7 @@ const _article_subtitle = Object.freeze({
       "element": "article-subtitle",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <article-subtitle>. It renders with\nits title's heading group and carries NO heading level of its own —\nthe #397 heading-semantics rule wraps outline titles in native\nheadings, and the subtitle is deliberately not in that outline set\n(render-quality.md RQ-DOC-M4).\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -501,6 +502,7 @@ const _article_title = Object.freeze({
       "element": "article-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <article-title>. In rendered\nprojections its inline content is additionally wrapped in a native\n<h1> — the document's heading anchor — per the #397 heading-semantics\nrule (level is structural, never authored; render-quality.md\nRQ-DOC-M4). The wrap is derived display, not archival vocabulary,\nand is suppressed by <config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -594,17 +596,17 @@ const _article = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<meta type=article>\n  <title | The Effect of Elephants on Climate>\n  <author | Jane Goodall>\n  <date | 2024-03-15>\n</meta>\n\n<section | Introduction>\nThe paper begins here.\n\n<section | Conclusion>\nThe paper concludes here.\n",
-        "ehtml": "<article>\n  <article-front>\n    <meta data-document-type=\"article\">\n      <article-title>The Effect of Elephants on Climate</article-title>\n      <author>Jane Goodall</author>\n      <date>2024-03-15</date>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The paper begins here.</p>\n    </section>\n    <section>\n      <section-title>Conclusion</section-title>\n      <p>The paper concludes here.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "ehtml": "<article>\n  <article-front>\n    <meta data-document-type=\"article\">\n      <article-title><h1>The Effect of Elephants on Climate</h1></article-title>\n      <author>Jane Goodall</author>\n      <date>2024-03-15</date>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title><h2>Introduction</h2></section-title>\n      <p>The paper begins here.</p>\n    </section>\n    <section>\n      <section-title><h2>Conclusion</h2></section-title>\n      <p>The paper concludes here.</p>\n    </section>\n  </article-body>\n</article>\n",
         "notes": "Typical authoring path: <meta type=article> at the top with no\n<article> wrapper. The structural plugin generates the <article>\ncontainer and the three region wrappers. <title> in <meta> is\npromoted to <article-title>; <meta> itself survives inside\n<article-front>.\n",
       },
       {
         "source": "<article | The Effect of Elephants on Climate>\n<meta>\n  <author | Jane Goodall>\n</meta>\n\n<section | Introduction>\nThe paper begins here.\n",
-        "ehtml": "<article>\n  <article-front>\n    <meta>\n      <article-title>The Effect of Elephants on Climate</article-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The paper begins here.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "ehtml": "<article>\n  <article-front>\n    <meta>\n      <article-title><h1>The Effect of Elephants on Climate</h1></article-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title><h2>Introduction</h2></section-title>\n      <p>The paper begins here.</p>\n    </section>\n  </article-body>\n</article>\n",
         "notes": "Explicit-form escape hatch: <article | Title>. The structural plugin\nrespects the explicit wrapper. Pipe content from <article> becomes\n<article-title>, placed as the first child of <meta> (creating\n<meta> if absent, or appending if present).\n",
       },
       {
         "source": "<section | Introduction>\nThe introduction.\n\n<section | Conclusion>\nThe conclusion.\n",
-        "ehtml": "<article>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The introduction.</p>\n    </section>\n    <section>\n      <section-title>Conclusion</section-title>\n      <p>The conclusion.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "ehtml": "<article>\n  <article-body>\n    <section>\n      <section-title><h2>Introduction</h2></section-title>\n      <p>The introduction.</p>\n    </section>\n    <section>\n      <section-title><h2>Conclusion</h2></section-title>\n      <p>The conclusion.</p>\n    </section>\n  </article-body>\n</article>\n",
         "notes": "No <meta> and no <article> declared. The structural plugin assumes\narticle-shaped (the default) and wraps the sections in an implicit\narticle. <article-front> is omitted because there's no metadata.\n",
       },
     ],
@@ -1290,6 +1292,7 @@ const _book_part_subtitle = Object.freeze({
       "element": "book-part-subtitle",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-part-subtitle>. It renders with\nits title's heading group and carries NO heading level of its own —\nthe #397 heading-semantics rule wraps outline titles in native\nheadings, and the subtitle is deliberately not in that outline set\n(render-quality.md RQ-DOC-M4).\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1323,6 +1326,7 @@ const _book_part_title = Object.freeze({
       "element": "book-part-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-part-title>. In rendered\nprojections its inline content (including a materialized\n<section-number>) is additionally wrapped in the native heading of\nits derived level — <h2> for a top-level chapter/part, one deeper\nper book-part nesting level (#397; render-quality.md RQ-DOC-M4).\nDerived display, not archival; suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1531,11 +1535,11 @@ const _book_part = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<chapter | Origins>\nContent of the chapter.\n",
-        "ehtml": "<book-part book-part-type=\"chapter\">\n  <meta>\n    <book-part-title>Origins</book-part-title>\n  </meta>\n  <p>Content of the chapter.</p>\n</book-part>\n",
+        "ehtml": "<book-part book-part-type=\"chapter\">\n  <meta>\n    <book-part-title><h2>Origins</h2></book-part-title>\n  </meta>\n  <p>Content of the chapter.</p>\n</book-part>\n",
       },
       {
         "source": "<part | Part I: Foundations>\n<chapter | First Chapter>\nContent.\n\n<chapter | Second Chapter>\nContent.\n",
-        "ehtml": "<book-part book-part-type=\"part\">\n  <meta>\n    <book-part-title>Part I: Foundations</book-part-title>\n  </meta>\n  <book-part book-part-type=\"chapter\">\n    <meta>\n      <book-part-title>First Chapter</book-part-title>\n    </meta>\n    <p>Content.</p>\n  </book-part>\n  <book-part book-part-type=\"chapter\">\n    <meta>\n      <book-part-title>Second Chapter</book-part-title>\n    </meta>\n    <p>Content.</p>\n  </book-part>\n</book-part>\n",
+        "ehtml": "<book-part book-part-type=\"part\">\n  <meta>\n    <book-part-title><h2>Part I: Foundations</h2></book-part-title>\n  </meta>\n  <book-part book-part-type=\"chapter\">\n    <meta>\n      <book-part-title>First Chapter</book-part-title>\n    </meta>\n    <p>Content.</p>\n  </book-part>\n  <book-part book-part-type=\"chapter\">\n    <meta>\n      <book-part-title>Second Chapter</book-part-title>\n    </meta>\n    <p>Content.</p>\n  </book-part>\n</book-part>\n",
       },
       {
         "source": "<preface | A Note from the Author>\nI wrote this book because...\n\n<chapter | Chapter One>\nBody content.\n\n<appendix | Notation>\nNotation conventions used in this book.\n",
@@ -1569,6 +1573,7 @@ const _book_subtitle = Object.freeze({
       "element": "book-subtitle",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-subtitle>. It renders with its\ntitle's heading group and carries NO heading level of its own — the\n#397 heading-semantics rule wraps outline titles in native headings,\nand the subtitle is deliberately not in that outline set\n(render-quality.md RQ-DOC-M4).\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1602,6 +1607,7 @@ const _book_title = Object.freeze({
       "element": "book-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <book-title>. In rendered projections\nits inline content is additionally wrapped in a native <h1> — the\nbook's heading anchor — per the #397 heading-semantics rule (level is\nstructural, never authored; render-quality.md RQ-DOC-M4). The wrap is\nderived display, not archival vocabulary, and is suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -1695,12 +1701,12 @@ const _book = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<meta type=book>\n  <title | A Natural History of Elephants>\n  <author | Jane Goodall>\n</meta>\n\n<chapter | Origins>\n<section | Early ancestors>\nContent here.\n\n<chapter | Modern populations>\n<section | African elephants>\nContent here.\n",
-        "ehtml": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title>A Natural History of Elephants</book-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title>Origins</book-part-title>\n      </meta>\n      <section>\n        <section-title>Early ancestors</section-title>\n        <p>Content here.</p>\n      </section>\n    </book-part>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title>Modern populations</book-part-title>\n      </meta>\n      <section>\n        <section-title>African elephants</section-title>\n        <p>Content here.</p>\n      </section>\n    </book-part>\n  </book-body>\n</book>\n",
+        "ehtml": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title><h1>A Natural History of Elephants</h1></book-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title><h2>Origins</h2></book-part-title>\n      </meta>\n      <section>\n        <section-title><h3>Early ancestors</h3></section-title>\n        <p>Content here.</p>\n      </section>\n    </book-part>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title><h2>Modern populations</h2></book-part-title>\n      </meta>\n      <section>\n        <section-title><h3>African elephants</h3></section-title>\n        <p>Content here.</p>\n      </section>\n    </book-part>\n  </book-body>\n</book>\n",
         "notes": "Typical authoring path: <meta type=book> at the top with no <book>\nwrapper. The structural plugin generates <book> + the three region\nwrappers. Each book-part contains its own <meta> with the promoted\n<book-part-title>; no <book-part-meta> wrapper.\n",
       },
       {
         "source": "<meta type=book>\n  <title | The Comprehensive Guide>\n  <author | Author Name>\n</meta>\n\n<part | Part I: Foundations>\n<chapter | First Principles>\nContent.\n\n<chapter | Background>\nContent.\n\n<part | Part II: Applications>\n<chapter | Practical Examples>\nContent.\n",
-        "ehtml": "<book><book-front><meta data-document-type=\"book\"><book-title>The Comprehensive Guide</book-title><author>Author Name</author></meta></book-front><book-body><book-part book-part-type=\"part\"><meta><book-part-title>Part I: Foundations</book-part-title></meta></book-part><book-part book-part-type=\"chapter\"><meta><book-part-title>First Principles</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type=\"chapter\"><meta><book-part-title>Background</book-part-title></meta><p>Content.</p></book-part><book-part book-part-type=\"part\"><meta><book-part-title>Part II: Applications</book-part-title></meta></book-part><book-part book-part-type=\"chapter\"><meta><book-part-title>Practical Examples</book-part-title></meta><p>Content.</p></book-part></book-body></book>",
+        "ehtml": "<book><book-front><meta data-document-type=\"book\"><book-title><h1>The Comprehensive Guide</h1></book-title><author>Author Name</author></meta></book-front><book-body><book-part book-part-type=\"part\"><meta><book-part-title><h2>Part I: Foundations</h2></book-part-title></meta></book-part><book-part book-part-type=\"chapter\"><meta><book-part-title><h2>First Principles</h2></book-part-title></meta><p>Content.</p></book-part><book-part book-part-type=\"chapter\"><meta><book-part-title><h2>Background</h2></book-part-title></meta><p>Content.</p></book-part><book-part book-part-type=\"part\"><meta><book-part-title><h2>Part II: Applications</h2></book-part-title></meta></book-part><book-part book-part-type=\"chapter\"><meta><book-part-title><h2>Practical Examples</h2></book-part-title></meta><p>Content.</p></book-part></book-body></book>",
       },
     ],
     "interpreter_strategy": "schema",
@@ -2073,7 +2079,7 @@ const _config = Object.freeze({
         },
       },
       "kwargs": {
-        "notes": "<config> accepts an allowlisted set of kwargs as its flat authoring\nform (the settled register for flat config; #134). The current\nallowlist (enforced interpreter-side):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - number-depth            (live; consumed by numbering; deepest heading level that receives a number, #218; default all levels; INDEPENDENT of toc-depth)\n  - toc                     (live; consumed by the contents-listing stage; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)\n  - toc-depth               (live; deepest heading level the contents lists; default 3)\n  - toc-title               (live; the heading shown above the listing; default \"Contents\")\n  - toc-location            (live; body | left | right; default body — body is inline near the top, left/right a sticky sidebar)\n  - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)\n  - show-source             (live; consumed by the diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - quiet                   (live; boolean; consumed by the enscribeQuietSuppression stage — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed at compile time — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by the sidenotes render stage — the #33 margin render mode, 'bottom' default / 'margin'; see notes/specs/sidenotes.md)\n  - strict-mode             (live; consumed by the strict-mode gate, #36 — see notes/specs/strict-mode.md: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  (the reserved `reference-library` was retired: #133 makes external library\n  sources the body element `<library src=…>`, never a <config> kwarg)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\n<config>'s FLAT authoring form. Structured configuration is settled\n(#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured\nregister is future/unbuilt. <config> takes no\nchild elements today: the retired `<bibliography source=… />` form (#133)\nis replaced by the body element `<library src>` (see library.md /\nbibliography.md). See DESIGN.md \"Configuration and metadata are data\".\n",
+        "notes": "<config> accepts an allowlisted set of kwargs as its flat authoring\nform (the settled register for flat config; #134). The current\nallowlist (enforced interpreter-side):\n  - citation-style          (live; consumed by cite-resolution)\n  - number-equations        (live; consumed by numbering)\n  - number-figures          (live; consumed by numbering)\n  - number-tables           (live; consumed by numbering)\n  - number-sections         (live; consumed by numbering; default off for articles, on for books)\n  - number-depth            (live; consumed by numbering; deepest heading level that receives a number, #218; default all levels; INDEPENDENT of toc-depth)\n  - toc                     (live; consumed by the contents-listing stage; the config-driven contents listing, default off, #218 — see notes/specs/toc-and-numbering.md)\n  - toc-depth               (live; deepest heading level the contents lists; default 3)\n  - toc-title               (live; the heading shown above the listing; default \"Contents\")\n  - toc-location            (live; body | left | right; default body — body is inline near the top, left/right a sticky sidebar)\n  - toc-expand              (live; sidebar levels expanded initially; default 1; no effect on a body listing)\n  - show-source             (live; consumed by the diagram handlers; default off — reveals authored DSL source in a <details> disclosure, #19)\n  - parse-data-tables       (live; consumed by the table-cell-parse plugin; default off — doc-wide default for whether data-format table cells parse as Enscribe inline markup, #21; per-table +parse-text / parse-columns / -parse-text override it)\n  - quiet                   (live; boolean; consumed by the enscribeQuietSuppression stage — suppresses THIS document's authoring warnings (the vfile message stream: raw-HTML passthrough, mis-placed apparatus, …) from build/console output; page-scoped; gates emission only, rendering is untouched; default off; #281 — the supported way to quiet a teaching/demo page that deliberately shows warnings-worthy markup)\n  - ref-prefix-{prefix}     (live wildcard; consumed by ref-resolution)\n  - theme                   (live; consumed at compile time — injects a theme's :root token overrides, Phase 8 Slice 2)\n  - display-style           (reserved; future)\n  - note-position           (live; consumed by the sidenotes render stage — the #33 margin render mode, 'bottom' default / 'margin'; see notes/specs/sidenotes.md)\n  - heading-tags            (live; boolean, DEFAULT ON — the one default-on boolean here; consumed by the heading-level stamping stage, #397. Rendered projections wrap each outline title's inline content in the native heading of its structurally derived level (see notes/specs/render-quality.md RQ-DOC-M4). heading-tags=false is a deliberate host-level opt-out: no native heading wrap is emitted at all)\n  - strict-mode             (live; consumed by the strict-mode gate, #36 — see notes/specs/strict-mode.md: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)\n  - bibliography-position   (reserved; future)\n  (the reserved `reference-library` was retired: #133 makes external library\n  sources the body element `<library src=…>`, never a <config> kwarg)\nUnknown kwargs are dropped at the normalize-to-canonical gate with an\ninformative diagnostic. A <meta>-shaped kwarg (title, author, etc.) on\n<config> additionally triggers a \"did you mean <meta>?\" hint. Kwargs are\n<config>'s FLAT authoring form. Structured configuration is settled\n(#134) to be authored as a fenced DATA BLOCK inside <config> — a bounded\ndata-language island (e.g. YAML), the same pattern <library> uses for\nBibTeX and <$$> for LaTeX — NOT as a tree of child tags; that structured\nregister is future/unbuilt. <config> takes no\nchild elements today: the retired `<bibliography source=… />` form (#133)\nis replaced by the body element `<library src>` (see library.md /\nbibliography.md). See DESIGN.md \"Configuration and metadata are data\".\n",
       },
     },
     "content": {
@@ -4448,12 +4454,12 @@ const _meta = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<meta type=article>\n  <title | The Effect of Elephants on Climate>\n  <author | Jane Goodall>\n  <date | 2024-03-15>\n</meta>\n\n<section | Introduction>\nThe paper begins.\n",
-        "ehtml": "<article>\n  <article-front>\n    <meta data-document-type=\"article\">\n      <article-title>The Effect of Elephants on Climate</article-title>\n      <author>Jane Goodall</author>\n      <date>2024-03-15</date>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title>Introduction</section-title>\n      <p>The paper begins.</p>\n    </section>\n  </article-body>\n</article>\n",
+        "ehtml": "<article>\n  <article-front>\n    <meta data-document-type=\"article\">\n      <article-title><h1>The Effect of Elephants on Climate</h1></article-title>\n      <author>Jane Goodall</author>\n      <date>2024-03-15</date>\n    </meta>\n  </article-front>\n  <article-body>\n    <section>\n      <section-title><h2>Introduction</h2></section-title>\n      <p>The paper begins.</p>\n    </section>\n  </article-body>\n</article>\n",
         "notes": "Author writes <meta type=article> at the top with no <article>\nwrapper. The structural plugin reads type=article and generates:\n  - the <article> container\n  - <article-front> wrapping the original <meta>\n  - <article-body> wrapping the section content\n<title> is promoted to <article-title> as the first child of <meta>.\n<meta> itself survives in the output, inside <article-front>.\n",
       },
       {
         "source": "<meta type=book>\n  <title | A Natural History of Elephants>\n  <author | Jane Goodall>\n</meta>\n\n<chapter | Origins>\nContent.\n",
-        "ehtml": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title>A Natural History of Elephants</book-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title>Origins</book-part-title>\n      </meta>\n      <p>Content.</p>\n    </book-part>\n  </book-body>\n</book>\n",
+        "ehtml": "<book>\n  <book-front>\n    <meta data-document-type=\"book\">\n      <book-title><h1>A Natural History of Elephants</h1></book-title>\n      <author>Jane Goodall</author>\n    </meta>\n  </book-front>\n  <book-body>\n    <book-part book-part-type=\"chapter\">\n      <meta>\n        <book-part-title><h2>Origins</h2></book-part-title>\n      </meta>\n      <p>Content.</p>\n    </book-part>\n  </book-body>\n</book>\n",
         "notes": "type=book generates the book-shaped wrapper instead. Changing the\nsingle kwarg switches the entire output structure. Each book-part\ncontains its own <meta> with <book-part-title>; no <book-part-meta>\nwrapper.\n",
       },
     ],
@@ -5619,6 +5625,7 @@ const _section_title = Object.freeze({
       "element": "section-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <section-title>. In rendered\nprojections its inline content (including a materialized\n<section-number>) is additionally wrapped in the native heading of\nits derived level — <h2> for a top-level section in an article, one\ndeeper per enclosing outline container (#397; render-quality.md\nRQ-DOC-M4). The wrap is derived display, not archival vocabulary,\nand is suppressed by <config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -5748,15 +5755,15 @@ const _section = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<section | Introduction>\nThe paper begins here.\n",
-        "ehtml": "<section>\n  <section-title>Introduction</section-title>\n  <p>The paper begins here.</p>\n</section>\n",
+        "ehtml": "<section>\n  <section-title><h2>Introduction</h2></section-title>\n  <p>The paper begins here.</p>\n</section>\n",
       },
       {
         "source": "<section #methods sec-type=methods | Methods>\n<section-subtitle | A description of our experimental approach>\nThe methods used in this study were as follows.\n",
-        "ehtml": "<section id=\"methods\" data-sec-type=\"methods\">\n  <section-title>Methods</section-title>\n  <section-subtitle>A description of our experimental approach</section-subtitle>\n  <p>The methods used in this study were as follows.</p>\n</section>\n",
+        "ehtml": "<section id=\"methods\" data-sec-type=\"methods\">\n  <section-title><h2>Methods</h2></section-title>\n  <section-subtitle>A description of our experimental approach</section-subtitle>\n  <p>The methods used in this study were as follows.</p>\n</section>\n",
       },
       {
         "source": "<section | Results>\nResults paragraph.\n\n<sub-section | Quantitative analysis>\nSub-section content.\n\n<sub-section | Qualitative observations>\nSub-section content.\n",
-        "ehtml": "<section>\n  <section-title>Results</section-title>\n  <p>Results paragraph.</p>\n  <sub-section>\n    <sub-section-title>Quantitative analysis</sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n  <sub-section>\n    <sub-section-title>Qualitative observations</sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n</section>\n",
+        "ehtml": "<section>\n  <section-title><h2>Results</h2></section-title>\n  <p>Results paragraph.</p>\n  <sub-section>\n    <sub-section-title><h3>Quantitative analysis</h3></sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n  <sub-section>\n    <sub-section-title><h3>Qualitative observations</h3></sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n</section>\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -5866,6 +5873,7 @@ const _sub_section_title = Object.freeze({
       "element": "sub-section-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <sub-section-title>. In rendered\nprojections its inline content is additionally wrapped in the native\nheading of its derived level — <h3> in an article, one deeper per\nenclosing outline container (#397; render-quality.md RQ-DOC-M4).\nDerived display, not archival; suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -5994,11 +6002,11 @@ const _sub_section = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<sub-section | Quantitative analysis>\nSub-section content.\n",
-        "ehtml": "<sub-section>\n  <sub-section-title>Quantitative analysis</sub-section-title>\n  <p>Sub-section content.</p>\n</sub-section>\n",
+        "ehtml": "<sub-section>\n  <sub-section-title><h2>Quantitative analysis</h2></sub-section-title>\n  <p>Sub-section content.</p>\n</sub-section>\n",
       },
       {
         "source": "<section | Results>\n<sub-section | Statistical methods>\nSub-section content.\n\n<sub-sub-section | Regression analysis>\nSub-sub-section content.\n\n<sub-section | Sensitivity analyses>\nSub-section content.\n",
-        "ehtml": "<section>\n  <section-title>Results</section-title>\n  <sub-section>\n    <sub-section-title>Statistical methods</sub-section-title>\n    <p>Sub-section content.</p>\n    <sub-sub-section>\n      <sub-sub-section-title>Regression analysis</sub-sub-section-title>\n      <p>Sub-sub-section content.</p>\n    </sub-sub-section>\n  </sub-section>\n  <sub-section>\n    <sub-section-title>Sensitivity analyses</sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n</section>\n",
+        "ehtml": "<section>\n  <section-title><h2>Results</h2></section-title>\n  <sub-section>\n    <sub-section-title><h3>Statistical methods</h3></sub-section-title>\n    <p>Sub-section content.</p>\n    <sub-sub-section>\n      <sub-sub-section-title><h4>Regression analysis</h4></sub-sub-section-title>\n      <p>Sub-sub-section content.</p>\n    </sub-sub-section>\n  </sub-section>\n  <sub-section>\n    <sub-section-title><h3>Sensitivity analyses</h3></sub-section-title>\n    <p>Sub-section content.</p>\n  </sub-section>\n</section>\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -6054,6 +6062,7 @@ const _sub_sub_section_title = Object.freeze({
       "element": "sub-sub-section-title",
       "is_html_native": false,
       "default_attributes": {},
+      "notes": "Renders as the custom element <sub-sub-section-title>. In rendered\nprojections its inline content is additionally wrapped in the native\nheading of its derived level — <h4> in an article, one deeper per\nenclosing outline container (#397; render-quality.md RQ-DOC-M4).\nDerived display, not archival; suppressed by\n<config heading-tags=false>.\n",
     },
     "enscribe_attributes": {
       "id": {
@@ -6181,11 +6190,11 @@ const _sub_sub_section = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<sub-sub-section | Regression analysis>\nDetailed methods for the regression.\n",
-        "ehtml": "<sub-sub-section>\n  <sub-sub-section-title>Regression analysis</sub-sub-section-title>\n  <p>Detailed methods for the regression.</p>\n</sub-sub-section>\n",
+        "ehtml": "<sub-sub-section>\n  <sub-sub-section-title><h2>Regression analysis</h2></sub-sub-section-title>\n  <p>Detailed methods for the regression.</p>\n</sub-sub-section>\n",
       },
       {
         "source": "<section | Methods>\n<sub-section | Statistical methods>\n<sub-sub-section | Regression>\nLinear regression was performed.\n\n<sub-sub-section | Sensitivity testing>\nSensitivity tests were performed.\n",
-        "ehtml": "<section>\n  <section-title>Methods</section-title>\n  <sub-section>\n    <sub-section-title>Statistical methods</sub-section-title>\n    <sub-sub-section>\n      <sub-sub-section-title>Regression</sub-sub-section-title>\n      <p>Linear regression was performed.</p>\n    </sub-sub-section>\n    <sub-sub-section>\n      <sub-sub-section-title>Sensitivity testing</sub-sub-section-title>\n      <p>Sensitivity tests were performed.</p>\n    </sub-sub-section>\n  </sub-section>\n</section>\n",
+        "ehtml": "<section>\n  <section-title><h2>Methods</h2></section-title>\n  <sub-section>\n    <sub-section-title><h3>Statistical methods</h3></sub-section-title>\n    <sub-sub-section>\n      <sub-sub-section-title><h4>Regression</h4></sub-sub-section-title>\n      <p>Linear regression was performed.</p>\n    </sub-sub-section>\n    <sub-sub-section>\n      <sub-sub-section-title><h4>Sensitivity testing</h4></sub-sub-section-title>\n      <p>Sensitivity tests were performed.</p>\n    </sub-sub-section>\n  </sub-section>\n</section>\n",
       },
     ],
     "interpreter_strategy": "schema",
@@ -6339,7 +6348,7 @@ const _subtitle = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<meta>\n  <title | The Effect of Elephants on Climate>\n  <subtitle | A Multi-Year Field Study in Tanzania>\n</meta>\n",
-        "ehtml": "<article><article-front><meta><article-title>The Effect of Elephants on Climate</article-title><article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle></meta></article-front></article>",
+        "ehtml": "<article><article-front><meta><article-title><h1>The Effect of Elephants on Climate</h1></article-title><article-subtitle>A Multi-Year Field Study in Tanzania</article-subtitle></meta></article-front></article>",
       },
     ],
     "interpreter_strategy": "schema",
@@ -6804,7 +6813,7 @@ const _title = Object.freeze({
     "shorthand_examples": [
       {
         "source": "<meta>\n  <title | The Effect of Elephants on Climate>\n</meta>\n",
-        "ehtml": "<article><article-front><meta><article-title>The Effect of Elephants on Climate</article-title></meta></article-front></article>",
+        "ehtml": "<article><article-front><meta><article-title><h1>The Effect of Elephants on Climate</h1></article-title></meta></article-front></article>",
         "notes": "Inside <article>, <title> in <meta> becomes <article-title>.\n",
       },
       {
@@ -6814,7 +6823,7 @@ const _title = Object.freeze({
       },
       {
         "source": "<meta>\n  <title | The role of <i type=taxonomic | Loxodonta africana> in ecosystem dynamics>\n</meta>\n",
-        "ehtml": "<article><article-front><meta><article-title>The role of <i data-italic-type=\"taxonomic\">Loxodonta africana</i> in ecosystem dynamics</article-title></meta></article-front></article>",
+        "ehtml": "<article><article-front><meta><article-title><h1>The role of <i data-italic-type=\"taxonomic\">Loxodonta africana</i> in ecosystem dynamics</h1></article-title></meta></article-front></article>",
         "notes": "Titles can contain inline elements. The recursive content parsing\nhandles nested constructs.\n",
       },
     ],

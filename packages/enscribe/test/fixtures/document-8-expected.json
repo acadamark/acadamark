@@ -22,20 +22,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Introduction",
-                      "position": {
-                        "start": {
-                          "line": 9,
-                          "column": 4,
-                          "offset": 232
-                        },
-                        "end": {
-                          "line": 9,
-                          "column": 16,
-                          "offset": 244
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Introduction",
+                          "position": {
+                            "start": {
+                              "line": 9,
+                              "column": 4,
+                              "offset": 232
+                            },
+                            "end": {
+                              "line": 9,
+                              "column": 16,
+                              "offset": 244
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -186,20 +193,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Burnout and Well-Being",
-                      "position": {
-                        "start": {
-                          "line": 15,
-                          "column": 4,
-                          "offset": 944
-                        },
-                        "end": {
-                          "line": 15,
-                          "column": 26,
-                          "offset": 966
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Burnout and Well-Being",
+                          "position": {
+                            "start": {
+                              "line": 15,
+                              "column": 4,
+                              "offset": 944
+                            },
+                            "end": {
+                              "line": 15,
+                              "column": 26,
+                              "offset": 966
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -350,20 +364,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Education and Stigma Reduction",
-                      "position": {
-                        "start": {
-                          "line": 21,
-                          "column": 4,
-                          "offset": 1613
-                        },
-                        "end": {
-                          "line": 21,
-                          "column": 34,
-                          "offset": 1643
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Education and Stigma Reduction",
+                          "position": {
+                            "start": {
+                              "line": 21,
+                              "column": 4,
+                              "offset": 1613
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 34,
+                              "offset": 1643
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -514,20 +535,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "A Missing Reference",
-                      "position": {
-                        "start": {
-                          "line": 27,
-                          "column": 4,
-                          "offset": 2180
-                        },
-                        "end": {
-                          "line": 27,
-                          "column": 23,
-                          "offset": 2199
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A Missing Reference",
+                          "position": {
+                            "start": {
+                              "line": 27,
+                              "column": 4,
+                              "offset": 2180
+                            },
+                            "end": {
+                              "line": 27,
+                              "column": 23,
+                              "offset": 2199
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

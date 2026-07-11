@@ -114,7 +114,7 @@ export function run_tests() {
     const html = proc.stringify(proc.runSync(convertPandoc(ast)));
     assert.ok(html.includes('<b>bold</b>'), 'renders bold');
     assert.ok(html.includes('katex'), 'renders math via KaTeX');
-    assert.ok(html.includes('<section-title>Intro</section-title>'), 'renders the section');
+    assert.match(html, /<section-title>\s*<h2>Intro<\/h2>/, 'renders the section');
     console.log('PASS: pandoc import renders + serializes');
   }
 

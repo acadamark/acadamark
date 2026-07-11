@@ -24,20 +24,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "A Short Monograph on the Mathematics of Music",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 47,
-                          "offset": 46
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A Short Monograph on the Mathematics of Music",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 47,
+                              "offset": 46
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -107,8 +114,15 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "About this Monograph"
+                          "type": "element",
+                          "tagName": "h2",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "About this Monograph"
+                            }
+                          ]
                         }
                       ]
                     }
@@ -309,18 +323,25 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h2",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "1"
+                              "value": "Foundations"
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Foundations"
                         }
                       ]
                     }
@@ -2203,18 +2224,25 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h2",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "2"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "2"
+                              "value": "Consonance and Ratios"
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Consonance and Ratios"
                         }
                       ]
                     },
@@ -3894,18 +3922,25 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h2",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "3"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "3"
+                              "value": "Visual and Aural Structure"
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Visual and Aural Structure"
                         }
                       ]
                     }
@@ -4342,18 +4377,25 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h2",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "A"
+                              "value": "Notation and Sources"
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Notation and Sources"
                         }
                       ]
                     }

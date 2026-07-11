@@ -182,7 +182,7 @@ export function run_tests() {
   // ── assembles into ONE article ──────────────────────────────────────────────
   {
     assert.equal((html.match(/<article>/g) || []).length, 1, 'master assembles into a single <article>');
-    assert.ok(html.includes('<article-title>Multi-File Demo</article-title>'), 'master <meta> title becomes the article title');
+    assert.match(html, /<article-title>\s*<h1>Multi-File Demo<\/h1>/, 'master <meta> title becomes the article title');
     console.log('PASS: #190 — master document assembles into one article');
   }
 
@@ -243,11 +243,11 @@ export function run_tests() {
 
     // Continuous SECTION numbering (number-sections=true in the master <config>):
     // the section titles carry 1 / 2 / 3 in master document order, one per child.
-    assert.ok(xref.includes('<section-title><section-number>1</section-number>Alpha</section-title>'),
+    assert.match(xref, /<section-title>\s*<h2><section-number>1<\/section-number>Alpha<\/h2>/,
       'cross-file: first section numbered 1');
-    assert.ok(xref.includes('<section-title><section-number>2</section-number>Beta</section-title>'),
+    assert.match(xref, /<section-title>\s*<h2><section-number>2<\/section-number>Beta<\/h2>/,
       'cross-file: second section numbered 2');
-    assert.ok(xref.includes('<section-title><section-number>3</section-number>Gamma</section-title>'),
+    assert.match(xref, /<section-title>\s*<h2><section-number>3<\/section-number>Gamma<\/h2>/,
       'cross-file: third section numbered 3');
     console.log('PASS: #190 slice 2 — sections number continuously across child files (master <config>)');
 
@@ -284,7 +284,7 @@ export function run_tests() {
     assert.equal((book.match(/<book>/g) || []).length, 1, 'book master assembles into a single <book>');
     assert.ok(book.includes('<book-front>') && book.includes('<book-body>') && book.includes('<book-back>'),
       'book has front / body / back region wrappers');
-    assert.ok(book.includes('<book-title>Field Methods in Savanna Ecology</book-title>'),
+    assert.match(book, /<book-title>\s*<h1>Field Methods in Savanna Ecology<\/h1>/,
       'master <meta> title becomes the <book-title>');
     console.log('PASS: Slice B — book master assembles into one <book> with front/body/back');
 

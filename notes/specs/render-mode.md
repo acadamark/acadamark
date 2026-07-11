@@ -106,24 +106,25 @@ removes wrappers where they don't add value at the rendering layer.
 These two title/heading decisions cannot be settled until the render-mode
 machinery exists; they are tracked under #40. The lowering must be
 **deterministic** — the render-mode plugin needs one rule, not "more
-thought." Recorded here as relocated from the #40 comment; not decided in
-this spec.
+thought." Recorded here as relocated from the #40 comment. **Both are now
+settled by extension** of the #397 heading-semantics decision
+(`notes/decisions.md` §"Heading semantics"; `render-quality.md`
+RQ-DOC-M4), which fixed the level ladder for the *default* rendered
+projection — render-mode lowering follows the same derivation so the two
+projections can never disagree about a title's level. What remains open
+for #40 is the lowering machinery, not the ladder.
 
-**1. `<article-title>` + `<section-title>` collision.** When a document
-has both an article title and section titles, render-mode lowering must
-avoid two competing `<h1>`s. Options:
+**1. `<article-title>` + `<section-title>` collision — settled (#397).**
+The anchor: `<article-title>` → `<h1>`, `<section-title>` → `<h2>`, the
+whole section ladder shifted down one (`<sub-section-title>` → `<h3>`,
+`<sub-sub-section-title>` → `<h4>`; each enclosing `<book-part>` adds
+one). Past 6, the lowering — like the default projection — emits
+`<h6 aria-level="N">`.
 
-- `<article-title>` → `<h1>`, and `<section-title>` → `<h2>` (shift the
-  whole section ladder down one: `<sub-section-title>` → `<h3>`,
-  `<sub-sub-section-title>` → `<h4>`); or
-- section titles stay at their natural level and rely on document
-  structure / sectioning roots for the outline.
-
-**2. `<article-subtitle>` lowering.** `<article-subtitle>` →
-`<p class="subtitle">` or `<h2 class="subtitle">`? The choice interacts
-with (1): if `<article-title>` takes `<h1>` and `<section-title>` takes
-`<h2>`, a subtitle `<h2 class="subtitle">` would collide with section
-titles, arguing for `<p class="subtitle">`.
+**2. `<article-subtitle>` lowering — settled by the same decision.**
+#397 rules that subtitles ride with their title's heading group and
+carry no heading level of their own, which forecloses
+`<h2 class="subtitle">`: the lowering is `<p class="subtitle">`.
 
 ---
 

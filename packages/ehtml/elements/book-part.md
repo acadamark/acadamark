@@ -113,7 +113,7 @@ shorthand_examples:
     ehtml: |
       <book-part book-part-type="chapter">
         <meta>
-          <book-part-title>Origins</book-part-title>
+          <book-part-title><h2>Origins</h2></book-part-title>
         </meta>
         <p>Content of the chapter.</p>
       </book-part>
@@ -127,7 +127,7 @@ shorthand_examples:
     ehtml: |
       <book-part book-part-type="part">
         <meta>
-          <book-part-title>Part I: Foundations</book-part-title>
+          <book-part-title><h2>Part I: Foundations</h2></book-part-title>
         </meta>
         <book-part book-part-type="chapter">
           <meta>

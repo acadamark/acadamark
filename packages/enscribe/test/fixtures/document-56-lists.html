@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1235,13 +1250,17 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Lists</article-title>
+      <article-title>
+        <h1>Lists</h1>
+      </article-title>
       <author>Enscribe</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Item registers</section-title>
+      <section-title>
+        <h2>Item registers</h2>
+      </section-title>
       <p>
         The same list, written four ways — the canonical <code>&#x3C;li></code> marker, the <code>&#x3C;-></code> and
         <code>&#x3C;*></code> sigils, and the markdown <code>-</code> / <code>*</code> idiom — lowers to identical output.
@@ -1264,7 +1283,9 @@ toc-num {
       </ul>
     </section>
     <section>
-      <section-title>Multi-paragraph items</section-title>
+      <section-title>
+        <h2>Multi-paragraph items</h2>
+      </section-title>
       <p>
         An item runs from its marker to the next one, so it can hold several paragraphs
         with no indentation.
@@ -1287,7 +1308,9 @@ toc-num {
       </ul>
     </section>
     <section>
-      <section-title>Nested lists</section-title>
+      <section-title>
+        <h2>Nested lists</h2>
+      </section-title>
       <p>
         A <code>&#x3C;list></code> inside an item nests; the outer list resumes at the next marker. A
         nested list may itself be ordered.
@@ -1313,7 +1336,9 @@ toc-num {
       </ul>
     </section>
     <section>
-      <section-title>Marker schemes, start, and reversed</section-title>
+      <section-title>
+        <h2>Marker schemes, start, and reversed</h2>
+      </section-title>
       <p>
         <code>marker=</code> sets the CSS <code>list-style-type</code>; <code>start</code> and <code>reversed</code> control an
         ordered list’s numbering.

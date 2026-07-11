@@ -24,20 +24,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Config edge-case fixture",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 26,
-                          "offset": 25
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Config edge-case fixture",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 26,
+                              "offset": 25
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -84,20 +91,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Trailing whitespace after a sigil close",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 41,
-                          "offset": 40
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Trailing whitespace after a sigil close",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 41,
+                              "offset": 40
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -201,20 +215,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "A sigil with trailing whitespace",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 34,
-                              "offset": 33
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A sigil with trailing whitespace",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 34,
+                                  "offset": 33
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -268,20 +289,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Cross-reference using the ref-prefix override",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 47,
-                          "offset": 46
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Cross-reference using the ref-prefix override",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 47,
+                              "offset": 46
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -622,20 +650,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Nested config block is now read",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 33,
-                          "offset": 32
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Nested config block is now read",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 33,
+                              "offset": 32
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

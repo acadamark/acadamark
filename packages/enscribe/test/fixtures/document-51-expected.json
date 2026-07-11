@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Section numbering"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Section numbering"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -63,30 +70,37 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "section-number",
+                      "tagName": "h2",
                       "properties": {},
                       "children": [
                         {
+                          "type": "element",
+                          "tagName": "section-number",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "1"
+                            }
+                          ]
+                        },
+                        {
                           "type": "text",
-                          "value": "1"
+                          "value": "Introduction",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 14,
+                              "offset": 13
+                            }
+                          }
                         }
                       ]
-                    },
-                    {
-                      "type": "text",
-                      "value": "Introduction",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 14,
-                          "offset": 13
-                        }
-                      }
                     }
                   ]
                 },
@@ -180,30 +194,37 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h3",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1.1"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "1.1"
+                              "value": "Background",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 12,
+                                  "offset": 11
+                                }
+                              }
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Background",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 12,
-                              "offset": 11
-                            }
-                          }
                         }
                       ]
                     },
@@ -271,30 +292,37 @@
                   "children": [
                     {
                       "type": "element",
-                      "tagName": "section-number",
+                      "tagName": "h2",
                       "properties": {},
                       "children": [
                         {
+                          "type": "element",
+                          "tagName": "section-number",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "2"
+                            }
+                          ]
+                        },
+                        {
                           "type": "text",
-                          "value": "2"
+                          "value": "Methods",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 9,
+                              "offset": 8
+                            }
+                          }
                         }
                       ]
-                    },
-                    {
-                      "type": "text",
-                      "value": "Methods",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 9,
-                          "offset": 8
-                        }
-                      }
                     }
                   ]
                 },

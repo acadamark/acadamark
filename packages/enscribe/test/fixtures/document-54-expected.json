@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Scroll-spy in the ToC sidebar (#20)"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Scroll-spy in the ToC sidebar (#20)"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -138,20 +145,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Introduction",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 14,
-                          "offset": 13
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Introduction",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 14,
+                              "offset": 13
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -203,20 +217,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Methods",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 9,
-                          "offset": 8
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Methods",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 9,
+                              "offset": 8
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -266,20 +287,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "Data",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 6,
-                              "offset": 5
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Data",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 6,
+                                  "offset": 5
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -331,20 +359,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "Analysis",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 10,
-                              "offset": 9
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Analysis",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 10,
+                                  "offset": 9
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -394,20 +429,27 @@
                           "properties": {},
                           "children": [
                             {
-                              "type": "text",
-                              "value": "Regression",
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 2,
-                                  "offset": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 12,
-                                  "offset": 11
+                              "type": "element",
+                              "tagName": "h4",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Regression",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 12,
+                                      "offset": 11
+                                    }
+                                  }
                                 }
-                              }
+                              ]
                             }
                           ]
                         },
@@ -459,20 +501,27 @@
                           "properties": {},
                           "children": [
                             {
-                              "type": "text",
-                              "value": "Validation",
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 2,
-                                  "offset": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 12,
-                                  "offset": 11
+                              "type": "element",
+                              "tagName": "h4",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Validation",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 12,
+                                      "offset": 11
+                                    }
+                                  }
                                 }
-                              }
+                              ]
                             }
                           ]
                         },
@@ -528,20 +577,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Results",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 9,
-                          "offset": 8
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Results",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 9,
+                              "offset": 8
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -591,20 +647,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "Findings",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 10,
-                              "offset": 9
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Findings",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 10,
+                                  "offset": 9
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -658,20 +721,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Conclusion",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 12,
-                          "offset": 11
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Conclusion",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 12,
+                              "offset": 11
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

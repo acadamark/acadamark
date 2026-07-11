@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Table test fixture</article-title>
+      <article-title>
+        <h1>Table test fixture</h1>
+      </article-title>
       <author>Ariel Balter</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Inline CSV</section-title>
+      <section-title>
+        <h2>Inline CSV</h2>
+      </section-title>
       <p>A numbered table with caption from inline CSV:</p>
       <table id="tab:csv">
         <caption><table-label>Table 1.</table-label> Greek letters and values</caption>
@@ -1546,7 +1565,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>TSV</section-title>
+      <section-title>
+        <h2>TSV</h2>
+      </section-title>
       <p>A TSV table without headers:</p>
       <table id="tab:tsv">
         <caption><table-label>Table 2.</table-label></caption>
@@ -1570,7 +1591,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>JSON</section-title>
+      <section-title>
+        <h2>JSON</h2>
+      </section-title>
       <p>A JSON table from an array of objects:</p>
       <table id="tab:json">
         <caption><table-label>Table 3.</table-label> Coordinates</caption>
@@ -1593,7 +1616,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>YAML</section-title>
+      <section-title>
+        <h2>YAML</h2>
+      </section-title>
       <p>A YAML table from a sequence of mappings:</p>
       <table id="tab:yaml">
         <caption><table-label>Table 4.</table-label> YAML data</caption>
@@ -1616,7 +1641,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Markdown pipe table</section-title>
+      <section-title>
+        <h2>Markdown pipe table</h2>
+      </section-title>
       <table id="tab:md">
         <caption><table-label>Table 5.</table-label> Pipe table</caption>
         <thead>
@@ -1642,7 +1669,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Cross-references</section-title>
+      <section-title>
+        <h2>Cross-references</h2>
+      </section-title>
       <p>
         See <a href="#tab:csv" class="ref">table 1</a> for the CSV table,
         <a href="#tab:json" class="ref">table 3</a> for JSON,
@@ -1650,7 +1679,9 @@ note-list li {
       </p>
     </section>
     <section>
-      <section-title>File source</section-title>
+      <section-title>
+        <h2>File source</h2>
+      </section-title>
       <p>A table loaded from an external CSV file:</p>
       <table id="tab:src">
         <caption><table-label>Table 6.</table-label> From file</caption>
@@ -1681,7 +1712,9 @@ note-list li {
       </table>
     </section>
     <section>
-      <section-title>Unnumbered table</section-title>
+      <section-title>
+        <h2>Unnumbered table</h2>
+      </section-title>
       <table id="tab:unnumbered">
         <caption>Unnumbered</caption>
         <thead>

@@ -27,10 +27,10 @@ export async function run() {
     const src = '*foo* and # NotHere.\n\n# Heading\n\n- a\n- b\n\n`code`\n\n<# Sig Head #>';
     const h = html(src);
     assert.ok(!h.includes('*foo*'), 'off: *foo* is interpreted (not literal)');
-    assert.ok(h.includes('<section-title>Heading</section-title>'), 'off: # Heading → canonical section');
+    assert.match(h, /<section-title>\s*<h2>Heading<\/h2>/, 'off: # Heading → canonical section');
     assert.ok(/<ul>|<li>/.test(h), 'off: - a / - b → a list');
     assert.ok(h.includes('<code>code</code>'), 'off: `code` → inline code');
-    assert.ok(h.includes('<section-title>Sig Head</section-title>'), 'off: <# … #> sigil → section');
+    assert.match(h, /<section-title>\s*<h2>Sig Head<\/h2>/, 'off: <# … #> sigil → section');
     assert.ok(!hasFlagCss(h) && !hasFlagSpan(h), 'off: no lint or flag CSS');
     console.log('PASS: #36 — off (default) interprets all three registers; no lint');
   }
@@ -43,9 +43,9 @@ export async function run() {
     // markdown register OFF — characters survive literally.
     assert.ok(h.includes('*foo*'), 'sigil: *foo* passes through literal');
     assert.ok(!h.includes('<code>code</code>'), 'sigil: `code` is not inline code');
-    assert.ok(!h.includes('<section-title>Heading</section-title>'), 'sigil: # Heading is not a section');
+    assert.ok(!/<section-title>\s*<h2>Heading<\/h2>/.test(h), 'sigil: # Heading is not a section');
     // sigil + canonical registers STILL live.
-    assert.ok(h.includes('<section-title>Sig Head</section-title>'), 'sigil: <# … #> sigil still interprets');
+    assert.match(h, /<section-title>\s*<h2>Sig Head<\/h2>/, 'sigil: <# … #> sigil still interprets');
     assert.ok(h.includes('href="http://y"'), 'sigil: the <a … | …> link still interprets');
     assert.ok(/math/i.test(h) && !h.includes('<$'), 'sigil: the <$ … $> math sigil still interprets');
     // markdown is flagged (sigil is no longer silent — flagging rides any non-off rung).
@@ -82,9 +82,9 @@ export async function run() {
     assert.ok(h.includes('*foo*'), 'canonical: *foo* literal');
     // sigils literal (escaped in HTML) + flagged.
     assert.ok(h.includes('# Sig Head #'), 'canonical: <# … #> sigil passes through literal');
-    assert.ok(!h.includes('<section-title>Sig Head</section-title>'), 'canonical: <# … #> is NOT a section');
+    assert.ok(!/<section-title>\s*<h2>Sig Head<\/h2>/.test(h), 'canonical: <# … #> is NOT a section');
     // canonical named tags STILL live.
-    assert.ok(h.includes('<section-title>Canon Sec</section-title>'), 'canonical: <section> still interprets');
+    assert.match(h, /<section-title>\s*<h2>Canon Sec<\/h2>/, 'canonical: <section> still interprets');
     // canonical <li> keeps lists authorable; ^{}/_{} shortcuts stay live.
     assert.ok(/<li>[\s\S]*alpha/.test(h), 'canonical: the canonical <li> list item still interprets');
     assert.ok(h.includes('<sup>2</sup>') && h.includes('<sub>i</sub>'), 'canonical: ^{}/_{} shortcuts stay live');
@@ -106,7 +106,7 @@ export async function run() {
     for (const mode of ['off', 'sigil', 'canonical']) {
       const h = html(cfg(mode) + 'Para one.\n\nPara two.\n\n<section | Sec>');
       assert.ok((h.match(/<p>/g) || []).length >= 2, `${mode}: blank line → paragraph (native) stays on`);
-      assert.ok(h.includes('<section-title>Sec</section-title>'), `${mode}: canonical <section> structure stays on`);
+      assert.match(h, /<section-title>\s*<h2>Sec<\/h2>/, `${mode}: canonical <section> structure stays on`);
     }
     console.log('PASS: #36 — native inferences (blank-line→paragraph, section structure) are mode-invariant');
   }

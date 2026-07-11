@@ -547,7 +547,7 @@ export function run() {
       `doc16: three sections produced (named, sigil, bare-markdown); got ${sectionMatches.length}`);
 
     // All three produce <section-title> elements with the same title text.
-    const titleMatches = html.match(/<section-title>Convergence title<\/section-title>/g) ?? [];
+    const titleMatches = html.match(/<section-title>\s*<h2>Convergence title<\/h2>\s*<\/section-title>/g) ?? [];
     assert.equal(titleMatches.length, 3,
       `doc16: three identical <section-title> elements; got ${titleMatches.length}`);
 
@@ -725,7 +725,7 @@ export function run() {
     assert.ok(html.includes('<article>'), 'doc21: article structure present');
 
     // article-structuring promotes the lifted <title> to <article-title>.
-    assert.ok(html.includes('<article-title>Equivalent metadata via kwarg form</article-title>'),
+    assert.match(html, /<article-title>\s*<h1>Equivalent metadata via kwarg form<\/h1>\s*<\/article-title>/,
       'doc21: kwarg title lifts to child <title> then promotes to <article-title>');
 
     // <author> child created from the author= kwarg.
@@ -1755,11 +1755,11 @@ export function run() {
     const { html, hast } = runPipeline(src);
 
     // Build-time hierarchical numbers, emitted as <span class="section-number">.
-    assert.ok(html.includes('<section-title><section-number>1</section-number>'),
+    assert.match(html, /<section-title>\s*<h2><section-number>1<\/section-number>/,
       'doc51: first section numbered 1');
-    assert.ok(html.includes('<sub-section-title><section-number>1.1</section-number>'),
+    assert.match(html, /<sub-section-title>\s*<h3><section-number>1\.1<\/section-number>/,
       'doc51: nested sub-section numbered 1.1');
-    assert.ok(html.includes('<section-title><section-number>2</section-number>'),
+    assert.match(html, /<section-title>\s*<h2><section-number>2<\/section-number>/,
       'doc51: second section numbered 2');
     // Cross-ref to a numbered section renders the number (one registry).
     assert.ok(html.includes('class="ref">section 2</a>'),
@@ -1776,15 +1776,15 @@ export function run() {
 
     // Book defaults on: chapter heading arabic, appendix heading alphabetic;
     // sections chapter-/appendix-prefixed.
-    assert.ok(html.includes('<book-part-title><section-number>1</section-number>'),
+    assert.match(html, /<book-part-title>\s*<h2><section-number>1<\/section-number>/,
       'doc52: chapter heading numbered 1');
-    assert.ok(html.includes('<section-title><section-number>1.1</section-number>'),
+    assert.match(html, /<section-title>\s*<h3><section-number>1\.1<\/section-number>/,
       'doc52: chapter section numbered 1.1');
-    assert.ok(html.includes('<sub-section-title><section-number>1.1.1</section-number>'),
+    assert.match(html, /<sub-section-title>\s*<h4><section-number>1\.1\.1<\/section-number>/,
       'doc52: nested sub-section numbered 1.1.1');
-    assert.ok(html.includes('<book-part-title><section-number>A</section-number>'),
+    assert.match(html, /<book-part-title>\s*<h2><section-number>A<\/section-number>/,
       'doc52: appendix heading lettered A');
-    assert.ok(html.includes('<section-title><section-number>A.1</section-number>'),
+    assert.match(html, /<section-title>\s*<h3><section-number>A\.1<\/section-number>/,
       'doc52: appendix section numbered A.1');
     // Cross-refs to book-parts (registered) and a chapter-prefixed section.
     assert.ok(html.includes('class="ref">appendix A</a>'), 'doc52: ref → "appendix A"');

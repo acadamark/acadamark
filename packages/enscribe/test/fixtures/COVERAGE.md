@@ -16,7 +16,7 @@ An empty **covered-by** / a `gap` status is a *visible hole*. A `divergent:#NN` 
 
 ## RQ-DOC — Document structure (article)
 
-**Predicates:** `RQ-DOC-M1`, `RQ-DOC-M2`, `RQ-DOC-M3`, `RQ-DOC-S1`, `RQ-DOC-S2`, `RQ-DOC-S3`, `RQ-DOC-S4`
+**Predicates:** `RQ-DOC-M1`, `RQ-DOC-M2`, `RQ-DOC-M3`, `RQ-DOC-M4`, `RQ-DOC-S1`, `RQ-DOC-S2`, `RQ-DOC-S3`, `RQ-DOC-S4`, `RQ-DOC-S5`
 
 | element | cell | disposition | covered-by | status |
 |---|---|---|---|---|

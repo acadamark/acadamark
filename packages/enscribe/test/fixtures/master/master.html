@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1235,25 +1250,35 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Multi-File Demo</article-title>
+      <article-title>
+        <h1>Multi-File Demo</h1>
+      </article-title>
       <author>Test Author</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Introduction</section-title>
+      <section-title>
+        <h2>Introduction</h2>
+      </section-title>
       <p>The introduction body, authored in its own child file.</p>
       <sub-section>
-        <sub-section-title>Background</sub-section-title>
+        <sub-section-title>
+          <h3>Background</h3>
+        </sub-section-title>
         <p>Background content nested inside the introduction.</p>
       </sub-section>
     </section>
     <section>
-      <section-title>Methods Override</section-title>
+      <section-title>
+        <h2>Methods Override</h2>
+      </section-title>
       <p>We describe the methods here, in a second child file.</p>
     </section>
     <section>
-      <section-title>Discussion</section-title>
+      <section-title>
+        <h2>Discussion</h2>
+      </section-title>
       <p>An inline section authored directly in the master document.</p>
     </section>
   </article-body>

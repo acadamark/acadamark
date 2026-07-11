@@ -24,20 +24,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Cross-reference test fixture",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 30,
-                          "offset": 29
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Cross-reference test fixture",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 30,
+                              "offset": 29
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -84,20 +91,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Equations with various numbering states",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 41,
-                          "offset": 40
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Equations with various numbering states",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 41,
+                              "offset": 40
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1366,20 +1380,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "References to equations",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 25,
-                          "offset": 24
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "References to equations",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 25,
+                              "offset": 24
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1664,20 +1685,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Figures",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 9,
-                          "offset": 8
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Figures",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 9,
+                              "offset": 8
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -2074,20 +2102,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Notes",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 7,
-                          "offset": 6
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Notes",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 7,
+                              "offset": 6
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -2417,20 +2452,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Edge cases",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 12,
-                          "offset": 11
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Edge cases",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 12,
+                              "offset": 11
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

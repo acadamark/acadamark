@@ -89,9 +89,18 @@ function findTitleEl(node) {
 export function titleParts(node) {
   const titleEl = findTitleEl(node);
   if (!titleEl) return { glued: '', number: '', clean: '' };
+  // #397: the heading wrap. A rendered outline title carries its inline content
+  // (including the leading <section-number>) inside a single native <hN> child
+  // (render-quality.md RQ-DOC-M4). Descend into the wrap so the number/clean
+  // split — and the anchor slugs derived from `clean` — are byte-identical to
+  // the unwrapped form. `glued` (whole-subtree textContent) is wrap-transparent.
+  let kids = titleEl.children ?? [];
+  if (kids.length === 1 && kids[0].type === 'element' && /^h[1-6]$/.test(kids[0].tagName)) {
+    kids = kids[0].children ?? [];
+  }
   let number = '';
   const rest = [];
-  for (const c of titleEl.children ?? []) {
+  for (const c of kids) {
     if (c.type === 'element' && c.tagName === 'section-number') {
       number = clean(textContent(c));
     } else {

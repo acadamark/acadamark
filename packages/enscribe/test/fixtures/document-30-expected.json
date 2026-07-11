@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "CSV/TSV handlers + <code> long-form fixture (Phase 2 slice 2a)"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "CSV/TSV handlers + <code> long-form fixture (Phase 2 slice 2a)"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -49,20 +56,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Standalone CSV",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 16,
-                          "offset": 15
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Standalone CSV",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 16,
+                              "offset": 15
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -543,20 +557,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Standalone TSV",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 16,
-                          "offset": 15
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Standalone TSV",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 16,
+                              "offset": 15
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -798,47 +819,54 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "The ",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 6,
-                          "offset": 5
-                        }
-                      }
-                    },
-                    {
                       "type": "element",
-                      "tagName": "code",
+                      "tagName": "h2",
                       "properties": {},
                       "children": [
                         {
                           "type": "text",
-                          "value": "<code>"
+                          "value": "The ",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 6,
+                              "offset": 5
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "code",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "<code>"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " long-form bug fix",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 14,
+                              "offset": 13
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 32,
+                              "offset": 31
+                            }
+                          }
                         }
                       ]
-                    },
-                    {
-                      "type": "text",
-                      "value": " long-form bug fix",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 14,
-                          "offset": 13
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 32,
-                          "offset": 31
-                        }
-                      }
                     }
                   ]
                 },

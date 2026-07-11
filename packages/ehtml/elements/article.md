@@ -61,18 +61,18 @@ shorthand_examples:
       <article>
         <article-front>
           <meta data-document-type="article">
-            <article-title>The Effect of Elephants on Climate</article-title>
+            <article-title><h1>The Effect of Elephants on Climate</h1></article-title>
             <author>Jane Goodall</author>
             <date>2024-03-15</date>
           </meta>
         </article-front>
         <article-body>
           <section>
-            <section-title>Introduction</section-title>
+            <section-title><h2>Introduction</h2></section-title>
             <p>The paper begins here.</p>
           </section>
           <section>
-            <section-title>Conclusion</section-title>
+            <section-title><h2>Conclusion</h2></section-title>
             <p>The paper concludes here.</p>
           </section>
         </article-body>
@@ -95,13 +95,13 @@ shorthand_examples:
       <article>
         <article-front>
           <meta>
-            <article-title>The Effect of Elephants on Climate</article-title>
+            <article-title><h1>The Effect of Elephants on Climate</h1></article-title>
             <author>Jane Goodall</author>
           </meta>
         </article-front>
         <article-body>
           <section>
-            <section-title>Introduction</section-title>
+            <section-title><h2>Introduction</h2></section-title>
             <p>The paper begins here.</p>
           </section>
         </article-body>
@@ -121,11 +121,11 @@ shorthand_examples:
       <article>
         <article-body>
           <section>
-            <section-title>Introduction</section-title>
+            <section-title><h2>Introduction</h2></section-title>
             <p>The introduction.</p>
           </section>
           <section>
-            <section-title>Conclusion</section-title>
+            <section-title><h2>Conclusion</h2></section-title>
             <p>The conclusion.</p>
           </section>
         </article-body>

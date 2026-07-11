@@ -24,20 +24,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Edge Cases in Enscribe",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 24,
-                          "offset": 23
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Edge Cases in Enscribe",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 24,
+                              "offset": 23
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -84,29 +91,13 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "The ",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 6,
-                          "offset": 5
-                        }
-                      }
-                    },
-                    {
                       "type": "element",
-                      "tagName": "em",
+                      "tagName": "h2",
                       "properties": {},
                       "children": [
                         {
                           "type": "text",
-                          "value": "important",
+                          "value": "The ",
                           "position": {
                             "start": {
                               "line": 1,
@@ -115,28 +106,51 @@
                             },
                             "end": {
                               "line": 1,
-                              "column": 11,
-                              "offset": 10
+                              "column": 6,
+                              "offset": 5
+                            }
+                          }
+                        },
+                        {
+                          "type": "element",
+                          "tagName": "em",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "important",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 11,
+                                  "offset": 10
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "value": " finding",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 22,
+                              "offset": 21
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 30,
+                              "offset": 29
                             }
                           }
                         }
                       ]
-                    },
-                    {
-                      "type": "text",
-                      "value": " finding",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 22,
-                          "offset": 21
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 30,
-                          "offset": 29
-                        }
-                      }
                     }
                   ]
                 },
@@ -252,20 +266,27 @@
                       "properties": {},
                       "children": [
                         {
-                          "type": "text",
-                          "value": "Sub-section title",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 19,
-                              "offset": 18
+                          "type": "element",
+                          "tagName": "h3",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Sub-section title",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 19,
+                                  "offset": 18
+                                }
+                              }
                             }
-                          }
+                          ]
                         }
                       ]
                     },
@@ -315,20 +336,27 @@
                           "properties": {},
                           "children": [
                             {
-                              "type": "text",
-                              "value": "Deepest nesting",
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 2,
-                                  "offset": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 17,
-                                  "offset": 16
+                              "type": "element",
+                              "tagName": "h4",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Deepest nesting",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 17,
+                                      "offset": 16
+                                    }
+                                  }
                                 }
-                              }
+                              ]
                             }
                           ]
                         },
@@ -384,20 +412,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Second top-level section",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 26,
-                          "offset": 25
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Second top-level section",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 26,
+                              "offset": 25
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

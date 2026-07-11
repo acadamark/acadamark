@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,16 +1524,22 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Per-section footnote collection (formerly PG-1)</article-title>
+      <article-title>
+        <h1>Per-section footnote collection (formerly PG-1)</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>First section</section-title>
+      <section-title>
+        <h2>First section</h2>
+      </section-title>
       <p>This section has two footnotes.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup> The numbering is global across the document, so this is note 1.</p>
       <p>A second sentence with another footnote.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup> This is note 2.</p>
       <sub-section>
-        <sub-section-title>A nested sub-section</sub-section-title>
+        <sub-section-title>
+          <h3>A nested sub-section</h3>
+        </sub-section-title>
         <p>This nested sub-section has its own footnote.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup> This is note 3 — outermost-collection means it belongs to the first section’s list.</p>
       </sub-section>
       <note-list class="footnotes">
@@ -1536,7 +1557,9 @@ note-list li {
       </note-list>
     </section>
     <section>
-      <section-title>Second section</section-title>
+      <section-title>
+        <h2>Second section</h2>
+      </section-title>
       <p>A footnote in the second top-level section.<sup id="noteref-4" data-note-id="note-4"><a href="#note-4">4</a></sup> Note 4.</p>
       <note-list class="footnotes">
         <ol>
@@ -1547,7 +1570,9 @@ note-list li {
       </note-list>
     </section>
     <section>
-      <section-title>Third section: no footnotes</section-title>
+      <section-title>
+        <h2>Third section: no footnotes</h2>
+      </section-title>
       <p>This section has no footnotes; no per-section note-list should appear at its end.</p>
       <p>A regular endnote, though.<sup id="noteref-5" data-note-id="note-5"><a href="#note-5">5</a></sup> Note 5 is an endnote, which falls through to article-back per the residual-collection rule.</p>
     </section>

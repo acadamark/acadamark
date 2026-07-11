@@ -19,6 +19,7 @@ export const CONFIG_FAMILIES = [
   'Table of contents',
   'Citations & bibliography',
   'Notes',
+  'Heading semantics',
   'Book navigation',
   'Website navigation',
   'Display / DSL / strict',
@@ -76,6 +77,10 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'Where footnotes collect: document = one back-matter list; chapter = per <book-part>; section = per outermost <section>.' },
   { key: 'note-position', family: 'Notes', type: 'valued', values: 'bottom | margin', default: 'bottom', scope: 'all',
     description: 'Render position of numbered notes. bottom = foot of the document; margin = Tufte-style sidenotes in a wide margin column.' },
+
+  // ── Heading semantics (#397) ─────────────────────────────────────────────────
+  { key: 'heading-tags', family: 'Heading semantics', type: 'boolean', values: null, default: 'on', scope: 'all',
+    description: 'Wrap each outline title\'s inline content in the native heading of its structurally derived level (render-quality.md RQ-DOC-M4). ON is the conforming default; set false only when the host materializes heading semantics itself — off emits no heading wrap at all.' },
 
   // ── Book navigation (book-only) ──────────────────────────────────────────────
   { key: 'chapter-nav', family: 'Book navigation', type: 'boolean', values: null, default: 'on', scope: 'book-only',

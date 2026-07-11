@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <book>
   <book-front>
     <meta data-document-type="book">
-      <book-title>Field Methods in Savanna Ecology</book-title>
+      <book-title>
+        <h1>Field Methods in Savanna Ecology</h1>
+      </book-title>
       <book-subtitle>A Practical Handbook</book-subtitle>
       <author>The Enscribe Team</author>
     </meta>
     <book-part book-part-type="preface">
       <meta>
-        <book-part-title>About this Handbook</book-part-title>
+        <book-part-title>
+          <h2>About this Handbook</h2>
+        </book-part-title>
       </meta>
       <p>This preface sits in the book’s front matter and introduces the handbook.</p>
     </book-part>
@@ -1523,7 +1542,9 @@ note-list li {
   <book-body>
     <book-part book-part-type="chapter">
       <meta>
-        <book-part-title>Counting Elephants</book-part-title>
+        <book-part-title>
+          <h2>Counting Elephants</h2>
+        </book-part-title>
       </meta>
       <p>
         Aerial transects remain the standard method. See <a href="#fig:transect" class="ref">figure 1</a> for the
@@ -1538,7 +1559,9 @@ note-list li {
     </book-part>
     <book-part book-part-type="chapter">
       <meta>
-        <book-part-title>Estimating Browse Pressure</book-part-title>
+        <book-part-title>
+          <h2>Estimating Browse Pressure</h2>
+        </book-part-title>
         <author>Guest Contributor</author>
       </meta>
       <p>
@@ -1556,7 +1579,9 @@ note-list li {
   <book-back>
     <book-part book-part-type="appendix">
       <meta>
-        <book-part-title>Field Data Sheets</book-part-title>
+        <book-part-title>
+          <h2>Field Data Sheets</h2>
+        </book-part-title>
       </meta>
       <p>Reproducible blank data sheets for transect counts, placed in the back matter.</p>
     </book-part>

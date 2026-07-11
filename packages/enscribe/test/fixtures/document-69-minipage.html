@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,12 +1524,16 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Minipage: a sealed frameable (#115)</article-title>
+      <article-title>
+        <h1>Minipage: a sealed frameable (#115)</h1>
+      </article-title>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Private numbering and inbound references</section-title>
+      <section-title>
+        <h2>Private numbering and inbound references</h2>
+      </section-title>
       <p>A document figure outside any box, on the document figure counter:</p>
       <figure id="fig:doc">
         <img src="doc.png" alt="A document figure.">
@@ -1544,7 +1563,9 @@ note-list li {
       </p>
     </section>
     <section>
-      <section-title>Cross-referencing minipages</section-title>
+      <section-title>
+        <h2>Cross-referencing minipages</h2>
+      </section-title>
       <p>
         A minipage gets its own outward label in the “Minipage N” series, so it is
         itself cross-referenceable and one minipage’s label can be referenced
@@ -1561,7 +1582,9 @@ note-list li {
       <p>The boxes are <a href="#mp:a" class="ref">minipage 2</a> and <a href="#mp:b" class="ref">minipage 3</a>.</p>
     </section>
     <section>
-      <section-title>Box-local footnotes</section-title>
+      <section-title>
+        <h2>Box-local footnotes</h2>
+      </section-title>
       <p>
         A footnote authored inside a minipage is collected at the box’s own bottom
         boundary (the LaTeX bottom-of-minipage behavior), not hoisted to the
@@ -1580,7 +1603,9 @@ note-list li {
       </figure>
     </section>
     <section>
-      <section-title>Nested minipages</section-title>
+      <section-title>
+        <h2>Nested minipages</h2>
+      </section-title>
       <p>
         A minipage inside a minipage recurses within the deferred phase; each level
         numbers in its own private registry:
@@ -1602,7 +1627,9 @@ note-list li {
       </figure>
     </section>
     <section>
-      <section-title>External pulls are forbidden</section-title>
+      <section-title>
+        <h2>External pulls are forbidden</h2>
+      </section-title>
       <p>
         A minipage is self-contained: an <code>@src</code>/<code>&#x3C;data></code> external asset pull inside
         the body is rejected with a visible error, never resolved:

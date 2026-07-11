@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,13 +1524,17 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Config edge-case fixture</article-title>
+      <article-title>
+        <h1>Config edge-case fixture</h1>
+      </article-title>
       <author>Test Author</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Trailing whitespace after a sigil close</section-title>
+      <section-title>
+        <h2>Trailing whitespace after a sigil close</h2>
+      </section-title>
       <p>
         A sigil heading with trailing whitespace after the <code>#></code> (formerly PG-11)
         must still be recognized as a flow construct. Before the fix it was
@@ -1523,12 +1542,16 @@ note-list li {
         closer; the sigil heading must produce a <code>&#x3C;sub-section></code>.
       </p>
       <sub-section>
-        <sub-section-title>A sigil with trailing whitespace</sub-section-title>
+        <sub-section-title>
+          <h3>A sigil with trailing whitespace</h3>
+        </sub-section-title>
         <p>Surrounding prose continues to render normally below the sigil heading.</p>
       </sub-section>
     </section>
     <section>
-      <section-title>Cross-reference using the ref-prefix override</section-title>
+      <section-title>
+        <h2>Cross-reference using the ref-prefix override</h2>
+      </section-title>
       <p>
         The <code>&#x3C;config ref-prefix-eqn="Eq."></code> at the document top must produce
         “Eq. 1” when this section references an equation. The config kwarg is on a
@@ -1542,7 +1565,9 @@ note-list li {
       </p>
     </section>
     <section>
-      <section-title>Nested config block is now read</section-title>
+      <section-title>
+        <h2>Nested config block is now read</h2>
+      </section-title>
       <p>
         A nested <code>&#x3C;config></code> block (formerly PG-9, “deeply-nested <code>&#x3C;config></code> not
         read”) is now discovered by the recursive walk. The block below sits

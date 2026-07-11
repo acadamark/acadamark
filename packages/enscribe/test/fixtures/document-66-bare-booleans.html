@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1286,7 +1301,9 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Bare boolean authoring forms (#219)</article-title>
+      <article-title>
+        <h1>Bare boolean authoring forms (#219)</h1>
+      </article-title>
       <author>The Enscribe Team</author>
     </meta>
   </article-front>
@@ -1309,29 +1326,39 @@ toc-num {
 number-sections=true></code>. Only a <i>known</i> boolean promotes; a bare typo stays unrecognized.
     </p>
     <section id="sec:introduction"><section-number>1</section-number>
-      <section-title><section-number>1</section-number>Introduction</section-title>
+      <section-title>
+        <h2><section-number>1</section-number>Introduction</h2>
+      </section-title>
       <p>A numbered section (1).</p>
       <sub-section id="sec:background"><section-number>1.1</section-number>
-        <sub-section-title><section-number>1.1</section-number>Background</sub-section-title>
+        <sub-section-title>
+          <h3><section-number>1.1</section-number>Background</h3>
+        </sub-section-title>
         <p>A numbered sub-section (1.1).</p>
       </sub-section>
     </section>
     <section listed="false"><section-number>2</section-number>
-      <section-title><section-number>2</section-number>Colophon</section-title>
+      <section-title>
+        <h2><section-number>2</section-number>Colophon</h2>
+      </section-title>
       <p>
         <code>listed</code> defaults on, so its opt-out is the signed <code>-listed</code> — kept out of the contents listing, but
         still <b>numbered</b> (2) and rendered. (<code>listed</code> is listing-only; it does not affect numbering.)
       </p>
     </section>
     <section numbered="false" id="sec:a-note-on-method">
-      <section-title>A Note on Method</section-title>
+      <section-title>
+        <h2>A Note on Method</h2>
+      </section-title>
       <p>
         <code>numbered</code> defaults on, so its opt-out is <code>-numbered</code> — outside the numbered sequence: no number,
         and the counter does not advance. (<code>numbered</code> is numbering-only; it is still <i>listed</i>.)
       </p>
     </section>
     <section id="sec:methods"><section-number>3</section-number>
-      <section-title><section-number>3</section-number>Methods</section-title>
+      <section-title>
+        <h2><section-number>3</section-number>Methods</h2>
+      </section-title>
       <p>
         A numbered section (3) — Colophon took 2 (a -listed section is still numbered); the -numbered note
         did not advance the counter.

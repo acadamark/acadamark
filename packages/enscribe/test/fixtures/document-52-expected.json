@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Numbered book"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Numbered book"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -69,18 +76,25 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h2",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "1"
+                              "value": "First Chapter"
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "First Chapter"
                         }
                       ]
                     }
@@ -178,30 +192,37 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h3",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "1.1"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "1.1"
+                              "value": "Approach",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 10,
+                                  "offset": 9
+                                }
+                              }
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Approach",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 10,
-                              "offset": 9
-                            }
-                          }
                         }
                       ]
                     },
@@ -297,30 +318,37 @@
                           "children": [
                             {
                               "type": "element",
-                              "tagName": "section-number",
+                              "tagName": "h4",
                               "properties": {},
                               "children": [
                                 {
+                                  "type": "element",
+                                  "tagName": "section-number",
+                                  "properties": {},
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "value": "1.1.1"
+                                    }
+                                  ]
+                                },
+                                {
                                   "type": "text",
-                                  "value": "1.1.1"
+                                  "value": "Detail",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 8,
+                                      "offset": 7
+                                    }
+                                  }
                                 }
                               ]
-                            },
-                            {
-                              "type": "text",
-                              "value": "Detail",
-                              "position": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 2,
-                                  "offset": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 8,
-                                  "offset": 7
-                                }
-                              }
                             }
                           ]
                         },
@@ -409,18 +437,25 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h2",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "A"
+                              "value": "Notation"
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Notation"
                         }
                       ]
                     }
@@ -518,30 +553,37 @@
                       "children": [
                         {
                           "type": "element",
-                          "tagName": "section-number",
+                          "tagName": "h3",
                           "properties": {},
                           "children": [
                             {
+                              "type": "element",
+                              "tagName": "section-number",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "A.1"
+                                }
+                              ]
+                            },
+                            {
                               "type": "text",
-                              "value": "A.1"
+                              "value": "Symbols",
+                              "position": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 2,
+                                  "offset": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 9,
+                                  "offset": 8
+                                }
+                              }
                             }
                           ]
-                        },
-                        {
-                          "type": "text",
-                          "value": "Symbols",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 9,
-                              "offset": 8
-                            }
-                          }
                         }
                       ]
                     },

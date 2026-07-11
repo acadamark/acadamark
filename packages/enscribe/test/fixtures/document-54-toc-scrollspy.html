@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1358,7 +1373,9 @@ toc-num {
     <article>
       <article-front>
         <meta data-document-type="article">
-          <article-title>Scroll-spy in the ToC sidebar (#20)</article-title>
+          <article-title>
+            <h1>Scroll-spy in the ToC sidebar (#20)</h1>
+          </article-title>
         </meta>
       </article-front>
       <article-body>
@@ -1369,45 +1386,63 @@ toc-num {
           highlight (an active <code>3.1.2</code>-style entry lights up along with its parents).
         </p>
         <section id="sec:introduction">
-          <section-title>Introduction</section-title>
+          <section-title>
+            <h2>Introduction</h2>
+          </section-title>
           <p>Opening prose. The ToC lists this as a top-level entry linking to the section id.</p>
         </section>
         <section id="sec:methods">
-          <section-title>Methods</section-title>
+          <section-title>
+            <h2>Methods</h2>
+          </section-title>
           <p>
             The Methods section has sub-sections, which have sub-sub-sections — a three-level
             nest so the “you are here” trail has something to walk.
           </p>
           <sub-section id="sec:data">
-            <sub-section-title>Data</sub-section-title>
+            <sub-section-title>
+              <h3>Data</h3>
+            </sub-section-title>
             <p>A sub-section under Methods.</p>
           </sub-section>
           <sub-section id="sec:analysis">
-            <sub-section-title>Analysis</sub-section-title>
+            <sub-section-title>
+              <h3>Analysis</h3>
+            </sub-section-title>
             <p>Another sub-section, this one with its own sub-sub-sections.</p>
             <sub-sub-section id="sec:regression">
-              <sub-sub-section-title>Regression</sub-sub-section-title>
+              <sub-sub-section-title>
+                <h4>Regression</h4>
+              </sub-sub-section-title>
               <p>
                 A sub-sub-section — the deepest level. When this is the current section, its ToC
                 entry is active and both Analysis and Methods carry the trail hook.
               </p>
             </sub-sub-section>
             <sub-sub-section id="sec:validation">
-              <sub-sub-section-title>Validation</sub-sub-section-title>
+              <sub-sub-section-title>
+                <h4>Validation</h4>
+              </sub-sub-section-title>
               <p>A second sub-sub-section under Analysis.</p>
             </sub-sub-section>
           </sub-section>
         </section>
         <section id="sec:results">
-          <section-title>Results</section-title>
+          <section-title>
+            <h2>Results</h2>
+          </section-title>
           <p>A top-level section with one sub-section.</p>
           <sub-section id="sec:findings">
-            <sub-section-title>Findings</sub-section-title>
+            <sub-section-title>
+              <h3>Findings</h3>
+            </sub-section-title>
             <p>A sub-section under Results.</p>
           </sub-section>
         </section>
         <section id="sec:conclusion">
-          <section-title>Conclusion</section-title>
+          <section-title>
+            <h2>Conclusion</h2>
+          </section-title>
           <p>
             The final top-level section. When the reader scrolls to the bottom, this entry
             stays active (the graceful end-of-document case).

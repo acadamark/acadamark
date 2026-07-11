@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1286,7 +1301,9 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Config-driven contents — body placement (#218)</article-title>
+      <article-title>
+        <h1>Config-driven contents — body placement (#218)</h1>
+      </article-title>
       <author>The Enscribe Team</author>
     </meta>
   </article-front>
@@ -1303,17 +1320,23 @@ toc-num {
       </ul>
     </nav>
     <section id="sec:intro">
-      <section-title>Introduction</section-title>
+      <section-title>
+        <h2>Introduction</h2>
+      </section-title>
       <p>
         The contents listing is config-driven (<code>&#x3C;config toc></code>), read in the shared compiler,
         so the static build and the live render produce it identically. With
         <code>toc-location=body</code> it renders at the top of the document, after the title block.
       </p>
       <sub-section id="sec:background">
-        <sub-section-title>Background</sub-section-title>
+        <sub-section-title>
+          <h3>Background</h3>
+        </sub-section-title>
         <p>A second-level heading — listed, because <code>toc-depth=2</code> includes levels 1 and 2.</p>
         <sub-sub-section>
-          <sub-sub-section-title>Fine detail</sub-sub-section-title>
+          <sub-sub-section-title>
+            <h4>Fine detail</h4>
+          </sub-sub-section-title>
           <p>
             A third-level heading. Below <code>toc-depth</code>, so it is absent from the contents listing
             (it still renders here in the body).
@@ -1322,11 +1345,15 @@ toc-num {
       </sub-section>
     </section>
     <section id="sec:methods">
-      <section-title>Methods</section-title>
+      <section-title>
+        <h2>Methods</h2>
+      </section-title>
       <p>A first-level heading, listed.</p>
     </section>
     <section listed="false">
-      <section-title>Acknowledgements</section-title>
+      <section-title>
+        <h2>Acknowledgements</h2>
+      </section-title>
       <p>
         A <code>-listed</code> section: present in the document, absent from the contents listing,
         regardless of <code>toc-depth</code>. (<code>listed</code> defaults on; <code>-listed</code> opts out.)

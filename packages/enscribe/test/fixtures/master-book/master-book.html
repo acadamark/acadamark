@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1697,13 +1712,17 @@ note-list li {
     <book>
       <book-front>
         <meta data-document-type="book">
-          <book-title>Field Methods in Savanna Ecology</book-title>
+          <book-title>
+            <h1>Field Methods in Savanna Ecology</h1>
+          </book-title>
           <book-subtitle>A Multi-File Book Assembled From Per-Chapter Sources</book-subtitle>
           <author>The Enscribe Team</author>
         </meta>
         <book-part book-part-type="preface" id="sec:about-this-book">
           <meta>
-            <book-part-title>About this Book</book-part-title>
+            <book-part-title>
+              <h2>About this Book</h2>
+            </book-part-title>
           </meta>
           <p>
             This preface sits in the book’s front matter and introduces the multi-file book.
@@ -1715,14 +1734,18 @@ note-list li {
       <book-body>
         <book-part book-part-type="chapter" id="sec:counting-elephants"><section-number>1</section-number>
           <meta>
-            <book-part-title><section-number>1</section-number>Counting Elephants</book-part-title>
+            <book-part-title>
+              <h2><section-number>1</section-number>Counting Elephants</h2>
+            </book-part-title>
           </meta>
           <p>
             Aerial transects and ground counts are the two standard survey methods for
             savanna elephants.
           </p>
           <sub-section id="sec:aerial-transects"><section-number>1.1</section-number>
-            <sub-section-title><section-number>1.1</section-number>Aerial Transects</sub-section-title>
+            <sub-section-title>
+              <h3><section-number>1.1</section-number>Aerial Transects</h3>
+            </sub-section-title>
             <p>
               Aerial transects remain the standard method. See <a href="#fig:transect" class="ref">figure 1.1</a> for the grid
               layout; in a book it resolves to a chapter-scoped number (figure 1.1, not figure 1).
@@ -1735,7 +1758,9 @@ note-list li {
             </figure>
           </sub-section>
           <sub-section id="sec:ground-counts"><section-number>1.2</section-number>
-            <sub-section-title><section-number>1.2</section-number>Ground Counts</sub-section-title>
+            <sub-section-title>
+              <h3><section-number>1.2</section-number>Ground Counts</h3>
+            </sub-section-title>
             <p>
               Ground counts complement the aerial survey at known aggregation points such as
               waterholes during the dry season.
@@ -1745,7 +1770,9 @@ note-list li {
         </book-part>
         <book-part book-part-type="chapter" id="sec:estimating-browse-pressure"><section-number>2</section-number>
           <meta>
-            <book-part-title><section-number>2</section-number>Estimating Browse Pressure</book-part-title>
+            <book-part-title>
+              <h2><section-number>2</section-number>Estimating Browse Pressure</h2>
+            </book-part-title>
             <author>Guest Contributor</author>
           </meta>
           <p>
@@ -1753,7 +1780,9 @@ note-list li {
             renumbers its figures from one.
           </p>
           <sub-section id="sec:browse-scoring"><section-number>2.1</section-number>
-            <sub-section-title><section-number>2.1</section-number>Browse Scoring</sub-section-title>
+            <sub-section-title>
+              <h3><section-number>2.1</section-number>Browse Scoring</h3>
+            </sub-section-title>
             <p>
               Its own figure is <a href="#fig:browse" class="ref">figure 2.1</a>; a cross-chapter reference to <a href="#fig:transect" class="ref">figure 1.1</a>
               still resolves to chapter 1 (figure 1.1).
@@ -1766,7 +1795,9 @@ note-list li {
             </figure>
           </sub-section>
           <sub-section id="sec:limitations"><section-number>2.2</section-number>
-            <sub-section-title><section-number>2.2</section-number>Limitations</sub-section-title>
+            <sub-section-title>
+              <h3><section-number>2.2</section-number>Limitations</h3>
+            </sub-section-title>
             <p>
               Browse scoring is observer-dependent and should be calibrated across surveyors
               before the season’s counts begin.
@@ -1779,7 +1810,9 @@ note-list li {
         <config></config>
         <book-part book-part-type="appendix" id="sec:field-data-sheets"><section-number>A</section-number>
           <meta>
-            <book-part-title><section-number>A</section-number>Field Data Sheets</book-part-title>
+            <book-part-title>
+              <h2><section-number>A</section-number>Field Data Sheets</h2>
+            </book-part-title>
           </meta>
           <p>Reproducible blank data sheets for transect counts, placed in the book’s back matter.</p>
           <nav class="enscribe-chapter-nav" aria-label="Chapter navigation"><a class="enscribe-chapter-prev" href="#sec:estimating-browse-pressure" rel="prev"><chapter-arrow>←</chapter-arrow><toc-num>2</toc-num><toc-title>Estimating Browse Pressure</toc-title></a></nav>

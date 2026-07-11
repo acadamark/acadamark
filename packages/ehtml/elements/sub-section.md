@@ -63,7 +63,7 @@ shorthand_examples:
       Sub-section content.
     ehtml: |
       <sub-section>
-        <sub-section-title>Quantitative analysis</sub-section-title>
+        <sub-section-title><h2>Quantitative analysis</h2></sub-section-title>
         <p>Sub-section content.</p>
       </sub-section>
   - source: |
@@ -78,17 +78,17 @@ shorthand_examples:
       Sub-section content.
     ehtml: |
       <section>
-        <section-title>Results</section-title>
+        <section-title><h2>Results</h2></section-title>
         <sub-section>
-          <sub-section-title>Statistical methods</sub-section-title>
+          <sub-section-title><h3>Statistical methods</h3></sub-section-title>
           <p>Sub-section content.</p>
           <sub-sub-section>
-            <sub-sub-section-title>Regression analysis</sub-sub-section-title>
+            <sub-sub-section-title><h4>Regression analysis</h4></sub-sub-section-title>
             <p>Sub-sub-section content.</p>
           </sub-sub-section>
         </sub-section>
         <sub-section>
-          <sub-section-title>Sensitivity analyses</sub-section-title>
+          <sub-section-title><h3>Sensitivity analyses</h3></sub-section-title>
           <p>Sub-section content.</p>
         </sub-section>
       </section>

@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1235,27 +1250,35 @@ toc-num {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Bare markdown heading normalization fixture</article-title>
+      <article-title>
+        <h1>Bare markdown heading normalization fixture</h1>
+      </article-title>
       <author>Test Author</author>
     </meta>
   </article-front>
   <article-body>
     <section>
-      <section-title>Top-level bare heading</section-title>
+      <section-title>
+        <h2>Top-level bare heading</h2>
+      </section-title>
       <p>
         This top-level section is authored as a bare markdown <code>#</code> heading. It must
         lift to a canonical <code>&#x3C;section></code> element with a proper <code>&#x3C;section-title></code>, not
         flow through as <code>&#x3C;h1></code>.
       </p>
       <sub-section>
-        <sub-section-title>Bare sub-heading with <i>emphasis</i> in the title</sub-section-title>
+        <sub-section-title>
+          <h3>Bare sub-heading with <i>emphasis</i> in the title</h3>
+        </sub-section-title>
         <p>
           The bare <code>##</code> heading lifts to <code>&#x3C;sub-section></code>. The emphasis in the title
           text must be lifted recursively — emphasis becomes <code>&#x3C;i></code> per the decided
           stylistic mapping.
         </p>
         <sub-sub-section>
-          <sub-sub-section-title>Bare sub-sub-heading with <code>inline code</code></sub-sub-section-title>
+          <sub-sub-section-title>
+            <h4>Bare sub-sub-heading with <code>inline code</code></h4>
+          </sub-sub-section-title>
           <p>
             Triple-hash bare heading lifts to <code>&#x3C;sub-sub-section></code>. Inline code in the
             title text must also be lifted recursively.
@@ -1264,7 +1287,9 @@ toc-num {
       </sub-section>
     </section>
     <section>
-      <section-title>Top-level with <b>strong</b> text and <s>strikethrough</s></section-title>
+      <section-title>
+        <h2>Top-level with <b>strong</b> text and <s>strikethrough</s></h2>
+      </section-title>
       <p>
         Strong (bold) lifts to <code>&#x3C;b></code>; strikethrough lifts to <code>&#x3C;s></code> — both per the
         decided mappings.
@@ -1281,7 +1306,9 @@ toc-num {
       <p>Same treatment.</p>
     </section>
     <section>
-      <section-title>Bare heading inside named-tag content</section-title>
+      <section-title>
+        <h2>Bare heading inside named-tag content</h2>
+      </section-title>
       <aside class="frameable-border">
         <p>An aside containing a recursive heading.</p>
         <sub-section>

@@ -87,11 +87,11 @@ export async function run() {
 
     // ── continuous SECTION numbering (number-sections=true in the master config) ──
     {
-      assert.ok(html.includes('<section-title><section-number>1</section-number>Alpha</section-title>'),
+      assert.match(html, /<section-title>\s*<h2><section-number>1<\/section-number>Alpha<\/h2>\s*<\/section-title>/,
         'browser cross-file: first section numbered 1');
-      assert.ok(html.includes('<section-title><section-number>2</section-number>Beta</section-title>'),
+      assert.match(html, /<section-title>\s*<h2><section-number>2<\/section-number>Beta<\/h2>\s*<\/section-title>/,
         'browser cross-file: second section numbered 2');
-      assert.ok(html.includes('<section-title><section-number>3</section-number>Gamma</section-title>'),
+      assert.match(html, /<section-title>\s*<h2><section-number>3<\/section-number>Gamma<\/h2>\s*<\/section-title>/,
         'browser cross-file: third section numbered 3');
       console.log('PASS: #194 — sections number continuously across child files (browser)');
     }

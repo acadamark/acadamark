@@ -168,6 +168,27 @@ export function schemaDispatch(state, node, vocab) {
     });
   }
 
+  // #397: heading semantics. When the heading-level pass stamped a computed
+  // level on this outline title node, wrap the element's FULL inline children
+  // (including the materialized <section-number> above, so the number joins the
+  // accessible heading name) in the native heading of the derived level — eHTML
+  // outside, native heading inside (render-quality.md RQ-DOC-M4). Like the
+  // number, this is a DERIVED-DISPLAY artifact, never archival: JATS consumes
+  // the pre-render mdast and never sees it. A derived level past 6 emits
+  // <h6 aria-level="N"> (ARIA overriding native where native runs out). Guarded
+  // by the stamp: the stamping plugin applies the heading-tags config gate
+  // (default on), so an opted-out document renders byte-identical bare elements.
+  if (node.computedHeadingLevel != null) {
+    const level = node.computedHeadingLevel;
+    const wrap = {
+      type: 'element',
+      tagName: `h${Math.min(level, 6)}`,
+      properties: level > 6 ? { ariaLevel: String(level) } : {},
+      children,
+    };
+    return { type: 'element', tagName, properties, children: [wrap] };
+  }
+
   return {
     type: 'element',
     tagName,

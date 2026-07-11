@@ -7,6 +7,14 @@ html_output:
   element: section-title
   is_html_native: false
   default_attributes: {}
+  notes: |
+    Renders as the custom element <section-title>. In rendered
+    projections its inline content (including a materialized
+    <section-number>) is additionally wrapped in the native heading of
+    its derived level — <h2> for a top-level section in an article, one
+    deeper per enclosing outline container (#397; render-quality.md
+    RQ-DOC-M4). The wrap is derived display, not archival vocabulary,
+    and is suppressed by <config heading-tags=false>.
 enscribe_attributes:
   id:
     maps_to: id

@@ -24,8 +24,15 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Opt-in Enscribe markup in data-table cells (#21)"
+                      "type": "element",
+                      "tagName": "h1",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Opt-in Enscribe markup in data-table cells (#21)"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -49,20 +56,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "A parsed prose column",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 23,
-                          "offset": 22
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "A parsed prose column",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 23,
+                              "offset": 22
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -831,20 +845,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Parsing every cell",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 20,
-                          "offset": 19
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Parsing every cell",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 20,
+                              "offset": 19
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },
@@ -1084,20 +1105,27 @@
                   "properties": {},
                   "children": [
                     {
-                      "type": "text",
-                      "value": "Explicit opt-out",
-                      "position": {
-                        "start": {
-                          "line": 1,
-                          "column": 2,
-                          "offset": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 18,
-                          "offset": 17
+                      "type": "element",
+                      "tagName": "h2",
+                      "properties": {},
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Explicit opt-out",
+                          "position": {
+                            "start": {
+                              "line": 1,
+                              "column": 2,
+                              "offset": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 18,
+                              "offset": 17
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
                   ]
                 },

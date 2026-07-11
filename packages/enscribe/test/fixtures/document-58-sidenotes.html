@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1579,18 +1594,24 @@ sidenote { display: none; }
     <article>
       <article-front>
         <meta data-document-type="article">
-          <article-title>Side notes</article-title>
+          <article-title>
+            <h1>Side notes</h1>
+          </article-title>
           <author>Enscribe</author>
         </meta>
       </article-front>
       <article-body>
         <section>
-          <section-title>Numbered notes rendered as side notes</section-title>
+          <section-title>
+            <h2>Numbered notes rendered as side notes</h2>
+          </section-title>
           <p>With <code>note-position=margin</code>, a numbered note renders as a <i>side note</i>: its body appears in the margin beside the marker.<sup id="noteref-1" data-note-id="note-1"><a href="#note-1">1</a></sup><sidenote><sup>1</sup><p>This numbered note renders in the margin as a side note. The note in the tree, its marker, its number, and its JATS are all unchanged — only the HTML projection moves to the margin.</p></sidenote>The numbering and back-reference machinery is untouched; only the HTML projection changes.</p>
           <p>A second numbered note shows side notes stacking down the margin column.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup><sidenote><sup>2</sup><p>A second side note. Below the margin breakpoint, side notes hide and the ordinary footnote list at the foot of the document shows instead — the mobile fallback.</p></sidenote>Each keeps its number.</p>
         </section>
         <section>
-          <section-title>One note type, positioned in the margin</section-title>
+          <section-title>
+            <h2>One note type, positioned in the margin</h2>
+          </section-title>
           <p>Every note here is a margin note because the document sets <code>note-position=margin</code>. A single note can also opt in on its own with <code>position=margin</code>, independent of the document default.<sup id="noteref-3" data-note-id="note-3"><a href="#note-3">3</a></sup><sidenote><sup>3</sup><p>Whether the whole document sets note-position=margin or a single note sets position=margin, a margin note is the same numbered note, projected into the one margin column.</p></sidenote>There is one note type with three positions: foot, end, margin.</p>
         </section>
       </article-body>

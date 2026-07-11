@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1509,7 +1524,9 @@ note-list li {
 <article>
   <article-front>
     <meta data-document-type="article">
-      <article-title>Megaherbivores as Ecosystem Engineers</article-title>
+      <article-title>
+        <h1>Megaherbivores as Ecosystem Engineers</h1>
+      </article-title>
       <article-subtitle>Evidence from Sub-Saharan Savanna Systems</article-subtitle>
       <author id="goodall" corresponding>
         <affiliation>Gombe Institute</affiliation>
@@ -1529,7 +1546,9 @@ note-list li {
   </article-front>
   <article-body>
     <section id="intro" data-sec-type="intro">
-      <section-title>Introduction</section-title>
+      <section-title>
+        <h2>Introduction</h2>
+      </section-title>
       <p>
         Elephant populations have been <b>declining</b> for decades, and their role as
         ecosystem engineers is <i>understated</i> in most climate models. We revisit the
@@ -1541,18 +1560,26 @@ note-list li {
       </p>
     </section>
     <section id="methods" data-sec-type="methods">
-      <section-title>Methods</section-title>
+      <section-title>
+        <h2>Methods</h2>
+      </section-title>
       <sub-section>
-        <sub-section-title>Data sources</sub-section-title>
+        <sub-section-title>
+          <h3>Data sources</h3>
+        </sub-section-title>
         <p>We compiled census data from twelve national parks.</p>
         <sub-sub-section>
-          <sub-sub-section-title>Satellite imagery</sub-sub-section-title>
+          <sub-sub-section-title>
+            <h4>Satellite imagery</h4>
+          </sub-sub-section-title>
           <p>Woody cover came from MODIS at 250 m resolution.</p>
         </sub-sub-section>
       </sub-section>
     </section>
     <section id="results" data-sec-type="results">
-      <section-title>Results</section-title>
+      <section-title>
+        <h2>Results</h2>
+      </section-title>
       <p>The relationship between density <inline-math><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">d</span></span></span></span></inline-math> and turnover is summarised by the model</p>
       <display-math id="eq:turnover"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mord mathnormal">d</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.0528em;">β</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.0139em;">g</span></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mclose">)</span></span></span></span></span><equation-number>(1)</equation-number></display-math>
       <p>A robust positive correlation holds across all parks (see <a href="#eq:turnover" class="ref">1</a>).</p>
@@ -1586,7 +1613,9 @@ note-list li {
       </table>
     </section>
     <section id="discussion" data-sec-type="discussion">
-      <section-title>Discussion</section-title>
+      <section-title>
+        <h2>Discussion</h2>
+      </section-title>
       <p>Reintroduction may be a cost-effective climate intervention.<sup id="noteref-2" data-note-id="note-2"><a href="#note-2">2</a></sup></p>
       <note-list class="footnotes">
         <ol>

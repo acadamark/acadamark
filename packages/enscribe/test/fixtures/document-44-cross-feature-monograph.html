@@ -308,6 +308,21 @@ sub-sub-section-title {
   font-size: var(--enscribe-h4-size);
 }
 
+/* Heading semantics (#397, RQ-DOC-S5). Rendered outline titles carry their
+ * inline content inside a native heading (<section-title><h2>…</h2></section-title>
+ * — the derived-level wrap of RQ-DOC-M4). The wrap is semantic, not visual:
+ * neutralize the browser's default heading styling (font-size/weight scaling,
+ * block margins) so the title elements' own rules above remain the single
+ * visual source and the wrapped rendering is pixel-identical to the unwrapped
+ * form. `font: inherit` resets family/size/weight/style/line-height in one
+ * declaration. */
+:is(article-title, book-title, book-part-title,
+    section-title, sub-section-title, sub-sub-section-title) > :is(h1, h2, h3, h4, h5, h6) {
+  font: inherit;
+  margin: 0;
+  display: block;
+}
+
 /* Section numbering (#57). The build-time number is emitted as a
  * <section-number> element at the start of the section title (and the
  * book-part title of a numbered appendix) — real, copy/paste-able content. It
@@ -1524,13 +1539,17 @@ note-list li {
 <book>
   <book-front>
     <meta data-document-type="book">
-      <book-title>A Short Monograph on the Mathematics of Music</book-title>
+      <book-title>
+        <h1>A Short Monograph on the Mathematics of Music</h1>
+      </book-title>
       <book-subtitle>A Cross-Feature Stress Fixture for the Alpha Milestone</book-subtitle>
       <author>The Enscribe Team</author>
     </meta>
     <book-part book-part-type="preface">
       <meta>
-        <book-part-title>About this Monograph</book-part-title>
+        <book-part-title>
+          <h2>About this Monograph</h2>
+        </book-part-title>
       </meta>
       <p>
         This monograph is a believable miniature: it exercises every alpha feature in
@@ -1549,7 +1568,9 @@ note-list li {
   <book-body>
     <book-part book-part-type="chapter"><section-number>1</section-number>
       <meta>
-        <book-part-title><section-number>1</section-number>Foundations</book-part-title>
+        <book-part-title>
+          <h2><section-number>1</section-number>Foundations</h2>
+        </book-part-title>
       </meta>
       <p>
         The pitch of a note is its fundamental frequency, measured in hertz. Concert A
@@ -1586,7 +1607,9 @@ note-list li {
     </book-part>
     <book-part book-part-type="chapter"><section-number>2</section-number>
       <meta>
-        <book-part-title><section-number>2</section-number>Consonance and Ratios</book-part-title>
+        <book-part-title>
+          <h2><section-number>2</section-number>Consonance and Ratios</h2>
+        </book-part-title>
         <author>Guest Author</author>
       </meta>
       <p>
@@ -1645,7 +1668,9 @@ note-list li {
     </book-part>
     <book-part book-part-type="chapter"><section-number>3</section-number>
       <meta>
-        <book-part-title><section-number>3</section-number>Visual and Aural Structure</book-part-title>
+        <book-part-title>
+          <h2><section-number>3</section-number>Visual and Aural Structure</h2>
+        </book-part-title>
       </meta>
       <p>Two external notations close the body. A flow of the analysis pipeline:</p>
       
@@ -1682,7 +1707,9 @@ C C G G | A A G2 | F F E E | D D C2 |</pre>
     <config></config>
     <book-part book-part-type="appendix"><section-number>A</section-number>
       <meta>
-        <book-part-title><section-number>A</section-number>Notation and Sources</book-part-title>
+        <book-part-title>
+          <h2><section-number>A</section-number>Notation and Sources</h2>
+        </book-part-title>
       </meta>
       <p>
         This appendix lives in book-back. The interval names follow the usual Western

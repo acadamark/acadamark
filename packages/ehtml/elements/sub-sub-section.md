@@ -67,7 +67,7 @@ shorthand_examples:
       Detailed methods for the regression.
     ehtml: |
       <sub-sub-section>
-        <sub-sub-section-title>Regression analysis</sub-sub-section-title>
+        <sub-sub-section-title><h2>Regression analysis</h2></sub-sub-section-title>
         <p>Detailed methods for the regression.</p>
       </sub-sub-section>
   - source: |
@@ -80,15 +80,15 @@ shorthand_examples:
       Sensitivity tests were performed.
     ehtml: |
       <section>
-        <section-title>Methods</section-title>
+        <section-title><h2>Methods</h2></section-title>
         <sub-section>
-          <sub-section-title>Statistical methods</sub-section-title>
+          <sub-section-title><h3>Statistical methods</h3></sub-section-title>
           <sub-sub-section>
-            <sub-sub-section-title>Regression</sub-sub-section-title>
+            <sub-sub-section-title><h4>Regression</h4></sub-sub-section-title>
             <p>Linear regression was performed.</p>
           </sub-sub-section>
           <sub-sub-section>
-            <sub-sub-section-title>Sensitivity testing</sub-sub-section-title>
+            <sub-sub-section-title><h4>Sensitivity testing</h4></sub-sub-section-title>
             <p>Sensitivity tests were performed.</p>
           </sub-sub-section>
         </sub-section>
