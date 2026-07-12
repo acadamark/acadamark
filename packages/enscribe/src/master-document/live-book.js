@@ -321,8 +321,13 @@ export function resolveRoute(chapter, hash, model) {
     // click that didn't carry a chapter, or an old `#id` deep-link), else the cover.
     if (anchor && model.idToStem.has(anchor)) {
       const stem = model.idToStem.get(anchor);
-      // #404: a cover-owned anchor (front-region content) routes to the cover and scrolls there.
-      if (stem === COVER_STEM) return { cover: true, anchor };
+      // #404: a cover-owned anchor (front-region content) routes to the cover and scrolls there — BUT a
+      // cover-OFF book has no cover view (it lands on the first chapter; the static build redirects its
+      // index there). Honor cover-off the way the no-anchor branch below does, so a coverless book never
+      // routes to a cover the invariant forbids — degrade to the first chapter instead.
+      if (stem === COVER_STEM) {
+        return model.bookNav?.cover === false ? { cover: false, index: 0, anchor } : { cover: true, anchor };
+      }
       return { cover: false, index: model.stemToIndex.get(stem), anchor };
     }
     // #221: cover off → the no-chapter route lands on the first chapter, not a cover view.

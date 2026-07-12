@@ -229,7 +229,10 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   //    its links are ambiguous (the per-link non-resolution is #299 slice 3), but the build completes.
   const pageData = [];                 // [{ page, resolved, source, slug, isBook }] in nav order
   const pageInfo = new Map();          // slug → { title, isDerived, src }
-  const usedSlugs = new Set();         // site-wide slug allocation (the resolver + always-render dedup)
+  // #404: `not-found` is RESERVED — the lazy not-found page emits at `not-found/index.html`, so no author
+  // page may take that slug (else the framing pass would clobber the user's page with the not-found view).
+  // Seed it into usedSlugs so allocatePageSlug uniquifies a page titled "Not Found" to `not-found-2` etc.
+  const usedSlugs = new Set([NOT_FOUND_SLUG]);   // site-wide slug allocation (the resolver + always-render dedup)
   // The page's OWN document class — the shared classifier (1-C from #316) over a PARSED tree, so a
   // `<meta>` inside a code EXAMPLE is correctly skipped (it is a code node, not an enscribeTag). This
   // replaces a raw-source regex that matched the first literal `type=` and could mis-read an example.

@@ -1096,6 +1096,13 @@ export async function mountLiveWebsite(target, source, options = {}) {
     if (!isBook && p.body && p.body.length > 0) {
       tree = proc.parse(src);
       tree.children.push(...p.body);
+    } else if (isBook && p.body && p.body.length > 0) {
+      // Parity with the static build: a book page's insertion point for trailing article-level content
+      // is not yet defined, so flag rather than silently drop (the static builder warns here too — this
+      // mirrors it on the live surface so content loss is never silent on either).
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn(`enscribe website: interstitial content after a book <item src="${p.src}"> is captured but not yet rendered — the book-page insertion point is a follow-on (#404 marker 7 covers article pages)`);
+      }
     }
     // title + isDerived back the authored `<a {slug}>` auto-label + derived-slug warning (#318), computed the
     // SAME way the static build does (resolvePageSlug's title, else the nav title; un-pinned ⇒ derived).

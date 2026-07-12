@@ -77,6 +77,26 @@ export function run() {
       'live: resolveRoute returns null for an unknown stem (the browser router turns null into the not-found view)');
   }
   console.log('PASS: #404 live — unknown chapter stem → resolveRoute null (not-found is the caller\'s render)');
+
+  // ── COVER-OFF book: a front-region anchor must NOT route to a (nonexistent) cover ──
+  // A cover-off book has no cover view (it lands on the first chapter; the static build redirects its
+  // index there). Routing a cover-owned anchor to {cover:true} would render a cover that doesn't exist —
+  // the exact cover fallback the invariant forbids. resolveRoute must degrade to the first chapter.
+  {
+    const proc = buildEnscribePipeline({});
+    const file = new VFile({ path: 'master.emd' });
+    const src = MASTER.replace('<meta type=book title="Front-Ref Book" />',
+      '<meta type=book title="Front-Ref Book" />\n<config cover=false />');
+    const tree = assembleMasterDocument({ source: src, readFile: (p) => CHILDREN[p], resolve: (r) => r, parse: (s) => proc.parse(s) });
+    const numbered = proc.runSync(tree, file);
+    const model = buildLiveBook({ numbered, file });
+    assert.equal(model.bookNav.cover, false, 'guard: the book is cover-off');
+    const dest = resolveRoute('', '#eqn:loose', model);
+    assert.equal(dest.cover, false,
+      'live: a cover-off book routes a front-region anchor to a chapter, NOT a nonexistent cover (#404)');
+    assert.equal(dest.index, 0, 'live: it degrades to the first chapter (mirroring the static cover-off redirect)');
+  }
+  console.log('PASS: #404 live — cover-off book: front-region anchor degrades to first chapter, not a nonexistent cover');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) run();

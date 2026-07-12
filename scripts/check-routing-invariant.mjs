@@ -83,7 +83,14 @@ function navRefs(html) {
 }
 
 const isExternal = (href) => /^(https?:|mailto:|\?|\/\/)/.test(href);
-const routesToNotFound = (href) => href.split('#')[0].split('/').includes(NOT_FOUND_SLUG);
+// The not-found route is a page link whose FINAL path segment is NOT_FOUND_SLUG (e.g. `../not-found/`).
+// Match the final segment, not any segment — otherwise a genuinely dead ref to an author page that
+// merely lives under a `not-found/…` path would be wrongly exempted (a false negative). NOT_FOUND_SLUG
+// is also reserved in the builder, so no author page can occupy it.
+const routesToNotFound = (href) => {
+  const segs = href.split('#')[0].split('/').filter(Boolean);
+  return segs.length > 0 && segs[segs.length - 1] === NOT_FOUND_SLUG;
+};
 
 function checkBuild(dir, kind) {
   const violations = [];
