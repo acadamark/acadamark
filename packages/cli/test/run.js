@@ -9,6 +9,7 @@ import { run_tests as runJatsImportTests } from './import.test.js';
 import { run_tests as runRoundtripComplexTests } from './roundtrip-complex.test.js';
 import { run_tests as runLibrarySrcTests } from './library-src.test.js';
 import { run_tests as runMasterDocumentTests } from './master-document.test.js';
+import { run_tests as runAssemblyTransclusionTests } from './assembly-transclusion.test.js';
 import { run_tests as runEmbeddedAssetTests } from './embedded-asset.test.js';
 import { run_tests as runBuildLiveTests } from './build-live.test.js';
 import { run_tests as runDeliveryModesTests } from './delivery-modes.test.js';
@@ -23,6 +24,7 @@ try {
   runJatsImportTests();
   runRoundtripComplexTests();
   runMasterDocumentTests(); // #190: multi-file master-document walking skeleton
+  runAssemblyTransclusionTests(); // #404/#417: transclusion assembly — substitution-before-structure
   runEmbeddedAssetTests(); // #190: <data> embedded-png asset → numbered figure via src="@id"
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   await runDeliveryModesTests(); // #369: delivery-modes regression matrix + offline render/editor (async: Tier 2 browser)

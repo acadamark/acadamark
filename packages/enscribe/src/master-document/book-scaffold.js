@@ -177,8 +177,11 @@ export { escapeHtml };
  *  Rendered verbatim by P1's static cover (`pages/index.html`) and the live cover view, so
  *  the published cover and the previewed cover are the same artifact. Each consumer wraps
  *  this in its own `<main class="enscribe-body">` + rail + layout. */
-export function coverBodyHtml(bookTitle, contentsHtml = '') {
-  return `<book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p>${contentsHtml}`;
+export function coverBodyHtml(bookTitle, contentsHtml = '', frontHtml = '') {
+  // #404/#406: `frontHtml` is the rendered pre-first-part front-region content — it renders on the
+  // cover (the front region's landing page) after the lede, before the contents. '' (the default)
+  // keeps the cover byte-identical for a book with no pre-first-part content.
+  return `<book-title>${escapeHtml(bookTitle)}</book-title><p class="enscribe-book-index-lede">Select a chapter to begin reading.</p>${frontHtml}${contentsHtml}`;
 }
 
 // ─── Book navigation config (#221) ────────────────────────────────────────────

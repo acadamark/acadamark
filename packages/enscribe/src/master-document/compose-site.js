@@ -58,7 +58,7 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
   const ownerToUrl = new Map();
   const bookFnameOwner = new Map();
 
-  for (const { resolved, source, slug, isBook } of pages) {
+  for (const { resolved, source, tree, slug, isBook } of pages) {
     const destPrefix = destPrefixOf(slug);
     try {
       if (isBook) {
@@ -80,7 +80,10 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
       } else {
         const proc = buildPipeline({ assetsDir: resolved.pageDir });
         const file = new VFile({ path: resolved.sourcePath });
-        const numbered = proc.runSync(proc.parse(source), file);   // number only — no render
+        // #417: an inline `<item | Title>` page carries a pre-parsed body tree (no source file); a
+        // normal external page carries source. Either numbers natively in its own article scope — the
+        // composition MODEL (number-per-page, merge, never flatten) is unchanged, only the input shape.
+        const numbered = proc.runSync(tree ?? proc.parse(source), file);   // number only — no render
         ownerToUrl.set(slug, destPrefix);                          // the article's pretty URL ('' = root)
         for (const [anchor, e] of harvestCrossRefRegistry(numbered, file)) {
           siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });

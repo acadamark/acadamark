@@ -46,7 +46,7 @@ import {
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
-import { buildDocumentPipeline, renderArticleDocument, assembleAndNumber } from './render-document.js';
+import { buildDocumentPipeline, renderArticleDocument, renderArticleTree, assembleAndNumber } from './render-document.js';
 
 /**
  * Walk the nav tree and map each page slug → its OUTPUT nav-path: the slugified titles of the groups
@@ -227,12 +227,24 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // One parse-only proc, reused across pages (parse ignores assetsDir).
   const classifyProc = buildDocumentPipeline({});
   for (const page of pages) {
-    const resolved = resolvePageSource(masterDir, page.src);
-    if (!resolved) {
-      warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
-      continue;
+    // #417: an inline `<item | Title>` page has NO `src` child file — it is the zero-length-splice
+    // case of §Transclusion: its page content is the body authored in the master (captured by the
+    // website structurer as `page.body`). Build it into an article tree that renders as a standalone
+    // page; its assets resolve against the master dir. (Do NOT call resolvePageSource with an
+    // undefined src — that is the #417 TypeError; the inline form is legal by construction.)
+    let resolved, source, tree;
+    if (page.src == null) {
+      tree = { type: 'root', children: page.body ?? [] };
+      source = '';                                   // no child file; the slug derives from the nav title
+      resolved = { sourcePath: join(masterDir, `${page.slug || 'index'}.emd`), pageDir: masterDir };
+    } else {
+      resolved = resolvePageSource(masterDir, page.src);
+      if (!resolved) {
+        warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
+        continue;
+      }
+      source = readFileSync(resolved.sourcePath, 'utf8');
     }
-    const source = readFileSync(resolved.sourcePath, 'utf8');
     const { slug: baseSlug, pinned, title, rawMetaSlug } = resolvePageSlug({
       source, navTitle: page.title || page.slug, src: page.src,
     });
@@ -254,7 +266,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     });
     pageInfo.set(slug, { title: pageTitle, isDerived: !pinned, src: page.src });
     page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
-    pageData.push({ page, resolved, source, slug, isBook: classifyDocTypeFromSource(source, classifyProc).type === 'book' });
+    pageData.push({ page, resolved, source, tree, slug, isBook: tree ? false : classifyDocTypeFromSource(source, classifyProc).type === 'book' });
   }
   if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
 
@@ -374,7 +386,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // diagram runtime once — #298 — so it can't be composed until the whole site's DSL set is known.)
   const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
   const siteDslNames = new Set();
-  for (const { page, resolved, source, slug, isBook } of pageData) {
+  for (const { page, resolved, source, tree, slug, isBook } of pageData) {
     const destPrefix = destPrefixOf(slug);
     try {
       if (isBook) {
@@ -421,10 +433,12 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         // Authored `<a {slug}>` links resolve in-tree during this render — the resolver rides file.data
         // alongside the read-through seed (#318); the bare-`#anchor` cross-page refs rewrite after (a
         // disjoint href set — slug links carry a path URL, never `href="#…"` — so the order is immaterial).
-        const raw = renderArticleDocument(
-          { value: source, data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) } },
-          { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' },
-        );
+        const pageData2 = { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) };
+        const renderOpts = { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' };
+        // #417: an inline page renders its pre-parsed body tree; an external page renders its source.
+        const raw = tree
+          ? renderArticleTree(tree, renderOpts, pageData2)
+          : renderArticleDocument({ value: source, data: pageData2 }, renderOpts);
         const content = rewriteCrossPageHrefs(raw, slug, {
           ownerOf: (anchor) => idToOwner.get(anchor), hrefFor: crossPageHref(outPath),
         });
