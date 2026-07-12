@@ -1032,11 +1032,12 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // config (config-discovery populated it during the pass-1 runSync above), like the book's nav config.
   const showSidebar = readConfigBool(navFile.data[ENSCRIBE_CONFIG], 'sidebar', false);
   const allPages = flattenNavPages(navModel.entries);
-  const externalPages = allPages.filter((p) => p.src != null);
-  const inlinePages = allPages.filter((p) => p.src == null);
-  if (inlinePages.length && typeof console !== 'undefined' && typeof console.info === 'function') {
-    console.info(`enscribe: ${inlinePages.length} inline website page(s) render in a follow-on slice; skipped this slice.`);
-  }
+  // #419: an inline `<item | Title>` page is the zero-length-splice case (master-document.md §"Scope note:
+  // websites") — a legal page whose BODY is its content, in-hand, with no `src` to fetch. It renders through
+  // the SAME source-less tree seam the static build uses (renderArticleTree-shaped: the `pd.tree` render
+  // branch below), numbered by composeSiteRegistry's own `tree ?? parse(source)` branch — no live-only path.
+  // So it is no longer filtered out and skipped; it flows through the pipeline like any other page (its
+  // `fetched` entry short-circuits the fetch, and its `pageData` entry carries the body tree).
 
   // EAGER PRE-FETCH (the live #300, step 2 — #324). The composition core is SYNCHRONOUS but browser I/O is
   // async, so all fetching happens HERE, up front: every external page source, and for a BOOK page its
@@ -1047,7 +1048,8 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // must never take down the whole mount. A failed fetch/parse records {p, error}; the model
   // marks the slug as an error page, the router renders the shared failed-page view for it,
   // and every other page mounts normally.
-  const fetched = await Promise.all(externalPages.map((p) => (async () => {
+  const fetched = await Promise.all(allPages.map((p) => (async () => {
+    if (p.src == null) return { p, inline: true };   // #419: an inline page's body is in-hand — nothing to fetch
     // #331: each website page is deployed in its OWN directory — master at `<src>/index.emd`, its book
     // children BESIDE it (build-live.js). Fetch the master at `<src>/index.emd`, and resolve a book page's
     // chapter children MASTER-RELATIVE (`new URL(childSrc, masterUrl)` → `<src>/<childSrc>`) via the
@@ -1089,7 +1091,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const sourceBySlug = new Map();              // slug → source TEXT (the editor's value in edit mode; no re-fetch)
   const loadedBySrc = new Map();               // a book page's src → its cached (pre-fetched) child sources
   const usedSlugs = new Set();
-  const pageData = fetched.map(({ p, src, isBook, loaded, error }) => {
+  const pageData = fetched.map(({ p, src, isBook, loaded, error, inline }) => {
     // #405: a page that failed to fetch/parse becomes an ERROR PAGE in the model — its nav
     // entry stays (the universal shell keeps routing), the router renders the shared
     // failed-page view for its slug, and it is excluded from Phase-1 composition.
@@ -1098,6 +1100,22 @@ export async function mountLiveWebsite(target, source, options = {}) {
         (kind, s) => console.warn(`enscribe website: page slug collision (${kind}: "${s}")`));
       p.slug = slug;
       return { slug, isError: true, errorReason: error, title: p.title || slug };
+    }
+    // #419: an inline `<item | Title>` page — the zero-length-splice case. Its authored body IS its
+    // content (no source file). Parity with the static build's #417 handling (static-website.js): the
+    // tree is the body, the slug comes from the nav title (tier 3 — an inline body carries no <meta>),
+    // isBook is false. composeSiteRegistry numbers `pd.tree`; the render stringifies `pd.tree` — the
+    // SAME source-less seam an external page's marker-7 interstitial tree already uses. No live-only path.
+    if (inline) {
+      const { slug: baseSlug, pinned, title } = resolvePageSlug({ source: '', navTitle: p.title || p.slug, src: null });
+      const slug = allocatePageSlug(baseSlug, pinned, usedSlugs,
+        (kind, s) => console.warn(`enscribe website: page slug collision (${kind}: "${s}"${kind === 'pinned' ? ' — pinned slugs are not renamed; the pages collide on ?page=' : ''})`));
+      p.slug = slug;
+      return {
+        resolved: { sourcePath: `${slug}.emd`, pageDir: '' }, source: '',
+        tree: { type: 'root', children: p.body ?? [] }, slug, isBook: false,
+        title: title || p.title || slug, isDerived: !pinned,
+      };
     }
     const { slug: baseSlug, pinned, title } = resolvePageSlug({ source: src, navTitle: p.title || p.slug, src: p.src });
     // #403 (deferred row): the live surface now passes the allocator's collision callback —
