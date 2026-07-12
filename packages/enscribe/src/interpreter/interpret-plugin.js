@@ -40,6 +40,7 @@ import {
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler } from './handlers/cite.js';
 import { assetErrorHandler } from './handlers/asset.js';
+import { importErrorHandler } from './handlers/parser-errors.js';
 import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
 // gate (interpreter/plugins/normalize-to-canonical.js) rewrites
@@ -71,6 +72,7 @@ const INTERNAL_REGISTRY = new Map([
   ['__bibliography',   bibliographyHandler],
   ['__library-error',  libraryErrorHandler],
   ['__asset-error',    assetErrorHandler],
+  ['__import-error',   importErrorHandler],  // #412: importer loss-point placeholders
 ]);
 
 // Wrap the build-time-generated VOCABULARY object as a Map at module load,
@@ -87,6 +89,17 @@ const vocabulary = new Map(Object.entries(VOCABULARY));
  * @returns {(state: object, node: object) => object|null}
  */
 export function createEnscribeTagHandler(opts = {}) {
+  // #412: when the per-compile factory call supplies the vfile (index.js's
+  // compileToHtml has it in scope), the unknown-tag / handler-error warnings join
+  // the document's message stream — provenance (node position) included — and
+  // reach the #402 channels. Without a file (the default export's option-less
+  // handler, browser callers that bypass the compiler), the console fallback
+  // stands, so no caller loses the signal.
+  const say = (text, node, ruleId) => {
+    if (opts.file?.message) opts.file.message(text, node?.position ?? undefined, `enscribe:${ruleId}`);
+    else return false;
+    return true;
+  };
   return function enscribeTagHandler(state, node) {
     // Pre-dispatch: internal nodes created by structural plugins (no vocab entry).
     const internalFn = INTERNAL_REGISTRY.get(node.tagname);
@@ -98,7 +111,7 @@ export function createEnscribeTagHandler(opts = {}) {
     const vocab = vocabulary.get(node.tagname);
 
     if (!vocab) {
-      warnUnknownTag(node.tagname);
+      if (!say(`unknown tag <${node.tagname}>`, node, 'unknown-tag')) warnUnknownTag(node.tagname);
       return makeUnknownElement(state, node);
     }
 
@@ -114,11 +127,11 @@ export function createEnscribeTagHandler(opts = {}) {
         try {
           return handlerFn(state, node, vocab, opts);
         } catch (err) {
-          warnHandlerError(node.tagname, err);
+          if (!say(`handler error [<${node.tagname}>]: ${err?.message ?? String(err)}`, node, 'handler-error')) warnHandlerError(node.tagname, err);
           // Fall through to schema dispatch as best-effort recovery.
         }
       } else {
-        warnUnknownTag(`handler for ${node.tagname} (module ${vocab.handler_module})`);
+        if (!say(`unknown tag <handler for ${node.tagname} (module ${vocab.handler_module})>`, node, 'unknown-tag')) warnUnknownTag(`handler for ${node.tagname} (module ${vocab.handler_module})`);
         // Fall through to schema dispatch.
       }
     }

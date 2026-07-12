@@ -79,12 +79,23 @@ export function runPandoc(inputPath, fromFormat) {
  * (resolved against the input directory), else a single `.bib` beside the input.
  * Returns the raw .bib text, or null.
  */
-export function findBibtex(inputPath, meta) {
+export function findBibtex(inputPath, meta, onMiss = null) {
   const dir = dirname(resolve(inputPath));
   const candidates = [];
   const metaBib = meta && meta.bibliography;
+  const explicit = [];
   if (metaBib) {
-    for (const p of metaListPaths(metaBib)) candidates.push(isAbsolute(p) ? p : join(dir, p));
+    for (const p of metaListPaths(metaBib)) {
+      const abs = isAbsolute(p) ? p : join(dir, p);
+      candidates.push(abs);
+      explicit.push({ authored: p, abs });
+    }
+  }
+  // #412: an EXPLICITLY named bibliography that cannot be read is a warned miss —
+  // the import continues (heuristics may still find a sidecar .bib), but the author
+  // hears that the file they named did not load, instead of a silent no-bibliography.
+  for (const { authored, abs } of explicit) {
+    if (!existsSync(abs)) onMiss?.(`bibliography "${authored}" (from the document metadata) was not found — looked at ${abs}`);
   }
   // basename.bib, then any single .bib in the directory.
   candidates.push(join(dir, basename(inputPath, extname(inputPath)) + '.bib'));
@@ -108,13 +119,26 @@ function metaListPaths(metaval) {
 
 // ─── AST → Enscribe mdast ───────────────────────────────────────────────────
 
-// Track dropped (unmapped) pandoc node kinds; warn once per kind.
+// Track dropped (unmapped) pandoc node kinds. With a #412 sink installed
+// (convertPandoc's onDropped — the CLI wires it to file.message), EVERY drop is
+// reported (a complete account; pandoc's AST carries no source positions, so the
+// provenance is the node kind — as much as the model allows). Without a sink, the
+// legacy warn-once console note remains.
 const _dropped = new Set();
+let _onDropped = null; // per-run (#412); convertPandoc is synchronous and non-reentrant
 function noteDropped(name) {
+  if (_onDropped) { _onDropped(name, null); return; }
   if (_dropped.has(name)) return;
   _dropped.add(name);
   // eslint-disable-next-line no-console
   console.warn(`[pandoc-import] note: pandoc node '${name}' is not mapped (dropped)`);
+}
+
+/** #412: a visible loss-point placeholder (see jats-import's twin). */
+function makeImportError(what, detail) {
+  const kwargs = { what };
+  if (detail) kwargs.detail = detail;
+  return { type: 'enscribeTag', tagname: '__import-error', kwargs, content: null };
 }
 
 const text = (value) => ({ type: 'text', value });
@@ -236,9 +260,9 @@ function convertBlock(b) {
     case 'Figure': return convertFigureBlock(b.c);
     case 'Div': return convertBlocks(b.c[1]); // unwrap; class-specific mapping is future work
     case 'LineBlock': return { type: 'paragraph', children: b.c.flatMap((line, i) => (i ? [{ type: 'break' }] : []).concat(convertInline(line))) };
-    case 'RawBlock': noteDropped('RawBlock(' + b.c[0] + ')'); return null;
+    case 'RawBlock': noteDropped('RawBlock(' + b.c[0] + ')'); return makeImportError('RawBlock(' + b.c[0] + ')', 'raw ' + b.c[0] + ' block is not imported — its content was dropped');
     case 'Null': return null;
-    default: noteDropped(b.t); return null;
+    default: noteDropped(b.t); return makeImportError(b.t, 'pandoc node is not mapped — its content was dropped');
   }
 }
 
@@ -374,6 +398,15 @@ function hasCite(node) {
  */
 export function convertPandoc(ast, opts = {}) {
   _dropped.clear();
+  _onDropped = opts.onDropped ?? null; // #412: complete drop account via the CLI's file.message
+  try {
+    return convertPandocInner(ast, opts);
+  } finally {
+    _onDropped = null;
+  }
+}
+
+function convertPandocInner(ast, opts) {
   const out = [];
   const meta = buildMeta(ast.meta);
   if (meta) out.push(meta);

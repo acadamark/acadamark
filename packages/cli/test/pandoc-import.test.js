@@ -5,7 +5,7 @@
 // pandoc is only the invocation, exercised by a skippable integration check in
 // cli.test.js. The synthetic ASTs follow the pandoc-types schema (pandoc 2.10+).
 import assert from 'node:assert';
-import { convertPandoc, detectFormat } from '../src/pandoc-import.js';
+import { convertPandoc, detectFormat, findBibtex } from '../src/pandoc-import.js';
 import { serializeCanonical } from '../src/serialize-canonical.js';
 import { buildEnscribePipeline } from '@enscribejs/enscribe';
 
@@ -143,4 +143,32 @@ export function run_tests() {
   }
 
   console.log('All pandoc-import tests passed.');
+
+  // ── #412: unmapped pandoc nodes → sink + placeholder; explicit bibliography miss warns ──
+  {
+    const drops = [];
+    const ast = { meta: {}, blocks: [
+      { t: 'Para', c: [{ t: 'Str', c: 'ok' }] },
+      { t: 'SomeExoticBlock', c: [] },
+      { t: 'RawBlock', c: ['html', '<marquee>hi</marquee>'] },
+    ] };
+    const tree = convertPandoc(ast, { onDropped: (name) => drops.push(name) });
+    assert.ok(drops.includes('SomeExoticBlock'), 'unmapped block kind reported');
+    assert.ok(drops.some((n) => n.startsWith('RawBlock')), 'raw block reported');
+    const markers = [];
+    (function walk(ns) { for (const n of ns ?? []) {
+      if (n?.type === 'enscribeTag' && n.tagname === '__import-error') markers.push(n);
+      if (Array.isArray(n?.children)) walk(n.children);
+      if (Array.isArray(n?.content)) walk(n.content);
+    } })(tree.children ?? tree);
+    assert.equal(markers.length, 2, 'placeholders for both lost blocks');
+    assert.equal(markers[0].kwargs.what, 'SomeExoticBlock', 'placeholder names the node kind');
+
+    // findBibtex: an EXPLICITLY named, unreadable bibliography is a warned miss.
+    const misses = [];
+    findBibtex('/nonexistent-dir/doc.md', { bibliography: { t: 'MetaString', c: 'gone.bib' } }, (m) => misses.push(m));
+    assert.equal(misses.length, 1, 'one miss for the explicit bibliography');
+    assert.ok(misses[0].includes('gone.bib') && misses[0].includes('not found'), 'names the file');
+    console.log('PASS: pandoc-import (#412) — sink + placeholders + explicit-bibliography miss');
+  }
 }

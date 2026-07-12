@@ -848,4 +848,34 @@ graph TD
   }
 
   console.log('All JATS import tests passed.');
+
+  // ── #412: the drop account is complete (sink) and losses leave placeholders ──
+  {
+    const xml = `<?xml version="1.0"?>
+<article xml:lang="en">
+  <front><article-meta><title-group><article-title>T</article-title></title-group></article-meta></front>
+  <body>
+    <p>Note<xref ref-type="fn" rid="fn9">1</xref>.</p>
+    <chem-struct-wrap id="c1"><chem-struct>X</chem-struct></chem-struct-wrap>
+    <chem-struct-wrap id="c2"><chem-struct>Y</chem-struct></chem-struct-wrap>
+    <table-wrap id="t1"><caption><p>Cap.</p></caption></table-wrap>
+  </body>
+</article>`;
+    const drops = [];
+    const tree = importJats(xml, { onDropped: (name, line) => drops.push({ name, line }) });
+
+    // Complete account: the SAME kind reports every occurrence (not warn-once), with lines.
+    const chem = drops.filter((d) => d.name === 'chem-struct-wrap');
+    assert.equal(chem.length, 2, 'every occurrence reported (not once per kind)');
+    assert.ok(chem.every((d) => typeof d.line === 'number'), 'source lines carried');
+    assert.ok(drops.some((d) => d.name === 'xref-fn(unresolved)'), 'unresolved footnote reported');
+    assert.ok(drops.some((d) => d.name === 'table-wrap(no <table>)'), 'empty table-wrap reported');
+
+    // Placeholders at the loss points, with provenance kwargs.
+    const markers = findAll(tree, (n) => n.type === 'enscribeTag' && n.tagname === '__import-error');
+    assert.equal(markers.length, 4, 'a placeholder per genuine content loss (fn + 2 chem + table)');
+    const fn = markers.find((m) => m.kwargs.what === 'footnote');
+    assert.ok(fn && /fn9/.test(fn.kwargs.detail) && fn.kwargs.line, 'footnote placeholder names the rid and line');
+    console.log('PASS: jats-import (#412) — complete drop account + loss-point placeholders');
+  }
 }

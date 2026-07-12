@@ -1030,6 +1030,11 @@ function isNormalizable(node) {
 // Dispatch to the matching entry's normalize function.
 // `file` is threaded through from the plugin transformer for warning emission.
 function normalizeNode(node, file) {
+  // #412: engine-internal nodes (tagname '__…') are plugin/importer PRODUCTS, not
+  // authored tags — the JATS/pandoc importers inject loss-point placeholders
+  // (__import-error) BEFORE the gate runs. They pass through untouched: no authored
+  // kwarg allowlist applies to them, and the INTERNAL_REGISTRY renders them.
+  if (isEnscribeTag(node) && node.tagname.startsWith('__')) return node;
   const entry = NORMALIZATIONS.find((e) => e.predicate(node));
   return entry.normalize(node, file);
 }

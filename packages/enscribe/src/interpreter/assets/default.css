@@ -433,6 +433,12 @@ cite.cite-error {
   cursor: help;
 }
 
+/* #412: importer loss-point placeholder (??import: …?? — a dropped JATS/pandoc node). */
+.import-error {
+  color: var(--enscribe-error);
+  cursor: help;
+}
+
 /* ─── Math ──────────────────────────────────────────────────────────────────── */
 
 /*

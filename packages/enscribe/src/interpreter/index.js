@@ -1033,7 +1033,7 @@ export function enscribeInterpreter(options = {}) {
     // reach the table handler through the handler opts — the compiler has the VFile,
     // the toHast handlers do not.
     const loadedSources = file?.data?.[ENSCRIBE_LOADED_SOURCES] ?? null;
-    const tagHandler = createEnscribeTagHandler({ assetsDir, showSource, loadedSources });
+    const tagHandler = createEnscribeTagHandler({ assetsDir, showSource, loadedSources, file }); // #412: file → unknown-tag/handler-error warnings join the message stream
     const hast = toHast(tree, {
       handlers: {
         enscribeTag: tagHandler,

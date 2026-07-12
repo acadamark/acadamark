@@ -487,8 +487,15 @@ function doLower(opts) {
 function doImportJats(opts, diag) {
   const xml = readInput(opts.input);
   return withQuiet(opts.quiet, () => {
-    const tree = importJats(xml);
-    if (opts.emd) return serializeCanonical(tree);
+    // #402/#412: the vfile exists BEFORE the importer runs, so import-time drops land
+    // on it (a complete account, source lines included — not the old warn-once console
+    // note), alongside the transform diagnostics from runSync.
+    const file = new VFile({ path: opts.input });
+    const tree = importJats(xml, {
+      onDropped: (name, line) =>
+        file.message(`jats-import: dropped ${name}`, line != null ? { line, column: 1 } : undefined, 'jats-import:dropped'),
+    });
+    if (opts.emd) { diag?.report(file); return serializeCanonical(tree); }
     // HTML: run the imported mdast tree through the interpreter transforms
     // (.runSync) and the HTML compiler (.stringify), self-contained by default.
     const embedResources = opts.embed ?? true;
@@ -499,10 +506,6 @@ function doImportJats(opts, diag) {
     // BEFORE runSync — the interpreter transforms mutate the tree in place and
     // consume the <meta><title> on the way to hast.
     const derivedTitle = extractTitleFromTree(tree);
-    // #402: a real VFile (with the input path) rides the run so transform diagnostics
-    // are kept — runSync with no file used to accumulate them on an internal vfile
-    // that was thrown away.
-    const file = new VFile({ path: opts.input });
     const html = proc.stringify(proc.runSync(tree, file), file);
     diag?.report(file);
     return wrapStandalone(html, opts, () => derivedTitle, file.messages);
@@ -519,10 +522,18 @@ function doImport(opts, diag) {
     // pandoc-missing, unknown-format, or a pandoc run error → a clean CLI message.
     throw new CliError(e instanceof PandocMissingError ? e.message : `pandoc import failed: ${e.message}`);
   }
-  const bibtex = findBibtex(opts.input, ast.meta);
+  // #402/#412: the vfile exists before bibliography resolution and conversion — an
+  // explicitly named bibliography that cannot be read, and every unmapped pandoc node,
+  // land on the stream (pandoc's AST carries no positions; the node kind is the
+  // provenance the model allows).
+  const file = new VFile({ path: opts.input });
+  const bibtex = findBibtex(opts.input, ast.meta, (miss) => file.message(`pandoc-import: ${miss}`, undefined, 'pandoc-import:bibliography'));
   return withQuiet(opts.quiet, () => {
-    const tree = convertPandoc(ast, { bibtex });
-    if (opts.emd) return serializeCanonical(tree);
+    const tree = convertPandoc(ast, {
+      bibtex,
+      onDropped: (name) => file.message(`pandoc-import: dropped ${name}`, undefined, 'pandoc-import:dropped'),
+    });
+    if (opts.emd) { diag?.report(file); return serializeCanonical(tree); }
     const embedResources = opts.embed ?? true;
     const proc = buildEnscribePipeline({ embedResources, dslMode: standaloneDslMode(opts, embedResources) });
     // #414: same standalone-by-default + --fragment/--css/--title surface as render
@@ -531,8 +542,6 @@ function doImport(opts, diag) {
     // the interpreter transforms mutate the tree in place and consume the
     // <meta><title> on the way to hast.
     const derivedTitle = extractTitleFromTree(tree);
-    // #402: a real VFile keeps the transform diagnostics (see doImportJats).
-    const file = new VFile({ path: opts.input });
     const html = proc.stringify(proc.runSync(tree, file), file);
     diag?.report(file);
     return wrapStandalone(html, opts, () => derivedTitle, file.messages);
