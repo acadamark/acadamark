@@ -26,11 +26,18 @@ import { escapeHtml } from '../core/escape-html.js';
  * @param {string} o.title - the page title (plain text; escaped here).
  * @param {string} [o.stylesheet] - a ready head block for the document stylesheet
  *   (`<style>…</style>` or `<link rel="stylesheet" …>`); empty for none.
+ * @param {string} [o.themeVariant] - #398: the document-tier light/dark default
+ *   (`<config theme-variant=…>`). 'light'/'dark' stamp data-theme-variant on <html> —
+ *   the hook the baked dark CSS keys on (`:root[data-theme-variant="dark"]`, and the
+ *   auto media block's `:not([data-theme-variant="light"])` escape). 'auto'/absent
+ *   stamps nothing: the document follows prefers-color-scheme.
  * @returns {string} the complete HTML document.
  */
-export function emitDocumentShell(body, { title, stylesheet = '' }) {
+export function emitDocumentShell(body, { title, stylesheet = '', themeVariant }) {
+  const variantAttr = themeVariant === 'light' || themeVariant === 'dark'
+    ? ` data-theme-variant="${themeVariant}"` : '';
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${variantAttr}>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -24,3 +24,28 @@
   --enscribe-border:         #ececef;
   --enscribe-border-strong:  #d6d6db;
 }
+
+/* ── BEGIN generated: dark variant (scripts/gen-dark-variants.mjs) — do not edit; derived per the contract's per-role rules from the light tokens above. Hand overrides go in your own :root[data-theme-variant="dark"] block; the generator folds them in. ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme-variant="light"]) {
+    color-scheme: dark;
+    --enscribe-text-primary: #cbcbcd;
+    --enscribe-text-secondary: #94949a;
+    --enscribe-link: #5e92fa;
+    --enscribe-link-hover: #719dfd;
+    --enscribe-link-visited: #5e92fa;
+    --enscribe-border: #343436;
+    --enscribe-border-strong: #58585a;
+  }
+}
+:root[data-theme-variant="dark"] {
+  color-scheme: dark;
+  --enscribe-text-primary: #cbcbcd;
+  --enscribe-text-secondary: #94949a;
+  --enscribe-link: #5e92fa;
+  --enscribe-link-hover: #719dfd;
+  --enscribe-link-visited: #5e92fa;
+  --enscribe-border: #343436;
+  --enscribe-border-strong: #58585a;
+}
+/* ── END generated: dark variant ── */

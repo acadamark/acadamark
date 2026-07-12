@@ -73,6 +73,8 @@ jobs:
 
       - name: Theme-token contract freshness guard (#398)
         run: npm run check:theme-tokens
+      - name: Dark-variant freshness + contrast gate (#398)
+        run: npm run check:dark
 
       - name: Run workspace test suites
         run: npm test --workspaces --if-present

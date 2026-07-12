@@ -49,61 +49,61 @@ Rung-3 structural CSS targets the **eHTML rendering surface**, whose stable, con
 Every `--enscribe-*` token a theme may retune, its default, and which shipped theme(s) retune it. This table is **generated from the engine's `default.css`** and guarded against drift (`npm run check:theme-tokens`), so it cannot silently fall out of step with the stylesheet.
 
 <!-- BEGIN generated: token table (scripts/gen-theme-tokens.mjs) -->
-| Token | Meaning | Default | Retuned by |
-|---|---|---|---|
-| `--enscribe-text-primary` | Body text colour. | `#1a1a1a` | `modern`, `tufte` |
-| `--enscribe-text-secondary` | Secondary text — captions, subtitles, secondary UI. | `#555` | `modern`, `tufte` |
-| `--enscribe-text-muted` | Muted text — the least-emphasis tier. | `#888` | `tufte` |
-| `--enscribe-link` | Link colour. | `#0052cc` | `modern`, `tufte` |
-| `--enscribe-link-hover` | Link colour on hover. | `#003d99` | `modern`, `tufte` |
-| `--enscribe-link-visited` | Visited-link colour. | `#0052cc` | `modern`, `tufte` |
-| `--enscribe-bg` | Page background. | `#ffffff` | `tufte` |
-| `--enscribe-bg-subtle` | Subtle raised background — e.g. the active chapter tint. | `#f7f7f7` | `tufte` |
-| `--enscribe-bg-code` | Code background. | `#f5f5f5` | `tufte` |
-| `--enscribe-border` | Default rule / border colour. | `#e1e1e1` | `modern`, `tufte` |
-| `--enscribe-border-strong` | Stronger border colour. | `#ccc` | `modern`, `tufte` |
-| `--enscribe-accent` | General accent colour. | `#444` | — |
-| `--enscribe-toc-active-bg` | Active chapter's tinted block in the chapter rail. | `var(--enscribe-bg-subtle)` | — |
-| `--enscribe-toc-active-accent` | Active chapter's left accent bar in the chapter rail. | `var(--enscribe-link)` | — |
-| `--enscribe-border-accent` | Frameable `border=accent` look — border colour. | `var(--enscribe-accent)` | — |
-| `--enscribe-border-thick` | Frameable `border=thick` look — border width. | `3px` | — |
-| `--enscribe-border-subtle` | Frameable `border=subtle` look — border colour. | `#e6e6e6` | — |
-| `--enscribe-error` | Error / flag colour — unresolved `??ref??` / `??cite??` markers. | `#c0392b` | — |
-| `--enscribe-callout-note-accent` | Callout `note` accent. | `#0052cc` | — |
-| `--enscribe-callout-note-bg` | Callout `note` background tint. | `#eef4ff` | — |
-| `--enscribe-callout-info-accent` | Callout `info` accent. | `#0b7285` | — |
-| `--enscribe-callout-info-bg` | Callout `info` background tint. | `#e7f6f8` | — |
-| `--enscribe-callout-tip-accent` | Callout `tip` accent. | `#1f7a4d` | — |
-| `--enscribe-callout-tip-bg` | Callout `tip` background tint. | `#eafaf1` | — |
-| `--enscribe-callout-warning-accent` | Callout `warning` accent. | `#8a6d1f` | — |
-| `--enscribe-callout-warning-bg` | Callout `warning` background tint. | `#fff8e1` | — |
-| `--enscribe-callout-caution-accent` | Callout `caution` accent. | `#c0392b` | — |
-| `--enscribe-callout-caution-bg` | Callout `caution` background tint. | `#fdecea` | — |
-| `--enscribe-font-sans` | Sans-serif font stack (bundled Inter + system fallback). | `'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | — |
-| `--enscribe-font-mono` | Monospace font stack (bundled Source Code Pro + fallback). | `'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace` | — |
-| `--enscribe-font-body` | Body text font. | `Georgia, "Times New Roman", serif` | `modern`, `tufte` |
-| `--enscribe-font-heading` | Heading / label font. | `var(--enscribe-font-sans)` | `tufte` |
-| `--enscribe-weight-heading` | Heading font weight. | `700` | `modern`, `tufte` |
-| `--enscribe-text-base` | Base body font size. | `1rem` | `compact` |
-| `--enscribe-text-sm` | Small text size — captions, notes. | `0.875rem` | `compact` |
-| `--enscribe-text-xs` | Extra-small text size — note markers, labels. | `0.75rem` | — |
-| `--enscribe-text-code` | Code font size. | `0.95rem` | `compact` |
-| `--enscribe-h1-size` | Heading size, level 1 (`article-title` / `book-title`). | `2.25rem` | `compact`, `tufte` |
-| `--enscribe-h2-size` | Heading size, level 2 (`section-title`). | `1.5rem` | `compact`, `tufte` |
-| `--enscribe-h3-size` | Heading size, level 3 (`sub-section-title`). | `1.2rem` | `compact`, `tufte` |
-| `--enscribe-h4-size` | Heading size, level 4 (`sub-sub-section-title`). | `1.05rem` | `compact`, `tufte` |
-| `--enscribe-line-height` | Body line height. | `1.65` | `compact`, `modern`, `tufte` |
-| `--enscribe-line-height-heading` | Heading line height. | `1.3` | `compact` |
-| `--enscribe-line-height-tight` | Tight line height — captions, notes. | `1.4` | `compact` |
-| `--enscribe-space-1` | Spacing scale — step 1 (smallest). | `0.25rem` | — |
-| `--enscribe-space-2` | Spacing scale — step 2. | `0.5rem` | — |
-| `--enscribe-space-3` | Spacing scale — step 3. | `0.75rem` | — |
-| `--enscribe-space-4` | Spacing scale — step 4 (one line). | `1rem` | — |
-| `--enscribe-space-6` | Spacing scale — step 6. | `1.5rem` | `compact` |
-| `--enscribe-space-8` | Spacing scale — step 8. | `2rem` | `compact` |
-| `--enscribe-space-12` | Spacing scale — step 12 (largest — big structural gaps). | `3rem` | `compact` |
-| `--enscribe-content-width` | Readable content column width. | `760px` | `compact`, `modern`, `tufte` |
-| `--enscribe-content-padding` | Content horizontal padding. | `1.5rem` | — |
+| Token | Role | Meaning | Default | Retuned by |
+|---|---|---|---|---|
+| `--enscribe-text-primary` | text | Body text colour. | `#1a1a1a` | `modern`, `tufte` |
+| `--enscribe-text-secondary` | text | Secondary text — captions, subtitles, secondary UI. | `#555` | `modern`, `tufte` |
+| `--enscribe-text-muted` | text | Muted text — the least-emphasis tier. | `#888` | `tufte` |
+| `--enscribe-link` | accent | Link colour. | `#0052cc` | `modern`, `tufte` |
+| `--enscribe-link-hover` | accent | Link colour on hover. | `#003d99` | `modern`, `tufte` |
+| `--enscribe-link-visited` | accent | Visited-link colour. | `#0052cc` | `modern`, `tufte` |
+| `--enscribe-bg` | surface | Page background. | `#ffffff` | `tufte` |
+| `--enscribe-bg-subtle` | surface | Subtle raised background — e.g. the active chapter tint. | `#f7f7f7` | `tufte` |
+| `--enscribe-bg-code` | surface | Code background. | `#f5f5f5` | `tufte` |
+| `--enscribe-border` | border | Default rule / border colour. | `#e1e1e1` | `modern`, `tufte` |
+| `--enscribe-border-strong` | border | Stronger border colour. | `#ccc` | `modern`, `tufte` |
+| `--enscribe-accent` | accent | General accent colour. | `#444` | — |
+| `--enscribe-toc-active-bg` | alias | Active chapter's tinted block in the chapter rail. | `var(--enscribe-bg-subtle)` | — |
+| `--enscribe-toc-active-accent` | alias | Active chapter's left accent bar in the chapter rail. | `var(--enscribe-link)` | — |
+| `--enscribe-border-accent` | alias | Frameable `border=accent` look — border colour. | `var(--enscribe-accent)` | — |
+| `--enscribe-border-thick` | fixed | Frameable `border=thick` look — border width. | `3px` | — |
+| `--enscribe-border-subtle` | border | Frameable `border=subtle` look — border colour. | `#e6e6e6` | — |
+| `--enscribe-error` | accent | Error / flag colour — unresolved `??ref??` / `??cite??` markers. | `#c0392b` | — |
+| `--enscribe-callout-note-accent` | accent | Callout `note` accent. | `#0052cc` | — |
+| `--enscribe-callout-note-bg` | tint | Callout `note` background tint. | `#eef4ff` | — |
+| `--enscribe-callout-info-accent` | accent | Callout `info` accent. | `#0b7285` | — |
+| `--enscribe-callout-info-bg` | tint | Callout `info` background tint. | `#e7f6f8` | — |
+| `--enscribe-callout-tip-accent` | accent | Callout `tip` accent. | `#1f7a4d` | — |
+| `--enscribe-callout-tip-bg` | tint | Callout `tip` background tint. | `#eafaf1` | — |
+| `--enscribe-callout-warning-accent` | accent | Callout `warning` accent. | `#8a6d1f` | — |
+| `--enscribe-callout-warning-bg` | tint | Callout `warning` background tint. | `#fff8e1` | — |
+| `--enscribe-callout-caution-accent` | accent | Callout `caution` accent. | `#c0392b` | — |
+| `--enscribe-callout-caution-bg` | tint | Callout `caution` background tint. | `#fdecea` | — |
+| `--enscribe-font-sans` | fixed | Sans-serif font stack (bundled Inter + system fallback). | `'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | — |
+| `--enscribe-font-mono` | fixed | Monospace font stack (bundled Source Code Pro + fallback). | `'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace` | — |
+| `--enscribe-font-body` | fixed | Body text font. | `Georgia, "Times New Roman", serif` | `modern`, `tufte` |
+| `--enscribe-font-heading` | fixed | Heading / label font. | `var(--enscribe-font-sans)` | `tufte` |
+| `--enscribe-weight-heading` | fixed | Heading font weight. | `700` | `modern`, `tufte` |
+| `--enscribe-text-base` | fixed | Base body font size. | `1rem` | `compact` |
+| `--enscribe-text-sm` | fixed | Small text size — captions, notes. | `0.875rem` | `compact` |
+| `--enscribe-text-xs` | fixed | Extra-small text size — note markers, labels. | `0.75rem` | — |
+| `--enscribe-text-code` | fixed | Code font size. | `0.95rem` | `compact` |
+| `--enscribe-h1-size` | fixed | Heading size, level 1 (`article-title` / `book-title`). | `2.25rem` | `compact`, `tufte` |
+| `--enscribe-h2-size` | fixed | Heading size, level 2 (`section-title`). | `1.5rem` | `compact`, `tufte` |
+| `--enscribe-h3-size` | fixed | Heading size, level 3 (`sub-section-title`). | `1.2rem` | `compact`, `tufte` |
+| `--enscribe-h4-size` | fixed | Heading size, level 4 (`sub-sub-section-title`). | `1.05rem` | `compact`, `tufte` |
+| `--enscribe-line-height` | fixed | Body line height. | `1.65` | `compact`, `modern`, `tufte` |
+| `--enscribe-line-height-heading` | fixed | Heading line height. | `1.3` | `compact` |
+| `--enscribe-line-height-tight` | fixed | Tight line height — captions, notes. | `1.4` | `compact` |
+| `--enscribe-space-1` | fixed | Spacing scale — step 1 (smallest). | `0.25rem` | — |
+| `--enscribe-space-2` | fixed | Spacing scale — step 2. | `0.5rem` | — |
+| `--enscribe-space-3` | fixed | Spacing scale — step 3. | `0.75rem` | — |
+| `--enscribe-space-4` | fixed | Spacing scale — step 4 (one line). | `1rem` | — |
+| `--enscribe-space-6` | fixed | Spacing scale — step 6. | `1.5rem` | `compact` |
+| `--enscribe-space-8` | fixed | Spacing scale — step 8. | `2rem` | `compact` |
+| `--enscribe-space-12` | fixed | Spacing scale — step 12 (largest — big structural gaps). | `3rem` | `compact` |
+| `--enscribe-content-width` | fixed | Readable content column width. | `760px` | `compact`, `modern`, `tufte` |
+| `--enscribe-content-padding` | fixed | Content horizontal padding. | `1.5rem` | — |
 
 *53 tokens. Generated from `packages/enscribe/src/interpreter/assets/default.css` and the shipped `themes/*.css` by `scripts/gen-theme-tokens.mjs`; guarded by `npm run check:theme-tokens`.*
 <!-- END generated: token table -->
@@ -121,7 +121,46 @@ The theme name is an enumerable family: the value spec for `<config theme=…>` 
 
 # Dark mode
 
-A theme ships **one (light) token set**; the engine **derives the dark variant automatically** from those tokens (#398 decision, 2026-07-14) — so a theme never hand-authors a second palette, and every theme gets a coherent light/dark pair for free. The dark *switch* is a reader-tier control: the reader flips between the light and dark variants the theme provides; the theme supplies the variants and the default. (The derivation mechanism and the reader-tier switch are the settings-UI arc; this contract states the promise.)
+A theme ships **one (light) token set**; the engine **derives the dark variant automatically** from those tokens (#398 decision, 2026-07-14) — a theme never hand-authors a second palette, and every theme gets a coherent light/dark pair for free. The derivation is **deterministic and baked**: it runs at generation time (`npm run dark:gen`, guarded by `npm run check:dark`) and writes the derived values into the stylesheets themselves — no runtime colour math, no JavaScript required for dark to work.
+
+## The derivation rules
+
+Each token's **Role** (the column in the token reference above) selects its rule. The rules operate in OKLCH — perceptual lightness, **hue always preserved** — so a warm cream page derives to a warm near-black, never a neutral one:
+
+- **surface** — backgrounds darken. The page maps to dark-surface lightness (L 0.215); other surfaces keep their *elevation*, inverted: what sat below the page in light sits above it in dark. Chroma is capped to a whisper — warmth survives, tint does not glare.
+- **text** — text lightens and reflects (L′ = 1 − 0.75·L, clamped to the readable band), preserving the emphasis *order*: primary stays brightest, muted stays dimmest.
+- **accent** — links, the accent, the error flag, and callout accents keep their hue and rise into the contrast-on-dark band (L′ = 1 − 0.6·L, clamped to [0.65, 0.84]), chroma slightly tamed — vivid, never neon.
+- **border** — rules and dividers mute: near-neutral grays whose visibility *order* survives (the further from white in light, the further from black in dark), clamped to a muted band — visible, never crisp.
+- **tint** — callout washes become a just-above-surface wash of the same hue.
+- **alias** — tokens defined as `var(<another token>)` are never derived; they follow their referent.
+- **fixed** — non-colour tokens (fonts, weights, sizes, leading, spacing, layout) pass through untouched: dark never changes typography or geometry.
+
+Every derived palette must pass the **contrast gate** before it can be baked: WCAG-AA floors for the text tiers, links, and the error flag against every surface; the non-text floor for callout accents on their tints; and a visible-border floor (the invisible-border classic, encoded). A palette that fails cannot ship — the generator exits with the failing pairs.
+
+## Correcting a single dial (the per-token override)
+
+Auto-dark is the zero-effort default; when one derived value isn't what your theme wants, override **that token only** — never fork a palette. In your theme file, add one block:
+
+```
+:root[data-theme-variant="dark"] {
+  --enscribe-link: #8ab4f8;
+}
+```
+
+The generator reads it, **skips deriving those tokens** (derivation fills only what you didn't), folds your values into both dark scopes (so they hold under OS-auto too), and still runs the contrast gate over the result. One write point; the system makes it total. (For the record: all four shipped themes currently pass the gate on pure derivation — zero overrides.)
+
+## Where dark lives at runtime
+
+The baked block ships under two scopes:
+
+- `@media (prefers-color-scheme: dark)` with `:root:not([data-theme-variant="light"])` — **auto**: the document follows the OS, with zero JavaScript.
+- `:root[data-theme-variant="dark"]` — the **explicit hook**: set `data-theme-variant="dark"` (or `"light"`, which defeats the media block) on the document root. This is the reader-tier switch's attachment point — the settings panel (the next slice) drives exactly this attribute; `color-scheme` rides along so native scrollbars and form controls follow.
+
+The **document-tier default** is `<config theme-variant=light|dark|auto>` (default `auto`): `light`/`dark` pin the variant by stamping the attribute on `<html>` in the standalone builds; `auto` (or omitting it) leaves the OS in charge. An unknown value warns and falls back to `auto` — the standard config behaviour. Per the two-tier model, the document sets this default and the reader's own switch overrides it locally.
+
+## Testing your theme in dark
+
+Three ways, no tooling required: flip your OS appearance (the auto path); add `data-theme-variant="dark"` to `<html>` in the rendered file (the explicit path); or set `<config theme-variant=dark />` while iterating. To check the derived values themselves, `npm run dark:gen -- --report` prints every theme's contrast table. One known boundary: hover-preview tooltips keep their light styling in dark for now (the tooltip layer sits on a vendored stylesheet) — a follow-on, tracked with the settings-panel slice.
 
 # The Tufte worked example
 
