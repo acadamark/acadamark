@@ -143,6 +143,7 @@ export function run() {
       'strict-mode': 'sigil', 'toc-depth': '2', 'number-sections': 'true',
       'citation-style': 'apa', 'toc-title': 'Table of Contents',
       'toc-expand': 'all', 'note-position': 'margin', 'ref-prefix-eqn': 'Eq.',
+      'theme-variant': 'dark', // #398: the document-tier variant default
     });
     assert.equal(good.messages.length, 0, 'acceptable values warn nothing');
     console.log('PASS: config-discovery (#401) — bad values warn with key/value/accepted; good values silent');

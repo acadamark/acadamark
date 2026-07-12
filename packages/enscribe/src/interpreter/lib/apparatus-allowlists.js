@@ -145,7 +145,14 @@ export const CONFIG_KWARGS = new Map([
   // `display-style` and `bibliography-position` — have no consumer yet; the
   // allowlist accepts them so author input is not rejected before that
   // consumer lands.
-  ['theme',                   valued('live', { enum: ['modern', 'compact', 'tufte'] })],  // ⇄ index.js KNOWN_THEMES + themes/ dir (guarded by config-discovery.test.js equality, not an import — no cycle)
+  ['theme',                   valued('live', { enum: ['modern', 'compact', 'tufte'] })],
+  // #398 slice 2: the document-tier DEFAULT for the light/dark variant (the two-tier
+  // model: the document sets the default; the reader-tier switch — the settings panel,
+  // slice 3 — overrides it locally). 'auto' (the default) follows the OS via
+  // prefers-color-scheme; 'light'/'dark' pin the variant by stamping
+  // data-theme-variant on <html> (the standalone shells honor it now; the live shell
+  // wires it with the panel). Consumed in cli.js's wrapStandalone → emitDocumentShell.
+  ['theme-variant',           valued('live', { enum: ['light', 'dark', 'auto'] })],  // ⇄ index.js KNOWN_THEMES + themes/ dir (guarded by config-discovery.test.js equality, not an import — no cycle)
   ['display-style',           valued('reserved')],
   ['note-position',           valued('live', { enum: ['bottom', 'margin'] })],            // index.js compiler → sidenotes (#33, margin render mode)
   ['heading-tags',            boolean()],           // heading-levels.js (#397; DEFAULT ON — native heading wrap on outline titles)
