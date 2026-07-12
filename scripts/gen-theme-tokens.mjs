@@ -17,6 +17,10 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// #398 slice 2: the ROLE of every token — the dark-derivation category (surface/text/
+// accent/border/tint, alias/fixed) — is contract information, single-sourced in the
+// derivation lib so the table column and the derivation itself cannot drift apart.
+import { ROLES } from './lib/theme-token-roles.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_CSS = join(ROOT, 'packages/enscribe/src/interpreter/assets/default.css');
@@ -122,14 +126,21 @@ function buildTable() {
       `Add a one-line meaning in scripts/gen-theme-tokens.mjs (meanings ship with tokens).`,
     );
   }
+  const unroled = tokens.filter(([name]) => !(name in ROLES)).map(([n]) => n);
+  if (unroled.length) {
+    throw new Error(
+      `gen-theme-tokens: default.css declares token(s) with no ROLE entry: ${unroled.join(', ')}. ` +
+      `Add the role in scripts/lib/theme-token-roles.mjs (roles ship with tokens — they drive dark derivation).`,
+    );
+  }
 
-  const header = `| Token | Meaning | Default | Retuned by |\n|---|---|---|---|`;
+  const header = `| Token | Role | Meaning | Default | Retuned by |\n|---|---|---|---|---|`;
   const rows = tokens.map(([name, value]) => {
     const retuners = themeNames.filter((n) => themeSets.get(n).has(name));
     const retunedBy = retuners.length ? retuners.map((n) => `\`${n}\``).join(', ') : '—';
     // Escape a `|` inside a value (font stacks have none today, but be safe) and wrap in code.
     const val = `\`${value.replace(/\|/g, '\\|')}\``;
-    return `| \`--enscribe-${name}\` | ${MEANING[name]} | ${val} | ${retunedBy} |`;
+    return `| \`--enscribe-${name}\` | ${ROLES[name]} | ${MEANING[name]} | ${val} | ${retunedBy} |`;
   });
   const note = `\n*${tokens.length} tokens. Generated from ` +
     `\`packages/enscribe/src/interpreter/assets/default.css\` and the shipped ` +

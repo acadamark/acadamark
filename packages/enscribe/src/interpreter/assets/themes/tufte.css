@@ -70,3 +70,36 @@ sub-section-title,
 sub-sub-section-title {
   font-style: italic;
 }
+
+/* ── BEGIN generated: dark variant (scripts/gen-dark-variants.mjs) — do not edit; derived per the contract's per-role rules from the light tokens above. Hand overrides go in your own :root[data-theme-variant="dark"] block; the generator folds them in. ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme-variant="light"]) {
+    color-scheme: dark;
+    --enscribe-text-primary: #d3d3d3;
+    --enscribe-text-secondary: #9a9a9a;
+    --enscribe-text-muted: #7e7e7e;
+    --enscribe-link: #cacaca;
+    --enscribe-link-hover: #faa497;
+    --enscribe-link-visited: #cacaca;
+    --enscribe-bg: #1a1a15;
+    --enscribe-bg-subtle: #262621;
+    --enscribe-bg-code: #292924;
+    --enscribe-border: #40403c;
+    --enscribe-border-strong: #585852;
+  }
+}
+:root[data-theme-variant="dark"] {
+  color-scheme: dark;
+  --enscribe-text-primary: #d3d3d3;
+  --enscribe-text-secondary: #9a9a9a;
+  --enscribe-text-muted: #7e7e7e;
+  --enscribe-link: #cacaca;
+  --enscribe-link-hover: #faa497;
+  --enscribe-link-visited: #cacaca;
+  --enscribe-bg: #1a1a15;
+  --enscribe-bg-subtle: #262621;
+  --enscribe-bg-code: #292924;
+  --enscribe-border: #40403c;
+  --enscribe-border-strong: #585852;
+}
+/* ── END generated: dark variant ── */

@@ -103,8 +103,10 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'The left navigation sidebar (the full nav tree). The sticky top bar is a website’s primary nav; the sidebar is an opt-in second surface — off by default, and the layout reflows to give the content the freed column.' },
 
   // ── Display / DSL / strict ───────────────────────────────────────────────────
-  { key: 'theme', family: 'Display / DSL / strict', type: 'valued', values: 'default | modern | compact', default: 'default', scope: 'all',
+  { key: 'theme', family: 'Display / DSL / strict', type: 'valued', values: 'default | modern | compact | tufte', default: 'default', scope: 'all',
     description: 'Inject a theme’s :root token overrides after the base stylesheet. default (or unset) injects nothing.' },
+  { key: 'theme-variant', family: 'Display / DSL / strict', type: 'valued', values: 'light | dark | auto', default: 'auto', scope: 'all',
+    description: 'The document-tier light/dark default (#398). light/dark pin the variant (data-theme-variant on <html> in standalone builds); auto follows the OS via prefers-color-scheme. The reader-tier switch overrides locally.' },
   { key: 'display-style', family: 'Display / DSL / strict', type: 'valued', values: null, default: null, scope: 'all', reserved: true,
     description: 'Reserved — no consumer yet.' },
   { key: 'show-source', family: 'Display / DSL / strict', type: 'boolean', values: null, default: 'off', scope: 'all',

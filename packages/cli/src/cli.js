@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSyn
 import { dirname, resolve, join, basename, extname } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages, extractDocumentTitle, extractTitleFromTree } from '@enscribejs/enscribe';
+import { ENSCRIBE_CONFIG } from '@enscribejs/enscribe/core/file-data-keys';
 import { emitDocumentShell } from '@enscribejs/enscribe/shell/document-shell.js';
 import { escapeHtmlAttr } from '@enscribejs/enscribe/core/escape-html';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
@@ -394,7 +395,14 @@ function standaloneDslMode(opts, embedResources) {
 //                     <title>; fallback: the input filename)
 // default.css is ~40 KB — small enough to inline under both embed modes (--no-embed
 // governs the ~260 KB font/KaTeX payload, not the stylesheet).
-function wrapStandalone(html, opts, deriveTitle, messages = []) {
+// #398: the document-tier variant default, read off the rendered file's config map
+// (config-discovery validated the value at the gate; anything but light/dark → auto).
+function configThemeVariant(file) {
+  const v = file?.data?.[ENSCRIBE_CONFIG]?.get('theme-variant');
+  return v === 'light' || v === 'dark' ? v : undefined;
+}
+
+function wrapStandalone(html, opts, deriveTitle, messages = [], themeVariant = undefined) {
   if (opts.fragment) return html;
   const title = opts.title ?? (deriveTitle() || basename(opts.input, extname(opts.input)));
   const stylesheet = opts.css
@@ -403,7 +411,9 @@ function wrapStandalone(html, opts, deriveTitle, messages = []) {
   // #415 (channel 3): the run's diagnostics ride the artifact — a script block that
   // recapitulates them to the viewer's console. Zero messages ⇒ zero bytes. A
   // --fragment output carries none (the shell furniture belongs to the host page).
-  return emitDocumentShell(html + diagnosticsScript(messages), { title, stylesheet });
+  // #398: <config theme-variant=light|dark> pins the document's variant on <html>;
+  // auto/absent leaves the OS (prefers-color-scheme) in charge.
+  return emitDocumentShell(html + diagnosticsScript(messages), { title, stylesheet, themeVariant });
 }
 
 // #414: the flag-contradiction checks shared by the three standalone commands.
@@ -438,7 +448,7 @@ function doRender(opts, diag) {
   // #395 D2 (audit W3): the DEFAULT output is a complete, styled, standalone document.
   // The wrap and its option surface are shared with import / import-jats (#414) —
   // see wrapStandalone below for the full rationale.
-  const wrap = (html, messages) => wrapStandalone(html, opts, () => extractDocumentTitle(src), messages);
+  const wrap = (html, messages, file) => wrapStandalone(html, opts, () => extractDocumentTitle(src), messages, configThemeVariant(file));
 
   // #133: external <library src> loading. Filesystem paths are read synchronously
   // inside the pipeline (assetsDir, unchanged). URL sources need an async fetch, so
@@ -451,7 +461,7 @@ function doRender(opts, diag) {
     const file = withQuiet(opts.quiet, () =>
       renderArticleFile({ value: src, path: opts.input, ...(data ? { data } : {}) }, pipeOpts));
     diag?.report(file);
-    return wrap(String(file), file.messages);
+    return wrap(String(file), file.messages, file);
   };
   if (urlSrcs.length === 0) return renderSync();
   return preloadSources(urlSrcs, fetchSourceText).then((loaded) =>
@@ -509,7 +519,7 @@ function doImportJats(opts, diag) {
     const derivedTitle = extractTitleFromTree(tree);
     const html = proc.stringify(proc.runSync(tree, file), file);
     diag?.report(file);
-    return wrapStandalone(html, opts, () => derivedTitle, file.messages);
+    return wrapStandalone(html, opts, () => derivedTitle, file.messages, configThemeVariant(file));
   });
 }
 
@@ -545,7 +555,7 @@ function doImport(opts, diag) {
     const derivedTitle = extractTitleFromTree(tree);
     const html = proc.stringify(proc.runSync(tree, file), file);
     diag?.report(file);
-    return wrapStandalone(html, opts, () => derivedTitle, file.messages);
+    return wrapStandalone(html, opts, () => derivedTitle, file.messages, configThemeVariant(file));
   });
 }
 
