@@ -170,7 +170,7 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 import { getRegisteredDsls, resolveDslMode } from './dsl/registry.js';
 import { ensureRegistry, makeReadThroughRegistry } from '../core/registry.js';
 // Phase 8 Slice 2: <config theme=…> flows here via the config map on file.data.
-import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '../core/file-data-keys.js';
+import { ENSCRIBE_CONFIG, ENSCRIBE_STRICT_MODE, ENSCRIBE_LOADED_SOURCES, ENSCRIBE_MINIPAGE_SUBRUN, ENSCRIBE_MINIPAGE_DEPTH, ENSCRIBE_REGISTRY, ENSCRIBE_CITATIONS, ENSCRIBE_PAGE_LINK_RESOLVER } from '../core/file-data-keys.js';
 // #318: the render-time `<a {slug}>` page-link resolver — a hast tree-pass run in the compiler (just
 // before serialization) when the website builder has injected a resolver on file.data. Imported for USE
 // here; also re-exported at the barrel below (one home, cross-page-links.js).
@@ -797,6 +797,28 @@ export function enscribeInterpreter(options = {}) {
         const childFile = {
           data: {
             [ENSCRIBE_REGISTRY]: makeReadThroughRegistry(parentRegistry),
+            // #411 (follow LaTeX): CITATIONS read through the seal. The box
+            // resolves <cite> against the DOCUMENT's library — the parent's
+            // citation index, shared BY REFERENCE, deliberately:
+            //   - `cite`/`style` are read-only lookups;
+            //   - `order` is MUTATED by the child's cite-resolution, so a boxed
+            //     cite joins the document's first-cited order. This is the
+            //     "boxed cites feed the bibliography" contract (#411): the
+            //     document-wide References renders the whole registry today,
+            //     but its empty-case gate (bibliography.js) and any future
+            //     cited-only rendering read `citations.order` — replacing this
+            //     with a copy would silently orphan a document whose only
+            //     cites are boxed. Do NOT copy. (Known nuance: the deferred
+            //     phase runs before parent cite-resolution, so boxed cites
+            //     claim earlier order slots than textually-earlier document
+            //     cites — invisible in author-date styles; a numeric-style
+            //     ordering refinement would need position-aware ordering.)
+            // The seal elsewhere is unchanged: notes stay box-local (LaTeX
+            // seals footnotes), refs stay one-way read-through, and a boxed
+            // <library> is prohibited (minipage-guard, the #410 flag family).
+            ...(file?.data?.[ENSCRIBE_CITATIONS]
+              ? { [ENSCRIBE_CITATIONS]: file.data[ENSCRIBE_CITATIONS] }
+              : {}),
             [ENSCRIBE_MINIPAGE_SUBRUN]: true,
             [ENSCRIBE_MINIPAGE_DEPTH]: depth + 1,
           },

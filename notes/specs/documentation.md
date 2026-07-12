@@ -64,19 +64,27 @@ code, headerless tables, stale content — cannot recur:
    (inline `<code>` reflows to one line). Single-value inline examples may use inline `<code>`.
 6. **Examples show source and rendered result** (the `<code-block>` source + a rendered
    companion), so the reader sees both what to type and what it produces. The rendered
-   companion is a sealed `<minipage>` preview, and document-scope resolution cannot cross the
-   seal — an example whose source needs a document-scope counterpart (a `<data>` store, an
-   `@`-src consumer, a `<cite>` against a `<library>`) shows source only, with a one-line
-   stated reason. Never a silently-broken preview, and never an unintentional failure marker.
+   companion is a sealed `<minipage>` preview. **Citations render live** (#411): the seal
+   reads citations through, so a `<cite>` example resolves against the page-level docs
+   example library the generator appends to any chapter whose previews cite
+   (`DOCS_EXAMPLE_LIBRARY` — its keys stay in sync with the vocabulary examples'). An
+   example whose source needs a *storage-side* document-scope counterpart (a `<data>`
+   store, an `@`-src consumer) still shows source only, with a one-line stated reason —
+   those pulls remain sealed out. Never a silently-broken preview, and never an
+   unintentional failure marker.
 7. **Failure behavior is demonstrated, not just named (#395/D1).** The authoring guide's
    quotation-and-sourcing chapter carries a "When citation resolution fails" passage that
-   renders the visible `??cite: …??` markers live: a cite with no `<library>` in scope (a
-   sealed preview is exactly that, stated honestly), a key missing from a real in-scope
-   library (rendered in the chapter body against the chapter's own small `<library>`, the
-   found key resolving beside the missing key's marker), and a misplaced `<library>` —
-   outside a `<data>` block (#410) — whose sealed preview renders both the markers and
-   the misplacement flag with its cannot-resolve citation count, so the placement cause
-   is demonstrated the same way the key causes are. The passage claims only what
+   renders the visible `??cite: …??` markers live: an unknown key (a sealed preview
+   resolving through the seal against the page's libraries — #411 — with a key none of
+   them contain, stated honestly), a key missing from a real in-scope library (rendered
+   in the chapter body against the chapter's own small `<library>`, the found key
+   resolving beside the missing key's marker), and a `<library>` inside the preview box —
+   prohibited under #411's one-document-one-library rule — whose box renders the
+   misplacement-family flag with its box-scoped cannot-resolve citation count, so the
+   placement cause is demonstrated the same way the key causes are (the body-level
+   outside-`<data>` misplacement, #410, is described with a pointer to `library.md`
+   §Placement rather than rendered live — its whole-document cite-count hint would read
+   confusingly on a page full of resolving cites). The passage claims only what
    renders on every surface — the auto-placed References list does not land on a
    book-in-website page (the bibliography-placement gap in the #395 inventory), so the
    docs do not claim it. Resolution failure is part of the authored surface; the docs show

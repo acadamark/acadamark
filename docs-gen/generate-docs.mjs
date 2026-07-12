@@ -127,21 +127,36 @@ function exampleBlock(id, source, note) {
   // resolve at DOCUMENT scope (a store + its consumer), not inside a preview sandbox
   // (the #115 no-external guard). For such examples show the source only — a live
   // preview is impossible by construction — with a one-line reason.
+  //
+  // #411 reverted the former <cite> omission here: citations now READ THROUGH the seal
+  // (a boxed cite resolves against the page document's library), so cite examples get
+  // live previews like everything else. The page carries the docs example library
+  // (DOCS_EXAMPLE_LIBRARY below, appended by familyChapter when a chapter previews a
+  // cite), so the example keys resolve for real.
   if (/<data\b|src=["']?@/.test(src)) {
     out += `*(Rendered preview omitted — ${code('<data>')} / ${code('@')}-references resolve at document scope, not inside a sealed preview.)*\n`;
-  } else if (/<cite\b/.test(src)) {
-    // #395 D1b (documentation.md rule 6): a <cite> resolves against a document-scope
-    // <library>, which the sealed preview cannot carry — the preview would show the
-    // ??cite:…?? failure marker unintentionally. Source only, with the reason stated.
-    // The failure markers themselves are demonstrated deliberately in the authoring
-    // guide's "When citation resolution fails" passage (rule 7).
-    out += `*(Rendered preview omitted — a ${code('<cite>')} resolves against a document-scope ${code('<library>')}, which a sealed preview cannot carry; a cite that cannot resolve renders a visible ${code('??cite: …??')} marker.)*\n`;
   } else {
     out += `<minipage #mp:${id}>\n${src}\n</minipage>\n`;
   }
   if (note) out += `\n*${esc(note.trim())}*\n`;
   return out + '\n';
 }
+
+// #411: the docs example bibliography. Every citation key used by a vocabulary
+// example (cite.md and any future citing example) resolves against this page-level
+// library — previews read it through the minipage seal. Keys are the four the
+// vocabulary examples use; keep this list in sync when an example cites a new key
+// (an unknown key would render a truthful-but-unintended ??cite:…?? marker in the
+// preview, which the example-render conformance harness would surface).
+const DOCS_EXAMPLE_LIBRARY = `<data>
+<library bibtex>
+@book{goodall2024,   author={Goodall, Jane},    title={Reflections on Primatology}, publisher={Field Press},   year={2024}}
+@article{smith2023,  author={Smith, Ann},       title={Structured Documents},       journal={J. Doc. Eng.},    year={2023}}
+@book{jones2024,     author={Jones, Bo},        title={The Citation Habit},         publisher={Scholars Row},  year={2024}}
+@book{attenborough2020, author={Attenborough, David}, title={A Life on Our Planet}, publisher={Witness Books}, year={2020}}
+@book{darwin1859,    author={Darwin, Charles},   title={On the Origin of Species},   publisher={John Murray},   year={1859}}
+</library>
+</data>`;
 
 // The Registers list: canonical tag, markdown idiom (source: idioms.md), aliases.
 function registersLines(name) {
@@ -262,7 +277,7 @@ An authored citation never silently disappears: a \`<cite>\` that cannot resolve
 visible \`??cite: …??\` marker in place — the same marker family as the \`??ref: …??\` an
 unresolved cross-reference renders.
 
-With no \`<library>\` in the document, every citation renders its marker:
+A citation whose key is in no library in scope renders its marker:
 
 <code #code:ag-cite-fail-1>
 Prior work <cite adams2019> anticipated this result.
@@ -272,8 +287,10 @@ Prior work <cite adams2019> anticipated this result.
 Prior work <cite adams2019> anticipated this result.
 </minipage>
 
-*(The preview box is a sealed sub-document with no &lt;library&gt; in scope, so the marker
-it shows is the real no-library render.)*
+*(A preview box resolves citations against this page's own library — the seal reads
+citations through (#411) — and \`adams2019\` is in none of this page's libraries, so the
+marker shown is the real unknown-key render. In a document with no \`<library>\` at all,
+every citation renders this same marker.)*
 
 When a \`<library>\` is in scope but a key is missing from it, found keys resolve and each
 missing key renders its own marker:
@@ -311,12 +328,11 @@ Known <cite mead1972>, unknown <cite bateson1904>.
 *(The found key renders its formatted citation; the missing key renders its marker beside
 it — a failure never hides a neighboring success.)*
 
-A third failure looks like the first but has a different cause: the document HAS a
-\`<library>\`, but it sits outside a \`<data>\` block. A library loads only from inside
-\`<data>\` (see the \`<library>\` reference's Placement section), so every citation still
-renders its marker — and the page flags the misplaced library itself, counting the
-citations that cannot resolve against it, so the real cause reads from the page rather
-than from the keys:
+A third failure looks like the first but has a placement cause: a \`<library>\` may not
+live inside an example box at all — one document, one library (#411; a box's citations
+resolve against the *document's* library instead). A boxed library is never loaded, and
+the box flags it, counting the box's citations that cannot resolve against it, so the
+real cause reads from the page rather than from the keys:
 
 <code-block #code:ag-cite-fail-3>
 Prior work <cite adams2019> anticipated this result.
@@ -334,7 +350,9 @@ Prior work <cite adams2019> anticipated this result.
 </library>
 </minipage>
 
-*(Move the \`<library>\` into a \`<data>\` block and the citation resolves.)*
+*(Declare the library in the document's \`<data>\` block instead; the box's citation then
+resolves through the seal. The same not-loaded rule applies to a body-level \`<library>\`
+outside a \`<data>\` block — see the \`<library>\` reference's Placement section.)*
 
 </section>
 `,
@@ -348,6 +366,13 @@ function familyChapter(fam, title, sectionFn, extraSection) {
   let out = `${FAMILY_INTRO[fam] ?? ''}\n\n`;
   out += members.map(sectionFn).join('\n');
   if (extraSection) out += '\n' + extraSection;
+  // #411: a chapter whose previews cite needs the docs example library on the page —
+  // the sealed previews resolve against it through the seal's citation read-through.
+  // (Multiple <data> libraries on a page merge into one registry, so this coexists
+  // with a chapter's own curated library, e.g. the failure passage's.)
+  if (/<minipage[^>]*>[\s\S]*?<cite\b[\s\S]*?<\/minipage>/.test(out)) {
+    out += `\n${DOCS_EXAMPLE_LIBRARY}\n`;
+  }
   return out;
 }
 

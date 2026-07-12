@@ -16,8 +16,10 @@ sealed sub-interpret" rather than inline:
 - **LaTeX-local footnotes** — `note-placement` running inside the sub-tree collects the body's notes at
   the minipage's own boundary, which is exactly the LaTeX bottom-of-minipage behavior.
 
-The one thing paid for is **outbound** refs (body → document): seed the parent registry into the sub-run,
-read-only.
+The things paid for are the **read-throughs** (body → document): the parent label registry is seeded into the
+sub-run read-only (outbound refs), and — #411, following LaTeX — the parent **citation index** is seeded the
+same way (boxed cites resolve against the document library and feed its bibliography). See "The seal policy"
+below for the full three-way table.
 
 ## The model that does NOT work (and why)
 A vanilla frameable renders its body inline via `recursive-content.js` into the **main** tree (this is what
@@ -26,12 +28,34 @@ registry (referenceable from outside — the thing we forbid), and its footnotes
 section. Sealing that inline would mean hand-carving three separate exceptions (registry exclusion, private
 numbering scope, a new box-local note scope). The sealed sub-interpret inverts all three into freebies.
 
+## The seal policy — three-way, LaTeX-verified (#411)
+
+The seal is **not** one uniform wall: each mechanism follows what LaTeX's minipage actually does,
+verified empirically on #411 (pdflatex + bibtex, TeX Live 2023 — footnotes render at the box bottom
+on their own alphabetic counter; `\label`/`\ref` and `\cite` are document-global; a boxed-only
+`\cite` pulls its entry into the bibliography; LaTeX has no box-local bibliography concept). Ariel's
+decision, refined 2026-07-12:
+
+> *"Only notes local. Both cross-refs and citations (references) follow global. No local `<data>`
+> or `<library>` in a minipage."*
+
+| Mechanism | Seal behavior | LaTeX fidelity |
+|---|---|---|
+| **Notes** (`<note>`, `<^ …>`) | **Sealed** — box-local counter, collected at the box's own bottom boundary | Exactly LaTeX (`mpfootnote`, letter marks at box bottom). Deliberate; no change ever intended |
+| **Cross-references** (`<ref>`) | **Read through, outbound** — a box `<ref>` resolves against the document registry; the box's own labels stay private (inbound forbidden) | LaTeX is two-way; enscribe is deliberately one-way because box numbering is private (see the open sub-question on #411 — outside→inside targeting is undecided, not implemented) |
+| **Citations** (`<cite>`) | **Read through** — a box `<cite>` resolves against the DOCUMENT's library (the parent citation index is seeded by reference into the sub-run); boxed cites join the document's first-cited `order`, so they feed the document References (its empty-case gate and any future cited-only rendering read `order` — the contract comment lives at the deferred-phase seeding site in `interpreter/index.js`) | Exactly LaTeX (`\cite` in a minipage resolves globally and its entry joins the bibliography) |
+| **Libraries** (`<data>`/`<library>` in the box) | **Prohibited** — never loaded, visibly flagged through the #410 misplacement family with a cite-count hint; one document, one library. A `<bibliography>` marker in a box is removed with a warning (one document, one References) | LaTeX has no box-local bibliography concept — one global cite-key namespace; the prohibition is the honest enscribe rendering of that fact |
+
 ## The one load-bearing subtlety: a one-way registry view
 The sub-run gets **read** access to the parent registry (so outbound refs resolve) but its own labels do
 **not** merge upward (so inbound stays forbidden and numbering stays private). A read-through parent with a
 private child overlay. This single seam is the whole reason one-way is strictly easier than two-way — two-way
 would force merging child labels up, unique-id namespacing across minipages, and document-coordinated
-numbering, eroding the very seal that makes the rest free.
+numbering, eroding the very seal that makes the rest free. (LaTeX's label read-through **is** two-way — it
+can afford to be, because its numbering is globally scoped; the collision two-way creates under private box
+numbering is the open sub-question posted on #411, deliberately not implemented.) The **citation index**
+rides the same seam in the same direction (#411): the parent's `enscribeCitations` is seeded by reference
+into the sub-run, read for resolution, with `order` shared so boxed cites feed the document bibliography.
 
 The minipage resolves its own refs *inside* the sub-run before splicing, so the parent's ref-resolution
 treats the finished minipage as an opaque black box carrying exactly one outward-facing label.
@@ -99,12 +123,20 @@ opaque frameable (`<svg>` / `<table>` / `<csv>`); a `<caption>` written inside t
 The body is sealed inline content with no outward pulls. `@src` (a body `<fig src="@id">` asset-store reference)
 and `<data>` (the declaration host for embedded base64 / external image paths / external `<library>` sources) are
 disallowed inside a minipage — these are the outward-pull surface, so forbidding them keeps the box
-self-contained. A forbidden construct renders a **visible** `__asset-error` block (reject, never resolve, never a
-silent drop). A plain `<fig src="path.png">` / `<fig src="http://…">` image is **allowed** — it is not an
+self-contained; a boxed `<library>` (in `<data>` or bare) is additionally prohibited by the #411 one-document-
+one-library rule (see the seal-policy table). A forbidden construct renders a **visible** flag (reject, never
+resolve, never a silent drop): an `@src` pull renders a `__asset-error` in place; a `<data>`/`<library>` renders
+its flag **injected into the box body** — a `__library-error` from the #410 misplacement family (with the
+cite-count hint) for each library, a generic `__asset-error` for other `<data>` content. The body injection is
+load-bearing, not a style choice: article-structuring relocates `<data>` to a root *sibling* of the box's
+article, and `projectMinipageBody` splices only the article's regions, so an in-place error at the `<data>`
+node's position would be **discarded by the projection** (pre-#411 this silently swallowed the flag — a fixed
+bug). A plain `<fig src="path.png">` / `<fig src="http://…">` image is **allowed** — it is not an
 asset-store pull (no `@`), cannot pull enscribe source, and is outside the forbid. The guard is a pipeline pass
 (`enscribeMinipageGuard`) that is a no-op on every normal document and active only on a minipage sub-run (the
 `ENSCRIBE_MINIPAGE_SUBRUN` flag), running before the citation/asset index passes so the pull is neutralized before
-any of them would resolve it.
+any of them would resolve it — and before library-load's misplacement classifier, whose "move it into `<data>`"
+advice would mislead inside a box.
 
 ## Reuse map (what exists vs. what's new)
 - **Frameable shell** — reuse `lib/frameable.js` + `core/frameable-elements.js`. The minipage is a new

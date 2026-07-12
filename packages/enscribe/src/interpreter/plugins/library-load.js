@@ -50,9 +50,34 @@ const URL_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
  * A visible `__library-error` node (rendered by libraryErrorHandler). always-
  * renders (#133): a failed load / collision / misplacement shows a visible block
  * naming the source, never a silent drop.
+ *
+ * Exported (#411): the minipage guard emits the boxed-library misplacement flag
+ * through this same factory, so every library-placement failure is one family.
  */
-function libraryError(src, message) {
+export function libraryError(src, message) {
   return makeErrorNode('__library-error', 'src', src, message);
+}
+
+/**
+ * The #411 misplacement message for a `<library>` inside a minipage: prohibited
+ * outright (Ariel: "one document, one library" — LaTeX has no box-local
+ * bibliography concept; a box cite resolves against the DOCUMENT's library).
+ * Owned here so the misplacement family's wording lives in one home; the
+ * minipage guard (plugins/minipage-guard.js) is the enforcement point — it runs
+ * before this plugin's classifier, so a boxed library is neutralized (and
+ * flagged with THIS message) before collectMisplacedLibraries could flag it
+ * with the misleading "move it into <data>" advice, which cannot help in a box.
+ *
+ * @param {number} citeCount - `<cite>` nodes in the box (the #410-style hint:
+ *   the true cause of every one of them failing is on the page).
+ */
+export function minipageLibraryMessage(citeCount) {
+  const hint = citeCount > 0
+    ? `; ${citeCount} citation${citeCount === 1 ? '' : 's'} in this box cannot resolve against it`
+    : '';
+  return `a <library> is not allowed inside a minipage — one document, one library. ` +
+    `This one was NOT loaded${hint}. Declare it in the document's <data> block; ` +
+    `a cite inside the box resolves against the document's library (#411).`;
 }
 
 /** Recursively classify every misplaced `<library>` node (#410: a library LOADS only as a
@@ -81,8 +106,9 @@ function collectMisplacedLibraries(nodes, ctx = 'body', out = { apparatus: [], b
 }
 
 /** Count the document's `<cite>` nodes (for the misplacement hint — every one of them is
- * unable to resolve against a library that was not loaded). */
-function countCites(nodes, n = 0) {
+ * unable to resolve against a library that was not loaded). Exported (#411): the minipage
+ * guard reuses it to count the box's cites for the boxed-library hint. */
+export function countCites(nodes, n = 0) {
   for (const node of nodes ?? []) {
     if (isEnscribeTag(node, 'cite')) n++;
     if (isEnscribeTag(node) && Array.isArray(node.content)) n = countCites(node.content, n);

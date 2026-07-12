@@ -22,7 +22,7 @@
 // getCiteContent() something to look up with document.getElementById('ref-KEY').
 
 import { makeTag, makeInternalMarker } from '../../core/tag.js';
-import { ENSCRIBE_CITATIONS, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
+import { ENSCRIBE_CITATIONS, ENSCRIBE_CONFIG, ENSCRIBE_MINIPAGE_SUBRUN } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { isBookRegionTag } from '../lib/book-regions.js';
 import { escapeHtmlAttr } from '../../core/escape-html.js';
@@ -220,6 +220,28 @@ function collectChapterCiteKeys(unit, cslById) {
 export function enscribeBibliography() {
   return (tree, file) => {
     const citations = file?.data?.[ENSCRIBE_CITATIONS];
+
+    // #411: a minipage sub-run never renders a bibliography — one document, one
+    // References. The seal seeds the DOCUMENT's citation index into the box (so
+    // boxed cites resolve and join the shared `order`), which would otherwise
+    // make this plugin auto-place a full document References inside every
+    // citing box. Authored <bibliography> markers in a box are removed with a
+    // warning (their home is the document); the box's cites are listed by the
+    // DOCUMENT's References via the shared order (see index.js's deferred-phase
+    // seeding comment — the contract lives there).
+    if (file?.data?.[ENSCRIBE_MINIPAGE_SUBRUN]) {
+      const boxAuthorPlaced = findAuthorPlacedBibliography(tree.children);
+      const boxChapterPlaced = findChapterPlacedBibliographies(tree.children);
+      if (boxAuthorPlaced) {
+        boxAuthorPlaced.backNode.content.splice(boxAuthorPlaced.index, 1);
+        file?.message?.('bibliography: a <bibliography> inside a minipage is removed — one document, one References (#411)');
+      }
+      for (const { parent, index } of boxChapterPlaced.reverse()) {
+        parent.splice(index, 1);
+        file?.message?.('bibliography: a <bibliography> inside a minipage is removed — one document, one References (#411)');
+      }
+      return;
+    }
 
     const authorPlaced = findAuthorPlacedBibliography(tree.children);
     const chapterPlaced = findChapterPlacedBibliographies(tree.children);
