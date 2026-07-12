@@ -153,13 +153,15 @@ export function enscribeRefResolution() {
       const targetId = node.atRefs?.[0] ?? node.kwargs?.target ?? null;
 
       if (!targetId) {
-        file?.message?.('Reference has no id', node);
+        // #427: name the rule (ref:no-id) so the summary buckets it by rule, not the fallback
+        // `message` class — mirroring cite-resolution's cite:invalid-style / cite:narrative-group.
+        file?.message?.('Reference has no id', node, 'ref:no-id');
         return [makeRefError(null)];
       }
 
       const entry = registry.findByLabel(targetId);
       if (!entry) {
-        file?.message?.(`Reference target not found: ${targetId}`, node);
+        file?.message?.(`Reference target not found: ${targetId}`, node, 'ref:target-not-found');
         return [makeRefError(targetId)];
       }
 

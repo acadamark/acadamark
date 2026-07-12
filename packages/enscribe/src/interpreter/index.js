@@ -791,7 +791,11 @@ export function enscribeInterpreter(options = {}) {
         if (depth + 1 > MAX_MINIPAGE_DEPTH) {
           node.minipageResolved = [minipageDepthErrorNode()];
           if (typeof file?.message === 'function') {
-            file.message(`minipage nesting exceeds the maximum depth (${MAX_MINIPAGE_DEPTH})`, node.position);
+            // #427 sweep: name the rule (minipage:nesting-too-deep) so the summary buckets it by
+            // rule, not the fallback `message` class — the §8-spirit inventory found this producer
+            // unnamed alongside ref-resolution. Latent (it fires only past MAX_MINIPAGE_DEPTH, which
+            // the docs build never reaches), but named now so it never lands in the fallback bucket.
+            file.message(`minipage nesting exceeds the maximum depth (${MAX_MINIPAGE_DEPTH})`, node.position, 'minipage:nesting-too-deep');
           }
           return;
         }
@@ -829,6 +833,14 @@ export function enscribeInterpreter(options = {}) {
             [ENSCRIBE_MINIPAGE_DEPTH]: depth + 1,
           },
         };
+        // The sub-run's diagnostics are DISCARDED by design — a sealed demo's messages belong to
+        // the demo, not the host build (childFile is a plain object; unified coerces it to a
+        // throwaway VFile whose .messages never reach the host stream). #427's optional debug-log
+        // of those dropped messages (so an unintentionally-broken demo isn't perfectly invisible)
+        // was DEFERRED: capturing them means turning this load-bearing minimal childFile into a
+        // real VFile and adding a cross-environment (node/browser) debug channel to the core
+        // interpreter — not the trivially-clean few-liner #427 gated it on. The box's error markers
+        // render as visible HTML regardless, so a broken demo still shows on the page.
         const resolved = proc.runSync(proc.parse(bodySource), childFile);
         node.minipageResolved = projectMinipageBody(resolved);
         // #267: scope-qualify every id DEFINED in this box (auto note-N / noteref-N, author

@@ -111,7 +111,14 @@ at one seam (`packages/cli/src/diagnostics.js`); no pipeline plugin knows channe
    principle; one convention authors already know from remark/rehype tooling).
 2. **End-of-run summary.** Grouped by file, then by kind (the producer's `source[:ruleId]`, else
    the `producer:` message-prefix convention), with counts. **Silent when there is nothing to
-   say** — a clean run adds zero lines.
+   say** — a clean run adds zero lines. Two contract properties the summary makes visible:
+   *every message names its rule* — via `source:ruleId` or a `producer:` prefix; the bare
+   `message` fallback bucket is an un-named producer and should be empty on a clean build (its
+   presence is a producer to migrate, not a message class). And *every message names its page* —
+   a diagnostic with **no page attribution** (bucketed under `(input)`) is categorically a defect
+   (a producer emitting without a vfile path, or a build-path bug), never a legitimate documented
+   survivor; the flagship's `check:docs-clean` gate rejects an anonymous bucket **un-suppressibly**
+   (no allowlist entry can explain anonymity away).
 3. **Carried into the rendered document (#415).** Build-time diagnostics are serialized into the
    emitted page as a `<script data-enscribe-diagnostics>` block that recapitulates each message
    to the browser console when the document is viewed — the author who ignored (or never saw)

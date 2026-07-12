@@ -18,6 +18,7 @@ import { dirname, join } from 'node:path';
 import { writeFileSync, mkdtempSync, rmSync, readFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { VFile } from 'vfile';
+import { buildEnscribePipeline } from '@enscribejs/enscribe';
 import { run } from '../src/cli.js';
 import { createDiagnostics, diagnosticsScript, messageKind } from '../src/diagnostics.js';
 import { findChromium, detectDriver, openBrowser } from './delivery-browser.mjs';
@@ -46,6 +47,36 @@ export async function run_tests() {
     assert.equal(messageKind({ reason: 'cite-resolution: no <library> in scope' }), 'cite-resolution');
     assert.equal(messageKind({ reason: 'A bare sentence with no prefix' }), 'message');
     console.log('PASS: diagnostics — messageKind (source:ruleId / producer-prefix / fallback)');
+  }
+
+  // ── #427 sweep: NO producer falls to the `message` fallback bucket ────────────────
+  // The §8-spirit inventory: every diagnostic names its rule (source:ruleId) or carries a
+  // producer prefix. A document exercising the known error producers — ref (no-id / target-
+  // not-found, newly named #427), cite (no keys / no library), misplaced-apparatus,
+  // raw-html-passthrough — must emit ZERO messages that bucket under the fallback `message`.
+  // Pre-#427 the two ref classes fell here (the `5 × message` line in the #426 build summary).
+  {
+    const src = [
+      '<meta title="Sweep" />',
+      '',
+      '<ref />',                        // ref:no-id
+      'See <ref @fig:ghost>.',          // ref:target-not-found
+      '<cite />',                       // cite-resolution (no keys)
+      'Cited <cite @unknownkey>.',      // cite-resolution (no library)
+      '<config><library bibtex | @book{a,title={x}}></library></config>',  // misplaced <library>
+    ].join('\n');
+    const file = new VFile({ path: 'sweep.emd' });
+    const proc = buildEnscribePipeline({});
+    proc.runSync(proc.parse(src), file);
+    const fallback = file.messages.filter((m) => messageKind(m) === 'message');
+    assert.ok(file.messages.length >= 5, 'the sweep document actually produced diagnostics');
+    assert.deepEqual(fallback.map((m) => m.reason), [],
+      'no producer falls to the fallback `message` bucket — every message names its class (#427 §8-spirit)');
+    // and the two ref classes are now specifically named
+    const kinds = file.messages.map((m) => messageKind(m));
+    assert.ok(kinds.includes('ref:no-id'), 'a ref with no id buckets as ref:no-id');
+    assert.ok(kinds.includes('ref:target-not-found'), 'a ref to a missing target buckets as ref:target-not-found');
+    console.log('PASS: #427 — the sweep: no message falls to the fallback bucket; ref classes named (ref:no-id / ref:target-not-found)');
   }
 
   // ── unit: createDiagnostics (channels 1+2, quiet, silence-when-clean) ───────

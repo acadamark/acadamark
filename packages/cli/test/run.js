@@ -19,6 +19,7 @@ import { run_tests as runWebsiteAssetLinksTests } from './website-asset-links.te
 import { run_tests as runDiagnosticsTests } from './diagnostics.test.js';
 import { run_tests as runDarkVariantTests } from './dark-variant.test.js';
 import { run_tests as runArrowsClearanceTests } from './arrows-clearance.test.js';
+import { run_tests as runDocsCleanGuardTests } from './docs-clean-guard.test.js';
 
 try {
   runCliTests();
@@ -38,6 +39,7 @@ try {
   await runArrowsClearanceTests(); // #420 follow-up: gutter chevrons clear ALL neighbors across the width sweep (Tier 2)
   runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
+  runDocsCleanGuardTests(); // #427: docs-clean guard rejects anonymous (input) messages categorically
   process.exit(0);
 } catch (err) {
   console.error('FAIL:', err?.message ?? err);
