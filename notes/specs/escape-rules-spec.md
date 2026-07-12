@@ -11,7 +11,7 @@ In prose content, write `\X` to produce a literal `X` for any character `X` that
 
 The escape character itself is escaped as `\\`. The four additional content-position characters `^`, `_`, `{`, `}` are enscribe-consumed so that `\^` and `\_` suppress the inline TeX shortcut interpretation (`^{...}` for superscript and `_{...}` for subscript — see `notes/specs/shorthand-syntax.md` §"Inline TeX shortcuts") even before a `{`, and `\{` and `\}` produce literal braces inside content.
 
-**Sigil characters (`#`, `$`, `` ` ``) are syntactically meaningful only at sigil-tag opening positions (`<#`, `<$`, `` <` ``), not in prose content.** In prose, `\#`, `\$`, `` \` `` are markdown pass-through sequences, not enscribe escapes — they pass through to remark, which processes them as CommonMark escapes.
+**Sigil characters (`#`, `$`, `` ` ``, `^`) are syntactically meaningful only at sigil-tag opening positions (`<#`, `<$`, `` <` ``, `<^` — #416), not in prose content.** In prose, `\#`, `\$`, `` \` `` are markdown pass-through sequences, not enscribe escapes — they pass through to remark, which processes them as CommonMark escapes. (`\^` differs: the `^` character's prose meaning is the inline TeX sup shortcut, so its escape is enscribe-consumed — see the content-position characters above — not markdown pass-through.)
 
 **`>` is not escapable inside named-tag content.** The micromark boundary finder closes named-tag content at any unbalanced `>`, before escape processing can apply. Use `&gt;` for a literal `>` inside named-tag content. `\>` works in prose (where remark handles it via CommonMark), but is not reliable inside named-tag content.
 
@@ -31,6 +31,7 @@ The construct determines which type applies:
 | Prose outside any construct | Prose | Escape rules apply (via remark/CommonMark) |
 | Named-tag content (after `\|`) | Prose | Escape rules apply |
 | Hash sigil-tag content (`<#...#>`) | Prose | Escape rules apply |
+| Footnote sigil content (`<^ ...>`) | Prose | Escape rules apply (desugars to `<note \| …>` pipe content, #416) |
 | Math sigil content (`<$...$>`, `<$$...$$>`) | Opaque | No escape processing |
 | Code sigil content (`` <`...`> ``, `` <```...```> ``) | Opaque | No escape processing |
 | DSL-tag content (`<csv>...</csv>`, `<math>...</math>`, etc.) | Opaque | No escape processing |

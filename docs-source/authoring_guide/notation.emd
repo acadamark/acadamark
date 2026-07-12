@@ -208,3 +208,23 @@ Compiles to eHTML `<matrix>`.
 `\begin{matrix}...\end{matrix}` before KaTeX renders.*
 
 </section>
+
+<section #ag-footnote-sigil | The `<^ …>` footnote sigil>
+
+Notation's sigils have one sibling outside this family: the footnote sigil. It is
+listed here because this chapter is where the sigil forms live side by side.
+
+<code #code:ag-caret-1>
+A claim<^ A footnote written with the sigil.>.
+</code>
+
+<minipage #mp:ag-caret-1>
+A claim<^ A footnote written with the sigil.>.
+</minipage>
+
+*The `^` sigil (#416): the native footnote, sugar for `<note | …>` —
+`<^ x>` and `<note | x>` produce byte-identical output. Content-only (no
+id or attributes inside the sigil); see `<note>` in the Aside chapter for
+the attributed and long forms, numbering, and margin placement.*
+
+</section>
