@@ -1,0 +1,72 @@
+/* Tufte theme (#398 slice 1) — the sidenote-forward, generous-margin, old-style-serif
+ * look of Edward Tufte's books and the tufte-css project, built to the enscribe theming
+ * contract (notes/specs/themes.md).
+ *
+ * It is a TOKEN RETUNE first: the :root block below retunes the published --enscribe-*
+ * tokens and carries the whole look — serif body and headings, a warm cream page, a
+ * classic reading measure, generous leading. Margin notes are the Tufte hallmark; the
+ * theme makes them the presented default LOOK by retuning the tokens the margin-column
+ * layout (margin-css.js, active on note-position=margin) already reads — no structural
+ * rule needed for the sidenotes themselves.
+ *
+ * Then a SMALL structural block (the contract's third rung — full-selector themes, worked
+ * example): exactly the rules the token vocabulary cannot express, each labelled with WHY
+ * it earns a structural selector. Per the #414 chrome-unification principle the theme
+ * styles the DOCUMENT only — no rule here targets the shell chrome (book rail, site nav,
+ * masthead); those stay the shell's.
+ *
+ * Dark mode is NOT authored here: per the #398 decision (2026-07-14), a theme ships one
+ * (light) token set and the engine derives the dark variant from it — so this file is
+ * light-only by design.
+ *
+ * Cascade it AFTER default.css; the interpreter's theme:'tufte' option / <config theme=tufte>
+ * injects it for you.
+ */
+
+:root {
+  /* Old-style serif for BOTH body and headings — Tufte sets headings in the body face,
+     not a sans display face. et-book (Tufte's own Bembo cut) is not bundled; Palatino /
+     Book Antiqua is the closest widely-installed humanist serif, with Georgia as the floor. */
+  --enscribe-font-body:      Palatino, "Palatino Linotype", "Book Antiqua", "URW Palladio L", Georgia, serif;
+  --enscribe-font-heading:   var(--enscribe-font-body);
+  --enscribe-weight-heading: 400;                 /* Tufte headings are light, never bold */
+
+  /* The classic warm cream page and near-black ink. */
+  --enscribe-bg:             #fffff8;
+  --enscribe-bg-subtle:      #f7f7ef;
+  --enscribe-bg-code:        #f5f5ee;
+  --enscribe-text-primary:   #111111;
+  --enscribe-text-secondary: #4d4d4d;
+  --enscribe-text-muted:     #6f6f6f;
+  --enscribe-border:         #e6e6da;
+  --enscribe-border-strong:  #cfcfc0;
+
+  /* Restrained links — Tufte avoids link-blue; near-black with a muted oxblood on hover. */
+  --enscribe-link:           #1a1a1a;
+  --enscribe-link-hover:     #6b0000;
+  --enscribe-link-visited:   #1a1a1a;
+
+  /* Generous leading and a classic reading measure. The margin-notes layout adds an 18rem
+     gutter to this width, so keeping the body measure classic leaves room for the margin. */
+  --enscribe-line-height:    1.72;
+  --enscribe-content-width:  42rem;               /* ~672px — a Tufte reading measure */
+
+  /* A quiet heading scale — Tufte titles carry by italic and serif, not by size or weight. */
+  --enscribe-h1-size: 2rem;
+  --enscribe-h2-size: 1.45rem;
+  --enscribe-h3-size: 1.2rem;
+  --enscribe-h4-size: 1.05rem;
+}
+
+/* ── Structural rung (full-selector; only what tokens cannot express) ─────────────────── */
+
+/* Section headings in italic — the Tufte section-head idiom. There is NO --enscribe-* token
+ * for font-style, so this cannot be a token retune. Scoped to the section-title family
+ * (not the article/book title, which Tufte keeps roman); the post-#397 native <hN> wrapped
+ * inside each title element inherits the style via default.css's `font: inherit` rule
+ * (RQ-DOC-S5), so styling the outer element is sufficient. */
+section-title,
+sub-section-title,
+sub-sub-section-title {
+  font-style: italic;
+}

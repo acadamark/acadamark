@@ -62,5 +62,25 @@ export async function run() {
     console.log('PASS: unknown theme → warn + default (no throw)');
   }
 
+  // ── tufte: a full-selector theme (#398) — token retune + one structural rule ─
+  {
+    const tufte = render(DOC, { theme: 'tufte' });
+    assert.ok(/<style>[\s\S]*Tufte theme/.test(tufte), 'tufte.css inlined in a <style>');
+    assert.ok(/--enscribe-font-body:\s*Palatino/.test(tufte), 'tufte sets a serif (Palatino) body');
+    assert.ok(/--enscribe-bg:\s*#fffff8/.test(tufte), 'tufte sets the cream page background');
+    // the structural rung: section headings in italic (no token can express font-style)
+    assert.ok(/section-title[\s\S]*?font-style:\s*italic/.test(tufte), 'tufte adds the italic section-heading structural rule');
+    // chrome-unification (#414): the theme targets the document, not the shell chrome
+    assert.ok(!/enscribe-chapter-rail|enscribe-site-|enscribe-book-rail/.test(getThemeOnly(tufte)), 'tufte styles no shell-chrome selector');
+    console.log('PASS: tufte — full-selector theme (serif retune + italic-heading structural rule, no chrome)');
+  }
+
   console.log('All theme tests passed.');
+}
+
+// The tufte <style> block only (so the chrome-selector assertion tests the THEME, not the
+// document's own default.css / chrome, which legitimately carry those selectors).
+function getThemeOnly(html) {
+  const m = html.match(/<style>([^<]*Tufte theme[\s\S]*?)<\/style>/);
+  return m ? m[1] : '';
 }

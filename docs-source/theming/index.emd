@@ -1,0 +1,132 @@
+<meta type=article slug=theming>
+<title | Theming — the token-and-selector contract>
+<subtitle | Pick a theme, retune tokens, or write a full theme — against a published, versioned surface>
+</meta>
+
+A theme changes how an enscribe document *looks* without changing what it *is*. This page is the **published, versioned contract** a theme is written against: the list of `--enscribe-*` tokens a theme may retune, the selector surface a full theme may target, and the compatibility promise that lets a theme keep working across engine versions. It is the answer to "are enscribe themes wedded to the engine?" — no: a theme conforms to this contract, the way an implementation conforms to the eHTML vocabulary. (Decision record and rationale: enscribe issue #398.)
+
+# The three rungs
+
+Theming is a ladder — pick the rung that fits the effort you want to spend. This is the deliberate middle rung the neighbours miss: RMarkdown gives you rung 1; Quarto jumps you from rung 1 straight to authoring Sass against a framework; enscribe's token vocabulary *is* rung 2, with no compiler.
+
+**1. Pick a theme — one config word.** `<config theme=tufte>` (or `--theme tufte` on the CLI) selects a bundled theme. Zero install, self-contained: the theme's CSS is inlined into the rendered document, so the file carries its own look. The shipped set is listed under The themes, below.
+
+**2. Retune tokens — a few lines of CSS, no compiler.** Every knob in the token reference is a CSS custom property. Override any subset in your own stylesheet (a `:root { … }` block) cascaded after the default:
+
+<code-block |
+:root {
+  --enscribe-font-body:     "Iowan Old Style", Georgia, serif;
+  --enscribe-content-width: 46rem;
+  --enscribe-link:          #2b6cb0;
+}
+>
+
+No Sass, no build step, no layer-ordering to learn — the token *is* the override. This rung changes the whole feel of a document from a handful of lines, and is the **supported path** for most theming.
+
+**3. Write a full theme — structural selectors allowed.** A theme that needs more than the tokens can express (a margin-note layout, an italic heading idiom) may also write structural CSS against the selector surface below. This is a real theme file; the shipped `tufte` theme is the worked example. Two rules bound it: **prefer the token rung** — structural CSS is for what tokens genuinely cannot reach, and each such rule should be justifiable as exactly that — and **style the document, not the chrome** (see The selector surface).
+
+# The compatibility promise
+
+The token vocabulary is **versioned with the engine, and the version travels with the release notes.** The promise, stated as a promise:
+
+- **Adding a token is non-breaking** — new knobs appear; existing themes are unaffected.
+- **Renaming or removing a token is breaking** — it is called out in the release notes for the version that does it, with the replacement named.
+- **A token's *default value* may change between releases** — a default is a default, not a contract; a theme that wants a specific value sets it explicitly.
+- **The selector surface a full theme targets is the post-#397 eHTML rendering** (native `<h*>` wrapped inside the outline title elements — see below); changes to it follow the same add-is-safe / change-is-release-noted rule.
+
+That is the whole "not wedded to the engine" answer: a theme is decoupled the moment the surface it targets is a stated, versioned contract — independent of *where* the theme's files live.
+
+# The selector surface
+
+Rung-3 structural CSS targets the **eHTML rendering surface**, whose stable, contract-relevant facts are:
+
+- **Outline titles wrap a native heading** (#397): `<section-title>` renders `<section-title><h2>…</h2></section-title>` and family, the level derived from nesting. The wrapped heading carries `font: inherit` and `margin: 0`, so **styling the outer title element is sufficient** — the inner heading inherits it (as the `tufte` theme's italic-headings rule relies on).
+- **Margin notes are a document capability, not a theme one.** `note-position=margin` — a `<config>` setting, not a theme — relocates notes into a right-margin gutter as `<sidenote>` elements, with a bottom-list fallback below 900px; the layout ships in the engine. A theme makes margin notes *look* a certain way by retuning the tokens that layout reads; it does not own the placement.
+- **The chrome is the shell's, not the theme's** (chrome-unification, #414). A theme styles the *document* — prose, headings, figures, notes, callouts. It must **not** target the shell chrome: the book chapter rail, the website top bar and nav, the page masthead. That chrome is one unified surface across document types, and a theme reshaping it would fracture that. A theme's colours do reach chrome that *reads the shared tokens* (a retuned `--enscribe-bg-subtle` tints the active chapter block); that is the token system working, not a chrome override. The line is: **retune tokens freely; add no structural rule against a chrome selector.**
+
+# The token reference
+
+Every `--enscribe-*` token a theme may retune, its default, and which shipped theme(s) retune it. This table is **generated from the engine's `default.css`** and guarded against drift (`npm run check:theme-tokens`), so it cannot silently fall out of step with the stylesheet.
+
+<!-- BEGIN generated: token table (scripts/gen-theme-tokens.mjs) -->
+| Token | Meaning | Default | Retuned by |
+|---|---|---|---|
+| `--enscribe-text-primary` | Body text colour. | `#1a1a1a` | `modern`, `tufte` |
+| `--enscribe-text-secondary` | Secondary text — captions, subtitles, secondary UI. | `#555` | `modern`, `tufte` |
+| `--enscribe-text-muted` | Muted text — the least-emphasis tier. | `#888` | `tufte` |
+| `--enscribe-link` | Link colour. | `#0052cc` | `modern`, `tufte` |
+| `--enscribe-link-hover` | Link colour on hover. | `#003d99` | `modern`, `tufte` |
+| `--enscribe-link-visited` | Visited-link colour. | `#0052cc` | `modern`, `tufte` |
+| `--enscribe-bg` | Page background. | `#ffffff` | `tufte` |
+| `--enscribe-bg-subtle` | Subtle raised background — e.g. the active chapter tint. | `#f7f7f7` | `tufte` |
+| `--enscribe-bg-code` | Code background. | `#f5f5f5` | `tufte` |
+| `--enscribe-border` | Default rule / border colour. | `#e1e1e1` | `modern`, `tufte` |
+| `--enscribe-border-strong` | Stronger border colour. | `#ccc` | `modern`, `tufte` |
+| `--enscribe-accent` | General accent colour. | `#444` | — |
+| `--enscribe-toc-active-bg` | Active chapter's tinted block in the chapter rail. | `var(--enscribe-bg-subtle)` | — |
+| `--enscribe-toc-active-accent` | Active chapter's left accent bar in the chapter rail. | `var(--enscribe-link)` | — |
+| `--enscribe-border-accent` | Frameable `border=accent` look — border colour. | `var(--enscribe-accent)` | — |
+| `--enscribe-border-thick` | Frameable `border=thick` look — border width. | `3px` | — |
+| `--enscribe-border-subtle` | Frameable `border=subtle` look — border colour. | `#e6e6e6` | — |
+| `--enscribe-error` | Error / flag colour — unresolved `??ref??` / `??cite??` markers. | `#c0392b` | — |
+| `--enscribe-callout-note-accent` | Callout `note` accent. | `#0052cc` | — |
+| `--enscribe-callout-note-bg` | Callout `note` background tint. | `#eef4ff` | — |
+| `--enscribe-callout-info-accent` | Callout `info` accent. | `#0b7285` | — |
+| `--enscribe-callout-info-bg` | Callout `info` background tint. | `#e7f6f8` | — |
+| `--enscribe-callout-tip-accent` | Callout `tip` accent. | `#1f7a4d` | — |
+| `--enscribe-callout-tip-bg` | Callout `tip` background tint. | `#eafaf1` | — |
+| `--enscribe-callout-warning-accent` | Callout `warning` accent. | `#8a6d1f` | — |
+| `--enscribe-callout-warning-bg` | Callout `warning` background tint. | `#fff8e1` | — |
+| `--enscribe-callout-caution-accent` | Callout `caution` accent. | `#c0392b` | — |
+| `--enscribe-callout-caution-bg` | Callout `caution` background tint. | `#fdecea` | — |
+| `--enscribe-font-sans` | Sans-serif font stack (bundled Inter + system fallback). | `'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | — |
+| `--enscribe-font-mono` | Monospace font stack (bundled Source Code Pro + fallback). | `'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace` | — |
+| `--enscribe-font-body` | Body text font. | `Georgia, "Times New Roman", serif` | `modern`, `tufte` |
+| `--enscribe-font-heading` | Heading / label font. | `var(--enscribe-font-sans)` | `tufte` |
+| `--enscribe-weight-heading` | Heading font weight. | `700` | `modern`, `tufte` |
+| `--enscribe-text-base` | Base body font size. | `1rem` | `compact` |
+| `--enscribe-text-sm` | Small text size — captions, notes. | `0.875rem` | `compact` |
+| `--enscribe-text-xs` | Extra-small text size — note markers, labels. | `0.75rem` | — |
+| `--enscribe-text-code` | Code font size. | `0.95rem` | `compact` |
+| `--enscribe-h1-size` | Heading size, level 1 (`article-title` / `book-title`). | `2.25rem` | `compact`, `tufte` |
+| `--enscribe-h2-size` | Heading size, level 2 (`section-title`). | `1.5rem` | `compact`, `tufte` |
+| `--enscribe-h3-size` | Heading size, level 3 (`sub-section-title`). | `1.2rem` | `compact`, `tufte` |
+| `--enscribe-h4-size` | Heading size, level 4 (`sub-sub-section-title`). | `1.05rem` | `compact`, `tufte` |
+| `--enscribe-line-height` | Body line height. | `1.65` | `compact`, `modern`, `tufte` |
+| `--enscribe-line-height-heading` | Heading line height. | `1.3` | `compact` |
+| `--enscribe-line-height-tight` | Tight line height — captions, notes. | `1.4` | `compact` |
+| `--enscribe-space-1` | Spacing scale — step 1 (smallest). | `0.25rem` | — |
+| `--enscribe-space-2` | Spacing scale — step 2. | `0.5rem` | — |
+| `--enscribe-space-3` | Spacing scale — step 3. | `0.75rem` | — |
+| `--enscribe-space-4` | Spacing scale — step 4 (one line). | `1rem` | — |
+| `--enscribe-space-6` | Spacing scale — step 6. | `1.5rem` | `compact` |
+| `--enscribe-space-8` | Spacing scale — step 8. | `2rem` | `compact` |
+| `--enscribe-space-12` | Spacing scale — step 12 (largest — big structural gaps). | `3rem` | `compact` |
+| `--enscribe-content-width` | Readable content column width. | `760px` | `compact`, `modern`, `tufte` |
+| `--enscribe-content-padding` | Content horizontal padding. | `1.5rem` | — |
+
+*53 tokens. Generated from `packages/enscribe/src/interpreter/assets/default.css` and the shipped `themes/*.css` by `scripts/gen-theme-tokens.mjs`; guarded by `npm run check:theme-tokens`.*
+<!-- END generated: token table -->
+
+# The themes
+
+The bundled starter set — one config word each (`<config theme=…>` or `--theme …`):
+
+- **`default`** — the academic / print house look: a serif body, a sans heading face, bold headings, a white page. Injects nothing (it *is* the base stylesheet).
+- **`modern`** — a clean, web-native retune: sans-serif body, lighter headings, a touch more air, a blue accent. A pure token retune.
+- **`compact`** — tighter spacing and smaller type for dense reading and review. A pure token retune.
+- **`tufte`** — the sidenote-forward, generous-margin, old-style-serif look of Edward Tufte's books: a Palatino-family serif for body *and* headings, a warm cream page, italic section headings, a classic reading measure, and margin notes as the presented default (pair it with `<config note-position=margin>`). The worked example of a rung-3 full theme — almost entirely a token retune, plus one structural rule (see The Tufte worked example).
+
+The theme name is an enumerable family: the value spec for `<config theme=…>` (the validated allowlist), the engine's `KNOWN_THEMES`, the CLI `--theme` help, and this list are kept in step, and a test asserts the value spec equals the shipped themes directory.
+
+# Dark mode
+
+A theme ships **one (light) token set**; the engine **derives the dark variant automatically** from those tokens (#398 decision, 2026-07-14) — so a theme never hand-authors a second palette, and every theme gets a coherent light/dark pair for free. The dark *switch* is a reader-tier control: the reader flips between the light and dark variants the theme provides; the theme supplies the variants and the default. (The derivation mechanism and the reader-tier switch are the settings-UI arc; this contract states the promise.)
+
+# The Tufte worked example
+
+`tufte` is the reference full theme — proof that even the showpiece is **almost entirely a token retune**. Its `:root` block retunes the font, colour, measure, leading, and heading-scale tokens; that carries the entire look, and the margin notes inherit it through the shared margin layout — no theme rule touches the sidenotes. The theme adds **exactly one** structural rule, and it earns its place because no token can express it:
+
+- **Italic section headings** — `section-title, sub-section-title, sub-sub-section-title { font-style: italic }`, the Tufte section-head idiom. There is no `--enscribe-*` token for `font-style`, and the article and book titles stay roman (so the rule is scoped to the section family). The post-#397 native heading inherits the style through `font: inherit`, so styling the outer element suffices.
+
+Everything else Tufte-ish is a token: the serif is `--enscribe-font-body` / `--enscribe-font-heading`, the light headings are `--enscribe-weight-heading: 400`, the cream page is `--enscribe-bg`, the measure is `--enscribe-content-width`. (One honest edge: the margin-note *marker* stays in the sans face, because the margin layout pins it to `--enscribe-font-sans` and the theme does not override that; a serif marker would need an engine-side token or a structural rule that beats the margin layout — deferred, not needed for the look.)

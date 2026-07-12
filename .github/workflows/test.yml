@@ -71,6 +71,9 @@ jobs:
       - name: Routing invariant gate (#404)
         run: npm run check:routing
 
+      - name: Theme-token contract freshness guard (#398)
+        run: npm run check:theme-tokens
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 
