@@ -321,6 +321,19 @@ earlier ones for the same key.
 the tree (they will be collected into article-back by the structuring plugin,
 where the hast handler renders them as null/hidden).
 
+**Value validation (#401 — warned-default, family-wide):** as each kwarg is
+copied into the map, its VALUE is validated against the spec carried by its own
+allowlist entry (`apparatus-allowlists.js` — enum sets, integer minimums,
+booleans' implicit true/false; one source for key-allowlisting and
+value-validation, so no second table can drift). A recognized key with an
+unusable value (`strict-mode=tue`, `toc-depth=three`, `number-sections=yes`)
+emits one `config:invalid-value` warning through the #402 diagnostics seam —
+naming the key, the offending value, and the accepted values, anchored at the
+authored position — and the reader's existing default still applies. Never an
+in-document flag (presentation config, not content), never a hard error.
+Free-valued keys (`citation-style`, `toc-title`, `bibliography-heading`, the
+reserved keys) and the `ref-prefix-*` wildcards are not value-checked.
+
 **Keys consumed by downstream plugins:**
 
 | Key | Consumed by | Effect |
@@ -766,6 +779,22 @@ runs.
 `sub-sub-section` nodes are registered with `numbered: false`. This makes them
 findable by label via `registry.findByLabel()` for cross-references (e.g.,
 `<ref @sec:intro>`), without assigning sequential numbers.
+
+**Duplicate authored ids (#403):** an authored id that registers twice — a colon
+id colliding across types (the label index is cross-type), a plain id within its
+type — is a **warned last-wins**: the render is deterministic (the last
+declaration wins; references resolve to it, nothing is dropped) and the build
+says so — one `registry:duplicate-id` warning per duplicate through the #402
+diagnostics seam, anchored at the later declaration and naming the first
+origin's position when known. The detection lives in the shared registry's
+`assign()` (one sink wired by `ensureRegistry`, so every registerable —
+sections, figures/tables/equations, notes, code, book-parts, and any future
+`assign` caller — gets the one policy with no per-plugin wiring). Registries
+that already carry their own **visible** collision flags exceed the warning
+floor and keep them: duplicate citation keys (library-load) and duplicate
+data-store ids (asset-load). The website site-registry merge (cross-page
+anchors) and pinned page slugs have their own collision story in the website
+assembly layer.
 
 **Code-block sigil registration (G4 / AUD-09 closure):** `` ``` `` nodes
 are registered under registry type `code` with `numbered: false`. A

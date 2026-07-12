@@ -87,3 +87,28 @@ export function tagErrorHandler(_state, node) {
   if (node.position) el.position = node.position;
   return el;
 }
+
+/**
+ * Handler for __import-error nodes (#412): a loss-point placeholder the JATS /
+ * pandoc importers emit where content they could not convert was dropped. Same
+ * always-renders family as the parse/tag error markers above — the imported
+ * document shows every loss point in place, with the provenance the importer had
+ * (element/node name, source line when the XML parser supplied one).
+ *
+ * kwargs: { what, detail?, line? } →
+ *   <span class="import-error">??import: WHAT — DETAIL (source line N)??</span>
+ */
+export function importErrorHandler(_state, node) {
+  const what = node.kwargs?.what ?? '(unknown)';
+  const detail = node.kwargs?.detail;
+  const line = node.kwargs?.line;
+  const text = `??import: ${what}${detail ? ` — ${detail}` : ''}${line ? ` (source line ${line})` : ''}??`;
+  const properties = { className: ['import-error'] };
+  if (line) properties.dataSourceLine = line;
+  return {
+    type: 'element',
+    tagName: 'span',
+    properties,
+    children: [{ type: 'text', value: text, data: { verbatim: true } }],
+  };
+}

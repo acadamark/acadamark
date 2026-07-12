@@ -41,8 +41,22 @@ import { tagnamesInCategory } from './vocab-categories.js';
 // (the silent-inert bug #221 had to dodge by hand). `boolean()` / `valued()` make the
 // type visible at every entry; the allowlist predicate and isBooleanConfigKwarg both
 // derive from this single Map.
+// #401: each entry may also carry its VALUE spec (`accepts`), so key-allowlisting and
+// value-validation share ONE source — the F11 lesson again (a parallel value table would
+// drift exactly like the old CONFIG_BOOLEAN_KWARGS Set did). A `boolean()` key implicitly
+// accepts true/false (bare `<config X>` → 'true' per #219); a `valued()` key accepts
+// anything unless it names a spec:
+//   { enum: [...] }               — one of the listed words
+//   { int: { min } }              — an integer ≥ min
+//   { enum: [...], int: { min } } — either form (toc-expand: a count, or 'all')
+// A key with no spec (citation-style — the CSL style registry is unbounded;
+// bibliography-heading, toc-title — free text; the reserved keys) is not value-checked.
+// Validation itself is validateConfigValue below; the config-discovery plugin calls it
+// as the map is built, so a bad value warns ONCE, at the authored position, through the
+// #402 diagnostics seam — and the reader's default still applies (warned-default, never
+// silent-default: Ariel's #401 decision).
 const boolean = (status = 'live') => ({ status, type: 'boolean' });
-const valued = (status = 'live') => ({ status, type: 'valued' });
+const valued = (status = 'live', accepts = null) => ({ status, type: 'valued', accepts });
 
 export const CONFIG_KWARGS = new Map([
   // Live (consumed by current plugins).
@@ -51,17 +65,17 @@ export const CONFIG_KWARGS = new Map([
   ['number-figures',          boolean()],   // numbering.js
   ['number-tables',           boolean()],   // numbering.js
   ['number-sections',         boolean()],   // numbering.js (#57; default off articles / on books)
-  ['number-depth',            valued()],    // numbering.js (#218; deepest heading level numbered; default all levels; INDEPENDENT of toc-depth)
+  ['number-depth',            valued('live', { int: { min: 0 } })],    // numbering.js (#218; deepest heading level numbered; default all levels; INDEPENDENT of toc-depth)
 
   // #218: table-of-contents settings — the config-driven contents listing, read in
   // the shared compiler (index.js → lib/toc.js applyConfigToc) so the static build and
   // the live render honor them identically. Default off. Numbering (number-depth) is the
   // sibling half (next slice). See notes/specs/toc-and-numbering.md.
   ['toc',                     boolean()],   // index.js compiler → applyConfigToc (default off)
-  ['toc-depth',               valued()],    // deepest heading level listed (default 3)
+  ['toc-depth',               valued('live', { int: { min: 1 } })],    // deepest heading level listed (default 3)
   ['toc-title',               valued()],    // heading above the listing (default "Contents")
-  ['toc-location',            valued()],    // body | left | right (default body)
-  ['toc-expand',              valued()],    // sidebar levels expanded initially (default 1)
+  ['toc-location',            valued('live', { enum: ['body', 'left', 'right'] })],    // body | left | right (default body)
+  ['toc-expand',              valued('live', { int: { min: 0 }, enum: ['all'] })],    // sidebar levels expanded initially (default 1)
   // Phase 3 slice 3a (2026-05-28): the three new theorem-family counter
   // suppressions. Same pattern as number-equations/figures/tables —
   // setting any of these to false in a <config> block suppresses the
@@ -83,8 +97,8 @@ export const CONFIG_KWARGS = new Map([
   //   chapter  — per-book-part <note-list> at each chapter's end
   //   section  — per-outermost-section <note-list> (article default;
   //              slice 7001aaa behavior)
-  ['counter-reset-scope',     valued()],    // numbering.js + ref-resolution.js
-  ['note-scope',              valued()],    // note-placement.js
+  ['counter-reset-scope',     valued('live', { enum: ['none', 'chapter', 'section'] })],    // numbering.js + ref-resolution.js
+  ['note-scope',              valued('live', { enum: ['document', 'chapter', 'section'] })],    // note-placement.js
   ['bibliography-heading',    valued()],    // bibliography.js (overrides the "References" heading)
 
   // #19: reveal the authored DSL source behind a rendered DSL block in a native
@@ -112,12 +126,12 @@ export const CONFIG_KWARGS = new Map([
   // build and the live render honor them identically. Only split-by=chapter is built;
   // section|none are deferred. See notes/specs/book-navigation.md.
   ['chapter-nav',             boolean()],   // book-scaffold → buildChapterRail (the chapter rail)
-  ['chapter-nav-depth',       valued()],    // rail depth: 1 = chapters; >=2 = chapters + their sections
+  ['chapter-nav-depth',       valued('live', { int: { min: 1 } })],    // rail depth: 1 = chapters; >=2 = chapters + their sections
   ['page-navigation',         boolean()],   // prev/next chapter links (chapterNavBar)
   ['cover',                   boolean()],   // cover landing page; off = land on the first chapter
   ['back-to-top',             boolean()],   // scroll-to-top control within a chapter
   ['on-this-page',            boolean()],   // book-scaffold resolveBookNavConfig / lib/toc.js applyBookToc — the per-chapter on-this-page rail (right column); default on; #248
-  ['split-by',                valued()],    // pagination unit: chapter (built) | section | none (deferred)
+  ['split-by',                valued('live', { enum: ['chapter', 'section', 'none'] })],    // pagination unit: chapter (built) | section | none (deferred)
 
   // #246: website navigation chrome. The website's primary nav is the sticky TOP bar; the left
   // sidebar (the full nav tree) is an opt-in, default OFF (the top bar suffices for a small site).
@@ -131,11 +145,11 @@ export const CONFIG_KWARGS = new Map([
   // `display-style` and `bibliography-position` — have no consumer yet; the
   // allowlist accepts them so author input is not rejected before that
   // consumer lands.
-  ['theme',                   valued()],            // index.js compiler (Phase 8 Slice 2)
+  ['theme',                   valued('live', { enum: ['modern', 'compact'] })],  // ⇄ index.js KNOWN_THEMES (guarded by a test, not an import — no cycle)            // index.js compiler (Phase 8 Slice 2)
   ['display-style',           valued('reserved')],
-  ['note-position',           valued()],            // index.js compiler → sidenotes (#33, margin render mode)
+  ['note-position',           valued('live', { enum: ['bottom', 'margin'] })],            // index.js compiler → sidenotes (#33, margin render mode)
   ['heading-tags',            boolean()],           // heading-levels.js (#397; DEFAULT ON — native heading wrap on outline titles)
-  ['strict-mode',             valued()],            // strict-mode.js → the strictness register switch (#36):
+  ['strict-mode',             valued('live', { enum: ['off', 'sigil', 'canonical'] })],            // strict-mode.js → the strictness register switch (#36):
                                                     // off | sigil | canonical (each names the loosest register on).
   ['bibliography-position',   valued('reserved')],
   // `reference-library` (a config-level external-library declaration) retired:
@@ -166,6 +180,53 @@ export function isConfigKwarg(key) {
  */
 export function isBooleanConfigKwarg(key) {
   return CONFIG_KWARGS.get(key)?.type === 'boolean';
+}
+
+// ── #401: config VALUE validation (one policy, family-wide) ───────────────────
+//
+// A recognized key whose value fails its spec is a warned-default: the message below
+// flows through the #402 diagnostics seam (emitted by config-discovery at the authored
+// position) and every reader's existing default/coercion still applies. Warning-channel
+// only — never an in-document flag (Ariel's #401/#403 clarification: this family is
+// presentation config, not content).
+
+/** Human wording of a spec's accepted values, for the warning text. */
+function describeAccepted(entry) {
+  if (entry.type === 'boolean') return 'true or false (or the bare flag form)';
+  const parts = [];
+  if (entry.accepts?.enum) parts.push(entry.accepts.enum.join(', '));
+  if (entry.accepts?.int) parts.push(`an integer ≥ ${entry.accepts.int.min}`);
+  return parts.join(', or ');
+}
+
+/** An integer-shaped string/number (no trailing junk: '2' yes, '2.7'/'two' no). */
+function isIntAtLeast(value, min) {
+  const s = String(value).trim();
+  if (!/^-?\d+$/.test(s)) return false;
+  return parseInt(s, 10) >= min;
+}
+
+/**
+ * Validate a recognized <config> kwarg's VALUE against the allowlist entry's spec.
+ * Returns null when acceptable (or when the key is unspecced/unknown/wildcard — key
+ * validation is the normalize gate's job, not this one's), else the warning text.
+ *
+ * @param {string} key
+ * @param {*} value - as stored by the parser (bare boolean → 'true' per #219)
+ * @returns {string|null}
+ */
+export function validateConfigValue(key, value) {
+  const entry = CONFIG_KWARGS.get(key);
+  if (!entry) return null; // unknown / ref-prefix-* wildcard: not this check's job
+  if (entry.type === 'boolean') {
+    const ok = value === true || value === false || value === 'true' || value === 'false';
+    return ok ? null : `config: ${key}="${value}" is not a recognized value — expected ${describeAccepted(entry)}; the default applies`;
+  }
+  if (!entry.accepts) return null; // free-valued (citation-style, toc-title, …)
+  const { enum: words, int } = entry.accepts;
+  if (words && words.includes(String(value))) return null;
+  if (int && isIntAtLeast(value, int.min)) return null;
+  return `config: ${key}="${value}" is not a recognized value — expected ${describeAccepted(entry)}; the default applies`;
 }
 
 // ── Apparatus tag sets (F13 set + F14 category-derived suppressed subset) ──────

@@ -58,4 +58,16 @@ export function run() {
     assert.ok(/<pre><code>/.test(withRecovery) && withRecovery.includes('x = 1'), 'a closed <code-block> renders its content (unaffected)');
     console.log('PASS: the recovery pass is output-neutral for well-formed documents');
   }
+
+  // ── #412: unknown-tag / handler-error warnings ride the vfile when the compiler has one ──
+  {
+    const proc = buildEnscribePipeline({ embedResources: false });
+    const file = proc.processSync('<article>\n\n# T\n\nAn unknown <wibble | tag> here.\n');
+    const unknown = file.messages.filter((m) => m.ruleId === 'unknown-tag' && m.source === 'enscribe');
+    assert.equal(unknown.length, 1, 'the unknown-tag warning lands on file.messages (not console)');
+    assert.ok(unknown[0].reason.includes('<wibble>'), 'names the tag');
+    assert.ok(unknown[0].line != null, 'carries the authored position');
+    assert.ok(String(file).includes('wibble'), 'the unknown tag still renders visibly (always-renders)');
+    console.log('PASS: #412 — unknown-tag warning joins the message stream with position');
+  }
 }

@@ -264,7 +264,7 @@ export function enscribeNumbering() {
         const entry = registry.assign(
           registryType,
           node.id || null,
-          { numbered, data: {} },
+          { numbered, data: {}, position: node.position ?? null },
         );
         node.registryType = registryType;  // used by compile-time handlers
         // computedNumber is set later by fillNumbering(), after numberRegistry() runs.
@@ -278,7 +278,7 @@ export function enscribeNumbering() {
     // UNnumbered section renders the section's title rather than its id-tail (#246/core).
     for (const tagname of SECTION_TAGNAMES) {
       visitors.set(tagname, (node) => {
-        registry.assign('section', node.id || null, { numbered: false, data: { title: structuralTitleText(node) } });
+        registry.assign('section', node.id || null, { numbered: false, data: { title: structuralTitleText(node) }, position: node.position ?? null });
       });
     }
 
@@ -288,7 +288,7 @@ export function enscribeNumbering() {
     // (#57 Layer 2) stamps the chapter/appendix number onto this same entry. Registering here (not only
     // on-demand in stampSection) is what keeps unnumbered chapter refs from breaking.
     visitors.set('book-part', (node) => {
-      registry.assign('book-part', node.id || null, { numbered: false, data: { title: structuralTitleText(node) } });
+      registry.assign('book-part', node.id || null, { numbered: false, data: { title: structuralTitleText(node) }, position: node.position ?? null });
     });
 
     // Visitor for code-block nodes (canonical tagname 'code-block'; the gate
@@ -303,7 +303,7 @@ export function enscribeNumbering() {
     // NUMBERED_TAGNAMES, and adding a CONFIG_KEY entry for 'code' — the same
     // mechanism figures and tables already use.
     visitors.set('code-block', (node) => {
-      registry.assign('code', node.id || null, { numbered: false, data: {} });
+      registry.assign('code', node.id || null, { numbered: false, data: {}, position: node.position ?? null });
     });
 
     // Phase 4 slice 4a (2026-05-29): for books / scoped documents, use a
@@ -626,7 +626,7 @@ function stampSection(node, num, registry) {
     // visitor; book-parts do NOT (#57 Layer 2 registers them here so cross-refs
     // resolve). Create the entry on demand for book-parts.
     if (!entry && node.tagname === 'book-part') {
-      entry = registry.assign('book-part', node.id, { numbered: false, data: {} });
+      entry = registry.assign('book-part', node.id, { numbered: false, data: {}, position: node.position ?? null });
     }
     if (entry) entry.number = num; // a string ("1" / "A" / "3.1.2"); computeRefText renders it
   }

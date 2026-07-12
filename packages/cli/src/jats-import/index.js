@@ -85,7 +85,10 @@ function parseXml(xml) {
   let firstError = null;
 
   parser.on('opentag', (tag) => {
-    const node = { name: tag.name, attributes: tag.attributes, children: [] };
+    // #412: carry the source line (saxes' live position — at the end of the open
+    // tag, close enough for loss-point provenance) so a dropped element's warning
+    // and placeholder can say WHERE in the source XML it was.
+    const node = { name: tag.name, attributes: tag.attributes, children: [], line: parser.line };
     stack[stack.length - 1].children.push(node);
     stack.push(node);
   });
@@ -105,8 +108,7 @@ function parseXml(xml) {
   // than one article (multi-id efetch): import the first and warn, never hard-fail.
   const roots = findDocRoots(root);
   if (roots.length > 1) {
-    // eslint-disable-next-line no-console
-    console.warn(`[jats-import] note: source contains ${roots.length} <article>/<book> elements (article-set); importing the first`);
+    noteDropped(`article-set(${roots.length} documents — importing the first)`);
   }
   return roots[0] ?? null;
 }
@@ -153,13 +155,33 @@ function textOf(node) {
   return (node.children ?? []).map(textOf).join('');
 }
 
-// Track dropped (not-yet-supported) element kinds; warn once per kind.
+// Track dropped (not-yet-supported) element kinds. With a #412 sink installed
+// (importJats's onDropped — the CLI wires it to file.message), EVERY drop is
+// reported with its source line — a complete account, not warn-once. Without a
+// sink (library callers, tests), the legacy warn-once console note remains.
 const _dropped = new Set();
-function noteDropped(name) {
+let _onDropped = null; // per-run (#412); importJats is synchronous and non-reentrant
+function noteDropped(name, node) {
+  if (_onDropped) { _onDropped(name, node?.line ?? null); return; }
   if (_dropped.has(name)) return;
   _dropped.add(name);
   // eslint-disable-next-line no-console
   console.warn(`[jats-import] note: <${name}> is not yet imported (dropped)`);
+}
+
+/**
+ * #412: a visible loss-point placeholder, in the ??…?? marker family. Rendered by
+ * the engine's __import-error handler as `??import: WHAT — DETAIL (source line N)??`
+ * with the error styling. Emitted at drop sites where content is genuinely LOST
+ * in the reading flow (a whole table, an unresolved footnote body, an unknown
+ * block); degrades that keep the content visible (math falling back to code text,
+ * an unknown statement rendering as a theorem) warn without a placeholder.
+ */
+function makeImportError(what, detail, node) {
+  const kwargs = { what };
+  if (detail) kwargs.detail = detail;
+  if (node?.line != null) kwargs.line = String(node.line);
+  return { type: 'enscribeTag', tagname: '__import-error', kwargs, content: null };
 }
 
 // ─── public API ───────────────────────────────────────────────────────────────
@@ -167,13 +189,27 @@ function noteDropped(name) {
 /**
  * Import a JATS XML article string to an Enscribe mdast tree.
  * @param {string} xml - JATS XML source.
+ * @param {object} [opts]
+ * @param {(name: string, line: number|null) => void} [opts.onDropped] - #412: the
+ *   diagnostics sink. Called for EVERY drop/degrade (a complete account, with the
+ *   source line when known); the CLI wires it to file.message so drops reach the
+ *   #402 channels. Without it, the legacy warn-once console note applies.
  * @returns {import('mdast').Root}
  */
-export function importJats(xml) {
+export function importJats(xml, { onDropped = null } = {}) {
   _dropped.clear();
   _footnotes.clear();
   _fnInProgress.clear();
   _statements.clear();
+  _onDropped = onDropped;
+  try {
+    return importJatsInner(xml);
+  } finally {
+    _onDropped = null;
+  }
+}
+
+function importJatsInner(xml) {
   const doc = parseXml(xml);
   if (!doc) throw new Error('JATS import: no <article> or <book> root element found');
   if (doc.name === 'book') {
@@ -448,14 +484,14 @@ function readableSections(front, back) {
 function warnUnhandledMeta(front) {
   const am = childEl(front, 'article-meta') ?? front;
   for (const child of am.children) {
-    if (isEl(child) && !HANDLED_META.has(child.name) && !DROPPED_METADATA.has(child.name)) noteDropped(child.name);
+    if (isEl(child) && !HANDLED_META.has(child.name) && !DROPPED_METADATA.has(child.name)) noteDropped(child.name, child);
   }
 }
 
 /** Warn once for each `<back>` child that is neither handled nor expected-dropped. */
 function warnUnhandledBack(back) {
   for (const child of back.children) {
-    if (isEl(child) && !HANDLED_BACK.has(child.name) && !DROPPED_METADATA.has(child.name)) noteDropped(child.name);
+    if (isEl(child) && !HANDLED_BACK.has(child.name) && !DROPPED_METADATA.has(child.name)) noteDropped(child.name, child);
   }
 }
 
@@ -504,7 +540,7 @@ function convertRef(ref, index) {
     childEl(host, 'mixed-citation') ||
     childEl(host, 'nlm-citation') ||
     childEl(host, 'citation');
-  if (!citation) { noteDropped('ref(no-citation)'); return null; }
+  if (!citation) { noteDropped('ref(no-citation)', ref); return null; }
 
   const { bibType, fields } = extractCitationFields(citation);
 
@@ -700,7 +736,7 @@ function extractMathLatex(formula) {
       const latex = MathMLToLaTeX.convert(serializeXml(math)).trim();
       if (latex) return latex;
     } catch {
-      noteDropped('math(mathml-conversion-failed)');
+      noteDropped('math(mathml-conversion-failed)', formula);
     }
   }
   return null;
@@ -742,7 +778,7 @@ function convertFormula(formula, display) {
     }
     return makeOpaqueTag('inline-math', latex, { contentHandler: 'math' });
   }
-  noteDropped(display ? 'disp-formula(no-tex-math/mathml)' : 'inline-formula(no-tex-math/mathml)');
+  noteDropped(display ? 'disp-formula(no-tex-math/mathml)' : 'inline-formula(no-tex-math/mathml)', formula);
   return { type: 'inlineCode', value: textOf(formula).replace(/\s+/g, ' ').trim() || '(math)' };
 }
 
@@ -816,7 +852,7 @@ function convertFigure(fig) {
   const src = graphic ? (graphic.attributes['xlink:href'] || graphic.attributes.href || '') : '';
   // A figure with neither a <graphic> nor recognized DSL source imports as a
   // captioned figure, but any body content is dropped here — warn, never silent.
-  if (!src) noteDropped('fig(no <graphic>/DSL — body content dropped)');
+  if (!src) noteDropped('fig(no <graphic>/DSL — body content dropped)', fig);
   const caption = captionInline(fig);
   return makeTag('fig', caption, { id, kwargs: src ? { src } : {} });
 }
@@ -831,7 +867,7 @@ function convertTableWrap(tw) {
   const id = prefixId(tw.attributes.id, 'tab');
   const caption = captionText(tw);
   const innerTable = collectEls(tw, 'table')[0];
-  if (!innerTable) { noteDropped('table-wrap(no <table>)'); return null; }
+  if (!innerTable) { noteDropped('table-wrap(no <table>)', tw); return makeImportError('table-wrap', 'no <table> inside — the table was dropped', tw); }
 
   const result = tableToCsv(innerTable);
   if (result.complex) {
@@ -1031,8 +1067,8 @@ function collectFootnotes(back) {
 function inlineFootnote(xref) {
   const rid = xref.attributes.rid || '';
   const fn = _footnotes.get(rid);
-  if (!fn) { noteDropped('xref-fn(unresolved)'); return convertInline(xref.children); }
-  if (_fnInProgress.has(rid)) { noteDropped('xref-fn(nested/circular)'); return []; }
+  if (!fn) { noteDropped('xref-fn(unresolved)', xref); return [...convertInline(xref.children), makeImportError('footnote', `reference "${rid}" could not be resolved — the note text was lost`, xref)]; }
+  if (_fnInProgress.has(rid)) { noteDropped('xref-fn(nested/circular)', xref); return [makeImportError('footnote', `reference "${rid}" is nested or circular — the note text was lost`, xref)]; }
   _fnInProgress.add(rid);
   const body = convertBlocks(fn.children.filter((c) => c.name !== 'label'), 99);
   _fnInProgress.delete(rid);
@@ -1088,7 +1124,7 @@ function resolveStatementTarget(rid) {
 function convertStatement(st) {
   const ct = st.attributes['content-type'] || '';
   let info = STATEMENT_TYPE[ct];
-  if (!info) { noteDropped(`statement(content-type=${ct || '?'} → theorem)`); info = STATEMENT_TYPE.theorem; }
+  if (!info) { noteDropped(`statement(content-type=${ct || '?'} → theorem)`, st); info = STATEMENT_TYPE.theorem; }
   const id = info.prefix ? prefixId(st.attributes.id, info.prefix) : (st.attributes.id || null);
   const titleEl = childEl(st, 'title');
   const name = titleEl ? textOf(titleEl).replace(/\s+/g, ' ').trim() : null;
@@ -1240,7 +1276,10 @@ function convertBlock(node, depth) {
     default:
       // Expected publishing metadata drops silently; a genuinely unknown block
       // warns once so it is not lost without notice.
-      if (!DROPPED_METADATA.has(node.name)) noteDropped(node.name);
+      if (!DROPPED_METADATA.has(node.name)) {
+        noteDropped(node.name, node);
+        return makeImportError(node.name, 'element is not yet imported — its content was dropped', node);
+      }
       return null;
   }
 }
@@ -1324,7 +1363,7 @@ function convertInline(children) {
         if (target) { out.push(refNode(target)); continue; }
       }
       // Unknown ref-type. Keep the visible link text, drop the marker.
-      noteDropped(`xref(${refType || '?'})`);
+      noteDropped(`xref(${refType || '?'})`, c);
       out.push(...convertInline(c.children));
       continue;
     }

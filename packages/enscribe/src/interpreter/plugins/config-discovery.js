@@ -25,6 +25,7 @@
 import { isEnscribeTag } from '../../core/tag.js';
 import { ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { tagnamesInCategory } from '../lib/vocab-categories.js';
+import { validateConfigValue } from '../lib/apparatus-allowlists.js';
 
 // #251: "is this a <config>?" derives from the vocab `configuration` category —
 // the single source the #232 capstone established (normalize-to-canonical.js's
@@ -63,6 +64,13 @@ export function enscribeConfigDiscovery() {
     visitConfigs(tree.children ?? [], (node) => {
       const kwargs = node.kwargs ?? {};
       for (const [key, value] of Object.entries(kwargs)) {
+        // #401: value validation, at the one place config enters the system. A recognized
+        // key with an unusable value is a WARNED default — the message rides the #402
+        // seam with the authored position; the reader's existing default still applies
+        // (before: silent-default; after: warned-default). Key validation stays at the
+        // normalize gate; ref-prefix-* wildcards and free-valued keys pass untouched.
+        const problem = validateConfigValue(key, value);
+        if (problem) file?.message?.(problem, node, 'config:invalid-value');
         // Later entries override earlier entries for the same key.
         config.set(key, value);
       }

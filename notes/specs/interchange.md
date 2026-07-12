@@ -65,6 +65,30 @@ This mapping is the workhorse for LaTeX and DOCX. It is intentionally the same
 shape as the JATS mapping, with pandoc's AST standing in for JATS XML as the
 intermediary.
 
+## Import loss accounting (#412 — placeholders + the complete account)
+
+Import is where the author cannot eyeball the source for what got lost, so a
+drop is never console-only:
+
+- **Every drop reaches the diagnostics seam** (#402) on the imported document's
+  vfile — a complete, per-occurrence account (`jats-import:dropped` /
+  `pandoc-import:dropped`), with the source XML line where the parser supplies
+  one (pandoc's AST carries no positions; the node kind is the provenance the
+  model allows). An explicitly named `bibliography:` file that cannot be read is
+  a warned miss (`pandoc-import:bibliography`), not a silent fall-through.
+- **Content genuinely lost in the reading flow leaves a visible placeholder** at
+  the loss point — the `__import-error` node, rendered in the `??…??` marker
+  family (`??import: what — detail (source line N)??`, error-styled): an
+  unresolvable or circular footnote body, an empty `table-wrap`, an unknown JATS
+  block, an unmapped pandoc block or raw block. Degrades that keep the content
+  visible warn WITHOUT a placeholder: math falling back to literal code text, an
+  unknown statement rendering as a `<theorem>`, an unknown xref keeping its link
+  text, a graphic-less `fig` keeping its caption — the reader already sees the
+  content; the warning says it arrived degraded.
+
+An author auditing an import finds every loss point in the document AND in the
+end-of-run summary; the recap script carries the account to the viewer's console.
+
 ## Per-format fidelity contracts
 
 Each format ships an explicit, documented fidelity contract — what survives, what

@@ -82,7 +82,7 @@ export function enscribeNotes() {
     discover(tree, new Map([
       ['note', (node) => {
         const placement = notePlacement(node);
-        const entry = registry.assign('note', node.id || null, { numbered: true, data: { placement } });
+        const entry = registry.assign('note', node.id || null, { numbered: true, data: { placement }, position: node.position ?? null });
         pending.push({ node, entry });
       }],
     ]));

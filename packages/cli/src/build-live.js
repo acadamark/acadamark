@@ -153,7 +153,7 @@ export function discoverWebsitePages(masterSource) {
  *   folder needs no network. The document `.emd` content is copied flat in every mode (it is fetched).
  * @returns {{ outDir: string, master: string, children: string[], assets: string[], delivery: string }}
  */
-export function buildLiveFolder({ master, outDir, title, edit = false, delivery = 'siblings' }) {
+export function buildLiveFolder({ master, outDir, title, edit = false, delivery = 'siblings', headExtra = '' }) {
   if (!DELIVERY_VALUES.has(delivery)) {
     throw new Error(`buildLiveFolder: unknown asset delivery "${delivery}" (expected siblings | cdn | inlined)`);
   }
@@ -267,7 +267,7 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
   const shellTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
   writeFileSync(
     join(out, 'index.html'),
-    emitLiveShell({ master: masterName, title: shellTitle, edit, ...shellAssetOpts }),
+    emitLiveShell({ master: masterName, title: shellTitle, edit, headExtra, ...shellAssetOpts }),
     'utf8',
   );
 

@@ -213,4 +213,50 @@ export function run() {
     assert.ok(r2.findByLabel('eqn:a') !== null, 'state shared across calls');
     console.log('PASS: registry: ensureRegistry reuses registry on file.data');
   }
+
+  // ── #403: duplicate authored ids — warned last-wins through one sink ─────────
+  {
+    const collisions = [];
+    const reg = createRegistry({ onCollision: (c) => collisions.push(c) });
+    const pos = (line) => ({ start: { line, column: 1 }, end: { line, column: 20 } });
+
+    // A colon id colliding ACROSS types (the label index is cross-type).
+    reg.assign('figure', 'fig:results', { position: pos(5) });
+    reg.assign('table', 'fig:results', { position: pos(9) });
+    assert.equal(collisions.length, 1, 'one collision per duplicate');
+    assert.equal(collisions[0].id, 'fig:results');
+    assert.equal(collisions[0].prior.type, 'figure', 'the evicted entry rides the callback');
+    assert.equal(collisions[0].prior.position.start.line, 5, 'first origin position carried');
+    assert.equal(collisions[0].position.start.line, 9, 'new origin position carried');
+    assert.equal(reg.findByLabel('fig:results').type, 'table', 'last-wins unchanged');
+
+    // A plain id colliding WITHIN its type (notes).
+    reg.assign('note', 'n1', {});
+    reg.assign('note', 'n1', {});
+    assert.equal(collisions.length, 2, 'plain same-type duplicate detected');
+
+    // Auto-generated ids never collide; a sink-less registry stays silent-compatible.
+    reg.assign('figure', null, {});
+    reg.assign('figure', null, {});
+    assert.equal(collisions.length, 2, 'auto ids are collision-proof');
+    const plain = createRegistry();
+    plain.assign('figure', 'fig:x', {});
+    plain.assign('figure', 'fig:x', {});
+    console.log('PASS: registry (#403) — duplicate authored ids fire onCollision; last-wins stays');
+  }
+
+  // ── #403: ensureRegistry wires the sink to file.message with both origins ────
+  {
+    const messages = [];
+    const file = { data: {}, message: (reason, _pos, origin) => messages.push({ reason, origin }) };
+    const reg = ensureRegistry(file);
+    reg.assign('figure', 'fig:dup', { position: { start: { line: 3, column: 1 } } });
+    reg.assign('figure', 'fig:dup', { position: { start: { line: 8, column: 1 } } });
+    assert.equal(messages.length, 1);
+    assert.ok(messages[0].reason.includes('duplicate id "#fig:dup"'), 'names the id');
+    assert.ok(messages[0].reason.includes('first declared at 3:1'), 'names the first origin');
+    assert.ok(messages[0].reason.includes('the last declaration wins'), 'states the rule');
+    assert.equal(messages[0].origin, 'registry:duplicate-id', 'seam kind');
+    console.log('PASS: registry (#403) — ensureRegistry sink → file.message with both origins');
+  }
 }

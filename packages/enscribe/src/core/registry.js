@@ -32,9 +32,18 @@ import { ENSCRIBE_REGISTRY } from './file-data-keys.js';
 /**
  * Create a new registry instance.
  *
+ * @param {object} [opts]
+ * @param {Function} [opts.onCollision] - #403: called when an AUTHORED id registers twice
+ *   (`{ id, type, prior, position }` — `prior` is the evicted entry, `position` the new
+ *   declaration's). Last-wins is unchanged (the render stays deterministic and complete);
+ *   the sink makes the collision a warned one. ensureRegistry wires it to file.message so
+ *   every registerable that flows through the shared registry gets the one policy;
+ *   transient/child registries (tests, the minipage/site read-through children) stay
+ *   sink-less — box-local ids are #267-scoped, and the site-registry merge has its own
+ *   collision story (deferred on #403).
  * @returns {object} registry with assign, lookup, entries, findByLabel, reset
  */
-export function createRegistry() {
+export function createRegistry({ onCollision } = {}) {
   // type → { sequence: number, entries: Map<id, entry> }
   const types = new Map();
   // Cross-type label index: ids containing ":" → entry
@@ -64,11 +73,19 @@ export function createRegistry() {
      * @param {{ numbered?: boolean, data?: object }} [opts]
      * @returns {{ type: string, id: string, number: undefined, numbered: boolean, data: object }}
      */
-    assign(type, providedId, { numbered = true, data = {} } = {}) {
+    assign(type, providedId, { numbered = true, data = {}, position = null } = {}) {
       const t = ensure(type);
       t.sequence += 1;
       const id = providedId || `${type}-${t.sequence}`;
-      const entry = { type, id, number: undefined, numbered, data };
+      // #403: an authored id registering twice is a WARNED last-wins, never a silent one.
+      // Colon ids collide across types (the label index is cross-type — a <fig #fig:x>
+      // and a <table #fig:x> fight over one label); plain ids collide within their type.
+      // Auto-generated ids (`${type}-${seq}`) cannot collide.
+      if (providedId && onCollision) {
+        const prior = (isColonId(id) ? labelIndex.get(id) : null) ?? t.entries.get(id) ?? null;
+        if (prior) onCollision({ id, type, prior, position });
+      }
+      const entry = { type, id, number: undefined, numbered, data, position };
       t.entries.set(id, entry);
       if (isColonId(id)) {
         labelIndex.set(id, entry);
@@ -195,7 +212,23 @@ export function makeReadThroughRegistry(parent) {
 export function ensureRegistry(file) {
   if (!file?.data) return createRegistry();
   if (!file.data[ENSCRIBE_REGISTRY]) {
-    file.data[ENSCRIBE_REGISTRY] = createRegistry();
+    // #403: the document registry warns on duplicate authored ids through the #402 seam.
+    // One sink here = one policy for every registerable that flows through the shared
+    // registry (sections, figures/tables/equations, notes, code, book-parts — today's and
+    // any future assign caller). The message names both origins when positions are known;
+    // last-wins stays (the reference text and href stay deterministic; the build says so).
+    file.data[ENSCRIBE_REGISTRY] = createRegistry({
+      onCollision: ({ id, type, prior, position }) => {
+        const priorAt = prior?.position?.start
+          ? `first declared at ${prior.position.start.line}:${prior.position.start.column}${prior.type !== type ? ` (a ${prior.type})` : ''}`
+          : (prior?.type !== type ? `first declared as a ${prior.type}` : 'declared earlier in the document');
+        file.message?.(
+          `duplicate id "#${id}" — ${priorAt}; the last declaration wins (references resolve to it)`,
+          position ?? undefined,
+          'registry:duplicate-id',
+        );
+      },
+    });
   }
   return file.data[ENSCRIBE_REGISTRY];
 }

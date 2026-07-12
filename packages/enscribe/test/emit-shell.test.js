@@ -201,4 +201,16 @@ export async function run() {
   }
 
   console.log('All live-shell emitter (#215) checks passed.');
+
+  // ── #399: headExtra — brand-free by default, caller-supplied head links when given ──
+  {
+    const plain = emitLiveShell({ master: 'book.emd' });
+    assert.ok(!plain.includes('favicon'), 'no headExtra → no brand markup (the engine stays brand-free)');
+    const links = '<link rel="icon" href="favicon.svg" type="image/svg+xml">';
+    const branded = emitLiveShell({ master: 'book.emd', headExtra: links });
+    assert.ok(branded.includes('</title>\n' + links), 'headExtra lands verbatim after <title>');
+    assert.equal(branded.replace(links, '').replace('</title>\n', '</title>'), plain.replace('</title>', '</title>'),
+      'headExtra is the ONLY difference');
+    console.log('PASS: #399 — emitLiveShell headExtra (brand-free default; verbatim insertion)');
+  }
 }
