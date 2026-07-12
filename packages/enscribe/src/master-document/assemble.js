@@ -48,13 +48,53 @@ export function isMasterSrcEntry(node) {
   return isEnscribeTag(node) && MASTER_SRC_TAGS.has(node.tagname) && node.kwargs?.src != null;
 }
 
+/**
+ * True iff `node` is an `<include src=…>` — the transclusion primitive (#424;
+ * master-document.md §Transclusion point 3): a block-level splice of the named
+ * file's content at the call site, opening nothing and closing nothing. The
+ * structural `src=` forms are sugar over it.
+ */
+export function isIncludeEntry(node) {
+  return isEnscribeTag(node, 'include') && node.kwargs?.src != null;
+}
+
 // A cheap source-level pre-check (before any parse): does the text contain a
-// MASTER_SRC_TAGS tag with a `src=`? Built from the set so it can't drift from it.
-// Used by the browser entry and the fixture renderer to decide "is this a master?".
+// MASTER_SRC_TAGS tag (or an `<include>`) with a `src=`? Built from the set so it
+// can't drift from it. Used by the browser entry and the fixture renderer to decide
+// "does this document need assembly?".
 export const HAS_MASTER_SRC = new RegExp(
-  `<(?:${[...MASTER_SRC_TAGS].join('|')})\\b[^>]*\\bsrc\\s*=`,
+  `<(?:${[...MASTER_SRC_TAGS, 'include'].join('|')})\\b[^>]*\\bsrc\\s*=`,
   'i',
 );
+
+/**
+ * POSIX-relative composition: a `src` written inside the file at `baseSrc` (a
+ * master-relative path, '' for the master itself) resolves against that file's
+ * directory — the universal including-file rule (§Path resolution), applied
+ * recursively. Absolute paths and URLs pass through.
+ */
+export function composeRel(baseSrc, src) {
+  if (!src || src.startsWith('/') || /^[a-z][a-z0-9+.-]*:/i.test(src)) return src;
+  const slash = baseSrc.lastIndexOf('/');
+  const dir = slash >= 0 ? baseSrc.slice(0, slash) : '';
+  return dir ? `${dir}/${src}` : src;
+}
+
+/**
+ * The `<include src>` targets of a parsed tree's top level, composed against the
+ * file's own (master-relative) path — the discovery primitive the browser's
+ * transitive prefetch and the live-folder copy closure share (#424). Deduped,
+ * document order.
+ */
+export function collectIncludeSrcs(tree, baseSrc = '') {
+  return [
+    ...new Set(
+      (tree.children ?? [])
+        .filter(isIncludeEntry)
+        .map((n) => composeRel(baseSrc, n.kwargs.src)),
+    ),
+  ];
+}
 
 // Placement markers the spec defines but no slice assembles yet.
 // #190: <bibliography> is no longer deferred — a master top-level <bibliography> survives
@@ -84,8 +124,16 @@ const DATA_SRC_RE = /(<(?:library|fig|figure|table|csv|tsv)\b[^>|]*?\bsrc\s*=\s*
  * @param {(msg: string) => void}    [opts.warn]   - diagnostic sink (always-renders: notes, never silent loss)
  * @returns {{ type: 'root', children: object[] }} a flat tree ready for the interpreter pipeline
  */
-export function assembleMasterDocument({ source, readFile, resolve, parse, warn = () => {} }) {
+export function assembleMasterDocument({ source, readFile, resolve, parse, warn = () => {}, selfSrc = '' }) {
   const master = parse(source);
+  const ctx = { readFile, resolve, parse, warn };
+  // #424: the include chain is seeded with the master's OWN (master-relative) name when the
+  // caller knows it, so a chain that leads back to the master (a → b → a where a is the
+  // master) flags at the FIRST re-entry. Without it the cycle still terminates — the repeat
+  // is caught one traversal later, when a non-master file re-enters the chain — but the
+  // marker then names the sub-cycle rather than the full chain. Callers that know their
+  // own file name should pass it.
+  const rootChain = selfSrc ? [selfSrc] : [];
   const out = [];
 
   for (const node of master.children ?? []) {
@@ -98,23 +146,9 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
       let childBody;
       let childMetaTitle = '';
       try {
-        const childTree = parse(readFile(resolve(src)));
-        const kids = childTree.children ?? [];
-        const childMeta = kids.find((c) => isEnscribeTag(c, 'meta'));
-        childMetaTitle = childMeta?.kwargs?.title ?? '';
-        // The child's body is everything except its own <meta>/<config>. Its <data>
-        // (the home of <library>) is HOISTED so its sources join the project-wide citation
-        // registry (#190), with each src rewritten from child-relative to master-relative.
-        childBody = kids
-          .filter((c) => !(isEnscribeTag(c) && CHILD_STRIP_APPARATUS.has(c.tagname)))
-          .map((c) => {
-            if (isEnscribeTag(c, 'data')) return rebaseChildData(c, src);
-            // #190 split_bib: a <bibliography> in a CHILD's body is that chapter's
-            // bibliography. Mark it so book-structuring keeps it INSIDE the book-part — a
-            // flat sibling is otherwise routed to back-matter (a BACK_MATTER_TAGS boundary).
-            if (isEnscribeTag(c, 'bibliography')) return { ...c, kwargs: { ...c.kwargs, 'chapter-scoped': true } };
-            return c;
-          });
+        const loaded = loadFileBody(src, [...rootChain, src], ctx, { chapterScopeBibs: true });
+        childBody = loaded.body;
+        childMetaTitle = loaded.metaTitle;
       } catch (err) {
         // Always-renders: a missing/unreadable child becomes a visible note, not
         // a crash. (#190 — robust per-child error reporting is a later refinement.)
@@ -129,18 +163,16 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
       // preserved, so a `<chapter src>` stays `<chapter>` for the gate to expand
       // into a `<book-part>`), then the child body as following siblings — the flat
       // shape enscribeSectionNesting / enscribeBookStructuring absorb.
-      // #408: stamp every top-level node of the child's body with the child's
-      // directory so the src-rebase pass (interpreter/plugins/src-rebase.js) can
-      // resolve the child's body-level relative srcs child-relative — the universal
-      // including-file rule (master-document.md §Path resolution). Stamping the
-      // BODY nodes (not the marker) keeps master-authored content between entries
-      // unstamped, so its paths stay master-relative with no boundary ambiguity.
-      // The <data> hoist above keeps its own string-level rebase (data content is
-      // an opaque string end to end).
-      const srcSlash = src.lastIndexOf('/');
-      const srcDir = srcSlash >= 0 ? src.slice(0, srcSlash) : '';
       out.push({ ...node, kwargs: stripSrc(node.kwargs), content: title });
-      out.push(...(srcDir ? childBody.map((c) => ({ ...c, _srcDir: srcDir })) : childBody));
+      out.push(...childBody);
+      continue;
+    }
+
+    // The `<include>` primitive (#424): splice the file's content at the call site,
+    // as if typed there — no marker node, no structure. Chain starts empty (the
+    // master is the unnamed origin of every include chain).
+    if (isIncludeEntry(node)) {
+      out.push(...spliceInclude(node, '', rootChain, ctx));
       continue;
     }
 
@@ -158,6 +190,100 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
   }
 
   return { type: 'root', children: out };
+}
+
+/**
+ * Load a file and prepare its top-level body for splicing (#190 structural children,
+ * #424 includes — one loader, so the sugar and the primitive cannot diverge):
+ * strip the file's own <meta>/<config> (document-wide apparatus only the master
+ * declares), hoist + rebase its <data>, resolve its own `<include>` entries
+ * recursively (paths composed file-relative — §Path resolution), and stamp every
+ * body node with the file's directory for the #408 src-rebase pass.
+ *
+ * @param {string}   src   - the file's master-relative path
+ * @param {string[]} chain - the include chain that led here (for cycle detection)
+ * @param {object}   ctx   - { readFile, resolve, parse, warn }
+ * @param {object}   [o]
+ * @param {boolean}  [o.chapterScopeBibs=false] - #190 split_bib: a STRUCTURAL child's
+ *   <bibliography> is that chapter's (marked chapter-scoped). An include's is NOT —
+ *   included content is "typed there", so its <bibliography> means whatever it would
+ *   mean written at the call site.
+ * @returns {{ body: object[], metaTitle: string }}
+ */
+function loadFileBody(src, chain, ctx, { chapterScopeBibs = false } = {}) {
+  const tree = ctx.parse(ctx.readFile(ctx.resolve(src)));
+  const kids = tree.children ?? [];
+  const meta = kids.find((c) => isEnscribeTag(c, 'meta'));
+  const metaTitle = meta?.kwargs?.title ?? '';
+  const srcSlash = src.lastIndexOf('/');
+  const srcDir = srcSlash >= 0 ? src.slice(0, srcSlash) : '';
+
+  const body = [];
+  for (const c of kids) {
+    if (isEnscribeTag(c) && CHILD_STRIP_APPARATUS.has(c.tagname)) continue;
+    // A nested `<include>` inside this file: splice it here, file-relative (#424).
+    if (isIncludeEntry(c)) {
+      body.push(...spliceInclude(c, src, chain, ctx));
+      continue;
+    }
+    let node = c;
+    if (isEnscribeTag(c, 'data')) node = rebaseChildData(c, src);
+    else if (chapterScopeBibs && isEnscribeTag(c, 'bibliography')) {
+      // #190 split_bib: a <bibliography> in a CHILD's body is that chapter's
+      // bibliography. Mark it so book-structuring keeps it INSIDE the book-part — a
+      // flat sibling is otherwise routed to back-matter (a BACK_MATTER_TAGS boundary).
+      node = { ...c, kwargs: { ...c.kwargs, 'chapter-scoped': true } };
+    }
+    // #408: stamp body nodes with the file's directory so the src-rebase pass
+    // (interpreter/plugins/src-rebase.js) resolves body-level relative srcs
+    // file-relative — the universal including-file rule. `src` is already
+    // master-relative here (composed up the chain), so the stamp is too. A node
+    // spliced from a DEEPER include already carries its own (deeper) stamp — keep it.
+    body.push(srcDir && node._srcDir === undefined ? { ...node, _srcDir: srcDir } : node);
+  }
+  return { body, metaTitle };
+}
+
+/**
+ * Splice one `<include src=…>` entry (#424): resolve the target file-relative to the
+ * including file, detect cycles against the chain, and return the spliced body nodes
+ * (or the visible cycle/load-failure degrade — always-renders, never a silent drop).
+ *
+ * @param {object}   node    - the include entry node
+ * @param {string}   baseSrc - the including file's master-relative path ('' = the master)
+ * @param {string[]} chain   - master-relative paths currently being spliced (ancestors)
+ * @param {object}   ctx     - { readFile, resolve, parse, warn }
+ * @returns {object[]} the nodes to splice in
+ */
+function spliceInclude(node, baseSrc, chain, ctx) {
+  const composed = composeRel(baseSrc, node.kwargs.src);
+
+  // Cycle detection (§Recursion and cycles): the chain of including files is
+  // tracked; re-entering a file already being spliced is the one prohibited
+  // topology. The offending include renders a visible marker naming the cycle,
+  // that splice is skipped, and assembly continues. (The same file included at
+  // two DIFFERENT sites is not a cycle — the chain only holds ancestors.)
+  if (chain.includes(composed)) {
+    const cycle = [...chain.slice(chain.indexOf(composed)), composed];
+    const display = cycle.join(' → ');
+    ctx.warn(`include: cycle detected — the splice is skipped: ${display}`);
+    return [includeErrorNode(node.kwargs.src, `include cycle: ${display}`)];
+  }
+
+  try {
+    return loadFileBody(composed, [...chain, composed], ctx).body;
+  } catch (err) {
+    ctx.warn(`include: could not load <include src="${node.kwargs.src}"> (resolved "${composed}"): ${err.message}`);
+    return [includeErrorNode(node.kwargs.src, `could not load "${composed}": ${err.message}`)];
+  }
+}
+
+// A visible `__include-error` marker node (rendered by includeErrorHandler as a
+// role=alert block, the asset/library error family's shape). Emitted from the
+// assembler straight into the pre-pipeline tree — the interpreter dispatches
+// internal-marker tagnames wherever they appear.
+function includeErrorNode(src, message) {
+  return { type: 'enscribeTag', tagname: '__include-error', kwargs: { src: src ?? '', message }, content: null };
 }
 
 function stripSrc(kwargs) {

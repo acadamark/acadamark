@@ -1,0 +1,4 @@
+An interlude between the chapters, arriving via `<include>` — under §Transclusion
+it belongs to the PRECEDING chapter and renders on that chapter's page.
+
+<figure #fig:interlude | The interlude's own captioned figure.>

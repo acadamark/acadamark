@@ -1,0 +1,7 @@
+<meta title="Second" />
+
+# Continuing
+
+Back to <ref @fig:interlude> from the second chapter.
+
+<figure #fig:second | The second chapter's figure.>

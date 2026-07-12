@@ -15,9 +15,9 @@
 // inline ~260 KB of KaTeX CSS into every page). The construction is identical either way.
 
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { VFile } from 'vfile';
-import { buildEnscribePipeline, assembleMasterDocument } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, assembleMasterDocument, HAS_MASTER_SRC } from '@enscribejs/enscribe';
 
 /**
  * Construct the document render pipeline. The one place `buildEnscribePipeline` is called for a
@@ -39,6 +39,36 @@ export function buildDocumentPipeline(pipeOpts = {}) {
  * @returns {import('vfile').VFile}
  */
 export function renderArticleFile(source, pipeOpts = {}) {
+  // #424: assembly is universal — a source carrying src-entries (structural forms or the
+  // <include> primitive) assembles BEFORE the pipeline runs, exactly as the browser's
+  // renderMasterAsync wrapper branches on the same HAS_MASTER_SRC gate. This is what makes
+  // `enscribe render` and a website article page splice includes; a source with no
+  // src-bearing tags takes the unchanged processSync path (assembleMasterDocument on such
+  // a source is a passthrough, so the gate is a fast-path, not a semantic fork). Paths
+  // resolve against assetsDir (the pipeline's existing resolution base), falling back to
+  // the source file's own directory.
+  const value = typeof source === 'string' ? source : String(source.value ?? '');
+  if (HAS_MASTER_SRC.test(value)) {
+    const proc = buildDocumentPipeline(pipeOpts);
+    const file = new VFile(
+      typeof source === 'string'
+        ? {}
+        : { ...(source.path ? { path: source.path } : {}), ...(source.data ? { data: source.data } : {}) },
+    );
+    const base = pipeOpts.assetsDir
+      ?? (typeof source === 'object' && source.path ? dirname(source.path) : '.');
+    const tree = assembleMasterDocument({
+      source: value,
+      readFile: (p) => readFileSync(p, 'utf8'),
+      resolve: (rel) => join(base, rel),
+      parse: (s) => proc.parse(s),
+      warn: (m) => file.message(m),
+      ...(typeof source === 'object' && source.path ? { selfSrc: basename(source.path) } : {}),
+    });
+    const ran = proc.runSync(tree, file);
+    file.value = String(proc.stringify(ran, file));
+    return file;
+  }
   return buildDocumentPipeline(pipeOpts).processSync(source);
 }
 
@@ -102,6 +132,9 @@ export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpt
     resolve: (rel) => join(masterDir, rel),
     parse: (s) => proc.parse(s),
     warn: warn ?? ((m) => file.message(m)),
+    // #424: seed the include-cycle chain with the master's own name, so a chain that
+    // leads back to the master flags at the first re-entry with the full chain named.
+    ...(sourcePath ? { selfSrc: basename(sourcePath) } : {}),
   });
   const numbered = proc.runSync(tree, file);
   return { numbered, file, proc };

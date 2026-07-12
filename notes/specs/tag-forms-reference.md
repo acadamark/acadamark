@@ -90,6 +90,17 @@ each title element is the section's promoted title.
 | `<book-part-title>` | — | — | — | Generated from book-part title-after-pipe lift. |
 | `<book-part-subtitle>` | — | — | — | Generated wrapper. |
 
+### Transclusion
+
+The substitution primitive (#424; `master-document.md` §"Transclusion — substitution
+before structure"): a block-level splice of a file's content at the call site, as if
+typed there. The structural `src=` forms (`<section src>`, `<chapter src>`,
+`<item src>`) are sugar over it.
+
+| Tag | Pipe | Slash | Long | Notes |
+|---|---|---|---|---|
+| `<include>` | — | ✓ | — | Slash form only: `<include src=part.emd />` — a kwarg-only entry that splices and vanishes (it opens nothing, closes nothing, adds no structure). Paths resolve relative to the including file, recursively; a cycle renders the visible `??include cycle: …??` marker and assembly continues. Not allowed inside a `<minipage>` (the sealed box has no outward pulls). |
+
 ### Block prose
 
 | Tag | Pipe | Slash | Long | Notes |

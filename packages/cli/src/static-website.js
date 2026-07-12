@@ -28,7 +28,7 @@
 // its embed/dsl at the library defaults (a multi-page site does not inline KaTeX CSS into every page).
 
 import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs';
-import { join, dirname, extname } from 'node:path';
+import { join, dirname, extname, basename } from 'node:path';
 import { VFile } from 'vfile';
 import {
   publishBookPageBodies,
@@ -47,6 +47,8 @@ import {
   notFoundViewHtml,
   pageErrorViewHtml,
   NOT_FOUND_SLUG,
+  assembleMasterDocument,
+  HAS_MASTER_SRC,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER, ENSCRIBE_CONFIG } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
@@ -298,8 +300,24 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
       // trailing content of ONE tree — so a figure in the interstitial numbers within this page and
       // its ids are owned by this page (the routing invariant needs the ids on a real page) — and
       // render via the tree seam. No interstitial → tree stays unset → source render, byte-identical.
+      // #424: an ARTICLE page whose own source carries src-entries (an <include>, or a
+      // structural src form) ASSEMBLES into the same tree seam — Phase 1 then harvests the
+      // spliced content's anchors and Phase 2 renders the same tree, exactly like an
+      // interstitial/inline page. Paths resolve page-relative (the including-file rule).
+      const needsAssembly = !isBook && HAS_MASTER_SRC.test(source);
+      if (needsAssembly) {
+        const assembleProc = buildDocumentPipeline({ assetsDir: resolved.pageDir });
+        tree = assembleMasterDocument({
+          source,
+          readFile: (fp) => readFileSync(fp, 'utf8'),
+          resolve: (rel) => join(resolved.pageDir, rel),
+          parse: (s) => assembleProc.parse(s),
+          warn: (m) => warnings.push(`page "${page.src}": ${m}`),
+          selfSrc: basename(resolved.sourcePath),
+        });
+      }
       if (!isBook && page.body && page.body.length > 0) {
-        tree = classifyProc.parse(source);
+        if (!tree) tree = classifyProc.parse(source);
         tree.children.push(...page.body);
       } else if (isBook && page.body && page.body.length > 0) {
         // A book page's insertion point for trailing article-level content is not yet defined
