@@ -520,6 +520,26 @@ machine-checkable gate) in `notes/specs/website.md` §"The routing invariant". C
 divergences are marked spec-ahead-of-code and tracked in #404; the `<item>` inline-page crash is
 reclassified a plain bug (#417 — an inline item is a zero-length splice, legal by construction).
 
+## The repo-split license map — CC-BY language, MIT engine, GPL convert, conformance-protected name (2026-07-12)
+
+**The decision.** At the physical repo split: **enscribe-language** is **CC-BY 4.0**;
+**enscribe-engine** is **MIT**; **enscribe-convert** is **GPL** (the quarantine for GPL
+conversion dependencies — the one job copyleft keeps). The **name** — "enscribe" /
+"eHTML" — is protected by a **conformance clause**, not copyright: call an implementation
+enscribe/eHTML-conformant only if it passes the language repo's conformance suite (the
+TeX/TRIP model; the suite is the existing vocabulary-example conformance test). Nothing
+changes in the current repo before the split — everything ships MIT today.
+
+**Why (adoption-first, in both directions).** Encourage adoption: a document language is
+valuable exactly in proportion to how freely it can be implemented (the precedent survey —
+HTML's CC-BY spec, LaTeX's free-with-identity-protection, JATS's public domain — is
+unanimous), and an MIT engine is embeddable by the commercial adopters the project wants.
+Protect that the name means one thing everywhere: conformance, not copyright, is what
+keeps "enscribe" from fragmenting — an implementation earns the name by passing the
+suite, not by licensing terms. This supersedes the earlier GPL-on-language direction from
+the planning conversation, which misread the HTML precedent; the correction is recorded
+in the migration plan's §"License map".
+
 ## Not a decision — recorded for accuracy
 
 **Citations are not website-broken.** Investigated this session: real citations (with a `<library>`)
