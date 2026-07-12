@@ -435,4 +435,22 @@ export function run_tests() {
   }
 
   console.log('All static-website (#278) tests passed.');
+
+// ── #408: the referenced-vs-shipped audit — a page's referenced relative assets ship at
+//    their referenced dest (subdirectories included, URL-depth-correct by construction);
+//    a missing referenced asset is a visible build warning, never a silent 404 ─────────
+{
+  const d = mkdtempSync(join(tmpdir(), 'enscribe-408-audit-'));
+  writeFileSync(join(d, 'index.emd'), '<meta type=website>\n<title|S>\n</meta>\n\n<nav>\n<item src="a" +homepage | Home>\n</nav>\n');
+  mkdirSync(join(d, 'a'));
+  mkdirSync(join(d, 'a', 'img'));
+  writeFileSync(join(d, 'a', 'index.emd'),
+    '<meta type=article>\n<title|Home>\n</meta>\n\n<figure #fig:sub src=img/sub.png | In a subdirectory>\n\n<figure #fig:gone src=missing.png | Renamed away>\n');
+  writeFileSync(join(d, 'a', 'img', 'sub.png'), 'png-bytes');
+  const { warnings, assets } = buildStaticWebsite({ masterSource: readFileSync(join(d, 'index.emd'), 'utf8'), masterDir: d, defaultCss: '' });
+  assert.ok(assets.some((x) => x.to === 'img/sub.png'), 'a referenced SUBDIRECTORY asset ships at its referenced dest path (the +homepage page emits at the root, so img/sub.png IS the depth-correct dest; the co-location scan alone could never ship a subdir file)');
+  assert.ok(warnings.some((w) => w.includes('missing.png') && w.includes('#408')), 'a referenced-but-absent asset is a visible build warning');
+  console.log('PASS: #408 — referenced-vs-shipped audit (subdir ships; missing warns)');
+}
+
 }

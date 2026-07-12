@@ -129,8 +129,18 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
       // preserved, so a `<chapter src>` stays `<chapter>` for the gate to expand
       // into a `<book-part>`), then the child body as following siblings — the flat
       // shape enscribeSectionNesting / enscribeBookStructuring absorb.
+      // #408: stamp every top-level node of the child's body with the child's
+      // directory so the src-rebase pass (interpreter/plugins/src-rebase.js) can
+      // resolve the child's body-level relative srcs child-relative — the universal
+      // including-file rule (master-document.md §Path resolution). Stamping the
+      // BODY nodes (not the marker) keeps master-authored content between entries
+      // unstamped, so its paths stay master-relative with no boundary ambiguity.
+      // The <data> hoist above keeps its own string-level rebase (data content is
+      // an opaque string end to end).
+      const srcSlash = src.lastIndexOf('/');
+      const srcDir = srcSlash >= 0 ? src.slice(0, srcSlash) : '';
       out.push({ ...node, kwargs: stripSrc(node.kwargs), content: title });
-      out.push(...childBody);
+      out.push(...(srcDir ? childBody.map((c) => ({ ...c, _srcDir: srcDir })) : childBody));
       continue;
     }
 

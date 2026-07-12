@@ -133,6 +133,7 @@ import { enscribeBookStructuring } from './plugins/book-structuring.js';
 import { enscribeWebsiteStructuring } from './plugins/website-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
 import { enscribeHeadingLevels } from './plugins/heading-levels.js';
+import { enscribeSrcRebase } from './plugins/src-rebase.js';
 // #137: lower the `<list>` construct (+ `<-`/`<*` markers, `-`/`*` idiom) to a
 // markdown list node, reusing the existing list render + JATS mapping.
 import { enscribeListStructuring } from './plugins/list-structuring.js';
@@ -632,6 +633,11 @@ export function enscribeInterpreter(options = {}) {
   //    inner processor is the matching registers-off one (the register(s) stay off
   //    inside pipe bodies too); recursive-content selects it via the file.data mode.
   this.use(remarkRecursiveContent, { processor: innerProcessor, processorSigil: sigilProcessor, processorCanonical: canonicalProcessor, flowTagnames: FLOW_TAGNAMES });
+
+  // 1.2 (#408): the universal child-relative src rebase. Runs after recursive-content
+  //     (a child's nested tags exist as nodes) and before the gate (nothing downstream
+  //     sees a child-relative path). A no-op on every non-assembled document.
+  this.use(enscribeSrcRebase);
 
   // 1.5. The normalize-to-canonical gate. Runs after step 1 so both outer
   //      and inner processor runs have completed. Runs before step 2 so no

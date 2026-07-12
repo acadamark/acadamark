@@ -121,6 +121,34 @@ export function pageDirAssets(pageDir, masterDir, destPrefix) {
   return out;
 }
 
+// #408: the referenced-vs-shipped audit (+ referenced-subdirectory shipping). pageDirAssets
+// ships a page dir's TOP-LEVEL files; nothing verified that what a page's markup actually
+// REFERENCES exists and ships — a renamed image broke silently, and a child-subdirectory
+// asset (now correctly rebased by the universal src rebase) could never ship at its
+// referenced path. This scan closes both: every relative src attribute in a page's content
+// region either ships at its referenced dest path (so the URL-depth resolution is correct
+// by construction — the file lands exactly where the reference points) or produces a
+// visible build warning. <pre>/<code>/<script> regions are stripped first (docs pages
+// demonstrate src= syntax in escaped examples; the recap script carries JSON).
+const STRIPPABLE_RE = /<(pre|code|script)\b[\s\S]*?<\/\1>/gi;
+function auditReferencedAssets(html, baseDir, destPrefix, shipped, warnings, label) {
+  const out = [];
+  const scannable = html.replace(STRIPPABLE_RE, '');
+  for (const m of scannable.matchAll(/\bsrc="([^"]+)"/g)) {
+    const src = m[1];
+    if (/^(?:[a-z][a-z0-9+.-]*:|\/|@|#)/i.test(src)) continue; // URLs, absolute, store refs, fragments
+    const to = `${destPrefix}${src}`;
+    if (shipped.has(to)) continue;
+    shipped.add(to);
+    const from = join(baseDir, src);
+    let ok = false;
+    try { ok = statSync(from).isFile(); } catch { /* missing */ }
+    if (ok) out.push({ from, to });
+    else warnings.push(`page "${label}": referenced asset "${src}" not found under ${baseDir} — the emitted page will 404 it (#408)`);
+  }
+  return out;
+}
+
 // #295: the per-page-type composition (composeArticlePage / decorateBookPage) is retired. ONE
 // shell (composeWebsiteShellPage) now frames every page — the universal head + the sticky top
 // nav (the outer frame) + the page's content fragment in `.content`. The book top nav is visible
@@ -377,6 +405,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
 
   const pageMap = new Map();
   const assets = [];
+  const shippedAssetDests = new Set(); // #408: dedupe referenced-asset shipping across pages
 
   // ── #300 slice 2: COMPOSITION model. Number each page in its OWN native scope, harvest its cross-ref
   //    registry, MERGE into one SITE registry, then render each page natively and resolve cross-page refs
@@ -434,6 +463,8 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   const siteDslNames = new Set();
   for (const { page, resolved, source, tree, slug, isBook } of pageData) {
     const destPrefix = destPrefixOf(slug);
+    const colocatedAssets = pageDirAssets(resolved.pageDir, masterDir, destPrefix);
+    for (const a of colocatedAssets) shippedAssetDests.add(a.to); // seed BEFORE the audit (no dup ships)
     try {
       if (isBook) {
         // Re-number with the read-through seeded so the book's OUTBOUND cross-page refs resolve to native
@@ -465,6 +496,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
             // the framing pass links this chapter page to its exact live twin `?page=<slug>&chapter=<stem>`.
             const chapterStem = fname === 'index.html' ? null : fname.replace(/\.html$/, '');
             rendered.push({ outPath, slug, title: entry.title, content: body, chapterStem });
+            assets.push(...auditReferencedAssets(body, resolved.pageDir, destPrefix, shippedAssetDests, warnings, slug));
           }
         }
       } else {
@@ -497,12 +529,13 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         });
         collectDslNames(content, siteDslNames);
         rendered.push({ outPath, slug, title: page.title, content });
+        assets.push(...auditReferencedAssets(content, resolved.pageDir, destPrefix, shippedAssetDests, warnings, slug));
       }
     } catch (err) {
       warnings.push(`page "${slug}" failed to render: ${err.message}`);
       continue;
     }
-    assets.push(...pageDirAssets(resolved.pageDir, masterDir, destPrefix));
+    assets.push(...colocatedAssets);
   }
 
   // #404 routing invariant, point 3 (lazy emission): if any cross-page ref routed to the not-found view,

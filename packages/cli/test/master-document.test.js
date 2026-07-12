@@ -359,6 +359,35 @@ export function run_tests() {
     console.log('PASS: #190 slice 3 — a child\'s own library (inline + subdir src) merges project-wide');
   }
 
+  // ── #408: the universal child-relative src rebase (body-level assets) ────────
+  // Every relative `src` kwarg authored in a child resolves against the CHILD's own
+  // directory (master-document.md §Path resolution) — body-level and nested tags
+  // included, not just the hoisted <data> block. Master-authored content between
+  // entries stays master-relative (no boundary bleed).
+  {
+    const d = mkdtempSync(join(tmpdir(), 'enscribe-408-'));
+    mkdirSync(join(d, 'chapters'));
+    writeFileSync(join(d, 'master.emd'),
+      '<meta type=book>\n  <title | B>\n</meta>\n\n<chapter src="chapters/one.emd" | One>\n\n<section | Master section>\n\n<figure #fig:root src=root.png | Master-level figure>\n');
+    writeFileSync(join(d, 'chapters', 'one.emd'),
+      'Body text.\n\n<figure #fig:one src=img.png | Top-level child figure>\n\n<section | S>\n\nNested <figure #fig:two src=deep.png | Nested child figure>.\n\n<table #tab:one csv src=data/rows.csv caption="T" | >\n');
+    const proc2 = buildEnscribePipeline({ assetsDir: d });
+    const tree = assembleMasterDocument({
+      source: readFileSync(join(d, 'master.emd'), 'utf8'),
+      readFile: (pth) => readFileSync(pth, 'utf8'),
+      resolve: (rel) => join(d, rel),
+      parse: (s) => proc2.parse(s),
+      warn: () => {},
+    });
+    const html = proc2.stringify(proc2.runSync(tree));
+    assert.ok(html.includes('src="chapters/img.png"'), 'a child TOP-LEVEL figure src rebases child-relative');
+    assert.ok(html.includes('src="chapters/deep.png"'), 'a child NESTED (inside a section) figure src rebases too — no tag/topology alternation');
+    assert.ok(/cannot read file .chapters\/data\/rows\.csv/.test(html),
+      "a child table src rebases (the visible error names the CHILD-relative path — the file is deliberately absent)");
+    assert.ok(html.includes('src="root.png"'), 'master-authored content stays master-relative (no boundary bleed)');
+    console.log('PASS: #408 — universal child-relative src rebase (body-level, nested, master unaffected)');
+  }
+
   // ── #190: per-chapter bibliography (split_bib) ──────────────────────────────
   // A <bibliography> at a chapter's end lists ONLY that chapter's cited references
   // (drawn from the one merged registry, so a reference cited in two chapters appears in
