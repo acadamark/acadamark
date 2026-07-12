@@ -26,7 +26,7 @@ import {
   isMasterSrcEntry,
   isIncludeEntry,
   collectIncludeSrcs,
-  HAS_MASTER_SRC,
+  hasMasterSrcEntries,
   buildLiveBook,
   renderLiveChapterView,
   renderLiveCoverView,
@@ -236,10 +236,11 @@ export async function renderIntoAsync(target, source, options = {}) {
   return el;
 }
 
-// #194: a master-src fast-path gate (HAS_MASTER_SRC, shared with the assembler) —
-// true only if the source might be a multi-file master document (a `<section src>` /
-// `<chapter src>` / … entry), so renderMasterAsync can short-circuit a non-master
-// source to the ordinary (library-aware) async render without a discovery parse.
+// #194/#426: the master-src gate (hasMasterSrcEntries, shared with the assembler) —
+// true only if the PARSED tree carries a `<section src>` / `<chapter src>` / … / `<include src>`
+// entry, so renderMasterAsync can short-circuit a non-master source to the ordinary
+// (library-aware) async render. The gate is STRUCTURAL: a src-form inside a code fence is
+// a text node, never an entry, so a page documenting the syntax never trips assembly.
 
 /**
  * Throw on a child source the async pre-load could not supply, so the assembler's
@@ -285,12 +286,14 @@ function readPreloadedChild(loaded, src) {
  * @returns {Promise<string>} Serialized HTML of the assembled document.
  */
 /**
- * Discover a master's top-level `src` structure children — the SAME parser AND the SAME
+ * Discover a master's top-level `src` structure children FROM ITS PARSED TREE — the SAME
  * predicate (isMasterSrcEntry) the assembler uses, so the discovered set is exactly the
  * set assembleMasterDocument resolves (one authority, no drift). Deduped child `src`s.
+ * Takes the tree (not the source): #426 makes every call site parse ONCE and both gate
+ * (hasMasterSrcEntries) and discover from that one parse — a src-form inside a code fence
+ * is a text node, never an entry, so it neither gates nor is discovered (by construction).
  */
-function discoverChildSrcs(proc, source) {
-  const masterTree = proc.parse(source);
+function discoverChildSrcs(masterTree) {
   return [
     ...new Set([
       ...(masterTree.children ?? [])
@@ -376,9 +379,14 @@ async function loadAndAssembleMaster(proc, source, childSrcs, loadSource, selfSr
 }
 
 export async function renderMasterAsync(source, options = {}) {
-  if (!HAS_MASTER_SRC.test(source)) return renderAsync(source, options);
   const proc = getPipeline(options);
-  const childSrcs = discoverChildSrcs(proc, source);
+  // #426: structural gate — parse once, then ask the parsed tree. A fenced/inline src-form
+  // is literal text, never an entry, so a page that TEACHES `<include src>` renders as the
+  // plain article it is (the childSrcs.length===0 fallback already handled the no-entry case;
+  // the gate is now correct-by-construction instead of a raw-regex fast-path).
+  const masterTree = proc.parse(source);
+  if (!hasMasterSrcEntries(masterTree)) return renderAsync(source, options);
+  const childSrcs = discoverChildSrcs(masterTree);
   if (childSrcs.length === 0) return renderAsync(source, options);
   const { tree, loadedFile } = await loadAndAssembleMaster(proc, source, childSrcs);
   // The loaded map rides one VFile through BOTH runSync (library-load resolves the
@@ -494,11 +502,12 @@ export async function mountLiveBook(target, source, options = {}) {
   if (!root) {
     throw new Error(`mountLiveBook: target not found: ${String(target)}`);
   }
-  if (!HAS_MASTER_SRC.test(source)) {
+  const proc = getPipeline(pipelineOptions);
+  const masterTree = proc.parse(source);   // #426: parse once — gate + discovery share it
+  if (!hasMasterSrcEntries(masterTree)) {
     throw new Error('mountLiveBook: source is not a multi-file master (no `<… src>` chapter children)');
   }
-  const proc = getPipeline(pipelineOptions);
-  const childSrcs = discoverChildSrcs(proc, source);
+  const childSrcs = discoverChildSrcs(masterTree);
   if (childSrcs.length === 0) {
     throw new Error('mountLiveBook: the master has no `<… src>` chapter children to assemble');
   }
@@ -852,7 +861,7 @@ export async function mountLiveArticle(target, source, options = {}) {
   // `<table src>`) ONCE so each edit re-renders synchronously from memory, then run the single-unit
   // edit loop. (A single-file article fetches nothing here — childSrcs is empty.)
   const proc = getPipeline(pipelineOptions);
-  const childSrcs = discoverChildSrcs(proc, source);
+  const childSrcs = discoverChildSrcs(proc.parse(source));   // #426: structural discovery
   const { loadedFile } = await loadAndAssembleMaster(proc, source, childSrcs);
   return mountArticleEditLoop({
     root, proc, masterSource: source, loadedFile, editor,
@@ -876,7 +885,7 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
 
   // Synchronous render of the CURRENT source → cheap global pass → stringify, byte-identical to the
   // READ render (renderMasterAsync), so the preview matches the published article. It mirrors
-  // renderMasterAsync's OWN top-level branch on HAS_MASTER_SRC: a multi-file article (a `<section src>`
+  // renderMasterAsync's OWN top-level structural branch: a multi-file article (a `<section src>`
   // entry) ASSEMBLES its in-memory children first (the same assembler read mode uses); a single-file
   // article renders the source DIRECTLY — NOT through the assembler — so deferred placement markers
   // (`<toc>` / `<endnotes>` / `<bibliography>`) survive exactly as read mode's render() leaves them
@@ -884,15 +893,21 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
   // registry must not carry over).
   const renderArticle = (src) => {
     const file = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } };
-    const tree = HAS_MASTER_SRC.test(src)
+    // #426: parse once, then branch on the parsed structure. A fenced src-form in the editor
+    // buffer is literal text and takes the direct-render branch (which preserves deferred
+    // `<toc>`/`<endnotes>`/`<bibliography>` markers the assembler would drop) — so typing a
+    // documentation example never flips a single-file article onto the assembly path.
+    const parsed = proc.parse(src);
+    let masterServed = false;
+    const tree = hasMasterSrcEntries(parsed)
       ? assembleMasterDocument({
           source: src,
-          parse: (s) => proc.parse(s),
+          parse: (s) => { if (!masterServed && s === src) { masterServed = true; return parsed; } return proc.parse(s); },
           resolve: (rel) => rel,
           readFile: (s) => readPreloadedChild(loaded, s),
           warn: () => {},
         })
-      : proc.parse(src);
+      : parsed;
     return String(proc.stringify(proc.runSync(tree, file), file));
   };
 
@@ -1144,8 +1159,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // same tree seam the interstitial/inline pages use (static parity, #404 marker 7).
     let loaded = null;
     let assembled = null;
-    if (HAS_MASTER_SRC.test(src)) {
-      const r = await loadAndAssembleMaster(proc, src, discoverChildSrcs(proc, src),
+    const srcTree = proc.parse(src);   // #426: one parse — structural gate + discovery
+    if (hasMasterSrcEntries(srcTree)) {
+      const r = await loadAndAssembleMaster(proc, src, discoverChildSrcs(srcTree),
         (childSrc) => fetchSourceText(childSrc, masterUrl), masterPath);
       loaded = r.loadedFile.data[ENSCRIBE_LOADED_SOURCES];
       if (!isBook) assembled = r.tree;
@@ -1464,7 +1480,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
       const loaded = loadedBySrc.get(pd.resolved.sourcePath) || {};
       currentBookEdit = mountEditLoop({
         root: contentRegion, proc, masterSource: pd.source,
-        childSrcs: discoverChildSrcs(proc, pd.source),
+        childSrcs: discoverChildSrcs(proc.parse(pd.source)),   // #426: structural discovery
         loadedFile: { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } },
         editor, debounceMs, embedded: true, pageSlug: pd.slug, pageSrcDir: pd.resolved.sourcePath,
       });

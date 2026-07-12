@@ -93,6 +93,12 @@ spec-ahead-of-code markers: every clause below is realized behavior.)*
    as if the author had written one file. Assembly answers "what is the text?"; structuring answers
    "what does the text mean?"; assembly always runs first and structuring never knows the seams.
 
+   Assembly triggers on parsed structure, never on raw text: a document enters the assembly path
+   only when its parse carries an actual src-bearing entry — a structural `<… src>` or an
+   `<include src>` — so a src-form inside a code fence or inline-code span is verbatim content and
+   never triggers it. This is what lets a page *document* the transclusion syntax (a fenced
+   `<include src=…>` example) without the page itself being assembled.
+
 2. **`src=` supplies an element's initial content; it does not close the element.**
    `<section src=f.emd | Title>` means: open the section with that title, splice `f.emd`'s content
    as the section's initial body, and continue reading — everything after it in the calling file

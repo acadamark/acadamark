@@ -17,7 +17,7 @@
 import { readFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { VFile } from 'vfile';
-import { buildEnscribePipeline, assembleMasterDocument, HAS_MASTER_SRC } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, assembleMasterDocument, hasMasterSrcEntries } from '@enscribejs/enscribe';
 
 /**
  * Construct the document render pipeline. The one place `buildEnscribePipeline` is called for a
@@ -40,36 +40,46 @@ export function buildDocumentPipeline(pipeOpts = {}) {
  */
 export function renderArticleFile(source, pipeOpts = {}) {
   // #424: assembly is universal — a source carrying src-entries (structural forms or the
-  // <include> primitive) assembles BEFORE the pipeline runs, exactly as the browser's
-  // renderMasterAsync wrapper branches on the same HAS_MASTER_SRC gate. This is what makes
-  // `enscribe render` and a website article page splice includes; a source with no
-  // src-bearing tags takes the unchanged processSync path (assembleMasterDocument on such
-  // a source is a passthrough, so the gate is a fast-path, not a semantic fork). Paths
-  // resolve against assetsDir (the pipeline's existing resolution base), falling back to
-  // the source file's own directory.
+  // <include> primitive) assembles BEFORE the pipeline runs. #426: the gate is STRUCTURAL —
+  // parse first, then ask hasMasterSrcEntries(tree); a src-form inside a code fence or
+  // inline-code span parses as literal text and can never trigger assembly (the #424
+  // regression that leaked the Design page's teaching examples into live tags). Parse-once:
+  // a parse is ~50% of a full render (measured), so BOTH branches reuse this one parse —
+  // the no-src path runs the already-parsed tree (unified's own processSync sequence:
+  // parse → run → stringify on one vfile), and the assembly path hands the tree to the
+  // assembler via a memoized parse. Paths resolve against assetsDir (the pipeline's
+  // existing resolution base), falling back to the source file's own directory.
   const value = typeof source === 'string' ? source : String(source.value ?? '');
-  if (HAS_MASTER_SRC.test(value)) {
-    const proc = buildDocumentPipeline(pipeOpts);
-    const file = new VFile(
-      typeof source === 'string'
-        ? {}
-        : { ...(source.path ? { path: source.path } : {}), ...(source.data ? { data: source.data } : {}) },
-    );
+  const proc = buildDocumentPipeline(pipeOpts);
+  const file = new VFile(
+    typeof source === 'string'
+      ? { value }
+      : { value, ...(source.path ? { path: source.path } : {}), ...(source.data ? { data: source.data } : {}) },
+  );
+  const parsed = proc.parse(file);
+  let tree = parsed;
+  if (hasMasterSrcEntries(parsed)) {
     const base = pipeOpts.assetsDir
       ?? (typeof source === 'object' && source.path ? dirname(source.path) : '.');
-    const tree = assembleMasterDocument({
+    // The assembler's FIRST parse call is the master itself — hand it the parse already in
+    // hand, exactly once (a child that happened to be byte-identical must still parse fresh:
+    // shared nodes across two splice points would alias under runSync's in-place mutation).
+    let masterParseServed = false;
+    tree = assembleMasterDocument({
       source: value,
       readFile: (p) => readFileSync(p, 'utf8'),
       resolve: (rel) => join(base, rel),
-      parse: (s) => proc.parse(s),
+      parse: (s) => {
+        if (!masterParseServed && s === value) { masterParseServed = true; return parsed; }
+        return proc.parse(s);
+      },
       warn: (m) => file.message(m),
       ...(typeof source === 'object' && source.path ? { selfSrc: basename(source.path) } : {}),
     });
-    const ran = proc.runSync(tree, file);
-    file.value = String(proc.stringify(ran, file));
-    return file;
   }
-  return buildDocumentPipeline(pipeOpts).processSync(source);
+  const ran = proc.runSync(tree, file);
+  file.value = String(proc.stringify(ran, file));
+  return file;
 }
 
 /**

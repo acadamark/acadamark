@@ -48,10 +48,10 @@ import {
   pageErrorViewHtml,
   NOT_FOUND_SLUG,
   assembleMasterDocument,
-  HAS_MASTER_SRC,
+  hasMasterSrcEntries,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER, ENSCRIBE_CONFIG } from '@enscribejs/enscribe/core/file-data-keys';
-import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
+import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { buildDocumentPipeline, renderArticleFile, renderArticleTreeFile, assembleAndNumber } from './render-document.js';
 import { diagnosticsScript } from './diagnostics.js';
 
@@ -294,17 +294,21 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         continue;
       }
       source = readFileSync(resolved.sourcePath, 'utf8');
-      isBook = classifyDocTypeFromSource(source, classifyProc).type === 'book';
+      // ONE parse serves classification, the structural assembly gate (#426), and the marker-7
+      // splice base below — a parse is ~50% of a full render (measured), so it is not repeated.
+      const pageTree = classifyProc.parse(source);
+      isBook = classifyDocType(pageTree).type === 'book';
       // #404 marker 7: interstitial master content authored after this `<item src>` (captured as
       // `page.body` by the website structurer) JOINS this page. For an ARTICLE page, splice it as
       // trailing content of ONE tree — so a figure in the interstitial numbers within this page and
       // its ids are owned by this page (the routing invariant needs the ids on a real page) — and
       // render via the tree seam. No interstitial → tree stays unset → source render, byte-identical.
-      // #424: an ARTICLE page whose own source carries src-entries (an <include>, or a
-      // structural src form) ASSEMBLES into the same tree seam — Phase 1 then harvests the
-      // spliced content's anchors and Phase 2 renders the same tree, exactly like an
-      // interstitial/inline page. Paths resolve page-relative (the including-file rule).
-      const needsAssembly = !isBook && HAS_MASTER_SRC.test(source);
+      // #424/#426: an ARTICLE page whose PARSE carries src-entries (an <include>, or a structural
+      // src form) ASSEMBLES into the same tree seam. The gate is STRUCTURAL (hasMasterSrcEntries on
+      // the parsed tree) — a src-form inside a code fence or inline-code span is literal text and
+      // never triggers assembly, so a page that TEACHES `<include src=…>` in fenced examples (the
+      // Design page) renders as the plain article it is. Paths resolve page-relative.
+      const needsAssembly = !isBook && hasMasterSrcEntries(pageTree);
       if (needsAssembly) {
         const assembleProc = buildDocumentPipeline({ assetsDir: resolved.pageDir });
         tree = assembleMasterDocument({
@@ -317,7 +321,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         });
       }
       if (!isBook && page.body && page.body.length > 0) {
-        if (!tree) tree = classifyProc.parse(source);
+        if (!tree) tree = pageTree;    // the one parse above — the former fresh re-parse, reused
         tree.children.push(...page.body);
       } else if (isBook && page.body && page.body.length > 0) {
         // A book page's insertion point for trailing article-level content is not yet defined

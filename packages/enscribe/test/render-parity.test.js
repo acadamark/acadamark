@@ -24,7 +24,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, relative } from 'node:path';
 import { render, renderAsync, renderMasterAsync } from '../src/interpreter/browser.js';
-import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC } from '../src/interpreter/index.js';
+import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, hasMasterSrcEntries } from '../src/interpreter/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -56,7 +56,9 @@ const FIXTURE_OPTIONS = {
   'master-book': { toc: true },
 };
 
-const isMaster = (src) => HAS_MASTER_SRC.test(src);
+// #426: structural detection — a fenced src-form is a text node, never an entry.
+const parityDetectProc = buildEnscribePipeline({});
+const isMaster = (src) => hasMasterSrcEntries(parityDetectProc.parse(src));
 
 // A single-file fixture with an external `src` — a <library src> bibliography (#196) or a
 // <table src> / <csv src> / <tsv src> data file (#195): its LIVE render is the async path

@@ -20,15 +20,16 @@
 
 import assert from 'node:assert/strict';
 import { buildEnscribePipeline } from '../src/interpreter/index.js';
-import { assembleMasterDocument } from '../src/master-document/assemble.js';
+import { assembleMasterDocument, hasMasterSrcEntries } from '../src/master-document/assemble.js';
 
 // An fs-free harness: files live in a map; resolve is identity (map keys are the
 // composed master-relative paths — exactly the browser preload shape).
-function render(files, masterName = 'master.emd', warnings = []) {
+function render(files, masterName = 'master.emd', warnings = [], reads = []) {
   const proc = buildEnscribePipeline({});
   const tree = assembleMasterDocument({
     source: files[masterName],
     readFile: (p) => {
+      reads.push(p);
       if (!(p in files)) throw new Error(`no such file: ${p}`);
       return files[p];
     },
@@ -159,5 +160,50 @@ export function run() {
     passed++;
   }
 
-  console.log(`include (#424): ${passed}/8 passed`);
+  // ── #426: the assembly gate is STRUCTURAL — verbatim src-forms never trigger it ──
+  // The contract behind master-document.md §"Substitution before structure": a document enters
+  // the assembly path only when its PARSED tree carries an actual src-bearing entry. A src-form
+  // inside a code fence or inline-code span is a text node, never an entry.
+  {
+    const proc = buildEnscribePipeline({});
+    const parse = (s) => proc.parse(s);
+    // Real entries → TRUE
+    assert.equal(hasMasterSrcEntries(parse('<meta type=article title=A />\n\n<section src=s.emd | S>\n')), true,
+      'a real <section src> triggers the gate');
+    assert.equal(hasMasterSrcEntries(parse('Prose.\n\n<include src=part.emd />\n\nMore.\n')), true,
+      'a real <include src> triggers the gate');
+    // Fenced / inline-code src-forms → FALSE (the #426 regression's exact shape)
+    assert.equal(hasMasterSrcEntries(parse('Teaching:\n\n```\n<include src=methods.emd />\n<chapter src=ch1.emd | One>\n```\n')), false,
+      'a FENCED <include src>/<chapter src> example does NOT trigger the gate');
+    assert.equal(hasMasterSrcEntries(parse('Splice a file with `<include src=methods.emd />` at its call site.\n')), false,
+      'an INLINE-CODE <include src> mention does NOT trigger the gate');
+    // The pre-#426 raw regex would have matched all four; the structural gate splits them correctly.
+    console.log('PASS: #426 — the assembly gate is structural: real src-entries trigger, fenced/inline src-forms do not');
+    passed++;
+  }
+
+  // ── #426: one document, both shapes — assembles the REAL entry, ignores the FENCED example ──
+  // The load-bearing case: a page that TEACHES <include src> in a fence AND genuinely uses one.
+  {
+    const reads = [];
+    const warnings = [];
+    const html = render({
+      'master.emd':
+        '<meta type=article title="Mixed" />\n\n' +
+        'How to transclude — write this:\n\n' +
+        '```\n<include src=NEVER_READ.emd />\n```\n\n' +   // fenced: documentation, must NOT be read
+        'And here is a real one:\n\n' +
+        '<include src=real.emd />\n\n' +
+        'End.\n',
+      'real.emd': 'REAL_CHILD_BODY spliced in.\n',
+    }, 'master.emd', warnings, reads);
+    assert.match(html, /REAL_CHILD_BODY/, 'the real <include src=real.emd> assembled its child');
+    assert.match(html, /NEVER_READ\.emd/, 'the fenced example text survives verbatim (shown, not spliced)');
+    assert.ok(!reads.includes('NEVER_READ.emd'), 'the FENCED example file was never read (not treated as a live include)');
+    assert.deepEqual(warnings, [], 'no could-not-load warning for the fenced example');
+    console.log('PASS: #426 — a document teaching <include src> in a fence AND using one: real assembles, fenced ignored');
+    passed++;
+  }
+
+  console.log(`include (#424, #426): ${passed}/10 passed`);
 }

@@ -58,14 +58,31 @@ export function isIncludeEntry(node) {
   return isEnscribeTag(node, 'include') && node.kwargs?.src != null;
 }
 
-// A cheap source-level pre-check (before any parse): does the text contain a
-// MASTER_SRC_TAGS tag (or an `<include>`) with a `src=`? Built from the set so it
-// can't drift from it. Used by the browser entry and the fixture renderer to decide
-// "does this document need assembly?".
-export const HAS_MASTER_SRC = new RegExp(
-  `<(?:${[...MASTER_SRC_TAGS, 'include'].join('|')})\\b[^>]*\\bsrc\\s*=`,
-  'i',
-);
+/**
+ * The assembly gate (#426): does this PARSED document carry an actual src-bearing entry —
+ * a structural `<section/chapter/… src>` or an `<include src>` — at the level the assembler
+ * resolves them (the root)? This is the ONE detection authority, and it is deliberately
+ * STRUCTURAL, never textual: a src-form inside a code fence, an inline-code span, or any
+ * verbatim context parses as literal text, never as an enscribeTag, so documentation
+ * examples can NEVER trigger assembly — by construction, not by pattern-dodging.
+ *
+ * (Replaces the raw-source HAS_MASTER_SRC regex, which matched src-forms inside the Design
+ * page's own fenced teaching examples and routed the whole page through assembly — the #424
+ * regression: a path-less re-render, example tags gone live, spurious library-error boxes on
+ * the deployed page. The regex is REMOVED, not refined: a smarter pattern would still be
+ * text-reading, and the next author documenting any src form would re-trip it. Spec:
+ * master-document.md §Transclusion — assembly triggers on parsed structure; verbatim content
+ * never triggers it. Detection matches the assembler's own walk exactly: the same two
+ * predicates over the same root-level children.)
+ *
+ * Cost note (measured, 2026-07-13): a parse is ~50% of a full render on real docs pages
+ * (Design: 33ms of 60ms), so callers do NOT parse an extra time for detection — every call
+ * site parses once and REUSES the tree (runSync on the no-src path; a memoized `parse` into
+ * assembleMasterDocument on the src path).
+ */
+export function hasMasterSrcEntries(tree) {
+  return (tree?.children ?? []).some((n) => isMasterSrcEntry(n) || isIncludeEntry(n));
+}
 
 /**
  * POSIX-relative composition: a `src` written inside the file at `baseSrc` (a

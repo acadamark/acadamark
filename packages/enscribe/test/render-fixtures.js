@@ -23,7 +23,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'n
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename, resolve } from 'node:path';
 import { VFile } from 'vfile';
-import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, HAS_MASTER_SRC, publishBookPages, emitLiveShell } from '../src/interpreter/index.js';
+import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, hasMasterSrcEntries, publishBookPages, emitLiveShell } from '../src/interpreter/index.js';
 import { MASTER_BOOK_SHELL_PARAMS } from './fixtures/master-book/shell-params.mjs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, 'fixtures');
@@ -90,12 +90,12 @@ const TOC_FIXTURES = new Set([
  * and the browser `renderMasterAsync` perform — into one document, then rendered
  * to a single golden. The child `.emd` files are fragments consumed by the
  * assembly, so they get no standalone golden. Detection reuses the assembler's own
- * shared `HAS_MASTER_SRC` gate + `isMasterSrcEntry` predicate (no drift), and the
- * children are read off the parsed master, so this is general — not hardcoded to
- * the master/, master-xref/, … dirs or to one document class.
+ * shared `hasMasterSrcEntries` gate + `isMasterSrcEntry` predicate (no drift, #426:
+ * structural), and the children are read off the parsed master, so this is general —
+ * not hardcoded to the master/, master-xref/, … dirs or to one document class.
  */
-function isMaster(src) {
-  return HAS_MASTER_SRC.test(src);
+function isMaster(src, proc) {
+  return hasMasterSrcEntries(proc.parse(src));
 }
 
 // The set of child source paths consumed by every master fixture — skipped in
@@ -106,7 +106,7 @@ function collectConsumedChildren(emdPaths) {
   const proc = buildEnscribePipeline({});
   for (const p of emdPaths) {
     const src = readFileSync(p, 'utf8');
-    if (!isMaster(src)) continue;
+    if (!isMaster(src, proc)) continue;
     for (const node of proc.parse(src).children ?? []) {
       if (isMasterSrcEntry(node)) {
         consumed.add(join(dirname(p), node.kwargs.src));
@@ -175,7 +175,7 @@ function renderFixture(emdPath) {
   // handoff `enscribe build` and the browser `renderMasterAsync` also perform). A
   // plain document renders straight through.
   let fragment;
-  if (isMaster(src)) {
+  if (isMaster(src, processor)) {
     const masterDir = dirname(emdPath);
     const tree = assembleMasterDocument({
       source: src,

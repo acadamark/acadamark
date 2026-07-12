@@ -13,9 +13,18 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { VFile } from 'vfile';
 import { buildEnscribePipeline, assembleMasterDocument, publishBookPages } from '@enscribejs/enscribe';
+import { readFileSync } from 'node:fs';
 import { buildStaticWebsite } from '../src/static-website.js';
+import { renderArticleFile } from '../src/render-document.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(__dirname, '..', '..', '..');
+const DOCS_SOURCE = join(REPO_ROOT, 'docs-source');
+
+// Count the visible library-error boxes (#426's deployed-page symptom) in built HTML.
+const libraryErrorBoxes = (html) => (html.match(/enscribe-library-error/g) || []).length;
+// A message with no page attribution — the categorical defect #427 hardens the guard against.
+const anonymousWarn = (w) => /\(input\)/.test(w);
 
 // In-memory assembly: children are supplied as a { 'src.emd': 'source' } map, resolved by identity.
 function assembleRender(masterSource, children = {}) {
@@ -140,6 +149,45 @@ export function run_tests() {
     assert.ok(home.includes('WELCOMEBODY'), '#417: the inline item\'s body renders as its page content (zero-length-splice)');
     assert.ok(!warnings.some((w) => /TypeError|undefined/.test(w)), '#417: no TypeError-shaped warning');
     console.log('PASS: #417 — an inline <item | Title> website page builds and carries its body (no crash)');
+  }
+
+  // ── #426: the DESIGN page builds clean through the website (two-phase) path, examples intact ──
+  // The regression proof, on the REAL page. Pre-#426 (raw-regex gate) the Design page's own FENCED
+  // `<include src=…>` / `<chapter src=…>` teaching examples tripped needsAssembly=true, routed the
+  // page onto the shared-tree seam, and the two-phase double-runSync manufactured 9 spurious
+  // library-error boxes + 19 anonymous `(input)` messages + a phantom refs.bib #408 warning. The
+  // structural gate keeps the page on the fresh-parse source path: clean, examples untouched.
+  {
+    const master = '<meta type=website title="Docs" />\n\n<nav>\n<item src=home | Home>\n<item src=design | Design>\n</nav>\n';
+    const { pages, warnings } = buildStaticWebsite({
+      masterSource: master, masterDir: DOCS_SOURCE, defaultCss: '/* css */',
+    });
+    const design = pages.get('design/index.html');
+    assert.ok(design, '#426: the Design page builds');
+    // (1) the 9 spurious boxes are gone — assert on the built output
+    assert.equal(libraryErrorBoxes(design), 0, '#426: zero library-error boxes on the built Design page (was 9)');
+    // (2) its examples are intact — the transclusion teaching section still shows the src forms verbatim
+    assert.match(design, /include src=/, '#426: the Design page still TEACHES <include src> (examples intact)');
+    // (3) no anonymous `(input)` diagnostics, and (4) no phantom refs.bib warning
+    assert.ok(!warnings.some(anonymousWarn), '#426: no anonymous (input) diagnostics in the build');
+    assert.ok(!warnings.some((w) => /refs\.bib/.test(w)), '#426: the phantom refs.bib #408 warning is gone');
+    // (5) the Home page (fenced apparatus "taste" block, no src-form) stays clean too
+    const homePage = pages.get('index.html');
+    assert.equal(libraryErrorBoxes(homePage), 0, '#426: the Home page stays clean (0 boxes)');
+    console.log('PASS: #426 — the Design page builds clean through the website path (0 boxes, no (input), no refs.bib), examples intact; Home clean');
+  }
+
+  // ── #426: standalone render parity — the Design page was already clean standalone; the website now matches ──
+  // `enscribe render` (renderArticleFile → fresh-parse source path) never tripped the raw-regex trap
+  // because it does not go through the two-phase shared-tree seam. This locks that standalone stays
+  // clean AND documents that the website path now produces the same zero-diagnostic result.
+  {
+    const src = readFileSync(join(DOCS_SOURCE, 'design', 'index.emd'), 'utf8');
+    const file = renderArticleFile({ value: src, path: join(DOCS_SOURCE, 'design', 'index.emd'), data: {} },
+      { assetsDir: join(DOCS_SOURCE, 'design') });
+    assert.equal(libraryErrorBoxes(String(file)), 0, '#426: standalone Design render has 0 library-error boxes');
+    assert.equal(file.messages.length, 0, '#426: standalone Design render carries 0 diagnostics (parity with the website path)');
+    console.log('PASS: #426 — standalone Design render is clean (0 boxes, 0 diagnostics); the website path now matches');
   }
 }
 
