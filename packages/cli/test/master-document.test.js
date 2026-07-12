@@ -12,7 +12,8 @@
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { buildEnscribePipeline, assembleMasterDocument } from '@enscribejs/enscribe';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

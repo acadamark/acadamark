@@ -39,6 +39,11 @@ const CORPUS = [
   { master: 'docs-source/index.emd', label: 'docs site (website)', kind: 'website' },
   { master: 'test/routing-invariant/book-front-ref/master.emd', label: 'front-ref book (front-region cross-ref → cover)', kind: 'book' },
   { master: 'packages/cli/test/fixtures/book.emd', label: 'book fixture', kind: 'book' },
+  // #405: the DEGRADED corpus entry — a website with one unresolvable nav page. The build must
+  // SUCCEED (per-item visible degrade: the failed page ships the failed-page view at its own
+  // address) and every emitted href must still resolve — the invariant holding THROUGH failure
+  // is the point of the degrade design, so it is gated permanently.
+  { master: 'test/routing-invariant/degraded-website/index.emd', label: 'degraded website (one failed page)', kind: 'website' },
 ];
 
 function htmlFiles(dir) {
@@ -64,7 +69,13 @@ function idsOf(html) {
 // illustrate the ref element, or a JSDoc comment in a `<pre>` sample). Those are CONTENT, not routing
 // output, so strip `<pre>` and inline `<code>` regions before scanning for navigation refs — otherwise
 // the gate false-positives on documentation that demonstrates the very syntax it checks.
-const stripCode = (html) => html.replace(/<pre\b[\s\S]*?<\/pre>/gi, '').replace(/<code\b[\s\S]*?<\/code>/gi, '');
+// `<script>` regions are the same class (#405): an inlined asset's JSDoc comments — the
+// hover-preview asset documents `<a class="ref" href="#...">` literally — and the embedded
+// diagnostics recap both carry ref-shaped TEXT that is not routing output.
+const stripCode = (html) => html
+  .replace(/<pre\b[\s\S]*?<\/pre>/gi, '')
+  .replace(/<code\b[\s\S]*?<\/code>/gi, '')
+  .replace(/<script\b[\s\S]*?<\/script>/gi, '');
 
 // Every NAVIGATION ref anchor: an <a …> whose class word-set includes `ref` but NOT `ref-error` (the
 // latter is the intentional visible-degrade), carrying an href. Returns [{ href }]. Attribute order is

@@ -1295,7 +1295,7 @@ export { createIncrementalRebuilder, renderLiveChapterEditView, renderLiveChapte
 // merge one registry → render per page) is the shared composeSiteRegistry below; the synthetic-<book>
 // flatten that used to live here (buildWebsiteTree/buildLiveWebsite/renderLiveWebsitePage) was removed
 // with the live #300 lift (#320).
-export { renderNotFoundView, notFoundViewHtml, NOT_FOUND_SLUG, flattenNavPages } from '../master-document/live-website.js';
+export { renderNotFoundView, notFoundViewHtml, pageErrorViewHtml, NOT_FOUND_SLUG, flattenNavPages } from '../master-document/live-website.js';
 // The browser-pure website COMPOSITION core (website.md Phase 1 — the live #300, step 1, #324): number
 // each page natively → harvest → merge one site cross-ref registry → the read-through seed Phase 2 consumes.
 // Browser-pure (I/O injected); the static build calls it, a later live caller will too. See compose-site.js.

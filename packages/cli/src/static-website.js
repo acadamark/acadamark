@@ -44,6 +44,7 @@ import {
   allocatePageSlug,
   rewriteCrossPageHrefs,
   notFoundViewHtml,
+  pageErrorViewHtml,
   NOT_FOUND_SLUG,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
@@ -256,6 +257,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   //    duplicate uniquifies + warns; a pinned `<meta slug>` duplicate is NOT renamed — it warns and
   //    its links are ambiguous (the per-link non-resolution is #299 slice 3), but the build completes.
   const pageData = [];                 // [{ page, resolved, source, slug, isBook }] in nav order
+  const failedPages = [];              // #405: [{ slug, title, reason }] — each ships an error page at its address
   const pageInfo = new Map();          // slug → { title, isDerived, src }
   // #404: `not-found` is RESERVED — the lazy not-found page emits at `not-found/index.html`, so no author
   // page may take that slug (else the framing pass would clobber the user's page with the not-found view).
@@ -281,7 +283,11 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     } else {
       resolved = resolvePageSource(masterDir, page.src);
       if (!resolved) {
-        warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
+        // #405: the page cannot be read — it degrades to an ERROR PAGE AT ITS OWN ADDRESS
+        // (the decision: never a silent skip, never a chrome link into a 404). The nav
+        // entry keeps its structurer slug; the stub emits after the render loop.
+        warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — its address ships the failed-page view (#405)`);
+        failedPages.push({ slug: page.slug, title: page.title || page.slug, reason: `source "${page.src}" could not be read` });
         continue;
       }
       source = readFileSync(resolved.sourcePath, 'utf8');
@@ -327,7 +333,10 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
     pageData.push({ page, resolved, source, tree, slug, isBook });
   }
-  if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
+  // #405: an all-pages-failed site still BUILDS — shell + a failed-page stub per nav entry +
+  // the loud summary (never a crash, never empty silence). Only a genuinely empty nav —
+  // nothing resolvable AND nothing that failed — is a hard authoring error.
+  if (pageData.length === 0 && failedPages.length === 0) throw new Error('website master <nav> has no resolvable pages');
 
   // 3. Output location mirrors the nav TREE (slice 1): group segments (slugified group titles) + the
   //    page's slug; home (the first nav page) → the dist root. Now keyed on meta-slugs (remapped above).
@@ -401,11 +410,28 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   //    rail, carried inside the book body fragment — untouched). Articles get the top bar + their own
   //    right section nav. (buildWebsiteSidebar still serves the LIVE website's opt-in <config sidebar>
   //    via browser.js; it is simply no longer used by the static article composition.)
-  const topBar = buildWebsiteTopBar({ title: masterTitle, icon: null, firstSlug: homeSlug }, entries);
-
   const pageMap = new Map();
   const assets = [];
   const shippedAssetDests = new Set(); // #408: dedupe referenced-asset shipping across pages
+
+  // #405 (surface parity): the live top bar renders `<meta icon>`; the static build discarded
+  //   it. Read it from the parsed nav master, ship the file, and render it PER PAGE with the
+  //   same depth-relative `up` treatment the favicon links get (the topBar's `?page=` hrefs are
+  //   already relativized per page by staticize — the icon src needs the same, so the once-built
+  //   bar becomes a per-page build; buildWebsiteTopBar is a cheap string join).
+  const brandIconRel = (() => {
+    const metaNode = (navProc.parse(masterSource).children ?? []).find((n) => n?.type === 'enscribeTag' && n.tagname === 'meta');
+    const icon = metaNode?.kwargs?.icon ?? null;
+    if (!icon || /^(?:[a-z][a-z0-9+.-]*:|\/)/i.test(icon)) return icon; // URL/absolute: use verbatim, ship nothing
+    try {
+      if (statSync(join(masterDir, icon)).isFile()) { assets.push({ from: join(masterDir, icon), to: icon }); return icon; }
+    } catch { /* missing */ }
+    warnings.push(`<meta icon="${icon}"> not found under ${masterDir} — the top bar renders without it (#405)`);
+    return null;
+  })();
+  const topBarFor = (up) => buildWebsiteTopBar(
+    { title: masterTitle, icon: brandIconRel ? (/^(?:[a-z][a-z0-9+.-]*:)/i.test(brandIconRel) ? brandIconRel : `${up}${brandIconRel}`) : null, firstSlug: homeSlug }, entries);
+
 
   // ── #300 slice 2: COMPOSITION model. Number each page in its OWN native scope, harvest its cross-ref
   //    registry, MERGE into one SITE registry, then render each page natively and resolve cross-page refs
@@ -475,10 +501,20 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         // serves them all; the within-book scheme + warnings match the per-page form this replaced.
         const { numbered, file, proc } = assembleAndNumber({
           source, sourcePath: resolved.sourcePath, masterDir: resolved.pageDir,
-          warn: () => {}, pipeOpts: { assetsDir: resolved.pageDir },
+          // #405: the dead sink dies — Phase-2 assembler warnings ride the book's own vfile
+          // like every other producer (#402). Phase 1 collected the site-scoped copies; these
+          // carry the per-book provenance the seam's summary and recap group by.
+          pipeOpts: { assetsDir: resolved.pageDir },
           fileData: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(`${destPrefix}index.html`, slug) },
         });
-        const bookBodies = publishBookPageBodies({ numbered, file, proc });
+        // #405 (#403's unowned-anchor row for website books): routing diagnostics reach the stream.
+        const bookBodies = publishBookPageBodies({ numbered, file, proc,
+          onUnowned: (anchor, owner) => file.message(`anchor "${anchor}" has no owning chapter — routed to ${owner}`, undefined, 'routing:unowned-anchor') });
+        // #405: the book's message stream reaches BOTH seam channels (it was dropped whole
+        // before): the terminal per-document report, and the embedded recap on every chapter
+        // page — any chapter is an entry point, mirroring the standalone separate-pages build.
+        diagnostics?.report(file);
+        const bookRecap = diagnosticsScript(file.messages);
         for (const [fname, entry] of bookBodies) {
           const outPath = `${destPrefix}${fname}`;
           if (entry.page != null) {
@@ -495,7 +531,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
             // A book chapter's static file is `<stem>.html` (its cover is `index.html`); carry the stem so
             // the framing pass links this chapter page to its exact live twin `?page=<slug>&chapter=<stem>`.
             const chapterStem = fname === 'index.html' ? null : fname.replace(/\.html$/, '');
-            rendered.push({ outPath, slug, title: entry.title, content: body, chapterStem });
+            rendered.push({ outPath, slug, title: entry.title, content: body + bookRecap, chapterStem });
             assets.push(...auditReferencedAssets(body, resolved.pageDir, destPrefix, shippedAssetDests, warnings, slug));
           }
         }
@@ -532,7 +568,9 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         assets.push(...auditReferencedAssets(content, resolved.pageDir, destPrefix, shippedAssetDests, warnings, slug));
       }
     } catch (err) {
-      warnings.push(`page "${slug}" failed to render: ${err.message}`);
+      // #405: a page that fails to parse/render degrades the same way — error page at its address.
+      warnings.push(`page "${slug}" failed to render: ${err.message} — its address ships the failed-page view (#405)`);
+      failedPages.push({ slug, title: page.title || slug, reason: err.message });
       continue;
     }
     assets.push(...colocatedAssets);
@@ -549,6 +587,22 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
       outPath, slug: NOT_FOUND_SLUG, title: 'Page not found',
       content: notFoundViewHtml('this page', upFrom(outPath)),   // homeHref → the site root (serves home)
     });
+  }
+
+  // #405: every failed page ships the failed-page view AT ITS OWN ADDRESS (pageErrorViewHtml,
+  // single-sourced with the live SPA's view) — the chrome's link to it lands on a real,
+  // explicable page, so the routing invariant holds THROUGH the failure. Emitted before the
+  // framing pass: the stub wears the universal shell like any page. A site whose every page
+  // failed still emits its shell + stubs + a loud summary — never a crash, never empty silence.
+  for (const f of failedPages) {
+    const outPath = `${destPrefixOf(f.slug)}index.html`;
+    rendered.push({
+      outPath, slug: f.slug, title: f.title,
+      content: pageErrorViewHtml(f.slug, f.reason, upFrom(outPath)),
+    });
+  }
+  if (failedPages.length > 0) {
+    warnings.push(`${failedPages.length} of ${pageData.length + failedPages.length} pages failed — each ships the failed-page view at its address (#405)`);
   }
 
   // The live-diagram runtime block for the universal head — the pinned-CDN <script src> + init for each
@@ -573,7 +627,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
       up, description: firstParagraphText(content), ogTitle: pageTitle, siteName: masterTitle, siteBaseUrl,
     });
     const html = composeWebsiteShellPage({
-      defaultCss, title: pageTitle, topBar, content, dslHead, headMeta,
+      defaultCss, title: pageTitle, topBar: topBarFor(up), content, dslHead, headMeta,
       playgroundHref: liveHrefFor(outPath, slug, chapterStem),
     });
     pageMap.set(outPath, staticize(html, outPath));

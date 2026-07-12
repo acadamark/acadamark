@@ -107,6 +107,9 @@ export async function run_tests() {
   // ── STATIC: build the whole site from the p314 master on disk. ──
   const dir = mkdtempSync(join(tmpdir(), 'enscribe-parity-'));
   for (const [name, body] of Object.entries(FILES)) writeFileSync(join(dir, name), body);
+  // #408: the pages reference these assets; the referenced-vs-shipped audit verifies they exist
+  // (and ships them) — write the real files so the fixture is truthful and the audit stays quiet.
+  for (const svg of ['a.svg', 'b.svg', 'w.svg']) writeFileSync(join(dir, svg), '<svg xmlns="http://www.w3.org/2000/svg"/>');
   const { pages: S, warnings } = buildStaticWebsite({ masterSource: MASTER, masterDir: dir, defaultCss: '' });
   assert.ok(!warnings.some((m) => /not found|failed/i.test(m)), `static: no cross-page resolution failures (warnings: ${warnings.join(' | ')})`);
 

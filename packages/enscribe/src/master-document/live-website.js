@@ -54,6 +54,21 @@ export function notFoundViewHtml(label, homeHref) {
   );
 }
 
+/** The failed-page VIEW BODY (#405 — always-renders at website scale). Distinct from the
+ *  not-found view: this page EXISTS but could not be read/parsed/rendered. The static build
+ *  ships it AT THE PAGE'S OWN ADDRESS (the decision: "a missing page ships as an error page at
+ *  its address"), so nav chrome keeps routing to a real, explicable landing; the live SPA
+ *  renders the same body inline when one page's fetch/render fails, so one bad page never takes
+ *  the site down. `reason` is the human account (read error / parse error / render throw). */
+export function pageErrorViewHtml(label, reason, homeHref) {
+  return (
+    `<div class="enscribe-website-pageerror" role="alert"><p>⚠ This page failed to build: <code>${esc(label)}</code>.</p>` +
+    (reason ? `<p>${esc(reason)}</p>` : '') +
+    (homeHref ? `<p><a href="${esc(homeHref)}">Go to the first page</a></p>` : '') +
+    `</div>`
+  );
+}
+
 /** The not-found view for an unknown `?page=` slug — the live SPA's router renders it (with a
  *  `{ firstSlug }` model) when `?page=` names no known page. Delegates to the shared body so the
  *  static build emits byte-identical markup. */

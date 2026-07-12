@@ -65,6 +65,12 @@ jobs:
       - name: Live-examples freshness guard (#390)
         run: npm run examples:check
 
+      # #404/#405: the routing invariant — every id on exactly one page; every href resolves or
+      # routes to the not-found view — checked over the real built corpus, INCLUDING the degraded
+      # website (one failed page): the invariant holds THROUGH failure. Builds with the real CLI.
+      - name: Routing invariant gate (#404)
+        run: npm run check:routing
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 

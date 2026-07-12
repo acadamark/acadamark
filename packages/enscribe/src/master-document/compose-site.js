@@ -58,6 +58,21 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
   const ownerToUrl = new Map();
   const bookFnameOwner = new Map();
 
+  // #403 (deferred row, landed here): cross-page duplicate-anchor detection at the ONE point
+  // every site anchor flows through — the merge itself (the one-sink policy's site-scale
+  // analogue: detect at the choke point, one sink, zero per-branch wiring). Later page in nav
+  // order still wins site-wide (last-wins so documents fully render — Ariel's #403 policy),
+  // but the eviction is now accounted for with per-page provenance on both surfaces (static:
+  // the build warnings; live: the console).
+  const mergeAnchor = (anchor, entry, owner, sourcePath) => {
+    const prev = idToOwner.get(anchor);
+    if (prev != null && prev !== owner) {
+      warn(`site-registry: duplicate anchor "${anchor}" — "${owner}" (${sourcePath}) overrides "${prev}"; cross-page refs now resolve to the later page (site-registry:duplicate-anchor)`);
+    }
+    siteHarvest.set(anchor, entry);
+    idToOwner.set(anchor, owner);
+  };
+
   for (const { resolved, source, tree, slug, isBook } of pages) {
     const destPrefix = destPrefixOf(slug);
     try {
@@ -70,10 +85,9 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
         // WITHOUT rendering. Tag every anchor with the CHAPTER-PAGE it renders on, not one book slug.
         const { registry: harvest, idToUrl } = prepareBook(numbered, file);
         for (const [anchor, e] of harvest) {
-          siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });
           const fname = e.chapter != null ? idToUrl.get(e.chapter) : null;
           const owner = `${slug}::${fname ?? 'index.html'}`;
-          idToOwner.set(anchor, owner);
+          mergeAnchor(anchor, { number: e.number, title: e.title, type: e.type }, owner, resolved.sourcePath);
           ownerToUrl.set(owner, `${destPrefix}${fname ?? 'index.html'}`);
           if (fname) bookFnameOwner.set(`${destPrefix}${fname}`, owner);
         }
@@ -86,8 +100,7 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
         const numbered = proc.runSync(tree ?? proc.parse(source), file);   // number only — no render
         ownerToUrl.set(slug, destPrefix);                          // the article's pretty URL ('' = root)
         for (const [anchor, e] of harvestCrossRefRegistry(numbered, file)) {
-          siteHarvest.set(anchor, { number: e.number, title: e.title, type: e.type });
-          idToOwner.set(anchor, slug);
+          mergeAnchor(anchor, { number: e.number, title: e.title, type: e.type }, slug, resolved.sourcePath);
         }
       }
     } catch (err) {

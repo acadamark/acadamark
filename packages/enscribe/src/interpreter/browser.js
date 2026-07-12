@@ -38,6 +38,7 @@ import {
   resolvePageSlug,
   allocatePageSlug,
   renderNotFoundView,
+  pageErrorViewHtml,
   notFoundViewHtml,
   flattenNavPages,
   extractDocumentTitle,
@@ -1042,7 +1043,11 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // `<chapter src>` children too (loadAndAssembleMaster — the new fetch level, the #314 substance). For a
   // large site this is the eager-fetch cost: a later progressive/lazy-fill follow-up (noted, not solved here).
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
-  const fetched = await Promise.all(externalPages.map(async (p) => {
+  // #405 (always-renders at website scale): each page settles INDEPENDENTLY — one bad page
+  // must never take down the whole mount. A failed fetch/parse records {p, error}; the model
+  // marks the slug as an error page, the router renders the shared failed-page view for it,
+  // and every other page mounts normally.
+  const fetched = await Promise.all(externalPages.map((p) => (async () => {
     // #331: each website page is deployed in its OWN directory — master at `<src>/index.emd`, its book
     // children BESIDE it (build-live.js). Fetch the master at `<src>/index.emd`, and resolve a book page's
     // chapter children MASTER-RELATIVE (`new URL(childSrc, masterUrl)` → `<src>/<childSrc>`) via the
@@ -1065,7 +1070,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
           (childSrc) => fetchSourceText(childSrc, masterUrl))).loadedFile.data[ENSCRIBE_LOADED_SOURCES]
       : null;
     return { p, src, isBook, loaded };
-  }));
+  })().catch((err) => {
+    console.warn(`[enscribe] website page "${p.slug ?? p.src}" failed to load: ${err.message} — the rest of the site mounts; this page shows the failed-page view (#405)`);
+    return { p, error: err.message };
+  })));
   // Assemble a book master to a FRESH pre-runSync tree from its cached (pre-fetched) children — re-parse
   // only, no re-fetch. resolve is identity (the loaded map is keyed by the raw child src).
   const assembleBookTree = (src, loaded) => assembleMasterDocument({
@@ -1081,9 +1089,21 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const sourceBySlug = new Map();              // slug → source TEXT (the editor's value in edit mode; no re-fetch)
   const loadedBySrc = new Map();               // a book page's src → its cached (pre-fetched) child sources
   const usedSlugs = new Set();
-  const pageData = fetched.map(({ p, src, isBook, loaded }) => {
+  const pageData = fetched.map(({ p, src, isBook, loaded, error }) => {
+    // #405: a page that failed to fetch/parse becomes an ERROR PAGE in the model — its nav
+    // entry stays (the universal shell keeps routing), the router renders the shared
+    // failed-page view for its slug, and it is excluded from Phase-1 composition.
+    if (error != null) {
+      const slug = allocatePageSlug(p.slug || 'page', false, usedSlugs,
+        (kind, s) => console.warn(`enscribe website: page slug collision (${kind}: "${s}")`));
+      p.slug = slug;
+      return { slug, isError: true, errorReason: error, title: p.title || slug };
+    }
     const { slug: baseSlug, pinned, title } = resolvePageSlug({ source: src, navTitle: p.title || p.slug, src: p.src });
-    const slug = allocatePageSlug(baseSlug, pinned, usedSlugs);
+    // #403 (deferred row): the live surface now passes the allocator's collision callback —
+    // a pinned <meta slug> duplicate warns instead of silently colliding (static parity).
+    const slug = allocatePageSlug(baseSlug, pinned, usedSlugs,
+      (kind, s) => console.warn(`enscribe website: page slug collision (${kind}: "${s}"${kind === 'pinned' ? ' — pinned slugs are not renamed; the pages collide on ?page=' : ''})`));
     p.slug = slug;                             // remap the nav model entry → the chrome's ?page= links use it
     sourceBySlug.set(slug, src);
     if (loaded) loadedBySrc.set(p.src, loaded);
@@ -1114,7 +1134,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // static build calls (master-document/compose-site.js, #324 step 1). The book branch's assembleAndNumber
   // re-assembles a fresh tree from the cached children (the fetch-based reader where the static caller fs-reads).
   const { idToOwner, seedRegistry } = composeSiteRegistry({
-    pages: pageData,
+    pages: pageData.filter((pd) => !pd.isError),
     destPrefixOf: () => '',                    // the live owner→URL is the owner KEY (?page=slug), not a path prefix
     buildPipeline: (opts) => getPipeline({ ...pipelineOptions, ...opts }),
     assembleAndNumber: ({ source, sourcePath, pipeOpts }) => {
@@ -1177,7 +1197,12 @@ export async function mountLiveWebsite(target, source, options = {}) {
     try {
       const fsrc = await fetchSourceText(footerNode.kwargs.src, baseUrl);
       footerHtml = `<footer class="enscribe-site-footer">${String(proc.stringify(proc.runSync(proc.parse(fsrc), { data: {} })))}</footer>`;
-    } catch { footerHtml = ''; }
+    } catch (err) {
+      // #405: a failed footer degrades VISIBLY in its slot, with a console account — never a
+      // silent absence.
+      console.warn(`enscribe website: <footer src> failed to load: ${err.message}`);
+      footerHtml = `<div class="enscribe-footer-error" role="alert">⚠ footer failed to load</div>`;
+    }
   }
 
   // Persistent shell built ONCE from the nav TREE (with groups): the top bar (brand + nav, a
@@ -1317,6 +1342,11 @@ export async function mountLiveWebsite(target, source, options = {}) {
     teardownEdit();                                              // tear down the prior ARTICLE-page editor
     if (currentBookEdit) { currentBookEdit.teardown(); currentBookEdit = null; }  // and a prior BOOK-page editor
     if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, { firstSlug }) : ''; return; }
+    if (pageBySlug.get(slug)?.isError) {
+      // #405: nothing to edit — the page's source never loaded; show the failed-page view.
+      contentRegion.innerHTML = pageErrorViewHtml(slug, pageBySlug.get(slug).errorReason, firstSlug ? `?page=${firstSlug}` : '');
+      return;
+    }
     // Dispatch on page TYPE exactly as READ mode (renderPageInto) does — a book page edits PER-CHAPTER, an
     // article page edits as one unit. (Before the unification this path was book-blind: EVERY page fell to the
     // single-unit branch below, so a book page rendered its UNASSEMBLED master — empty chapters, no rail.)
@@ -1385,6 +1415,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
         contentRegion.innerHTML = renderNotFoundView(slug, { firstSlug });
       } else if (slug == null) {
         contentRegion.innerHTML = '';
+      } else if (pageBySlug.get(slug)?.isError) {
+        // #405: the page exists but failed to load — the graceful failed-page view, this page only.
+        const pd = pageBySlug.get(slug);
+        contentRegion.innerHTML = pageErrorViewHtml(slug, pd.errorReason, firstSlug ? `?page=${firstSlug}` : '');
       } else {
         // Render the page NATIVELY — an article as an article, a book as a book sub-view (#314). The
         // render helpers own executeAssets + the page's own layout (a book carries its own rail).

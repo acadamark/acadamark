@@ -1,0 +1,9 @@
+<meta type=website>
+<title|Degraded Site>
+</meta>
+
+<nav>
+<item src="a" +homepage | Home>
+<item src="missing-page" | Ghost>
+<item src="c" | Real>
+</nav>

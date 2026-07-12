@@ -453,4 +453,45 @@ export function run_tests() {
   console.log('PASS: #408 — referenced-vs-shipped audit (subdir ships; missing warns)');
 }
 
+
+// ── #405: a failed page degrades per-item, visibly — error page AT ITS ADDRESS, chrome
+//    keeps routing, warnings account for it, the build never fails ──────────────────────
+{
+  const d = mkdtempSync(join(tmpdir(), 'enscribe-405-'));
+  writeFileSync(join(d, 'index.emd'), '<meta type=website>\n<title|S>\n</meta>\n\n<nav>\n<item src="a" +homepage | Home>\n<item src="ghost" | Ghost>\n<item src="c" | Real>\n</nav>\n');
+  writeFileSync(join(d, 'a.emd'), '<meta type=article>\n<title|Home>\n</meta>\n\nbody');
+  writeFileSync(join(d, 'c.emd'), '<meta type=article>\n<title|Real>\n</meta>\n\nbody');
+  const { pages, warnings } = buildStaticWebsite({ masterSource: readFileSync(join(d, 'index.emd'), 'utf8'), masterDir: d, defaultCss: '' });
+  assert.ok(pages.has('index.html') && pages.has('real/index.html'), 'the two healthy pages render');
+  assert.ok(pages.has('ghost/index.html'), 'the failed page ships a page AT ITS OWN ADDRESS');
+  assert.ok(pages.get('ghost/index.html').includes('enscribe-website-pageerror'), 'the stub is the shared failed-page view');
+  assert.ok(pages.get('index.html').includes('href="ghost/"'), 'the chrome still links the page — and now lands on a real, explicable landing');
+  assert.ok(warnings.some((w) => w.includes('ghost') && w.includes('#405')), 'a warning names the failed page and why');
+  assert.ok(warnings.some((w) => w.includes('1 of 3 pages failed')), 'the loud summary counts the failures');
+  console.log('PASS: #405 — a failed page ships the failed-page view at its address (chrome routes, build succeeds)');
+}
+
+// ── #405 edge: EVERY page failed → shell + stubs + loud summary, never a crash ─────────
+{
+  const d = mkdtempSync(join(tmpdir(), 'enscribe-405-all-'));
+  writeFileSync(join(d, 'index.emd'), '<meta type=website>\n<title|S>\n</meta>\n\n<nav>\n<item src="x" +homepage | X>\n<item src="y" | Y>\n</nav>\n');
+  const { pages, warnings } = buildStaticWebsite({ masterSource: readFileSync(join(d, 'index.emd'), 'utf8'), masterDir: d, defaultCss: '' });
+  assert.ok(pages.size >= 2, 'an all-failed site still emits a page per nav entry');
+  assert.ok([...pages.values()].every((h) => h.includes('enscribe-website-pageerror')), 'each is the failed-page view');
+  assert.ok(warnings.some((w) => w.includes('2 of 2 pages failed')), 'the summary is loud');
+  console.log('PASS: #405 — all-pages-failed still emits shell + stubs + summary (never a crash)');
+}
+
+// ── #403 (deferred row): cross-page duplicate anchors warn at the merge, with provenance ─
+{
+  const d = mkdtempSync(join(tmpdir(), 'enscribe-403-'));
+  writeFileSync(join(d, 'index.emd'), '<meta type=website>\n<title|S>\n</meta>\n\n<nav>\n<item src="a" +homepage | A>\n<item src="b" | B>\n</nav>\n');
+  writeFileSync(join(d, 'a.emd'), '<meta type=article>\n<title|A>\n</meta>\n\n<section #sec:dup | First>\n\nbody');
+  writeFileSync(join(d, 'b.emd'), '<meta type=article>\n<title|B>\n</meta>\n\n<section #sec:dup | Second>\n\nbody');
+  const { warnings } = buildStaticWebsite({ masterSource: readFileSync(join(d, 'index.emd'), 'utf8'), masterDir: d, defaultCss: '' });
+  assert.ok(warnings.some((w) => w.includes('duplicate anchor "sec:dup"') && w.includes('a.emd') === false ? w.includes('overrides') : w.includes('overrides')),
+    'the site-registry merge warns on a cross-page duplicate anchor, naming the winner and the evicted owner');
+  console.log('PASS: #403 — cross-page duplicate anchor warns at the merge (last-wins stays, silence dies)');
+}
+
 }
