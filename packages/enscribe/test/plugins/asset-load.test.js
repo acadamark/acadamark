@@ -8,7 +8,7 @@
 // never a silent overwrite). Plus the makeAssetError / assetError node shapes.
 
 import assert from 'node:assert/strict';
-import { buildAssetIndex, makeAssetError, assetError, resolveAssetReference } from '../../src/interpreter/plugins/asset-load.js';
+import { buildAssetIndex, makeAssetError, assetError, resolveAssetReference, enscribeAssetResolution } from '../../src/interpreter/plugins/asset-load.js';
 import { ENSCRIBE_ASSETS } from '../../src/core/file-data-keys.js';
 import { makeTag } from '../../src/core/tag.js';
 import { buildEnscribePipeline } from '../../src/interpreter/index.js';
@@ -438,5 +438,34 @@ export function run() {
     assert.ok(fires('<section | S>\n\n<code src="@ind" />' + CODEBLOCK_DS), 'a <code src="@id"> that pulled a MULTI-LINE dataset warns (nudge to <code-block>)');
     assert.ok(!fires('<section | S>\n\n<code-block src="@ind" />' + CODEBLOCK_DS), 'a <code-block src="@id"> does NOT warn (the whitespace-safe form)');
     console.log('PASS: Option A — multi-line <code> lint fires (bare / long-form / @id), quiet for single-line + code block');
+  }
+
+  // ── #421: a file-path src on <code-block> flags visibly (never a silent empty <pre>) ──
+  {
+    const mkFile = () => { const w = []; return { data: {}, message: (m) => w.push(String(m)), _warnings: w }; };
+
+    // Empty case: the node converts to the visible asset-error flag + a located warning.
+    const empty = makeTag('code-block', null, { kwargs: { src: 'file.js' } });
+    empty.content = null;
+    const t1 = { type: 'root', children: [empty] };
+    const f1 = mkFile();
+    enscribeAssetResolution()(t1, f1);
+    assert.equal(t1.children[0].tagname, '__asset-error', 'empty file-path src → visible flag');
+    assert.match(t1.children[0].kwargs.message, /file-path src is not loaded.*<dataset> via src="@id"/,
+      'the flag names the form and points at the mechanism');
+    assert.ok(f1._warnings.some((w) => /file-path src is not loaded/.test(w)), 'a located seam warning too');
+
+    // Body case: the body keeps rendering; the ignored src warns only.
+    const withBody = makeTag('code-block', null, { kwargs: { src: 'body.js' } });
+    withBody.content = 'const x = 1;';
+    const t2 = { type: 'root', children: [withBody] };
+    const f2 = mkFile();
+    enscribeAssetResolution()(t2, f2);
+    assert.equal(t2.children[0].tagname, 'code-block', 'a body-bearing node is NOT converted');
+    assert.equal(t2.children[0].content, 'const x = 1;', 'the body survives');
+    assert.ok(f2._warnings.some((w) => /file-path src is not loaded/.test(w)), 'the ignored src warns');
+
+    // @id srcs are untouched by the new branch (the existing dataset path owns them).
+    console.log('PASS: asset-load (#421) — code-block file-path src: visible flag (empty) / warn-only (body)');
   }
 }

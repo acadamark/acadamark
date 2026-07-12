@@ -78,11 +78,18 @@ function extractCiteKeys(node) {
 
 // ─── Internal node factories ──────────────────────────────────────────────────
 
-function makeCiteMarker(keys, html) {
+function makeCiteMarker(keys, html, styleForm = null) {
   return makeInternalMarker('__cite-marker', {
-    kwargs: { keys: keys.join(','), html },
+    kwargs: { keys: keys.join(','), html, ...(styleForm ? { style: styleForm } : {}) },
   });
 }
+
+// #418: the per-citation FORM set — the rendering modes of the ONE document-wide
+// citation style (never a per-cite CSL-style switch; Ariel 2026-07-13). Names per
+// the LaTeX axis and APA/Zotero terminology: parenthetical = \citep (default),
+// narrative = \citet (APA "narrative citation"), suppress-author = Zotero's
+// Suppress Author / Pandoc [-@k]. year-only/author-only bare forms are parked.
+const CITE_FORMS = new Set(['parenthetical', 'narrative', 'suppress-author']);
 
 function makeCiteError(keys) {
   return makeInternalMarker('__cite-error', {
@@ -140,6 +147,30 @@ export function enscribeCiteResolution() {
 
       const keys = items.map((it) => it.key);
 
+      // #418: resolve the per-citation form. Unknown values are the #401 warned-default
+      // (name the kwarg, the value, the accepted set; render parenthetical). narrative is
+      // single-work by nature — a multi-key group warns and falls back (split the group
+      // to mix forms; one form per <cite>).
+      let form = 'parenthetical';
+      let formAuthored = false;
+      const styleRaw = node.kwargs?.style;
+      if (styleRaw != null) {
+        if (CITE_FORMS.has(String(styleRaw))) {
+          form = String(styleRaw);
+          formAuthored = true;
+        } else {
+          file?.message?.(
+            `cite-resolution: style="${styleRaw}" is not a recognized citation form — expected ${[...CITE_FORMS].join(', ')}; the default applies`,
+            node, 'cite:invalid-style');
+        }
+      }
+      if (form === 'narrative' && items.length > 1) {
+        file?.message?.(
+          `cite-resolution: style=narrative is a single-work form — a ${items.length}-key group renders parenthetical (split the group to mix forms)`,
+          node, 'cite:narrative-group');
+        form = 'parenthetical';
+      }
+
       if (keys.length === 0 && malformed.length === 0) {
         file?.message?.('cite-resolution: <cite> has no keys', node);
         return [makeCiteError(['(empty)'])];
@@ -183,29 +214,41 @@ export function enscribeCiteResolution() {
       if (foundKeys.length > 0) {
         // #409: an item with locator/prefix/suffix flows through citation-js as a full
         // citeproc citation item — the CSL style renders labels, punctuation, and order
-        // (Phase 0: 0.7.22 supports this natively). Bare-key cites keep the plain
-        // key-array call, byte-identical to the pre-#409 render.
-        const bare = foundItems.every((it) => !it.locator && !it.prefix && !it.suffix);
-        const entry = bare ? foundKeys : foundItems.map((it) => ({
+        // (Phase 0: 0.7.22 supports this natively). Bare-key parenthetical cites keep the
+        // plain key-array call, byte-identical to the pre-#409/#418 render.
+        const itemProps = (it, extra = {}) => ({
           id: it.key,
           ...(it.locator ? { locator: it.locator, label: it.label || 'page' } : {}),
           ...(it.prefix ? { prefix: it.prefix.endsWith(' ') ? it.prefix : it.prefix + ' ' } : {}),
           ...(it.suffix ? { suffix: it.suffix.startsWith(' ') ? it.suffix : ' ' + it.suffix } : {}),
-        }));
+          ...extra,
+        });
+        const fmt = (entry) => cite.format('citation', { entry, template: style, format: 'html', lang: 'en-US' });
         let html;
         try {
-          html = cite.format('citation', {
-            entry,
-            template: style,
-            format: 'html',
-            lang: 'en-US',
-          });
+          if (form === 'narrative') {
+            // #418: the author-in-text composite ("Doe (1999, p. 42)"). citeproc's cluster
+            // machinery isn't reachable through citation-js's format('citation'), so the
+            // composite is COMPOSED from its two native per-item parts — author-only
+            // (carrying the prefix: "see Doe") + suppress-author (carrying the locator and
+            // suffix: "(1999, p. 42)") — joined with one space. The CSL style still owns
+            // each part's punctuation and localization (the #418 Phase-0 spike).
+            const it = foundItems[0];
+            const authorPart = fmt([{ id: it.key, 'author-only': true, ...(it.prefix ? { prefix: it.prefix.endsWith(' ') ? it.prefix : it.prefix + ' ' } : {}) }]);
+            const parenPart = fmt([itemProps({ ...it, prefix: '' }, { 'suppress-author': true })]);
+            html = `${authorPart} ${parenPart}`;
+          } else {
+            const suppress = form === 'suppress-author';
+            const bare = !suppress && foundItems.every((it) => !it.locator && !it.prefix && !it.suffix);
+            const entry = bare ? foundKeys : foundItems.map((it) => itemProps(it, suppress ? { 'suppress-author': true } : {}));
+            html = fmt(entry);
+          }
         } catch (err) {
           // Shouldn't happen (we pre-checked), but defend against it.
           file?.message?.(`cite-resolution: format error: ${err.message}`, node);
           html = `??cite-error: ${foundKeys.join(', ')}??`;
         }
-        replacements.push(makeCiteMarker(foundKeys, html));
+        replacements.push(makeCiteMarker(foundKeys, html, formAuthored ? form : null));
       }
 
       if (missingKeys.length > 0) {

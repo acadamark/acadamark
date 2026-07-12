@@ -459,9 +459,25 @@ function resolveCodeSrc(node, assets) {
  * a code-block's language is `positional[0]` (mirroring `<table>`/`<diagram>`), not a `language` kwarg
  * as on inline `<code>`. Inline body (a non-`@` `src`, or a `<code-block …>…</code-block>` body) is untouched.
  */
-function resolveCodeBlockSrc(node, assets) {
+function resolveCodeBlockSrc(node, assets, file) {
   const ds = readDatasetSource(node, assets, 'code-block');
-  if (ds == null) return;                                       // non-@ (untouched) or already errored
+  if (ds == null) {
+    // #421: a FILE-PATH src on <code-block> is unsupported BY DESIGN (the handler reads
+    // no files; datasets via @id are the mechanism) — but it used to render a silent
+    // empty <pre><code>. always-renders: the empty case converts to the visible
+    // asset-error flag (the family voice at this exact seam) pointing at the supported
+    // mechanism, plus a located seam warning. A node WITH body content keeps rendering
+    // its body (visible), and the ignored src warns only.
+    const src = node.kwargs?.src;
+    const hasBody = (typeof node.content === 'string' && node.content.trim() !== '') ||
+      (Array.isArray(node.content) && node.content.length > 0);
+    if (src && !String(src).startsWith('@')) {
+      const msg = `<code-block src="${src}">: file-path src is not loaded (by design) — source a <dataset> via src="@id" (code-block.md)`;
+      file?.message?.(`asset-load: ${msg}`, node, 'asset:unsupported-src');
+      if (!hasBody) assetError(node, String(src), msg);
+    }
+    return;                                                     // non-@ (body untouched) or already errored
+  }
   node.content = ds.bytes;
   if ((node.positional == null || node.positional.length === 0) && ds.format) {
     node.positional = [ds.format];   // dataset format hint → the language positional (code-block reads positional[0])
@@ -523,7 +539,7 @@ export function enscribeAssetResolution() {
         else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets);
         else if (isEnscribeTag(node, 'diagram')) resolveDiagramSrc(node, assets);
         else if (isEnscribeTag(node, 'code')) resolveCodeSrc(node, assets);
-        else if (isEnscribeTag(node, 'code-block')) resolveCodeBlockSrc(node, assets);
+        else if (isEnscribeTag(node, 'code-block')) resolveCodeBlockSrc(node, assets, file);
         // Authoring lint (Option A): warn on a multi-line bare <code> (inline code is reflowed, so its
         // indentation is lost). Runs AFTER resolveCodeSrc so a <code src="@id"> that just pulled a
         // multi-line dataset is nudged too. Non-destructive — a located build warning, no in-tree rewrite.

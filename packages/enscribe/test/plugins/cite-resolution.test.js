@@ -333,4 +333,55 @@ export function run() {
       'comma-separated bare keys stay a key list');
     console.log('PASS: #409 — no-@ interior is the unchanged legacy key list');
   }
+
+  // ── #418: per-citation FORM (style=) — every cite.md worked example, as a test ──
+  {
+    const bib = new Cite(TEST_BIBTEX);
+    const renderWith = (kwargs, atRefs, rawArgs) => {
+      const file = makeFile(bib);
+      const warnings = [];
+      file.message = (msg) => warnings.push(String(msg));
+      file._warnings = warnings;
+      const node = makeCiteNode({ atRefs });
+      node.kwargs = kwargs;
+      if (rawArgs) node.rawArgs = rawArgs;
+      const tree = makeArticleTree([node]);
+      enscribeCiteResolution()(tree, file);
+      return { children: getParagraphChildren(tree), file };
+    };
+
+    // narrative: author-in-text — "Smith (2020)".
+    const nar = renderWith({ style: 'narrative' }, ['Smith2020']);
+    assert.equal(nar.children[0].tagname, '__cite-marker');
+    assert.match(nar.children[0].kwargs.html, /Smith.*\(.*2020.*\)/, 'narrative: author outside, year parenthetical');
+    assert.ok(!/\(.*Smith/.test(nar.children[0].kwargs.html), 'narrative: the author is NOT inside the parens');
+    assert.equal(nar.children[0].kwargs.style, 'narrative', 'the marker carries the authored form');
+
+    // suppress-author: "(2020)".
+    const sup = renderWith({ style: 'suppress-author' }, ['Smith2020']);
+    assert.ok(/2020/.test(sup.children[0].kwargs.html) && !/Smith/.test(sup.children[0].kwargs.html),
+      'suppress-author: year only, no author');
+
+    // narrative + locator compose: "Smith (2020, p. 42)" (the locator rides the paren part).
+    const comp = renderWith({ style: 'narrative' }, [], '@Smith2020, p. 42');
+    assert.match(comp.children[0].kwargs.html, /Smith.*\(.*2020.*42.*\)/, 'narrative+locator composite');
+    assert.ok(!/\(.*Smith/.test(comp.children[0].kwargs.html), 'composite keeps the author out of the parens');
+
+    // unknown value: warned default (#401 shape), renders parenthetical, no style on the marker.
+    const bad = renderWith({ style: 'footnote' }, ['Smith2020']);
+    assert.ok(bad.file._warnings.some((w) => /style="footnote".*expected parenthetical, narrative, suppress-author/.test(w)),
+      'unknown style warns with kwarg, value, and the accepted set');
+    assert.match(bad.children[0].kwargs.html, /\(.*Smith.*2020.*\)/, 'unknown style renders the parenthetical default');
+    assert.equal(bad.children[0].kwargs.style, undefined, 'no data-citation-style for an invalid value');
+
+    // narrative on a group: warns, falls back to parenthetical.
+    const grp = renderWith({ style: 'narrative' }, ['Smith2020', 'Jones2019']);
+    assert.ok(grp.file._warnings.some((w) => /narrative is a single-work form/.test(w)), 'group fallback warns');
+    assert.match(grp.children[0].kwargs.html, /\(/, 'group renders parenthetical');
+
+    // byte-identity: a bare cite and a locator cite are UNTOUCHED by #418 (no style kwarg).
+    const bare = renderWith({}, ['Smith2020']);
+    assert.equal(bare.children[0].kwargs.style, undefined, 'bare cite: no style kwarg on the marker');
+    console.log('PASS: cite-resolution (#418) — narrative/suppress-author/composition/warned-default/group-fallback');
+  }
 }
