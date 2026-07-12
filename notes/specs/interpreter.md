@@ -767,6 +767,22 @@ runs.
 findable by label via `registry.findByLabel()` for cross-references (e.g.,
 `<ref @sec:intro>`), without assigning sequential numbers.
 
+**Duplicate authored ids (#403):** an authored id that registers twice — a colon
+id colliding across types (the label index is cross-type), a plain id within its
+type — is a **warned last-wins**: the render is deterministic (the last
+declaration wins; references resolve to it, nothing is dropped) and the build
+says so — one `registry:duplicate-id` warning per duplicate through the #402
+diagnostics seam, anchored at the later declaration and naming the first
+origin's position when known. The detection lives in the shared registry's
+`assign()` (one sink wired by `ensureRegistry`, so every registerable —
+sections, figures/tables/equations, notes, code, book-parts, and any future
+`assign` caller — gets the one policy with no per-plugin wiring). Registries
+that already carry their own **visible** collision flags exceed the warning
+floor and keep them: duplicate citation keys (library-load) and duplicate
+data-store ids (asset-load). The website site-registry merge (cross-page
+anchors) and pinned page slugs have their own collision story in the website
+assembly layer.
+
 **Code-block sigil registration (G4 / AUD-09 closure):** `` ``` `` nodes
 are registered under registry type `code` with `numbered: false`. A
 colon-label id (e.g. `<``` python #code:newton | ... ```>`) lands in the
