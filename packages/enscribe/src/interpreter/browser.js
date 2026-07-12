@@ -54,9 +54,52 @@ import { classifyDocType } from './lib/classify-doc-type.js';
 import { injectBookNavStyles, bindBackToTop } from './assets/book-nav-asset.js';
 import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
-  setActivePage, bindWebsiteNavDismiss,
+  setActivePage, bindWebsiteNavDismiss, buildShellActions, SHELL_ACTIONS_CSS,
 } from './assets/website-nav-asset.js';
 import { isEnscribeTag } from '../core/tag.js';
+
+// ── #392: the chrome corner's Edit toggle ─────────────────────────────────────────────────────────
+// One binder for every surface that renders the corner. Clicking Edit flips the SAME `?edit` switch
+// the URL hack uses (#213 — which keeps working) and reloads: read↔edit with a shareable URL and no
+// new mode machinery. Bound on a container (delegation) so a re-rendered corner stays live.
+function bindShellEditToggle(container) {
+  if (!container || typeof container.addEventListener !== 'function') return;
+  if (container.__enscribeEditToggleBound) return;
+  container.__enscribeEditToggleBound = true;
+  container.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('[data-enscribe-edit-toggle]');
+    if (!btn) return;
+    const u = new URL(location.href);
+    if (u.searchParams.has('edit')) u.searchParams.delete('edit');
+    else u.searchParams.set('edit', '');
+    location.href = u.toString();
+  });
+}
+
+// The floating corner for STANDALONE live shells (article/book — no top bar): fixed top-right, the
+// same pill the website corner is (and the #398 gear's future home). Injected OUTSIDE the mount root
+// (the routers innerHTML-swap the root's content), CSS style-injected idempotently (standalone shells
+// never load the website chrome CSS). Edit only — a standalone shell's document is the page (repo
+// linkage is the website chrome's `<config repo>` concern; threading it through the three standalone
+// mount paths rides the #398 corner slice).
+function injectFloatingShellActions() {
+  // No document → nothing to inject; no location → nothing the Edit toggle could flip (a jsdom
+  // harness without a URL, or a non-browser host) — the corner is chrome for a real navigable page.
+  if (typeof document === 'undefined' || typeof location === 'undefined') return;
+  if (document.getElementById('enscribe-shell-actions-floating')) return;
+  if (!document.getElementById('enscribe-shell-actions-style')) {
+    const s = document.createElement('style');
+    s.id = 'enscribe-shell-actions-style';
+    s.textContent = SHELL_ACTIONS_CSS;
+    document.head.appendChild(s);
+  }
+  const editOn = new URLSearchParams(location.search).has('edit');
+  const holder = document.createElement('div');
+  holder.id = 'enscribe-shell-actions-floating';
+  holder.innerHTML = buildShellActions({ edit: true, editOn, floating: true });
+  document.body.appendChild(holder);
+  bindShellEditToggle(holder);
+}
 
 const BROWSER_DEFAULTS = {
   embedResources: false,
@@ -1238,11 +1281,17 @@ export async function mountLiveWebsite(target, source, options = {}) {
     document.head.appendChild(s);
   }
   const brand = { title: extractDocumentTitle(source) || '', icon: brandIcon, firstSlug };
+  // #392 chrome corner (the live SPA): Edit toggle (flips the same `?edit` switch the URL hack uses —
+  // which keeps working) + the GitHub mark when the master carries `<config repo=…>`. The corner is
+  // the shell's action home (#398's settings gear joins it here).
+  const repoUrl = navFile.data[ENSCRIBE_CONFIG]?.get?.('repo') ?? null;
+  const editOn = typeof location !== 'undefined' && new URLSearchParams(location.search).has('edit');
   root.innerHTML = composeWebsiteShell({
-    topBar: buildWebsiteTopBar(brand, navModel.entries),
+    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, repoUrl })),
     sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
     footer: footerHtml,
   });
+  bindShellEditToggle(root);
   if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');
   // The top-bar dropdown opens natively (<details>/<summary>); wire the missing dismissal — close on
   // outside-click + Escape — once for the persistent chrome. Document-level + idempotent, so it stays live
@@ -1543,6 +1592,9 @@ export async function mountLiveDocument(target, source, options = {}) {
   const proc = getPipeline(pipelineOptions);
   const type = masterType(proc, source);
   const mountOptions = { ...pipelineOptions, editor, editDebounceMs };
+  // #392: standalone shells (article/book — no top bar) get the FLOATING chrome corner (the Edit
+  // toggle; the website type renders the corner inside its own top bar instead).
+  if (type !== 'website') injectFloatingShellActions();
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
     : type === 'website' ? mountLiveWebsite(target, source, mountOptions)
     : mountLiveArticle(target, source, { ...mountOptions, saveContext });

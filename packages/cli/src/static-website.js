@@ -36,6 +36,7 @@ import {
   flattenNavPages,
   extractDocumentTitle,
   buildWebsiteTopBar,
+  buildShellActions,
   composeWebsiteShellPage,
   collectDslNames,
   buildWebsiteDslHead,
@@ -47,7 +48,7 @@ import {
   pageErrorViewHtml,
   NOT_FOUND_SLUG,
 } from '@enscribejs/enscribe';
-import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
+import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER, ENSCRIBE_CONFIG } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { buildDocumentPipeline, renderArticleFile, renderArticleTreeFile, assembleAndNumber } from './render-document.js';
 import { diagnosticsScript } from './diagnostics.js';
@@ -369,8 +370,12 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // static chapter page links to its EXACT live chapter, not just the book cover (static↔live parity).
   // Depth-relative (static at root, live at `/live/`). The `?page=` here is the LIVE route, NOT a chrome
   // link, so the (tightened) `staticize` — which rewrites only `href="?page=…"` chrome links — leaves it intact.
+  // #392 (the decided read-with-button split): the `<config playground=<slug>>` page's CTA opens its
+  // live twin EDITING (`&edit` — the one door that engages the editor); every other page's CTA stays
+  // read-mode, where the live corner's Edit toggle is the button. Absent config → all CTAs read-mode.
+  const playgroundSlug = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('playground') ?? null;
   const liveHrefFor = (outPath, slug, chapterStem = null) =>
-    `${'../'.repeat((outPath.match(/\//g) || []).length)}live/?page=${slug}${chapterStem ? `&chapter=${chapterStem}` : ''}`;
+    `${'../'.repeat((outPath.match(/\//g) || []).length)}live/?page=${slug}${chapterStem ? `&chapter=${chapterStem}` : ''}${slug === playgroundSlug ? '&edit' : ''}`;
 
   // Build the authored `<a {slug}>` internal-link resolver for a page rendered at `outPath` (#318). It is
   // INJECTED on the page's file.data (ENSCRIBE_PAGE_LINK_RESOLVER) and the engine runs it over the in-memory
@@ -429,8 +434,14 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     warnings.push(`<meta icon="${icon}"> not found under ${masterDir} — the top bar renders without it (#405)`);
     return null;
   })();
+  // #392 chrome corner: the STATIC pages get the GitHub mark only (`<config repo=…>` on the master;
+  // absent → no corner, chrome byte-identical). Edit is deliberately NOT rendered here — a static
+  // page has no editor; its live door is the per-page "Open in playground ↗" CTA, which lands on the
+  // live twin where the corner's Edit toggle takes over (the decided read-with-button split).
+  const repoUrl = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('repo') ?? null;
+  const shellActions = buildShellActions({ repoUrl });
   const topBarFor = (up) => buildWebsiteTopBar(
-    { title: masterTitle, icon: brandIconRel ? (/^(?:[a-z][a-z0-9+.-]*:)/i.test(brandIconRel) ? brandIconRel : `${up}${brandIconRel}`) : null, firstSlug: homeSlug }, entries);
+    { title: masterTitle, icon: brandIconRel ? (/^(?:[a-z][a-z0-9+.-]*:)/i.test(brandIconRel) ? brandIconRel : `${up}${brandIconRel}`) : null, firstSlug: homeSlug }, entries, shellActions);
 
 
   // ── #300 slice 2: COMPOSITION model. Number each page in its OWN native scope, harvest its cross-ref

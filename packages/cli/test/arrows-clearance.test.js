@@ -29,6 +29,11 @@ const NEIGHBORS = {
   leftRail: '.enscribe-chapter-rail',
   rightRail: '.enscribe-onthispage',
   backToTop: '.enscribe-back-to-top',
+  // #392: the chrome corner (the shell-actions home — the GitHub mark today, the #398 gear later).
+  // On a website book page it sits in the sticky top bar's right edge; the chevrons are fixed at
+  // 50vh — the sweep proves they never share a band at any width. (The website-mini fixture carries
+  // `<config repo>` precisely so this selector matches — a corner-less build would make it vacuous.)
+  shellActions: '.enscribe-shell-actions',
 };
 const CHEVRONS = { prev: '.enscribe-chapter-arrow--prev', next: '.enscribe-chapter-arrow--next' };
 
@@ -66,6 +71,12 @@ export async function run_tests() {
     const page = await browser.page(false);
     for (const [label, htmlPath] of PAGES) {
       await page.goto(pathToFileURL(htmlPath).href);
+      // #392 non-vacuity: the WEBSITE page must actually render the chrome corner (website-mini's
+      // master carries `<config repo>`), else the shellActions clause below silently checks nothing.
+      if (label.includes('website')) {
+        const present = await page.eval(() => !!document.querySelector('.enscribe-shell-actions'));
+        assert.ok(present, `${label}: the chrome corner (.enscribe-shell-actions) must render — the fixture carries <config repo>`);
+      }
       const failures = [];
       let minClearance = Infinity;
       for (const w of WIDTHS) {

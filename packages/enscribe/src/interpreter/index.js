@@ -1311,7 +1311,7 @@ export { rewriteCrossPageHrefs, resolvePageSlugLinksInTree } from '../master-doc
 // the live shell mounts. The live shell's interactive helpers (injectWebsiteNavStyles needs a DOM;
 // setActivePage/buildOnThisPage are runtime) stay internal to the browser entry. (The top-bar dropdown
 // is a native <details> disclosure — CSS-only — so it needs no JS wiring on either surface.)
-export { buildWebsiteTopBar, buildWebsiteSidebar, WEBSITE_NAV_CSS } from './assets/website-nav-asset.js';
+export { buildWebsiteTopBar, buildWebsiteSidebar, WEBSITE_NAV_CSS, buildShellActions, SHELL_ACTIONS_CSS, GITHUB_MARK_SVG } from './assets/website-nav-asset.js';
 // Static website SHELL (#295): one shell frames every static page — the universal head + the
 // sticky top nav (the outer frame) + the page's content fragment in `.content`. Replaces the old
 // per-page-type composition (decorateBookPage / composeArticlePage) so the book top nav is visible

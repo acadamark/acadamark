@@ -2,6 +2,8 @@
 <title | Mini Site>
 </meta>
 
+<config repo="https://github.com/enscribejs/enscribe" />
+
 <nav>
 <item src="home" +homepage | Home>
 <item src="about" | About>
