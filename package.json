@@ -29,7 +29,7 @@
     "examples:check": "node scripts/check-examples-fresh.mjs",
     "check:boundary": "node scripts/check-boundary.mjs",
     "build:site": "npm run docs:gen && rm -rf site && node packages/cli/bin/enscribe.js build docs-source/index.emd -o site",
-    "build:site-live": "npm run build:lib -w @enscribejs/enscribe && node packages/cli/bin/enscribe.js build docs-source/index.emd --live -o site/live",
+    "build:site-live": "npm run build:lib -w @enscribejs/enscribe && node scripts/build-site-live.mjs",
     "build:site-all": "npm run build:site && npm run build:site-live"
   },
   "dependencies": {
