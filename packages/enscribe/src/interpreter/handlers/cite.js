@@ -31,7 +31,7 @@
  * @returns {import('hast').Element}
  */
 export function citeMarkerHandler(_state, node) {
-  const { keys, html } = node.kwargs;
+  const { keys, html, style } = node.kwargs;
 
   return {
     type: 'element',
@@ -39,6 +39,10 @@ export function citeMarkerHandler(_state, node) {
     properties: {
       className: ['cite'],
       dataKeys: keys,
+      // #418: an AUTHORED per-citation form is reflected as data-citation-style
+      // (cite.md's maps_to); absent for the unauthored default, so existing
+      // cites stay byte-identical.
+      ...(style ? { dataCitationStyle: style } : {}),
     },
     children: [{ type: 'raw', value: html }],
   };

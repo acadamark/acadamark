@@ -173,7 +173,7 @@ the same eHTML output.*
 | `section` | kwarg |  | Section reference within the cited work. |
 | `prefix` | kwarg |  | Text to appear before the citation. |
 | `suffix` | kwarg |  | Text to appear after the citation. |
-| `style` | kwarg | `author-year` `numbered` `footnote` `endnote` `inline-author-year` `default` (default `default`) | RESERVED — accepted but unwired (#409): |
+| `style` | kwarg | `parenthetical` `narrative` `suppress-author` (default `parenthetical`) | The per-citation FORM (#418) — the rendering mode of the one document-wide citation style, never a per-cite CSL-style switch (the document has ONE style; the References list stays coherent). |
 
 Produced by: canonical `<cite>`.
 
@@ -227,16 +227,40 @@ See also <cite cf. @goodall2024, pp. 42-45>.
 *Citation with a positional prefix and a page range (Pandoc grammar).*
 
 <code #code:eh-cite-5>
-A specific work <cite goodall2024 style=footnote>.
+As <cite style=narrative @goodall2024> showed, the effect holds.
 </code>
 
 <minipage #mp:eh-cite-5>
-A specific work <cite goodall2024 style=footnote>.
+As <cite style=narrative @goodall2024> showed, the effect holds.
 </minipage>
 
-*style= is RESERVED and unwired (#409): the per-citation style
-override is its own future slice. Today the kwarg is accepted and
-has no effect — the citation renders in the document-level style.*
+*The narrative form (#418) — author-in-text, LaTeX \citet, APA's
+"narrative citation". The author name joins the sentence; the year
+stays parenthetical. Composed from citeproc's author-only +
+suppress-author parts, so the CSL style still owns punctuation.*
+
+<code #code:eh-cite-6>
+Goodall showed this in <cite style=suppress-author @goodall2024>.
+</code>
+
+<minipage #mp:eh-cite-6>
+Goodall showed this in <cite style=suppress-author @goodall2024>.
+</minipage>
+
+*The suppress-author form (#418) — the year alone, for when the
+author is already named in the prose. Zotero's Suppress Author,
+Pandoc's [-@key], citeproc's own per-item flag.*
+
+<code #code:eh-cite-7>
+As <cite style=narrative @goodall2024, p. 42> notes, context matters.
+</code>
+
+<minipage #mp:eh-cite-7>
+As <cite style=narrative @goodall2024, p. 42> notes, context matters.
+</minipage>
+
+*A form composes with a #409 locator: the page rides the
+parenthetical part of the narrative composite.*
 
 </section>
 

@@ -52,22 +52,37 @@ enscribe_attributes:
         Text to appear after the citation.
     style:
       maps_to: data-citation-style
-      values: [author-year, numbered, footnote, endnote, inline-author-year, default]
-      default: default
+      values: [parenthetical, narrative, suppress-author]
+      default: parenthetical
       notes: |
-        RESERVED — accepted but unwired (#409): the per-citation style
-        override is a future slice; today the document-level style
-        always applies. Documented here so the acceptance is not read
-        as support.
+        The per-citation FORM (#418) — the rendering mode of the one
+        document-wide citation style, never a per-cite CSL-style switch
+        (the document has ONE style; the References list stays coherent).
+        The v1 set is the axis every neighbor varies (natbib/biblatex,
+        Pandoc, citeproc's per-item flags), named per APA/Zotero
+        terminology: `parenthetical` (default) — "(Doe, 1999)", LaTeX
+        \citep; `narrative` — author-in-text, "Doe (1999)", LaTeX \citet
+        (APA's "narrative citation"); `suppress-author` — "(1999)",
+        Zotero's Suppress Author checkbox, Pandoc [-@k]. A form composes
+        with #409 locators: <cite style=narrative @doe99, p. 42> renders
+        "Doe (1999, p. 42)" — the locator rides the parenthetical part.
+        One form per <cite> (a grouped cite shares it); narrative on a
+        multi-key group warns and falls back to parenthetical (the
+        author-in-text composite is single-work by nature — split the
+        group to mix forms). An unknown value is a warned default (#401):
+        the seam names the kwarg, the value, and the accepted set; the
+        citation renders parenthetical. year-only/author-only bare forms
+        are parked (#418's approved boundary).
 content:
   shape:
     contains: [inline]
   becomes: children
   notes: |
-    Content inside <cite> is optional. When present, it overrides the
-    automatically-rendered citation text. Most citations have no content
-    (the resolver generates the rendered text from the bibliography entry
-    and the citation style).
+    Content inside <cite> is not a citation form: the custom-text override
+    was RETIRED by #409 (prefix/suffix carry that intent). Authored content
+    renders a visible unsupported-form marker. Citations have no content —
+    the resolver generates the rendered text from the bibliography entry
+    and the citation style.
 jats_counterpart:
   element: 'xref ref-type="bibr"'
   attributes:
@@ -102,12 +117,24 @@ shorthand_examples:
     ehtml: '<p>See also <cite class="cite" data-keys="goodall2024">(cf. Goodall, 2024, pp. 42–45)</cite>.</p>'
     notes: |
       Citation with a positional prefix and a page range (Pandoc grammar).
-  - source: 'A specific work <cite goodall2024 style=footnote>.'
-    ehtml: '<p>A specific work <cite class="cite" data-keys="goodall2024">(Goodall, 2024)</cite>.</p>'
+  - source: 'As <cite style=narrative @goodall2024> showed, the effect holds.'
+    ehtml: '<p>As <cite class="cite" data-keys="goodall2024" data-citation-style="narrative">Goodall (2024)</cite> showed, the effect holds.</p>'
     notes: |
-      style= is RESERVED and unwired (#409): the per-citation style
-      override is its own future slice. Today the kwarg is accepted and
-      has no effect — the citation renders in the document-level style.
+      The narrative form (#418) — author-in-text, LaTeX \citet, APA's
+      "narrative citation". The author name joins the sentence; the year
+      stays parenthetical. Composed from citeproc's author-only +
+      suppress-author parts, so the CSL style still owns punctuation.
+  - source: 'Goodall showed this in <cite style=suppress-author @goodall2024>.'
+    ehtml: '<p>Goodall showed this in <cite class="cite" data-keys="goodall2024" data-citation-style="suppress-author">(2024)</cite>.</p>'
+    notes: |
+      The suppress-author form (#418) — the year alone, for when the
+      author is already named in the prose. Zotero's Suppress Author,
+      Pandoc's [-@key], citeproc's own per-item flag.
+  - source: 'As <cite style=narrative @goodall2024, p. 42> notes, context matters.'
+    ehtml: '<p>As <cite class="cite" data-keys="goodall2024" data-citation-style="narrative">Goodall (2024, p. 42)</cite> notes, context matters.</p>'
+    notes: |
+      A form composes with a #409 locator: the page rides the
+      parenthetical part of the narrative composite.
 # <cite> is resolved by the cite-resolution plugin into an internal marker node
 # (__cite-marker / __cite-error, dispatched via INTERNAL_REGISTRY) — it is NOT
 # dispatched through HANDLER_REGISTRY, so it declares no handler_module. Its
