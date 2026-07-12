@@ -138,6 +138,16 @@ export const CONFIG_KWARGS = new Map([
   // Read in the live website mount (browser.js mountLiveWebsite → readConfigBool) so the chrome is
   // built with the sidebar column only when the master asks for it. Website-only (<meta type=website>).
   ['sidebar',                 boolean()],   // mountLiveWebsite → buildWebsiteSidebar (the left nav rail; default off)
+  // #392: the project-repository URL for the shell chrome's corner (the GitHub mark links here).
+  // Free-valued (any URL). Read by the website chrome on BOTH surfaces (the static shell's top bar
+  // and mountLiveWebsite's) — absent → no mark, the chrome is unchanged. The corner is the shell's
+  // action home (#398's settings gear joins it); `repo` is its first config-driven affordance.
+  ['repo',                    valued()],    // website-shell topBarFor + mountLiveWebsite → buildShellActions (the chrome corner's GitHub mark)
+  // #392: the slug of the site's live-tour page (the playground door). THAT page's "Open in
+  // playground" CTA carries `&edit` — its live twin opens with the editor engaged — while every
+  // other page's CTA stays read-mode (the decided read-with-button split; the #365 lazy-editor
+  // economy: CodeMirror loads only through this one door or an explicit ?edit).
+  ['playground',              valued()],    // static-website liveHrefFor → the try-page CTA opens the live twin editing
 
   // The remaining keys, enumerated as intended <config> surface by the
   // apparatus-tag reconciliation. Most are now LIVE with a named consumer

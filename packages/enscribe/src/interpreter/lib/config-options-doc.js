@@ -101,6 +101,10 @@ export const CONFIG_OPTIONS_DOC = [
   // ── Website navigation (website-only) ────────────────────────────────────────
   { key: 'sidebar', family: 'Website navigation', type: 'boolean', values: null, default: 'off', scope: 'website-only',
     description: 'The left navigation sidebar (the full nav tree). The sticky top bar is a website’s primary nav; the sidebar is an opt-in second surface — off by default, and the layout reflows to give the content the freed column.' },
+  { key: 'repo', family: 'Website navigation', type: 'valued', values: null, default: null, scope: 'website-only',
+    description: 'The project-repository URL. The shell chrome’s top-bar corner renders the GitHub mark linking here, on both the static and live surfaces; absent, no mark renders and the chrome is unchanged (#392).' },
+  { key: 'playground', family: 'Website navigation', type: 'valued', values: null, default: null, scope: 'website-only',
+    description: 'The slug of the site’s live-tour page. That page’s “Open in playground” CTA opens its live twin with the editor engaged; every other page’s CTA stays read-mode — the one door that loads the editor (#392).' },
 
   // ── Display / DSL / strict ───────────────────────────────────────────────────
   { key: 'theme', family: 'Display / DSL / strict', type: 'valued', values: 'default | modern | compact | tufte', default: 'default', scope: 'all',

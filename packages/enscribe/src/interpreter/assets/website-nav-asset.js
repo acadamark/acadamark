@@ -17,8 +17,70 @@ import { escapeHtmlAttr } from '../../core/escape-html.js';
 // guard (escapeHtmlAttr coerces null→"null"; here an absent value — e.g. a missing brand icon — → "").
 const esc = (s) => escapeHtmlAttr(s ?? '');
 
+// ── The shell-actions corner (#392) ────────────────────────────────────────────────────────────────
+// The top-right chrome corner — the shell's ACTION HOME (built as a home, not a one-off: #398's
+// settings gear joins it). Two affordances today: an Edit toggle (live surfaces — flips the same
+// `?edit` switch the URL hack uses, which keeps working) and the GitHub mark (the official
+// invertocat, `fill="currentColor"` so themes/dark work for free, linking to `<config repo=…>`).
+// One builder + one CSS block, two placements: inline at the right edge of the website top bar
+// (static + live SPA), or `--floating` fixed top-right on standalone live shells (no top bar).
+
+// The official GitHub invertocat (octicons mark-github, 16×16). currentColor inherits the chrome's
+// text color, so every theme (and dark) renders it correctly with no per-theme asset.
+export const GITHUB_MARK_SVG =
+  '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">' +
+  '<path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.04-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.27-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
+
+/**
+ * Build the shell-actions corner. `edit` renders the Edit toggle (a live-surface affordance — the
+ * binder in browser.js flips `?edit` and reloads; `editOn` marks the current state); `repoUrl`
+ * renders the GitHub mark. Neither → '' (the chrome is byte-identical for a site with no repo
+ * config on a static page). Placement is the caller's: inline in the top bar, or `--floating`.
+ */
+export function buildShellActions({ edit = false, editOn = false, repoUrl = null, floating = false } = {}) {
+  const parts = [];
+  if (edit) {
+    parts.push(
+      `<button type="button" class="enscribe-shell-action enscribe-shell-action--edit" data-enscribe-edit-toggle` +
+      ` aria-pressed="${editOn ? 'true' : 'false'}" title="${editOn ? 'Back to the reading view' : 'Edit this page live'}">` +
+      `${editOn ? 'Read' : 'Edit'}</button>`,
+    );
+  }
+  if (repoUrl) {
+    parts.push(
+      `<a class="enscribe-shell-action enscribe-shell-action--github" href="${esc(repoUrl)}"` +
+      ` aria-label="Project repository on GitHub" title="View source on GitHub">${GITHUB_MARK_SVG}</a>`,
+    );
+  }
+  if (parts.length === 0) return '';
+  return `<div class="enscribe-shell-actions${floating ? ' enscribe-shell-actions--floating' : ''}">${parts.join('')}</div>`;
+}
+
+// The corner's CSS — exported SEPARATELY so standalone live shells (which never load the website
+// chrome CSS) can inject exactly this block; WEBSITE_NAV_CSS includes it below (one source).
+export const SHELL_ACTIONS_CSS = `
+.enscribe-shell-actions { margin-left: auto; display: inline-flex; align-items: center; gap: var(--enscribe-space-2, 0.5rem); }
+.enscribe-shell-action {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2rem; min-height: 2rem; padding: 0.25rem 0.5rem; border-radius: 6px;
+  color: var(--enscribe-text-muted, #57606a); background: none; border: none; cursor: pointer;
+  font-family: var(--enscribe-font-sans); font-size: 0.9rem; font-weight: 600; text-decoration: none;
+}
+.enscribe-shell-action:hover { color: var(--enscribe-text-primary, #1f2328); background: var(--enscribe-bg-subtle, #f6f8fa); }
+.enscribe-shell-action--edit[aria-pressed="true"] { color: var(--enscribe-link, #0969da); }
+.enscribe-shell-action--github svg { display: block; }
+/* Standalone live shells (no top bar): the corner floats fixed top-right — the same pill the
+   #398 settings gear will join. Sits above the reading column; the gutter chevrons are vertically
+   centered, so the corner (top-anchored) shares no band with them. */
+.enscribe-shell-actions--floating {
+  position: fixed; top: 0.6rem; right: 0.75rem; z-index: 120; margin-left: 0;
+  background: var(--enscribe-bg, #fff); border: 1px solid var(--enscribe-border, #d8dee4);
+  border-radius: 999px; padding: 0.1rem 0.35rem; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+`;
+
 // The website chrome CSS. Modeled on the original docs-site site.css (now in notes/archive/old-docs-site/), retoken'd to --enscribe-*.
-export const WEBSITE_NAV_CSS = `
+export const WEBSITE_NAV_CSS = `${SHELL_ACTIONS_CSS}
 .enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
    <body>. default.css sizes <body> for a single reading column (a centred content-width column with
@@ -130,12 +192,13 @@ function topItemHtml(entry) {
 }
 
 /** The sticky top bar: brand (`<meta>` title + optional icon, linking to the first page) + the nav
- *  built from the tree's TOP LEVEL (groups → dropdowns). */
-export function buildWebsiteTopBar({ title, icon, firstSlug }, entries) {
+ *  built from the tree's TOP LEVEL (groups → dropdowns) + the shell-actions corner (#392 — '' when
+ *  the caller has no actions; `margin-left:auto` right-aligns it, the top-right corner). */
+export function buildWebsiteTopBar({ title, icon, firstSlug }, entries, actions = '') {
   const iconHtml = icon ? `<img class="enscribe-site-brand-icon" src="${esc(icon)}" alt="" />` : '';
   const brand = `<a class="enscribe-site-brand" href="?page=${esc(firstSlug || '')}">${iconHtml}${esc(title || '')}</a>`;
   const nav = (entries || []).map(topItemHtml).join('');
-  return `<header class="enscribe-site-header">${brand}<nav class="enscribe-site-nav">${nav}</nav></header>`;
+  return `<header class="enscribe-site-header">${brand}<nav class="enscribe-site-nav">${nav}</nav>${actions}</header>`;
 }
 
 // Map the nav tree → buildList's {id, clean, children} shape: a page carries its slug as `id`

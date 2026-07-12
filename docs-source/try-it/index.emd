@@ -4,10 +4,12 @@
 </meta>
 
 You are reading an Enscribe document — not a description of one, but the actual
-source rendered to HTML in your browser. If you are on the docs site, the panel
-beside this text holds that source; change anything and the output re-renders as
-you type. Everything below is at once an explanation of a feature and a use of
-it. **The page teaches by being what it describes.** You already know HTML and
+source rendered to HTML in your browser. In the playground this page opens with
+the editor engaged — **Source** and **Preview** tabs, where Source holds this
+page's actual source: change anything there, switch to Preview, and the output
+has re-rendered. (Reading the static copy? The *Open in playground ↗* link on
+this page lands you in that editor.) Everything below is at once an explanation
+of a feature and a use of it. **The page teaches by being what it describes.** You already know HTML and
 Markdown, so this guide skips what a heading is and spends its time on what
 Enscribe adds: a compact, uniform way to write the *structure* — citations,
 figures, cross-references, math — that Markdown never covered and raw HTML makes
@@ -234,8 +236,8 @@ For the architecture behind the two-layer model — why eHTML is canonical, how
 the shorthand lifts to it, and where JATS fits — read the
 <a design | Design article>. The **Authoring Guide**, covering every element in
 depth, and the **eHTML Reference**, cataloguing the output vocabulary, are the
-next documents to land on this site. Until then, the best next step is the one
-right beside this text: keep editing, and watch what changes.
+next documents to land on this site. Until then, the best next step is one tab
+away: switch to Source, keep editing, and watch what changes.
 
 <data>
 <library |

@@ -2,6 +2,8 @@
 	<title>Enscribe</title>
 </meta>
 
+<config repo="https://github.com/enscribejs/enscribe" playground=try-it />
+
 <nav>
 	<item src="home" +homepage | Home>
 	<item src="design" | Design>

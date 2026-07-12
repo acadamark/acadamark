@@ -41,6 +41,8 @@ enscribe_attributes:
         - note-position           (live; consumed by the sidenotes render stage — the #33 margin render mode, 'bottom' default / 'margin'; see notes/specs/sidenotes.md)
         - heading-tags            (live; boolean, DEFAULT ON — the one default-on boolean here; consumed by the heading-level stamping stage, #397. Rendered projections wrap each outline title's inline content in the native heading of its structurally derived level (see notes/specs/render-quality.md RQ-DOC-M4). heading-tags=false is a deliberate host-level opt-out: no native heading wrap is emitted at all)
         - strict-mode             (live; consumed by the strict-mode gate, #36 — see notes/specs/strict-mode.md: 'off' default / 'sigil' / 'canonical' — each names the loosest register still interpreted. 'sigil' turns the markdown register off (canonical + sigils stay); 'canonical' turns markdown AND sigils off, leaving only canonical named tags. Non-'off' rungs flag would-be-shorthand text)
+        - repo                    (live; the project-repository URL, consumed by the website shell chrome on BOTH surfaces — the top-bar corner renders the GitHub mark linking here; absent → no mark, chrome unchanged; #392)
+        - playground              (live; the slug of the site's live-tour page — THAT page's "Open in playground" CTA opens its live twin with the editor engaged (`&edit`); every other page's CTA stays read-mode (the read-with-button split, preserving the #365 lazy-editor economy); absent → all CTAs read-mode; #392)
         - bibliography-position   (reserved; future)
         (the reserved `reference-library` was retired: #133 makes external library
         sources the body element `<library src=…>`, never a <config> kwarg)
