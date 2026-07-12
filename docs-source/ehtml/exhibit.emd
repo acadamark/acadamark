@@ -10,8 +10,6 @@ Supporting material showcased in isolation — figures, tables, diagrams, and fr
 
 Produced by: canonical `<caption>`.
 
-</section>
-
 <section #eh-diagram | `<diagram>`>
 
 <sub-section | Specification>
@@ -69,8 +67,6 @@ CDEFGABc
 </minipage>
 
 *The `abc` format word selects the abcjs engine.*
-
-</section>
 
 <section #eh-fig | `<fig>`>
 
@@ -157,8 +153,6 @@ Quarterly revenue for fiscal year 2024.
 the trailing line becomes the figcaption. Author convention is
 to put the caption text on its own line at the end of the content.*
 
-</section>
-
 <section #eh-frame | `<frame>`>
 
 <sub-section | Specification>
@@ -223,8 +217,6 @@ Make sure to read this carefully.
 *Numbered by default (#272). Shares the figure counter with
 &lt;fig&gt;/&lt;svg&gt;/&lt;mermaid&gt;/&lt;abc&gt;; use -numbered for a frame that is not numbered.*
 
-</section>
-
 <section #eh-minipage | `<minipage>`>
 
 <sub-section | Specification>
@@ -281,8 +273,6 @@ the document's: a document &lt;fig&gt; elsewhere is unaffected, and an outside
 `&lt;ref @fig:left&gt;` is a normal not-found ref-error (the seal forbids inbound
 references to the body).*
 
-</section>
-
 <section #eh-svg | `<svg>`>
 
 <sub-section | Specification>
@@ -336,8 +326,6 @@ handler wraps the &lt;svg&gt; in a &lt;figure&gt; with the &lt;figcaption&gt; as
 sibling inside the wrapper (figcaption is not a valid child of &lt;svg&gt;).
 Shares the figure counter with &lt;fig&gt;; `&lt;ref @fig:diagram&gt;` resolves
 to "Figure N".*
-
-</section>
 
 <section #eh-table | `<table>`>
 
@@ -420,5 +408,3 @@ entry for engine attributes (header control, alignment, etc.).*
 
 *Explicit table with cells, used when fine control over structure
 or attributes is needed.*
-
-</section>

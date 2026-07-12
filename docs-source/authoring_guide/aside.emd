@@ -12,8 +12,6 @@ Compiles to eHTML `<aside>`.
 <aside | A side note about the elephant.>
 </minipage>
 
-</section>
-
 <section #ag-details | `<details>`>
 
 Compiles to eHTML `<details>`.
@@ -38,13 +36,9 @@ Compiles to eHTML `<details>`.
 followed by the disclosure body. The body is recursively parsed
 as prose / block content.*
 
-</section>
-
 <section #ag-endnotes | `<endnotes>`>
 
 Compiles to eHTML `<endnotes>`.
-
-</section>
 
 <section #ag-note | `<note>`>
 
@@ -58,13 +52,9 @@ Some text<note | A substantive note about the text.>.
 Some text<note | A substantive note about the text.>.
 </minipage>
 
-</section>
-
 <section #ag-note-list | `<note-list>`>
 
 Compiles to eHTML `<note-list>`.
-
-</section>
 
 <section #ag-summary | `<summary>`>
 
@@ -80,5 +70,3 @@ Compiles to eHTML `<summary>`.
 
 *The visible heading of a &lt;details&gt; disclosure. Appears as a
 child of &lt;details&gt;.*
-
-</section>

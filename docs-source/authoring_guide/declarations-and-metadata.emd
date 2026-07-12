@@ -22,8 +22,6 @@ role in shaping vegetation and carbon storage.
 
 *Unstructured abstract (the default). Single paragraph of summary prose.*
 
-</section>
-
 <section #ag-affiliation | `<affiliation>`>
 
 Compiles to eHTML `<affiliation>`.
@@ -46,19 +44,13 @@ Compiles to eHTML `<affiliation>`.
 of &lt;author&gt;, parallel to other rich-author-metadata elements
 (&lt;orcid&gt;, &lt;email&gt;).*
 
-</section>
-
 <section #ag-article-subtitle | `<article-subtitle>`>
 
 Compiles to eHTML `<article-subtitle>`.
 
-</section>
-
 <section #ag-article-title | `<article-title>`>
 
 Compiles to eHTML `<article-title>`.
-
-</section>
 
 <section #ag-author | `<author>`>
 
@@ -79,31 +71,21 @@ authors who want the structured shape use the kwarg form below
 or the child-tag form. JATS export reads the name string either
 way.*
 
-</section>
-
 <section #ag-book-part-subtitle | `<book-part-subtitle>`>
 
 Compiles to eHTML `<book-part-subtitle>`.
-
-</section>
 
 <section #ag-book-part-title | `<book-part-title>`>
 
 Compiles to eHTML `<book-part-title>`.
 
-</section>
-
 <section #ag-book-subtitle | `<book-subtitle>`>
 
 Compiles to eHTML `<book-subtitle>`.
 
-</section>
-
 <section #ag-book-title | `<book-title>`>
 
 Compiles to eHTML `<book-title>`.
-
-</section>
 
 <section #ag-config | `<config>`>
 
@@ -120,8 +102,6 @@ Compiles to eHTML `<config>`.
 *The authoring form for &lt;config&gt; is kwargs. Settings are read at the
 discovery pass into the configuration registry; the element itself
 produces no body output (it renders as an empty &lt;config&gt;).*
-
-</section>
 
 <section #ag-date | `<date>`>
 
@@ -140,8 +120,6 @@ Compiles to eHTML `<date>`.
 date (cf. Quarto/Pandoc/Bookdown preamble date slots). Use an explicit
 type= (e.g. &lt;date type=publication | …&gt;) for a typed date. (#325)*
 
-</section>
-
 <section #ag-editor | `<editor>`>
 
 Compiles to eHTML `<editor>`.
@@ -156,8 +134,6 @@ Compiles to eHTML `<editor>`.
 
 *Casual form — the pipe content is the editor's name (text content,
 not lifted to a &lt;name&gt; child), mirroring &lt;author | ...&gt;.*
-
-</section>
 
 <section #ag-email | `<email>`>
 
@@ -181,8 +157,6 @@ Compiles to eHTML `<email>`.
 the corresponding author (see also the +corresponding boolean
 kwarg on &lt;author&gt;).*
 
-</section>
-
 <section #ag-keywords | `<keywords>`>
 
 Compiles to eHTML `<keywords>`.
@@ -201,8 +175,6 @@ Compiles to eHTML `<keywords>`.
 
 *Comma-separated keyword list — the simpler and more common
 authoring form. The exporter splits on commas when emitting JATS.*
-
-</section>
 
 <section #ag-lang | `<lang>`>
 
@@ -224,8 +196,6 @@ Compiles to eHTML `<lang>`.
 child element of &lt;meta&gt;; downstream consumers (the JATS exporter,
 the render-mode lowering) project it where each format expects.*
 
-</section>
-
 <section #ag-license | `<license>`>
 
 Compiles to eHTML `<license>`.
@@ -243,8 +213,6 @@ Compiles to eHTML `<license>`.
 </minipage>
 
 *License name with canonical URL.*
-
-</section>
 
 <section #ag-meta | `<meta>`>
 
@@ -280,8 +248,6 @@ wrapper. The structural plugin reads type=article and generates:
 &lt;title&gt; is promoted to &lt;article-title&gt; as the first child of &lt;meta&gt;.
 &lt;meta&gt; itself survives in the output, inside &lt;article-front&gt;.*
 
-</section>
-
 <section #ag-name | `<name>`>
 
 Compiles to eHTML `<name>`.
@@ -299,8 +265,6 @@ Compiles to eHTML `<name>`.
 </minipage>
 
 *The common case. Pipe content becomes the name string.*
-
-</section>
 
 <section #ag-orcid | `<orcid>`>
 
@@ -322,8 +286,6 @@ Compiles to eHTML `<orcid>`.
 
 *Bare 16-digit ORCID — the canonical form.*
 
-</section>
-
 <section #ag-publication-date | `<publication-date>`>
 
 Compiles to eHTML `<publication-date>`.
@@ -342,43 +304,29 @@ Compiles to eHTML `<publication-date>`.
 
 *ISO 8601 publication date — the preferred form.*
 
-</section>
-
 <section #ag-section-subtitle | `<section-subtitle>`>
 
 Compiles to eHTML `<section-subtitle>`.
-
-</section>
 
 <section #ag-section-title | `<section-title>`>
 
 Compiles to eHTML `<section-title>`.
 
-</section>
-
 <section #ag-sub-section-subtitle | `<sub-section-subtitle>`>
 
 Compiles to eHTML `<sub-section-subtitle>`.
-
-</section>
 
 <section #ag-sub-section-title | `<sub-section-title>`>
 
 Compiles to eHTML `<sub-section-title>`.
 
-</section>
-
 <section #ag-sub-sub-section-subtitle | `<sub-sub-section-subtitle>`>
 
 Compiles to eHTML `<sub-sub-section-subtitle>`.
 
-</section>
-
 <section #ag-sub-sub-section-title | `<sub-sub-section-title>`>
 
 Compiles to eHTML `<sub-sub-section-title>`.
-
-</section>
 
 <section #ag-subject | `<subject>`>
 
@@ -398,8 +346,6 @@ Compiles to eHTML `<subject>`.
 
 *Free-form subject. Common for general-interest documents.*
 
-</section>
-
 <section #ag-subtitle | `<subtitle>`>
 
 Compiles to eHTML `<subtitle>`.
@@ -417,8 +363,6 @@ Compiles to eHTML `<subtitle>`.
   <subtitle | A Multi-Year Field Study in Tanzania>
 </meta>
 </minipage>
-
-</section>
 
 <section #ag-title | `<title>`>
 
@@ -438,8 +382,6 @@ Compiles to eHTML `<title>`.
 
 *Inside &lt;article&gt;, &lt;title&gt; in &lt;meta&gt; becomes &lt;article-title&gt;.*
 
-</section>
-
 <section #ag-version | `<version>`>
 
 Compiles to eHTML `<version>`.
@@ -458,5 +400,3 @@ Compiles to eHTML `<version>`.
 
 *Semantic version. Other formats are equally valid as a free-form
 string.*
-
-</section>

@@ -36,8 +36,6 @@ Using <abbr | CSS> selectors.
 *Bare abbreviation, no title. Acceptable when the expansion
 has already been introduced earlier in the document.*
 
-</section>
-
 <section #eh-b | `<b>`>
 
 <sub-section | Specification>
@@ -67,8 +65,6 @@ Use <b type=product-name | Acrobat> to read the file.
 <minipage #mp:eh-b-2>
 Use <b type=product-name | Acrobat> to read the file.
 </minipage>
-
-</section>
 
 <section #eh-em | `<em>`>
 
@@ -112,8 +108,6 @@ tag. &lt;em&gt; is reached only by the explicit form.*
 <em #key-term .highlighted | distinguishing feature>
 </minipage>
 
-</section>
-
 <section #eh-i | `<i>`>
 
 <sub-section | Specification>
@@ -152,8 +146,6 @@ The technical term <i type=technical | mitochondria> refers to organelles.
 The technical term <i type=technical | mitochondria> refers to organelles.
 </minipage>
 
-</section>
-
 <section #eh-kbd | `<kbd>`>
 
 <sub-section | Specification>
@@ -190,8 +182,6 @@ Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 render the outer block as the chord and the inner blocks as
 individual keys, both monospace.*
 
-</section>
-
 <section #eh-output | `<output>`>
 
 <sub-section | Specification>
@@ -216,8 +206,6 @@ The function returns <output | 42> for the test input.
 distinct from &lt;samp&gt; — &lt;samp&gt; is what a program prints (a
 display artifact); &lt;output&gt; is the result of a computation
 (a semantic value). Browsers render both similarly.*
-
-</section>
 
 <section #eh-s | `<s>`>
 
@@ -251,8 +239,6 @@ The claim <s type=retracted | was unsupported> has been corrected.
 <minipage #mp:eh-s-2>
 The claim <s type=retracted | was unsupported> has been corrected.
 </minipage>
-
-</section>
 
 <section #eh-samp | `<samp>`>
 
@@ -289,8 +275,6 @@ Set <var | threshold> to <samp | 0.05>.
 *&lt;samp&gt; for the sample value paired with &lt;var&gt; for the variable
 name — the natural pair for documenting configuration in
 technical writing.*
-
-</section>
 
 <section #eh-strong | `<strong>`>
 
@@ -332,8 +316,6 @@ visual tag. &lt;strong&gt; is reached only by the explicit form.*
 <strong #critical .warning | This is critical.>
 </minipage>
 
-</section>
-
 <section #eh-sub | `<sub>`>
 
 <sub-section | Specification>
@@ -361,8 +343,6 @@ The vector x<sub | i> represents the i-th component.
 <minipage #mp:eh-sub-2>
 The vector x<sub | i> represents the i-th component.
 </minipage>
-
-</section>
 
 <section #eh-sup | `<sup>`>
 
@@ -399,8 +379,6 @@ The isotope <sup | 12>C is abundant.
 <minipage #mp:eh-sup-3>
 The isotope <sup | 12>C is abundant.
 </minipage>
-
-</section>
 
 <section #eh-term | `<term>`>
 
@@ -439,8 +417,6 @@ back to it. Subsequent uses of the same term (without an id)
 still mark it as a term being referenced, distinct from running
 prose, without re-asserting the introduction.*
 
-</section>
-
 <section #eh-u | `<u>`>
 
 <sub-section | Specification>
@@ -470,8 +446,6 @@ The Chinese name <u type=proper-name | 王明> appears here.
 <minipage #mp:eh-u-2>
 The Chinese name <u type=proper-name | 王明> appears here.
 </minipage>
-
-</section>
 
 <section #eh-var | `<var>`>
 
@@ -506,5 +480,3 @@ Set <var | threshold> to <samp | 0.05>.
 
 *&lt;var&gt; for the variable name and &lt;samp&gt; for a sample value —
 the natural pair for documenting configuration in technical writing.*
-
-</section>

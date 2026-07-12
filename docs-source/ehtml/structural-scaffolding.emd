@@ -94,8 +94,6 @@ The conclusion.
 article-shaped (the default) and wraps the sections in an implicit
 article. &lt;article-front&gt; is omitted because there's no metadata.*
 
-</section>
-
 <section #eh-article-back | `<article-back>`>
 
 <sub-section | Specification>
@@ -105,8 +103,6 @@ article. &lt;article-front&gt; is omitted because there's no metadata.*
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<article-back>`.
-
-</section>
 
 <section #eh-article-body | `<article-body>`>
 
@@ -118,8 +114,6 @@ Produced by: canonical `<article-back>`.
 
 Produced by: canonical `<article-body>`.
 
-</section>
-
 <section #eh-article-front | `<article-front>`>
 
 <sub-section | Specification>
@@ -129,8 +123,6 @@ Produced by: canonical `<article-body>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<article-front>`.
-
-</section>
 
 <section #eh-book | `<book>`>
 
@@ -162,20 +154,7 @@ Content here.
 Content here.
 </code-block>
 
-<minipage #mp:eh-book-1>
-<meta type=book>
-  <title | A Natural History of Elephants>
-  <author | Jane Goodall>
-</meta>
-
-<chapter | Origins>
-<section | Early ancestors>
-Content here.
-
-<chapter | Modern populations>
-<section | African elephants>
-Content here.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 *Typical authoring path: &lt;meta type=book&gt; at the top with no &lt;book&gt;
 wrapper. The structural plugin generates &lt;book&gt; + the three region
@@ -200,25 +179,7 @@ Content.
 Content.
 </code-block>
 
-<minipage #mp:eh-book-2>
-<meta type=book>
-  <title | The Comprehensive Guide>
-  <author | Author Name>
-</meta>
-
-<part | Part I: Foundations>
-<chapter | First Principles>
-Content.
-
-<chapter | Background>
-Content.
-
-<part | Part II: Applications>
-<chapter | Practical Examples>
-Content.
-</minipage>
-
-</section>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 <section #eh-book-back | `<book-back>`>
 
@@ -230,8 +191,6 @@ Content.
 
 Produced by: canonical `<book-back>`.
 
-</section>
-
 <section #eh-book-body | `<book-body>`>
 
 <sub-section | Specification>
@@ -242,8 +201,6 @@ Produced by: canonical `<book-back>`.
 
 Produced by: canonical `<book-body>`.
 
-</section>
-
 <section #eh-book-front | `<book-front>`>
 
 <sub-section | Specification>
@@ -253,8 +210,6 @@ Produced by: canonical `<book-body>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<book-front>`.
-
-</section>
 
 <section #eh-book-part | `<book-part>`>
 
@@ -279,10 +234,7 @@ Produced by: canonical `<book-part>`.
 Content of the chapter.
 </code-block>
 
-<minipage #mp:eh-book-part-1>
-<chapter | Origins>
-Content of the chapter.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 <code-block #code:eh-book-part-2>
 <part | Part I: Foundations>
@@ -293,14 +245,7 @@ Content.
 Content.
 </code-block>
 
-<minipage #mp:eh-book-part-2>
-<part | Part I: Foundations>
-<chapter | First Chapter>
-Content.
-
-<chapter | Second Chapter>
-Content.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 <code-block #code:eh-book-part-3>
 <preface | A Note from the Author>
@@ -313,21 +258,10 @@ Body content.
 Notation conventions used in this book.
 </code-block>
 
-<minipage #mp:eh-book-part-3>
-<preface | A Note from the Author>
-I wrote this book because...
-
-<chapter | Chapter One>
-Body content.
-
-<appendix | Notation>
-Notation conventions used in this book.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 *The structural plugin places the preface in book-front, the chapter
 in book-body, and the appendix in book-back based on book-part-type.*
-
-</section>
 
 <section #eh-hr | `<hr>`>
 
@@ -375,8 +309,6 @@ Produced by: canonical `<hr>`.
 <p | Second paragraph after a thematic break.>
 </minipage>
 
-</section>
-
 <section #eh-item | `<item>`>
 
 <sub-section | Specification>
@@ -389,8 +321,6 @@ Produced by: canonical `<hr>`.
 
 Produced by: canonical `<item>`.
 
-</section>
-
 <section #eh-nav | `<nav>`>
 
 <sub-section | Specification>
@@ -400,8 +330,6 @@ Produced by: canonical `<item>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<nav>`.
-
-</section>
 
 <section #eh-nav-group | `<nav-group>`>
 
@@ -414,8 +342,6 @@ Produced by: canonical `<nav>`.
 | `title` | kwarg |  | The group's display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). |
 
 Produced by: canonical `<nav-group>`.
-
-</section>
 
 <section #eh-section | `<section>`>
 
@@ -478,8 +404,6 @@ Sub-section content.
 Sub-section content.
 </minipage>
 
-</section>
-
 <section #eh-sub-section | `<sub-section>`>
 
 <sub-section | Specification>
@@ -531,8 +455,6 @@ Sub-sub-section content.
 Sub-section content.
 </minipage>
 
-</section>
-
 <section #eh-sub-sub-section | `<sub-sub-section>`>
 
 <sub-section | Specification>
@@ -579,5 +501,3 @@ Linear regression was performed.
 <sub-sub-section | Sensitivity testing>
 Sensitivity tests were performed.
 </minipage>
-
-</section>

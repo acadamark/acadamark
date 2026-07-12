@@ -31,8 +31,6 @@ Produced by: canonical `<data>`.
 registers entries in the citation system. The &lt;data&gt; block itself
 produces no rendered output.*
 
-</section>
-
 <section #eh-dataset | `<dataset>`>
 
 <sub-section | Specification>
@@ -66,8 +64,6 @@ Q3,145
 *A CSV dataset is stored once under #sales and a &lt;table src="@sales" /&gt; pulls
 it in and renders it as a grid. The dataset itself renders nothing; the
 consuming element decides how to present the opaque bytes.*
-
-</section>
 
 <section #eh-library | `<library>`>
 
@@ -131,5 +127,3 @@ against these entries. The block itself produces no rendered output.*
 </code-block>
 
 *(Rendered preview omitted — `<data>` / `@`-references resolve at document scope, not inside a sealed preview.)*
-
-</section>

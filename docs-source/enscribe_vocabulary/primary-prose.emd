@@ -44,5 +44,3 @@ delineate paragraphs. The explicit &lt;p&gt; form is used when attributes
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `type` | kwarg | `normal` `lead` `intro` `abstract` `summary` `other` | Optional classification of the paragraph's role. |
-
-</section>

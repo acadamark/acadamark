@@ -10,8 +10,6 @@ Registers:
 
 - Canonical: `<caption>`
 
-</section>
-
 <section #sh-diagram | `<diagram>`>
 
 <sub-section | General Usage>
@@ -71,8 +69,6 @@ CDEFGABc
 | `engine` | format-word | `mermaid` `abc` | The diagram engine — the language that renders the body. |
 | `caption` | kwarg |  | Optional caption text. |
 | `src` | kwarg |  | An @id reference (#313 consumer wiring) that pulls a stored &lt;dataset&gt; declared in &lt;data&gt; and feeds its opaque bytes as the diagram's engine source — e.g. |
-
-</section>
 
 <section #sh-fig | `<fig>`>
 
@@ -162,8 +158,6 @@ to put the caption text on its own line at the end of the content.*
 | `+numbered` / `-numbered` | flag | default on | Whether this figure participates in the document-wide figure sequence. |
 | `+border` / `-border` | flag | default off | The frameable surface. |
 
-</section>
-
 <section #sh-frame | `<frame>`>
 
 <sub-section | General Usage>
@@ -230,8 +224,6 @@ Make sure to read this carefully.
 | `+numbered` / `-numbered` | flag | default on | Whether this frame participates in the document-wide figure sequence. |
 | `+border` / `-border` | flag | default on | The frameable surface. |
 
-</section>
-
 <section #sh-minipage | `<minipage>`>
 
 <sub-section | General Usage>
@@ -290,8 +282,6 @@ references to the body).*
 | `+numbered` / `-numbered` | flag | default on | Whether this minipage is numbered. |
 | `+border` / `-border` | flag | default on | The frameable surface. |
 
-</section>
-
 <section #sh-svg | `<svg>`>
 
 <sub-section | General Usage>
@@ -347,8 +337,6 @@ to "Figure N".*
 | `caption` | kwarg |  | Optional caption text rendered in a sibling &lt;figcaption&gt;. |
 | `+numbered` / `-numbered` | flag | default on | Whether this SVG participates in the document-wide figure sequence (shares the `figure` counter with &lt;fig&gt;, &lt;mermaid&gt;, &lt;abc&gt;). |
 | `+border` / `-border` | flag | default off | The frameable surface. |
-
-</section>
 
 <section #sh-table | `<table>`>
 
@@ -433,5 +421,3 @@ or attributes is needed.*
 | `+headers` / `-headers` | flag | default on | Whether the first row of the data is a header row. |
 | `+numbered` / `-numbered` | flag | default on | Whether this table is counted in the numbered table sequence and receives a "Table N." label prefix in its caption. |
 | `+parse-text` / `-parse-text` | flag | default off | #21: |
-
-</section>

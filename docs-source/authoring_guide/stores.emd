@@ -23,8 +23,6 @@ Compiles to eHTML `<data>`.
 registers entries in the citation system. The &lt;data&gt; block itself
 produces no rendered output.*
 
-</section>
-
 <section #ag-dataset | `<dataset>`>
 
 Compiles to eHTML `<dataset>`.
@@ -47,8 +45,6 @@ Q3,145
 *A CSV dataset is stored once under #sales and a &lt;table src="@sales" /&gt; pulls
 it in and renders it as a grid. The dataset itself renders nothing; the
 consuming element decides how to present the opaque bytes.*
-
-</section>
 
 <section #ag-library | `<library>`>
 
@@ -81,5 +77,3 @@ a &lt;library&gt; loads only from inside &lt;data&gt;). The parser reads the
 entries and registers goodall2024 and darwin1859 in the citation
 registry. Citations elsewhere (e.g., &lt;cite goodall2024&gt;) resolve
 against these entries. The block itself produces no rendered output.*
-
-</section>

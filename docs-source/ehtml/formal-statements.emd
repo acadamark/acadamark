@@ -35,8 +35,6 @@ Any continuous function on a closed interval is bounded.
 </corollary>
 </minipage>
 
-</section>
-
 <section #eh-dd | `<dd>`>
 
 <sub-section | Specification>
@@ -79,8 +77,6 @@ The second paragraph of the definition.
 *Multi-paragraph descriptions are valid — the pipe content's
 paragraph structure is preserved.*
 
-</section>
-
 <section #eh-definition | `<definition>`>
 
 <sub-section | Specification>
@@ -117,8 +113,6 @@ A *group* is a set $G$ together with a binary operation
 $\cdot$ satisfying associativity, identity, and inverses.
 </definition>
 </minipage>
-
-</section>
 
 <section #eh-dl | `<dl>`>
 
@@ -175,8 +169,6 @@ authoring pattern.*
 
 *One term with multiple definitions — a valid HTML pattern.*
 
-</section>
-
 <section #eh-dt | `<dt>`>
 
 <sub-section | Specification>
@@ -209,8 +201,6 @@ Produced by: canonical `<dt>`.
 
 *Inline markup in a term. The recursive-content pass parses the
 pipe content normally.*
-
-</section>
 
 <section #eh-example | `<example>`>
 
@@ -250,8 +240,6 @@ operation is associative, $0$ is the identity, and every
 integer has an additive inverse.
 </example>
 </minipage>
-
-</section>
 
 <section #eh-glossary | `<glossary>`>
 
@@ -295,8 +283,6 @@ Produced by: canonical `<glossary>`.
 for its term and definition (the same shapes &lt;dl&gt; uses), wrapped
 in the entry's own envelope for cross-reference / styling.*
 
-</section>
-
 <section #eh-glossary-entry | `<glossary-entry>`>
 
 <sub-section | Specification>
@@ -326,8 +312,6 @@ Produced by: canonical `<glossary-entry>`.
 *A single glossary entry. The id uses the "term:" colon-prefix
 convention so cross-references like &lt;ref @term:enscribe&gt; can
 resolve into the entry.*
-
-</section>
 
 <section #eh-lemma | `<lemma>`>
 
@@ -365,8 +349,6 @@ Every non-empty partially-ordered set in which every chain has
 an upper bound contains a maximal element.
 </lemma>
 </minipage>
-
-</section>
 
 <section #eh-proof | `<proof>`>
 
@@ -420,8 +402,6 @@ The argument follows from the preceding lemma.
 (useful when the proof is separated from its theorem by
 intervening text).*
 
-</section>
-
 <section #eh-proposition | `<proposition>`>
 
 <sub-section | Specification>
@@ -459,8 +439,6 @@ $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
 </proposition>
 </minipage>
 
-</section>
-
 <section #eh-remark | `<remark>`>
 
 <sub-section | Specification>
@@ -497,8 +475,6 @@ The hypothesis of compactness is essential here; without it
 the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
 </remark>
 </minipage>
-
-</section>
 
 <section #eh-theorem | `<theorem>`>
 
@@ -544,5 +520,3 @@ via id (the "thm:" colon-prefix convention is consistent with
 "fig:", "eqn:", "sec:" elsewhere in enscribe). The name
 kwarg lifts to `data-name`; the Phase-2 handler will render
 it as the "(Pythagoras)" suffix to the label "Theorem N".*
-
-</section>

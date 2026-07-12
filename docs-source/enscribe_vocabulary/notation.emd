@@ -28,8 +28,6 @@ a + b &= c
 the `=` sign). Handler wraps in `\begin{aligned}...\end{aligned}`
 (KaTeX-compatible variant of LaTeX's `align`).*
 
-</section>
-
 <section #sh-cases | `<cases>`>
 
 <sub-section | General Usage>
@@ -56,8 +54,6 @@ x^2 & \text{if } x \ge 0 \\
 
 *A two-case piecewise definition. Handler wraps in
 `\begin{cases}...\end{cases}`.*
-
-</section>
 
 <section #sh-code | `<code>`>
 
@@ -114,8 +110,6 @@ but supports attributes.*
 | `language` | kwarg |  | The programming language of the code. |
 | `src` | kwarg |  | An @id reference (#313 consumer wiring) that pulls a stored &lt;dataset&gt; declared in &lt;data&gt; and renders its opaque bytes as the verbatim code body — e.g. |
 
-</section>
-
 <section #sh-code-block | `<code-block>`>
 
 <sub-section | General Usage>
@@ -157,8 +151,6 @@ extraction.*
 |---|---|---|---|
 | `src` | kwarg |  | An @id reference (Option A / #313) that pulls a stored &lt;dataset&gt; declared in &lt;data&gt; and renders its opaque bytes as the code block's verbatim body — e.g. |
 
-</section>
-
 <section #sh-display-math | `<display-math>`>
 
 <sub-section | General Usage>
@@ -187,8 +179,6 @@ output).*
 |---|---|---|---|
 | `+numbered` / `-numbered` | flag | default on | Whether this equation participates in the document-wide numbered sequence. |
 
-</section>
-
 <section #sh-eqnarray | `<eqnarray>`>
 
 <sub-section | General Usage>
@@ -215,8 +205,6 @@ g(x) &=& 2x
 
 *Two equations rendered via KaTeX's `aligned` env (the supported
 equivalent of LaTeX's `eqnarray`).*
-
-</section>
 
 <section #sh-inline-code | `<inline-code>`>
 
@@ -253,8 +241,6 @@ Call <` python | factorial(n) `> to recurse.
 as a `language-X` class on the &lt;code&gt; (discoverable by highlighters;
 the interpreter applies no highlighting itself).*
 
-</section>
-
 <section #sh-inline-math | `<inline-math>`>
 
 <sub-section | General Usage>
@@ -276,8 +262,6 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 *The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
 wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no
 attributes — id and classes are not supported for inline math.*
-
-</section>
 
 <section #sh-math | `<math>`>
 
@@ -307,8 +291,6 @@ LaTeX math via KaTeX. Use the long-form when the source is
 multi-line or when explicit tag bounds aid readability; use the
 sigil for brevity.*
 
-</section>
-
 <section #sh-matrix | `<matrix>`>
 
 <sub-section | General Usage>
@@ -335,5 +317,3 @@ Registers:
 
 *A 2×2 matrix. The handler wraps the body in
 `\begin{matrix}...\end{matrix}` before KaTeX renders.*
-
-</section>

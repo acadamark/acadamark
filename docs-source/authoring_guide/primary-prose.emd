@@ -11,5 +11,3 @@ Compiles to eHTML `<p>`.
 <minipage #mp:ag-p-1>
 <p | A simple paragraph.>
 </minipage>
-
-</section>

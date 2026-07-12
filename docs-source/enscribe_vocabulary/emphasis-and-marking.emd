@@ -38,8 +38,6 @@ has already been introduced earlier in the document.*
 |---|---|---|---|
 | `title` | kwarg |  | The abbreviation's expansion. |
 
-</section>
-
 <section #sh-b | `<b>`>
 
 <sub-section | General Usage>
@@ -72,8 +70,6 @@ Use <b type=product-name | Acrobat> to read the file.
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `type` | kwarg | `keyword` `product-name` `lead` `offset` `other` |  |
-
-</section>
 
 <section #sh-em | `<em>`>
 
@@ -114,8 +110,6 @@ tag. &lt;em&gt; is reached only by the explicit form.*
 <minipage #mp:sh-em-3>
 <em #key-term .highlighted | distinguishing feature>
 </minipage>
-
-</section>
 
 <section #sh-i | `<i>`>
 
@@ -158,8 +152,6 @@ The technical term <i type=technical | mitochondria> refers to organelles.
 |---|---|---|---|
 | `type` | kwarg | `foreign` `taxonomic` `technical` `thought` `ship-name` `other` | Optional classification of the italic's role. |
 
-</section>
-
 <section #sh-kbd | `<kbd>`>
 
 <sub-section | General Usage>
@@ -194,8 +186,6 @@ Press <kbd | <kbd | Ctrl>+<kbd | C>> to copy.
 render the outer block as the chord and the inner blocks as
 individual keys, both monospace.*
 
-</section>
-
 <section #sh-output | `<output>`>
 
 <sub-section | General Usage>
@@ -218,8 +208,6 @@ The function returns <output | 42> for the test input.
 distinct from &lt;samp&gt; — &lt;samp&gt; is what a program prints (a
 display artifact); &lt;output&gt; is the result of a computation
 (a semantic value). Browsers render both similarly.*
-
-</section>
 
 <section #sh-s | `<s>`>
 
@@ -257,8 +245,6 @@ The claim <s type=retracted | was unsupported> has been corrected.
 |---|---|---|---|
 | `type` | kwarg | `outdated` `retracted` `deleted` `other` |  |
 
-</section>
-
 <section #sh-samp | `<samp>`>
 
 <sub-section | General Usage>
@@ -292,8 +278,6 @@ Set <var | threshold> to <samp | 0.05>.
 *&lt;samp&gt; for the sample value paired with &lt;var&gt; for the variable
 name — the natural pair for documenting configuration in
 technical writing.*
-
-</section>
 
 <section #sh-strong | `<strong>`>
 
@@ -333,8 +317,6 @@ visual tag. &lt;strong&gt; is reached only by the explicit form.*
 <strong #critical .warning | This is critical.>
 </minipage>
 
-</section>
-
 <section #sh-sub | `<sub>`>
 
 <sub-section | General Usage>
@@ -360,8 +342,6 @@ The vector x<sub | i> represents the i-th component.
 <minipage #mp:sh-sub-2>
 The vector x<sub | i> represents the i-th component.
 </minipage>
-
-</section>
 
 <section #sh-sup | `<sup>`>
 
@@ -396,8 +376,6 @@ The isotope <sup | 12>C is abundant.
 <minipage #mp:sh-sup-3>
 The isotope <sup | 12>C is abundant.
 </minipage>
-
-</section>
 
 <section #sh-term | `<term>`>
 
@@ -434,8 +412,6 @@ back to it. Subsequent uses of the same term (without an id)
 still mark it as a term being referenced, distinct from running
 prose, without re-asserting the introduction.*
 
-</section>
-
 <section #sh-u | `<u>`>
 
 <sub-section | General Usage>
@@ -468,8 +444,6 @@ The Chinese name <u type=proper-name | 王明> appears here.
 |---|---|---|---|
 | `type` | kwarg | `misspelling` `proper-name` `editorial-correction` `other` |  |
 
-</section>
-
 <section #sh-var | `<var>`>
 
 <sub-section | General Usage>
@@ -501,5 +475,3 @@ Set <var | threshold> to <samp | 0.05>.
 
 *&lt;var&gt; for the variable name and &lt;samp&gt; for a sample value —
 the natural pair for documenting configuration in technical writing.*
-
-</section>

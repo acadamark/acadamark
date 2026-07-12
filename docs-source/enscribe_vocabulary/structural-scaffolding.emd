@@ -96,8 +96,6 @@ article. &lt;article-front&gt; is omitted because there's no metadata.*
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` (default `arabic`) |  |
 | `note-position` | kwarg | `bottom` `margin` (default `bottom`) | Document-level note render mode (#33): |
 
-</section>
-
 <section #sh-article-back | `<article-back>`>
 
 <sub-section | General Usage>
@@ -107,8 +105,6 @@ Semantic role: *article-back*. Compiles to eHTML `<article-back>`.
 Registers:
 
 - Canonical: `<article-back>`
-
-</section>
 
 <section #sh-article-body | `<article-body>`>
 
@@ -120,8 +116,6 @@ Registers:
 
 - Canonical: `<article-body>`
 
-</section>
-
 <section #sh-article-front | `<article-front>`>
 
 <sub-section | General Usage>
@@ -131,8 +125,6 @@ Semantic role: *article-front*. Compiles to eHTML `<article-front>`.
 Registers:
 
 - Canonical: `<article-front>`
-
-</section>
 
 <section #sh-book | `<book>`>
 
@@ -159,20 +151,7 @@ Content here.
 Content here.
 </code-block>
 
-<minipage #mp:sh-book-1>
-<meta type=book>
-  <title | A Natural History of Elephants>
-  <author | Jane Goodall>
-</meta>
-
-<chapter | Origins>
-<section | Early ancestors>
-Content here.
-
-<chapter | Modern populations>
-<section | African elephants>
-Content here.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 *Typical authoring path: &lt;meta type=book&gt; at the top with no &lt;book&gt;
 wrapper. The structural plugin generates &lt;book&gt; + the three region
@@ -197,23 +176,7 @@ Content.
 Content.
 </code-block>
 
-<minipage #mp:sh-book-2>
-<meta type=book>
-  <title | The Comprehensive Guide>
-  <author | Author Name>
-</meta>
-
-<part | Part I: Foundations>
-<chapter | First Principles>
-Content.
-
-<chapter | Background>
-Content.
-
-<part | Part II: Applications>
-<chapter | Practical Examples>
-Content.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 <sub-section | Arguments>
 
@@ -221,8 +184,6 @@ Content.
 |---|---|---|---|
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` (default `arabic`) |  |
 | `note-position` | kwarg | `bottom` `margin` (default `bottom`) | Document-level note render mode (#33): |
-
-</section>
 
 <section #sh-book-back | `<book-back>`>
 
@@ -234,8 +195,6 @@ Registers:
 
 - Canonical: `<book-back>`
 
-</section>
-
 <section #sh-book-body | `<book-body>`>
 
 <sub-section | General Usage>
@@ -246,8 +205,6 @@ Registers:
 
 - Canonical: `<book-body>`
 
-</section>
-
 <section #sh-book-front | `<book-front>`>
 
 <sub-section | General Usage>
@@ -257,8 +214,6 @@ Semantic role: *book-front*. Compiles to eHTML `<book-front>`.
 Registers:
 
 - Canonical: `<book-front>`
-
-</section>
 
 <section #sh-book-part | `<book-part>`>
 
@@ -275,10 +230,7 @@ Registers:
 Content of the chapter.
 </code-block>
 
-<minipage #mp:sh-book-part-1>
-<chapter | Origins>
-Content of the chapter.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 <code-block #code:sh-book-part-2>
 <part | Part I: Foundations>
@@ -289,14 +241,7 @@ Content.
 Content.
 </code-block>
 
-<minipage #mp:sh-book-part-2>
-<part | Part I: Foundations>
-<chapter | First Chapter>
-Content.
-
-<chapter | Second Chapter>
-Content.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 <code-block #code:sh-book-part-3>
 <preface | A Note from the Author>
@@ -309,16 +254,7 @@ Body content.
 Notation conventions used in this book.
 </code-block>
 
-<minipage #mp:sh-book-part-3>
-<preface | A Note from the Author>
-I wrote this book because...
-
-<chapter | Chapter One>
-Body content.
-
-<appendix | Notation>
-Notation conventions used in this book.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 *The structural plugin places the preface in book-front, the chapter
 in book-body, and the appendix in book-back based on book-part-type.*
@@ -332,8 +268,6 @@ in book-body, and the appendix in book-back based on book-part-type.*
 | `note-position` | kwarg | `bottom` `margin` | Document-level note render mode (#33): |
 | `+listed` / `-listed` | flag | default on | Whether this book-part appears in the generated table of contents. |
 | `+numbered` / `-numbered` | flag | default on | Whether this book-part participates in numbering. |
-
-</section>
 
 <section #sh-hr | `<hr>`>
 
@@ -383,8 +317,6 @@ Registers:
 |---|---|---|---|
 | `type` | kwarg | `scene-break` `section-break` `ornamental` `decorative` `other` | Optional classification of the thematic break's role. |
 
-</section>
-
 <section #sh-item | `<item>`>
 
 <sub-section | General Usage>
@@ -401,8 +333,6 @@ Registers:
 |---|---|---|---|
 | `src` | kwarg |  | For an EXTERNAL page: |
 
-</section>
-
 <section #sh-nav | `<nav>`>
 
 <sub-section | General Usage>
@@ -412,8 +342,6 @@ Semantic role: *navigation*. Compiles to eHTML `<nav>`.
 Registers:
 
 - Canonical: `<nav>`
-
-</section>
 
 <section #sh-nav-group | `<nav-group>`>
 
@@ -430,8 +358,6 @@ Registers:
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `title` | kwarg |  | The group's display label — its heading in the top bar (a dropdown) and the sidebar (an expandable node). |
-
-</section>
 
 <section #sh-section | `<section>`>
 
@@ -496,8 +422,6 @@ Sub-section content.
 | `+listed` / `-listed` | flag | default on | Whether this section appears in the generated table of contents. |
 | `+numbered` / `-numbered` | flag | default on | Whether this section participates in heading numbering. |
 
-</section>
-
 <section #sh-sub-section | `<sub-section>`>
 
 <sub-section | General Usage>
@@ -551,8 +475,6 @@ Sub-section content.
 | `+listed` / `-listed` | flag | default on | Whether this sub-section appears in the generated table of contents. |
 | `+numbered` / `-numbered` | flag | default on | Whether this sub-section participates in heading numbering. |
 
-</section>
-
 <section #sh-sub-sub-section | `<sub-sub-section>`>
 
 <sub-section | General Usage>
@@ -601,5 +523,3 @@ Sensitivity tests were performed.
 | `numbering-style` | kwarg | `arabic` `roman` `alpha` `none` |  |
 | `+listed` / `-listed` | flag | default on | Whether this sub-sub-section appears in the generated table of contents. |
 | `+numbered` / `-numbered` | flag | default on | Whether this sub-sub-section participates in heading numbering. |
-
-</section>

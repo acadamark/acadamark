@@ -61,8 +61,6 @@ content is the link text. The most common authoring path. (Markdown
 *Internal links use fragment identifiers pointing at element ids — here
 the in-scope &lt;section #section-2&gt; the link targets.*
 
-</section>
-
 <section #eh-bib-entry | `<bib-entry>`>
 
 <sub-section | Specification>
@@ -74,8 +72,6 @@ the in-scope &lt;section #section-2&gt; the link targets.*
 | `type` | kwarg | `article` `book` `chapter` `thesis` `proceedings` `report` `webpage` `other` | The bibliography entry type. |
 
 Produced by: canonical `<bib-entry>`.
-
-</section>
 
 <section #eh-bibliography | `<bibliography>`>
 
@@ -90,8 +86,6 @@ Produced by: canonical `<bib-entry>`.
 | `type` | kwarg | `cited-only` `full` `hybrid` (default `cited-only`) | Future — not yet implemented: |
 
 Produced by: canonical `<bibliography>`.
-
-</section>
 
 <section #eh-blockquote | `<blockquote>`>
 
@@ -156,8 +150,6 @@ All happy families are alike; each unhappy family is unhappy in its own way.
 
 *Authors can also write &lt;blockquote&gt; directly. Both forms produce
 the same eHTML output.*
-
-</section>
 
 <section #eh-cite | `<cite>`>
 
@@ -262,8 +254,6 @@ As <cite style=narrative @goodall2024, p. 42> notes, context matters.
 *A form composes with a #409 locator: the page rides the
 parenthetical part of the narrative composite.*
 
-</section>
-
 <section #eh-doi | `<doi>`>
 
 <sub-section | Specification>
@@ -302,8 +292,6 @@ Produced by: canonical `<doi>`.
 normalize-to-canonical gate (per the apparatus-tag reconciliation,
 DESIGN.md §"Apparatus-tag positioning").*
 
-</section>
-
 <section #eh-q | `<q>`>
 
 <sub-section | Specification>
@@ -336,8 +324,6 @@ The phrase <q cite=https://example.com | to be or not to be> is iconic.
 <minipage #mp:eh-q-2>
 The phrase <q cite=https://example.com | to be or not to be> is iconic.
 </minipage>
-
-</section>
 
 <section #eh-ref | `<ref>`>
 
@@ -400,8 +386,6 @@ Config override: &lt;config ref-prefix-eqn="Eq."&gt; changes this to "Eq.".*
 
 *Unresolved target renders a visible error anchor. This example is the
 deliberate exception — it teaches the error form on purpose.*
-
-</section>
 
 <data>
 <library bibtex>

@@ -74,6 +74,12 @@ jobs:
       - name: Theme-token contract freshness guard (#398)
         run: npm run check:theme-tokens
 
+      # The flagship builds with zero unexplained diagnostics — every warning the docs emit is
+      # embedded into the deployed page as a console recap (#415), so the docs must hold to the
+      # standard they preach. Survivors are individually justified in the guard's allowlist.
+      - name: Docs-clean gate (flagship builds clean)
+        run: npm run check:docs-clean
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 

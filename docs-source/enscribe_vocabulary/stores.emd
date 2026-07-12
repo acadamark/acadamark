@@ -29,8 +29,6 @@ Registers:
 registers entries in the citation system. The &lt;data&gt; block itself
 produces no rendered output.*
 
-</section>
-
 <section #sh-dataset | `<dataset>`>
 
 <sub-section | General Usage>
@@ -66,8 +64,6 @@ consuming element decides how to present the opaque bytes.*
 |---|---|---|---|
 | `format` | format-word | `csv` `tsv` `json` `other` | The format word — the canonical way to name the payload language (`&lt;dataset #id csv&gt;…&lt;/dataset&gt;`). |
 | `format` | kwarg | `csv` `tsv` `json` `other` | Attribute-form equivalent of the format-word positional (`&lt;dataset #id format=csv&gt;…&lt;/dataset&gt;`). |
-
-</section>
 
 <section #sh-library | `<library>`>
 
@@ -133,5 +129,3 @@ against these entries. The block itself produces no rendered output.*
 | `format` | format-word | `bibtex` `csl-json` `ris` `endnote-xml` `other` | The format word — the canonical way to name the payload language (`&lt;library bibtex | …&gt;`). |
 | `format` | kwarg | `bibtex` `csl-json` `ris` `endnote-xml` `other` (default `auto`) | Attribute-form equivalent of the format-word positional. |
 | `src` | kwarg |  | External source (#133): |
-
-</section>

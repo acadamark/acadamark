@@ -37,8 +37,6 @@ Any continuous function on a closed interval is bounded.
 | `name` | kwarg |  | Optional name suffix for the corollary's label, parallel to &lt;theorem&gt;'s `name` kwarg. |
 | `+numbered` / `-numbered` | flag | default on | Whether this corollary participates in the propositional theorem-family shared counter. |
 
-</section>
-
 <section #sh-dd | `<dd>`>
 
 <sub-section | General Usage>
@@ -79,8 +77,6 @@ The second paragraph of the definition.
 *Multi-paragraph descriptions are valid — the pipe content's
 paragraph structure is preserved.*
 
-</section>
-
 <section #sh-definition | `<definition>`>
 
 <sub-section | General Usage>
@@ -119,8 +115,6 @@ $\cdot$ satisfying associativity, identity, and inverses.
 |---|---|---|---|
 | `name` | kwarg |  | Optional name suffix for the definition's label. |
 | `+numbered` / `-numbered` | flag | default on | Whether this definition participates in the definition counter. |
-
-</section>
 
 <section #sh-dl | `<dl>`>
 
@@ -175,8 +169,6 @@ authoring pattern.*
 
 *One term with multiple definitions — a valid HTML pattern.*
 
-</section>
-
 <section #sh-dt | `<dt>`>
 
 <sub-section | General Usage>
@@ -207,8 +199,6 @@ Registers:
 
 *Inline markup in a term. The recursive-content pass parses the
 pipe content normally.*
-
-</section>
 
 <section #sh-example | `<example>`>
 
@@ -251,8 +241,6 @@ integer has an additive inverse.
 | `name` | kwarg |  | Optional name suffix for the example's label. |
 | `+numbered` / `-numbered` | flag | default on | Whether this example participates in the example counter. |
 
-</section>
-
 <section #sh-glossary | `<glossary>`>
 
 <sub-section | General Usage>
@@ -293,8 +281,6 @@ Registers:
 for its term and definition (the same shapes &lt;dl&gt; uses), wrapped
 in the entry's own envelope for cross-reference / styling.*
 
-</section>
-
 <section #sh-glossary-entry | `<glossary-entry>`>
 
 <sub-section | General Usage>
@@ -322,8 +308,6 @@ Registers:
 *A single glossary entry. The id uses the "term:" colon-prefix
 convention so cross-references like &lt;ref @term:enscribe&gt; can
 resolve into the entry.*
-
-</section>
 
 <section #sh-lemma | `<lemma>`>
 
@@ -363,8 +347,6 @@ an upper bound contains a maximal element.
 |---|---|---|---|
 | `name` | kwarg |  | Optional name suffix for the lemma's label, parallel to &lt;theorem&gt;'s `name` kwarg. |
 | `+numbered` / `-numbered` | flag | default on | Whether this lemma participates in the propositional theorem- family shared counter. |
-
-</section>
 
 <section #sh-proof | `<proof>`>
 
@@ -420,8 +402,6 @@ intervening text).*
 | `name` | kwarg |  | Optional name suffix — e.g. |
 | `+numbered` / `-numbered` | flag | default off | Whether this proof is numbered. |
 
-</section>
-
 <section #sh-proposition | `<proposition>`>
 
 <sub-section | General Usage>
@@ -461,8 +441,6 @@ $|\langle u, v \rangle| \le \|u\| \, \|v\|$.
 | `name` | kwarg |  | Optional name suffix for the proposition's label. |
 | `+numbered` / `-numbered` | flag | default on | Whether this proposition participates in the propositional theorem-family shared counter. |
 
-</section>
-
 <section #sh-remark | `<remark>`>
 
 <sub-section | General Usage>
@@ -501,8 +479,6 @@ the conclusion fails (consider $f(x) = 1/x$ on $(0, 1]$).
 |---|---|---|---|
 | `name` | kwarg |  | Optional name suffix for the remark's label. |
 | `+numbered` / `-numbered` | flag | default off | Whether this remark is numbered. |
-
-</section>
 
 <section #sh-theorem | `<theorem>`>
 
@@ -550,5 +526,3 @@ it as the "(Pythagoras)" suffix to the label "Theorem N".*
 |---|---|---|---|
 | `name` | kwarg |  | Optional name suffix for the theorem's label (the "(Pythagoras)" half of "Theorem 1.2 (Pythagoras)"). |
 | `+numbered` / `-numbered` | flag | default on | Whether this theorem participates in the theorem-family shared counter (see "Numbering" below). |
-
-</section>

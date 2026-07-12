@@ -73,8 +73,6 @@ This paper presents...
 >
 </minipage>
 
-</section>
-
 <section #eh-affiliation | `<affiliation>`>
 
 <sub-section | Specification>
@@ -132,8 +130,6 @@ subsequent authors reference the same one by id via a
 self-closing tag. JATS exporter generates the appropriate
 &lt;xref ref-type="aff" rid="aff1"&gt; structure.*
 
-</section>
-
 <section #eh-article-subtitle | `<article-subtitle>`>
 
 <sub-section | Specification>
@@ -144,8 +140,6 @@ self-closing tag. JATS exporter generates the appropriate
 
 Produced by: canonical `<article-subtitle>`.
 
-</section>
-
 <section #eh-article-title | `<article-title>`>
 
 <sub-section | Specification>
@@ -155,8 +149,6 @@ Produced by: canonical `<article-subtitle>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<article-title>`.
-
-</section>
 
 <section #eh-author | `<author>`>
 
@@ -244,8 +236,6 @@ the equivalent kwarg form above produce the same eHTML output.*
 The third is the corresponding author. JATS export groups them
 as &lt;contrib-group&gt;.*
 
-</section>
-
 <section #eh-book-part-subtitle | `<book-part-subtitle>`>
 
 <sub-section | Specification>
@@ -255,8 +245,6 @@ as &lt;contrib-group&gt;.*
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<book-part-subtitle>`.
-
-</section>
 
 <section #eh-book-part-title | `<book-part-title>`>
 
@@ -268,8 +256,6 @@ Produced by: canonical `<book-part-subtitle>`.
 
 Produced by: canonical `<book-part-title>`.
 
-</section>
-
 <section #eh-book-subtitle | `<book-subtitle>`>
 
 <sub-section | Specification>
@@ -280,8 +266,6 @@ Produced by: canonical `<book-part-title>`.
 
 Produced by: canonical `<book-subtitle>`.
 
-</section>
-
 <section #eh-book-title | `<book-title>`>
 
 <sub-section | Specification>
@@ -291,8 +275,6 @@ Produced by: canonical `<book-subtitle>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<book-title>`.
-
-</section>
 
 <section #eh-config | `<config>`>
 
@@ -331,8 +313,6 @@ produces no body output (it renders as an empty &lt;config&gt;).*
 *More operational options, all from the live kwarg allowlist
 (citation-style, number-sections, number-figures, number-tables,
 number-equations, show-source, parse-data-tables, ref-prefix-*).*
-
-</section>
 
 <section #eh-date | `<date>`>
 
@@ -400,8 +380,6 @@ primary; submission, acceptance, etc., go in JATS history.*
 *Free-form date format. Acceptable but ISO 8601 is preferred for
 machine readability and for predictable JATS export.*
 
-</section>
-
 <section #eh-editor | `<editor>`>
 
 <sub-section | Specification>
@@ -443,8 +421,6 @@ not lifted to a &lt;name&gt; child), mirroring &lt;author | ...&gt;.*
 the gate (unified to &lt;author&gt;'s shape, #338); role stays a scalar
 attribute (data-role) — the one field that differs from &lt;author&gt;.*
 
-</section>
-
 <section #eh-email | `<email>`>
 
 <sub-section | Specification>
@@ -474,8 +450,6 @@ Produced by: canonical `<email>`.
 *Author contact email. Common in journal article metadata for
 the corresponding author (see also the +corresponding boolean
 kwarg on &lt;author&gt;).*
-
-</section>
 
 <section #eh-keywords | `<keywords>`>
 
@@ -513,8 +487,6 @@ authoring form. The exporter splits on commas when emitting JATS.*
 </minipage>
 
 *Kwarg-form authoring lifts to the child-tag form at the gate.*
-
-</section>
 
 <section #eh-lang | `<lang>`>
 
@@ -554,8 +526,6 @@ the render-mode lowering) project it where each format expects.*
 
 *Kwarg-form authoring lifts to the child-tag form at the gate.*
 
-</section>
-
 <section #eh-license | `<license>`>
 
 <sub-section | Specification>
@@ -594,8 +564,6 @@ Produced by: canonical `<license>`.
 
 *Kwarg-form authoring (license name only) lifts to the child-tag
 form at the normalize-to-canonical gate.*
-
-</section>
 
 <section #eh-meta | `<meta>`>
 
@@ -654,22 +622,12 @@ wrapper. The structural plugin reads type=article and generates:
 Content.
 </code-block>
 
-<minipage #mp:eh-meta-2>
-<meta type=book>
-  <title | A Natural History of Elephants>
-  <author | Jane Goodall>
-</meta>
-
-<chapter | Origins>
-Content.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 *type=book generates the book-shaped wrapper instead. Changing the
 single kwarg switches the entire output structure. Each book-part
 contains its own &lt;meta&gt; with &lt;book-part-title&gt;; no &lt;book-part-meta&gt;
 wrapper.*
-
-</section>
 
 <section #eh-name | `<name>`>
 
@@ -710,8 +668,6 @@ tag at the normalize-to-canonical gate, parallel to &lt;meta&gt;'s
 kwarg-to-child-tag lift. The `+corresponding` boolean stays as
 a kwarg/attribute on the canonical eHTML &lt;author&gt; (it is a
 scalar marker, not a structured field).*
-
-</section>
 
 <section #eh-orcid | `<orcid>`>
 
@@ -757,8 +713,6 @@ Produced by: canonical `<orcid>`.
 
 *URL form is accepted but bare form is preferred.*
 
-</section>
-
 <section #eh-publication-date | `<publication-date>`>
 
 <sub-section | Specification>
@@ -802,8 +756,6 @@ Produced by: canonical `<publication-date>`.
 *Free-form publication date. Acceptable but ISO 8601 is preferred
 for predictable JATS export and machine readability.*
 
-</section>
-
 <section #eh-section-subtitle | `<section-subtitle>`>
 
 <sub-section | Specification>
@@ -813,8 +765,6 @@ for predictable JATS export and machine readability.*
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<section-subtitle>`.
-
-</section>
 
 <section #eh-section-title | `<section-title>`>
 
@@ -826,8 +776,6 @@ Produced by: canonical `<section-subtitle>`.
 
 Produced by: canonical `<section-title>`.
 
-</section>
-
 <section #eh-sub-section-subtitle | `<sub-section-subtitle>`>
 
 <sub-section | Specification>
@@ -837,8 +785,6 @@ Produced by: canonical `<section-title>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<sub-section-subtitle>`.
-
-</section>
 
 <section #eh-sub-section-title | `<sub-section-title>`>
 
@@ -850,8 +796,6 @@ Produced by: canonical `<sub-section-subtitle>`.
 
 Produced by: canonical `<sub-section-title>`.
 
-</section>
-
 <section #eh-sub-sub-section-subtitle | `<sub-sub-section-subtitle>`>
 
 <sub-section | Specification>
@@ -862,8 +806,6 @@ Produced by: canonical `<sub-section-title>`.
 
 Produced by: canonical `<sub-sub-section-subtitle>`.
 
-</section>
-
 <section #eh-sub-sub-section-title | `<sub-sub-section-title>`>
 
 <sub-section | Specification>
@@ -873,8 +815,6 @@ Produced by: canonical `<sub-sub-section-subtitle>`.
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<sub-sub-section-title>`.
-
-</section>
 
 <section #eh-subject | `<subject>`>
 
@@ -922,8 +862,6 @@ Produced by: canonical `<subject>`.
 identifies the classification system; the JATS exporter
 generates the appropriate &lt;subj-group subj-group-type="..."&gt; wrapper.*
 
-</section>
-
 <section #eh-subtitle | `<subtitle>`>
 
 <sub-section | Specification>
@@ -949,8 +887,6 @@ Produced by: canonical `<subtitle>`.
   <subtitle | A Multi-Year Field Study in Tanzania>
 </meta>
 </minipage>
-
-</section>
 
 <section #eh-title | `<title>`>
 
@@ -1011,8 +947,6 @@ Produced by: canonical `<title>`.
 *Titles can contain inline elements. The recursive content parsing
 handles nested constructs.*
 
-</section>
-
 <section #eh-version | `<version>`>
 
 <sub-section | Specification>
@@ -1049,5 +983,3 @@ string.*
 </minipage>
 
 *Kwarg-form authoring lifts to the child-tag form at the gate.*
-
-</section>

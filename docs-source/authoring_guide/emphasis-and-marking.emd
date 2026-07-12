@@ -15,8 +15,6 @@ The <abbr title="Document Object Model" | DOM> is the browser API for HTML.
 *Standard pattern — abbreviation with its expansion as the title
 kwarg. Browsers show the expansion in a hover tooltip.*
 
-</section>
-
 <section #ag-b | `<b>`>
 
 Compiles to eHTML `<b>`; markdown `**…**`.
@@ -28,8 +26,6 @@ The keyword <b type=keyword | recursion> is fundamental.
 <minipage #mp:ag-b-1>
 The keyword <b type=keyword | recursion> is fundamental.
 </minipage>
-
-</section>
 
 <section #ag-em | `<em>`>
 
@@ -47,8 +43,6 @@ This has *emphasized* content.
 visual &lt;i&gt;, not the semantic &lt;em&gt; — markdown emphasis maps to the visual
 tag. &lt;em&gt; is reached only by the explicit form.*
 
-</section>
-
 <section #ag-i | `<i>`>
 
 Compiles to eHTML `<i>`; markdown `*…*` (or `_…_`).
@@ -60,8 +54,6 @@ The species is <i type=taxonomic | Loxodonta africana>.
 <minipage #mp:ag-i-1>
 The species is <i type=taxonomic | Loxodonta africana>.
 </minipage>
-
-</section>
 
 <section #ag-kbd | `<kbd>`>
 
@@ -78,8 +70,6 @@ Press <kbd | Ctrl+C> to copy.
 *Single chord as a kbd block. Browsers render &lt;kbd&gt; in a
 monospace font by default, distinguishing it from surrounding
 prose.*
-
-</section>
 
 <section #ag-output | `<output>`>
 
@@ -98,8 +88,6 @@ distinct from &lt;samp&gt; — &lt;samp&gt; is what a program prints (a
 display artifact); &lt;output&gt; is the result of a computation
 (a semantic value). Browsers render both similarly.*
 
-</section>
-
 <section #ag-s | `<s>`>
 
 Compiles to eHTML `<s>`; markdown `~~…~~`.
@@ -114,8 +102,6 @@ The price is ~~$50~~ now $40.
 
 *GFM's tilde syntax produces &lt;s&gt; elements. The most common
 authoring path for casual strikethrough.*
-
-</section>
 
 <section #ag-samp | `<samp>`>
 
@@ -133,8 +119,6 @@ The command prints <samp | Hello, world!> to stdout.
 monospace font by default, distinguishing it from surrounding
 prose.*
 
-</section>
-
 <section #ag-strong | `<strong>`>
 
 Compiles to eHTML `<strong>`.
@@ -151,8 +135,6 @@ This is **strongly emphasized** content.
 visual &lt;b&gt;, not the semantic &lt;strong&gt; — markdown emphasis maps to the
 visual tag. &lt;strong&gt; is reached only by the explicit form.*
 
-</section>
-
 <section #ag-sub | `<sub>`>
 
 Compiles to eHTML `<sub>`.
@@ -165,8 +147,6 @@ Water is H<sub | 2>O.
 Water is H<sub | 2>O.
 </minipage>
 
-</section>
-
 <section #ag-sup | `<sup>`>
 
 Compiles to eHTML `<sup>`.
@@ -178,8 +158,6 @@ The 1<sup | st> edition of the work.
 <minipage #mp:ag-sup-1>
 The 1<sup | st> edition of the work.
 </minipage>
-
-</section>
 
 <section #ag-term | `<term>`>
 
@@ -197,8 +175,6 @@ An <term | eigenvector> is a non-zero vector that scales under a linear transfor
 "this is a term being introduced," typically rendered in italic
 or bold by default CSS.*
 
-</section>
-
 <section #ag-u | `<u>`>
 
 Compiles to eHTML `<u>`.
@@ -210,8 +186,6 @@ The author wrote <u type=misspelling | recieve> in the original.
 <minipage #mp:ag-u-1>
 The author wrote <u type=misspelling | recieve> in the original.
 </minipage>
-
-</section>
 
 <section #ag-var | `<var>`>
 
@@ -227,5 +201,3 @@ The function takes a parameter <var | n> and returns <var | n>²+1.
 
 *Variable names in prose. Browsers render &lt;var&gt; in italic by
 default, distinguishing it from surrounding prose.*
-
-</section>

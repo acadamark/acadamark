@@ -133,8 +133,17 @@ function exampleBlock(id, source, note) {
   // live previews like everything else. The page carries the docs example library
   // (DOCS_EXAMPLE_LIBRARY below, appended by familyChapter when a chapter previews a
   // cite), so the example keys resolve for real.
+  // A book is a whole-document structure — `<meta type=book>` and the book-part
+  // shorthands (`<chapter>` / `<part>` / `<preface>`) are meaningful only as a
+  // document master, never inside a sealed article-shaped preview box (which
+  // cannot be a book). Rendering one in a `<minipage>` produces unknown-tag
+  // noise (`<chapter>` is not a standalone element) — so show the source only,
+  // with a reason, exactly as the `<data>` / `@`-src case does.
+  const isBookExample = /<meta\s+type\s*=\s*["']?book\b/.test(src) || /^\s*<(chapter|part|preface)\b/m.test(src);
   if (/<data\b|src=["']?@/.test(src)) {
     out += `*(Rendered preview omitted — ${code('<data>')} / ${code('@')}-references resolve at document scope, not inside a sealed preview.)*\n`;
+  } else if (isBookExample) {
+    out += `*(Rendered preview omitted — a book (${code('<meta type=book>')} / ${code('<chapter>')}) is a whole-document structure, which a sealed preview box cannot host.)*\n`;
   } else {
     out += `<minipage #mp:${id}>\n${src}\n</minipage>\n`;
   }
@@ -225,7 +234,7 @@ function shorthandSection(name) {
     out += `<sub-section | Arguments>\n\n`;
     out += mdTable(['attribute', 'kind', 'values / default', 'notes'], rows) + '\n';
   }
-  return out + `</section>\n`;
+  return out;
 }
 
 // eHTML vocabulary section: one-line Specification + Examples.
@@ -247,7 +256,7 @@ function ehtmlSection(name) {
   out += `Produced by: ${produced.join(', ')}.\n\n`;
   const ex = elementExamples(name, 'eh');
   if (ex) out += `<sub-section | Examples>\n\n` + ex;
-  return out + `</section>\n`;
+  return out;
 }
 
 // AUTHORING GUIDE section (lighter): role line + ONE example, no argument tables.
@@ -259,7 +268,7 @@ function guideSection(name) {
   out += `.\n\n`;
   const exs = el.shorthand_examples ?? [];
   if (exs.length) out += exampleBlock(`ag-${name}-1`, exs[0].source, exs[0].notes);
-  return out + `</section>\n`;
+  return out;
 }
 
 // ── failure-demonstration passage (#395 D1b, documentation.md rule 7) ────────
@@ -292,8 +301,6 @@ A claim<^ A footnote written with the sigil.>.
 \`<^ x>\` and \`<note | x>\` produce byte-identical output. Content-only (no
 id or attributes inside the sigil); see \`<note>\` in the Aside chapter for
 the attributed and long forms, numbering, and margin placement.*
-
-</section>
 `,
     'quotation-and-sourcing': `<section #ag-when-cites-fail | When citation resolution fails>
 
@@ -377,8 +384,6 @@ Prior work <cite adams2019> anticipated this result.
 *(Declare the library in the document's \`<data>\` block instead; the box's citation then
 resolves through the seal. The same not-loaded rule applies to a body-level \`<library>\`
 outside a \`<data>\` block — see the \`<library>\` reference's Placement section.)*
-
-</section>
 `,
   },
 };

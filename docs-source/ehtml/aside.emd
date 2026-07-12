@@ -52,8 +52,6 @@ It can contain multiple paragraphs and other content like
 >
 </minipage>
 
-</section>
-
 <section #eh-details | `<details>`>
 
 <sub-section | Specification>
@@ -105,8 +103,6 @@ as prose / block content.*
 *The +open boolean kwarg expands the disclosure by default.
 Maps to HTML's standard open attribute.*
 
-</section>
-
 <section #eh-endnotes | `<endnotes>`>
 
 <sub-section | Specification>
@@ -116,8 +112,6 @@ Maps to HTML's standard open attribute.*
 *No kwargs or boolean flags.*
 
 Produced by: canonical `<endnotes>`.
-
-</section>
 
 <section #eh-note | `<note>`>
 
@@ -174,8 +168,6 @@ A definition<note position=margin | A margin note.>.
 A definition<note position=margin | A margin note.>.
 </minipage>
 
-</section>
-
 <section #eh-note-list | `<note-list>`>
 
 <sub-section | Specification>
@@ -187,8 +179,6 @@ A definition<note position=margin | A margin note.>.
 | `type` | kwarg | `end-notes` `chapter-notes` `footnotes-collected` `other` (default `end-notes`) |  |
 
 Produced by: canonical `<note-list>`.
-
-</section>
 
 <section #eh-summary | `<summary>`>
 
@@ -223,5 +213,3 @@ child of &lt;details&gt;.*
 
 *Inline markup in a summary. The recursive-content pass parses
 the pipe content normally.*
-
-</section>

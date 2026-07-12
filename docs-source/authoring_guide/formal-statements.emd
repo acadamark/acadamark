@@ -12,8 +12,6 @@ Compiles to eHTML `<corollary>`.
 <corollary | Every prime greater than 2 is odd.>
 </minipage>
 
-</section>
-
 <section #ag-dd | `<dd>`>
 
 Compiles to eHTML `<dd>`.
@@ -29,8 +27,6 @@ Compiles to eHTML `<dd>`.
 *A definition-list description. Appears as a child of &lt;dl&gt;,
 following the term it defines.*
 
-</section>
-
 <section #ag-definition | `<definition>`>
 
 Compiles to eHTML `<definition>`.
@@ -42,8 +38,6 @@ Compiles to eHTML `<definition>`.
 <minipage #mp:ag-definition-1>
 <definition | A *group* is a set with an associative binary operation, identity, and inverses.>
 </minipage>
-
-</section>
 
 <section #ag-dl | `<dl>`>
 
@@ -74,8 +68,6 @@ Compiles to eHTML `<dl>`.
 *Long-form &lt;dl&gt; with short-form &lt;dt&gt;/&lt;dd&gt; children. The natural
 authoring pattern.*
 
-</section>
-
 <section #ag-dt | `<dt>`>
 
 Compiles to eHTML `<dt>`.
@@ -90,8 +82,6 @@ Compiles to eHTML `<dt>`.
 
 *A definition-list term. Appears as a child of &lt;dl&gt;.*
 
-</section>
-
 <section #ag-example | `<example>`>
 
 Compiles to eHTML `<example>`.
@@ -103,8 +93,6 @@ Compiles to eHTML `<example>`.
 <minipage #mp:ag-example-1>
 <example | The integers under addition form a group.>
 </minipage>
-
-</section>
 
 <section #ag-glossary | `<glossary>`>
 
@@ -140,8 +128,6 @@ Compiles to eHTML `<glossary>`.
 for its term and definition (the same shapes &lt;dl&gt; uses), wrapped
 in the entry's own envelope for cross-reference / styling.*
 
-</section>
-
 <section #ag-glossary-entry | `<glossary-entry>`>
 
 Compiles to eHTML `<glossary-entry>`.
@@ -164,8 +150,6 @@ Compiles to eHTML `<glossary-entry>`.
 convention so cross-references like &lt;ref @term:enscribe&gt; can
 resolve into the entry.*
 
-</section>
-
 <section #ag-lemma | `<lemma>`>
 
 Compiles to eHTML `<lemma>`.
@@ -177,8 +161,6 @@ Compiles to eHTML `<lemma>`.
 <minipage #mp:ag-lemma-1>
 <lemma | Every continuous function on a compact set attains its maximum.>
 </minipage>
-
-</section>
 
 <section #ag-proof | `<proof>`>
 
@@ -205,8 +187,6 @@ even. $\square$
 *The canonical pattern: &lt;theorem&gt; followed by sibling &lt;proof&gt;.
 The proof is NOT nested inside the theorem.*
 
-</section>
-
 <section #ag-proposition | `<proposition>`>
 
 Compiles to eHTML `<proposition>`.
@@ -219,8 +199,6 @@ Compiles to eHTML `<proposition>`.
 <proposition | The sum of two even integers is even.>
 </minipage>
 
-</section>
-
 <section #ag-remark | `<remark>`>
 
 Compiles to eHTML `<remark>`.
@@ -232,8 +210,6 @@ Compiles to eHTML `<remark>`.
 <minipage #mp:ag-remark-1>
 <remark | The converse does not hold in general.>
 </minipage>
-
-</section>
 
 <section #ag-theorem | `<theorem>`>
 
@@ -248,5 +224,3 @@ Compiles to eHTML `<theorem>`.
 </minipage>
 
 *Short-form with pipe content. The body is parsed normally.*
-
-</section>

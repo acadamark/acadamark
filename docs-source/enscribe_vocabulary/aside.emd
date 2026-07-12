@@ -54,8 +54,6 @@ It can contain multiple paragraphs and other content like
 | `+numbered` / `-numbered` | flag | default off | Whether this aside is numbered. |
 | `+border` / `-border` | flag | default on | Frameable surface (#31). |
 
-</section>
-
 <section #sh-details | `<details>`>
 
 <sub-section | General Usage>
@@ -109,8 +107,6 @@ Maps to HTML's standard open attribute.*
 |---|---|---|---|
 | `open` | kwarg | `true` `false` | HTML's open attribute on &lt;details&gt;. |
 
-</section>
-
 <section #sh-endnotes | `<endnotes>`>
 
 <sub-section | General Usage>
@@ -120,8 +116,6 @@ Semantic role: *endnotes*. Compiles to eHTML `<endnotes>`.
 Registers:
 
 - Canonical: `<endnotes>`
-
-</section>
 
 <section #sh-note | `<note>`>
 
@@ -180,8 +174,6 @@ A definition<note position=margin | A margin note.>.
 | `position` | kwarg | `end` `foot` `margin` | Alias for "placement" (same values, same data-note-placement output). |
 | `type` | kwarg | `substantive` `technical` `editorial` `translator` `other` (default `substantive`) | Optional classification. |
 
-</section>
-
 <section #sh-note-list | `<note-list>`>
 
 <sub-section | General Usage>
@@ -197,8 +189,6 @@ Registers:
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `type` | kwarg | `end-notes` `chapter-notes` `footnotes-collected` `other` (default `end-notes`) |  |
-
-</section>
 
 <section #sh-summary | `<summary>`>
 
@@ -231,5 +221,3 @@ child of &lt;details&gt;.*
 
 *Inline markup in a summary. The recursive-content pass parses
 the pipe content normally.*
-
-</section>

@@ -75,8 +75,6 @@ This paper presents...
 | `type` | kwarg | `unstructured` `structured` `graphical` `executive-summary` `other` (default `unstructured`) | Distinguishes abstract types. |
 | `word-limit` | kwarg |  | Optional documentation of the journal's word limit for this abstract. |
 
-</section>
-
 <section #sh-affiliation | `<affiliation>`>
 
 <sub-section | General Usage>
@@ -132,8 +130,6 @@ subsequent authors reference the same one by id via a
 self-closing tag. JATS exporter generates the appropriate
 &lt;xref ref-type="aff" rid="aff1"&gt; structure.*
 
-</section>
-
 <section #sh-article-subtitle | `<article-subtitle>`>
 
 <sub-section | General Usage>
@@ -144,8 +140,6 @@ Registers:
 
 - Canonical: `<article-subtitle>`
 
-</section>
-
 <section #sh-article-title | `<article-title>`>
 
 <sub-section | General Usage>
@@ -155,8 +149,6 @@ Semantic role: *article-title*. Compiles to eHTML `<article-title>`.
 Registers:
 
 - Canonical: `<article-title>`
-
-</section>
 
 <section #sh-author | `<author>`>
 
@@ -246,8 +238,6 @@ as &lt;contrib-group&gt;.*
 | `email` | kwarg |  | Author's contact email address. |
 | `corresponding` | kwarg | `true` `false` | Marks this author as the corresponding author (JATS contrib corresp="yes"). |
 
-</section>
-
 <section #sh-book-part-subtitle | `<book-part-subtitle>`>
 
 <sub-section | General Usage>
@@ -257,8 +247,6 @@ Semantic role: *book-part-subtitle*. Compiles to eHTML `<book-part-subtitle>`.
 Registers:
 
 - Canonical: `<book-part-subtitle>`
-
-</section>
 
 <section #sh-book-part-title | `<book-part-title>`>
 
@@ -270,8 +258,6 @@ Registers:
 
 - Canonical: `<book-part-title>`
 
-</section>
-
 <section #sh-book-subtitle | `<book-subtitle>`>
 
 <sub-section | General Usage>
@@ -282,8 +268,6 @@ Registers:
 
 - Canonical: `<book-subtitle>`
 
-</section>
-
 <section #sh-book-title | `<book-title>`>
 
 <sub-section | General Usage>
@@ -293,8 +277,6 @@ Semantic role: *book-title*. Compiles to eHTML `<book-title>`.
 Registers:
 
 - Canonical: `<book-title>`
-
-</section>
 
 <section #sh-config | `<config>`>
 
@@ -335,8 +317,6 @@ number-equations, show-source, parse-data-tables, ref-prefix-*).*
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `notes` | kwarg |  |  |
-
-</section>
 
 <section #sh-date | `<date>`>
 
@@ -406,8 +386,6 @@ machine readability and for predictable JATS export.*
 | `type` | kwarg | `publication` `submission` `acceptance` `revision` `retraction` `embargo` `other` (default `publication`) | Distinguishes different kinds of dates. |
 | `format` | kwarg | `iso` `ymd` `ymd-time` `mdy` `dmy` `custom` | Optional hint about how the date should be parsed and formatted. |
 
-</section>
-
 <section #sh-editor | `<editor>`>
 
 <sub-section | General Usage>
@@ -451,8 +429,6 @@ attribute (data-role) — the one field that differs from &lt;author&gt;.*
 | `email` | kwarg |  | Editor's contact email address. |
 | `role` | kwarg | `editor` `co-editor` `series-editor` `volume-editor` `guest-editor` `other` (default `editor`) | The editorial role — the one field that distinguishes an &lt;editor&gt; from an &lt;author&gt;. |
 
-</section>
-
 <section #sh-email | `<email>`>
 
 <sub-section | General Usage>
@@ -480,8 +456,6 @@ Registers:
 *Author contact email. Common in journal article metadata for
 the corresponding author (see also the +corresponding boolean
 kwarg on &lt;author&gt;).*
-
-</section>
 
 <section #sh-keywords | `<keywords>`>
 
@@ -518,8 +492,6 @@ authoring form. The exporter splits on commas when emitting JATS.*
 
 *Kwarg-form authoring lifts to the child-tag form at the gate.*
 
-</section>
-
 <section #sh-lang | `<lang>`>
 
 <sub-section | General Usage>
@@ -555,8 +527,6 @@ the render-mode lowering) project it where each format expects.*
 </minipage>
 
 *Kwarg-form authoring lifts to the child-tag form at the gate.*
-
-</section>
 
 <section #sh-license | `<license>`>
 
@@ -598,8 +568,6 @@ form at the normalize-to-canonical gate.*
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `href` | kwarg |  | Optional URL of the license terms (e.g. |
-
-</section>
 
 <section #sh-meta | `<meta>`>
 
@@ -651,15 +619,7 @@ wrapper. The structural plugin reads type=article and generates:
 Content.
 </code-block>
 
-<minipage #mp:sh-meta-2>
-<meta type=book>
-  <title | A Natural History of Elephants>
-  <author | Jane Goodall>
-</meta>
-
-<chapter | Origins>
-Content.
-</minipage>
+*(Rendered preview omitted — a book (`<meta type=book>` / `<chapter>`) is a whole-document structure, which a sealed preview box cannot host.)*
 
 *type=book generates the book-shaped wrapper instead. Changing the
 single kwarg switches the entire output structure. Each book-part
@@ -674,8 +634,6 @@ wrapper.*
 | `book-part-type` | kwarg | `chapter` `part` `introduction` `conclusion` `other` `preface` `foreword` `dedication` `appendix` `glossary` `colophon` `afterword` (default `chapter`) | For a single-file book-part (type=book-part) only: |
 | `icon` | kwarg |  | Optional brand icon for a website's top bar (#246): |
 | `slug` | kwarg |  | The page's stable public SLUG (#289) — its identity, independent of title and of where it sits in a website's &lt;nav&gt;. |
-
-</section>
 
 <section #sh-name | `<name>`>
 
@@ -714,8 +672,6 @@ tag at the normalize-to-canonical gate, parallel to &lt;meta&gt;'s
 kwarg-to-child-tag lift. The `+corresponding` boolean stays as
 a kwarg/attribute on the canonical eHTML &lt;author&gt; (it is a
 scalar marker, not a structured field).*
-
-</section>
 
 <section #sh-orcid | `<orcid>`>
 
@@ -758,8 +714,6 @@ Registers:
 </minipage>
 
 *URL form is accepted but bare form is preferred.*
-
-</section>
 
 <section #sh-publication-date | `<publication-date>`>
 
@@ -806,8 +760,6 @@ for predictable JATS export and machine readability.*
 |---|---|---|---|
 | `format` | kwarg | `iso` `ymd` `ymd-time` `mdy` `dmy` `custom` | Optional hint about how the date should be parsed and formatted. |
 
-</section>
-
 <section #sh-section-subtitle | `<section-subtitle>`>
 
 <sub-section | General Usage>
@@ -817,8 +769,6 @@ Semantic role: *section-subtitle*. Compiles to eHTML `<section-subtitle>`.
 Registers:
 
 - Canonical: `<section-subtitle>`
-
-</section>
 
 <section #sh-section-title | `<section-title>`>
 
@@ -830,8 +780,6 @@ Registers:
 
 - Canonical: `<section-title>`
 
-</section>
-
 <section #sh-sub-section-subtitle | `<sub-section-subtitle>`>
 
 <sub-section | General Usage>
@@ -841,8 +789,6 @@ Semantic role: *sub-section-subtitle*. Compiles to eHTML `<sub-section-subtitle>
 Registers:
 
 - Canonical: `<sub-section-subtitle>`
-
-</section>
 
 <section #sh-sub-section-title | `<sub-section-title>`>
 
@@ -854,8 +800,6 @@ Registers:
 
 - Canonical: `<sub-section-title>`
 
-</section>
-
 <section #sh-sub-sub-section-subtitle | `<sub-sub-section-subtitle>`>
 
 <sub-section | General Usage>
@@ -866,8 +810,6 @@ Registers:
 
 - Canonical: `<sub-sub-section-subtitle>`
 
-</section>
-
 <section #sh-sub-sub-section-title | `<sub-sub-section-title>`>
 
 <sub-section | General Usage>
@@ -877,8 +819,6 @@ Semantic role: *sub-sub-section-title*. Compiles to eHTML `<sub-sub-section-titl
 Registers:
 
 - Canonical: `<sub-sub-section-title>`
-
-</section>
 
 <section #sh-subject | `<subject>`>
 
@@ -928,8 +868,6 @@ generates the appropriate &lt;subj-group subj-group-type="..."&gt; wrapper.*
 |---|---|---|---|
 | `scheme` | kwarg |  | Optional classification scheme this subject belongs to (e.g. |
 
-</section>
-
 <section #sh-subtitle | `<subtitle>`>
 
 <sub-section | General Usage>
@@ -953,8 +891,6 @@ Registers:
   <subtitle | A Multi-Year Field Study in Tanzania>
 </meta>
 </minipage>
-
-</section>
 
 <section #sh-title | `<title>`>
 
@@ -1013,8 +949,6 @@ Registers:
 *Titles can contain inline elements. The recursive content parsing
 handles nested constructs.*
 
-</section>
-
 <section #sh-version | `<version>`>
 
 <sub-section | General Usage>
@@ -1049,5 +983,3 @@ string.*
 </minipage>
 
 *Kwarg-form authoring lifts to the child-tag form at the gate.*
-
-</section>

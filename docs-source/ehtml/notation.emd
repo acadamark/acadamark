@@ -30,8 +30,6 @@ a + b &= c
 the `=` sign). Handler wraps in `\begin{aligned}...\end{aligned}`
 (KaTeX-compatible variant of LaTeX's `align`).*
 
-</section>
-
 <section #eh-cases | `<cases>`>
 
 <sub-section | Specification>
@@ -60,8 +58,6 @@ x^2 & \text{if } x \ge 0 \\
 
 *A two-case piecewise definition. Handler wraps in
 `\begin{cases}...\end{cases}`.*
-
-</section>
 
 <section #eh-code | `<code>`>
 
@@ -116,8 +112,6 @@ but supports attributes.*
 <code #factorial-impl language=python | def factorial(n):>
 </minipage>
 
-</section>
-
 <section #eh-code-block | `<code-block>`>
 
 <sub-section | Specification>
@@ -157,8 +151,6 @@ whitespace in code is significant and visible to the reader. (#327)*
 *The no-pipe form: the entire body is opaque content with no language
 extraction.*
 
-</section>
-
 <section #eh-display-math | `<display-math>`>
 
 <sub-section | Specification>
@@ -184,8 +176,6 @@ Produced by: canonical `<display-math>`.
 *The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
 numbered by default (the equation number is appended after the KaTeX
 output).*
-
-</section>
 
 <section #eh-eqnarray | `<eqnarray>`>
 
@@ -215,8 +205,6 @@ g(x) &=& 2x
 
 *Two equations rendered via KaTeX's `aligned` env (the supported
 equivalent of LaTeX's `eqnarray`).*
-
-</section>
 
 <section #eh-inline-code | `<inline-code>`>
 
@@ -255,8 +243,6 @@ Call <` python | factorial(n) `> to recurse.
 as a `language-X` class on the &lt;code&gt; (discoverable by highlighters;
 the interpreter applies no highlighting itself).*
 
-</section>
-
 <section #eh-inline-math | `<inline-math>`>
 
 <sub-section | Specification>
@@ -280,8 +266,6 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 *The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
 wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no
 attributes — id and classes are not supported for inline math.*
-
-</section>
 
 <section #eh-math | `<math>`>
 
@@ -313,8 +297,6 @@ LaTeX math via KaTeX. Use the long-form when the source is
 multi-line or when explicit tag bounds aid readability; use the
 sigil for brevity.*
 
-</section>
-
 <section #eh-matrix | `<matrix>`>
 
 <sub-section | Specification>
@@ -343,5 +325,3 @@ Produced by: canonical `<matrix>`.
 
 *A 2×2 matrix. The handler wraps the body in
 `\begin{matrix}...\end{matrix}` before KaTeX renders.*
-
-</section>

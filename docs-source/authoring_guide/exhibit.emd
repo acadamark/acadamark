@@ -4,8 +4,6 @@ Supporting material showcased in isolation — figures, tables, diagrams, and fr
 
 Compiles to eHTML `<caption>`.
 
-</section>
-
 <section #ag-diagram | `<diagram>`>
 
 Compiles to eHTML `<diagram>`.
@@ -32,8 +30,6 @@ graph LR
 emits the same `&lt;pre class="mermaid" data-enscribe-dsl="mermaid"&gt;`
 contract as the legacy `&lt;mermaid&gt;` shorthand expands to.*
 
-</section>
-
 <section #ag-fig | `<fig>`>
 
 Compiles to eHTML `<fig>`.
@@ -53,8 +49,6 @@ element is HTML-native &lt;figure&gt; (not the custom-element &lt;fig&gt;)
 because the HTML rendering surface is the HTML5 native element
 while the enscribe canonical name follows JATS's shorter &lt;fig&gt;.*
 
-</section>
-
 <section #ag-frame | `<frame>`>
 
 Compiles to eHTML `<frame>`.
@@ -71,8 +65,6 @@ Compiles to eHTML `<frame>`.
 html_output.element `frame` is only the lookup key for handler-strategy
 entries — the handler controls the actual element). +border is default on
 for &lt;frame&gt;, so the class appears automatically.*
-
-</section>
 
 <section #ag-minipage | `<minipage>`>
 
@@ -91,8 +83,6 @@ html_output.element `minipage` is only the lookup key for handler-strategy
 entries — the handler controls the actual element). +border is default on
 for &lt;minipage&gt;, so the class appears automatically. The body renders as
 sealed eHTML.*
-
-</section>
 
 <section #ag-svg | `<svg>`>
 
@@ -115,8 +105,6 @@ figure counter), so `-numbered` is what opts out of framing for a
 purely inline graphic. The source is opaque pipe content; the
 attributes pass through to the rendered &lt;svg&gt; element.*
 
-</section>
-
 <section #ag-table | `<table>`>
 
 Compiles to eHTML `<table>`.
@@ -137,5 +125,3 @@ Compiles to eHTML `<table>`.
 
 *Plain markdown table syntax (via remark-gfm). The most common
 authoring path for simple tables. No explicit enscribe tags needed.*
-
-</section>

@@ -63,8 +63,6 @@ the in-scope &lt;section #section-2&gt; the link targets.*
 | `rel` | kwarg |  | Relationship between the current document and the link target. |
 | `title` | kwarg |  | Tooltip text shown on hover. |
 
-</section>
-
 <section #sh-bib-entry | `<bib-entry>`>
 
 <sub-section | General Usage>
@@ -80,8 +78,6 @@ Registers:
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `type` | kwarg | `article` `book` `chapter` `thesis` `proceedings` `report` `webpage` `other` | The bibliography entry type. |
-
-</section>
 
 <section #sh-bibliography | `<bibliography>`>
 
@@ -100,8 +96,6 @@ Registers:
 | `style` | kwarg | `author-year` `numbered` `footnote` `custom` | Future — not yet implemented: |
 | `sort` | kwarg | `alpha` `citation-order` `year` `none` (default `alpha`) | Future — not yet implemented: |
 | `type` | kwarg | `cited-only` `full` `hybrid` (default `cited-only`) | Future — not yet implemented: |
-
-</section>
 
 <section #sh-blockquote | `<blockquote>`>
 
@@ -169,8 +163,6 @@ the same eHTML output.*
 |---|---|---|---|
 | `cite` | kwarg |  | URL of the source being quoted. |
 | `type` | kwarg | `verse` `dialogue` `epigraph` `pullquote` `other` | Optional classification of the quotation's role. |
-
-</section>
 
 <section #sh-cite | `<cite>`>
 
@@ -277,8 +269,6 @@ parenthetical part of the narrative composite.*
 | `suffix` | kwarg |  | Text to appear after the citation. |
 | `style` | kwarg | `parenthetical` `narrative` `suppress-author` (default `parenthetical`) | The per-citation FORM (#418) — the rendering mode of the one document-wide citation style, never a per-cite CSL-style switch (the document has ONE style; the References list stays coherent). |
 
-</section>
-
 <section #sh-doi | `<doi>`>
 
 <sub-section | General Usage>
@@ -315,8 +305,6 @@ Registers:
 normalize-to-canonical gate (per the apparatus-tag reconciliation,
 DESIGN.md §"Apparatus-tag positioning").*
 
-</section>
-
 <section #sh-q | `<q>`>
 
 <sub-section | General Usage>
@@ -351,8 +339,6 @@ The phrase <q cite=https://example.com | to be or not to be> is iconic.
 | attribute | kind | values / default | notes |
 |---|---|---|---|
 | `cite` | kwarg |  | URL of the source being quoted. |
-
-</section>
 
 <section #sh-ref | `<ref>`>
 
@@ -417,8 +403,6 @@ deliberate exception — it teaches the error form on purpose.*
 | `+link` / `-link` | flag | default on | Controls whether the rendered ref is a navigable hyperlink. |
 | `+preview` / `-preview` | flag | default on | Controls the hover preview that attaches to the rendered ref by default. |
 | `+title` / `-title` | flag | default on | Reserved / unimplemented. |
-
-</section>
 
 <data>
 <library bibtex>

@@ -48,8 +48,6 @@ The schematic in <ref @fig:map> sketches the iteration, and equation <ref @eqn:f
 <fig #fig:map src=iteration.png | The iteration approaching its fixed point.>
 </minipage>
 
-</section>
-
 <section #sh-showcase-2 | A boxed worked example>
 
 A definition, a list, a table, and a callout — the everyday block constructs together.
@@ -95,6 +93,4 @@ sd,0.98>
 
 <aside type=tip | Standardize residuals before comparing across models.>
 </minipage>
-
-</section>
 
