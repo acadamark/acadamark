@@ -29,6 +29,7 @@ import { run as runNoteHomelessHome } from './note-homeless-home.test.js';
 import { run as runLibraryLoad } from './plugins/library-load.test.js';
 import { run as runAssetLoad } from './plugins/asset-load.test.js';
 import { run as runCiteResolution } from './plugins/cite-resolution.test.js';
+import { run as runMinipageCites } from './plugins/minipage-cites.test.js';
 import { run as runBibliography } from './plugins/bibliography.test.js';
 import { run as runCiteHandler } from './handlers/cite.test.js';
 import { run as runNormalizeToCanonical } from './plugins/normalize-to-canonical.test.js';
@@ -128,6 +129,7 @@ const suites = [
   ['plugins/library-load',         runLibraryLoad],
   ['plugins/asset-load',           runAssetLoad],
   ['plugins/cite-resolution',      runCiteResolution],
+  ['plugins/minipage-cites',       runMinipageCites],
   ['plugins/bibliography',         runBibliography],
   ['handlers/cite',                runCiteHandler],
   ['plugins/normalize-to-canonical', runNormalizeToCanonical],

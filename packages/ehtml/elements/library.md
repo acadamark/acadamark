@@ -221,6 +221,14 @@ counts the document's citations that cannot resolve against the unloaded library
 an author whose every `<cite>` shows a `??cite: …??` marker finds the true cause
 (placement, not keys) from the rendered page alone.
 
+A `<library>` inside a **`<minipage>`** is likewise prohibited — in `<data>` or bare
+(#411, following LaTeX, which has one global cite-key namespace and no box-local
+bibliography concept; Ariel's rule: *one document, one library*). It is never loaded,
+and the box renders the same misplacement-family flag with a box-scoped cite-count
+hint. A `<cite>` inside a minipage does not need a boxed library: it resolves against
+the **document's** library through the seal's read-through, and it feeds the
+document's References like any other citation.
+
 The canonical shape:
 
 ```
