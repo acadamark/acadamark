@@ -72,7 +72,7 @@ function figureLabel(html) {
 }
 
 // ── live SPA harness (jsdom), mirroring master-website-live.test.js ───────────────────────────────────
-function installDom(url = 'https://example.com/site/') {
+function installDom(url = 'https://example.com/site/', files = FILES) {
   const vc = new VirtualConsole();
   vc.on('jsdomError', (err) => { if (!/Not implemented/.test(err && err.message)) throw err; });
   const dom = new JSDOM('<!DOCTYPE html><html><body><div id="root"></div></body></html>', { url, virtualConsole: vc });
@@ -88,8 +88,8 @@ function installDom(url = 'https://example.com/site/') {
     const segs = String(u).split('?')[0].split('/').filter(Boolean);
     let name = segs[segs.length - 1];
     if (name === 'index.emd' && segs.length >= 2) name = segs[segs.length - 2];
-    return Object.prototype.hasOwnProperty.call(FILES, name)
-      ? { ok: true, status: 200, statusText: 'OK', text: async () => FILES[name] }
+    return Object.prototype.hasOwnProperty.call(files, name)
+      ? { ok: true, status: 200, statusText: 'OK', text: async () => files[name] }
       : { ok: false, status: 404, statusText: 'Not Found', text: async () => '' };
   };
   return { dom, orig };
@@ -176,6 +176,47 @@ export async function run_tests() {
   //     → "figure 2.1", owner the book page itself (static a sibling `two.html`, live `?page=bookp&chapter=two`
   //     — both stay within the bookp page; the owner normalizes to bookp on both surfaces).
   direction('within-book', 'fig:bookp', 'figure 2.1', 'bookp', S.get('bookp/one.html'), L.bookpOne, 'bookp');
+
+  // ── #419: the live SPA renders an inline `<item | Title>` page — parity with the static build ──────────
+  // The #417 acceptance shape: a site whose HOME is an INLINE page (its authored body IS the page — the
+  // zero-length-splice case, no source file), plus one EXTERNAL page (so nav is exercised both ways). Before
+  // #419 the live SPA filtered inline pages out and skipped them (a console.info); now it renders them through
+  // the SAME source-less tree seam the static build uses. Static ≡ live on the inline page's body content.
+  {
+    const INLINE_MASTER =
+      '<meta type=website title="Inline Site" />\n\n<nav>\n<item | Home>\n\nWelcome INLINEBODY419 to the inline home.\n\n<item src="about.emd" | About>\n</nav>\n';
+    const inlineFiles = { 'about.emd': '<meta type=article title="About" />\n\nThe ABOUTBODY419 external page.\n' };
+
+    // STATIC: the inline Home is the FIRST nav entry → the dist-root index.html; the external page renders too.
+    const idir = mkdtempSync(join(tmpdir(), 'enscribe-inline-'));
+    for (const [n, b] of Object.entries(inlineFiles)) writeFileSync(join(idir, n), b);
+    const { pages: SI } = buildStaticWebsite({ masterSource: INLINE_MASTER, masterDir: idir, defaultCss: '' });
+    const sInline = SI.get('index.html');
+    assert.ok(sInline && /INLINEBODY419/.test(sInline), 'static: the inline home page renders its authored body');
+    assert.ok(SI.get('about/index.html')?.includes('ABOUTBODY419'), 'static: the external page renders too (nav both ways)');
+
+    // LIVE: mount the SPA; the inline home is the first render; navigate to the external page and back.
+    const { dom: idom, orig: iorig } = installDom('https://example.com/site/', inlineFiles);
+    let lHome, lAbout, lHomeAgain;
+    try {
+      const root = await mountLiveWebsite('#root', INLINE_MASTER);
+      const content = () => root.querySelector('[data-enscribe-content]').innerHTML;
+      lHome = content();                                  // first render = the inline home page
+      pop(idom, '?page=about'); lAbout = content();       // nav forward → the external page
+      pop(idom, '?page=home'); lHomeAgain = content();    // nav back → the inline page (slug 'home')
+    } finally { restoreDom(iorig); }
+
+    assert.ok(/INLINEBODY419/.test(lHome), 'live (#419): the inline home page renders its authored body — no longer skipped');
+    assert.ok(/ABOUTBODY419/.test(lAbout), 'live (#419): the external page renders (nav forward works)');
+    assert.ok(/INLINEBODY419/.test(lHomeAgain), 'live (#419): routing back to the inline page re-renders it (nav backward works)');
+
+    // PARITY: the inline page's body PARAGRAPH is byte-identical on both surfaces. (Extract the <p> that
+    // carries the marker — not the head og:description meta the static page also derives from the body.)
+    const bodyText = (html) => (String(html).match(/<p[^>]*>([^<]*INLINEBODY419[^<]*)<\/p>/) || [, ''])[1].trim();
+    assert.equal(bodyText(sInline), bodyText(lHome),
+      `#419: the inline page's body paragraph is identical static≡live ("${bodyText(sInline)}" vs "${bodyText(lHome)}")`);
+    console.log(`PASS: #419 — the live SPA renders the inline <item | Title> page; body identical static≡live ("${bodyText(lHome)}")`);
+  }
 
   console.log('All #320 website parity (static ≡ live, all four directions, book direction now covered) checks passed.');
 }
