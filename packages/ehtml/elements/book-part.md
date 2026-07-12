@@ -195,11 +195,11 @@ deferred_features:
       (notes/specs/master-document.md §"Transclusion — substitution before
       structure"): src splices the child file's content as the part's INITIAL
       body and the part stays open — interstitial master content after the
-      entry belongs to that part (and numbers within it) until a peer opens.
-      Spec-ahead-of-code: the current assembler stitches children but treats
-      interstitial master content as loose book-body content (rendered on no
-      page by the separate-pages build) — tracked in #404. The <include src>
-      general primitive is specified there and not yet implemented.
+      entry belongs to that part (and numbers within it) until a peer opens —
+      implemented (#404): interstitial master content joins the preceding part
+      and renders on its page; pre-first-part content is front-region and
+      renders on the cover. The <include src> general primitive is specified
+      in master-document.md and lands in its own slice.
 ---
 
 # `<book-part>`

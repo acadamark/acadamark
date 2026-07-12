@@ -99,6 +99,20 @@ export const STRUCTURED_ELEMENTS = new Map([
         // `book-part-type` likewise routes structure (the single-file
         // `<meta type=book-part>` case, #176); allowlisted, not lifted.
         'book-part-type',
+        // `slug` is the page's stable public identity (#289) — the tier-1
+        // pinned slug the website builder reads (spec-internal-links.md;
+        // #404 routing invariant: URLs are a pure function of ownership +
+        // this slug). `icon` is a website's brand icon (#246). Both are
+        // free-valued descriptive metadata that map to data-slug / data-icon
+        // (packages/ehtml/elements/meta.md) — allowlisted, NOT lifted (no
+        // child tag), exactly like `type`. They are CONSUMED today (slug in
+        // website-structuring.js resolvePageSlug, icon in browser.js's brand
+        // bar) but were unlisted, so normalize-to-canonical dropped them with
+        // a false-positive "unknown kwarg" warning (#404 deliverable 4 / the
+        // §8 family sweep: slug + icon are the only two consumed-but-unlisted
+        // <meta> kwargs).
+        'slug',
+        'icon',
       ]),
       liftedKwargs: new Set([
         'title', 'subtitle', 'author', 'date',

@@ -42,7 +42,7 @@ decision, refined 2026-07-12:
 | Mechanism | Seal behavior | LaTeX fidelity |
 |---|---|---|
 | **Notes** (`<note>`, `<^ …>`) | **Sealed** — box-local counter, collected at the box's own bottom boundary | Exactly LaTeX (`mpfootnote`, letter marks at box bottom). Deliberate; no change ever intended |
-| **Cross-references** (`<ref>`) | **Read through, outbound** — a box `<ref>` resolves against the document registry; the box's own labels stay private (inbound forbidden) | LaTeX is two-way; enscribe is deliberately one-way because box numbering is private (see the open sub-question on #411 — outside→inside targeting is undecided, not implemented) |
+| **Cross-references** (`<ref>`) | **Read through, outbound** — a box `<ref>` resolves against the document registry; the box's own labels stay private (inbound forbidden) | LaTeX is two-way; enscribe is deliberately **one-way outbound** because box numbering is private (**decided 2026-07-12, #411**). Pointing *at* a box is not done by targeting a label inside it; the box is referenced as a whole through its own outward `<ref @mp:…>` label (the minipage's frameable number) — the box-target escape hatch |
 | **Citations** (`<cite>`) | **Read through** — a box `<cite>` resolves against the DOCUMENT's library (the parent citation index is seeded by reference into the sub-run); boxed cites join the document's first-cited `order`, so they feed the document References (its empty-case gate and any future cited-only rendering read `order` — the contract comment lives at the deferred-phase seeding site in `interpreter/index.js`) | Exactly LaTeX (`\cite` in a minipage resolves globally and its entry joins the bibliography) |
 | **Libraries** (`<data>`/`<library>` in the box) | **Prohibited** — never loaded, visibly flagged through the #410 misplacement family with a cite-count hint; one document, one library. A `<bibliography>` marker in a box is removed with a warning (one document, one References) | LaTeX has no box-local bibliography concept — one global cite-key namespace; the prohibition is the honest enscribe rendering of that fact |
 
@@ -52,8 +52,11 @@ The sub-run gets **read** access to the parent registry (so outbound refs resolv
 private child overlay. This single seam is the whole reason one-way is strictly easier than two-way — two-way
 would force merging child labels up, unique-id namespacing across minipages, and document-coordinated
 numbering, eroding the very seal that makes the rest free. (LaTeX's label read-through **is** two-way — it
-can afford to be, because its numbering is globally scoped; the collision two-way creates under private box
-numbering is the open sub-question posted on #411, deliberately not implemented.) The **citation index**
+can afford to be, because its numbering is globally scoped; under enscribe's private box numbering, two-way
+targeting would collide, so **one-way outbound is the decided rule** — #411, resolved 2026-07-12, not an open
+question. An author who needs to point at boxed material references the **box as a whole** via its own
+outward `<ref @mp:…>` label, not a label buried inside it — the box-target escape hatch, and the honest
+consequence of box-private numbering.) The **citation index**
 rides the same seam in the same direction (#411): the parent's `enscribeCitations` is seeded by reference
 into the sub-run, read for resolution, with `order` shared so boxed cites feed the document bibliography.
 

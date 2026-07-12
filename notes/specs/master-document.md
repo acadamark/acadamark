@@ -79,9 +79,11 @@ asset paths already follow — one resolution rule everywhere, matching the LaTe
 This section is normative for every sourced form. The structural forms (`<chapter/part/section
 src>`) realize it today — the assembler flat-splices each child at its call site, so interstitial
 master content joins the preceding element, structure crosses the seam in both directions, and a
-separate-pages build renders pre-first-part content on the cover instead of dropping it. The
-remaining divergences — the `<include>` primitive with recursion + cycle detection, and the website
-`<item src>` interstitial — are marked **spec-ahead-of-code** inline and tracked in #404.)*
+separate-pages build renders pre-first-part content on the cover instead of dropping it, the
+website `<item src>` interstitial joins its page on both surfaces, and the routing invariant is
+implemented and gated (#404, closed — `scripts/check-routing-invariant.mjs`). The one remaining
+divergence — the `<include>` primitive with recursion + cycle detection — is marked
+**spec-ahead-of-code** inline and has its own slice.)*
 
 ### The model
 
@@ -110,8 +112,8 @@ remaining divergences — the `<include>` primitive with recursion + cycle detec
    `<chapter src>`, `<part src>`, `<preface src>`, `<appendix src>` — with no per-form variation, and
    is realized in the assembler today: the child splices in as initial content, and interstitial
    master content joins the preceding element rather than becoming a loose sibling. The website
-   `<item src>` follows the same rule in principle, but its interstitial handling is still
-   **spec-ahead-of-code** — see §websites.
+   `<item src>` follows the same rule: interstitial master content joins the item's page on both
+   surfaces (#404).
 
 3. **`<include src=…>` is the general primitive.** An `<include>` splices a file's content at its
    own position and is otherwise inert — it opens nothing, closes nothing, and adds no structure.
@@ -218,8 +220,9 @@ For a website, substitution operates **within each nav entry**: an `<item src>`'
 the spliced child followed by any interstitial master content up to the next entry, and an inline
 `<item | Title>` is simply the zero-length-splice case of the same rule. Inline items build and
 render today (the earlier builder crash on them is fixed — #417); the **interstitial** master
-content after an `<item src>` is still dropped by the website structurer rather than joining the
-item's page — the one website divergence still **spec-ahead-of-code**, tracked in #404. The *site*
+content after an `<item src>` joins the item's page on both surfaces (the website structurer
+captures it as the entry's body; each surface splices it as the page's trailing content — #404;
+the article-page case is live, the book-page insertion point is a flagged follow-on). The *site*
 remains a composition of native page-documents — pages are not spliced into one another, and
 `notes/specs/website.md`'s composition model (number natively, merge registries, never flatten) is
 unchanged by this section. Substitution defines what content a page *contains*; composition defines

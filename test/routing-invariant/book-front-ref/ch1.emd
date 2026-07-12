@@ -1,0 +1,6 @@
+<meta type=book-part title="First Chapter" />
+
+A cross-page reference to front-region content: <ref @eqn:loose>. Under the #404
+routing invariant this resolves to the cover page (index.html#eqn:loose), where the
+equation renders — not a bare dead #anchor. And a reference across chapters:
+<ref @fig:elephants>.

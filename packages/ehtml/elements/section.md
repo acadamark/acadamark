@@ -165,8 +165,8 @@ the section, splices the child file's content as its initial body, and stays ope
 content in the calling file belongs to the section until a peer opens, exactly as if the child's
 text had been typed at the call site (`notes/specs/master-document.md` §"Transclusion — substitution
 before structure" is normative). `src` supplies initial content; it does not close the element.
-*Spec-ahead-of-code: the current assembler treats content after a `<section src>` entry as loose
-sibling content instead — tracked in #404.*
+*Implemented (#404): the assembler splices interstitial calling-file content into the preceding
+section, exactly as typed at the call site.*
 
 ## Structure within a section
 

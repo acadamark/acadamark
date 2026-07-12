@@ -35,14 +35,29 @@ export function flattenNavPages(entries) {
   return out;
 }
 
-/** The not-found view for an unknown `?page=` slug — a visible message + a link to the first
- *  page (NOT a silent redirect, NOT a blank shell). browser.js's router renders it (with a
- *  `{ firstSlug }` model) when `?page=` names no known page. */
-export function renderNotFoundView(slug, model) {
-  const first = model.firstSlug;
+// #404 routing invariant, point 3: a link whose target page is not among the emitted pages routes to
+// ONE graceful not-found view — "the same view the `?page=` router already has for unknown pages." The
+// slug both surfaces emit the not-found page at (dir-per-page on the static build; the live SPA renders
+// it inline for an unknown `?page=`/`?chapter=` route).
+export const NOT_FOUND_SLUG = 'not-found';
+
+/** The shared not-found VIEW BODY — the single graceful landing both surfaces render (routing
+ *  invariant point 3: "the same view"). `label` names what was not found (a page slug, a chapter
+ *  stem, or a cross-page target); `homeHref` links back to a real page. The static build and the
+ *  live SPA pass their own `homeHref` (a depth-relative path URL vs a `?page=` route) — the one
+ *  output difference website.md allows between the surfaces. NOT a silent redirect, NOT a blank shell. */
+export function notFoundViewHtml(label, homeHref) {
   return (
-    `<div class="enscribe-website-notfound"><p>Page not found: <code>${esc(slug)}</code>.</p>` +
-    (first ? `<p><a href="?page=${esc(first)}">Go to the first page</a></p>` : '') +
+    `<div class="enscribe-website-notfound"><p>Page not found: <code>${esc(label)}</code>.</p>` +
+    (homeHref ? `<p><a href="${esc(homeHref)}">Go to the first page</a></p>` : '') +
     `</div>`
   );
+}
+
+/** The not-found view for an unknown `?page=` slug — the live SPA's router renders it (with a
+ *  `{ firstSlug }` model) when `?page=` names no known page. Delegates to the shared body so the
+ *  static build emits byte-identical markup. */
+export function renderNotFoundView(slug, model) {
+  const first = model.firstSlug;
+  return notFoundViewHtml(slug, first ? `?page=${first}` : '');
 }

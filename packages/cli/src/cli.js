@@ -611,7 +611,15 @@ function doBuild(opts, diag) {
       if (!isBook) {
         throw new CliError('--separate-pages is a book-only build; this document is not a <meta type=book>');
       }
-      const pages = publishBookPages({ numbered, file, proc, defaultCss: readDefaultCss() });
+      const pages = publishBookPages({
+        numbered, file, proc, defaultCss: readDefaultCss(),
+        // #404: total ownership leaves one residual (a book-part id the projection did not emit
+        // as a page — a structural anomaly). It degrades in-page per always-renders AND says so
+        // through the seam; the invariant gate is the machine backstop.
+        onUnowned: (anchor, owner) => file.message(
+          `cross-page reference to "#${anchor}" — its owning page ("${owner}") was not emitted; the link stays in-page`,
+          undefined, 'routing:unowned-anchor'),
+      });
       if (script) for (const [name, html] of pages) pages.set(name, html + script);
       return { mode: 'separate', pages };
     }
