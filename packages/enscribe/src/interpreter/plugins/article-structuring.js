@@ -45,6 +45,22 @@ import {
 import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
 // Apparatus tags (the single source — F13). The suppressed subset is derived there.
 import { APPARATUS_TAGS } from '../lib/apparatus-allowlists.js';
+import { tagnamesInCategory } from '../lib/vocab-categories.js';
+
+// The structural containers a document is wrapped IN — the region wrappers
+// (article/book -front/-body/-back) and the document containers (article, book,
+// book-part). book-structuring runs BEFORE this plugin, so for a book the tree
+// is ALREADY wrapped when the apparatus walk below runs; an apparatus tag that
+// book-structuring correctly ROUTED into <book-front> / <book-back> / a
+// <book-part>'s own <meta> is at a legitimate document edge, not mid-body. The
+// walk treats these containers as TRANSPARENT (recurse with the at-edge
+// sentinel) so it flags only apparatus tags inside genuine body content
+// (a <section>, an <aside>, …) — which are still mis-placed. Single-sourced
+// from the vocab categories so a renamed region/container can't drift it.
+const STRUCTURAL_CONTAINERS = new Set([
+  ...tagnamesInCategory('structural-regions'),   // article/book -front/-body/-back
+  ...tagnamesInCategory('document-containers'),   // article, book, book-part
+]);
 
 // <data> is NOT in BACK_MATTER_TAGS. It lives at root level as a sibling of
 // <article>, because it is a data-only block (citation registry) processed by
@@ -91,9 +107,13 @@ function warnMisplacedApparatus(nodes, file, parentTagname /* null at root */) {
       );
     }
     // Recurse into the node's content. Skip opaque content (no nested
-    // enscribeTag nodes live there).
+    // enscribeTag nodes live there). A structural container (a region wrapper
+    // or document container book-structuring produced) is TRANSPARENT: its
+    // direct apparatus children are at a document edge, so recurse with the
+    // at-edge sentinel (null) rather than the container's own tagname.
     if (Array.isArray(node.content) && !node.isOpaqueContent) {
-      warnMisplacedApparatus(node.content, file, node.tagname);
+      const childParent = STRUCTURAL_CONTAINERS.has(node.tagname) ? null : node.tagname;
+      warnMisplacedApparatus(node.content, file, childParent);
     }
   }
 }

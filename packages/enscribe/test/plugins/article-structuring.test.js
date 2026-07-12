@@ -136,4 +136,35 @@ export function run() {
     assert.equal(body.content[1], p2);
     console.log('PASS: article-structuring with no meta → default article treatment');
   }
+
+  // --- apparatus-tag positioning: a book's OWN apparatus is NOT mid-body ---
+  // Regression for the docs-clean fix: book-structuring runs BEFORE this plugin,
+  // so for a book the apparatus walk sees the ALREADY-wrapped tree. Apparatus that
+  // book-structuring correctly routed into <book-front> / <book-back> / a
+  // <book-part>'s own <meta> is at a document edge — it must NOT warn. Only
+  // apparatus inside genuine body content (a <section>) stays mid-body.
+  {
+    const msgs = [];
+    const file = { data: {}, message: (text, node, ruleId) => msgs.push({ ruleId, tag: node?.tagname }) };
+    const book = makeTag('book', [
+      makeTag('book-front', [metaTag('book')]),                 // book meta at the front edge → OK
+      makeTag('book-body', [
+        makeTag('book-part', [
+          metaTag(null),                                          // book-part's own meta → OK
+          makeTag('section', [makeTag('config', [], { kwargs: { 'number-sections': 'true' } })]), // config mid-body → WARN
+        ]),
+      ]),
+      makeTag('book-back', [
+        makeTag('config', [], { kwargs: { toc: 'true' } }),      // back-matter config → OK
+        makeTag('data', []),                                     // back-matter data → OK
+      ]),
+    ]);
+    const tree = { type: 'root', children: [book] };
+    enscribeArticleStructuring()(tree, file);
+
+    const apparatus = msgs.filter((m) => m.ruleId === 'article-structuring:apparatus-tag-mid-body');
+    assert.equal(apparatus.length, 1, 'exactly one apparatus warning — the genuinely mid-body <config> in a <section>');
+    assert.equal(apparatus[0].tag, 'config', 'the one warning is the mid-body <config>, not the book-region apparatus');
+    console.log('PASS: article-structuring — a book\'s own front/back/part apparatus is at-edge, not mid-body');
+  }
 }

@@ -543,8 +543,16 @@ function liftHardBreak(_node) {
   };
 }
 
+// A whole HTML comment node — `<!-- … -->` with nothing else. Per
+// shorthand-syntax.md §"Interpreter-level resolution of raw HTML", an HTML
+// comment is STRIPPED from the output entirely (the interpret-plugin html
+// handler drops it). It is not "passed through" and has no eHTML round-trip,
+// so the passthrough warning does not apply — a comment is a sanctioned,
+// inert construct, not unrecognized markup.
+const isHtmlComment = (node) => typeof node.value === 'string' && /^<!--[\s\S]*-->$/.test(node.value.trim());
+
 function liftRawHtml(node, file) {
-  if (file && typeof file.message === 'function') {
+  if (!isHtmlComment(node) && file && typeof file.message === 'function') {
     file.message(
       'raw HTML passed through; eHTML round-trip not guaranteed for this fragment',
       node,

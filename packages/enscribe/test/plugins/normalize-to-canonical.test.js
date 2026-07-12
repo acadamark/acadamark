@@ -714,4 +714,19 @@ export function run() {
       console.log('PASS: normalize-to-canonical: #407 reference-link definition renders literal');
     }
   }
+
+  // ── HTML comments are exempt from raw-html-passthrough (docs-clean) ─────────
+  // Per shorthand-syntax.md, an HTML comment is STRIPPED, not passed through —
+  // so the round-trip warning does not apply. A stray raw tag still warns.
+  {
+    const warn = (source) => {
+      const tree = unified().use(remarkParse).use(remarkEnscribe).parse(source);
+      const file = { messages: [], message(m, n, id) { this.messages.push({ id }); } };
+      enscribeNormalizeMarkdown()(tree, file);
+      return file.messages.filter((m) => m.id === 'normalize-to-canonical:raw-html-passthrough').length;
+    };
+    assert.equal(warn('<!-- a doc marker -->\n\nText.'), 0, 'an HTML comment does NOT raise raw-html-passthrough (it is stripped)');
+    assert.equal(warn('</section>\n\nText.'), 1, 'a stray raw tag STILL raises raw-html-passthrough (exemption is comment-only)');
+    console.log('PASS: normalize-to-canonical: HTML comments exempt from raw-html-passthrough; stray tags still warn');
+  }
 }
