@@ -14,7 +14,7 @@ rendering.
 
 ## Target: three homes, three licenses
 1. **`enscribe-language`** — the eHTML vocabulary/specs, the design docs, the notes (incl. CC-guidance),
-   and the grammar *if it proves normative* (see Stage 3). **License: open/permissive** — CC-BY (or
+   and the grammar *if it proves normative* (see Stage 3). **License: open/permissive** (decided: CC-BY 4.0 — see §"License map") — CC-BY (or
    similar) for prose/specs; a permissive code license for anything executable that's part of the
    definition. Rationale: a format must be free to implement anywhere; this matches HTML, JATS, TEI,
    RASH. **Not a judgment call.**
@@ -35,6 +35,45 @@ GPL is viral. The MIT-adoption goal dies if GPL "reaches through" into the engin
   distinct work, not a derivative that infects the engine.
 The architecture decision (pandoc.wasm on one page only) and the license split must agree — the
 one-page scoping *is* the firewall.
+
+## License map (decided — Ariel, 2026-07-12)
+
+The tentative choices above are now settled. Nothing about the repo's CURRENT licensing
+changes before the physical split — everything ships MIT today and continues to; this
+section records the decided destination, executed when the repos split.
+
+- **enscribe-language** (the eHTML vocabulary, the shorthand spec, the taxonomies, the
+  specs, the authoring docs): **CC-BY 4.0** — maximally implementable, attribution
+  required. This follows the actual precedent of document languages: **HTML** (the WHATWG
+  spec is CC-BY), **LaTeX** (free, with identity protection), **JATS** (public domain). A
+  document language's value is universal implementability; copyleft on a language taxes
+  exactly the adoption it needs.
+- **enscribe-engine** (interpreter / renderer / editor / CLI): **MIT** — adoptable by
+  anyone, including commercial products (the Posit/RStudio and AI-chat-vendor embedding
+  cases are the goal, not an accident).
+- **enscribe-convert** (import/conversion tooling): **GPL** — the original firewall,
+  unchanged: this repo alone absorbs GPL-licensed conversion dependencies (pandoc.wasm),
+  quarantined so the license cannot reach the engine.
+- **The name** ("enscribe" / "eHTML") is protected by a **conformance clause, not
+  copyright**: an implementation may describe itself as enscribe/eHTML-conformant only if
+  it passes the language repo's conformance suite. This is the TeX/TRIP model — the
+  license protects nothing about the name; the conformance sentence does. The suite is the
+  existing engine-conformance test (the vocabulary examples with stored expected renders,
+  `example-render.test.js`), which therefore becomes the language repo's PUBLIC definition
+  of conformance at the split — it moves to (or is published by) the language repo, with
+  the engine consuming it. That relocation is a Stage 2 dependency-map input (today the
+  test lives engine-side after the Rule-1 allowlist went to zero).
+
+**The recorded correction.** The original planning conversation had adopted GPL for the
+language repo under a misreading of the HTML precedent (treating the language the way
+copyleft treats code). The survey above is the correction: the languages that won —
+HTML, LaTeX, JATS — are all maximally implementable, protecting identity through
+attribution or conformance rather than through copyleft. The GPL keeps exactly one job in
+this plan: quarantining GPL conversion dependencies inside enscribe-convert.
+
+**Execution.** License files and package `license` fields change **at the physical split,
+not before**; the conformance-clause text ships with the language repo's README/spec at
+that time. Until then the monorepo remains uniformly MIT.
 
 ## Stage 0 — pre-carve the cut INSIDE the current monorepo (adopt now; low-risk; pure prep)
 Do this before anything moves. It makes the eventual split a non-event.
