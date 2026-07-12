@@ -39,6 +39,10 @@ const CORPUS = [
   { master: 'docs-source/index.emd', label: 'docs site (website)', kind: 'website' },
   { master: 'test/routing-invariant/book-front-ref/master.emd', label: 'front-ref book (front-region cross-ref → cover)', kind: 'book' },
   { master: 'packages/cli/test/fixtures/book.emd', label: 'book fixture', kind: 'book' },
+  // #424: a separate-pages book whose interlude arrives via <include> — ownership flows
+  // through splices (the interlude's anchors are the preceding chapter's), so the invariant
+  // holds over transcluded content exactly as over typed content.
+  { master: 'test/routing-invariant/include-interlude/master.emd', label: 'interlude-via-include book', kind: 'book' },
   // #405: the DEGRADED corpus entry — a website with one unresolvable nav page. The build must
   // SUCCEED (per-item visible degrade: the failed page ships the failed-page view at its own
   // address) and every emitted href must still resolve — the invariant holding THROUGH failure

@@ -40,6 +40,7 @@ import {
 import { refMarkerHandler, refErrorHandler } from './handlers/ref.js';
 import { citeMarkerHandler, citeErrorHandler, bibliographyHandler, libraryErrorHandler } from './handlers/cite.js';
 import { assetErrorHandler } from './handlers/asset.js';
+import { includeErrorHandler } from './handlers/include.js';
 import { importErrorHandler } from './handlers/parser-errors.js';
 import { convertChildren } from './lib/ast-helpers.js';
 // resolveVocabKey is no longer needed at runtime: the normalize-to-canonical
@@ -73,6 +74,7 @@ const INTERNAL_REGISTRY = new Map([
   ['__library-error',  libraryErrorHandler],
   ['__asset-error',    assetErrorHandler],
   ['__import-error',   importErrorHandler],  // #412: importer loss-point placeholders
+  ['__include-error',  includeErrorHandler], // #424: failed <include> splice (cycle / unloadable)
 ]);
 
 // Wrap the build-time-generated VOCABULARY object as a Map at module load,

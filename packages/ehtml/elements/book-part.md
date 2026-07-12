@@ -198,8 +198,11 @@ deferred_features:
       entry belongs to that part (and numbers within it) until a peer opens —
       implemented (#404): interstitial master content joins the preceding part
       and renders on its page; pre-first-part content is front-region and
-      renders on the cover. The <include src> general primitive is specified
-      in master-document.md and lands in its own slice.
+      renders on the cover. The <include src> general primitive is
+      implemented (#424): it splices a file's content at its call site — the
+      form the structural src entries are sugar over — with file-relative
+      recursion and visible cycle detection (master-document.md
+      §"Transclusion").
 ---
 
 # `<book-part>`

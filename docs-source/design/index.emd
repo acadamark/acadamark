@@ -388,6 +388,27 @@ frameable handlers, the theorem family, math, citations, and notes
 all work identically inside an article or a book. The shape divides
 the *outer container*; the *body authoring surface* is one enscribe.
 
+# Multi-file documents and transclusion
+
+A document may be authored across files. The model (`master-document.md` §"Transclusion — substitution before structure") is **substitution before structure**: externally sourced content is spliced in at its call site *as if typed there*, and structure — element opening, peer-closing, nesting, numbering — is computed over the assembled text as one file. Two authoring forms realize it:
+
+- **Structural entries with `src=`** — `<chapter src=ch1.emd | One>`, `<section src=intro.emd | Introduction>`, a website `<item src=about.emd | About>`: the entry opens the element, splices the child file as its *initial* content, and stays open — interstitial master content after the entry belongs to it until a peer opens.
+- **`<include src=…>` — the general primitive** the structural forms are sugar over. An `<include>` splices a file's content at its own position and is otherwise inert: it opens nothing, closes nothing, adds no structure. The forward case:
+
+<code-block |
+Opening prose in the master.
+
+<include src=methods.emd />
+
+Prose between the includes reads normally.
+
+<include src=results/tables.emd />
+
+Closing prose.
+>
+
+Each file splices at its spot — one continuous document. Paths resolve **relative to the including file**, recursively (an include inside `results/tables.emd` resolves against `results/`); includes may include to any depth. The one prohibited topology is a **cycle**, which renders a visible `??include cycle: a.emd → b.emd → a.emd??` marker at the offending splice and assembly continues. The same file included at two different sites is legal — pure substitution means it reads exactly as if typed at both places. Splices are block-level (v1); an `<include>` is not allowed inside a `<minipage>` (a sealed box has no outward pulls).
+
 # Structured-data-container tags
 
 The kwargs-or-child-tags interface principle described for apparatus tags above is not unique to apparatus. It applies to a more general category — **structured-data-container tags** — of which `<meta>` was the first member and `<author>` is the second. (`<config>` is *not* a structured-data container: its body is processing options, not a record of named document-descriptive fields, and the authoring surface today is kwargs-only.) `<data>` / `<library>` are not structured-data containers either: their body is a foreign-format payload (BibTeX, CSL-JSON, …) read by an external parser, so they are **storage hosts** on the language axis, registered on the DSL/language side rather than in `STRUCTURED_ELEMENTS` — and issue #24, which asked whether they should additionally gain a structured-field interface, resolved **no**.

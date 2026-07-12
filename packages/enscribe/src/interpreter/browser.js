@@ -24,6 +24,8 @@ import {
   collectTableSources,
   assembleMasterDocument,
   isMasterSrcEntry,
+  isIncludeEntry,
+  collectIncludeSrcs,
   HAS_MASTER_SRC,
   buildLiveBook,
   renderLiveChapterView,
@@ -247,11 +249,14 @@ function readPreloadedChild(loaded, src) {
 function discoverChildSrcs(proc, source) {
   const masterTree = proc.parse(source);
   return [
-    ...new Set(
-      (masterTree.children ?? [])
+    ...new Set([
+      ...(masterTree.children ?? [])
         .filter(isMasterSrcEntry)
         .map((n) => n.kwargs.src),
-    ),
+      // #424: the master's own top-level <include> targets join the first fetch wave;
+      // includes nested in fetched files are closed over in loadAndAssembleMaster.
+      ...collectIncludeSrcs(masterTree),
+    ]),
   ];
 }
 
@@ -269,7 +274,7 @@ function discoverChildSrcs(proc, source) {
  *   and the VFile-shaped carrier holding file.data[ENSCRIBE_LOADED_SOURCES] (the channel
  *   runSync + stringify read: #197 library bibliography, #195 table data).
  */
-async function loadAndAssembleMaster(proc, source, childSrcs, loadSource) {
+async function loadAndAssembleMaster(proc, source, childSrcs, loadSource, selfSrc = '') {
   const baseUrl = (typeof document !== 'undefined' && document.baseURI) || undefined;
   // The source-provider seam (single-file / #288): a caller may INJECT how a referenced source is
   // read; the default is the HTTP fetch the served Live modes use. `preloadSources` already takes the
@@ -290,8 +295,30 @@ async function loadAndAssembleMaster(proc, source, childSrcs, loadSource) {
     [...childSrcs, ...librarySrcs, ...tableSrcs],
     load,
   );
+  // #424: transitive include closure. A fetched file (a chapter child or an included
+  // file) may itself carry <include> entries the initial discovery cannot see; scan each
+  // fetched source for them (paths composed file-relative, per §Path resolution) and
+  // fetch what is missing, iterating to closure. Already-fetched paths are skipped, so a
+  // cyclic graph terminates here too — the assembler renders the visible cycle marker at
+  // splice time; this loop only guarantees the sources are present.
+  {
+    const scanned = new Set();
+    for (;;) {
+      const pending = [];
+      for (const [src, entry] of Object.entries(loaded)) {
+        if (scanned.has(src) || entry?.error != null || typeof entry?.content !== 'string') continue;
+        scanned.add(src);
+        for (const inc of collectIncludeSrcs(proc.parse(entry.content), src)) {
+          if (!(inc in loaded)) pending.push(inc);
+        }
+      }
+      if (pending.length === 0) break;
+      Object.assign(loaded, await preloadSources([...new Set(pending)], load));
+    }
+  }
   const tree = assembleMasterDocument({
     source,
+    ...(selfSrc ? { selfSrc } : {}),
     parse: (s) => proc.parse(s),
     // The pre-load map is keyed by the raw child src (the URL was resolved against
     // the base at fetch time), so resolve is identity and readFile is a cache hit.
@@ -1067,11 +1094,20 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // book is numbered TWICE (Phase 1 native, then Phase 2 over the seed), so a shared tree would bake
     // Phase 1's results (incl. unresolved cross-page refs) into Phase 2. Same as the static build, which
     // re-reads + re-assembles per phase. The children load MASTER-RELATIVE (the loadSource seam).
-    const loaded = isBook && HAS_MASTER_SRC.test(src)
-      ? (await loadAndAssembleMaster(proc, src, discoverChildSrcs(proc, src),
-          (childSrc) => fetchSourceText(childSrc, masterUrl))).loadedFile.data[ENSCRIBE_LOADED_SOURCES]
-      : null;
-    return { p, src, isBook, loaded };
+    // #424: fetch-assemble for ANY src-bearing page (a book's chapter children, or an
+    // article page carrying <include>/src entries — the include closure rides
+    // loadAndAssembleMaster). A book keeps only the loaded map (it re-assembles a fresh
+    // tree per phase); an ARTICLE page keeps the assembled tree itself and rides the
+    // same tree seam the interstitial/inline pages use (static parity, #404 marker 7).
+    let loaded = null;
+    let assembled = null;
+    if (HAS_MASTER_SRC.test(src)) {
+      const r = await loadAndAssembleMaster(proc, src, discoverChildSrcs(proc, src),
+        (childSrc) => fetchSourceText(childSrc, masterUrl), masterPath);
+      loaded = r.loadedFile.data[ENSCRIBE_LOADED_SOURCES];
+      if (!isBook) assembled = r.tree;
+    }
+    return { p, src, isBook, loaded, assembled };
   })().catch((err) => {
     console.warn(`[enscribe] website page "${p.slug ?? p.src}" failed to load: ${err.message} — the rest of the site mounts; this page shows the failed-page view (#405)`);
     return { p, error: err.message };
@@ -1091,7 +1127,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const sourceBySlug = new Map();              // slug → source TEXT (the editor's value in edit mode; no re-fetch)
   const loadedBySrc = new Map();               // a book page's src → its cached (pre-fetched) child sources
   const usedSlugs = new Set();
-  const pageData = fetched.map(({ p, src, isBook, loaded, error, inline }) => {
+  const pageData = fetched.map(({ p, src, isBook, loaded, assembled, error, inline }) => {
     // #405: a page that failed to fetch/parse becomes an ERROR PAGE in the model — its nav
     // entry stays (the universal shell keeps routing), the router renders the shared
     // failed-page view for its slug, and it is excluded from Phase-1 composition.
@@ -1130,9 +1166,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // trailing content of the page's tree, so it numbers within the page (Phase 1 consumes
     // this tree) and renders on it (renderArticleInto consumes it too, the same tree seam
     // the inline-page path uses). No interstitial → tree unset → source path, byte-identical.
-    let tree;
+    let tree = assembled;   // #424: an article page's include-spliced tree, when present
     if (!isBook && p.body && p.body.length > 0) {
-      tree = proc.parse(src);
+      if (!tree) tree = proc.parse(src);
       tree.children.push(...p.body);
     } else if (isBook && p.body && p.body.length > 0) {
       // Parity with the static build: a book page's insertion point for trailing article-level content

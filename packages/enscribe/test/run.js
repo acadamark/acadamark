@@ -65,6 +65,7 @@ import { run as runHtmlTableCells } from './plugins/html-table-cells.test.js';
 import { run as runSmartTypography } from './smart-typography.test.js';
 import { run as runBrowserMemo } from './browser-memo.test.js';
 import { run as runMasterDocumentBrowser } from './master-document-browser.test.js';
+import { run as runInclude } from './include.test.js';
 import { run as runRenderParity } from './render-parity.test.js';
 import { run as runCrossPageLinks } from './cross-page-links.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
@@ -165,6 +166,7 @@ const suites = [
   ['smart-typography',             runSmartTypography],
   ['browser-memo',                 runBrowserMemo],
   ['master-document-browser',      runMasterDocumentBrowser],
+  ['include',                  runInclude],
   ['render-parity',                runRenderParity],
   ['cross-page-links',             runCrossPageLinks],
   ['render-chapter-parity',        runRenderChapterParity],

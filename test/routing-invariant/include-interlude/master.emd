@@ -1,0 +1,7 @@
+<meta type=book title="Routing Invariant — Interlude via Include" />
+
+<chapter src=ch1.emd />
+
+<include src=interlude.emd />
+
+<chapter src=ch2.emd />

@@ -81,9 +81,9 @@ src>`) realize it today — the assembler flat-splices each child at its call si
 master content joins the preceding element, structure crosses the seam in both directions, and a
 separate-pages build renders pre-first-part content on the cover instead of dropping it, the
 website `<item src>` interstitial joins its page on both surfaces, and the routing invariant is
-implemented and gated (#404, closed — `scripts/check-routing-invariant.mjs`). The one remaining
-divergence — the `<include>` primitive with recursion + cycle detection — is marked
-**spec-ahead-of-code** inline and has its own slice.)*
+implemented and gated (#404, closed — `scripts/check-routing-invariant.mjs`). The `<include>`
+primitive with recursion + cycle detection is implemented too (#424), so this section carries no
+spec-ahead-of-code markers: every clause below is realized behavior.)*
 
 ### The model
 
@@ -123,9 +123,10 @@ divergence — the `<include>` primitive with recursion + cycle detection — is
 
    > `<section src=f.emd | Title>` ≡ `<section | Title>` immediately followed by `<include src=f.emd>`
 
-   and likewise for every element that accepts `src` content sourcing. **`<include>` itself is not
-   yet implemented** — it is specified now so the model is stated whole; its implementation is
-   scheduled separately from the #404 arc.
+   and likewise for every element that accepts `src` content sourcing. `<include>` is implemented
+   (#424): the assembler splices it on every surface (CLI render + builds, the live paths — the
+   browser prefetch closes over nested includes), and a minipage's sealed body rejects it visibly
+   (no outward pulls).
 
 ### Path resolution
 
@@ -135,10 +136,6 @@ one-level case). This is the rule assets and per-chapter libraries already follo
 `\input` intuition.
 
 ### Recursion and cycles
-
-*(**Spec-ahead-of-code:** recursion and cycle detection ship with the `<include>` primitive, which is
-scheduled separately from the #404 arc — see point 3. This subsection describes their intended
-behavior, not current engine behavior.)*
 
 Includes may include, to any depth — there is **no fixed depth limit**; the only prohibited topology
 is a **cycle**. A cycle is detected at assembly time (the chain of including files is tracked) and

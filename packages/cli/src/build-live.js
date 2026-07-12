@@ -21,7 +21,7 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { dirname, basename, join, resolve, extname } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, isMasterSrcEntry, emitLiveShell, emitSingleFileShell, extractDocumentTitle, getInlineDisplayHead, SINGLE_FILE_ASSETS } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, isMasterSrcEntry, collectIncludeSrcs, emitLiveShell, emitSingleFileShell, extractDocumentTitle, getInlineDisplayHead, SINGLE_FILE_ASSETS } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { resolvePageSource, pageDirAssets } from './static-website.js';
@@ -95,6 +95,27 @@ const DELIVERY_VALUES = new Set(['siblings', 'cdn', 'inlined']);
  *  wraps it with a parse for external callers. */
 function srcChildrenOf(tree) {
   return [...new Set((tree.children ?? []).filter(isMasterSrcEntry).map((n) => n.kwargs.src))];
+}
+
+/** #424: the TRANSITIVE source closure a live folder must carry — the structural `<… src>`
+ *  children plus every `<include src>` target, closed over includes found in any referenced
+ *  file (an included file may include further files; a chapter file may include). Paths are
+ *  composed file-relative (the including-file rule), which is exactly the master-relative
+ *  path the live shell fetches at runtime. Cycle-safe (`seen`); a missing file is skipped
+ *  here — the runtime assembler renders its visible degrade at splice time. */
+function transitiveSrcsOf(proc, tree, readRel) {
+  const out = [...srcChildrenOf(tree), ...collectIncludeSrcs(tree)];
+  const seen = new Set(out);
+  const queue = [...out];
+  while (queue.length) {
+    const src = queue.shift();
+    let sub;
+    try { sub = proc.parse(readRel(src)); } catch { continue; }
+    for (const inc of collectIncludeSrcs(sub, src)) {
+      if (!seen.has(inc)) { seen.add(inc); out.push(inc); queue.push(inc); }
+    }
+  }
+  return out;
 }
 
 export function discoverMasterSrcChildren(masterSource) {
@@ -193,7 +214,7 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
     proc.runSync(tree, file);
     children = collectWebsitePageSrcs(file.data[ENSCRIBE_NAV_MODEL]);
   } else {
-    children = srcChildrenOf(tree);
+    children = transitiveSrcsOf(proc, tree, (s) => readFileSync(join(masterDir, s), 'utf8'));
   }
   for (const src of children) {
     // #286: a website nav `<item src>` may resolve to a PAGE-DIRECTORY (src="home" → its body
@@ -227,7 +248,8 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
     // master-relative runtime fetch finds it there (and two books' same-named children stay distinct). Reuses
     // `srcChildrenOf` — the SAME child-source discovery the standalone-book path (the `else` branch) uses.
     if (isWebsite) {
-      for (const childSrc of srcChildrenOf(proc.parse(readFileSync(pageSourcePath, 'utf8')))) {
+      for (const childSrc of transitiveSrcsOf(proc, proc.parse(readFileSync(pageSourcePath, 'utf8')),
+        (s) => readFileSync(join(resolved.pageDir, s), 'utf8'))) {
         copyInto(join(resolved.pageDir, childSrc), join(src, childSrc));
       }
 
@@ -416,7 +438,7 @@ export function buildSingleFile({ master, title, edit = false, assetBase, delive
   const proc = buildEnscribePipeline({});
   const tree = proc.parse(masterSource);
   const type = classifyDocType(tree).type;
-  const childSrcs = srcChildrenOf(tree);
+  const childSrcs = [...srcChildrenOf(tree), ...collectIncludeSrcs(tree)];   // #424: an <include> is an external pull too
   const websitePages = type === 'website' ? discoverWebsitePages(masterSource) : [];
   // Editability is about `<… src>` STRUCTURE children (article/book/website pages), NOT asset references —
   // computed from the parsed tree, BEFORE embedding assets, so embedding external assets (a fig/table

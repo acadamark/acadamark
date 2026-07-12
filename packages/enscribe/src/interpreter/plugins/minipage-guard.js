@@ -90,6 +90,17 @@ function neutralize(node, errors, boxCites) {
     blankNode(node);
     return;
   }
+  if (isEnscribeTag(node, 'include')) {
+    // #424: an <include src> is an outward pull — the sealed sub-document must not
+    // reach external files. In-place visible rejection (body-flow position survives
+    // the projection), same reject-not-resolve guarantee as the other pulls.
+    const incSrc = typeof node.kwargs?.src === 'string' ? node.kwargs.src : '';
+    node.type = 'enscribeTag';
+    node.tagname = '__include-error';
+    node.kwargs = { src: incSrc, message: `<include${incSrc ? ` src="${incSrc}"` : ''}> is not allowed inside a minipage — the box is a sealed sub-document with no outward pulls` };
+    node.content = null;
+    return;
+  }
   const src = node?.kwargs?.src;
   if (isEnscribeTag(node) && typeof src === 'string' && src.startsWith('@')) {
     assetError(node, src, FORBID_MESSAGE);
