@@ -1,6 +1,15 @@
 # Enscribe
 
+[![tests](https://github.com/enscribejs/enscribe/actions/workflows/test.yml/badge.svg)](https://github.com/enscribejs/enscribe/actions/workflows/test.yml)
+[![npm](https://img.shields.io/npm/v/%40enscribejs%2Fenscribe?label=%40enscribejs%2Fenscribe)](https://www.npmjs.com/package/@enscribejs/enscribe)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 An academic publishing system that uses HTML+CSS+JS as its substrate and a shorthand authoring syntax on top — combining the simplicity of markdown with the expressiveness needed for scholarly work.
+
+**📖 [Documentation site](https://enscribejs.github.io/enscribe/)** — guides, the authoring reference, and worked examples.
+**✏️ [Try it live](https://enscribejs.github.io/enscribe/live/?page=try-it&edit)** — the in-browser playground, editor open: type enscribe, watch it render.
+
+<!-- #394 release: these two links move to enscribe.org when the DNS lands; the github.io URLs are what resolves today. -->
 
 ## Motto
 
@@ -74,7 +83,7 @@ Standard markdown headings carry the prose structure; tag shorthand is reached f
 
 **enscribe is released and usable today.** The shorthand parser, the interpreter, and the eHTML vocabulary all exist and are tested, and a set of example documents demonstrates the system end to end — sections, lists, citations (with external `<library src>` sources), cross-references, figures, math, code, tables, footnotes and margin notes, and article appendices all render to self-contained HTML, with strict mode, an authoring coverage gallery, and a full documentation site to match. It also ships bidirectional JATS conversion (export *and* import), a client-side browser library, and the `enscribe` command-line tool.
 
-The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for the capability checklist (what works today), [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/`](notes/specs/) for the architecture. A full documentation site — guides, an authoring reference, and an in-browser playground — is authored in [`docs-source/`](docs-source/) and built (static + live) into [`site/`](site/) via `npm run build:site-all`.
+The implementation is built on the [unified](https://unifiedjs.com/) ecosystem (remark/rehype), replacing earlier regex-based prototypes. See [`STATUS.md`](STATUS.md) for the capability checklist (what works today), [`DESIGN.md`](DESIGN.md) for the design rationale, and [`notes/specs/`](notes/specs/) for the architecture. The full documentation site — guides, an authoring reference, and an in-browser playground — is deployed at [enscribejs.github.io/enscribe](https://enscribejs.github.io/enscribe/); it is authored in [`docs-source/`](docs-source/) and built with `npm run build:site-all` (the output directory is gitignored).
 
 Found a bug, or want a feature? Open an issue at [github.com/enscribejs/enscribe/issues](https://github.com/enscribejs/enscribe/issues) — that is where all open work lives.
 

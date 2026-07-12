@@ -20,8 +20,8 @@ The shape of the system:
 ```
                  ┌─────────────────────────────┐
                  │  display targets            │
-                 │  · eHTML + CSS            │
-                 │  · eHTML + CSS + JS       │
+                 │  · eHTML + CSS              │
+                 │  · eHTML + CSS + JS         │
    ┌──────────┐  │  · render mode (lowered)    │
    │ Enscribe │  └─────────────────────────────┘
    │ shorthand│              ▲
@@ -32,9 +32,9 @@ The shape of the system:
         │  round-trip        │
         ▼                    │
    ┌─────────────────────────────────┐         ┌──────────────┐
-   │  eHTML                        │ ──────► │  JATS XML    │
+   │  eHTML                          │ ──────► │  JATS XML    │
    │  canonical semantic HTML        │  export │  (scholarly  │
-   │  (the source of truth)          │ ◄┄┄┄┄┄┄ │   interchange)│
+   │  (the source of truth)          │ ◄┄┄┄┄┄┄ │  interchange)│
    └─────────────────────────────────┘  import └──────────────┘
                                      (lossy, with simplifications)
 ```
