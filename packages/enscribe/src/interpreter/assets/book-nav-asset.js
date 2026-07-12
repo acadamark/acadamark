@@ -64,12 +64,15 @@ export const BOOK_NAV_DEPTH_CSS = `.enscribe-chapter-rail .enscribe-rail-section
 //    a reader who finishes the chapter lands right on them). The redundant text foot links
 //    (`.enscribe-chapter-nav`) are HIDDEN below 984px, so the foot has ONE coherent affordance (the
 //    arrows REPLACE the text links on mobile). No overlap, no shrinking the narrow column.
-//  - DESKTOP (>= 984px): unchanged from #293 — each arrow is a fixed GUTTER chevron tucked just outside
-//    the centered reading grid (14rem left rail, 13rem right rail in 3-col), tracking the grid via
-//    inherited per-variant vars, never over the rail or the content; the text foot links stay. The
-//    mobile title label is hidden here (bare chevron in the gutter).
+//  - DESKTOP (>= 984px): each arrow is a fixed GUTTER chevron CENTERED in the free gutter between the
+//    reading column and its rail (14rem left rail, 13rem right rail in 3-col), tracking the grid via
+//    inherited per-variant vars — with clearance on BOTH sides, never over the rail or the content, at
+//    any width; the text foot links stay. The mobile title label is hidden here (bare chevron).
+//    (#420 shipped the chevrons here but its calc omitted the grid's own horizontal padding, dropping
+//    the right chevron onto the on-this-page rail at every desktop width — corrected below.)
 //
-// (Verified with a headless overlap check across widths; the responsive split is recorded in the report.)
+// Guarded by a headless width-sweep-vs-all-neighbors check (packages/cli/test/arrows-clearance.test.js):
+// both chevrons rect-intersect none of {column, left rail, right rail, back-to-top} across 984–1700px.
 export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
   display: flex;
   align-items: stretch;
@@ -108,6 +111,10 @@ export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
     --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width));
     --enscribe-book-lrail: 14rem;
     --enscribe-book-rrail: 0px;
+    /* The chevron centers in the FREE GUTTER (the grid's column-gap = --enscribe-space-12) between the
+       content column and a rail. Its diameter is therefore < the gutter, and the clearance each side is
+       (--enscribe-space-12 - this) / 2. At 3rem gutter / 2rem diameter that is 0.5rem each side. */
+    --enscribe-book-arrow-size: 2rem;
   }
   .enscribe-layout--book.enscribe-layout--book-3col {
     --enscribe-book-gridw: calc(14rem + var(--enscribe-space-12) + var(--enscribe-content-width) + var(--enscribe-space-12) + 13rem);
@@ -125,8 +132,8 @@ export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
     z-index: 20;
     justify-content: center;
     gap: 0;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: var(--enscribe-book-arrow-size);
+    height: var(--enscribe-book-arrow-size);
     min-height: 0;
     max-width: none;
     padding: 0;
@@ -141,11 +148,18 @@ export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
   .enscribe-chapter-arrow-label { display: none; }   /* bare chevron in the gutter */
   .enscribe-chapter-arrow:hover,
   .enscribe-chapter-arrow:focus-visible { opacity: 1; }
+  /* Sit the chevron CENTERED in the free gutter between the content column and the rail, on both the
+     standalone book and the website-embedded book page. The offset is, from the viewport edge:
+       grid-box margin  +  the grid's own horizontal padding  +  the rail width  +  half the leftover gutter.
+     The margin is max(0px, (100vw - gridw)/2) — 0px (not space-2) because the grid fills the viewport when
+     it is narrower than its gridw, so its real side margin is 0 there; a space-2 floor there shoved the
+     chevron toward the rail. The --enscribe-content-padding term was the missing piece (#420 sized the
+     grid box but not its padding), which is exactly what dropped the chevron onto the on-this-page rail. */
   .enscribe-chapter-arrow--prev {
-    left: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-lrail, 0px) + var(--enscribe-space-2));
+    left: calc(max(0px, (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-content-padding) + var(--enscribe-book-lrail, 0px) + (var(--enscribe-space-12) - var(--enscribe-book-arrow-size)) / 2);
   }
   .enscribe-chapter-arrow--next {
-    right: calc(max(var(--enscribe-space-2), (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-book-rrail, 0px) + var(--enscribe-space-2));
+    right: calc(max(0px, (100vw - var(--enscribe-book-gridw, 0px)) / 2) + var(--enscribe-content-padding) + var(--enscribe-book-rrail, 0px) + (var(--enscribe-space-12) - var(--enscribe-book-arrow-size)) / 2);
   }
 }`;
 

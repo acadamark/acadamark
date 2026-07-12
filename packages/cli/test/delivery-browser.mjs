@@ -56,6 +56,7 @@ export async function openBrowser(driver, executablePath) {
         const p = await context.newPage();
         return {
           goto: (url) => p.goto(url, { waitUntil: 'load' }),
+          setViewport: ({ width, height }) => p.setViewportSize({ width, height }),
           waitFor: (sel, timeout) => p.waitForSelector(sel, { timeout }),
           eval: (fn, ...a) => p.evaluate(fn, ...a),
           click: (sel) => p.evaluate((s) => document.querySelector(s)?.click(), sel),
@@ -77,6 +78,7 @@ export async function openBrowser(driver, executablePath) {
       if (offline) await p.setOfflineMode(true);
       return {
         goto: (url) => p.goto(url, { waitUntil: 'load' }),
+        setViewport: ({ width, height }) => p.setViewport({ width, height }),
         waitFor: (sel, timeout) => p.waitForSelector(sel, { timeout }),
         eval: (fn, ...a) => p.evaluate(fn, ...a),
         click: (sel) => p.evaluate((s) => document.querySelector(s)?.click(), sel),
