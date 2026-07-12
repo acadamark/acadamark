@@ -72,7 +72,11 @@ enscribe_attributes:
         when absent the slug is derived from the <meta> title (slugifyPage). The value
         is normalized to a lowercase [a-z0-9-] slug (slugifyPage), so `slug=Foo Bar`
         becomes `foo-bar` — author the matching <a foo-bar> link in that normalized
-        form. Slugs are unique site-wide. Descriptive metadata, like icon; ignored by
+        form. Slugs are unique site-wide. Under the #404 routing invariant a
+        cross-page reference's URL is a pure function of its target's owning page and
+        this slug (computed before any page is written), so `slug` is the load-bearing
+        pinned page identity — the tier-1 slug the builder reads first, ahead of the
+        title-derived fallback. Descriptive metadata, like icon; ignored by
         article/book documents read on their own.
 content:
   shape:

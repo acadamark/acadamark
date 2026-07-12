@@ -1,0 +1,3 @@
+<meta type=book-part title="Second Chapter" />
+
+<figure #fig:elephants src=elephants.png | A herd of elephants>

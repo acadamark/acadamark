@@ -37,17 +37,44 @@ export function run() {
     assert.equal(model.entries.length, 3, 'three top-level entries: Home, Resources group, Contact');
 
     const [home, group, contact] = model.entries;
-    assert.deepEqual(home, { kind: 'page', title: 'Home', slug: 'home', src: 'home.emd' },
-      'external page records {title, slug, src}');
+    // #404 marker 7: an external page carries a `body` for interstitial content after it; with no
+    // interstitial content here it is an empty array (byte-identical rendering).
+    assert.deepEqual(home, { kind: 'page', title: 'Home', slug: 'home', src: 'home.emd', body: [] },
+      'external page records {title, slug, src, body}');
     assert.equal(group.kind, 'group', 'second entry is a group');
     assert.equal(group.title, 'Resources', 'group title comes from the title kwarg');
     assert.equal(group.children.length, 2, 'group nests its two items as children (not leaked as siblings)');
     assert.deepEqual(group.children.map((c) => c.slug), ['tutorials', 'documentation'],
       'grouped pages slug from their titles');
-    assert.deepEqual(contact, { kind: 'page', title: 'Contact', slug: 'contact', src: 'contact.emd' },
+    assert.deepEqual(contact, { kind: 'page', title: 'Contact', slug: 'contact', src: 'contact.emd', body: [] },
       'a top-level page after the group is a sibling at the nav level, not swallowed');
   }
   console.log('PASS: website-structuring — external pages, a group, and a top-level page after the group');
+
+  // #404 marker 7: interstitial master content authored AFTER an <item src> and BEFORE the next nav
+  // entry joins THAT page's `body` (previously dropped), peer-closed by the next entry — exactly the
+  // inline-page rule extended to the external form.
+  {
+    const src = [
+      '<meta type=website>',
+      '</meta>',
+      '<nav>',
+      '<item src="a.emd" | Page A>',
+      'Interstitial INTERMARK after A.',
+      '<item src="b.emd" | Page B>',
+      '</nav>',
+    ].join('\n');
+    const { model } = buildModel(src);
+    assert.equal(model.entries.length, 2, 'two external pages');
+    const [a, b] = model.entries;
+    assert.equal(a.src, 'a.emd', 'first entry is external (src kept)');
+    assert.ok(Array.isArray(a.body) && a.body.length >= 1,
+      'marker 7: the interstitial content after <item src> is captured on that page (not dropped)');
+    const flat = JSON.stringify(a.body);
+    assert.ok(flat.includes('INTERMARK'), 'marker 7: the captured body holds the interstitial content');
+    assert.deepEqual(b.body, [], 'the next entry peer-closed A; B has no interstitial content');
+  }
+  console.log('PASS: website-structuring — marker 7: interstitial after <item src> joins that page');
 
   // An inline page: <item | Title> + body, peer-closed by the next entry.
   {

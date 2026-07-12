@@ -38,6 +38,7 @@ import {
   resolvePageSlug,
   allocatePageSlug,
   renderNotFoundView,
+  notFoundViewHtml,
   flattenNavPages,
   extractDocumentTitle,
   WEBSITE_SHELL_CSS,
@@ -456,16 +457,23 @@ export async function mountLiveBook(target, source, options = {}) {
   const viewCache = new Map();
   const viewFor = (key) => {
     if (!viewCache.has(key)) {
-      viewCache.set(key, key === 'cover' ? renderLiveCoverView(model) : renderLiveChapterView(model, key, ctx));
+      viewCache.set(key, key === 'cover' ? renderLiveCoverView(model, ctx) : renderLiveChapterView(model, key, ctx));
     }
     return viewCache.get(key);
   };
 
-  let currentKey = null;                          // 'cover' | a chapter index | null (unmounted)
+  let currentKey = null;                          // 'cover' | a chapter index | 'not-found' | null (unmounted)
   const route = () => {
     const { chapter, hash } = currentRoute();
     const dest = resolveRoute(chapter, hash, model);
-    if (dest == null) return;                     // unknown chapter stem — no-op
+    if (dest == null) {
+      // #404 routing invariant point 3: an unknown ?chapter= stem shows the graceful
+      // not-found view (the shared body the website router uses) — never a silent
+      // no-op/stale view, never a cover fallback. Home = the no-chapter route (the cover).
+      root.innerHTML = notFoundViewHtml(`chapter "${String(chapter)}"`, '?');
+      currentKey = 'not-found';
+      return;
+    }
     const key = dest.cover ? 'cover' : dest.index;
     if (key !== currentKey) {
       root.innerHTML = viewFor(key);
@@ -474,8 +482,9 @@ export async function mountLiveBook(target, source, options = {}) {
       // after each chapter swap (idempotent; a no-op when back-to-top is off or unbuilt).
       if (model.bookNav.backToTop) bindBackToTop();
     }
-    // A section anchor: scroll to it once its owning chapter is mounted.
-    if (!dest.cover && dest.anchor && typeof document !== 'undefined') {
+    // A section anchor: scroll to it once its owning page — a chapter OR the cover
+    // (#404: front-region anchors live there) — is mounted.
+    if (dest.anchor && typeof document !== 'undefined') {
       const anchorEl = document.getElementById(dest.anchor);
       if (anchorEl && typeof anchorEl.scrollIntoView === 'function') anchorEl.scrollIntoView();
     }
@@ -684,18 +693,27 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
     destroyEditor();
     currentIndex = -1;
     currentKey = 'cover';
-    root.innerHTML = renderLiveCoverView(model);
+    root.innerHTML = renderLiveCoverView(model, ctx);
   };
 
   const route = () => {
     const { chapter, hash } = currentRoute();
     const dest = resolveRoute(chapter, hash, model);
-    if (dest == null) return;
-    if (dest.cover) {
-      if (currentKey !== 'cover') renderCover();
+    if (dest == null) {
+      // #404 point 3: unknown ?chapter= → the graceful not-found view (see the read router).
+      debouncedRebuild.cancel();
+      destroyEditor();
+      currentIndex = -1;
+      currentKey = 'not-found';
+      root.innerHTML = notFoundViewHtml(`chapter "${String(chapter)}"`, '?');
       return;
     }
-    if (currentKey !== dest.index) renderChapterAt(dest.index);
+    if (dest.cover) {
+      if (currentKey !== 'cover') renderCover();
+    } else if (currentKey !== dest.index) {
+      renderChapterAt(dest.index);
+    }
+    // #404: cover-owned anchors (front-region content) scroll too.
     if (dest.anchor && typeof document !== 'undefined') {
       const anchorEl = document.getElementById(dest.anchor);
       if (anchorEl && typeof anchorEl.scrollIntoView === 'function') anchorEl.scrollIntoView();
@@ -1069,9 +1087,19 @@ export async function mountLiveWebsite(target, source, options = {}) {
     p.slug = slug;                             // remap the nav model entry → the chrome's ?page= links use it
     sourceBySlug.set(slug, src);
     if (loaded) loadedBySrc.set(p.src, loaded);
+    // #404 marker 7 (live surface, mirroring the static build): interstitial master content
+    // captured by the website structurer as the entry's `body` JOINS this page — spliced as
+    // trailing content of the page's tree, so it numbers within the page (Phase 1 consumes
+    // this tree) and renders on it (renderArticleInto consumes it too, the same tree seam
+    // the inline-page path uses). No interstitial → tree unset → source path, byte-identical.
+    let tree;
+    if (!isBook && p.body && p.body.length > 0) {
+      tree = proc.parse(src);
+      tree.children.push(...p.body);
+    }
     // title + isDerived back the authored `<a {slug}>` auto-label + derived-slug warning (#318), computed the
     // SAME way the static build does (resolvePageSlug's title, else the nav title; un-pinned ⇒ derived).
-    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, slug, isBook, title: title || p.title || slug, isDerived: !pinned };
+    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, tree, slug, isBook, title: title || p.title || slug, isDerived: !pinned };
   });
 
   // PHASE 1 — number each page NATIVELY (article as an article; a book as a book, chapters intact), harvest,
@@ -1185,7 +1213,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const renderArticleInto = (pd) => {
     if (!articleCache.has(pd.slug)) {
       const f = { data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(pd.slug) } };
-      articleCache.set(pd.slug, resolveRefs(String(proc.stringify(proc.runSync(proc.parse(pd.source), f), f)), pd.slug));
+      articleCache.set(pd.slug, resolveRefs(String(proc.stringify(proc.runSync(pd.tree ?? proc.parse(pd.source), f), f)), pd.slug)); // #404 marker 7: the interstitial-spliced tree, when present
     }
     contentRegion.innerHTML = articleCache.get(pd.slug);
     resolveWebsitePageAssets(contentRegion, pd.resolved.sourcePath);   // #352: figure assets resolve page-relative
@@ -1203,10 +1231,18 @@ export async function mountLiveWebsite(target, source, options = {}) {
     const b = currentBook;
     const { chapter, hash } = currentRoute();
     const dest = resolveRoute(chapter, hash, b.model);
-    const key = dest == null || dest.cover ? 'cover' : dest.index;
+    if (dest == null) {
+      // #404 point 3: an unknown ?chapter= stem on a book page shows the graceful not-found
+      // view — the OLD behavior silently fell back to the cover (the exact misrouting the
+      // #404 investigation named). Home = this book page's own route.
+      contentRegion.innerHTML = notFoundViewHtml(`chapter "${String(chapter)}"`, `?page=${b.pd.slug}`);
+      b.currentKey = 'not-found';
+      return;
+    }
+    const key = dest.cover ? 'cover' : dest.index;
     if (key !== b.currentKey) {
       if (!b.chapterCache.has(key)) {
-        const view = key === 'cover' ? renderLiveCoverView(b.model) : renderLiveChapterView(b.model, key, b.ctx);
+        const view = key === 'cover' ? renderLiveCoverView(b.model, b.ctx) : renderLiveChapterView(b.model, key, b.ctx);
         b.chapterCache.set(key, resolveRefs(view, b.pd.slug));
       }
       contentRegion.innerHTML = b.chapterCache.get(key);
@@ -1214,7 +1250,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
       b.currentKey = key;
       executeAssets(contentRegion);
     }
-    if (dest && !dest.cover && dest.anchor && typeof document !== 'undefined') {
+    if (dest && dest.anchor && typeof document !== 'undefined') {
       const el = document.getElementById(dest.anchor);
       if (el && typeof el.scrollIntoView === 'function') el.scrollIntoView();
     }

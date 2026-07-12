@@ -32,6 +32,8 @@ import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.j
 import { renderChapter } from './render-chapter.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
 import { assembleMasterDocument } from './assemble.js';
+import { collectFrontLoose } from './publish-pages.js';
+import { makeTag } from '../core/tag.js';
 import { buildEditMainInner } from './live-edit-view.js';
 import { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 import {
@@ -78,6 +80,11 @@ export const chapterHref = (p, pageSlug = null) =>
  *  (standalone, clears the chapter). The masthead/home link points here; the click interceptor reads
  *  the absent `chapter` and lands on the cover (or the first chapter when cover is off). */
 export const coverHref = (pageSlug = null) => (pageSlug ? `?page=${pageSlug}` : '?');
+
+// #404 total ownership: the owner sentinel for content that belongs to NO chapter — the book's
+// FRONT region (pre-first-part loose content), which renders on the COVER on both surfaces. A
+// stem can never collide with it (stems are slugified [a-z0-9-]).
+export const COVER_STEM = '::cover';
 
 /** A section's route href: the owning chapter's route + the section anchor — used by cross-chapter
  *  links (the cover contents listing, the rail at navDepth≥2, cross-chapter refs). A SAME-chapter
@@ -137,10 +144,15 @@ export function buildLiveBook({ numbered, file, pageSlug = null }) {
   for (const [anchor, entry] of registry) {
     if (entry.chapter != null && chapterIdToStem.has(entry.chapter)) {
       idToStem.set(anchor, chapterIdToStem.get(entry.chapter));
+    } else if (!idToStem.has(anchor)) {
+      // #404 total ownership: a registered target outside every chapter is FRONT-region
+      // content, owned by the cover (where the front loose content renders on both
+      // surfaces). The old omission left these anchors route-less — a dead click.
+      idToStem.set(anchor, COVER_STEM);
     }
   }
 
-  return { parts, bookTitle, registry, stemToIndex, idToStem, pageSlug, bookNav: resolveBookNavConfig(file), contents: resolveBookContentsConfig(file) };
+  return { parts, bookTitle, registry, stemToIndex, idToStem, pageSlug, bookNav: resolveBookNavConfig(file), contents: resolveBookContentsConfig(file), frontLoose: collectFrontLoose(bookEl) };
 }
 
 /**
@@ -192,12 +204,21 @@ function liveRail(parts, activeId, home, bookNav, pageSlug) {
  *  stays a bare `#anchor` (a pure in-page scroll). Done in the VIEW, never in renderLiveChapterContent
  *  (that stays bare — the parity target). Refs owned by NO chapter of this book (a cross-PAGE website ref)
  *  are left bare for the website's own cross-page rewrite (resolveRefs) to handle. */
-function rewriteCrossChapterRefs(html, currentPart, model) {
+function rewriteCrossChapterRefs(html, currentOwnerId, model) {
   const byId = new Map(model.parts.map((p) => [p.id, p]));
-  return rewriteCrossPageHrefs(html, currentPart.id, {
-    ownerOf: (anchor) => model.registry.get(anchor)?.chapter ?? null,
-    hrefFor: (chapterId, anchor) => {
-      const owning = byId.get(chapterId);
+  return rewriteCrossPageHrefs(html, currentOwnerId, {
+    // #404 total ownership: a REGISTERED target outside every chapter is front-region content,
+    // owned by the cover — its href is the cover route + anchor (the front content renders
+    // there). A NON-registered anchor stays null → left bare (a cross-PAGE website ref for
+    // resolveRefs, or a purely local id) — unchanged.
+    ownerOf: (anchor) => {
+      const e = model.registry.get(anchor);
+      if (!e) return null;
+      return (e.chapter != null && byId.has(e.chapter)) ? e.chapter : COVER_STEM;
+    },
+    hrefFor: (owner, anchor) => {
+      if (owner === COVER_STEM) return `${coverHref(model.pageSlug)}#${anchor}`;
+      const owning = byId.get(owner);
       return owning ? `${chapterHref(owning, model.pageSlug)}#${anchor}` : `#${anchor}`;
     },
   });
@@ -207,7 +228,7 @@ export function renderLiveChapterView(model, idx, ctx) {
   const { parts, bookTitle, bookNav, pageSlug } = model;
   const part = parts[idx];
 
-  const content = rewriteCrossChapterRefs(renderLiveChapterContent(part, model, ctx), part, model);
+  const content = rewriteCrossChapterRefs(renderLiveChapterContent(part, model, ctx), part.id, model);
   // cover off → the masthead 'home' points at the first chapter (the landing), not the cover.
   const home = { href: bookNav.cover ? coverHref(pageSlug) : chapterHref(parts[0], pageSlug), title: bookTitle };
   const rail = liveRail(parts, part.id, home, bookNav, pageSlug);
@@ -237,7 +258,22 @@ export function renderLiveChapterView(model, idx, ctx) {
  * @param {object} model - the buildLiveBook result
  * @returns {string} the mounted cover view HTML (a `<div class="enscribe-layout…">`)
  */
-export function renderLiveCoverView(model) {
+/** #404: the live cover's FRONT-region content — pre-first-part loose nodes rendered the same
+ *  wrap-and-stringify way the static cover renders them (publish-pages renderFrontLoose), then
+ *  cross-chapter refs rewritten with the COVER as the current owner (front→chapter refs route to
+ *  the owning chapter; front→front stays a bare in-page anchor). '' when the book has no front
+ *  loose content or no ctx is supplied (older callers) — the cover stays byte-identical. */
+function renderLiveFrontLoose(model, ctx) {
+  const nodes = model.frontLoose;
+  if (!nodes || nodes.length === 0 || !ctx?.proc) return '';
+  const wrapped = { type: 'root', children: [makeTag('book', [makeTag('book-body', nodes)])] };
+  const html = String(ctx.proc.stringify(wrapped, ctx.file));
+  const m = html.match(/<book-body[^>]*>([\s\S]*)<\/book-body>/);
+  const inner = m ? m[1].trim() : '';
+  return inner ? rewriteCrossChapterRefs(inner, COVER_STEM, model) : '';
+}
+
+export function renderLiveCoverView(model, ctx) {
   const { parts, bookTitle, bookNav, contents, pageSlug } = model;
   const home = { href: coverHref(pageSlug), title: bookTitle, current: true };
   const rail = liveRail(parts, null, home, bookNav, pageSlug);
@@ -255,7 +291,7 @@ export function renderLiveCoverView(model) {
       }))
     : '';
   return composeBookBody({
-    rail, content: coverBodyHtml(bookTitle, contentsHtml),
+    rail, content: coverBodyHtml(bookTitle, contentsHtml, renderLiveFrontLoose(model, ctx)),
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
   }) + BOOK_LIVE_RAIL_SCRIPTS;
 }
@@ -284,7 +320,10 @@ export function resolveRoute(chapter, hash, model) {
     // No chapter selected. A stray section hash → its owning chapter (graceful: an in-content `#id`
     // click that didn't carry a chapter, or an old `#id` deep-link), else the cover.
     if (anchor && model.idToStem.has(anchor)) {
-      return { cover: false, index: model.stemToIndex.get(model.idToStem.get(anchor)), anchor };
+      const stem = model.idToStem.get(anchor);
+      // #404: a cover-owned anchor (front-region content) routes to the cover and scrolls there.
+      if (stem === COVER_STEM) return { cover: true, anchor };
+      return { cover: false, index: model.stemToIndex.get(stem), anchor };
     }
     // #221: cover off → the no-chapter route lands on the first chapter, not a cover view.
     return model.bookNav?.cover === false ? { cover: false, index: 0, anchor } : { cover: true };

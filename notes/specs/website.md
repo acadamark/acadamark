@@ -207,7 +207,8 @@ The `<a {slug}>` form, the slug-source tiers, and the degrade marker are owned b
 *(Decided 2026-07-11 with the transclusion model — `notes/specs/master-document.md` §Transclusion,
 `notes/decisions.md` §"Transclusion — substitution before structure". Normative for **every**
 multi-page projection: the website composition on both surfaces, the separate-pages book build, and
-the live book router. Where current behavior differs it is **spec-ahead-of-code, tracked in #404**.)*
+the live book router. Implemented and gated by `scripts/check-routing-invariant.mjs`
+(`npm run check:routing`, wired into the root `test` script) — #404, closed.)*
 
 Multi-page projections cut the one assembled tree into pages. Three requirements make that cut
 navigation-safe:
@@ -217,8 +218,10 @@ navigation-safe:
    preceding part, and pre-first-part content is in the parent region — belongs to **exactly one**
    emitted page, computable from its ancestry alone. There is no "unowned" content and no
    `owner: null` degrade path: a projection that cannot place a node is a broken projection, not a
-   permitted silent fallback. **Spec-ahead-of-code:** today anchors outside every book-part harvest
-   `chapter: null` and every consumer of null silently gives up — #404.
+   permitted silent fallback. **Implemented (#404):** an anchor outside every book-part is owned by
+   the cover (where front-region content renders, both surfaces); the live router's `idToStem` is
+   total over the registry; the residual (an owner the projection did not emit) warns through the
+   diagnostics seam and the gate catches it.
 
 2. **Anchor URLs are a pure function of ownership + stable slug.** The URL a cross-page reference
    emits is computed from the target's owner page (point 1) and the owner's stable identity (the

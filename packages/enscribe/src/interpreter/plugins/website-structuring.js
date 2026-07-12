@@ -149,9 +149,22 @@ function walkEntries(content, assignSlug, file) {
       const title = titleText(node);
       const src = node.kwargs?.src ?? null;
       if (src != null) {
-        // External page — a leaf; the pipe gives the menu label (S2 loads the child).
-        entries.push({ kind: 'page', title, slug: assignSlug(title, src), src });
+        // External page — the pipe gives the menu label (S2 loads the child). #404 marker 7:
+        // master content authored AFTER this `<item src>` and BEFORE the next nav entry
+        // (interstitial content) belongs to THIS page — gather it as the page's `body`,
+        // peer-closed by the next `<item>`/`<nav-group>` or end of this array, exactly as the
+        // inline-item branch does. Each render path appends this body after the loaded child
+        // (the interstitial is trailing master content on the page; substitution within the
+        // nav entry, master-document.md §"Scope note: websites"). Empty when there is no
+        // interstitial content, so a nav without it stays byte-identical.
+        const slug = assignSlug(title, src);
+        const body = [];
         i += 1;
+        while (i < nodes.length && !isEntry(nodes[i])) {
+          body.push(nodes[i]);
+          i += 1;
+        }
+        entries.push({ kind: 'page', title, slug, src, body });
       } else {
         // Inline page — open marker; gather following non-entry siblings as its body
         // (peer-closed by the next <item>/<nav-group> or end of this array).

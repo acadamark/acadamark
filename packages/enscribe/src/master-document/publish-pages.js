@@ -77,13 +77,31 @@ function computeSlugs(parts) {
  *  anchors stay in-page; the owning chapter comes from the cross-ref registry and maps to its
  *  `<stem>.html` (null when it has no page URL → left in-page). The website composition + the live
  *  SPA call the SAME resolver with their own owner/href injection — no second rewriter. */
-function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl) {
+function rewriteCrossPageRefs(html, currentChapterId, registry, idToUrl, onUnowned) {
   return rewriteCrossPageHrefs(html, currentChapterId, {
     refsOnly: true,
-    ownerOf: (anchor) => registry.get(anchor)?.chapter ?? null,
-    hrefFor: (chapter, anchor) => {
-      const url = idToUrl.get(chapter);
-      return url ? `${url}#${anchor}` : null;
+    // #404 total ownership. A registered ref target's owning page is a TOTAL function of assembled
+    // tree position: the nearest <book-part> (its chapter page), else the COVER (index.html) — which
+    // is where the assembly slice renders front-region loose content, so the anchor is really there.
+    // `chapter: null` no longer means "give up" (the old bare-#anchor dead link at cross-page-links.js
+    // line 69); it means "owned by the cover." A NON-registered anchor (a footnote/section local id,
+    // absent from the cross-ref registry) is not a cross-page target → null → left in-page, correctly.
+    ownerOf: (anchor) => {
+      const e = registry.get(anchor);
+      if (!e) return null;
+      return e.chapter ?? INDEX_PAGE;
+    },
+    // The URL is a pure function of (owner page, anchor) — never consults emitted output. Every
+    // collected book-part is in idToUrl and front-region content maps to the cover, so this is total
+    // for a well-formed book. The residual (a book-part id the projection did not emit as a page — a
+    // structural anomaly, effectively unreachable) records a diagnostic via onUnowned rather than
+    // going silent, then degrades in-page per always-renders (the machine gate is the real backstop).
+    hrefFor: (owner, anchor) => {
+      if (owner === INDEX_PAGE) return `${INDEX_PAGE}#${anchor}`;
+      const url = idToUrl.get(owner);
+      if (url) return `${url}#${anchor}`;
+      onUnowned?.(anchor, owner);
+      return null;
     },
   });
 }
@@ -183,7 +201,7 @@ function renderPageBody(part, parts, idx, registry, idToUrl, opts) {
   const chapterHref = (p) => p.slug;
 
   let content = renderChapter(part.node, registry, { proc, file });
-  content = rewriteCrossPageRefs(content, part.id, registry, idToUrl);
+  content = rewriteCrossPageRefs(content, part.id, registry, idToUrl, opts.onUnowned);
 
   const home = { href: homeHref, title: bookTitle };
   // separate-pages section links are cross-page (`page#id`); only built at depth >= 2.
@@ -217,7 +235,7 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
 // cover, so — for it to render at all (projection equivalence) — this front loose content renders on
 // the COVER page (its front region's landing page). Extract the <book-front> children that are neither
 // the <meta> nor a <book-part> — those are the pre-first-part loose nodes.
-function collectFrontLoose(bookEl) {
+export function collectFrontLoose(bookEl) {
   const front = (bookEl.content ?? []).find((r) => isEnscribeTag(r, 'book-front'));
   if (!front || !Array.isArray(front.content)) return [];
   return front.content.filter((n) => !isEnscribeTag(n, 'meta') && !isEnscribeTag(n, 'book-part'));
@@ -227,12 +245,17 @@ function collectFrontLoose(bookEl) {
 // wrap-and-stringify (so the fragment is byte-identical to the in-context full render) but extracting
 // the <book-body> inner content (the nodes are loose content, not a single <book-part>). '' when empty
 // → the cover stays byte-identical for a book with no pre-first-part content.
-function renderFrontLoose(nodes, proc, file) {
+function renderFrontLoose(nodes, proc, file, registry, idToUrl, onUnowned) {
   if (!nodes || nodes.length === 0) return '';
   const wrapped = { type: 'root', children: [makeTag('book', [makeTag('book-body', nodes)])] };
   const html = String(proc.stringify(wrapped, file));
   const m = html.match(/<book-body[^>]*>([\s\S]*)<\/book-body>/);
-  return m ? m[1].trim() : '';
+  const inner = m ? m[1].trim() : '';
+  // #404: the cover's own front-region content can carry cross-page refs (front → a chapter). Rewrite
+  // them with the COVER as the current owner, so front→chapter resolves to the chapter page while
+  // front→front stays in-page — total ownership leaves no bare dead #anchor on the cover either. When
+  // registry/idToUrl aren't threaded (older callers), the fragment is returned unrewritten (unchanged).
+  return registry && idToUrl ? rewriteCrossPageRefs(inner, INDEX_PAGE, registry, idToUrl, onUnowned) : inner;
 }
 
 /** The landing/index page: the book title + the chapter rail linking to every chapter
@@ -306,9 +329,10 @@ export function prepareBook(numbered, file) {
   return { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose: collectFrontLoose(bookEl) };
 }
 
-export function publishBookPages({ numbered, file, proc, defaultCss }) {
+export function publishBookPages({ numbered, file, proc, defaultCss, onUnowned }) {
   const { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose } = prepareBook(numbered, file);
-  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref, frontHtml: renderFrontLoose(frontLoose, proc, file) };
+  const frontHtml = renderFrontLoose(frontLoose, proc, file, registry, idToUrl, onUnowned);
+  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref, frontHtml, onUnowned };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
@@ -332,9 +356,10 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
  *   `{ page }` entry carrying the full standalone redirect document (hosted as-is; a
  *   meta-refresh has no body fragment to wrap).
  */
-export function publishBookPageBodies({ numbered, file, proc }) {
+export function publishBookPageBodies({ numbered, file, proc, onUnowned }) {
   const { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose } = prepareBook(numbered, file);
-  const opts = { proc, file, bookTitle, bookNav, homeHref, frontHtml: renderFrontLoose(frontLoose, proc, file) };
+  const frontHtml = renderFrontLoose(frontLoose, proc, file, registry, idToUrl, onUnowned);
+  const opts = { proc, file, bookTitle, bookNav, homeHref, frontHtml, onUnowned };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPageBody(part, parts, idx, registry, idToUrl, opts));

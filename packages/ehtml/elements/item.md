@@ -24,10 +24,10 @@ enscribe_attributes:
         Omitted for an INLINE page, whose body is authored in the master after the
         `<item | Title>` marker (peer-closed by the next entry — the
         zero-length-splice case of the same rule). The website render (S2) loads
-        the child; S1 records the `src` as a reference only. Spec-ahead-of-code:
-        the current builder ignores interstitial content after an external item
-        (#404) and crashes on an inline item (#417 — a plain bug; inline items are
-        legal by construction).
+        the child; S1 records the `src` as a reference only. Implemented
+        (#404/#417): interstitial content after an external item joins that
+        item's page on both website surfaces, and inline items render (the
+        earlier builder crash is fixed).
 content:
   shape:
     - element: body

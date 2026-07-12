@@ -1,0 +1,9 @@
+<meta type=book title="Routing Invariant — Front-Ref Book" />
+
+This preamble is loose book content, before the first chapter — it lives in the
+book's FRONT region and renders on the cover (index.html).
+
+<$$ #eqn:loose | E = mc^2 $$>
+
+<chapter src=ch1.emd />
+<chapter src=ch2.emd />

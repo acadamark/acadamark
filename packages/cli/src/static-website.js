@@ -43,6 +43,8 @@ import {
   resolvePageSlug,
   allocatePageSlug,
   rewriteCrossPageHrefs,
+  notFoundViewHtml,
+  NOT_FOUND_SLUG,
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
@@ -240,6 +242,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     // page; its assets resolve against the master dir. (Do NOT call resolvePageSource with an
     // undefined src — that is the #417 TypeError; the inline form is legal by construction.)
     let resolved, source, tree;
+    let isBook = false;
     if (page.src == null) {
       tree = { type: 'root', children: page.body ?? [] };
       source = '';                                   // no child file; the slug derives from the nav title
@@ -251,6 +254,24 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         continue;
       }
       source = readFileSync(resolved.sourcePath, 'utf8');
+      isBook = classifyDocTypeFromSource(source, classifyProc).type === 'book';
+      // #404 marker 7: interstitial master content authored after this `<item src>` (captured as
+      // `page.body` by the website structurer) JOINS this page. For an ARTICLE page, splice it as
+      // trailing content of ONE tree — so a figure in the interstitial numbers within this page and
+      // its ids are owned by this page (the routing invariant needs the ids on a real page) — and
+      // render via the tree seam. No interstitial → tree stays unset → source render, byte-identical.
+      if (!isBook && page.body && page.body.length > 0) {
+        tree = classifyProc.parse(source);
+        tree.children.push(...page.body);
+      } else if (isBook && page.body && page.body.length > 0) {
+        // A book page's insertion point for trailing article-level content is not yet defined
+        // (the book renders per-chapter); flag rather than silently drop — a rare authoring edge,
+        // scoped as a follow-on to marker 7 (which covers article pages).
+        warnings.push(
+          `page "${page.src}": interstitial content after a book <item src> is captured but not yet ` +
+          `rendered — the book-page insertion point is a follow-on (#404 marker 7 covers article pages)`,
+        );
+      }
     }
     const { slug: baseSlug, pinned, title, rawMetaSlug } = resolvePageSlug({
       source, navTitle: page.title || page.slug, src: page.src,
@@ -273,7 +294,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     });
     pageInfo.set(slug, { title: pageTitle, isDerived: !pinned, src: page.src });
     page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
-    pageData.push({ page, resolved, source, tree, slug, isBook: tree ? false : classifyDocTypeFromSource(source, classifyProc).type === 'book' });
+    pageData.push({ page, resolved, source, tree, slug, isBook });
   }
   if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
 
@@ -378,13 +399,28 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     warn: (m) => warnings.push(m),
   });
 
+  // #404 routing invariant: a cross-page ref whose owner page is not among the emitted pages routes to
+  // the graceful NOT-FOUND view — never the old silent bare `#anchor` (point 3). `needsNotFound` triggers
+  // the lazy emission of one `not-found/` page after the render loop (so a healthy site — every owner
+  // emitted — is byte-identical, no not-found page written). The URL is a pure function of ownership +
+  // slug (point 2), so it is computed here without consulting the emitted output.
+  let needsNotFound = false;
+  const upFrom = (outPath) => '../'.repeat((outPath.match(/\//g) || []).length);
   // Static cross-page href resolver: ownerKey → its file, RELATIVE to the page being rendered. (LIVE keeps
   // `?page=owner#anchor` via rewriteCrossPageHrefs's default — the scheme differs by design; see hrefFor.)
   const crossPageHref = (currentOutPath) => (owner, anchor) => {
     const target = ownerToUrl.get(owner);
-    if (target == null) return `#${anchor}`;                       // unknown owner → leave intra-page (defensive)
-    const up = '../'.repeat((currentOutPath.match(/\//g) || []).length);
-    return `${up}${target}#${anchor}`;
+    if (target == null) {
+      // The owner's page is not in the emitted set (a page that failed to number/render, or an internal
+      // owner-map inconsistency). Route to the not-found view + warn — never a silent dead `#anchor`.
+      needsNotFound = true;
+      warnings.push(
+        `cross-page reference to "#${anchor}" — its owning page was not emitted; the link routes to the ` +
+        `not-found page (#404 routing invariant). This usually means that page failed to build (see its warning).`,
+      );
+      return `${upFrom(currentOutPath)}${NOT_FOUND_SLUG}/`;
+    }
+    return `${upFrom(currentOutPath)}${target}#${anchor}`;
   };
 
   // PHASE 2 — render each page NATIVELY (book/article scope intact) with the read-through pre-seeded, then
@@ -464,6 +500,19 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
       continue;
     }
     assets.push(...pageDirAssets(resolved.pageDir, masterDir, destPrefix));
+  }
+
+  // #404 routing invariant, point 3 (lazy emission): if any cross-page ref routed to the not-found view,
+  // emit ONE `not-found/` page so that route resolves to a real, explicable landing — the same view the
+  // live `?page=` router already renders (notFoundViewHtml, single-sourced). Added to `rendered` BEFORE
+  // the framing pass, so it is framed in the universal shell like any other page. A healthy site (every
+  // owner emitted) never sets the flag → no not-found page → byte-identical output.
+  if (needsNotFound) {
+    const outPath = `${NOT_FOUND_SLUG}/index.html`;
+    rendered.push({
+      outPath, slug: NOT_FOUND_SLUG, title: 'Page not found',
+      content: notFoundViewHtml('this page', upFrom(outPath)),   // homeHref → the site root (serves home)
+    });
   }
 
   // The live-diagram runtime block for the universal head — the pinned-CDN <script src> + init for each

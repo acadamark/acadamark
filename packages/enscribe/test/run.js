@@ -95,12 +95,14 @@ import { run as runCoverageFresh } from './coverage/coverage-fresh.test.js';
 import { run as runRegistriesGuard } from './registries-guard.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
 import { run as runCaretFootnoteSigil } from './caret-footnote-sigil.test.js';
+import { run as runRoutingInvariant } from './routing-invariant.test.js';
 
 const suites = [
   ['plugins/doc-type',             runDocType],
   ['plugins/config-discovery',     runConfigDiscovery],
   ['plugins/article-structuring',  runArticleStructuring],
   ['plugins/website-structuring',  runWebsiteStructuring],
+  ['routing-invariant',            runRoutingInvariant],
   ['plugins/section-nesting',      runSectionNesting],
   ['plugins/heading-levels',       runHeadingLevels],
   ['plugins/list-structuring',     runListStructuring],
