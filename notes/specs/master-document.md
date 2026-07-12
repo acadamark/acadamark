@@ -76,8 +76,12 @@ asset paths already follow — one resolution rule everywhere, matching the LaTe
 ## Transclusion — substitution before structure
 
 *(Decided 2026-07-11 — see `notes/decisions.md` §"Transclusion — substitution before structure".
-This section is normative for every sourced form. Where current engine behavior differs it is
-marked **spec-ahead-of-code, tracked in #404**.)*
+This section is normative for every sourced form. The structural forms (`<chapter/part/section
+src>`) realize it today — the assembler flat-splices each child at its call site, so interstitial
+master content joins the preceding element, structure crosses the seam in both directions, and a
+separate-pages build renders pre-first-part content on the cover instead of dropping it. The
+remaining divergences — the `<include>` primitive with recursion + cycle detection, and the website
+`<item src>` interstitial — are marked **spec-ahead-of-code** inline and tracked in #404.)*
 
 ### The model
 
@@ -103,10 +107,11 @@ marked **spec-ahead-of-code, tracked in #404**.)*
 
    The effective content of *Section 1* is `section1.emd`'s text **followed by** `Random text`;
    *Section 2* peer-closes it. This applies uniformly to every sourced structural form —
-   `<chapter src>`, `<part src>`, `<preface src>`, `<appendix src>`, the website `<item src>` — with
-   no per-form variation. **Spec-ahead-of-code:** today interstitial master content becomes *loose*
-   sibling content instead of joining the preceding element (and the separate-pages book build then
-   renders it on no page at all) — #404.
+   `<chapter src>`, `<part src>`, `<preface src>`, `<appendix src>` — with no per-form variation, and
+   is realized in the assembler today: the child splices in as initial content, and interstitial
+   master content joins the preceding element rather than becoming a loose sibling. The website
+   `<item src>` follows the same rule in principle, but its interstitial handling is still
+   **spec-ahead-of-code** — see §websites.
 
 3. **`<include src=…>` is the general primitive.** An `<include>` splices a file's content at its
    own position and is otherwise inert — it opens nothing, closes nothing, and adds no structure.
@@ -128,6 +133,10 @@ one-level case). This is the rule assets and per-chapter libraries already follo
 `\input` intuition.
 
 ### Recursion and cycles
+
+*(**Spec-ahead-of-code:** recursion and cycle detection ship with the `<include>` primitive, which is
+scheduled separately from the #404 arc — see point 3. This subsection describes their intended
+behavior, not current engine behavior.)*
 
 Includes may include, to any depth — there is **no fixed depth limit**; the only prohibited topology
 is a **cycle**. A cycle is detected at assembly time (the chain of including files is tracked) and
@@ -178,15 +187,15 @@ position and ancestry are identical in every projection; projections differ only
 tree is cut into pages. This is the sentence that kills #404's class: under point 2, interstitial
 master content is *inside the preceding part*, so in a separate-pages build it renders on that
 part's page — **no "loose content" exists to assign**, and no anchor can be resolved-but-unplaced.
-**Spec-ahead-of-code:** today the separate-pages build renders only book-parts and drops loose
-content from the output entirely — #404.
+This is realized today: an interlude between chapters renders on the preceding chapter's page (it is
+inside that chapter), and content before the first part renders on the book's front region (below).
 
 ### Content before the first part
 
 Content that precedes the first structural part has no preceding part to join: it belongs to the
-**parent element** — the article lead, or the book's front region. **Spec-ahead-of-code:** current
-book structuring routes such loose content into `book-body` (preserved in the tree but rendered on
-no page by the separate-pages build); under this spec it is front-region content — #404.
+**parent element** — the article lead, or the book's front region. Book structuring routes such
+content into `book-front`, and the separate-pages build renders it on the cover page (the front
+region's projection) rather than dropping it.
 
 ### Numbering and float consequences
 
@@ -207,9 +216,11 @@ carried forward") applied to transclusion.
 
 For a website, substitution operates **within each nav entry**: an `<item src>`'s page content is
 the spliced child followed by any interstitial master content up to the next entry, and an inline
-`<item | Title>` is simply the zero-length-splice case of the same rule (so inline items are legal
-by construction — the current builder crash on them is a plain bug, #417). The *site* remains a
-composition of native page-documents — pages are not spliced into one another, and
+`<item | Title>` is simply the zero-length-splice case of the same rule. Inline items build and
+render today (the earlier builder crash on them is fixed — #417); the **interstitial** master
+content after an `<item src>` is still dropped by the website structurer rather than joining the
+item's page — the one website divergence still **spec-ahead-of-code**, tracked in #404. The *site*
+remains a composition of native page-documents — pages are not spliced into one another, and
 `notes/specs/website.md`'s composition model (number natively, merge registries, never flatten) is
 unchanged by this section. Substitution defines what content a page *contains*; composition defines
 how pages *relate*.

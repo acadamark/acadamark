@@ -35,6 +35,8 @@ import {
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
 import { renderChapter } from './render-chapter.js';
+import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
+import { makeTag } from '../core/tag.js';
 import {
   collectBookParts,
   assignSlugStems,
@@ -210,12 +212,35 @@ function renderPage(part, parts, idx, registry, idToUrl, opts) {
   return pageShell(body, title, opts.defaultCss, opts.bookNav);
 }
 
+// #404/#406: content authored BEFORE the first book-part is front-region content (book-structuring
+// routes it into <book-front>). The separate-pages build renders only book-parts + a synthesized
+// cover, so — for it to render at all (projection equivalence) — this front loose content renders on
+// the COVER page (its front region's landing page). Extract the <book-front> children that are neither
+// the <meta> nor a <book-part> — those are the pre-first-part loose nodes.
+function collectFrontLoose(bookEl) {
+  const front = (bookEl.content ?? []).find((r) => isEnscribeTag(r, 'book-front'));
+  if (!front || !Array.isArray(front.content)) return [];
+  return front.content.filter((n) => !isEnscribeTag(n, 'meta') && !isEnscribeTag(n, 'book-part'));
+}
+
+// Render the front loose nodes to an HTML fragment for the cover, mirroring renderChapter's
+// wrap-and-stringify (so the fragment is byte-identical to the in-context full render) but extracting
+// the <book-body> inner content (the nodes are loose content, not a single <book-part>). '' when empty
+// → the cover stays byte-identical for a book with no pre-first-part content.
+function renderFrontLoose(nodes, proc, file) {
+  if (!nodes || nodes.length === 0) return '';
+  const wrapped = { type: 'root', children: [makeTag('book', [makeTag('book-body', nodes)])] };
+  const html = String(proc.stringify(wrapped, file));
+  const m = html.match(/<book-body[^>]*>([\s\S]*)<\/book-body>/);
+  return m ? m[1].trim() : '';
+}
+
 /** The landing/index page: the book title + the chapter rail linking to every chapter
  *  PAGE (a stable index.html entry point that does not privilege one chapter). The rail
  *  carries the same return-to-cover masthead as the chapter pages (here a self-link to
  *  the cover) so the chrome is uniform across every page. */
 function renderIndexBody(parts, opts) {
-  const { bookTitle, bookNav, file } = opts;
+  const { bookTitle, bookNav, file, frontHtml = '' } = opts;
   // `current: true` — on the cover the masthead is a self-link (index.html → itself), so
   // mark it aria-current="page" rather than presenting a 'home' link to the page you are
   // already on. Chapter pages omit it (their masthead points elsewhere).
@@ -238,7 +263,7 @@ function renderIndexBody(parts, opts) {
         depth: contentsCfg.depth,
       }))
     : '';
-  const body = bookBodyHtml(rail, coverBodyHtml(bookTitle, contentsHtml), '', '', bookNav);
+  const body = bookBodyHtml(rail, coverBodyHtml(bookTitle, contentsHtml, frontHtml), '', '', bookNav);
   return { body, title: bookTitle };
 }
 
@@ -278,12 +303,12 @@ export function prepareBook(numbered, file) {
   // cover on → the masthead 'home' is the cover (index.html); cover off → the book lands
   // on the first chapter, so 'home' points there and index.html redirects to it (#221).
   const homeHref = bookNav.cover ? INDEX_PAGE : parts[0].slug;
-  return { parts, bookNav, bookTitle, registry, idToUrl, homeHref };
+  return { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose: collectFrontLoose(bookEl) };
 }
 
 export function publishBookPages({ numbered, file, proc, defaultCss }) {
-  const { parts, bookNav, bookTitle, registry, idToUrl, homeHref } = prepareBook(numbered, file);
-  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref };
+  const { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose } = prepareBook(numbered, file);
+  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref, frontHtml: renderFrontLoose(frontLoose, proc, file) };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
@@ -308,8 +333,8 @@ export function publishBookPages({ numbered, file, proc, defaultCss }) {
  *   meta-refresh has no body fragment to wrap).
  */
 export function publishBookPageBodies({ numbered, file, proc }) {
-  const { parts, bookNav, bookTitle, registry, idToUrl, homeHref } = prepareBook(numbered, file);
-  const opts = { proc, file, bookTitle, bookNav, homeHref };
+  const { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose } = prepareBook(numbered, file);
+  const opts = { proc, file, bookTitle, bookNav, homeHref, frontHtml: renderFrontLoose(frontLoose, proc, file) };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPageBody(part, parts, idx, registry, idToUrl, opts));

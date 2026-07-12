@@ -9,6 +9,7 @@ import { run_tests as runJatsImportTests } from './import.test.js';
 import { run_tests as runRoundtripComplexTests } from './roundtrip-complex.test.js';
 import { run_tests as runLibrarySrcTests } from './library-src.test.js';
 import { run_tests as runMasterDocumentTests } from './master-document.test.js';
+import { run_tests as runAssemblyTransclusionTests } from './assembly-transclusion.test.js';
 import { run_tests as runEmbeddedAssetTests } from './embedded-asset.test.js';
 import { run_tests as runBuildLiveTests } from './build-live.test.js';
 import { run_tests as runDeliveryModesTests } from './delivery-modes.test.js';
@@ -24,12 +25,13 @@ try {
   runJatsImportTests();
   runRoundtripComplexTests();
   runMasterDocumentTests(); // #190: multi-file master-document walking skeleton
+  runAssemblyTransclusionTests(); // #404/#417: transclusion assembly — substitution-before-structure
   runEmbeddedAssetTests(); // #190: <data> embedded-png asset → numbered figure via src="@id"
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
   await runDeliveryModesTests(); // #369: delivery-modes regression matrix + offline render/editor (async: Tier 2 browser)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
-  await runWebsiteXrefTests();
-  await runDiagnosticsTests(); // #402/#415: the reporting seam (three channels; Tier 2 browser recap) // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)
+  await runWebsiteXrefTests(); // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)
+  await runDiagnosticsTests(); // #402/#415: the reporting seam (three channels; Tier 2 browser recap)
   runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
   process.exit(0);

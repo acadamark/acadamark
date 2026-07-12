@@ -52,6 +52,28 @@ export function renderArticleDocument(source, pipeOpts = {}) {
 }
 
 /**
+ * Render a PRE-PARSED article tree (mdast root) and return the processed VFile — the source-less
+ * counterpart of renderArticleFile, for an inline website `<item | Title>` page whose content is
+ * authored body nodes, not a child file (#417: the zero-length-splice case of §Transclusion).
+ * Skips the parse step (the nodes are already parsed) and runs the same runSync → stringify the
+ * source path runs, so an inline page renders byte-identically to the same body written as its own
+ * article — AND, like renderArticleFile, carries its run's diagnostics in `file.messages` so an
+ * inline page reaches the reporting seam like every other page (#402/#415). `data` seeds the VFile
+ * BEFORE the run (the site read-through registry), exactly as the `{ value, data }` source form does.
+ * @param {object} tree     - an mdast root `{ type: 'root', children: [...] }`.
+ * @param {object} [pipeOpts] - pipeline options (assetsDir, …), verbatim.
+ * @param {object} [data]    - VFile data seeded before runSync (e.g. the site registry read-through).
+ * @returns {import('vfile').VFile}
+ */
+export function renderArticleTreeFile(tree, pipeOpts = {}, data = {}) {
+  const proc = buildDocumentPipeline(pipeOpts);
+  const file = new VFile({ data });
+  const ran = proc.runSync(tree, file);              // transforms push diagnostics onto `file`
+  file.value = String(proc.stringify(ran, file));    // compile → the vfile's value is the HTML
+  return file;                                       // String(file) === HTML; file.messages === diagnostics
+}
+
+/**
  * Assemble a multi-file master (loading its `<section/chapter src>` children), construct the pipeline,
  * and run the transforms once — the shared front half of a BOOK build. Returns `{ numbered, file, proc }`
  * so the caller can detect the doc-type off `file.data`, publish per-chapter pages

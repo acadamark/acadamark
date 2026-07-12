@@ -46,7 +46,7 @@ import {
 } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocTypeFromSource } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
-import { buildDocumentPipeline, renderArticleFile, assembleAndNumber } from './render-document.js';
+import { buildDocumentPipeline, renderArticleFile, renderArticleTreeFile, assembleAndNumber } from './render-document.js';
 import { diagnosticsScript } from './diagnostics.js';
 
 /**
@@ -234,12 +234,24 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // One parse-only proc, reused across pages (parse ignores assetsDir).
   const classifyProc = buildDocumentPipeline({});
   for (const page of pages) {
-    const resolved = resolvePageSource(masterDir, page.src);
-    if (!resolved) {
-      warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
-      continue;
+    // #417: an inline `<item | Title>` page has NO `src` child file — it is the zero-length-splice
+    // case of §Transclusion: its page content is the body authored in the master (captured by the
+    // website structurer as `page.body`). Build it into an article tree that renders as a standalone
+    // page; its assets resolve against the master dir. (Do NOT call resolvePageSource with an
+    // undefined src — that is the #417 TypeError; the inline form is legal by construction.)
+    let resolved, source, tree;
+    if (page.src == null) {
+      tree = { type: 'root', children: page.body ?? [] };
+      source = '';                                   // no child file; the slug derives from the nav title
+      resolved = { sourcePath: join(masterDir, `${page.slug || 'index'}.emd`), pageDir: masterDir };
+    } else {
+      resolved = resolvePageSource(masterDir, page.src);
+      if (!resolved) {
+        warnings.push(`nav item src "${page.src}" did not resolve to a .emd or page-directory — skipped`);
+        continue;
+      }
+      source = readFileSync(resolved.sourcePath, 'utf8');
     }
-    const source = readFileSync(resolved.sourcePath, 'utf8');
     const { slug: baseSlug, pinned, title, rawMetaSlug } = resolvePageSlug({
       source, navTitle: page.title || page.slug, src: page.src,
     });
@@ -261,7 +273,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     });
     pageInfo.set(slug, { title: pageTitle, isDerived: !pinned, src: page.src });
     page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
-    pageData.push({ page, resolved, source, slug, isBook: classifyDocTypeFromSource(source, classifyProc).type === 'book' });
+    pageData.push({ page, resolved, source, tree, slug, isBook: tree ? false : classifyDocTypeFromSource(source, classifyProc).type === 'book' });
   }
   if (pageData.length === 0) throw new Error('website master <nav> has no resolvable pages');
 
@@ -381,7 +393,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // diagram runtime once — #298 — so it can't be composed until the whole site's DSL set is known.)
   const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
   const siteDslNames = new Set();
-  for (const { page, resolved, source, slug, isBook } of pageData) {
+  for (const { page, resolved, source, tree, slug, isBook } of pageData) {
     const destPrefix = destPrefixOf(slug);
     try {
       if (isBook) {
@@ -431,10 +443,14 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         // #402: each page renders on its own vfile (path = the page's source file), reported
         // through the seam as it completes — channel 1's per-document granularity. #415: the
         // page's own diagnostics ride the page as its recap script ('' when clean).
-        const pageFile = renderArticleFile(
-          { value: source, path: resolved.sourcePath, data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) } },
-          { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' },
-        );
+        // #417: an inline `<item | Title>` page renders its pre-parsed body TREE (no source file)
+        // via renderArticleTreeFile — also a vfile, so it reaches the SAME seam (reported + recapped)
+        // exactly like an external page; an external page renders its source.
+        const pageData2 = { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) };
+        const renderOpts = { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' };
+        const pageFile = tree
+          ? renderArticleTreeFile(tree, renderOpts, pageData2)
+          : renderArticleFile({ value: source, path: resolved.sourcePath, data: pageData2 }, renderOpts);
         diagnostics?.report(pageFile);
         const raw = String(pageFile) + diagnosticsScript(pageFile.messages);
         const content = rewriteCrossPageHrefs(raw, slug, {

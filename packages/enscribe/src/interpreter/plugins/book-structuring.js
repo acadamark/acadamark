@@ -347,10 +347,12 @@ export function enscribeBookStructuring() {
       frontContent.push(metaNode);
     }
 
+    let seenBookPart = false;
     for (const node of assembledChildren) {
       if (node === metaNode) continue;
 
       if (isBookPartTag(node)) {
+        seenBookPart = true;
         // Restructure first (synthesize meta if needed, promote titles).
         restructureBookPart(node);
         const type = bookPartType(node);
@@ -363,11 +365,16 @@ export function enscribeBookStructuring() {
         }
       } else if (isBackMatter(node)) {
         backContent.push(node);
+      } else if (!seenBookPart) {
+        // #404/#406: content BEFORE the first structural part has no preceding part to join, so it
+        // belongs to the book's FRONT region (the parent region), NOT book-body (master-document.md
+        // §"Content before the first part"). Interstitial content BETWEEN parts is already absorbed
+        // into the preceding part by assembleBookPartContents (substitution-before-structure), so the
+        // only loose content that reaches here before the first book-part is genuine front matter.
+        frontContent.push(node);
       } else {
-        // Loose body content not inside a book-part. Per book-body.md L26-28,
-        // body-level prose belongs inside book-parts. We still preserve
-        // such content in book-body for now (don't drop it) — the warning
-        // for misplaced content can be filed separately.
+        // Loose content AFTER a book-part but not absorbed into one (e.g. after a back-matter
+        // boundary) — kept in book-body as before; not the pre-first-part case.
         bodyContent.push(node);
       }
     }
