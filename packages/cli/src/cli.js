@@ -193,8 +193,9 @@ Options:
                        static, skip
   --toc                Add a table-of-contents sidebar (--toc=auto to show it
                        only past three sections)
-  --theme <name>       Apply a theme: default, modern, or compact (injects the
-                       theme's token overrides after the stylesheet)
+  --theme <name>       Apply a theme: default, modern, compact, or tufte
+                       (injects the theme's token overrides — and a full-selector
+                       theme's structural rules — after the stylesheet)
   --chapter-nav        For a book with --toc, opt into the single-chapter PAGING
                        view (default off — the book renders as one scrolling
                        document with chapter-navigation chrome)
@@ -304,7 +305,7 @@ function parseCommandArgs(args) {
       opts.toc = v === 'auto' ? 'auto' : v === 'true';
     } else if (a === '--theme') {
       opts.theme = args[++i];
-      if (opts.theme == null) throw new CliError('--theme needs a name (default, modern, compact)');
+      if (opts.theme == null) throw new CliError('--theme needs a name (default, modern, compact, tufte)');
     } else if (a.startsWith('--theme=')) {
       opts.theme = a.slice('--theme='.length);
     } else if (a === '--chapter-nav') opts.chapterNav = true;

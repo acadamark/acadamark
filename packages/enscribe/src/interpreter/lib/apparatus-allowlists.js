@@ -145,7 +145,7 @@ export const CONFIG_KWARGS = new Map([
   // `display-style` and `bibliography-position` — have no consumer yet; the
   // allowlist accepts them so author input is not rejected before that
   // consumer lands.
-  ['theme',                   valued('live', { enum: ['modern', 'compact'] })],  // ⇄ index.js KNOWN_THEMES (guarded by a test, not an import — no cycle)            // index.js compiler (Phase 8 Slice 2)
+  ['theme',                   valued('live', { enum: ['modern', 'compact', 'tufte'] })],  // ⇄ index.js KNOWN_THEMES + themes/ dir (guarded by config-discovery.test.js equality, not an import — no cycle)
   ['display-style',           valued('reserved')],
   ['note-position',           valued('live', { enum: ['bottom', 'margin'] })],            // index.js compiler → sidenotes (#33, margin render mode)
   ['heading-tags',            boolean()],           // heading-levels.js (#397; DEFAULT ON — native heading wrap on outline titles)

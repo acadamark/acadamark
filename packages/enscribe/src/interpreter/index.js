@@ -272,7 +272,7 @@ export function getInlineDisplayHead() {
 // (sub-1KB token files with no canonical CDN URL, unlike fonts / KaTeX) and read
 // lazily — only when a theme is actually requested, keeping the browser bundle's
 // fs-free default path intact.
-const KNOWN_THEMES = new Set(['modern', 'compact']);
+const KNOWN_THEMES = new Set(['modern', 'compact', 'tufte']);
 const _themeCss = new Map();
 function getThemeCss(name) {
   if (!_themeCss.has(name)) {
@@ -532,7 +532,7 @@ function replaceDslContractsWithSvg(node, dsl) {
  * @param {'skip'|'live-inline'|'live-link'} [options.mermaidMode] Override dslMode for mermaid (live-only; no 'static').
  * @param {'skip'|'live-inline'|'live-link'|'static'} [options.abcMode] Override dslMode for abc.
  * @param {boolean|'auto'} [options.toc=false] Build-time table-of-contents sidebar. true always; 'auto' past three top-level sections; false (default) none. The layout CSS lives in default.css (consumer-supplied), scoped to `.enscribe-layout--toc`.
- * @param {'default'|'modern'|'compact'} [options.theme='default'] Inject a theme's `:root` token overrides inline (after the document's base default.css). 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
+ * @param {'default'|'modern'|'compact'|'tufte'} [options.theme='default'] Inject a theme's token overrides (and, for a full-selector theme like `tufte`, its structural rules) inline, after the document's base default.css. 'default' (or unset) injects nothing. Also settable per-document via `<config theme=…>`; the option wins.
  * @param {'bottom'|'margin'} [options.notePosition='bottom'] Note render position (#33). 'bottom' (default) keeps numbered notes at the foot of the document; 'margin' projects each note's content into a wide margin column beside its marker (Tufte-style sidenotes) and injects the scoped sidenote CSS, falling back to the bottom rendering below a breakpoint. Display-only — markers, numbering, the note tree, and JATS are unchanged, and bottom-mode output (default) is byte-identical. Also settable per-document via `<config note-position=…>`; the option wins.
  * @param {boolean} [options.chapterNav] Opt-in single-chapter PAGING view (Slice C made the one-scroll reading interface the book default). When `true`, a book rendered with a ToC also gets the progressive-enhancement paging script that shows one chapter at a time (ToC as selector, prev/next, ←/→ keys, hash deep links, "show whole book"). Defaults OFF — the default book + ToC renders as one scrolling document with chapter-navigation chrome (left chapter rail, per-chapter prev/next, right "on this page" rail). Ignored for articles and for books without a ToC.
  * @param {string|null} [options.assetsDir=null] Base directory for resolving `src=` paths in `<library src=…>` and `<table src=…>` (server-side only).

@@ -11,5 +11,6 @@
 		<item src="ehtml" | eHTML Vocabulary>
 		<item src="jats" | JATS Import and Export>
 		</nav-group>
+	<item src="theming" | Theming>
 	<item src="try-it" | Try It!>
 </nav>
