@@ -417,9 +417,24 @@ function readDatasetSource(node, assets, consumerName) {
  * names its engine; a format-agnostic dataset is not the place to source one). Inline source
  * (a non-`@` `src`, or a `<diagram | …>` body) is untouched.
  */
-function resolveDiagramSrc(node, assets) {
+function resolveDiagramSrc(node, assets, file) {
   const ds = readDatasetSource(node, assets, 'diagram');
-  if (ds == null) return;                                       // non-@ (untouched) or already errored
+  if (ds == null) {
+    // #423 (mirrors #421): a FILE-PATH src on <diagram> is unsupported BY DESIGN (the handler
+    // reads no files; datasets via @id are the mechanism) — but it used to render a silent empty
+    // <pre data-enscribe-dsl>. always-renders: the empty case converts to the visible asset-error
+    // flag (the family voice at this exact seam) pointing at the supported mechanism, plus a located
+    // seam warning. A node WITH body content (the engine source) keeps rendering it, src warns only.
+    const src = node.kwargs?.src;
+    const hasBody = (typeof node.content === 'string' && node.content.trim() !== '') ||
+      (Array.isArray(node.content) && node.content.length > 0);
+    if (src && !String(src).startsWith('@')) {
+      const msg = `<diagram src="${src}">: file-path src is not loaded (by design) — source a <dataset> via src="@id" (diagram.md)`;
+      file?.message?.(`asset-load: ${msg}`, node, 'asset:unsupported-src');
+      if (!hasBody) assetError(node, String(src), msg);
+    }
+    return;                                                     // non-@ (body untouched) or already errored
+  }
   const engine = node.positional?.[0] ?? null;
   if (engine && ds.format && ds.format !== engine) {
     assetError(node, ds.ref, `dataset "${ds.ref}" has format "${ds.format}", which does not match the diagram engine "${engine}" — a <diagram> reads engine source, not ${ds.format} data`);
@@ -437,9 +452,24 @@ function resolveDiagramSrc(node, assets) {
  * only; the bytes render verbatim either way (opacity is preserved end to end). Inline body
  * (a non-`@` `src`, or a `<code | …>` body) is untouched.
  */
-function resolveCodeSrc(node, assets) {
+function resolveCodeSrc(node, assets, file) {
   const ds = readDatasetSource(node, assets, 'code');
-  if (ds == null) return;                                       // non-@ (untouched) or already errored
+  if (ds == null) {
+    // #423 (mirrors #421): a FILE-PATH src on inline <code> is unsupported BY DESIGN (the handler
+    // reads no files; datasets via @id are the mechanism) — but it used to render a silent empty
+    // <code></code>. always-renders: the empty case converts to the visible asset-error flag (the
+    // family voice at this exact seam) pointing at the supported mechanism, plus a located seam
+    // warning. A node WITH body content keeps rendering its body (visible), src warns only.
+    const src = node.kwargs?.src;
+    const hasBody = (typeof node.content === 'string' && node.content.trim() !== '') ||
+      (Array.isArray(node.content) && node.content.length > 0);
+    if (src && !String(src).startsWith('@')) {
+      const msg = `<code src="${src}">: file-path src is not loaded (by design) — source a <dataset> via src="@id" (code.md)`;
+      file?.message?.(`asset-load: ${msg}`, node, 'asset:unsupported-src');
+      if (!hasBody) assetError(node, String(src), msg);
+    }
+    return;                                                     // non-@ (body untouched) or already errored
+  }
   node.content = ds.bytes;
   if (node.kwargs) {
     if (ds.format && node.kwargs.language == null) node.kwargs.language = ds.format;
@@ -537,8 +567,8 @@ export function enscribeAssetResolution() {
         if (!node || typeof node !== 'object') continue;
         if (isEnscribeTag(node, 'fig')) resolveFig(node, assets, adopted);
         else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets);
-        else if (isEnscribeTag(node, 'diagram')) resolveDiagramSrc(node, assets);
-        else if (isEnscribeTag(node, 'code')) resolveCodeSrc(node, assets);
+        else if (isEnscribeTag(node, 'diagram')) resolveDiagramSrc(node, assets, file);
+        else if (isEnscribeTag(node, 'code')) resolveCodeSrc(node, assets, file);
         else if (isEnscribeTag(node, 'code-block')) resolveCodeBlockSrc(node, assets, file);
         // Authoring lint (Option A): warn on a multi-line bare <code> (inline code is reflowed, so its
         // indentation is lost). Runs AFTER resolveCodeSrc so a <code src="@id"> that just pulled a

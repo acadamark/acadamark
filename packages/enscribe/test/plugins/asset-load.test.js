@@ -468,4 +468,68 @@ export function run() {
     // @id srcs are untouched by the new branch (the existing dataset path owns them).
     console.log('PASS: asset-load (#421) — code-block file-path src: visible flag (empty) / warn-only (body)');
   }
+
+  // ── #423: the two sibling consumers flag identically — <diagram src=…> and <code src=…> ──
+  {
+    const mkFile = () => { const w = []; return { data: {}, message: (m) => w.push(String(m)), _warnings: w }; };
+
+    // <diagram mermaid src="x.mmd" /> with no body → the visible flag + a located warning.
+    const dEmpty = makeTag('diagram', null, { kwargs: { src: 'x.mmd' }, positional: ['mermaid'] });
+    dEmpty.content = null;
+    const td = { type: 'root', children: [dEmpty] };
+    const fd = mkFile();
+    enscribeAssetResolution()(td, fd);
+    assert.equal(td.children[0].tagname, '__asset-error', 'diagram: empty file-path src → visible flag');
+    assert.match(td.children[0].kwargs.message, /file-path src is not loaded.*<dataset> via src="@id"/,
+      'diagram: the flag names the form and points at the mechanism');
+    assert.ok(fd._warnings.some((w) => /file-path src is not loaded/.test(w)), 'diagram: a located seam warning too');
+
+    // <diagram mermaid | graph TD; A-->B> (a body) → keeps rendering; the ignored src warns only.
+    const dBody = makeTag('diagram', 'graph TD; A-->B', { kwargs: { src: 'x.mmd' }, positional: ['mermaid'] });
+    const td2 = { type: 'root', children: [dBody] };
+    const fd2 = mkFile();
+    enscribeAssetResolution()(td2, fd2);
+    assert.equal(td2.children[0].tagname, 'diagram', 'diagram: a body-bearing node is NOT converted');
+    assert.equal(td2.children[0].content, 'graph TD; A-->B', 'diagram: the body survives');
+    assert.ok(fd2._warnings.some((w) => /file-path src is not loaded/.test(w)), 'diagram: the ignored src warns');
+
+    // <code src="x.js" /> with no body → the visible flag + a located warning.
+    const cEmpty = makeTag('code', null, { kwargs: { src: 'x.js' } });
+    cEmpty.content = null;
+    const tc = { type: 'root', children: [cEmpty] };
+    const fc = mkFile();
+    enscribeAssetResolution()(tc, fc);
+    assert.equal(tc.children[0].tagname, '__asset-error', 'code: empty file-path src → visible flag');
+    assert.match(tc.children[0].kwargs.message, /file-path src is not loaded.*<dataset> via src="@id"/,
+      'code: the flag names the form and points at the mechanism');
+    assert.ok(fc._warnings.some((w) => /file-path src is not loaded/.test(w)), 'code: a located seam warning too');
+
+    // <code src="x.js" | inline body> → keeps rendering; the ignored src warns only.
+    const cBody = makeTag('code', 'inline body', { kwargs: { src: 'x.js' } });
+    const tc2 = { type: 'root', children: [cBody] };
+    const fc2 = mkFile();
+    enscribeAssetResolution()(tc2, fc2);
+    assert.equal(tc2.children[0].tagname, 'code', 'code: a body-bearing node is NOT converted');
+    assert.equal(tc2.children[0].content, 'inline body', 'code: the body survives');
+    assert.ok(fc2._warnings.some((w) => /file-path src is not loaded/.test(w)), 'code: the ignored src warns');
+    console.log('PASS: asset-load (#423) — diagram + inline code file-path src: visible flag (empty) / warn-only (body)');
+
+    // Three-way UNIFORMITY: code-block (#421), diagram (#423), code (#423) produce the SAME family
+    // behavior on an empty file-path src — same __asset-error tagname, same message shape, same
+    // located `asset:unsupported-src` seam warning. One class, one voice.
+    const flagOf = (tagname) => {
+      const n = makeTag(tagname, null, { kwargs: { src: 'x' }, positional: tagname === 'diagram' ? ['mermaid'] : [] });
+      n.content = null;
+      const t = { type: 'root', children: [n] };
+      const f = mkFile();
+      enscribeAssetResolution()(t, f);
+      return { tag: t.children[0].tagname, msg: t.children[0].kwargs?.message, warned: f._warnings.some((w) => /asset-load: <.* src=/.test(w)) };
+    };
+    const family = ['code-block', 'diagram', 'code'].map(flagOf);
+    assert.ok(family.every((r) => r.tag === '__asset-error'), 'uniformity: all three convert to __asset-error');
+    assert.ok(family.every((r) => /^<[a-z-]+ src="x">: file-path src is not loaded \(by design\) — source a <dataset> via src="@id" \([a-z-]+\.md\)$/.test(r.msg)),
+      'uniformity: all three markers share the identical voice (form named + @id mechanism + doc pointer)');
+    assert.ok(family.every((r) => r.warned), 'uniformity: all three emit the located asset:unsupported-src seam warning');
+    console.log('PASS: asset-load (#421/#423) — the three sibling consumers flag with ONE uniform family voice');
+  }
 }
