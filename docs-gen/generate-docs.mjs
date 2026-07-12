@@ -269,8 +269,32 @@ function guideSection(name) {
 // in a sealed <minipage> (which genuinely has no <library> in scope — stated honestly);
 // the missing-key case renders live in the chapter body against the chapter's own small
 // library, whose resolved cite also demonstrates the auto-placed References list.
-const FAILURE_PASSAGES = {
+// Renamed from FAILURE_PASSAGES when the notation chapter gained its sigil-inventory
+// extra (#416 caret docs): ONE per-(surface slug, family) extra-section mechanism for
+// hand-authored chapter tails — the failure-demonstration passage and the sigil entry
+// ride the same hook.
+const CHAPTER_EXTRAS = {
   'authoring-guide': {
+    'notation': `<section #ag-footnote-sigil | The \`<^ …>\` footnote sigil>
+
+Notation's sigils have one sibling outside this family: the footnote sigil. It is
+listed here because this chapter is where the sigil forms live side by side.
+
+<code #code:ag-caret-1>
+A claim<^ A footnote written with the sigil.>.
+</code>
+
+<minipage #mp:ag-caret-1>
+A claim<^ A footnote written with the sigil.>.
+</minipage>
+
+*The \`^\` sigil (#416): the native footnote, sugar for \`<note | …>\` —
+\`<^ x>\` and \`<note | x>\` produce byte-identical output. Content-only (no
+id or attributes inside the sigil); see \`<note>\` in the Aside chapter for
+the attributed and long forms, numbering, and margin placement.*
+
+</section>
+`,
     'quotation-and-sourcing': `<section #ag-when-cites-fail | When citation resolution fails>
 
 An authored citation never silently disappears: a \`<cite>\` that cannot resolve renders a
@@ -439,7 +463,7 @@ for (const s of surfaces) {
   for (const [fam, title, fslug] of FAMILY_ORDER) {
     const members = familyMembers(fam);
     elementCount += members.length;
-    writeFile(s.dir, `${fslug}.emd`, familyChapter(fam, title, s.sectionFn, FAILURE_PASSAGES[s.slug]?.[fam]));
+    writeFile(s.dir, `${fslug}.emd`, familyChapter(fam, title, s.sectionFn, CHAPTER_EXTRAS[s.slug]?.[fam]));
     pageCount++;
   }
   pageCount++; // index

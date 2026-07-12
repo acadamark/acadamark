@@ -93,3 +93,26 @@ correct, the "reversal" is a pipeline stage — leave it. This rule targets *mis
 
 This is the same instinct as §"single-source homes" and §"guard new single-sources": push the codebase to do
 the right thing *by construction* — but only where the earlier stage is genuinely doing the wrong thing.
+
+## 8 · A new family member joins every family inventory (Ariel, 2026-07-12)
+
+When a slice adds a new member to any **enumerable family** — sigils, tag forms, config
+kwargs, markers, idioms, locator terms, … — the construct is not done until it appears on
+**every surface that enumerates that family**, in the same slice: the spec registries
+(`shorthand-syntax.md`'s sigil register and kin), the reference tables
+(`tag-forms-reference.md`), the docs inventories (the notation chapter and its kin),
+`strict-mode.md`'s registers where the register is affected, the gallery rule's surfaces,
+and STATUS where a capability line enumerates. A member on the normative surfaces but
+missing from an inventory is the drift class this rule exists to kill: the motivating case
+is #416's `<^` footnote sigil, shipped complete on every normative surface yet absent from
+the documentation inventories until a PM audit caught it.
+
+**Operational, not aspirational:** the shipping slice's report carries a
+**family-inventory disposition table** — every surface that enumerates the family, each
+marked *added / already-complete / not-an-inventory (why)* — so completeness is checked by
+enumeration, not by recollection (the `caret-docs` slice report is the model). Finding the
+surfaces is the grep the table is built from: search the family's name and its members'
+literals across `notes/specs`, `packages/ehtml/SPEC.md`, and `docs-source`.
+
+(The documentation-system side of this — which docs surfaces exist and how they
+regenerate — is `notes/specs/documentation.md`; its rule 8 cross-references here.)

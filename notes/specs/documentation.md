@@ -90,6 +90,13 @@ code, headerless tables, stale content — cannot recur:
    docs do not claim it. Resolution failure is part of the authored surface; the docs show
    it the way they show every other rendered result.
 
+8. **A new family member joins every family inventory (cross-reference).** When a new
+   member of an enumerable family ships (a sigil, a tag form, a config kwarg, …), every
+   docs surface that ENUMERATES that family gains the member in the same slice — the
+   notation chapter's sigil entries are the canonical docs-side case (#416's `<^` was the
+   motivating miss). The rule itself — scope, the disposition-table requirement, and the
+   full surface list beyond the docs — lives in `notes/coding-conventions.md` §8.
+
 ---
 
 ## Prerequisite: the spec must be reconciled with the code first
