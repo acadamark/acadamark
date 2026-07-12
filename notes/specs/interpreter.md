@@ -321,6 +321,19 @@ earlier ones for the same key.
 the tree (they will be collected into article-back by the structuring plugin,
 where the hast handler renders them as null/hidden).
 
+**Value validation (#401 — warned-default, family-wide):** as each kwarg is
+copied into the map, its VALUE is validated against the spec carried by its own
+allowlist entry (`apparatus-allowlists.js` — enum sets, integer minimums,
+booleans' implicit true/false; one source for key-allowlisting and
+value-validation, so no second table can drift). A recognized key with an
+unusable value (`strict-mode=tue`, `toc-depth=three`, `number-sections=yes`)
+emits one `config:invalid-value` warning through the #402 diagnostics seam —
+naming the key, the offending value, and the accepted values, anchored at the
+authored position — and the reader's existing default still applies. Never an
+in-document flag (presentation config, not content), never a hard error.
+Free-valued keys (`citation-style`, `toc-title`, `bibliography-heading`, the
+reserved keys) and the `ref-prefix-*` wildcards are not value-checked.
+
 **Keys consumed by downstream plugins:**
 
 | Key | Consumed by | Effect |
