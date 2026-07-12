@@ -403,5 +403,36 @@ export function run_tests() {
     console.log('PASS: static-website — a content-less src dir does not shadow a sibling .emd');
   }
 
+  // ── #420 co-travel guard: paired book-nav markup and its CSS never ship separately ──────────
+  // The #293 arrows markup reached website book pages through the shared composeBookBody while
+  // its stylesheet lived only on the standalone paths — raw ‹Prev›/‹Next› text on every embedded-
+  // book chapter page, unnoticed from 17ec141 until #420. Structural guard: on EVERY emitted
+  // page, a body that carries one of the paired book-nav marker classes must have that class
+  // styled in its head. The pairs are the four union assets keyed by the class each styles
+  // (the text chapter-nav bar is excluded: its rules live in default.css, stubbed here).
+  {
+    const PAIRED = [
+      'enscribe-chapter-arrows',       // CHAPTER_ARROWS_CSS (#293/#420)
+      'enscribe-back-to-top',          // BACK_TO_TOP_CSS
+      'enscribe-rail-sections',        // BOOK_NAV_DEPTH_CSS
+      'enscribe-layout--book-noleft',  // BOOK_NAV_NOLEFT_CSS
+    ];
+    let checked = 0;
+    for (const [path, html] of pages) {
+      const headEnd = html.indexOf('</head>');
+      const head = html.slice(0, headEnd);
+      const body = html.slice(headEnd);
+      for (const cls of PAIRED) {
+        if (body.includes(cls)) {
+          checked++;
+          assert.ok(head.includes(`.${cls}`),
+            `#420 co-travel: ${path} body carries "${cls}" but no head style rule targets it`);
+        }
+      }
+    }
+    assert.ok(checked > 0, '#420 co-travel: the fixture must exercise at least one paired class (the book page carries the arrows at defaults)');
+    console.log(`PASS: static-website — #420 co-travel guard (markup↔CSS pairing held on ${checked} page/class hits)`);
+  }
+
   console.log('All static-website (#278) tests passed.');
 }

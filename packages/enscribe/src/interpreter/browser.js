@@ -1230,6 +1230,12 @@ export async function mountLiveWebsite(target, source, options = {}) {
       // pageSlug = pd.slug → the book sub-view's rail/route hrefs are fully-qualified `?page=<slug>&chapter=…`
       // (copyable section deep-links), and its cross-chapter refs route within the page.
       currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(assembleBookTree(pd.source, loaded), f), file: f, pageSlug: pd.slug }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
+      // #420: the website book view composes the same body as a standalone book (arrows,
+      // rail, back-to-top markup) but this mount never injected the conditional book-nav
+      // CSS — the standalone mount's injectBookNavStyles call has a website counterpart
+      // here. Idempotent-update: navigating between books with different nav configs
+      // refreshes the one style element.
+      injectBookNavStyles(currentBook.model.bookNav);
       renderBookChapter();
     } else {
       currentBook = null;

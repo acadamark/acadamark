@@ -201,19 +201,28 @@ export const BACK_TO_TOP_JS = `(${bindBackToTop.toString()})();`;
 /** Inject the active book-nav CSS as a single <style> in the document head — the live
  *  path, where chapter views are swapped via innerHTML (so they can't carry head CSS).
  *  At defaults a book injects only the chapter-arrows CSS (#293 — `page-navigation` is on by
- *  default); with page-navigation off (and chapter-nav on, depth 1, back-to-top off) it is a
- *  no-op. Idempotent via a fixed element id. */
+ *  default); with page-navigation off (and chapter-nav on, depth 1, back-to-top off) it
+ *  injects nothing. Idempotent-UPDATE via a fixed element id (#420): a live website mounts
+ *  different books under one document, so a second book with a different nav config must
+ *  REFRESH the style element, not inherit the first book's (the old early-return did the
+ *  latter; a standalone book, which calls this once, is unaffected). */
 export function injectBookNavStyles(bookNav, doc) {
   const d = doc || (typeof document !== 'undefined' ? document : null);
-  if (!d || d.getElementById('enscribe-book-nav-style')) return;
+  if (!d) return;
   const css = [];
   if (!bookNav.chapterNav) css.push(BOOK_NAV_NOLEFT_CSS);
   if (bookNav.chapterNavDepth >= 2) css.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) css.push(BACK_TO_TOP_CSS);
   if (bookNav.pageNavigation) css.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
-  if (!css.length) return;
+  const text = css.join('\n');
+  const existing = d.getElementById('enscribe-book-nav-style');
+  if (existing) {
+    if (existing.textContent !== text) existing.textContent = text;
+    return;
+  }
+  if (!text) return;
   const style = d.createElement('style');
   style.id = 'enscribe-book-nav-style';
-  style.textContent = css.join('\n');
+  style.textContent = text;
   d.head.appendChild(style);
 }

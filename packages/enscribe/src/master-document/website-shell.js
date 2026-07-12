@@ -23,6 +23,7 @@ import {
   BOOK_NAV_DEPTH_CSS,
   BACK_TO_TOP_CSS,
   BACK_TO_TOP_JS,
+  CHAPTER_ARROWS_CSS,
 } from '../interpreter/assets/book-nav-asset.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
@@ -103,6 +104,14 @@ function universalHeadStyle(defaultCss) {
     BOOK_NAV_NOLEFT_CSS,
     BOOK_NAV_DEPTH_CSS,
     BACK_TO_TOP_CSS,
+    // #420: the #293 chapter-arrows CSS — its markup reaches website book pages via the
+    // shared composeBookBody (gated there on bookNav.pageNavigation, the ONE gate), but
+    // this union omitted the stylesheet, so the arrows rendered as raw ‹Prev›/‹Next›
+    // text on every embedded-book chapter page. Like its three siblings above it is
+    // fully class-scoped (.enscribe-chapter-arrow*) — inert on any page without the
+    // markup — so it rides the universal head unconditionally (the BACK_TO_TOP
+    // precedent: gated at emission in pageShell, unconditional-inert here).
+    CHAPTER_ARROWS_CSS,
     WEBSITE_SHELL_CSS,
   ].join('\n');
 }
