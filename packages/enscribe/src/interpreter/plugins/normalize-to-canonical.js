@@ -1099,6 +1099,9 @@ function validateHostAcceptSet(node, file) {
       `<${node.tagname}>: "${format}" is not an accepted ${node.tagname} format ` +
       `(accepted: ${accepted}). Rendering anyway.`,
       node,
+      // C2 (#437): name the located host-accept-set warning (was anonymous). The diagram
+      // unknown-engine case rides this — the visible marker is the handler's [role=alert] block.
+      'host:unaccepted-format',
     );
   }
 }

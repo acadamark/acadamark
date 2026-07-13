@@ -13,6 +13,7 @@ import { run as runListStructuring } from './plugins/list-structuring.test.js';
 import { run as runNumbering } from './plugins/numbering.test.js';
 import { run as runRefResolution } from './plugins/ref-resolution.test.js';
 import { run as runFigureHandler } from './handlers/figure.test.js';
+import { run as runDiagramError } from './handlers/diagram-error.test.js';
 import { run as runMathHandler } from './handlers/math.test.js';
 import { run as runRefHandler } from './handlers/ref.test.js';
 import { run as runCodeBlockHandler } from './handlers/code-block.test.js';
@@ -138,6 +139,7 @@ const suites = [
   ['plugins/minipage-cites',       runMinipageCites],
   ['plugins/bibliography',         runBibliography],
   ['handlers/cite',                runCiteHandler],
+  ['handlers/diagram-error',       runDiagramError],
   ['plugins/normalize-to-canonical', runNormalizeToCanonical],
   ['dsl/registry',                 runRegistryDsl],
   ['cdn-versions',                 runCdnVersions],

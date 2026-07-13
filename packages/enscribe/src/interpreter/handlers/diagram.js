@@ -79,15 +79,23 @@ export function diagramHandler(state, node, _vocab, opts) {
   const engine = node.positional?.[0] ?? null;
   const handler = engine ? ENGINE_HANDLERS[engine] : null;
   if (!handler) {
-    // Defensive: the gate only ever injects mermaid/abc and the host
-    // accept-set admits only those, so this is unreachable for valid input.
-    // Emit a visible error rather than throwing.
+    // C2 (#437): an unknown/absent diagram engine is REACHABLE by ordinary authoring
+    // (`<diagram bogus|…>` or `<diagram | …>`). It used to render the raw source in a bare
+    // `<pre class="enscribe-error">` with the diagnosis buried in a `data-` attribute — visible
+    // content, but no visible "this failed" signal. always-renders: emit the visible marker-family
+    // block (the `⚠ [role=alert]` voice shared with asset/library/include errors) naming the bad
+    // engine + the accepted set, with the source still shown below so nothing is lost. The located
+    // seam warning rides the normalize gate's host-accept-set check (host:unaccepted-format).
     const source = typeof node.content === 'string' ? node.content : '';
+    const accepted = Object.keys(ENGINE_HANDLERS).join(', ');
     return {
       type: 'element',
-      tagName: 'pre',
-      properties: { className: ['enscribe-error'], 'dataEnscribeError': `unknown diagram engine "${engine ?? ''}"` },
-      children: [{ type: 'text', value: source }],
+      tagName: 'div',
+      properties: { className: ['enscribe-diagram-error'], role: 'alert' },
+      children: [
+        { type: 'text', value: `⚠ unknown diagram engine "${engine ?? ''}" — expected one of: ${accepted}. Showing the source:` },
+        { type: 'element', tagName: 'pre', properties: {}, children: [{ type: 'text', value: source }] },
+      ],
     };
   }
   return handler(state, node, opts);
