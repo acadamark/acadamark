@@ -273,7 +273,8 @@ function makeAutoClose({ EditorView }) {
 /**
  * Build the default editor adapter: lazily load the BUNDLED CodeMirror 6 (+ the authoring helpers, #212)
  * and turn a mount element into an editor. Matches the #211 adapter seam —
- * `mount(el, {value, onChange}) → {destroy()}` — reporting every document change through `onChange`.
+ * `mount(el, {value, onChange}) → {destroy(), setValue(next)}` — reporting every document change through
+ * `onChange`; `setValue` (#430) is an optional engine→editor push the document-tier settings use.
  *
  * @returns {Promise<{ mount: (el: Element, opts: { value: string, onChange: (source: string) => void }) => { destroy(): void } }>}
  */
@@ -320,7 +321,19 @@ export async function codeMirrorEditorFactory() {
           EditorView.updateListener.of((u) => { if (u.docChanged) onChange(u.state.doc.toString()); }),
         ],
       });
-      return { destroy() { view.destroy(); } };
+      return {
+        destroy() { view.destroy(); },
+        // #430: replace the WHOLE document — the settings panel's document tier rewrites the <config>
+        // block and pushes the new source here so the source pane reflects it. A full-doc transaction
+        // fires the updateListener → onChange, so the engine's currentSource stays in sync and the
+        // preview re-renders through the SAME path a keystroke uses (no divergent state). A no-op guard
+        // skips an identical replace so it never churns undo history.
+        setValue(next) {
+          const cur = view.state.doc.toString();
+          if (next === cur) return;
+          view.dispatch({ changes: { from: 0, to: cur.length, insert: next } });
+        },
+      };
     },
   };
 }

@@ -59,6 +59,8 @@ import {
   setActivePage, bindWebsiteNavDismiss, buildShellActions, SHELL_ACTIONS_CSS,
 } from './assets/website-nav-asset.js';
 import { bindSettingsPanel } from './assets/settings-panel.js';
+import { KNOWN_THEMES } from './assets/theme-css.js';
+import { editConfigKwarg } from './lib/config-source-edit.js';
 import { isEnscribeTag } from '../core/tag.js';
 
 // ── #392: the chrome corner's Edit toggle ─────────────────────────────────────────────────────────
@@ -110,7 +112,7 @@ function applyDocumentThemeVariant(configMap) {
 // never load the website chrome CSS). Edit only — a standalone shell's document is the page (repo
 // linkage is the website chrome's `<config repo>` concern; threading it through the three standalone
 // mount paths rides the #398 corner slice).
-function injectFloatingShellActions() {
+function injectFloatingShellActions({ document: docTier = false, themes = [] } = {}) {
   // No document → nothing to inject; no location → nothing the Edit toggle could flip (a jsdom
   // harness without a URL, or a non-browser host) — the corner is chrome for a real navigable page.
   if (typeof document === 'undefined' || typeof location === 'undefined') return;
@@ -125,12 +127,46 @@ function injectFloatingShellActions() {
   const holder = document.createElement('div');
   holder.id = 'enscribe-shell-actions-floating';
   // #430: the settings gear joins the floating pill (reader tier — always available on a standalone
-  // reading surface). The document tier is wired by the edit loop (which holds the source + editor
-  // handle), so it is added there, not here.
-  holder.innerHTML = buildShellActions({ edit: true, editOn, floating: true, settings: true });
+  // reading surface). The document tier (theme picker + variant) is rendered only when `docTier` (an
+  // editable article in edit mode) and WIRED by the edit loop, which holds the source + editor handle.
+  holder.innerHTML = buildShellActions({ edit: true, editOn, floating: true, settings: true, document: docTier, themes });
   document.body.appendChild(holder);
   bindShellEditToggle(holder);
   bindSettingsPanel();   // reader tier + the panel's Escape/outside-click dismissal
+}
+
+// #430: wire the document-tier controls (theme picker + default variant) once the edit loop has the
+// source + editor handle. Reflects the current <config> into the selects, then on change rewrites the
+// <config> in the source (editConfigKwarg — span-bounded) and pushes it to the editor via setValue, so the
+// SOURCE PANE shows the edit and the preview re-renders through the same onChange path a keystroke uses.
+// A variant change ALSO re-stamps documentElement (injectTheme re-applies the theme on re-render, but the
+// baked dark CSS keys on the ROOT attribute, which a rendered fragment cannot set). Article/single-file
+// only — a book master's <config> has no live-edit channel (its loop edits chapter files), and websites
+// are not document-editable; those surfaces get the reader tier alone.
+function wireDocumentTier({ proc, getSource, setSource }) {
+  if (typeof document === 'undefined') return;
+  const panel = document.querySelector('.enscribe-settings-panel');
+  const themeSel = panel && panel.querySelector('[data-doc="theme"]');
+  const variantSel = panel && panel.querySelector('[data-doc="theme-variant"]');
+  if (!themeSel && !variantSel) return;   // reader-only surface — nothing to wire
+  const cfg = readMasterConfig(proc, getSource());
+  if (themeSel) {
+    themeSel.value = cfg?.get?.('theme') || 'default';
+    themeSel.addEventListener('change', () => {
+      const v = themeSel.value;
+      setSource(editConfigKwarg(proc, getSource(), 'theme', v === 'default' ? null : v));
+    });
+  }
+  if (variantSel) {
+    variantSel.value = cfg?.get?.('theme-variant') || 'auto';
+    variantSel.addEventListener('change', () => {
+      const v = variantSel.value;
+      setSource(editConfigKwarg(proc, getSource(), 'theme-variant', v));
+      // Reflect the new document default immediately (the reader-tier switch still overrides on reload).
+      if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
+      else document.documentElement.removeAttribute('data-theme-variant');
+    });
+  }
 }
 
 const BROWSER_DEFAULTS = {
@@ -974,10 +1010,17 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
   const mountEl = root.querySelector('[data-edit-pane="source"]');
   if (mountEl) {
     // The adapter reports every edit; swap the source in synchronously and debounce the re-render.
-    editor.mount(mountEl, {
+    const handle = editor.mount(mountEl, {
       value: currentSource,
       onChange: (newSource) => { currentSource = newSource; if (save) save.markDirty(); debouncedRender(); },
     });
+    // #430: wire the document tier (theme picker + variant) to rewrite the <config> and push it back into
+    // the source pane via setValue — which fires the same onChange above (currentSource + markDirty +
+    // re-render), so there is one source of truth. Guarded: setValue is an optional adapter capability, so
+    // a host-supplied editor without it degrades to reader-tier-only (the source rewrite is skipped).
+    if (handle && typeof handle.setValue === 'function') {
+      wireDocumentTier({ proc, getSource: () => currentSource, setSource: (next) => handle.setValue(next) });
+    }
   }
   return root;
 }
@@ -1681,7 +1724,9 @@ export async function mountLiveDocument(target, source, options = {}) {
   // bindSettingsPanel captures it as the document default the reader tier falls back to.
   if (type !== 'website') {
     applyDocumentThemeVariant(readMasterConfig(proc, source));
-    injectFloatingShellActions();
+    // The document tier is meaningful only for an editable ARTICLE in edit mode (a book master's <config>
+    // has no live-edit channel); other standalone surfaces get the reader tier alone.
+    injectFloatingShellActions({ document: editEnabled && type === 'article', themes: [...KNOWN_THEMES] });
   }
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
     : type === 'website' ? mountLiveWebsite(target, source, mountOptions)
