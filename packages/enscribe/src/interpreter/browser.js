@@ -79,6 +79,31 @@ function bindShellEditToggle(container) {
   });
 }
 
+// #430: read the master's own <config> for the live variant stamp below. config-discovery populates
+// file.data[ENSCRIBE_CONFIG] during the transform (it needs the NORMALIZED tree — a raw parse has not yet
+// turned `<config …>` into a node with kwargs), so this runs the pipeline transform on a throwaway file.
+// One extra transform at mount (not per-render) — tolerant: any failure yields null (OS stays in charge).
+function readMasterConfig(proc, source) {
+  try {
+    const file = { data: {} };
+    proc.runSync(proc.parse(source), file);
+    return file.data[ENSCRIBE_CONFIG] || null;
+  } catch { return null; }
+}
+
+// Honor the document-tier `<config theme-variant>` default on the LIVE path (the variant-drop fix, #430):
+// stamp it on documentElement at mount BEFORE the corner's bindSettingsPanel reads it as the document
+// default. The static document shell stamps this server-side; the live shell renders a fragment into the
+// mount root, which cannot set the ROOT attribute the baked dark CSS keys on. 'light'/'dark' pin the
+// variant; 'auto'/absent leave prefers-color-scheme in charge (and preserve any prior reader override).
+// Documents only — a live website keeps type-parity with the static website shell (neither stamps a
+// config variant), and the reader-tier switch is the visitor's local override either way.
+function applyDocumentThemeVariant(configMap) {
+  if (typeof document === 'undefined' || !configMap) return;
+  const v = configMap.get?.('theme-variant');
+  if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
+}
+
 // The floating corner for STANDALONE live shells (article/book — no top bar): fixed top-right, the
 // same pill the website corner is (and the #398 gear's future home). Injected OUTSIDE the mount root
 // (the routers innerHTML-swap the root's content), CSS style-injected idempotently (standalone shells
@@ -1651,8 +1676,13 @@ export async function mountLiveDocument(target, source, options = {}) {
   const type = masterType(proc, source);
   const mountOptions = { ...pipelineOptions, editor, editDebounceMs };
   // #392: standalone shells (article/book — no top bar) get the FLOATING chrome corner (the Edit
-  // toggle; the website type renders the corner inside its own top bar instead).
-  if (type !== 'website') injectFloatingShellActions();
+  // toggle; the website type renders the corner inside its own top bar instead). #430: first honor the
+  // document's <config theme-variant> default on the root (the live variant-drop fix) so the corner's
+  // bindSettingsPanel captures it as the document default the reader tier falls back to.
+  if (type !== 'website') {
+    applyDocumentThemeVariant(readMasterConfig(proc, source));
+    injectFloatingShellActions();
+  }
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
     : type === 'website' ? mountLiveWebsite(target, source, mountOptions)
     : mountLiveArticle(target, source, { ...mountOptions, saveContext });
