@@ -446,6 +446,56 @@ cite.cite-error {
   cursor: help;
 }
 
+/* ─── Error markers — #413 styling half / always-render finding C4 ─────────────────────────────────
+ * The always-render contract's visible residue, styled as a DELIBERATE diagnostic (not broken text):
+ * the inline ??…?? recovery markers and the block ⚠ [role=alert] errors. Every color derives from the
+ * dark-aware --enscribe-error / --enscribe-bg-subtle / --enscribe-border tokens, so both the light and
+ * dark variants read correctly with NO new token. (ref-error / cite-error / import-error above already
+ * carry the error color; these rules bring the rest of the family up to the same legible standard.) */
+
+/* Inline recovery markers (??parse: …??, ??tag: …??): a faint boxed, monospaced diagnostic token so
+ * they read as a marker, not prose. Custom elements default to display:inline, which is what we want. */
+parse-error,
+tag-error {
+  color: var(--enscribe-error);
+  cursor: help;
+  font-family: var(--enscribe-font-mono);
+  font-size: 0.9em;
+  background: var(--enscribe-bg-subtle);
+  border: 1px solid var(--enscribe-border);
+  border-radius: 3px;
+  padding: 0.05em 0.35em;
+}
+
+/* Block errors — the ⚠ [role=alert] family (asset / library / include / website-page / footer /
+ * diagram): a boxed diagnostic with a subtle background, an error-red left rule, and error-red text,
+ * so it reads as a deliberate error box in both variants. */
+[role="alert"].enscribe-asset-error,
+[role="alert"].enscribe-library-error,
+[role="alert"].enscribe-include-error,
+[role="alert"].enscribe-website-pageerror,
+[role="alert"].enscribe-footer-error,
+[role="alert"].enscribe-diagram-error {
+  color: var(--enscribe-error);
+  background: var(--enscribe-bg-subtle);
+  border: 1px solid var(--enscribe-border);
+  border-left: 4px solid var(--enscribe-error);
+  border-radius: 4px;
+  padding: 0.6em 0.9em;
+  margin: 1em 0;
+}
+/* The source / detail shown inside a block error keeps normal body text (not error-red). */
+[role="alert"].enscribe-diagram-error pre {
+  color: var(--enscribe-text-primary);
+  margin: 0.5em 0 0;
+  white-space: pre-wrap;
+}
+/* A failed <table> reads as an error too: error-red text + left accent (its own grid stays intact). */
+table.table-parse-error {
+  color: var(--enscribe-error);
+  border-left: 4px solid var(--enscribe-error);
+}
+
 /* ─── Math ──────────────────────────────────────────────────────────────────── */
 
 /*
@@ -1346,7 +1396,7 @@ note-list li {
 .tippy-box figure figcaption {
   font-size: 0.9em;
   margin-top: 0.5em;
-  color: #555;
+  color: var(--enscribe-text-secondary);   /* #438: dark-aware (was hardcoded #555) */
 }
 
 /* Table tooltips: compact styling with border grid; overflow-x for wide tables. */
@@ -1363,7 +1413,7 @@ note-list li {
 
 .tippy-box table th,
 .tippy-box table td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--enscribe-border);   /* #438: dark-aware (was hardcoded #ccc) */
   padding: 0.3em 0.6em;
   text-align: left;
 }
@@ -1372,7 +1422,47 @@ note-list li {
   font-size: 0.9em;
   margin-bottom: 0.4em;
   text-align: left;
-  color: #444;
+  color: var(--enscribe-text-secondary);   /* #438: dark-aware (was hardcoded #444) */
+}
+
+/* ── #438: dark-variant hover-preview tooltip ────────────────────────────────────────────────────
+ * The Tippy `light-border` theme hardcodes a light box (#fff / #333 / a light border + a white arrow),
+ * so a dark-mode reader who hovers a <ref>/<cite> gets a light tooltip on a dark page. We follow the
+ * page variant WITHOUT re-implementing Tippy's per-placement arrow geometry: four tooltip-local custom
+ * properties default to light-border's own values (so light mode is unchanged), and the two dark scopes
+ * — mirroring default.css's `@media (prefers-color-scheme: dark) :root:not([data-theme-variant="light"])`
+ * + `:root[data-theme-variant="dark"]` — flip just those four to the dark-aware --enscribe-* tokens. The
+ * apply-rules carry a `:root` prefix so they outrank light-border regardless of stylesheet load order. */
+:root .tippy-box[data-theme~="light-border"] {
+  --tt-bg: #fff;
+  --tt-fg: #333;
+  --tt-border: rgba(0, 8, 16, 0.15);
+  --tt-arrow-edge: rgba(0, 8, 16, 0.2);
+  background-color: var(--tt-bg);
+  color: var(--tt-fg);
+  border-color: var(--tt-border);
+}
+:root .tippy-box[data-theme~="light-border"][data-placement^="top"]    > .tippy-arrow::before { border-top-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="bottom"] > .tippy-arrow::before { border-bottom-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="left"]   > .tippy-arrow::before { border-left-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="right"]  > .tippy-arrow::before { border-right-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="top"]    > .tippy-arrow::after { border-top-color: var(--tt-arrow-edge); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="bottom"] > .tippy-arrow::after { border-bottom-color: var(--tt-arrow-edge); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="left"]   > .tippy-arrow::after { border-left-color: var(--tt-arrow-edge); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="right"]  > .tippy-arrow::after { border-right-color: var(--tt-arrow-edge); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme-variant="light"]) .tippy-box[data-theme~="light-border"] {
+    --tt-bg: var(--enscribe-bg);
+    --tt-fg: var(--enscribe-text-primary);
+    --tt-border: var(--enscribe-border);
+    --tt-arrow-edge: var(--enscribe-border);
+  }
+}
+:root[data-theme-variant="dark"] .tippy-box[data-theme~="light-border"] {
+  --tt-bg: var(--enscribe-bg);
+  --tt-fg: var(--enscribe-text-primary);
+  --tt-border: var(--enscribe-border);
+  --tt-arrow-edge: var(--enscribe-border);
 }
 </style>
 <script>/**
