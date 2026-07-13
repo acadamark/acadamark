@@ -439,6 +439,56 @@ cite.cite-error {
   cursor: help;
 }
 
+/* ─── Error markers — #413 styling half / always-render finding C4 ─────────────────────────────────
+ * The always-render contract's visible residue, styled as a DELIBERATE diagnostic (not broken text):
+ * the inline ??…?? recovery markers and the block ⚠ [role=alert] errors. Every color derives from the
+ * dark-aware --enscribe-error / --enscribe-bg-subtle / --enscribe-border tokens, so both the light and
+ * dark variants read correctly with NO new token. (ref-error / cite-error / import-error above already
+ * carry the error color; these rules bring the rest of the family up to the same legible standard.) */
+
+/* Inline recovery markers (??parse: …??, ??tag: …??): a faint boxed, monospaced diagnostic token so
+ * they read as a marker, not prose. Custom elements default to display:inline, which is what we want. */
+parse-error,
+tag-error {
+  color: var(--enscribe-error);
+  cursor: help;
+  font-family: var(--enscribe-font-mono);
+  font-size: 0.9em;
+  background: var(--enscribe-bg-subtle);
+  border: 1px solid var(--enscribe-border);
+  border-radius: 3px;
+  padding: 0.05em 0.35em;
+}
+
+/* Block errors — the ⚠ [role=alert] family (asset / library / include / website-page / footer /
+ * diagram): a boxed diagnostic with a subtle background, an error-red left rule, and error-red text,
+ * so it reads as a deliberate error box in both variants. */
+[role="alert"].enscribe-asset-error,
+[role="alert"].enscribe-library-error,
+[role="alert"].enscribe-include-error,
+[role="alert"].enscribe-website-pageerror,
+[role="alert"].enscribe-footer-error,
+[role="alert"].enscribe-diagram-error {
+  color: var(--enscribe-error);
+  background: var(--enscribe-bg-subtle);
+  border: 1px solid var(--enscribe-border);
+  border-left: 4px solid var(--enscribe-error);
+  border-radius: 4px;
+  padding: 0.6em 0.9em;
+  margin: 1em 0;
+}
+/* The source / detail shown inside a block error keeps normal body text (not error-red). */
+[role="alert"].enscribe-diagram-error pre {
+  color: var(--enscribe-text-primary);
+  margin: 0.5em 0 0;
+  white-space: pre-wrap;
+}
+/* A failed <table> reads as an error too: error-red text + left accent (its own grid stays intact). */
+table.table-parse-error {
+  color: var(--enscribe-error);
+  border-left: 4px solid var(--enscribe-error);
+}
+
 /* ─── Math ──────────────────────────────────────────────────────────────────── */
 
 /*
