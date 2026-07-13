@@ -72,4 +72,34 @@ export async function run() {
       'a plain document adds no margin layout or CSS');
     console.log('PASS: #333 — plain documents are byte-identical (margin is opt-in)');
   }
+
+  // ── B1 (#401 residual): an unrecognized per-note placement VALUE warns + defaults to end ──
+  // #401 validated the <config> KEY half but not per-note placement VALUES; a typo like
+  // `<note position=margn>` silently fell back to `end`. It now warns through the seam and keeps
+  // the warned default (always-renders), mirroring doc-type.js's explicit-unknown diagnostic.
+  {
+    const file = buildEnscribePipeline({}).processSync('A claim<note position=margn | typo>. More.');
+    const h = String(file);
+    const invalid = file.messages.filter((m) => `${m.source}:${m.ruleId}` === 'note:invalid-placement');
+    assert.strictEqual(invalid.length, 1, 'B1: a typo placement value emits exactly one note:invalid-placement');
+    assert.match(invalid[0].reason, /margn/, 'B1: the diagnostic names the offending value');
+    assert.match(invalid[0].reason, /end, foot, margin/, 'B1: the diagnostic names the accepted set');
+    assert.ok(/<sup id="noteref-\d+"/.test(h) && h.includes('<note-list'),
+      'B1: the note still renders at the warned `end` default (always-renders)');
+    assert.ok(!h.includes('<sidenote>'), 'B1: the typo did not silently become a margin note');
+    console.log('PASS: B1 (#401) — an unrecognized per-note placement warns (note:invalid-placement) and defaults to end');
+  }
+
+  // ── B1: valid placement values (incl. the legacy `side` alias) and an absent placement do NOT warn ──
+  {
+    for (const v of ['end', 'foot', 'margin', 'side']) {
+      const file = buildEnscribePipeline({}).processSync(`A<note position=${v} | ok>.`);
+      assert.strictEqual(file.messages.filter((m) => `${m.source}:${m.ruleId}` === 'note:invalid-placement').length, 0,
+        `B1: valid placement "${v}" emits no note:invalid-placement`);
+    }
+    const plain = buildEnscribePipeline({}).processSync('A<note | plain>.');
+    assert.strictEqual(plain.messages.filter((m) => `${m.source}:${m.ruleId}` === 'note:invalid-placement').length, 0,
+      'B1: an absent placement is silent (no warning on the default path), like an absent <meta type>');
+    console.log('PASS: B1 (#401) — valid placements (end/foot/margin/side) and an absent placement do not warn');
+  }
 }

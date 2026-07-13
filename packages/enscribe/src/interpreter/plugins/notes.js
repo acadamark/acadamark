@@ -63,6 +63,23 @@ export function notePlacement(node) {
   return 'end';
 }
 
+// The accepted per-note placement VALUES (the validity set; `side` is the legacy alias
+// for `margin` — notePlacement maps it). The diagnostic names only the canonical three.
+const NOTE_PLACEMENTS = new Set(['end', 'foot', 'margin', 'side']);
+const NOTE_PLACEMENT_WORDS = 'end, foot, margin';
+
+/**
+ * The raw per-note placement kwarg exactly as authored, or null if none was given.
+ * `placement` (current) then `position` (legacy alias) — the same precedence notePlacement reads.
+ * Returned unresolved so the caller can validate the VALUE before notePlacement coerces it.
+ *
+ * @param {object} node - enscribeTag with tagname 'note'
+ * @returns {string|null}
+ */
+function rawNotePlacement(node) {
+  return node.kwargs?.placement ?? node.kwargs?.position ?? null;
+}
+
 /**
  * Unified plugin. Register note nodes via a discover() walk and store
  * { node, entry } pairs for enscribeNotePlacement. <note> nodes stay in the
@@ -81,6 +98,21 @@ export function enscribeNotes() {
 
     discover(tree, new Map([
       ['note', (node) => {
+        // B1 (#401 residual): an explicitly-authored per-note placement VALUE that isn't
+        // recognized (a typo like `<note position=margn>`) silently fell back to `end`. #401
+        // validated the <config> KEY half (validateConfigValue) but not per-note VALUES. Mirror
+        // doc-type.js's explicit-unknown diagnostic: name the kwarg, the value, and the accepted
+        // set, then keep the warned `end` default (notePlacement coerces it). Absent placement →
+        // silent `end`, no warning (the normal case), exactly as an absent `<meta type>` is silent.
+        const raw = rawNotePlacement(node);
+        if (raw != null && !NOTE_PLACEMENTS.has(raw)) {
+          file?.message?.(
+            `<note ${node.kwargs?.placement != null ? 'placement' : 'position'}="${raw}">: unknown note placement — ` +
+              `expected one of: ${NOTE_PLACEMENT_WORDS}. Placing at end.`,
+            node,
+            'note:invalid-placement',
+          );
+        }
         const placement = notePlacement(node);
         const entry = registry.assign('note', node.id || null, { numbered: true, data: { placement }, position: node.position ?? null });
         pending.push({ node, entry });
