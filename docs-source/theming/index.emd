@@ -154,13 +154,23 @@ The generator reads it, **skips deriving those tokens** (derivation fills only w
 The baked block ships under two scopes:
 
 - `@media (prefers-color-scheme: dark)` with `:root:not([data-theme-variant="light"])` — **auto**: the document follows the OS, with zero JavaScript.
-- `:root[data-theme-variant="dark"]` — the **explicit hook**: set `data-theme-variant="dark"` (or `"light"`, which defeats the media block) on the document root. This is the reader-tier switch's attachment point — the settings panel (the next slice) drives exactly this attribute; `color-scheme` rides along so native scrollbars and form controls follow.
+- `:root[data-theme-variant="dark"]` — the **explicit hook**: set `data-theme-variant="dark"` (or `"light"`, which defeats the media block) on the document root. This is the reader-tier switch's attachment point — the settings panel (below) drives exactly this attribute; `color-scheme` rides along so native scrollbars and form controls follow.
 
 The **document-tier default** is `<config theme-variant=light|dark|auto>` (default `auto`): `light`/`dark` pin the variant by stamping the attribute on `<html>` in the standalone builds; `auto` (or omitting it) leaves the OS in charge. An unknown value warns and falls back to `auto` — the standard config behaviour. Per the two-tier model, the document sets this default and the reader's own switch overrides it locally.
 
 ## Testing your theme in dark
 
-Three ways, no tooling required: flip your OS appearance (the auto path); add `data-theme-variant="dark"` to `<html>` in the rendered file (the explicit path); or set `<config theme-variant=dark />` while iterating. To check the derived values themselves, `npm run dark:gen -- --report` prints every theme's contrast table. One known boundary: hover-preview tooltips keep their light styling in dark for now (the tooltip layer sits on a vendored stylesheet) — a follow-on, tracked with the settings-panel slice.
+Three ways, no tooling required: flip your OS appearance (the auto path); add `data-theme-variant="dark"` to `<html>` in the rendered file (the explicit path); or set `<config theme-variant=dark />` while iterating. To check the derived values themselves, `npm run dark:gen -- --report` prints every theme's contrast table. One known boundary: hover-preview tooltips keep their light styling in dark for now (the tooltip layer sits on a vendored stylesheet) — a known boundary of the settings panel (below).
+
+# The settings panel
+
+A **gear** in the shell chrome (beside Edit and the repository mark) opens a small panel with **two tiers** — the concrete expression of the theme system's split between what a document *is* and how a *reader* takes it in.
+
+**The document tier** edits the document's `<config>` block: it is a friendly editor over document state, not a separate store. A theme picker and a default-variant control rewrite `<config theme=…>` / `<config theme-variant=…>` right in the source (visible in the source pane) — the change is the document's, saved with it. This tier appears only where there *is* an editable document to edit: a live article or single-file in edit mode. Static pages, read-only live documents, books (whose live loop edits chapter files, not the master), and websites show the reader tier alone.
+
+**The reader tier** is the visitor's own — local to their browser, never touching the document: **text size**, **line spacing**, **text width**, and a **light/dark switch**. It persists per-origin in `localStorage`, applies on load, and offers *reset to theme*. Each control is a CSS custom-property override on the document root (`--enscribe-text-base`, `--enscribe-line-height`, `--enscribe-content-width`) layered *above* the theme's tokens — an inline style outranks every stylesheet `:root` by cascade origin, so theme and reader settings **compose** with no `!important`. The light/dark switch drives the same `data-theme-variant` hook above (auto removes it → the OS decides; light/dark pin it). Because every override lives on the persistent document root, the settings survive a live site's page-to-page navigation.
+
+**Why two tiers — and where the line falls.** The document/theme tier owns *identity*: the theme, the typeface, the default appearance — what the author decides and the document carries. The reader tier owns *legibility of that same design*: how large, how loose, how wide, and the flip between the light and dark variants the theme already provides. The rule that draws the line — **anything that changes the design's identity is document-tier; anything that changes the legibility of the same design is reader-tier** — is why **font family stays document-tier** (it *is* the design) while **text size is reader-tier**. That is the deliberate departure from e-reader convention, which puts typeface reader-side only because those systems have no theme tier to hold it. Precedence follows from the same idea: the document sets the defaults, the reader overrides them locally the way a reader controls their own reading, and *reset to theme* hands control back.
 
 # The Tufte worked example
 
