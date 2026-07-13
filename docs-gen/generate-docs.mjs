@@ -448,7 +448,11 @@ const surfaces = [
     subtitle: 'The common path, family by family — lighter than the full reference',
     intro: ARGUMENT_CONVENTIONS,
     sectionFn: guideSection,
-    extra: [],
+    // Preserve the curated hand-authored "Multi-file documents" chapter if it exists — a conceptual
+    // graduation chapter the per-element template cannot express (the src / <include> transclusion
+    // path, #429), appended after the family chapters. Same preserved-extra mechanism as the
+    // vocabulary Showcase; documentation.md §"Preserved hand-authored chapters" records it.
+    extra: existsSync(join(DOCS, 'authoring_guide', 'multi-file-documents.emd')) ? [['multi-file-documents.emd', 'Multi-file documents']] : [],
   },
 ];
 
