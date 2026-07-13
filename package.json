@@ -16,10 +16,14 @@
     "packages/*"
   ],
   "comments": {
-    "overrides": "katex is pinned to 0.16.45 to reproduce the pre-consolidation dependency baseline: the headline `enscribe` package and its transitive `mermaid` both depend on katex within a `^0.16` range, and a fresh lockfile floats both to 0.16.47. The interpreter's live-link CDN URL literal pins 0.16.45 (guarded by test/cdn-versions.test.js); this override keeps the rendered output byte-stable across the package consolidation. Lift this override in a dedicated katex-bump maintenance slice that also updates the CDN literal and regenerates fixture snapshots."
+    "overrides": {
+      "katex": "katex is pinned to 0.16.45 to reproduce the pre-consolidation dependency baseline: the headline `enscribe` package and its transitive `mermaid` both depend on katex within a `^0.16` range, and a fresh lockfile floats both to 0.16.47. The interpreter's live-link CDN URL literal pins 0.16.45 (guarded by test/cdn-versions.test.js); this override keeps the rendered output byte-stable across the package consolidation. Lift this override in a dedicated katex-bump maintenance slice that also updates the CDN literal and regenerates fixture snapshots.",
+      "esbuild": "esbuild is forced to ^0.28.1 (#387) to clear GHSA-g7r4-m6w7-qqqr (a dev-server path-traversal advisory covering 0.27.3–0.28.0; not exploitable here — this repo only ever runs tsup's batch `build:lib`, never esbuild's `serve` — but parked pending a clean bump). Our only esbuild consumer is tsup 8.5.1, whose declared range `esbuild: ^0.27.0` stops at <0.28.0, and no tsup release (8.5.1 is latest; there is no 9.x) widens it — so the override is the only path to the fixed line. The tsup 8.5.1 + esbuild 0.28.1 pairing is unblessed by tsup's range but verified to build all three bundles correctly; the only 0.28.0 breaking change is install-time binary-integrity embedding (lockfile metadata, not the build API tsup calls), and every 0.28.1 change is a minify/bundle correctness fix. Lift this override when tsup ships a version declaring `esbuild: ^0.28` (or wider) — at that point it is redundant."
+    }
   },
   "overrides": {
-    "katex": "0.16.45"
+    "katex": "0.16.45",
+    "esbuild": "^0.28.1"
   },
   "scripts": {
     "test": "npm run check:boundary && npm run docs:check && npm run examples:check && npm run check:routing && npm run check:theme-tokens && npm run check:dark && npm run check:docs-clean && npm test --workspaces --if-present",
