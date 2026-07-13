@@ -18,6 +18,7 @@
 // (the CLI static-website build) reads default.css and passes it in.
 
 import { WEBSITE_NAV_CSS, WEBSITE_DROPDOWN_JS } from '../interpreter/assets/website-nav-asset.js';
+import { SETTINGS_PANEL_JS } from '../interpreter/assets/settings-panel.js';
 import {
   BOOK_NAV_NOLEFT_CSS,
   BOOK_NAV_DEPTH_CSS,
@@ -136,7 +137,8 @@ const SHELL_BODY_SCRIPTS =
   `<script>${SCROLL_SPY_JS}</script>\n` +
   `<script>${ON_THIS_PAGE_JS}</script>\n` +
   `<script>${BACK_TO_TOP_JS}</script>\n` +
-  `<script>${WEBSITE_DROPDOWN_JS}</script>`;
+  `<script>${WEBSITE_DROPDOWN_JS}</script>\n` +
+  `<script>${SETTINGS_PANEL_JS}</script>`;   // #430: the reader-tier gear (static delivery)
 
 // The external-DSL contract marker the diagram handler emits on every diagram's `<pre>` container,
 // regardless of render mode (the value is the DSL's registry name). collectDslNames reads it back

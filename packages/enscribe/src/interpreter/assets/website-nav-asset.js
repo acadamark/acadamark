@@ -12,6 +12,7 @@
 import { toHtml } from 'hast-util-to-html';
 import { buildList } from '../lib/toc.js';
 import { escapeHtmlAttr } from '../../core/escape-html.js';
+import { buildSettingsPanel, SETTINGS_PANEL_CSS } from './settings-panel.js';
 
 // The shared 4-entity attribute escaper (#316/1-A), wrapped to keep the inline copy's null-safe
 // guard (escapeHtmlAttr coerces null→"null"; here an absent value — e.g. a missing brand icon — → "").
@@ -37,7 +38,7 @@ export const GITHUB_MARK_SVG =
  * renders the GitHub mark. Neither → '' (the chrome is byte-identical for a site with no repo
  * config on a static page). Placement is the caller's: inline in the top bar, or `--floating`.
  */
-export function buildShellActions({ edit = false, editOn = false, repoUrl = null, floating = false } = {}) {
+export function buildShellActions({ edit = false, editOn = false, repoUrl = null, floating = false, settings = false, document: docTier = false, themes = [] } = {}) {
   const parts = [];
   if (edit) {
     parts.push(
@@ -52,6 +53,10 @@ export function buildShellActions({ edit = false, editOn = false, repoUrl = null
       ` aria-label="Project repository on GitHub" title="View source on GitHub">${GITHUB_MARK_SVG}</a>`,
     );
   }
+  // #430: the settings gear — the third affordance, rightmost. Unlike Edit/GitHub it is UNCONDITIONAL on
+  // the surfaces that opt in (its reader tier is always available), so a corner carrying only the gear is
+  // still a corner — the `parts.length === 0` empty-return no longer fires when `settings` is set.
+  if (settings) parts.push(buildSettingsPanel({ document: docTier, themes }));
   if (parts.length === 0) return '';
   return `<div class="enscribe-shell-actions${floating ? ' enscribe-shell-actions--floating' : ''}">${parts.join('')}</div>`;
 }
@@ -77,7 +82,7 @@ export const SHELL_ACTIONS_CSS = `
   background: var(--enscribe-bg, #fff); border: 1px solid var(--enscribe-border, #d8dee4);
   border-radius: 999px; padding: 0.1rem 0.35rem; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
-`;
+${SETTINGS_PANEL_CSS}`;
 
 // The website chrome CSS. Modeled on the original docs-site site.css (now in notes/archive/old-docs-site/), retoken'd to --enscribe-*.
 export const WEBSITE_NAV_CSS = `${SHELL_ACTIONS_CSS}

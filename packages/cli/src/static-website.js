@@ -461,7 +461,11 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // page has no editor; its live door is the per-page "Open in playground ↗" CTA, which lands on the
   // live twin where the corner's Edit toggle takes over (the decided read-with-button split).
   const repoUrl = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('repo') ?? null;
-  const shellActions = buildShellActions({ repoUrl });
+  // #430: the settings gear joins the corner (reader tier — always available on a static website page;
+  // the SETTINGS_PANEL_JS inline script wires it). The document tier is live-editable only, so a static
+  // page shows the reader tier alone. With the gear always present, the corner renders even on a repo-less
+  // site (the empty-corner case retires).
+  const shellActions = buildShellActions({ repoUrl, settings: true });
   const topBarFor = (up) => buildWebsiteTopBar(
     { title: masterTitle, icon: brandIconRel ? (/^(?:[a-z][a-z0-9+.-]*:)/i.test(brandIconRel) ? brandIconRel : `${up}${brandIconRel}`) : null, firstSlug: homeSlug }, entries, shellActions);
 

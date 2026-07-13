@@ -58,6 +58,7 @@ import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
   setActivePage, bindWebsiteNavDismiss, buildShellActions, SHELL_ACTIONS_CSS,
 } from './assets/website-nav-asset.js';
+import { bindSettingsPanel } from './assets/settings-panel.js';
 import { isEnscribeTag } from '../core/tag.js';
 
 // ── #392: the chrome corner's Edit toggle ─────────────────────────────────────────────────────────
@@ -98,9 +99,13 @@ function injectFloatingShellActions() {
   const editOn = new URLSearchParams(location.search).has('edit');
   const holder = document.createElement('div');
   holder.id = 'enscribe-shell-actions-floating';
-  holder.innerHTML = buildShellActions({ edit: true, editOn, floating: true });
+  // #430: the settings gear joins the floating pill (reader tier — always available on a standalone
+  // reading surface). The document tier is wired by the edit loop (which holds the source + editor
+  // handle), so it is added there, not here.
+  holder.innerHTML = buildShellActions({ edit: true, editOn, floating: true, settings: true });
   document.body.appendChild(holder);
   bindShellEditToggle(holder);
+  bindSettingsPanel();   // reader tier + the panel's Escape/outside-click dismissal
 }
 
 const BROWSER_DEFAULTS = {
@@ -1339,7 +1344,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const repoUrl = navFile.data[ENSCRIBE_CONFIG]?.get?.('repo') ?? null;
   const editOn = typeof location !== 'undefined' && new URLSearchParams(location.search).has('edit');
   root.innerHTML = composeWebsiteShell({
-    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, repoUrl })),
+    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, repoUrl, settings: true })),
     sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
     footer: footerHtml,
   });
@@ -1349,6 +1354,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // outside-click + Escape — once for the persistent chrome. Document-level + idempotent, so it stays live
   // across every content swap and never double-binds (the static shell gets the same via WEBSITE_DROPDOWN_JS).
   bindWebsiteNavDismiss();
+  bindSettingsPanel();   // #430: the reader-tier gear (settings live on documentElement → survive page swaps)
   const contentRegion = root.querySelector('[data-enscribe-content]');
 
   // Per-page render (website.md Phase 2, lazy). An ARTICLE page renders its source over a FRESH read-through
