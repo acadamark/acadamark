@@ -155,7 +155,8 @@ on #402.
 assets = sibling / CDN / inlined (the asset-delivery axis); capability = view or view+edit; server =
 required (the shell fetches over HTTP).
 
-A minimal HTML **shell** — an `index.html` with no body content — loads the engine and, at runtime,
+A minimal HTML **shell** — an `index.html` whose body is only a mount point (plus a one-line
+`<noscript>` no-JavaScript notice) — loads the engine and, at runtime,
 **fetches** the master `.emd` and its children, composes them in the browser, and mounts the result.
 One shell drives either kind of document: the runtime dispatch reads `<meta type>` and routes an
 article, a book, or a website through the same path (the shell is type-agnostic; the dispatch is the
@@ -202,7 +203,10 @@ editor; default is read. Edits are preview-only in the current build (in-memory,
 view is single-sourced across article and book so the two cannot drift.
 
 **Invariants.**
-- The shell body is empty by design; all content arrives at runtime by fetch.
+- The shell body carries no *content* — just the mount point and a one-line `<noscript>` fallback
+  (#396, the no-JavaScript degrade so a scripting-disabled load is an explanation, not a blank page);
+  all content arrives at runtime by fetch/mount. The static modes embed already-rendered HTML in their
+  body and so need no such notice.
 - The CHROME (engine bundle, sibling/CDN CSS) resolves **relative to the shell's location**
   (`document.baseURI` / a relative asset base), so the folder is portable to any served sub-path — e.g.
   served at `/live/` it resolves `/live/…`. A page's own CONTENT references, by contrast, resolve relative
