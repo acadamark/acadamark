@@ -19,3 +19,4 @@
 <chapter src="stores.emd" | Stores>
 <chapter src="declarations-and-metadata.emd" | Declarations & metadata>
 <chapter src="structural-scaffolding.emd" | Structural scaffolding>
+<chapter src="multi-file-documents.emd" | Multi-file documents>

@@ -1,0 +1,169 @@
+A work does not have to live in one file. A book can keep each chapter in its
+own file, a long article can pull its methods and results from separate sources,
+and a website is a set of pages by definition. Enscribe stitches all of them into
+one document at build time — and a single rule keeps the result predictable.
+
+# Why split a document across files
+
+An author reaches for multiple files for the ordinary reasons of scale: a book or
+a long report is easier to draft, navigate, and revise when each chapter is its
+own file rather than one enormous scroll, and a file is a natural unit of work —
+one to write, hand to a co-author, or set aside. The same instinct enables reuse:
+a shared preface, a standard methods section, or a boilerplate appendix can be
+pulled into more than one document, or into more than one place in the same one.
+Enscribe serves all of these with one small vocabulary, built on a single idea.
+
+# The one rule: pasted in place
+
+External content is **spliced in at its call site, as if you had typed it there.**
+That is the whole model. Assembly is a *textual* step that runs first — it answers
+"what is the text?" — and only then does enscribe work out the structure: which
+section opens where, and what numbers as what. The file boundaries are invisible to
+everything downstream, so an assembled document means exactly what the same words
+would mean typed into one file.
+
+The consequence worth internalising is what happens to the text *after* a
+reference. Here a master sources two sections and types a line of its own between
+them:
+
+<code-block #code:mf-model-1>
+<section src=section1.emd | Section 1>
+
+Random text
+
+<section src=section2.emd | Section 2>
+</code-block>
+
+*(Source only — a sealed preview box cannot reach out to other files. The
+equivalent single file below renders live.)*
+
+*Section 1*'s content is `section1.emd`'s text **followed by** `Random text`: the
+line in between belongs to the section above it, because that section is still open
+when the line is read. *Section 2* then peer-closes *Section 1*, exactly as a second
+`<section>` always closes the first. Paste the two children in place and this is the
+single file the master is equivalent to — and it renders the same way:
+
+<minipage #mp:mf-model-1>
+<section | Section 1>
+The first section, from its own file.
+
+Random text
+
+<section | Section 2>
+The second section, from its own file.
+</minipage>
+
+*The interstitial "Random text" sits inside Section 1, not between the two sections
+— assembly changes nothing about how the words are read.*
+
+# The structural forms
+
+Every structural element that holds content accepts a `src`, and the child file
+supplies that element's **initial** content. In an article, sections:
+
+<code-block #code:mf-section>
+<section src=intro.emd | Introduction>
+</code-block>
+
+In a book, chapters — and prefaces, appendices, and parts — source the same way:
+
+<code-block #code:mf-chapter>
+<chapter src=origins.emd | Origins>
+<chapter src=populations.emd | Modern populations>
+</code-block>
+
+In a website, a nav entry names its page's file:
+
+<code-block #code:mf-item>
+<nav>
+<item src=home.emd | Home>
+<item src=about.emd | About>
+</nav>
+</code-block>
+
+*(Source only — these forms assemble across real files, which a sealed preview box
+cannot do.)*
+
+All three behave identically. The entry opens the element, splices the child as its
+initial content, and **stays open** — so anything you type after it, up to the next
+peer, belongs to it, by the pasted-in-place rule above. The pipe title overrides the
+child file's own title; drop the pipe and the child's `<title>` is used instead.
+
+# `<include>`: splice anything, anywhere
+
+The structural `src` forms are shorthand for one primitive: `<include>`. An
+`<include>` splices a file at its own position and does nothing else — it opens no
+element, closes none, and adds no structure. Reach for it to break prose into files
+without wrapping each piece in a section:
+
+<code-block #code:mf-include>
+Opening prose, in the master.
+
+<include src=methods.emd />
+
+Prose between the includes reads normally.
+
+<include src=results/tables.emd />
+
+Closing prose.
+</code-block>
+
+Each file drops in at its spot and the whole reads as one continuous document. An
+included file may itself include others, to any depth.
+
+The one topology enscribe will not follow is a **cycle** — a file that includes
+itself, directly or through a chain that leads back to it. Rather than loop forever,
+the offending include renders a flagged marker in place, naming the cycle, and
+assembly carries on. This is what a reader sees on the page:
+
+> `??include cycle: master.emd → intro.emd → master.emd??`
+
+*(Quoted, not previewed: a live cycle needs real files that point back at each
+other, which a sealed box cannot host. The marker is enscribe's always-renders
+habit — a failure is shown, never silent.)*
+
+Including the same file at two *different* places is not a cycle and is perfectly
+legal — it reads exactly as if its text were typed at both spots.
+
+# Paths, and one document across many pages
+
+**A path is relative to the file that writes it** — resolved against the directory
+of the *including* file, not the master. Each file names its children the way it
+sits on disk, so a moved subtree keeps working. In a master beside a `chapters/`
+folder:
+
+<code-block #code:mf-path-1>
+<chapter src=chapters/origins.emd | Origins>
+</code-block>
+
+and inside `chapters/origins.emd`, beside its own `figures/` folder:
+
+<code-block #code:mf-path-2>
+<include src=figures/skull.emd />
+</code-block>
+
+This is the same rule assets and per-chapter bibliographies already follow — one
+resolution rule everywhere, and the intuition of LaTeX's `\input`.
+
+**You author once; how the document is delivered does not change where things land.**
+The same assembled document renders as one page or splits into per-chapter pages,
+and every piece keeps its place either way: an interlude you type between two
+chapters renders with the chapter it belongs to, a figure in that interlude numbers
+within that chapter, and a cross-reference to it resolves wherever the reader is.
+Splitting a document into files and splitting a rendering into pages are independent
+choices — assembly reconciles them so you don't have to.
+
+# Going deeper
+
+This chapter is the common path. The parts an author rarely has to think about —
+how cross-references find their target across files, how each page earns its URL,
+how a library in every file merges into one bibliography — are handled for you, and
+specified in full elsewhere:
+
+- The **Design** page's *Multi-file documents and transclusion* section — the model
+  and the reasoning behind it.
+- `notes/specs/master-document.md` — the complete specification: assembly order,
+  numbering across files, the shared citation registry, and cross-reference
+  resolution.
+- `notes/specs/website.md` — how a website's pages compose, each numbering in its
+  own right over one shared cross-reference registry.

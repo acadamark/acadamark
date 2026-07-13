@@ -41,6 +41,27 @@ pages become generator output. (Prior generators — `gen-reference.js`, `vocab-
 The single-source pages (Home ← README, Design ← DESIGN) are derived from their source file,
 not hand-copied, so they cannot drift either.
 
+### Preserved hand-authored chapters (the one exception)
+
+A generated book may carry a **preserved hand-authored chapter** — narrative the per-element
+template cannot express, sitting inside a generated book as a real chapter. Two exist today: the
+Enscribe Vocabulary's **Showcase**, and the Authoring Guide's **Multi-file documents** (the `src` /
+`<include>` transclusion path — a conceptual model, not a per-element reference). The mechanism is
+deliberately narrow:
+
+- The generator **emits the index reference** to the chapter (via each surface's `extra` list) but
+  **never writes the chapter body**. The body is hand-authored and committed once; the reference is
+  guarded by `existsSync`, so it appears only while the file does.
+- The freshness guard (`check-docs-fresh.mjs`) asserts that *regenerating changes nothing*: because
+  the generator never touches a preserved chapter's body, it survives regeneration byte-for-byte and
+  the guard stays green. The chapter's **placement** is generated (and thus guarded); its **content**
+  is authored (and thus outside the content check).
+- Such a chapter is still bound by the docs-clean guard — it must build with zero unexplained
+  diagnostics, in pure Enscribe shorthand (no raw HTML).
+
+This is the *only* exception to "generated, never hand-edited," reserved for genuinely conceptual
+material — a mental model, a worked cross-cutting example — that has no per-element home.
+
 ---
 
 ## Generation rules (correct by construction)
