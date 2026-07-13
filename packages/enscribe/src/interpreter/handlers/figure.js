@@ -72,6 +72,16 @@ export function figureHandler(state, node, vocab) {
   // The alt text falls back to the caption (caption-as-content can be
   // arbitrary hast, so we plain-text-ify the original mdast for alt
   // when child <caption> isn't there).
+  //
+  // #408 B7 — DECISION (Ariel, 2026-07-15): the figure `src` is emitted verbatim with NO
+  // handler-time filesystem existence check, and that is a NON-GOAL, not a gap. A figure
+  // legitimately resolves its src in the BROWSER (a relative path the reader's browser fetches,
+  // an `@id`/`data:`/`http(s)` reference the handler must not touch), so a build-time fs.stat here
+  // would be wrong for the common case and cannot run at all on the live path. The asymmetry with
+  // `table.js` — which reads-and-errors because it must INLINE the CSV bytes at build time to render
+  // a grid — is therefore BY DESIGN: a table consumes its source, a figure references it. The
+  // missing-figure case is still surfaced where it can be (the static-website `auditReferencedAssets`
+  // pass warns on a referenced-but-unshipped path); a future reader should not re-flag this as a bug.
   const bodyHast = [];
   if (src) {
     let altText = altKwarg;
