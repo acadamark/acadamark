@@ -262,8 +262,10 @@ The custom-text pipe form (`<cite @key | some text>`) is retired: it never worke
 (the content was read as a key list), Pandoc's model has no replace-the-citation
 override, and prefix/suffix cover the intent — a `<cite>` carrying pipe/long-form
 content renders the visible marker naming the unsupported form. The `style=` kwarg
-remains **reserved and unwired** (per-citation style override is its own future
-slice); it is not a locator and is not claimed to work.
+is **wired** (#418): it selects the per-citation *form* — `parenthetical` (default),
+`narrative`, or `suppress-author` — of the document's one citation style. It is not a
+locator, and it is not a per-cite CSL-style switch (the document keeps one style so the
+References list stays coherent); see the *Citation styles* section below.
 
 ## Citation styles
 
@@ -285,7 +287,22 @@ The document-level style is set in `<config>`:
 </config>
 ```
 
-Individual citations can override via the `style` kwarg.
+**Per-citation form (#418).** The `style` kwarg does not switch the CSL style for one
+citation — the document keeps ONE style so the References list stays coherent. It selects
+that style's per-citation *form*:
+
+| `style=` | Renders | Equivalent |
+|----------|---------|------------|
+| `parenthetical` (default) | `(Goodall, 2024)` | LaTeX `\citep` |
+| `narrative` | `Goodall (2024)` — author in the sentence, year parenthetical | LaTeX `\citet`, APA "narrative citation" |
+| `suppress-author` | `(2024)` — for when the author is already named in prose | Zotero "Suppress Author", Pandoc `[-@key]` |
+
+A form composes with a #409 locator: `<cite style=narrative @goodall2024, p. 42>` renders
+`Goodall (2024, p. 42)` — the locator rides the parenthetical part. One form per `<cite>`
+(a grouped cite shares it); `narrative` on a multi-key group warns and falls back to
+`parenthetical` (the author-in-text composite is single-work by nature). An unknown value
+is a warned default (#401): the seam names the kwarg, the value, and the accepted set, and
+the citation renders `parenthetical`.
 
 ## Resolution
 
@@ -305,13 +322,7 @@ The error appears in the output rather than failing silently or breaking the bui
 
 ## Content
 
-The element's content is optional and rarely used. When present, it overrides the automatically-rendered citation text:
-
-```
-<cite goodall2024 | the work by Goodall>
-```
-
-This is rare. The resolver-generated text is usually preferred because it stays consistent with the document's style.
+`<cite>` takes **no content** — the resolver generates the rendered marker from the bibliography entry and the citation style. The custom-text pipe form (`<cite @key | some text>`) was **retired by #409**: it never worked (the pipe content was read as a key list), Pandoc's citation model has no replace-the-citation override, and `prefix=` / `suffix=` cover the intent. A `<cite>` that carries pipe or long-form content renders a visible unsupported-form marker rather than silently dropping it.
 
 ## Attributes
 
@@ -321,7 +332,7 @@ This is rare. The resolver-generated text is usually preferred because it stays 
 
 `suffix` — text appearing after the citation marker.
 
-`style` — override the document-level citation style for this citation.
+`style` — the per-citation *form* (`parenthetical` / `narrative` / `suppress-author`, #418) of the document's one citation style; not a per-cite style switch. See *Citation styles* above.
 
 The handler reads these and produces the appropriate output. They are not standard HTML attributes; they're enscribe-specific.
 
@@ -361,13 +372,13 @@ This finding has been reported widely <cite goodall2024 attenborough2020 darwin1
 For details on methodology, see <cite goodall2024 page=42>.
 ```
 
-**Citation as part of a sentence (inline-author-year style).**
+**Citation as part of a sentence (the narrative form).**
 
 ```
-<cite goodall2024 style=inline-author-year> reported significant findings.
+<cite style=narrative @goodall2024> reported significant findings.
 ```
 
-The author becomes part of the sentence rather than appearing parenthetically.
+The narrative form (#418) puts the author in the sentence and leaves the year parenthetical — `Goodall (2024) reported significant findings.` — LaTeX `\citet`, APA's "narrative citation".
 
 ## See also
 
