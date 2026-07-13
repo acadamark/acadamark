@@ -63,6 +63,9 @@ export async function openBrowser(driver, executablePath) {
           type: async (sel, text) => { await p.evaluate((s) => document.querySelector(s)?.focus(), sel); await p.keyboard.type(text); },
           focus: (sel) => p.evaluate((s) => document.querySelector(s)?.focus(), sel),
           press: (key) => p.keyboard.press(key),
+          // #430: emulate the visitor's OS light/dark preference so the auto-variant path is testable
+          // (prefers-color-scheme). Playwright: emulateMedia({colorScheme}).
+          emulateColorScheme: (scheme) => p.emulateMedia({ colorScheme: scheme }),
           onConsole: (cb) => p.on('console', (msg) => cb(msg.type(), msg.text())), // #402: capture the recap
         };
       },
@@ -85,6 +88,9 @@ export async function openBrowser(driver, executablePath) {
         type: async (sel, text) => { await p.evaluate((s) => document.querySelector(s)?.focus(), sel); await p.keyboard.type(text); },
         focus: (sel) => p.evaluate((s) => document.querySelector(s)?.focus(), sel),
         press: (key) => p.keyboard.press(key),
+        // #430: emulate the visitor's OS light/dark preference (prefers-color-scheme). Puppeteer:
+        // emulateMediaFeatures. Makes the auto-variant acceptance path testable rather than a no-op.
+        emulateColorScheme: (scheme) => p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: scheme }]),
         onConsole: (cb) => p.on('console', (msg) => cb(msg.type(), msg.text())), // #402: capture the recap
       };
     },

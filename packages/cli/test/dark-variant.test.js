@@ -111,17 +111,30 @@ export async function run_tests() {
         assert.notEqual(styles.borderVar, styles.bgVar, `${theme}: borders are not the page color (visible)`);
         assert.equal(styles.colorScheme, 'dark', `${theme}: color-scheme follows (native form controls/scrollbars)`);
       }
-      // The :not() escape: pin LIGHT while the OS prefers dark — the page must stay light.
-      const { out } = invoke(['render', FIXTURE]);
-      const lightPath = join(dir, 'pinned-light.html');
-      writeFileSync(lightPath, out.replace('<html lang="en">', '<html lang="en" data-theme-variant="light">'), 'utf8');
-      const p2 = await browser.page(false);
-      if (typeof p2.emulateMedia === 'function') await p2.emulateMedia({ colorScheme: 'dark' });
-      await p2.goto(pathToFileURL(lightPath).href);
-      const bodyBg = await p2.eval(() => getComputedStyle(document.body).backgroundColor);
-      const [r] = bodyBg.match(/\d+/g).map(Number);
-      assert.ok(r > 200, `pinning light defeats a dark OS preference (body bg ${bodyBg})`);
-      console.log('PASS: dark-variant browser tier — 4 themes derive correctly (dark page, light text, visible borders, color-scheme); light pin defeats OS dark');
+      // ── #430 acceptance triple — the auto default FOLLOWS the OS; an explicit pin WINS ───────────
+      // The reported "site defaults to dark for everyone" did NOT reproduce: auto is correct. This pins
+      // that behavior so a regression (absent-variant reading dark on a LIGHT OS) fails here. It uses the
+      // now-real emulateColorScheme — the adapter method dark-variant's old `emulateMedia` guard silently
+      // no-op'd, so the OS-emulation path was never actually exercised until now. Light bg ≈ rgb(255,…),
+      // the derived dark page bg is #191919 ≈ rgb(25,…), so the red channel separates them cleanly.
+      let probeN = 0;
+      const bodyRed = async (html, colorScheme) => {
+        const f = join(dir, `triple-${colorScheme}-${probeN++}.html`);
+        writeFileSync(f, html, 'utf8');
+        const pg = await browser.page(false);
+        await pg.emulateColorScheme(colorScheme);
+        await pg.goto(pathToFileURL(f).href);
+        const bg = await pg.eval(() => getComputedStyle(document.body).backgroundColor);
+        return bg.match(/\d+/g).map(Number)[0];
+      };
+      const plain = invoke(['render', FIXTURE]).out;                                        // no variant → auto
+      const pinDark = plain.replace('<html lang="en">', '<html lang="en" data-theme-variant="dark">');
+      const pinLight = plain.replace('<html lang="en">', '<html lang="en" data-theme-variant="light">');
+      assert.ok(await bodyRed(plain, 'light') > 200, 'acceptance (a): no variant + light OS → LIGHT page');
+      assert.ok(await bodyRed(plain, 'dark') < 60, 'acceptance (b): no variant + dark OS → DARK page (follows the OS)');
+      assert.ok(await bodyRed(pinDark, 'light') < 60, 'acceptance (c): theme-variant=dark → DARK even under a light OS');
+      assert.ok(await bodyRed(pinLight, 'dark') > 200, 'the light pin defeats a dark OS preference (:not() escape)');
+      console.log('PASS: dark-variant browser tier — 4 themes derive correctly; #430 acceptance triple (auto→light on light OS, auto→dark on dark OS, pin dark→dark regardless) + light-pin escape');
     } finally {
       if (browser) await browser.close();
       rmSync(dir, { recursive: true, force: true });
