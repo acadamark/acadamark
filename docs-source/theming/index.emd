@@ -156,7 +156,7 @@ The baked block ships under two scopes:
 - `@media (prefers-color-scheme: dark)` with `:root:not([data-theme-variant="light"])` — **auto**: the document follows the OS, with zero JavaScript.
 - `:root[data-theme-variant="dark"]` — the **explicit hook**: set `data-theme-variant="dark"` (or `"light"`, which defeats the media block) on the document root. This is the reader-tier switch's attachment point — the settings panel (below) drives exactly this attribute; `color-scheme` rides along so native scrollbars and form controls follow.
 
-The **document-tier default** is `<config theme-variant=light|dark|auto>` (default `auto`): `light`/`dark` pin the variant by stamping the attribute on `<html>` in the standalone builds; `auto` (or omitting it) leaves the OS in charge. An unknown value warns and falls back to `auto` — the standard config behaviour. Per the two-tier model, the document sets this default and the reader's own switch overrides it locally.
+The **document-tier default** is `<config theme-variant=light|dark|auto>` (default `auto`): `light`/`dark` pin the variant by stamping the attribute on `<html>` in every static build — the single-file render, a static website (site-wide, from the master's `<config>`), and a separate-pages book — and at mount on the live path; `auto` (or omitting it) leaves the OS in charge. An unknown value warns and falls back to `auto` — the standard config behaviour. Per the two-tier model, the document sets this default and the reader's own switch overrides it locally.
 
 ## Testing your theme in dark
 

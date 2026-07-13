@@ -98,8 +98,9 @@ function readMasterConfig(proc, source) {
 // default. The static document shell stamps this server-side; the live shell renders a fragment into the
 // mount root, which cannot set the ROOT attribute the baked dark CSS keys on. 'light'/'dark' pin the
 // variant; 'auto'/absent leave prefers-color-scheme in charge (and preserve any prior reader override).
-// Documents only — a live website keeps type-parity with the static website shell (neither stamps a
-// config variant), and the reader-tier switch is the visitor's local override either way.
+// Documents only — the LIVE website does NOT stamp the master's config variant at mount. (#431 gave the
+// STATIC website + separate-pages book their author-pin server-side; the live-website counterpart is a
+// known residual gap, tracked separately.) The reader-tier switch is the visitor's local override either way.
 function applyDocumentThemeVariant(configMap) {
   if (typeof document === 'undefined' || !configMap) return;
   const v = configMap.get?.('theme-variant');

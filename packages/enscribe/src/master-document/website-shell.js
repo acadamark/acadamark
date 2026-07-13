@@ -215,14 +215,23 @@ export function buildWebsiteDslHead(dslNames) {
  *        description, OpenGraph/Twitter cards — #393/W12), emitted right after `<title>` and before
  *        HEAD_ASSET_LINKS. The caller owns the content (per-page title suffix, depth-relative favicon
  *        hrefs, absolute og:image URL); this stays a dumb string-builder. '' (default) ⇒ head unchanged.
+ * @param {string} [o.themeVariant] - #431: the site's document-tier light/dark default
+ *        (`<config theme-variant=…>` on the website master, uniform across every page — the same
+ *        site-wide read as `repo`/`playground`/`icon`). 'light'/'dark' stamp data-theme-variant on
+ *        <html>, the hook the baked dark CSS keys on (`:root[data-theme-variant="dark"]`, and the auto
+ *        media block's `:not([data-theme-variant="light"])` escape) — mirrors emitDocumentShell. Any
+ *        other value ('auto'/absent/invalid) stamps nothing: the page follows prefers-color-scheme. The
+ *        reader-tier switch overrides locally on top, unchanged.
  * @returns {string} a standalone `<html>` document.
  */
-export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref, headMeta = '' }) {
+export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref, headMeta = '', themeVariant }) {
+  const variantAttr = themeVariant === 'light' || themeVariant === 'dark'
+    ? ` data-theme-variant="${themeVariant}"` : '';
   const cta = playgroundHref
     ? `<div class="enscribe-playground-cta"><a href="${escapeHtml(playgroundHref)}">Open in playground ↗</a></div>\n`
     : '';
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${variantAttr}>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

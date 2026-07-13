@@ -13,14 +13,19 @@
 
 import assert from 'node:assert';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { dirname, join } from 'node:path';
-import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { writeFileSync, readFileSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { run } from '../src/cli.js';
+import { buildStaticWebsite } from '../src/static-website.js';
 import { findChromium, detectDriver, openBrowser } from './delivery-browser.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE = join(__dirname, 'fixtures', 'sample.emd');
+const WEBSITE_MINI = resolve(__dirname, 'fixtures', 'website-mini');
+
+// The `<html …>` opening tag of a page — the sole place #398's variant hook is stamped.
+const htmlTag = (page) => page.match(/<html[^>]*>/)[0];
 
 function sink() {
   const chunks = [];
@@ -59,6 +64,122 @@ export async function run_tests() {
         'an unknown variant is the #401 warned-default');
       assert.ok(!bad.out.includes('<html lang="en" data-theme-variant='), 'an unknown variant stamps nothing');
       console.log('PASS: dark-variant — <config theme-variant> stamps the hook; invalid warns + auto');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #431: the STATIC WEBSITE honors the master's <config theme-variant> on EVERY page ─────────
+  // The acceptance triple, the same way the render path is proven above, but on a multi-page build:
+  // the site master's variant is site-wide (read like repo/playground/icon), so the pin stamps home,
+  // a nested article, AND an embedded book's cover + chapter pages — uniformly. buildStaticWebsite
+  // is called directly (as static-website.test.js does) over the website-mini fixture.
+  {
+    const base = readFileSync(join(WEBSITE_MINI, 'index.emd'), 'utf8');
+    const CFG = '<config repo="https://github.com/enscribejs/enscribe" />';
+    const withVariant = (v) => base.replace(CFG, `<config repo="https://github.com/enscribejs/enscribe" theme-variant=${v} />`);
+    const buildPages = (masterSource) =>
+      buildStaticWebsite({ masterSource, masterDir: WEBSITE_MINI, defaultCss: '/*c*/' }).pages;
+    // The four page shapes a site frames: home (dist root), a nested article, an embedded book's
+    // cover, and one of that book's chapter pages — all wear the ONE universal shell.
+    const bookChapterKey = (pages) =>
+      [...pages.keys()].find((k) => k.startsWith('guide/') && k !== 'guide/index.html');
+    const everyShape = (pages, label) => {
+      const chapter = bookChapterKey(pages);
+      assert.ok(chapter, `${label}: the embedded book emits a chapter page`);
+      return [
+        ['home', pages.get('index.html')],
+        ['about', pages.get('about/index.html')],
+        ['book-cover', pages.get('guide/index.html')],
+        [`book-chapter (${chapter})`, pages.get(chapter)],
+      ];
+    };
+
+    const dark = buildPages(withVariant('dark'));
+    for (const [name, html] of everyShape(dark, 'dark')) {
+      assert.equal(htmlTag(html), '<html lang="en" data-theme-variant="dark">', `website dark: ${name} is pinned dark`);
+    }
+    const light = buildPages(withVariant('light'));
+    for (const [name, html] of everyShape(light, 'light')) {
+      assert.equal(htmlTag(html), '<html lang="en" data-theme-variant="light">', `website light: ${name} is pinned light`);
+    }
+    const absent = buildPages(base);
+    for (const [name, html] of everyShape(absent, 'absent')) {
+      assert.equal(htmlTag(html), '<html lang="en">', `website absent: ${name} follows the OS (no stamp)`);
+    }
+    const sepia = buildPages(withVariant('sepia'));
+    for (const [name, html] of everyShape(sepia, 'invalid')) {
+      assert.equal(htmlTag(html), '<html lang="en">', `website invalid: ${name} stamps nothing (config-discovery warns)`);
+    }
+    console.log('PASS: #431 — static website pins the variant across home + nested article + embedded book (dark/light); auto/absent/invalid → OS');
+  }
+
+  // ── #431 precedence: the SITE MASTER wins — a per-page document's OR an embedded book's own ────
+  // <config theme-variant> is IGNORED; the whole site takes the master's variant, uniform. This is the
+  // deliberately-chosen rule (uniform-site, matching how repo/playground/icon resolve), NOT per-page-
+  // document-wins. The test would FAIL if the resolution regressed to reading each page's own config.
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-precedence-'));
+    try {
+      // Master pins DARK; the "solo" article AND the embedded book each pin LIGHT (the conflict).
+      writeFileSync(join(dir, 'index.emd'),
+        '<meta type=website><title | Prec Site></meta>\n\n<config theme-variant=dark />\n\n' +
+        '<nav>\n<item src="home" +homepage | Home>\n<item src="solo" | Solo>\n<item src="bk" | Book>\n</nav>\n');
+      writeFileSync(join(dir, 'home.emd'), '<meta type=article />\n\n# Home\n\nHome body.\n');
+      writeFileSync(join(dir, 'solo.emd'), '<meta type=article />\n\n<config theme-variant=light />\n\n# Solo\n\nThis page pins LIGHT — the site\'s dark must win.\n');
+      writeFileSync(join(dir, 'bk.emd'), '<meta type=book title="Embedded" />\n\n<config theme-variant=light />\n\n<chapter | Ch1>\n\nBody one.\n\n<chapter | Ch2>\n\nBody two.\n');
+      const { pages } = buildStaticWebsite({ masterSource: readFileSync(join(dir, 'index.emd'), 'utf8'), masterDir: dir, defaultCss: '/*c*/' });
+      const framed = [...pages].filter(([k]) => k.endsWith('.html'));
+      assert.ok(framed.length >= 4, `the conflicting site frames its pages (got ${framed.length})`);
+      for (const [k, html] of framed) {
+        assert.equal(htmlTag(html), '<html lang="en" data-theme-variant="dark">',
+          `precedence: ${k} takes the SITE master's dark, not a page/book's own light`);
+      }
+      console.log('PASS: #431 — the site master\'s variant wins over a per-page article AND an embedded book pinning the opposite (uniform-site precedence)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #431: the SEPARATE-PAGES BOOK build honors <config theme-variant>, end to end via the CLI ──
+  // Proves the full `enscribe build` wiring (no CLI change was needed — publishBookPages reads the
+  // book's own config), so every emitted chapter page + the index carry the pin.
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-book-variant-'));
+    try {
+      const book = (config) => `<meta type=book title="Pinned Book" />\n\n${config ? `<config ${config} />\n\n` : ''}<chapter | First>\n\nAlpha body.\n\n<chapter | Second>\n\nBeta body.\n`;
+      const buildBook = (config, name) => {
+        const src = join(dir, `${name}.emd`), outDir = join(dir, `${name}-out`);
+        writeFileSync(src, book(config));
+        const sink = () => { const c = []; return { write: (s) => c.push(s), get text() { return c.join(''); } }; };
+        const out = sink(), err = sink();
+        const code = run(['build', src, '-o', outDir], { stdout: out, stderr: err });
+        assert.equal(code, 0, `${name}: book build exits 0 (stderr: ${err.text})`);
+        return new Map(readdirSync(outDir).filter((f) => f.endsWith('.html')).map((f) => [f, readFileSync(join(outDir, f), 'utf8')]));
+      };
+      for (const [f, html] of buildBook('theme-variant=dark', 'dark')) {
+        assert.equal(htmlTag(html), '<html lang="en" data-theme-variant="dark">', `book dark: ${f} is pinned dark`);
+      }
+      for (const [f, html] of buildBook('theme-variant=light', 'light')) {
+        assert.equal(htmlTag(html), '<html lang="en" data-theme-variant="light">', `book light: ${f} is pinned light`);
+      }
+      for (const [f, html] of buildBook(null, 'absent')) {
+        assert.equal(htmlTag(html), '<html lang="en">', `book absent: ${f} follows the OS (no stamp)`);
+      }
+      // The cover-OFF book emits a meta-refresh redirect stub at index.html that carries NO stylesheet
+      // (a bare <p><a> that redirects instantly to the first chapter). It is deliberately NOT stamped:
+      // the variant hook would be inert dead markup with no theme CSS to key. The chapters it redirects
+      // to ARE stamped. This pins that decision so a regression that stamps the stub (or drops the pin on
+      // the cover-off chapter path) fails here.
+      const coverOff = buildBook('cover=false theme-variant=dark', 'coveroff');
+      const redirect = coverOff.get('index.html');
+      assert.ok(/http-equiv="refresh"/.test(redirect), 'cover-off: index.html is the meta-refresh redirect stub');
+      assert.equal(htmlTag(redirect), '<html lang="en">', 'cover-off: the redirect stub is NOT stamped (it has no stylesheet — the hook would be inert)');
+      for (const [f, html] of coverOff) {
+        if (f === 'index.html') continue;
+        assert.equal(htmlTag(html), '<html lang="en" data-theme-variant="dark">', `cover-off: chapter ${f} is still pinned dark`);
+      }
+      console.log('PASS: #431 — `enscribe build` separate-pages book pins every chapter page + index (dark/light); absent → OS; cover-off redirect stub stays unstamped');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

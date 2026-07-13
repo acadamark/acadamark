@@ -257,3 +257,21 @@ export function resolveBookContentsConfig(file) {
   }
   return cfg;
 }
+
+/**
+ * Resolve the book's document-tier light/dark DEFAULT — the `<config theme-variant=…>` on the book
+ * master (#398/#431). A book has ONE config scope (unlike a website's per-page documents), so the
+ * authored variant is the single default for every chapter page. Sibling of resolveBookNavConfig /
+ * resolveBookContentsConfig: the book's config reads live together here. Returns the validated pin
+ * ('light'/'dark') the separate-pages pageShell stamps on <html>, or undefined for auto/absent/invalid
+ * (the OS follows via prefers-color-scheme) — the same light/dark-only gate the render path's
+ * configThemeVariant applies. config-discovery already warned on an invalid value at the gate; this
+ * just does not stamp it. The reader-tier switch overrides locally on top, unchanged.
+ *
+ * @param {object} file - the VFile carrying file.data[ENSCRIBE_CONFIG]
+ * @returns {'light'|'dark'|undefined}
+ */
+export function resolveBookThemeVariant(file) {
+  const v = file?.data?.[ENSCRIBE_CONFIG]?.get?.('theme-variant');
+  return v === 'light' || v === 'dark' ? v : undefined;
+}

@@ -461,6 +461,12 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // page has no editor; its live door is the per-page "Open in playground ↗" CTA, which lands on the
   // live twin where the corner's Edit toggle takes over (the decided read-with-button split).
   const repoUrl = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('repo') ?? null;
+  // #431: the site's document-tier light/dark DEFAULT — `<config theme-variant=…>` on the website
+  // MASTER, read the SAME site-wide way as repo/playground/icon above (a website's chrome config is the
+  // master's, uniform across every page — NOT per-page-document, which would flip appearance jarringly
+  // between pages of one site). Passed to composeWebsiteShellPage in the framing pass, which stamps
+  // data-theme-variant on <html> for light/dark and nothing otherwise (auto/absent → follow the OS).
+  const themeVariant = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('theme-variant') ?? null;
   // #430: the settings gear joins the corner (reader tier — always available on a static website page;
   // the SETTINGS_PANEL_JS inline script wires it). The document tier is live-editable only, so a static
   // page shows the reader tier alone. With the gear always present, the corner renders even on a repo-less
@@ -665,7 +671,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     });
     const html = composeWebsiteShellPage({
       defaultCss, title: pageTitle, topBar: topBarFor(up), content, dslHead, headMeta,
-      playgroundHref: liveHrefFor(outPath, slug, chapterStem),
+      playgroundHref: liveHrefFor(outPath, slug, chapterStem), themeVariant,
     });
     pageMap.set(outPath, staticize(html, outPath));
   }

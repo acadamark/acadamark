@@ -160,8 +160,11 @@ export const CONFIG_KWARGS = new Map([
   // model: the document sets the default; the reader-tier switch — the settings panel,
   // slice 3 — overrides it locally). 'auto' (the default) follows the OS via
   // prefers-color-scheme; 'light'/'dark' pin the variant by stamping
-  // data-theme-variant on <html> (the standalone shells honor it now; the live shell
-  // wires it with the panel). Consumed in cli.js's wrapStandalone → emitDocumentShell.
+  // data-theme-variant on <html> (every STATIC shell honors it — the single-file
+  // emitDocumentShell, the website composeWebsiteShellPage, and the separate-pages
+  // pageShell, #431; the live shell wires it with the panel). Consumed via cli.js's
+  // wrapStandalone → emitDocumentShell, static-website.js → composeWebsiteShellPage,
+  // and publishBookPages → pageShell.
   ['theme-variant',           valued('live', { enum: ['light', 'dark', 'auto'] })],  // ⇄ index.js KNOWN_THEMES + themes/ dir (guarded by config-discovery.test.js equality, not an import — no cycle)
   ['display-style',           valued('reserved')],
   ['note-position',           valued('live', { enum: ['bottom', 'margin'] })],            // index.js compiler → sidenotes (#33, margin render mode)

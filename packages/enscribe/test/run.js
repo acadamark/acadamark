@@ -71,6 +71,7 @@ import { run as runRenderParity } from './render-parity.test.js';
 import { run as runCrossPageLinks } from './cross-page-links.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
 import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
+import { run as runThemeVariantMultipage } from './theme-variant-multipage.test.js';
 import { run as runLiveBookParity } from './live-book-parity.test.js';
 import { run as runBookNavConfig } from './book-nav-config.test.js';
 import { run as runMasterBookLive } from './master-book-live.test.js';
@@ -173,6 +174,7 @@ const suites = [
   ['cross-page-links',             runCrossPageLinks],
   ['render-chapter-parity',        runRenderChapterParity],
   ['separate-pages-parity',        runSeparatePagesParity],
+  ['theme-variant-multipage',      runThemeVariantMultipage],
   ['live-book-parity',             runLiveBookParity],
   ['book-nav-config',              runBookNavConfig],
   ['master-book-live',             runMasterBookLive],
