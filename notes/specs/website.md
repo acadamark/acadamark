@@ -252,13 +252,15 @@ Every page **always renders**; no website-specific condition halts the build. In
 
 - a **nav diagnostic** raised by the structurer (a pipe-labelled group, a malformed entry) surfaces as
   a build warning, not a failure;
-- a nav `<item src>` that **does not resolve** to a page body is skipped with a warning;
+- a nav `<item src>` that **does not resolve** to a page body ships a visible **failed-page view at
+  its own address**, with a warning (#405) — the nav link lands on a real, explicable page, never a
+  dead link or a silent skip;
 - a **slug collision** uniquifies-or-warns (above), never a build error;
 - a **broken cross-page reference** renders the unresolved-reference marker inline (its target page was
   never produced), never a crash;
 - a **broken `<a {slug}>`** degrades text-preserving with a warning (above);
-- a page that **fails to number or render** is skipped with a warning naming it; the rest of the site
-  still builds.
+- a page that **fails to number or render** ships that same visible failed-page view at its address,
+  with a warning naming it (#405); the rest of the site still builds.
 
 All warnings are surfaced on the console / CLI (the CLI build prints the build's collected warnings)
 and never halt rendering. The one boundary is structural rather than content: a master that declares

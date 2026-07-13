@@ -1739,8 +1739,8 @@ All warnings use the prefix `[enscribe] warning:`.
 
 The error categories that the interpreter currently renders as visible
 markers in the document body. This is not a complete enumeration of every
-error type the system can encounter — see §11.5 for the category that does
-not yet render visibly.
+error type the system can encounter — §11.5 covers the parser-stage error
+nodes, which are also rendered as visible markers.
 
 | condition | visible marker |
 |-----------|---------------|
