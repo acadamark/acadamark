@@ -462,13 +462,11 @@ tag-error {
 
 /* Block errors — the ⚠ [role=alert] family (asset / library / include / website-page / footer /
  * diagram): a boxed diagnostic with a subtle background, an error-red left rule, and error-red text,
- * so it reads as a deliberate error box in both variants. */
-[role="alert"].enscribe-asset-error,
-[role="alert"].enscribe-library-error,
-[role="alert"].enscribe-include-error,
-[role="alert"].enscribe-website-pageerror,
-[role="alert"].enscribe-footer-error,
-[role="alert"].enscribe-diagram-error {
+ * so it reads as a deliberate error box in both variants. Matched by the family shape
+ * (role=alert + an enscribe error class) rather than a hard-coded list, so a new family member
+ * inherits automatically AND no specific error-class name appears in the inlined stylesheet — a
+ * rendered page stays free of the class strings unless it actually carries a marker box. */
+[role="alert"][class*="enscribe-"][class*="-error"] {
   color: var(--enscribe-error);
   background: var(--enscribe-bg-subtle);
   border: 1px solid var(--enscribe-border);
@@ -477,8 +475,8 @@ tag-error {
   padding: 0.6em 0.9em;
   margin: 1em 0;
 }
-/* The source / detail shown inside a block error keeps normal body text (not error-red). */
-[role="alert"].enscribe-diagram-error pre {
+/* The source / detail shown inside a block error (the diagram source) keeps normal body text. */
+[role="alert"][class*="enscribe-"][class*="-error"] pre {
   color: var(--enscribe-text-primary);
   margin: 0.5em 0 0;
   white-space: pre-wrap;
