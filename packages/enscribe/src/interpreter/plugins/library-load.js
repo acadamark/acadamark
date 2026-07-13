@@ -46,6 +46,23 @@ import { makeErrorNode, injectBodyErrors } from '../lib/error-injection.js';
 // resolved against the document base URL and fetched by the pre-load pass).
 const URL_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
 
+// C1 (#436): the accepted citation-style vocabulary — the warned-default guard for
+// `<config citation-style=…>`, mirroring index.js's KNOWN_THEMES guard. A value OUTSIDE this set is a
+// typo (e.g. "chicagoo") and warns through the seam + falls to the default; a value inside is passed
+// through. The set is the documented styles (cite.md's Citation-styles table + config-options-doc's
+// examples) plus citation-js's bundled CSL templates. NOTE the deeper gap this guard does NOT cover:
+// only apa / vancouver / harvard1 are actually BUNDLED in citation-js 0.7; the rest (author-year,
+// chicago-*, ieee, numbered, …) currently fall back to citation-js's default style at format time.
+// That advertised-but-unbundled gap is tracked separately; C1's scope is narrower — catch the
+// outright-invalid VALUE, the one true silent survivor of the always-render contract.
+const DEFAULT_CITATION_STYLE = 'chicago-author-date';
+const KNOWN_CITATION_STYLES = new Set([
+  'apa', 'vancouver', 'harvard1',                                          // citation-js bundled CSL templates
+  'chicago-author-date', 'chicago',                                        // the default + a common alias
+  'author-year', 'numbered', 'footnote', 'endnote', 'inline-author-year',  // cite.md's documented styles
+  'ieee',                                                                  // config-options-doc example
+]);
+
 /**
  * A visible `__library-error` node (rendered by libraryErrorHandler). always-
  * renders (#133): a failed load / collision / misplacement shows a visible block
@@ -301,7 +318,21 @@ export function buildCitationIndex(tree, file, options = {}) {
       file?.message?.(`library-load: failed to merge citation entries: ${err.message}`);
     }
     if (mergedCite) {
-      const style = file?.data?.[ENSCRIBE_CONFIG]?.get('citation-style') ?? 'chicago-author-date';
+      const configured = file?.data?.[ENSCRIBE_CONFIG]?.get('citation-style');
+      // C1 (#436): an explicitly-configured style outside the accepted vocabulary is a typo that
+      // otherwise renders a wrong-style bibliography with ZERO warning — the one true silent survivor
+      // of the always-render contract. Warn through the seam like every warned-default (#401) and fall
+      // to the default; the bibliography still renders (always-renders). An unset/default value is
+      // never "wrong", so only an explicit `configured` is checked.
+      if (configured != null && !KNOWN_CITATION_STYLES.has(String(configured))) {
+        file?.message?.(
+          `config: citation-style="${configured}" is not a recognized citation style — ` +
+            `expected one of: ${[...KNOWN_CITATION_STYLES].join(', ')}; the default applies`,
+          undefined, 'cite:unknown-style',
+        );
+      }
+      const style = (configured != null && KNOWN_CITATION_STYLES.has(String(configured)))
+        ? configured : DEFAULT_CITATION_STYLE;
       file.data = file.data ?? {};
       file.data[ENSCRIBE_CITATIONS] = {
         cite: mergedCite,

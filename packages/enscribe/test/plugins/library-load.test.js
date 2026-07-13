@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { enscribeLibraryLoad } from '../../src/interpreter/plugins/library-load.js';
 import { makeTag } from '../../src/core/tag.js';
+import { ENSCRIBE_CONFIG } from '../../src/core/file-data-keys.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = join(__dirname, '../fixtures');
@@ -264,5 +265,38 @@ export function run() {
 
     assert.equal(file.data.enscribeCitations.style, 'apa', 'style taken from config');
     console.log('PASS: library-load: style from config');
+  }
+
+  // --- C1 (#436): an explicitly-configured UNKNOWN citation-style warns + falls to the default ---
+  // The one true silent survivor of the always-render contract: a typo like `chicagoo` rendered a
+  // wrong-style bibliography with zero warning. Now warned through the seam + defaulted.
+  {
+    const file = makeFile();
+    file.data[ENSCRIBE_CONFIG] = new Map([['citation-style', 'chicagoo']]);
+    enscribeLibraryLoad({ assetsDir: null })(makeDataTree([makeLibraryTag({ content: INLINE_BIBTEX })]), file);
+    assert.ok(file._warnings.some((w) => /citation-style="chicagoo".*not a recognized citation style/.test(w)),
+      'C1: an unknown citation-style typo warns, naming the value');
+    assert.ok(file._warnings.some((w) => /expected one of:.*apa.*author-year/.test(w)),
+      'C1: the warning names the accepted set');
+    assert.equal(file.data.enscribeCitations.style, 'chicago-author-date',
+      'C1: an unknown style falls to the default (warned-default)');
+    console.log('PASS: library-load: C1 (#436) unknown citation-style warns + defaults');
+  }
+
+  // --- C1 (#436): documented styles and an unset style do NOT warn ---
+  {
+    for (const s of ['apa', 'author-year', 'chicago-author-date', 'vancouver', 'ieee']) {
+      const file = makeFile();
+      file.data[ENSCRIBE_CONFIG] = new Map([['citation-style', s]]);
+      enscribeLibraryLoad({ assetsDir: null })(makeDataTree([makeLibraryTag({ content: INLINE_BIBTEX })]), file);
+      assert.equal(file._warnings.filter((w) => /not a recognized citation style/.test(w)).length, 0,
+        `C1: documented style "${s}" does not warn`);
+      assert.equal(file.data.enscribeCitations.style, s, `C1: documented style "${s}" is passed through`);
+    }
+    const file = makeFile(); // unset → default, no warning
+    enscribeLibraryLoad({ assetsDir: null })(makeDataTree([makeLibraryTag({ content: INLINE_BIBTEX })]), file);
+    assert.equal(file._warnings.filter((w) => /not a recognized citation style/.test(w)).length, 0,
+      'C1: an unset citation-style does not warn');
+    console.log('PASS: library-load: C1 (#436) documented + unset citation-styles do not warn');
   }
 }
