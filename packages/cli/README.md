@@ -18,24 +18,33 @@ via `npx @enscribejs/cli …`.)
 
 ### `enscribe render`
 
-Render an `.emd` file to HTML.
+Render an `.emd` file to HTML. The default output is a **complete, styled,
+standalone HTML page** — doctype, a `<title>` derived from the document, and the
+default stylesheet inlined — that opens and reads on its own. Use `--fragment`
+for the bare eHTML fragment when embedding in a larger page.
 
 ```bash
-enscribe render paper.emd                 # HTML to stdout
-enscribe render paper.emd -o paper.html   # HTML to a file
-enscribe render paper.emd --embed         # self-contained (default)
+enscribe render paper.emd                 # standalone HTML page to stdout
+enscribe render paper.emd -o paper.html   # to a file
+enscribe render paper.emd --fragment      # bare eHTML fragment (no doctype/head/CSS)
+enscribe render paper.emd --css house.css # link YOUR stylesheet instead of inlining the default
+enscribe render --emit-css > enscribe.css # print the default stylesheet and exit (no input needed)
 enscribe render paper.emd --no-embed      # link fonts / KaTeX CSS from CDNs
 enscribe render paper.emd --dsl-mode live-link
 ```
 
-Options: `-o, --output <file>`, `--embed` (default) / `--no-embed`,
+Options: `-o, --output <file>`, `--fragment` (emit the bare eHTML fragment — no
+doctype/head/stylesheet), `--css <path-or-url>` (link the given stylesheet from
+`<head>` instead of inlining the default), `--emit-css` (print the default
+stylesheet and exit), `--title <text>` (override the derived page title),
+`--embed` (default) / `--no-embed`,
 `--dsl-mode <skip|live-link|live-inline|static>`, `--toc` (a table-of-contents
 sidebar — for a book it is the left chapter rail of the reading interface;
 `--toc=auto` shows it only past three sections), `--theme
-<default|modern|compact>` (inject a theme's token overrides), `--chapter-nav`
-(opt into the single-chapter PAGING view for a book with `--toc`; default off —
-the book renders as one scrolling document with chapter-navigation chrome),
-`--quiet`.
+<default|modern|compact|tufte>` (inject a theme's token overrides),
+`--chapter-nav` (opt into the single-chapter PAGING view for a book with
+`--toc`; default off — the book renders as one scrolling document with
+chapter-navigation chrome), `--quiet`.
 
 ### `enscribe export-jats`
 
@@ -88,8 +97,10 @@ round-trip.
 
 ### `enscribe import-jats`
 
-Import a JATS XML article into Enscribe — rendered HTML by default, or canonical
-`.emd` source with `--emd`.
+Import a JATS XML article into Enscribe — a **complete, styled standalone HTML
+page** by default (the same standalone document `render` emits, so `--fragment`,
+`--css`, `--emit-css`, and `--title` apply), or canonical `.emd` source with
+`--emd`.
 
 ```bash
 enscribe import-jats paper.xml                 # → HTML on stdout
@@ -117,7 +128,9 @@ mapping.
 ### `enscribe import`
 
 Import LaTeX, Quarto, DOCX — anything [pandoc](https://pandoc.org) reads — into
-Enscribe: rendered HTML by default, or canonical `.emd` source with `--emd`.
+Enscribe: a **complete, styled standalone HTML page** by default (the standalone
+flags `--fragment`, `--css`, `--emit-css`, and `--title` apply, as for `render`),
+or canonical `.emd` source with `--emd`.
 
 ```bash
 enscribe import paper.tex -o paper.html     # LaTeX → HTML
