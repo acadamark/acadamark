@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: enscribe
+version: 0.4.1
+date-released: '2026-06-26'
+authors:
+  - family-names: Balter
+    given-names: Ariel
+    name-suffix: Ph.D.
+    orcid: 'https://orcid.org/0000-0002-1756-8706'
+repository-code: 'https://github.com/enscribejs/enscribe'
+url: 'https://enscribe.org/'
+license: MIT
