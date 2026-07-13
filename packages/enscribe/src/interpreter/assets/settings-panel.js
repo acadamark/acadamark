@@ -14,11 +14,13 @@
 //   lives on the persistent documentElement (never the swapped content region), reader settings survive
 //   a live SPA page transition by construction.
 //
-//   DOCUMENT TIER (live-editable article/single-file only — wired separately by the edit loop in
+//   DOCUMENT TIER (any editable single-document ARTICLE surface — wired separately by the edit loop in
 //   browser.js, which holds the source + the editor handle): a theme picker + a default-variant control
-//   that REWRITE the document's <config> block (visible in the source pane). Rendered only when
-//   `document:true`; absent on static pages and read-only live docs (no editable source to act on), which
-//   is the #398 read-only rule.
+//   that REWRITE the document's <config> block (visible in the source pane). Rendered when `document:true`
+//   — a standalone live/single-file article in edit mode, AND an article page in the website/playground
+//   editor (#434). Absent on static pages, read-only live docs (no editable source to act on — the #398
+//   read-only rule), and a BOOK in edit mode (its per-chapter loop edits chapter files, not the master
+//   <config> where the theme lives — reader tier only there).
 //
 // Dual delivery (like bindWebsiteNavDismiss / WEBSITE_DROPDOWN_JS): the reader-tier binder is a
 // self-contained function; static pages run its IIFE-string form as an inline <script>, the live paths
@@ -114,6 +116,10 @@ export const SETTINGS_PANEL_CSS = `
 }
 .enscribe-shell-settings[open] > .enscribe-settings-panel { display: block; }
 .enscribe-settings-tier { display: flex; flex-direction: column; gap: 0.5rem; }
+/* Author-origin reset so the HTML \`hidden\` attribute actually hides a tier — the UA \`[hidden]{display:none}\`
+   rule is otherwise overridden by the author \`display:flex\` above (resetDocumentTier hides the doc tier on a
+   book/read/not-found edit surface; #434). Class+attribute specificity beats the bare-class rule. */
+.enscribe-settings-tier[hidden] { display: none; }
 .enscribe-settings-tier + .enscribe-settings-tier { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--enscribe-border-subtle, var(--enscribe-border, #e6e6e6)); }
 .enscribe-settings-tier-label { margin: 0 0 0.15rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; color: var(--enscribe-text-muted, #57606a); }
 .enscribe-settings-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }

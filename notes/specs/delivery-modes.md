@@ -360,6 +360,27 @@ Edit being available on a mode is a function of "is there an engine at read time
 the static-vs-live boundary — so the capability axis is not free-floating; it is gated by the same
 discriminator that separates Static from the others.
 
+### The settings panel's two tiers (the same discriminator, applied to settings)
+
+The chrome settings gear (#398/#430) carries two tiers, split by **whether the setting travels with the
+document** — and the split lands on the very view-vs-edit boundary above:
+
+- **Reader tier** (text size, line spacing, text width, light/dark) — the **viewer's**, local to the
+  browser (`localStorage`, per-origin), applied as CSS-var overrides on the document root, **never
+  written to the document**. Present on **every** surface the gear appears on: static, live, single-file,
+  read or edit.
+- **Document tier** (theme, default variant — later, other `<config>` settings) — the **document's**.
+  It is not a separate store: it **rewrites the editable document's `<config>` block in the source
+  buffer** (visible in the source pane), and the render follows from the changed source. It is therefore
+  present **only where an editable single-document source with a `<config>` is in the editor** — a live
+  or single-file **article**, and an **article page in the website/playground editor**. It is absent
+  from every **view-only** surface (static bakes the theme at build; a read-only live document has no
+  source to act on) and from a **book** in edit mode: a book's live loop edits its `<chapter src>` files,
+  while the theme lives in the **master** `<config>`, which is in no editor buffer — so a book stays
+  reader-tier-only (editing a book's theme is a master-`<config>` affordance, not the per-chapter surface;
+  #434). The document tier is thus gated by the same "is there an editable `<config>` at hand"
+  discriminator the edit capability itself is — an application of the view-vs-edit boundary, not a new one.
+
 ---
 
 ## Status summary

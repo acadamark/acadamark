@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveWebsite, mountLiveShell } from '../src/interpreter/browser.js';
+import { SETTINGS_PANEL_CSS } from '../src/interpreter/assets/settings-panel.js';
 
 const DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-website');
 const read = (n) => readFileSync(join(DIR, n), 'utf8');
@@ -99,7 +100,14 @@ function makeEditorStub() {
     get last() { return mounts[mounts.length - 1]; },
     editor: {
       mount(el, { value, onChange }) {
-        const handle = { el, value, onChange, destroyed: false, destroy() { this.destroyed = true; } };
+        const handle = {
+          el, value, onChange, destroyed: false,
+          // Mirror the real CodeMirror adapter: setValue swaps the buffer AND fires onChange (so the
+          // document tier's <config> rewrite flows through the same currentSource + preview path a
+          // keystroke does — mountLiveArticle relies on this too).
+          setValue(v) { this.value = v; el.textContent = v; this.onChange(v); },
+          destroy() { this.destroyed = true; },
+        };
         el.textContent = value;
         mounts.push(handle);
         return handle;
@@ -325,6 +333,70 @@ export async function run() {
       console.log('PASS: S2c — nav-while-editing swaps the page source; chrome + editor adapter persist');
     } finally { restoreDom(orig); }
   }
+
+  // ── #434: the document tier reaches the WEBSITE/playground editor (theme picker rewrites <config>) ──
+  {
+    // READ MODE (no editor): the document tier is ABSENT — a read-only website shows the reader tier alone.
+    const { dom, orig } = installDom();
+    try {
+      const readRoot = await mountLiveWebsite('#root', MASTER);
+      assert.ok(!readRoot.querySelector('[data-doc="theme"]'),
+        'read-only website: no document tier (theme picker) — reader tier only (the read-only rule)');
+      console.log('PASS: document tier — a read-only website shows the reader tier alone (no theme picker)');
+    } finally { restoreDom(orig); }
+  }
+  {
+    // EDIT MODE on an article page: the picker is present + wired, and choosing a theme rewrites the
+    // page's <config> in the SOURCE buffer (the playground showpiece), idempotently.
+    const { dom, orig } = installDom();
+    try {
+      const stub = makeEditorStub();
+      const root = await mountLiveWebsite('#root', MASTER, { editor: stub.editor, editDebounceMs: 0 });
+      const themeSel = root.querySelector('.enscribe-settings-panel [data-doc="theme"]');
+      assert.ok(themeSel, 'edit mode on an article page: the document tier (theme picker) is present in the gear');
+      const docTier = root.querySelector('.enscribe-settings-tier--doc');
+      assert.ok(docTier && !docTier.hidden, 'the document tier is visible on an editable article page');
+      // The Home page carries no <config>; picking a theme INSERTS one, rewritten in the source buffer.
+      themeSel.value = 'tufte';
+      themeSel.dispatchEvent(new dom.window.Event('change'));
+      assert.ok(/<config[^>]*\btheme=tufte\b/.test(stub.last.value),
+        'picking a theme rewrites the page <config> in the source buffer (theme=tufte, visible in the source pane)');
+      console.log('PASS: document tier — the website/playground theme picker rewrites <config> in the source');
+
+      // IN-PLACE idempotency: switching themes updates the SAME kwarg (never stacking a duplicate <config>).
+      themeSel.value = 'modern';
+      themeSel.dispatchEvent(new dom.window.Event('change'));
+      assert.ok(/\btheme=modern\b/.test(stub.last.value) && !/theme=tufte/.test(stub.last.value),
+        'switching to modern replaces the theme in place');
+      assert.equal((stub.last.value.match(/<config/g) || []).length, 1,
+        'the rewrite is idempotent — one <config>, no stacked duplicate kwargs');
+      console.log('PASS: document tier — the <config> rewrite is in-place idempotent (no duplicate kwargs)');
+
+      // A website variant pick rewrites the page <config> but does NOT stamp the shared root (stampRoot:false)
+      // — read mode never stamps a website config variant; the reader switch owns the root variant, so one
+      // page's pick cannot leak onto the next (#434).
+      const variantSel = root.querySelector('.enscribe-settings-panel [data-doc="theme-variant"]');
+      variantSel.value = 'dark';
+      variantSel.dispatchEvent(new dom.window.Event('change'));
+      assert.ok(/theme-variant=dark/.test(stub.last.value), 'a variant pick rewrites <config theme-variant=dark> in the source');
+      assert.ok(!dom.window.document.documentElement.getAttribute('data-theme-variant'),
+        'the website variant pick does NOT stamp the shared root (no cross-page leak)');
+      console.log('PASS: document tier — a website variant pick rewrites <config> without leaking onto the shared root');
+
+      // Navigating to a NON-article edit surface (a not-found page) HIDES the document tier — reader tier only.
+      popTo(dom, '?page=__nope__');
+      const docTierAfter = root.querySelector('.enscribe-settings-tier--doc');
+      assert.ok(docTierAfter && docTierAfter.hidden === true,
+        'the document tier is hidden on a not-found (non-article) edit page (resetDocumentTier)');
+      console.log('PASS: document tier — hidden on a non-article edit surface');
+    } finally { restoreDom(orig); }
+  }
+  // The panel CSS must reset [hidden] to display:none so the tier hide takes VISUAL effect — the author
+  // `.enscribe-settings-tier { display:flex }` otherwise overrides the UA `[hidden]{display:none}` (jsdom does
+  // no layout, so this structural guard stands in for the browser-visual check; #434).
+  assert.ok(/\.enscribe-settings-tier\[hidden\]\s*\{\s*display:\s*none/.test(SETTINGS_PANEL_CSS),
+    'SETTINGS_PANEL_CSS resets [hidden] to display:none so a hidden tier is actually invisible (author > UA cascade)');
+  console.log('PASS: document tier — the [hidden] CSS reset makes the tier hide take visual effect');
 
   // ── S2c regression: a pending preview re-render must NOT leak into the next page (debounce cancelled on nav) ──
   {

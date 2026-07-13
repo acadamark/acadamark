@@ -144,12 +144,41 @@ function injectFloatingShellActions({ document: docTier = false, themes = [] } =
 // baked dark CSS keys on the ROOT attribute, which a rendered fragment cannot set). Article/single-file
 // only — a book master's <config> has no live-edit channel (its loop edits chapter files), and websites
 // are not document-editable; those surfaces get the reader tier alone.
-function wireDocumentTier({ proc, getSource, setSource }) {
-  if (typeof document === 'undefined') return;
+// Return the document-tier controls with any prior listeners dropped, or null if the panel renders no
+// document tier. Clone-replacing a select is the one-line "unbind everything" the per-page re-wire needs: a
+// prior page's change handler can never fire into the newly-active page's source. (The reader-tier controls
+// — `[data-reader]` — are untouched; only the `[data-doc]` selects are swapped.)
+function freshDocumentTierControls() {
+  if (typeof document === 'undefined') return null;
   const panel = document.querySelector('.enscribe-settings-panel');
-  const themeSel = panel && panel.querySelector('[data-doc="theme"]');
-  const variantSel = panel && panel.querySelector('[data-doc="theme-variant"]');
-  if (!themeSel && !variantSel) return;   // reader-only surface — nothing to wire
+  if (!panel) return null;
+  const docTierEl = panel.querySelector('.enscribe-settings-tier--doc');
+  const drop = (sel) => { if (!sel || !sel.parentNode) return null; const f = sel.cloneNode(true); sel.parentNode.replaceChild(f, sel); return f; };
+  const themeSel = drop(panel.querySelector('[data-doc="theme"]'));
+  const variantSel = drop(panel.querySelector('[data-doc="theme-variant"]'));
+  if (!themeSel && !variantSel) return null;
+  return { docTierEl, themeSel, variantSel };
+}
+
+// #430 / #434: wire the document-tier controls (theme picker + default variant) to the CURRENTLY-editable
+// document's source. Reflects the live <config> into the selects, then on change rewrites the <config> in the
+// source (editConfigKwarg — span-bounded, idempotent) and pushes it to the editor via setSource, so the
+// SOURCE PANE shows the edit and the preview re-renders through the same onChange path a keystroke uses. A
+// variant change ALSO re-stamps documentElement (the baked dark CSS keys on the ROOT attribute a rendered
+// fragment cannot set). SAFELY RE-CALLABLE: a multi-page website re-wires per active page, so each call first
+// drops any prior page's listeners (freshDocumentTierControls) before reflecting + binding — never stacking —
+// and reveals the tier. resetDocumentTier() is its counterpart for a page with no live-editable <config>.
+// `stampRoot` — whether a variant change re-stamps documentElement's data-theme-variant. TRUE on a
+// single-document surface (standalone article/single-file): its root IS the document, so reflecting the new
+// default immediately is correct. FALSE on a website: the root is shared chrome, and read mode deliberately
+// never stamps a config variant there (the reader switch owns the root variant) — so stamping per page would
+// leak one page's variant onto the next. Either way the variant is written into the page's <config> (the
+// document-tier's actual job); only the immediate visual reflection is surface-specific. (#434)
+function wireDocumentTier({ proc, getSource, setSource, stampRoot = true }) {
+  const els = freshDocumentTierControls();
+  if (!els) return;                       // reader-only surface — nothing to wire
+  const { docTierEl, themeSel, variantSel } = els;
+  if (docTierEl) docTierEl.hidden = false;
   const cfg = readMasterConfig(proc, getSource());
   if (themeSel) {
     themeSel.value = cfg?.get?.('theme') || 'default';
@@ -163,11 +192,22 @@ function wireDocumentTier({ proc, getSource, setSource }) {
     variantSel.addEventListener('change', () => {
       const v = variantSel.value;
       setSource(editConfigKwarg(proc, getSource(), 'theme-variant', v));
-      // Reflect the new document default immediately (the reader-tier switch still overrides on reload).
-      if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
-      else document.documentElement.removeAttribute('data-theme-variant');
+      if (stampRoot) {
+        // Single-document surface: reflect the new document default immediately (the reader switch still overrides).
+        if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
+        else document.documentElement.removeAttribute('data-theme-variant');
+      }
     });
   }
+}
+
+// Hide the document tier and drop any stale listeners — the active edit surface has no live-editable <config>
+// to act on (a book page edits its chapter files, not the master where the theme lives; a not-found/error
+// page has no source). The reader tier stays. The website loop calls this when the active page is not an
+// editable article; a standalone article never needs it (its one document is always the editable surface).
+function resetDocumentTier() {
+  const els = freshDocumentTierControls();
+  if (els && els.docTierEl) els.docTierEl.hidden = true;
 }
 
 const BROWSER_DEFAULTS = {
@@ -1413,7 +1453,12 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const repoUrl = navFile.data[ENSCRIBE_CONFIG]?.get?.('repo') ?? null;
   const editOn = typeof location !== 'undefined' && new URLSearchParams(location.search).has('edit');
   root.innerHTML = composeWebsiteShell({
-    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, repoUrl, settings: true })),
+    // #434: the document tier (theme picker + default variant) rides the website corner whenever the
+    // per-page editor is present (`editor` != null) — the playground is THE surface to change a theme on.
+    // The controls render into the persistent chrome; showEditPage wires them to the ACTIVE page's source
+    // per navigation (an article page → rewrite its <config>; a book/read/not-found page → hidden). A
+    // read-only website (no editor) passes document:false, so it stays reader-tier-only.
+    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, repoUrl, settings: true, document: !!editor, themes: [...KNOWN_THEMES] })),
     sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
     footer: footerHtml,
   });
@@ -1535,6 +1580,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
   const showEditPage = (slug, notFound) => {
     teardownEdit();                                              // tear down the prior ARTICLE-page editor
     if (currentBookEdit) { currentBookEdit.teardown(); currentBookEdit = null; }  // and a prior BOOK-page editor
+    resetDocumentTier();   // #434: hide the theme picker by default; the article branch below re-shows +
+                           // re-wires it to THIS page. A book page (per-chapter edit, master <config> not in
+                           // the buffer), a not-found, or an error page keeps it hidden — reader tier only.
     if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, { firstSlug }) : ''; return; }
     if (pageBySlug.get(slug)?.isError) {
       // #405: nothing to edit — the page's source never loaded; show the failed-page view.
@@ -1582,6 +1630,16 @@ export async function mountLiveWebsite(target, source, options = {}) {
     editHandle = mountEl
       ? editor.mount(mountEl, { value: currentSource, onChange: (s) => { currentSource = s; activeDebounced(); } })
       : null;
+    // #434: wire the document tier to THIS article page's source — the theme picker rewrites the page's
+    // <config> (visible in the source pane) and setValue fires the onChange above (currentSource + preview
+    // re-render), the same one-source-of-truth path the standalone article mount uses (mountLiveArticle). An
+    // editor adapter without setValue degrades to reader-tier-only (resetDocumentTier already hid it).
+    if (editHandle && typeof editHandle.setValue === 'function') {
+      // stampRoot:false — a website's shared root variant is the reader switch's (read mode never stamps a
+      // config variant here); the picker still rewrites this page's <config theme-variant>, just doesn't leak
+      // it onto the next page via the shared documentElement.
+      wireDocumentTier({ proc, getSource: () => currentSource, setSource: (next) => editHandle.setValue(next), stampRoot: false });
+    }
   };
 
   const scrollToHash = () => {
@@ -1725,8 +1783,14 @@ export async function mountLiveDocument(target, source, options = {}) {
   // bindSettingsPanel captures it as the document default the reader tier falls back to.
   if (type !== 'website') {
     applyDocumentThemeVariant(readMasterConfig(proc, source));
-    // The document tier is meaningful only for an editable ARTICLE in edit mode (a book master's <config>
-    // has no live-edit channel); other standalone surfaces get the reader tier alone.
+    // The document tier is wired wherever an editable single-document source carries the <config> the picker
+    // rewrites — a standalone ARTICLE in edit mode (here) and an article PAGE in the website SPA (mountLive-
+    // Website). A BOOK is deliberately excluded on BOTH surfaces, and this narrowing is kept on purpose: a
+    // book's live loop edits its <chapter src> files, while the theme lives in the MASTER <config> — which is
+    // not in any editor buffer, so a theme rewrite would either target a chapter file (wrong) or the unseen
+    // master, breaking the tier's whole point (the author watching `<config theme=…>` appear in the source
+    // pane). Editing a book's theme is a master-<config> affordance the per-chapter loop doesn't offer — a
+    // follow-on, not this wiring. Read-only + book standalone surfaces get the reader tier alone.
     injectFloatingShellActions({ document: editEnabled && type === 'article', themes: [...KNOWN_THEMES] });
   }
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
