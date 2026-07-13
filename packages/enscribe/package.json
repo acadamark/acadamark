@@ -28,7 +28,8 @@
     "node": ">=18"
   },
   "browser": {
-    "./src/interpreter/assets/hover-preview-assets.js": "./src/interpreter/assets/hover-preview-assets.browser.js"
+    "./src/interpreter/assets/hover-preview-assets.js": "./src/interpreter/assets/hover-preview-assets.browser.js",
+    "./src/interpreter/assets/theme-css.js": "./src/interpreter/assets/theme-css.browser.js"
   },
   "exports": {
     ".": "./src/interpreter/index.js",

@@ -67,7 +67,7 @@
 // parsing, which must work client-side.
 
 import { defineConfig } from 'tsup';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -77,6 +77,18 @@ import { dirname, join } from 'node:path';
 const assetsDir = join(dirname(fileURLToPath(import.meta.url)), 'src', 'interpreter', 'assets');
 const hoverPreviewCss = readFileSync(join(assetsDir, 'hover-preview.css'), 'utf8');
 const hoverPreviewJs = readFileSync(join(assetsDir, 'hover-preview.js'), 'utf8');
+
+// Read the bundled theme stylesheets (modern/compact/tufte) at config-eval time so `define` can inline
+// the whole `{ name: bytes }` map (see header item 2 — same reason as hover-preview: getThemeCss must
+// not fs-read in the bundle, or a live `<config theme=tufte>` crashes; #430/C4). The map is a readdir of
+// themes/, the SAME authority config-discovery.test.js (#401) guards, so the browser variant's picker
+// list can't drift from the shipped set. `default` is the base default.css (no injection), not a file here.
+const themesDir = join(assetsDir, 'themes');
+const themeCss = Object.fromEntries(
+  readdirSync(themesDir)
+    .filter((f) => f.endsWith('.css'))
+    .map((f) => [f.replace(/\.css$/, ''), readFileSync(join(themesDir, f), 'utf8')]),
+);
 
 // Absolute path to the node-builtin stub (see header item 1). The esbuild `alias`
 // in esbuildOptions redirects every (bare) fs/url/path/module specifier here, so
@@ -101,6 +113,9 @@ export default defineConfig([{
   define: {
     __ENSCRIBE_HOVER_PREVIEW_CSS__: JSON.stringify(hoverPreviewCss),
     __ENSCRIBE_HOVER_PREVIEW_JS__: JSON.stringify(hoverPreviewJs),
+    // The { name: bytes } theme map for the browser variant of theme-css.js (see header + the const
+    // above). JSON.stringify of an object is a valid JS object-literal expression for `define`.
+    __ENSCRIBE_THEME_CSS__: JSON.stringify(themeCss),
   },
   esbuildOptions(options) {
     // Resolve the Node built-ins to the throwing stub via esbuild `alias` (see

@@ -165,6 +165,9 @@ export { DOCUMENT_FONTS_CDN_URL } from './assets/font-loader.js';
 // (build-inlined strings) for browser bundles, while this Node import reads the
 // sibling files from disk. See src/assets/hover-preview-assets.js for the why.
 import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-assets.js';
+// KNOWN_THEMES + getThemeCss live in a swappable module pair (Node fs-read / browser build-inlined via
+// tsup `define`) so a live `<config theme=…>` render never fs-reads in the bundle (the C4 crash, #430).
+import { KNOWN_THEMES, getThemeCss } from './assets/theme-css.js';
 // DSL render registry (internal): drives live-mode asset emission for external
 // DSLs (mermaid, abc). Distinct concern from @enscribejs/enscribe/core's vocabulary
 // registry imported immediately below.
@@ -267,20 +270,11 @@ export function getInlineDisplayHead() {
 // ─── Theme CSS (Phase 8 Slice 2) ──────────────────────────────────────────────
 //
 // Themes are `:root` custom-property overrides shipped in src/assets/themes/.
-// The `theme` option (or a <config theme=…> setting) injects one inline, after
-// the document's base default.css, so its tokens win the cascade. Always inlined
-// (sub-1KB token files with no canonical CDN URL, unlike fonts / KaTeX) and read
-// lazily — only when a theme is actually requested, keeping the browser bundle's
-// fs-free default path intact.
-const KNOWN_THEMES = new Set(['modern', 'compact', 'tufte']);
-const _themeCss = new Map();
-function getThemeCss(name) {
-  if (!_themeCss.has(name)) {
-    const dir = dirname(fileURLToPath(import.meta.url));
-    _themeCss.set(name, readFileSync(join(dir, 'assets', 'themes', `${name}.css`), 'utf8'));
-  }
-  return _themeCss.get(name);
-}
+// The `theme` option (or a <config theme=…> setting) injects one inline, after the document's base
+// default.css, so its tokens win the cascade. KNOWN_THEMES + getThemeCss are imported from the
+// ./assets/theme-css.js module pair above: the Node variant reads the sub-1KB token file lazily (only
+// when a theme is requested), the browser variant returns the same bytes build-inlined via tsup
+// `define` — so a live `<config theme=…>` render is browser-safe (the C4 crash fix, #430).
 
 // ─── Hover-preview assets ─────────────────────────────────────────────────────
 // For inline mode: Popper UMD + Tippy UMD (non-bundle). Popper sets

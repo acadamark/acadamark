@@ -78,7 +78,19 @@ export async function run() {
     `bundle-load: render('hello world') did not produce <p>hello world</p>; got: ${html.slice(0, 160)}`,
   );
 
-  console.log('PASS: bundle-load (IIFE loads in a browser-like context; render/renderInto/executeAssets present; render works)');
+  // #430 (C4): a live `<config theme=…>` render must not fs-read in the bundle. getThemeCss used to be
+  // an inline fs-reader in index.js; the browser bundle aliased fs to a throwing stub, so ANY non-default
+  // theme crashed the client render (`readFileSync is not available in the enscribe browser bundle`).
+  // The theme-css.js / .browser.js pair (build-inlined via tsup `define`) fixes it. Prove the theme CSS is
+  // injected here — tufte's Palatino serif is a distinctive tell that its bytes rode into the bundle.
+  const themedHtml = enscribe.render('<config theme=tufte />\n\n# T\n\nBody.');
+  assert.ok(
+    themedHtml.includes('Palatino'),
+    'bundle-load(theme): render(<config theme=tufte>) did not inject the theme CSS — C4 regression ' +
+      `(getThemeCss fs-read reached the bundle again?); got: ${themedHtml.slice(0, 200)}`,
+  );
+
+  console.log('PASS: bundle-load (IIFE loads in a browser-like context; render/renderInto/executeAssets present; render works; #430 themed render injects build-inlined theme CSS, no fs-read crash)');
 
   // ── #214: the shipped EDITOR asset bundles CodeMirror (no runtime CDN) ───────────────
   // The same build above also emits dist/editor-codemirror.js. Prove it is self-contained: CodeMirror
