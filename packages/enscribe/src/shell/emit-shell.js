@@ -139,6 +139,16 @@ function editorDelivery(editorHref, inlineEditorBytes) {
   };
 }
 
+// The no-JavaScript fallback (#396). Every shell this module emits mounts its content with JavaScript
+// (the live shell fetches + renders the master; the single-file shell mounts the embedded source), so
+// with scripting disabled the <body> would be a blank white page. A one-line <noscript> notice replaces
+// that blank with an explanation. Brand-free by design — this is general engine code that ships in every
+// `enscribe build --live` / `--single-file` output, so the text carries no "Enscribe" (the same brand ≠
+// engine-chrome line #393/#399 drew for the favicon). The static emitters (website-shell, document-shell)
+// embed already-rendered HTML in their <body>, so they render without JS and need no such notice.
+const NOSCRIPT_FALLBACK =
+  '<noscript>This document requires JavaScript to display. Please enable JavaScript in your browser to view it.</noscript>';
+
 /**
  * Emit the minimal live shell HTML for a master document — book OR article. Pure (no I/O): the type
  * is detected at runtime by `mountLiveShell`, not read here (#216), so one shell drives either kind.
@@ -194,7 +204,8 @@ ${inlineHeadAssets(inline)}
 </head>
 <body>
 <!-- ${edit ? 'Defaults to the editor (data-enscribe-edit); remove it to read.' : 'Read by default; add `data-enscribe-edit` to default to the editor, or use `?edit`.'} -->
-${editorTemplate}<div id="enscribe-book-root"${editAttr}></div>
+${editorTemplate}${NOSCRIPT_FALLBACK}
+<div id="enscribe-book-root"${editAttr}></div>
 
 <!-- The engine bundle (IIFE → window.enscribe), inlined. -->
 ${inlineScriptTag(inline.engine)}
@@ -241,6 +252,7 @@ ${HEAD_ASSET_LINKS}
 </head>
 <body>
 <!-- ${edit ? 'Defaults to the editor (data-enscribe-edit); remove it to read.' : 'Read by default; add `data-enscribe-edit` to default to the editor, or use `?edit`.'} -->
+${NOSCRIPT_FALLBACK}
 <div id="enscribe-book-root"${editAttr}></div>
 
 <!-- The engine bundle (IIFE → window.enscribe). -->
@@ -343,7 +355,8 @@ ${inlineHeadAssets(inline)}
 <!-- The embedded document source — read at mount via .content.textContent (entities decoded on parse). -->
 <template id="enscribe-source">${embeddedSrc}</template>
 
-${editorTemplate}<div id="enscribe-book-root"${editAttrInline}></div>
+${editorTemplate}${NOSCRIPT_FALLBACK}
+<div id="enscribe-book-root"${editAttrInline}></div>
 
 <!-- The engine bundle (IIFE → window.enscribe), inlined. -->
 ${inlineScriptTag(inline.engine)}
@@ -408,6 +421,7 @@ ${HEAD_ASSET_LINKS}
 <!-- The embedded document source — read at mount via .content.textContent (entities decoded on parse). -->
 <template id="enscribe-source">${embedded}</template>
 
+${NOSCRIPT_FALLBACK}
 <div id="enscribe-book-root"${editAttr}></div>
 
 <!-- The engine bundle (IIFE → window.enscribe), loaded from the web. -->

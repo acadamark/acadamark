@@ -29,6 +29,28 @@ export async function run() {
     console.log('PASS: #215 — emitLiveShell requires `master`, defaults title, mounts the master');
   }
 
+  // ── #396: the no-JavaScript fallback — every JS-mounted shell carries a <noscript> notice ──
+  //    A live / single-file shell mounts its content with JS, so without scripting it is a blank page.
+  //    All four templates (live served/inlined, single-file served/inlined — editable AND read-only)
+  //    emit ONE brand-free <noscript> notice immediately before the mount <div>. The static emitters
+  //    (website-shell/document-shell) embed rendered HTML and need none, so they are not checked here.
+  {
+    const noscriptRe = /<noscript>[^<]*JavaScript[^<]*<\/noscript>\s*(?:<template[^>]*>[\s\S]*?<\/template>\s*)?<div id="enscribe-book-root"/;
+    const cases = {
+      'live served': emitLiveShell({ master: 'book.emd' }),
+      'live inlined': emitLiveShell({ master: 'book.emd', inline: { engine: 'e', defaultCss: '.d{}', shellCss: '.s{}', displayHead: '<style></style>' } }),
+      'single-file served (editable)': emitSingleFileShell({ source: 'x', editable: true }),
+      'single-file inlined (read-only)': emitSingleFileShell({ source: 'x', editable: false, inline: { engine: 'e', defaultCss: '.d{}', shellCss: '.s{}', displayHead: '<style></style>' } }),
+    };
+    for (const [label, html] of Object.entries(cases)) {
+      assert.strictEqual(html.split('<noscript>').length - 1, 1, `${label}: exactly one <noscript> notice`);
+      assert.ok(html.includes('Please enable JavaScript'), `${label}: the notice names the JavaScript requirement`);
+      assert.ok(!html.includes('Enscribe'), `${label}: the notice is brand-free (engine code ships in every user's build)`);
+      assert.ok(noscriptRe.test(html), `${label}: the notice sits immediately before the mount <div> (the blank it replaces)`);
+    }
+    console.log('PASS: #396 — every JS-mounted shell (live + single-file, both deliveries) carries the brand-free <noscript> fallback');
+  }
+
   // ── flat assetBase (the deployed layout) references the four assets next to the shell ──
   {
     const html = emitLiveShell({ master: 'book.emd', title: 'My Book', assetBase: './' });
