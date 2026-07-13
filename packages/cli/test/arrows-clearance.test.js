@@ -29,10 +29,11 @@ const NEIGHBORS = {
   leftRail: '.enscribe-chapter-rail',
   rightRail: '.enscribe-onthispage',
   backToTop: '.enscribe-back-to-top',
-  // #392: the chrome corner (the shell-actions home — the GitHub mark today, the #398 gear later).
+  // #392/#430: the chrome corner (the shell-actions home — GitHub mark + the #430 settings gear).
   // On a website book page it sits in the sticky top bar's right edge; the chevrons are fixed at
-  // 50vh — the sweep proves they never share a band at any width. (The website-mini fixture carries
-  // `<config repo>` precisely so this selector matches — a corner-less build would make it vacuous.)
+  // 50vh — the sweep proves they never share a band at any width. The corner is now ALWAYS present (the
+  // gear is unconditional), so this selector always matches; the OPEN-panel sweep below adds the gear's
+  // expanded footprint.
   shellActions: '.enscribe-shell-actions',
 };
 const CHEVRONS = { prev: '.enscribe-chapter-arrow--prev', next: '.enscribe-chapter-arrow--next' };
@@ -113,6 +114,46 @@ export async function run_tests() {
       assert.ok(minClearance >= 4,
         `${label}: chevrons must keep a comfortable gutter clearance (>=4px each side); worst was ${minClearance}px`);
       console.log(`PASS: chapter-arrow clearance — ${label}: zero intersections 984–1700px; min gutter clearance ${minClearance}px (Tier 2)`);
+
+      // #430: the OPEN settings panel is a bigger footprint than the closed corner, so it introduces two
+      // real geometry risks the sweep must guard: (1) OFF-SCREEN spill at a narrow viewport (the panel
+      // drops from the top-right, right-aligned, and must stay within the viewport), and (2) reaching down
+      // onto the mid-viewport (50vh) CHEVRON band at a short viewport (a panel covering a gutter nav arrow
+      // you might click). Both are checked across 984–1700px × {900,600}h. NOT checked: overlap with the
+      // on-this-page / chapter RAILS — the panel is a TRANSIENT, opaque, z-130 dropdown anchored to the
+      // top-right gear, which sits directly above the on-this-page rail, so it intentionally opens OVER the
+      // rail (standard dropdown behaviour — it is on top and dismisses on Escape/outside-click), unlike the
+      // #420 PERMANENT chevron-on-rail layout bug this file was born to catch. Only surfaces that render the
+      // gear are checked (the website page carries it in the top bar; the standalone separate-pages book is
+      // static HTML with no live corner, so it has no panel).
+      const hasGear = await page.eval(() => !!document.querySelector('details.enscribe-shell-settings'));
+      if (hasGear) {
+        const panelFailures = [];
+        for (const w of WIDTHS) {
+          for (const h of [900, 600]) {
+            await page.setViewport({ width: w, height: h });
+            const r = await page.eval((sels, vh) => {
+              window.scrollTo(0, Math.max(0, document.body.scrollHeight / 2 - vh / 2));
+              const d = document.querySelector('details.enscribe-shell-settings');
+              if (d) d.open = true;                              // reveal the panel (native [open])
+              const out = { innerWidth: window.innerWidth };
+              for (const [k, sel] of Object.entries(sels)) {
+                const el = document.querySelector(sel);
+                out[k] = el ? (({ left, right, top, bottom }) => ({ left, right, top, bottom }))(el.getBoundingClientRect()) : null;
+              }
+              return out;
+            }, { panel: '.enscribe-settings-panel', prev: CHEVRONS.prev, next: CHEVRONS.next }, h);
+            const p = r.panel;
+            if (!p) { panelFailures.push(`${w}x${h}: panel did not render when opened`); continue; }
+            if (p.left < -0.5 || p.right > r.innerWidth + 0.5) panelFailures.push(`${w}x${h}: panel off-screen (l ${p.left.toFixed(0)} r ${p.right.toFixed(0)} vw ${r.innerWidth})`);
+            const hit = (b) => b && p.left < b.right && p.right > b.left && p.top < b.bottom && p.bottom > b.top;
+            for (const nk of ['prev', 'next']) if (hit(r[nk])) panelFailures.push(`${w}x${h}: panel ∩ ${nk} (gutter chevron)`);
+          }
+        }
+        assert.equal(panelFailures.length, 0,
+          `${label}: the OPEN settings panel must stay on-screen and clear the gutter chevrons (984–1700px × {900,600}h) — got: ${panelFailures.join('; ')}`);
+        console.log(`PASS: #430 settings-panel clearance — ${label}: open panel stays on-screen + clears the gutter chevrons across 984–1700px × {900,600}h`);
+      }
     }
   } finally {
     if (browser) await browser.close();
