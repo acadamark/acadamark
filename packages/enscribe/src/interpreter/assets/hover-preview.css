@@ -30,7 +30,7 @@ note-list li {
 .tippy-box figure figcaption {
   font-size: 0.9em;
   margin-top: 0.5em;
-  color: #555;
+  color: var(--enscribe-text-secondary);   /* #438: dark-aware (was hardcoded #555) */
 }
 
 /* Table tooltips: compact styling with border grid; overflow-x for wide tables. */
@@ -47,7 +47,7 @@ note-list li {
 
 .tippy-box table th,
 .tippy-box table td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--enscribe-border);   /* #438: dark-aware (was hardcoded #ccc) */
   padding: 0.3em 0.6em;
   text-align: left;
 }
@@ -56,5 +56,45 @@ note-list li {
   font-size: 0.9em;
   margin-bottom: 0.4em;
   text-align: left;
-  color: #444;
+  color: var(--enscribe-text-secondary);   /* #438: dark-aware (was hardcoded #444) */
+}
+
+/* ── #438: dark-variant hover-preview tooltip ────────────────────────────────────────────────────
+ * The Tippy `light-border` theme hardcodes a light box (#fff / #333 / a light border + a white arrow),
+ * so a dark-mode reader who hovers a <ref>/<cite> gets a light tooltip on a dark page. We follow the
+ * page variant WITHOUT re-implementing Tippy's per-placement arrow geometry: four tooltip-local custom
+ * properties default to light-border's own values (so light mode is unchanged), and the two dark scopes
+ * — mirroring default.css's `@media (prefers-color-scheme: dark) :root:not([data-theme-variant="light"])`
+ * + `:root[data-theme-variant="dark"]` — flip just those four to the dark-aware --enscribe-* tokens. The
+ * apply-rules carry a `:root` prefix so they outrank light-border regardless of stylesheet load order. */
+:root .tippy-box[data-theme~="light-border"] {
+  --tt-bg: #fff;
+  --tt-fg: #333;
+  --tt-border: rgba(0, 8, 16, 0.15);
+  --tt-arrow-edge: rgba(0, 8, 16, 0.2);
+  background-color: var(--tt-bg);
+  color: var(--tt-fg);
+  border-color: var(--tt-border);
+}
+:root .tippy-box[data-theme~="light-border"][data-placement^="top"]    > .tippy-arrow::before { border-top-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="bottom"] > .tippy-arrow::before { border-bottom-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="left"]   > .tippy-arrow::before { border-left-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="right"]  > .tippy-arrow::before { border-right-color: var(--tt-bg); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="top"]    > .tippy-arrow::after { border-top-color: var(--tt-arrow-edge); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="bottom"] > .tippy-arrow::after { border-bottom-color: var(--tt-arrow-edge); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="left"]   > .tippy-arrow::after { border-left-color: var(--tt-arrow-edge); }
+:root .tippy-box[data-theme~="light-border"][data-placement^="right"]  > .tippy-arrow::after { border-right-color: var(--tt-arrow-edge); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme-variant="light"]) .tippy-box[data-theme~="light-border"] {
+    --tt-bg: var(--enscribe-bg);
+    --tt-fg: var(--enscribe-text-primary);
+    --tt-border: var(--enscribe-border);
+    --tt-arrow-edge: var(--enscribe-border);
+  }
+}
+:root[data-theme-variant="dark"] .tippy-box[data-theme~="light-border"] {
+  --tt-bg: var(--enscribe-bg);
+  --tt-fg: var(--enscribe-text-primary);
+  --tt-border: var(--enscribe-border);
+  --tt-arrow-edge: var(--enscribe-border);
 }
