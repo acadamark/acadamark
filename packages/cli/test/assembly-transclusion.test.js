@@ -12,10 +12,10 @@ import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { VFile } from 'vfile';
-import { buildEnscribePipeline, assembleMasterDocument, publishBookPages } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, assembleMasterDocument, publishBookPages, composeSiteRegistry } from '@enscribejs/enscribe';
 import { readFileSync } from 'node:fs';
 import { buildStaticWebsite } from '../src/static-website.js';
-import { renderArticleFile } from '../src/render-document.js';
+import { renderArticleFile, renderArticleTreeFile, buildDocumentPipeline, assembleAndNumber } from '../src/render-document.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..', '..', '..');
@@ -188,6 +188,57 @@ export function run_tests() {
     assert.equal(libraryErrorBoxes(String(file)), 0, '#426: standalone Design render has 0 library-error boxes');
     assert.equal(file.messages.length, 0, '#426: standalone Design render carries 0 diagnostics (parity with the website path)');
     console.log('PASS: #426 — standalone Design render is clean (0 boxes, 0 diagnostics); the website path now matches');
+  }
+
+  // ── #428: the two-phase build must NOT share a mutated tree across Phase 1 and Phase 2 ──
+  // The latent non-idempotency #426's regression rode on. On the tree seam (inline #417 / interstitial
+  // #404 marker 7 / assembled #424 article pages), Phase 1 (composeSiteRegistry) numbers the page's tree
+  // in place and Phase 2 (renderArticleTreeFile) then renders the SAME object. runSync mutates and the
+  // pipeline transforms are NOT idempotent, so a shared tree gets double-transformed — pre-fix this
+  // manufactured 9 spurious library-error boxes + 19 messages from the Design tree. The fix: Phase 1
+  // numbers a CLONE, so Phase 2 renders the pristine original (website.md's "fresh tree per phase"
+  // invariant, now realized for the source-less pre-built-tree seam). Proof: a tree through
+  // Phase-1-then-Phase-2 is byte-identical to a single clean pass, with zero spurious boxes/messages.
+  {
+    const designSrc = readFileSync(join(DOCS_SOURCE, 'design', 'index.emd'), 'utf8');
+    const pageDir = join(DOCS_SOURCE, 'design');
+    const renderOpts = { assetsDir: pageDir, documentFontsCss: 'skip', katexCss: 'skip' };
+    const parse = () => buildDocumentPipeline({ assetsDir: pageDir }).parse(designSrc);
+    const composePage = (tree) => composeSiteRegistry({
+      pages: [{ resolved: { sourcePath: join(pageDir, 'index.emd'), pageDir }, source: '', tree, slug: 'design', isBook: false }],
+      destPrefixOf: () => '', buildPipeline: buildDocumentPipeline, assembleAndNumber, warn: () => {},
+    });
+
+    // The page's tree (Phase 1 numbers it) and an independent fresh parse for the golden. The ONLY
+    // difference between the two renders is whether the tree passed through Phase 1 — isolating the fix.
+    const tree = parse();
+    const goldenTree = parse();
+    const { seedRegistry } = composePage(tree);                  // PHASE 1 — must not mutate `tree`
+    const golden = String(renderArticleTreeFile(goldenTree, renderOpts, seedRegistry()));  // single clean pass
+    const twoPhaseFile = renderArticleTreeFile(tree, renderOpts, seedRegistry());          // PHASE 2 over the Phase-1 tree
+    const twoPhase = String(twoPhaseFile);
+
+    assert.equal(libraryErrorBoxes(golden), 0, '#428: the single clean pass has 0 library-error boxes (baseline)');
+    assert.equal(libraryErrorBoxes(twoPhase), 0, '#428: the two-phase render has 0 library-error boxes (was 9 on the shared-tree defect)');
+    assert.equal(twoPhaseFile.messages.length, 0, '#428: the two-phase render carries 0 diagnostics (was 19)');
+    assert.equal(twoPhase, golden, '#428: Phase-1-then-Phase-2 is byte-identical to a single clean pass (no double-transform)');
+    console.log('PASS: #428 — a tree through Phase 1 + Phase 2 renders byte-identical to a single clean pass (0 boxes, 0 messages)');
+  }
+
+  // ── #428: composeSiteRegistry must not MUTATE the caller's tree — the invariant, stated directly ──
+  // "No tree object crosses the phase boundary in a mutated state." Phase 1 numbers a clone, so the
+  // caller's tree is untouched and Phase 2 (and any later reader) sees the pristine structure.
+  {
+    const designSrc = readFileSync(join(DOCS_SOURCE, 'design', 'index.emd'), 'utf8');
+    const pageDir = join(DOCS_SOURCE, 'design');
+    const tree = buildDocumentPipeline({ assetsDir: pageDir }).parse(designSrc);
+    const before = JSON.stringify(tree);
+    composeSiteRegistry({
+      pages: [{ resolved: { sourcePath: join(pageDir, 'index.emd'), pageDir }, source: '', tree, slug: 'design', isBook: false }],
+      destPrefixOf: () => '', buildPipeline: buildDocumentPipeline, assembleAndNumber, warn: () => {},
+    });
+    assert.equal(JSON.stringify(tree), before, "#428: composeSiteRegistry leaves the caller's tree un-mutated (Phase 1 numbers a clone)");
+    console.log('PASS: #428 — composeSiteRegistry does not mutate the caller\'s tree (Phase 1 clones)');
   }
 }
 

@@ -97,7 +97,17 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
         // #417: an inline `<item | Title>` page carries a pre-parsed body tree (no source file); a
         // normal external page carries source. Either numbers natively in its own article scope — the
         // composition MODEL (number-per-page, merge, never flatten) is unchanged, only the input shape.
-        const numbered = proc.runSync(tree ?? proc.parse(source), file);   // number only — no render
+        // #428: number a CLONE of a pre-built tree, never the shared object. `runSync` mutates the tree in
+        // place and the pipeline transforms are NOT idempotent (numbering, id registration, apparatus
+        // harvest all fire on structure), so a tree shared with Phase 2's render would be double-transformed
+        // — the latent defect #426's regression rode on (a tree-seam page manufactured 9 spurious error
+        // boxes). This realizes website.md's "fresh tree per phase" invariant for the pre-built-tree seam
+        // (inline #417 / interstitial #404 marker 7 / assembled #424): a SOURCE page re-parses fresh in each
+        // phase and is immune for free; a TREE page has no source to re-parse and no children to re-assemble,
+        // so Phase 1 clones and hands Phase 2 the pristine original. structuredClone is a faithful mdast copy
+        // (plain data, no functions) and ~10× cheaper than the re-parse it stands in for (measured: 3.4 ms
+        // vs 32 ms on the heaviest docs page); it runs only on the tree seam, never the source path.
+        const numbered = proc.runSync(tree ? structuredClone(tree) : proc.parse(source), file);  // number only — no render
         ownerToUrl.set(slug, destPrefix);                          // the article's pretty URL ('' = root)
         for (const [anchor, e] of harvestCrossRefRegistry(numbered, file)) {
           mergeAnchor(anchor, { number: e.number, title: e.title, type: e.type }, slug, resolved.sourcePath);

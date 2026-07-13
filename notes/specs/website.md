@@ -65,9 +65,15 @@ regardless of which page it sits on.
 > children; the two phases must never share one tree. Sharing it bakes Phase 1's results — including
 > its *unresolved* cross-page refs (Phase 1 runs with no seed) — into Phase 2, so a cross-page `<ref>`
 > renders as an unresolved marker even though the seed would have resolved it. A re-implementation must
-> not "optimize away" the double assembly. The static build gets this for free (it re-reads each page
-> from disk per phase); the live path must re-assemble each book page from its cached chapter sources
-> per phase (a real bug, hit and fixed in the live #300, step 2 — #314/#324).
+> not "optimize away" the double assembly. A page rendered from **source** gets this for free (each
+> phase re-parses it — the static build from disk, the live path from the cached source); a **book**
+> page must re-assemble from its cached chapter sources per phase (a real bug, hit and fixed in the
+> live #300, step 2 — #314/#324). A page on the **pre-built-tree seam** — an inline `<item | …>` page
+> (no source file), an interstitial-spliced page (#404 marker 7), or an assembled `<include>`/`<… src>`
+> article page (#424) — has no source to re-parse and no children to re-assemble, so Phase 1
+> (`composeSiteRegistry`) numbers a **structural clone** of the tree and hands the pristine original to
+> Phase 2. An mdast clone is a faithful, ~10× cheaper stand-in for the re-parse the source path gets
+> for free (#428 — the latent non-idempotency defect #426's regression rode on).
 
 ## Why composition, not flattening
 
