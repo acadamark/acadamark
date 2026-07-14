@@ -100,9 +100,14 @@ language L?" without reaching into each handler — the table host's entry is
 literally the handler's format table, so the two cannot drift. **#85 wired this
 as validation** at the normalize-to-canonical gate: after canonicalization, a
 host carrying a format word outside its accept-set gets a located, non-fatal
-diagnostic (a `file.message` on the offending node) and **still renders** — the
-handler's own fallback produces visible output. Validation observes; it never
-aborts and never mutates the tree. `<data>` is not validated this way: it carries
+diagnostic (a `file.message` on the offending node, ruleId `host:unaccepted-format`,
+#437) and **still renders** — the handler's own fallback produces visible output.
+Validation observes; it never aborts and never mutates the tree. That "visible
+output" is a real always-renders marker, not a silently-styled passthrough: the
+**diagram** host, given an unknown or absent engine word, renders the
+`⚠ enscribe-diagram-error[role=alert]` marker family (#437) with the offending
+engine and the accepted set named, so the failure shows in the document itself,
+not only in the diagnostic channel. `<data>` is not validated this way: it carries
 no format word of its own, and the payload languages of the `<library>` blocks it
 holds are validated when each inner `<library>` is visited.
 

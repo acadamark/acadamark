@@ -260,7 +260,10 @@ Every page **always renders**; no website-specific condition halts the build. In
   never produced), never a crash;
 - a **broken `<a {slug}>`** degrades text-preserving with a warning (above);
 - a page that **fails to number or render** ships that same visible failed-page view at its address,
-  with a warning naming it (#405); the rest of the site still builds.
+  with a warning naming it (#405); the rest of the site still builds;
+- a site-wide **`<footer src>` that fails to load** degrades to a visible in-slot marker
+  (`.enscribe-footer-error[role=alert]`, "⚠ footer failed to load") with a console warning (#405); the
+  footer slot shows the failure rather than vanishing, and the rest of the shell is untouched.
 
 All warnings are surfaced on the console / CLI (the CLI build prints the build's collected warnings)
 and never halt rendering. The one boundary is structural rather than content: a master that declares

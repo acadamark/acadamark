@@ -331,8 +331,14 @@ emits one `config:invalid-value` warning through the #402 diagnostics seam —
 naming the key, the offending value, and the accepted values, anchored at the
 authored position — and the reader's existing default still applies. Never an
 in-document flag (presentation config, not content), never a hard error.
-Free-valued keys (`citation-style`, `toc-title`, `bibliography-heading`, the
-reserved keys) and the `ref-prefix-*` wildcards are not value-checked.
+Free-valued keys (`toc-title`, `bibliography-heading`, the reserved keys) and the
+`ref-prefix-*` wildcards are not value-checked at this gate. **`citation-style` is
+checked at a different layer** (#436): its value space is the CSL templates
+registered at bibliography-build time — unknowable at the config gate — so an
+unrecognized style is caught there, emitting one `cite:unknown-style` warning
+(mirroring the theme's `KNOWN_THEMES` guard, `injectTheme`) while the built-in
+default style still applies. The warned-default guarantee holds; only the layer
+differs, so no `<config>` value silently becomes a wrong default.
 
 **Keys consumed by downstream plugins:**
 
@@ -365,6 +371,15 @@ structure: `<article>` containing `<article-front>`, `<article-body>`, and
 **Document type detection:** Looks for `<meta type=...>`. If `type` is absent
 or `article`, article structuring proceeds. If `type` is `book` or `book-part`,
 a warning is emitted and the plugin returns early (no structural wrapping).
+
+**Unknown `type` → warned-default-to-article (always-renders).** The document
+class is resolved upstream by `enscribeDocTypeResolve` (`doc-type.js`; pipeline
+stage 1.4). A `<meta type=…>` whose value is not one of the recognized classes
+(`article` / `book` / `book-part` / `website`) is not a hard error: the resolver
+emits one `doc-type-resolve:unknown-type` warning through the #402 seam — naming
+the value and the accepted set — and **falls to `article`**, so an unrecognized
+type always renders as an article rather than failing. This is the doc-type
+sibling of the `config:invalid-value` warned-default (§3.2).
 
 **Title promotion:** `<title>` and `<subtitle>` nodes found inside `<meta>`
 content are renamed to `<article-title>` and `<article-subtitle>` in place
@@ -448,6 +463,13 @@ tree and skips.
 | appendix, glossary, colophon, afterword | `<book-back>` |
 
 Per `book-part.md` §"Where book-parts appear".
+
+**Unknown `book-part-type` → warned-default-to-chapter (always-renders).** A
+`<meta type=book-part book-part-type=…>` whose value is outside the set above is
+not a hard error: book-structuring emits one `book-structuring:unknown-book-part-type`
+warning and **falls to `chapter`** (routing to `<book-body>`), so an unrecognized
+book-part always renders — the book-part sibling of the doc-type and config
+warned-defaults.
 
 **Body absorption:** the parser produces `<chapter | Title>` as a tag
 with title content; subsequent paragraphs/sections/figures sit as
