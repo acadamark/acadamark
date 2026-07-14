@@ -323,15 +323,11 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
       if (!isBook && page.body && page.body.length > 0) {
         if (!tree) tree = pageTree;    // the one parse above — the former fresh re-parse, reused
         tree.children.push(...page.body);
-      } else if (isBook && page.body && page.body.length > 0) {
-        // A book page's insertion point for trailing article-level content is not yet defined
-        // (the book renders per-chapter); flag rather than silently drop — a rare authoring edge,
-        // scoped as a follow-on to marker 7 (which covers article pages).
-        warnings.push(
-          `page "${page.src}": interstitial content after a book <item src> is captured but not yet ` +
-          `rendered — the book-page insertion point is a follow-on (#404 marker 7 covers article pages)`,
-        );
       }
+      // #433: a BOOK page's trailing interstitial (page.body) is no longer dropped — it rides `bookTrailing`
+      // (below) into assembleAndNumber for BOTH phases (Phase 1 id-harvest + Phase 2 render), splicing into
+      // the LAST book-part (deepest-open-container) via spliceBookInterstitial. The article branch above
+      // still splices its interstitial into the one page tree; only the insertion mechanism differs by type.
     }
     const { slug: baseSlug, pinned, title, rawMetaSlug } = resolvePageSlug({
       source, navTitle: page.title || page.slug, src: page.src,
@@ -354,7 +350,10 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     });
     pageInfo.set(slug, { title: pageTitle, isDerived: !pinned, src: page.src });
     page.slug = slug;                  // remap the nav model → the unified slug is the page's identity
-    pageData.push({ page, resolved, source, tree, slug, isBook });
+    // #433: `bookTrailing` carries a book page's trailing interstitial (page.body) to both compose phases;
+    // an article page already spliced its body into `tree` above, so it carries none.
+    const bookTrailing = isBook && page.body && page.body.length > 0 ? page.body : undefined;
+    pageData.push({ page, resolved, source, tree, slug, isBook, bookTrailing });
   }
   // #405: an all-pages-failed site still BUILDS — shell + a failed-page stub per nav entry +
   // the loud summary (never a crash, never empty silence). Only a genuinely empty nav —
@@ -530,7 +529,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // diagram runtime once — #298 — so it can't be composed until the whole site's DSL set is known.)
   const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
   const siteDslNames = new Set();
-  for (const { page, resolved, source, tree, slug, isBook } of pageData) {
+  for (const { page, resolved, source, tree, slug, isBook, bookTrailing } of pageData) {
     const destPrefix = destPrefixOf(slug);
     const colocatedAssets = pageDirAssets(resolved.pageDir, masterDir, destPrefix);
     for (const a of colocatedAssets) shippedAssetDests.add(a.to); // seed BEFORE the audit (no dup ships)
@@ -549,6 +548,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
           // carry the per-book provenance the seam's summary and recap group by.
           pipeOpts: { assetsDir: resolved.pageDir },
           fileData: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(`${destPrefix}index.html`, slug) },
+          trailingBody: bookTrailing,   // #433: splice the trailing interstitial into the last chapter (same as Phase 1)
         });
         // #405 (#403's unowned-anchor row for website books): routing diagnostics reach the stream.
         const bookBodies = publishBookPageBodies({ numbered, file, proc,

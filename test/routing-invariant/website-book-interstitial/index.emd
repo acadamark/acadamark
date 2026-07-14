@@ -1,0 +1,13 @@
+<meta type=website title="Routing Invariant — Website Book Interstitial" />
+
+<nav>
+<item src=book | The Book>
+
+An interstitial authored after the book <item src>. Under §Transclusion (master-document.md)
+it belongs to the book's LAST chapter — the deepest-open-container — and renders on that
+chapter's page (#433). Its figure numbers in that chapter's scope; its id is owned by that page.
+
+<figure #fig:websiteinter | The interstitial's own captioned figure.>
+
+<item src=other | Other>
+</nav>

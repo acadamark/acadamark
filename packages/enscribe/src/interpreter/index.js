@@ -1263,7 +1263,7 @@ export { ENSCRIBE_LOADED_SOURCES } from '../core/file-data-keys.js';
 // dependency direction). It is pure over its injected readFile/resolve/parse, so
 // the relocation from the CLI package was behavior-neutral; see
 // src/master-document/assemble.js.
-export { assembleMasterDocument, isMasterSrcEntry, isIncludeEntry, collectIncludeSrcs, composeRel, hasMasterSrcEntries, MASTER_SRC_TAGS } from '../master-document/assemble.js';
+export { assembleMasterDocument, spliceBookInterstitial, isMasterSrcEntry, isIncludeEntry, collectIncludeSrcs, composeRel, hasMasterSrcEntries, MASTER_SRC_TAGS } from '../master-document/assemble.js';
 // Lazy live book rendering, L1 (#204): the engine foundation. harvestCrossRefRegistry
 // reads anchor -> {number, title, type} off the numbered runSync tree (for L3 cross-
 // chapter preview); renderChapter projects one <book-part> to its HTML fragment,

@@ -40,6 +40,13 @@ const FILES = {
   'p314-bch2.emd': read('p314-bch2.emd'),
   'p314-atlasp.emd': read('p314-atlasp.emd'),
   'p314-am1.emd': read('p314-am1.emd'),
+  // #433: a live website whose book <item src=bi433> carries a TRAILING interstitial (a figure), cross-
+  // referenced from an article page. The interstitial splices into the book's LAST chapter (deepest-open-
+  // container) on both live phases (Phase 1 harvest so the cross-page ref resolves; Phase 2 render).
+  'bi433': '<meta type=book>\n<title | BI Book>\n</meta>\n\n<chapter src=bi433-c1.emd | One>\n<chapter src=bi433-c2.emd | Two>\n',
+  'bi433-c1.emd': '<section | First>\nChapter one.\n',
+  'bi433-c2.emd': '<section | Second>\nChapter two.\n',
+  'bi433-other': '<meta type=article />\n\n<section | Elsewhere>\nCross-page to the interstitial figure: <ref @fig:liveinter>.\n',
 };
 
 function installDom(url = 'https://example.com/site/') {
@@ -532,6 +539,35 @@ export async function run() {
     } finally {
       restoreDom(orig);
     }
+  }
+
+  // ── #433: a book <item src>'s TRAILING interstitial splices into the book's LAST chapter (LIVE parity
+  //    with the static build). A cross-page <ref> from an article page into the interstitial figure must
+  //    resolve to the book's chapter route — proving the interstitial's id was HARVESTED (Phase 1) as
+  //    owned by a real chapter page, not dropped. (The static build proves the render half; this the live.)
+  {
+    const { dom, orig } = installDom();
+    try {
+      const master = [
+        '<meta type=website>', '<title | BI>', '</meta>', '',
+        '<nav>',
+        '<item src=bi433 | Book>',
+        'Interstitial LIVEINTER content after the book item.',
+        '<figure #fig:liveinter | Live interstitial.>',
+        '<item src=bi433-other | Other>',
+        '</nav>',
+      ].join('\n');
+      const root = await mountLiveWebsite('#root', master);
+      clickLink(dom, root, '?page=other');
+      const html = root.querySelector('[data-enscribe-content]').innerHTML;
+      const m = html.match(/href="([^"]*#fig:liveinter)"/);
+      assert.ok(m, '#433 (live): the cross-page <ref> into the book interstitial resolves to a real href (harvested, not dropped)');
+      // The book page's slug is "bi-book" (its own <meta title>), and the interstitial owns the LAST chapter
+      // ("two") — the ref routes to that chapter page, proving Phase-1 harvest owned the interstitial's id there.
+      assert.ok(/page=bi-book\b/.test(m[1]) && /chapter=two\b/.test(m[1]),
+        `#433 (live): it routes to the book's LAST chapter page (?page=bi-book&chapter=two#fig:liveinter) — got "${m[1]}"`);
+      console.log('PASS: #433 (live) — a book-item interstitial is harvested + rendered; its cross-page ref resolves to the chapter page');
+    } finally { restoreDom(orig); }
   }
 
   // ── #unify — a BOOK page in EDIT mode edits PER-CHAPTER (the gap audit P1 fixed; the test 5.1 whose absence let it survive) ──

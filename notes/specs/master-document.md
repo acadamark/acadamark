@@ -224,8 +224,12 @@ the spliced child followed by any interstitial master content up to the next ent
 `<item | Title>` is simply the zero-length-splice case of the same rule. Inline items build and
 render today (the earlier builder crash on them is fixed — #417); the **interstitial** master
 content after an `<item src>` joins the item's page on both surfaces (the website structurer
-captures it as the entry's body; each surface splices it as the page's trailing content — #404;
-the article-page case is live, the book-page insertion point is a flagged follow-on). The *site*
+captures it as the entry's body; each surface splices it as the page's trailing content — #404).
+For an **article** page the interstitial is trailing content of the one page tree; for a **book**
+page it splices into the book's **last chapter** — the deepest-open-container, as if typed at the
+end of that chapter (#433), so an interstitial figure numbers in that chapter's scope and its ids
+are owned by that chapter's page (a cross-page `<ref>` into it resolves and routes there; the
+routing invariant holds). Both surfaces — static and live — apply the identical splice. The *site*
 remains a composition of native page-documents — pages are not spliced into one another, and
 `notes/specs/website.md`'s composition model (number natively, merge registries, never flatten) is
 unchanged by this section. Substitution defines what content a page *contains*; composition defines

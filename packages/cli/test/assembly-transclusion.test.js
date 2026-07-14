@@ -136,6 +136,27 @@ export function run_tests() {
     console.log('PASS: #404 arc — a separate-pages interlude renders on the preceding chapter page WITH its anchor');
   }
 
+  // ── #433: a website book `<item src>` carries a TRAILING interstitial → it renders on the book's LAST
+  //    chapter page (the deepest-open-container, "as if typed at the end of that chapter"), no longer
+  //    dropped/warned; a cross-page <ref> into it resolves to that page. (Reuses the routing-invariant
+  //    corpus as the on-disk book + pages; the routing gate itself proves the id-ownership half.)
+  {
+    const dir = join(REPO_ROOT, 'test', 'routing-invariant', 'website-book-interstitial');
+    const master = readFileSync(join(dir, 'index.emd'), 'utf8');
+    const { pages, warnings } = buildStaticWebsite({ masterSource: master, masterDir: dir, defaultCss: '' });
+    const owner = [...pages.entries()].find(([, v]) => v.includes('fig:websiteinter'));
+    assert.ok(owner, '#433: the book-item interstitial renders on a chapter page (previously dropped)');
+    // ch2's title is "Second" → its page is "second.html"; the interstitial lands on the LAST chapter.
+    assert.ok(/second/.test(owner[0]), `#433: it renders on the book's LAST chapter page (deepest-open-container) — got "${owner?.[0]}"`);
+    assert.ok(!/first/.test(owner[0]), '#433: NOT on the first chapter (it is trailing content → the last chapter)');
+    assert.ok(!warnings.some((w) => /interstitial content after a book|not yet rendered/.test(w)),
+      '#433: the book-interstitial warn-and-drop is gone (the content is placed, not flagged)');
+    const other = [...pages.entries()].find(([k]) => /other/.test(k))?.[1] || '';
+    assert.ok(/href="[^"]*#fig:websiteinter"/.test(other),
+      '#433: a cross-page <ref> into the interstitial resolves to a real href on the owning chapter page (not not-found)');
+    console.log('PASS: #433 — a website book-item interstitial renders on the last chapter; cross-page ref resolves');
+  }
+
   // ── #417: an inline website `<item | Title>` builds (no TypeError) and its body is the page ──
   {
     const master =

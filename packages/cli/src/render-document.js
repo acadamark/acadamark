@@ -17,7 +17,7 @@
 import { readFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { VFile } from 'vfile';
-import { buildEnscribePipeline, assembleMasterDocument, hasMasterSrcEntries } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, assembleMasterDocument, hasMasterSrcEntries, spliceBookInterstitial } from '@enscribejs/enscribe';
 
 /**
  * Construct the document render pipeline. The one place `buildEnscribePipeline` is called for a
@@ -133,7 +133,7 @@ export function renderArticleTreeFile(tree, pipeOpts = {}, data = {}) {
  *   static website seeds `enscribeRegistry` with a read-through over the merged SITE registry so a book
  *   chapter's outbound cross-page `<ref>` resolves to the target page's native number). Default: none.
  */
-export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpts = {}, fileData }) {
+export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpts = {}, fileData, trailingBody }) {
   const proc = buildDocumentPipeline(pipeOpts);
   const file = new VFile({ path: sourcePath, ...(fileData ? { data: fileData } : {}) });
   const tree = assembleMasterDocument({
@@ -146,6 +146,10 @@ export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpt
     // leads back to the master flags at the first re-entry with the full chain named.
     ...(sourcePath ? { selfSrc: basename(sourcePath) } : {}),
   });
+  // #433: a website book page's TRAILING interstitial (marker-7 body) splices into the LAST book-part
+  // before numbering, so its figures number in that chapter's scope and its ids are owned by that page.
+  // Deep-cloned per call inside the helper — this runs in BOTH phases and runSync mutates in place.
+  tree.children = spliceBookInterstitial(tree.children, trailingBody);
   const numbered = proc.runSync(tree, file);
   return { numbered, file, proc };
 }

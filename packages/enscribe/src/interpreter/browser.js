@@ -23,6 +23,7 @@ import {
   collectLibrarySources,
   collectTableSources,
   assembleMasterDocument,
+  spliceBookInterstitial,
   isMasterSrcEntry,
   isIncludeEntry,
   collectIncludeSrcs,
@@ -1343,17 +1344,14 @@ export async function mountLiveWebsite(target, source, options = {}) {
     if (!isBook && p.body && p.body.length > 0) {
       if (!tree) tree = proc.parse(src);
       tree.children.push(...p.body);
-    } else if (isBook && p.body && p.body.length > 0) {
-      // Parity with the static build: a book page's insertion point for trailing article-level content
-      // is not yet defined, so flag rather than silently drop (the static builder warns here too — this
-      // mirrors it on the live surface so content loss is never silent on either).
-      if (typeof console !== 'undefined' && console.warn) {
-        console.warn(`enscribe website: interstitial content after a book <item src="${p.src}"> is captured but not yet rendered — the book-page insertion point is a follow-on (#404 marker 7 covers article pages)`);
-      }
     }
+    // #433: a BOOK page's trailing interstitial (p.body) rides `bookTrailing` into the book assembly on
+    // BOTH phases (composeSiteRegistry harvest + renderPageInto render), splicing into the last chapter —
+    // the live mirror of the static path. No longer dropped/warned.
+    const bookTrailing = isBook && p.body && p.body.length > 0 ? p.body : undefined;
     // title + isDerived back the authored `<a {slug}>` auto-label + derived-slug warning (#318), computed the
     // SAME way the static build does (resolvePageSlug's title, else the nav title; un-pinned ⇒ derived).
-    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, tree, slug, isBook, title: title || p.title || slug, isDerived: !pinned };
+    return { resolved: { sourcePath: p.src, pageDir: dirOfSrc(p.src) }, source: src, tree, slug, isBook, bookTrailing, title: title || p.title || slug, isDerived: !pinned };
   });
 
   // PHASE 1 — number each page NATIVELY (article as an article; a book as a book, chapters intact), harvest,
@@ -1364,10 +1362,12 @@ export async function mountLiveWebsite(target, source, options = {}) {
     pages: pageData.filter((pd) => !pd.isError),
     destPrefixOf: () => '',                    // the live owner→URL is the owner KEY (?page=slug), not a path prefix
     buildPipeline: (opts) => getPipeline({ ...pipelineOptions, ...opts }),
-    assembleAndNumber: ({ source, sourcePath, pipeOpts }) => {
+    assembleAndNumber: ({ source, sourcePath, pipeOpts, trailingBody }) => {
       const loaded = loadedBySrc.get(sourcePath);
       const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded } };       // carry the book's loaded library/table sources
-      return { numbered: getPipeline({ ...pipelineOptions, ...pipeOpts }).runSync(assembleBookTree(source, loaded), f), file: f };
+      const bt = assembleBookTree(source, loaded);
+      bt.children = spliceBookInterstitial(bt.children, trailingBody);  // #433: interstitial → last chapter (Phase 1 id-harvest)
+      return { numbered: getPipeline({ ...pipelineOptions, ...pipeOpts }).runSync(bt, f), file: f };
     },
     warn: (m) => { if (typeof console !== 'undefined' && console.warn) console.warn(`enscribe website: ${m}`); },
   });
@@ -1536,7 +1536,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
       const f = { data: { [ENSCRIBE_LOADED_SOURCES]: loaded, ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(pd.slug) } };
       // pageSlug = pd.slug → the book sub-view's rail/route hrefs are fully-qualified `?page=<slug>&chapter=…`
       // (copyable section deep-links), and its cross-chapter refs route within the page.
-      currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(assembleBookTree(pd.source, loaded), f), file: f, pageSlug: pd.slug }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
+      const btree = assembleBookTree(pd.source, loaded);
+      btree.children = spliceBookInterstitial(btree.children, pd.bookTrailing);  // #433: interstitial → last chapter (same splice Phase 1 harvested)
+      currentBook = { pd, model: buildLiveBook({ numbered: proc.runSync(btree, f), file: f, pageSlug: pd.slug }), ctx: { proc, file: f }, chapterCache: new Map(), currentKey: null };
       // #420: the website book view composes the same body as a standalone book (arrows,
       // rail, back-to-top markup) but this mount never injected the conditional book-nav
       // CSS — the standalone mount's injectBookNavStyles call has a website counterpart

@@ -48,6 +48,11 @@ const CORPUS = [
   // address) and every emitted href must still resolve — the invariant holding THROUGH failure
   // is the point of the degrade design, so it is gated permanently.
   { master: 'test/routing-invariant/degraded-website/index.emd', label: 'degraded website (one failed page)', kind: 'website' },
+  // #433: a website whose book <item src> carries a TRAILING interstitial (a figure), cross-referenced
+  // from another page. The interstitial splices into the book's last chapter (deepest-open-container); its
+  // id must be OWNED by that chapter's emitted page so the inbound cross-page <ref> resolves — which makes
+  // this corpus BITE on ownership (a stranded interstitial anchor would dangle the ref and fail the gate).
+  { master: 'test/routing-invariant/website-book-interstitial/index.emd', label: 'website book-item interstitial (→ last chapter, cross-page ref)', kind: 'website' },
 ];
 
 function htmlFiles(dir) {

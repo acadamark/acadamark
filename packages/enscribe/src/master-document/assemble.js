@@ -31,6 +31,7 @@
 
 import { isEnscribeTag } from '../core/tag.js';
 import { BOOK_PART_SHORTHANDS } from '../interpreter/plugins/normalize-to-canonical.js';
+import { BACK_MATTER_TAGS } from '../interpreter/lib/back-matter.js';
 
 // The tagnames that, carrying a `src`, name a child file the master assembles in:
 // `<section>` (the article spine) plus every book-part shorthand (the book spine).
@@ -333,4 +334,35 @@ function rebaseChildData(dataNode, childSrc) {
     return `${pre}${q}${rebaseSrc(childSrc, raw)}${q}`;
   });
   return content === dataNode.content ? dataNode : { ...dataNode, content };
+}
+
+/**
+ * Splice a book page's TRAILING interstitial content — a website `<item src>`'s marker-7 body, i.e. master
+ * content authored after a book item and before the next nav entry — into an assembled (pre-runSync) book
+ * tree's children, so it lands in the LAST book-part: the deepest-open-container, "as if typed at the end of
+ * that chapter" (#433, the decided rule; the book mirror of the article marker-7 splice). A figure in the
+ * interstitial therefore numbers in that chapter's scope and its ids are owned by that chapter's page — the
+ * numbering/ownership fall out of the existing structural passes, no provenance threading needed.
+ *
+ * Insertion goes BEFORE any trailing document-level back-matter run (config / bibliography / note-list — a
+ * `BACK_MATTER_TAGS` boundary, matching book-structuring's `assembleBookPartContents`), which resets the
+ * absorb cursor: inserting after it would strand the interstitial as a loose `<book-body>` sibling. A
+ * chapter-scoped `<bibliography>` is NOT a boundary (it lives inside its chapter), mirroring `isBackMatter`.
+ *
+ * The body is DEEP-CLONED per call (#428): a website book is assembled + `runSync`'d TWICE (Phase 1 harvest,
+ * Phase 2 render), and `runSync` mutates nodes in place and is not idempotent — so each phase must splice a
+ * fresh copy of the shared `page.body`, exactly as compose-site clones the article tree seam.
+ *
+ * @param {Array} children       - the assembled book tree's children (pre-runSync).
+ * @param {Array} [trailingBody] - the interstitial mdast nodes; empty/absent → `children` is returned as-is.
+ * @returns {Array} a new children list with the interstitial inserted at the deepest-open-container.
+ */
+export function spliceBookInterstitial(children, trailingBody) {
+  if (!Array.isArray(trailingBody) || trailingBody.length === 0) return children;
+  const body = structuredClone(trailingBody);
+  const isDocBackMatter = (n) =>
+    isEnscribeTag(n) && BACK_MATTER_TAGS.has(n.tagname) && !n.kwargs?.['chapter-scoped'];
+  let i = children.length;
+  while (i > 0 && isDocBackMatter(children[i - 1])) i--;
+  return [...children.slice(0, i), ...body, ...children.slice(i)];
 }

@@ -73,13 +73,18 @@ export function composeSiteRegistry({ pages, destPrefixOf, buildPipeline, assemb
     idToOwner.set(anchor, owner);
   };
 
-  for (const { resolved, source, tree, slug, isBook } of pages) {
+  for (const { resolved, source, tree, slug, isBook, bookTrailing } of pages) {
     const destPrefix = destPrefixOf(slug);
     try {
       if (isBook) {
+        // #433: thread the book page's TRAILING interstitial (marker-7 body) into the assemble+number so
+        // its ids are HARVESTED here in Phase 1 (a cross-page <ref> into the interstitial resolves) — the
+        // same body Phase 2 splices to render. Both phases assemble fresh + clone the body (assembleAndNumber
+        // → spliceBookInterstitial), so the two agree without sharing mutated nodes.
         const { numbered, file } = assembleAndNumber({
           source, sourcePath: resolved.sourcePath, masterDir: resolved.pageDir,
           warn: (m) => warn(`page "${slug}": ${m}`), pipeOpts: { assetsDir: resolved.pageDir },
+          trailingBody: bookTrailing,
         });
         // prepareBook assigns chapter <book-part> ids + harvests + maps chapter-id → its `<stem>.html`,
         // WITHOUT rendering. Tag every anchor with the CHAPTER-PAGE it renders on, not one book slug.
