@@ -41,7 +41,7 @@ const FLAT_FILENAMES = {
 
 // Single-file mode (delivery-modes.md §Single-file): the chrome assets load FROM THE WEB (the file
 // carries only the document content, not the ~3 MB engine). The default is jsDelivr fronting the
-// PINNED, PUBLISHED npm package — `@enscribejs/enscribe@0.4.1` — an immutable version, not the moving
+// PINNED, PUBLISHED npm package — `@enscribejs/enscribe@0.5.0` — an immutable version, not the moving
 // `@main` git ref the stopgap used. jsDelivr serves npm files with the correct MIME
 // (`application/javascript` for the engine + editor, `text/css` for the stylesheets), so they execute
 // as a `<script>` / import as a module / apply as a stylesheet.
@@ -51,7 +51,7 @@ const FLAT_FILENAMES = {
 // single-file default is a PER-ASSET map at those real paths — NOT a flat `base + filename` (which
 // would 404). Bumping the pinned version is one edit to SINGLE_FILE_CDN_ROOT. Override the whole set
 // with emitSingleFileShell's `assetBase` (a flat self-host) or `assets` (per-asset).
-export const SINGLE_FILE_CDN_ROOT = 'https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/';
+export const SINGLE_FILE_CDN_ROOT = 'https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.5.0/';
 
 // The four chrome assets at their REAL paths in the pinned tarball (verified non-404, correct MIME).
 // These mirror the package `exports`: `./browser-global` → `dist/…`, `./default.css` →

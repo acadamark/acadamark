@@ -293,8 +293,8 @@ export function run_tests() {
       assert.ok(solo.html.includes('<template id="enscribe-source">'), 'the source is embedded in a <template>');
       assert.ok(/\.mountLiveDocument\('#enscribe-book-root'/.test(solo.html) && !solo.html.includes(".mountLiveShell('"),
         'the file mounts via mountLiveDocument (embedded read), not the fetching mountLiveShell');
-      assert.ok(/cdn\.jsdelivr\.net\/npm\/@enscribejs\/enscribe@0\.4\.1\/dist\/enscribe\.browser\.global\.js/.test(solo.html),
-        'the engine loads from the pinned npm CDN @0.4.1 (no embedded engine, no sibling assets)');
+      assert.ok(/cdn\.jsdelivr\.net\/npm\/@enscribejs\/enscribe@0\.5\.0\/dist\/enscribe\.browser\.global\.js/.test(solo.html),
+        'the engine loads from the pinned npm CDN @0.5.0 (no embedded engine, no sibling assets)');
       assert.ok(solo.html.includes('codeMirrorEditorFactory'), 'editable → the editor is wired');
       // the source is embedded HTML-escaped (the round-trip via <template>.content.textContent is
       // proven in the engine suite's single-file test; here we confirm the escaped content is carried)
@@ -413,7 +413,7 @@ export function run_tests() {
       assert.deepStrictEqual(cRes.assets, [], 'cdn copies NO chrome assets');
       assert.ok(!existsSync(join(cdn, 'enscribe.browser.global.js')), 'cdn: engine NOT copied');
       const cHtml = readFileSync(join(cdn, 'index.html'), 'utf8');
-      assert.ok(cHtml.includes('src="https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/enscribe.browser.global.js"'),
+      assert.ok(cHtml.includes('src="https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.5.0/dist/enscribe.browser.global.js"'),
         'cdn: engine referenced from the pinned jsDelivr package');
       assert.ok(existsSync(join(cdn, 'book.emd')), 'cdn: the document CONTENT is still copied (it is fetched)');
 
@@ -454,7 +454,7 @@ export function run_tests() {
 
       const cdn = buildSingleFile({ master: soloPath, warn: () => {} });   // delivery defaults to cdn
       assert.strictEqual(cdn.delivery, 'cdn', 'single-file delivery defaults to cdn');
-      assert.ok(cdn.html.includes('src="https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/enscribe.browser.global.js"'),
+      assert.ok(cdn.html.includes('src="https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.5.0/dist/enscribe.browser.global.js"'),
         'cdn single-file: engine referenced from jsDelivr');
 
       const inl = buildSingleFile({ master: soloPath, delivery: 'inlined', warn: () => {} });

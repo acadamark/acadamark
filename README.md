@@ -89,8 +89,7 @@ Found a bug, or want a feature? Open an issue at [github.com/enscribejs/enscribe
 
 ## Install
 
-<!-- re-true with #394 release: restore the "three npm packages" sentence once @enscribejs/ehtml publishes to the registry as an installable package -->
-enscribe installs as two npm packages today: **`@enscribejs/enscribe`** (the library — the eHTML vocabulary, the shorthand parser, and the interpreter) and **`@enscribejs/cli`** (the `enscribe` command). The vocabulary definitions are factored out as a third package, **`@enscribejs/ehtml`** (the vocabulary as data), which publishes to the registry with the next release.
+enscribe ships as three npm packages: **`@enscribejs/enscribe`** (the library — the shorthand parser and the interpreter), **`@enscribejs/cli`** (the `enscribe` command), and **`@enscribejs/ehtml`** (the eHTML vocabulary as data, which the library depends on and pulls in automatically). Install the library and, for the command line, the CLI:
 
 ```sh
 # The library, for use in a Node or browser project:

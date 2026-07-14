@@ -1,6 +1,6 @@
 {
   "name": "@enscribejs/cli",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "The `enscribe` command-line tool — render Enscribe documents to HTML, exchange JATS XML (export and import), import other formats via a pandoc bridge, and rewrite source between authoring registers.",
   "keywords": [
     "enscribe",
@@ -18,6 +18,9 @@
     "directory": "packages/cli"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Ariel Balter <ariel@arielbalter.com>",
   "type": "module",
   "engines": {
@@ -43,8 +46,8 @@
     "test": "node test/run.js && node test/jats-export.test.js"
   },
   "dependencies": {
-    "@enscribejs/ehtml": "^0.4.1",
-    "@enscribejs/enscribe": "^0.4.1",
+    "@enscribejs/ehtml": "^0.5.0",
+    "@enscribejs/enscribe": "^0.5.0",
     "mathml-to-latex": "^1.5.0",
     "remark-parse": "^11.0.0",
     "saxes": "^6.0.0",

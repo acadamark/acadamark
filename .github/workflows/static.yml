@@ -47,13 +47,17 @@ jobs:
         run: npm ci
       - name: Build the docs site (static + live)
         run: npm run build:site-all
-      - name: Add .nojekyll and CNAME to the built site
+      - name: Add .nojekyll to the built site
         # .nojekyll stops Pages Jekyll-processing the built tree (which has underscore-prefixed paths a
-        # Jekyll build would drop). CNAME prepares the custom domain — it takes effect only once DNS for
-        # enscribe.org points at Pages; until then the deploy serves on the default *.github.io URL.
+        # Jekyll build would drop).
+        #
+        # #394 W10: the CNAME step (`echo 'enscribe.org' > site/CNAME`) is intentionally DROPPED for now.
+        # This send serves on the default `*.github.io` URL ("github for now"). Stamping a CNAME for a
+        # domain that does not resolve is a latent 301-to-dead-domain landmine the moment a custom domain
+        # is ever set in Settings → Pages. Re-add the CNAME line (and set the domain in Settings → Pages)
+        # ONLY when DNS for enscribe.org points at Pages — Ariel's enscribe.org-at-release-time decision.
         run: |
           touch site/.nojekyll
-          echo 'enscribe.org' > site/CNAME
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
