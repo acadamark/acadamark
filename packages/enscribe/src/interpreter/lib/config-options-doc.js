@@ -60,7 +60,7 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'Heading shown above the listing.' },
   { key: 'toc-location', family: 'Table of contents', type: 'valued', values: 'body | left | right', default: 'body', scope: 'all',
     description: 'Where the listing sits: body = inline at the top of the document; left / right = a sticky sidebar.' },
-  { key: 'toc-expand', family: 'Table of contents', type: 'valued', values: 'an integer, or all | none', default: '1', scope: 'all',
+  { key: 'toc-expand', family: 'Table of contents', type: 'valued', values: 'an integer (0 = none), or all', default: '1', scope: 'all',
     description: 'How many sidebar levels are expanded initially (sidebar locations only).' },
 
   // ── Citations & bibliography ─────────────────────────────────────────────────

@@ -429,7 +429,7 @@ The complete set of document-level `<config>` settings, grouped by concern — t
 | `toc-depth` | a positive integer | 3 | all | Deepest heading level shown in the listing. |
 | `toc-title` | any text | Contents | all | Heading shown above the listing. |
 | `toc-location` | body \| left \| right | body | all | Where the listing sits: body = inline at the top of the document; left / right = a sticky sidebar. |
-| `toc-expand` | an integer, or all \| none | 1 | all | How many sidebar levels are expanded initially (sidebar locations only). |
+| `toc-expand` | an integer (0 = none), or all | 1 | all | How many sidebar levels are expanded initially (sidebar locations only). |
 
 **Citations & bibliography**
 
