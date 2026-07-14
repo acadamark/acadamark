@@ -68,6 +68,37 @@ const FAMILY_INTRO = {
   'structural-scaffolding':   'The document’s skeleton — containers, regions, sections, the website page-set, and the section break.',
 };
 
+// Per-surface family SPLITS: a surface may render one semantic family as more than one chapter.
+// The AUTHORING GUIDE splits the 'notation' family (Ariel's call): the title "Notation" named neither
+// of its two topics — mathematical typesetting and the sigil/code shorthand forms. The partition is by
+// the element's own `category` (math | code) — drift-proof: a new notation element files by its own
+// category, no hand-list to maintain. Math → "Mathematical Typesetting"; code (the backtick sigil forms)
+// + the footnote sigil (a CHAPTER_EXTRAS tail) → "Sigil Tag Shorthand". The comprehensive vocabulary /
+// eHTML surfaces keep the single "Notation" family chapter (element references, where the member list is
+// self-evident and these teaching-oriented titles don't fit). The intros below are structure-only,
+// awaiting Ariel's prose polish. The `keep` predicates must PARTITION the family (every member in exactly
+// one chapter); NOTATION_CATEGORY_GUARD below fails the build if a member's category is neither.
+const FAMILY_SPLITS = {
+  'authoring-guide': {
+    'notation': [
+      { title: 'Mathematical Typesetting', fslug: 'mathematical-typesetting',
+        intro: 'Mathematical content a DSL owns — inline and displayed math, multi-line alignment, cases, and matrices, embedded when small and exhibited when large. Enscribe owns the tag; the math body is LaTeX the KaTeX engine renders.',
+        keep: (n) => VOCABULARY[n]?.category === 'math' },
+      { title: 'Sigil Tag Shorthand', fslug: 'sigil-tag-shorthand',
+        intro: 'Code a DSL owns, and the sigil shorthand forms — each of these tags has a sigil form alongside its named-tag form (the backtick for code, the caret for a footnote). The body is held verbatim.',
+        keep: (n) => VOCABULARY[n]?.category !== 'math' },
+    ],
+  },
+};
+
+// Guard: every 'notation' family member must be math or code, so the split partition can't silently
+// misfile (or, with a third category, drop) a future element. Fails the docs build loudly if violated.
+{
+  const bad = Object.keys(VOCABULARY).filter((n) => VOCABULARY[n]?.semantic_family === 'notation'
+    && !['math', 'code'].includes(VOCABULARY[n]?.category));
+  if (bad.length) throw new Error(`generate-docs: notation-family element(s) with a category that is neither math nor code — the Mathematical Typesetting / Sigil Tag Shorthand split cannot classify them: ${[...new Set(bad)].join(', ')}. Update FAMILY_SPLITS.`);
+}
+
 // A cover lede teaching the one argument convention every element shares (#230). Placed on the
 // covers of the surfaces where authors learn/look up syntax, so the generated guide states the
 // positive-boolean rule plainly (source of record: notes/specs/shorthand-syntax.md).
@@ -322,9 +353,10 @@ const CHAPTER_EXTRAS = {
     // The exhaustive <config> options reference ends the Declarations & metadata chapter (the <config>
     // teaching's home). Generated from config-options-doc.js; no top-level menu item of its own.
     'declarations-and-metadata': buildConfigOptionsEmd(),
-    'notation': `<section #ag-footnote-sigil | The \`<^ …>\` footnote sigil>
+    // The footnote sigil rides the 'sigil-tag-shorthand' sub-chapter of the split 'notation' family.
+    'sigil-tag-shorthand': `<section #ag-footnote-sigil | The \`<^ …>\` footnote sigil>
 
-Notation's sigils have one sibling outside this family: the footnote sigil. It is
+The sigil shorthand forms have one sibling from another chapter: the footnote sigil. It is
 listed here because this chapter is where the sigil forms live side by side.
 
 <code #code:ag-caret-1>
@@ -428,9 +460,11 @@ outside a \`<data>\` block — see the \`<library>\` reference's Placement secti
 
 // ── page + index emitters ────────────────────────────────────────────────────
 
-function familyChapter(fam, title, sectionFn, extraSection) {
-  const members = familyMembers(fam);
-  let out = `${FAMILY_INTRO[fam] ?? ''}\n\n`;
+function familyChapter(fam, title, sectionFn, extraSection, { keep = null, intro = null } = {}) {
+  // `keep` selects a SUBSET of the family's members (a split chapter), `intro` overrides the family
+  // opener — both used only where a surface splits one family into more than one chapter (see FAMILY_SPLITS).
+  const members = familyMembers(fam).filter((n) => !keep || keep(n));
+  let out = `${intro ?? FAMILY_INTRO[fam] ?? ''}\n\n`;
   out += members.map(sectionFn).join('\n');
   if (extraSection) out += '\n' + extraSection;
   // #411: a chapter whose previews cite needs the docs example library on the page —
@@ -443,15 +477,14 @@ function familyChapter(fam, title, sectionFn, extraSection) {
   return out;
 }
 
-function bookIndex({ slug, title, subtitle, introChapter = null, extraChapters = [] }) {
+function bookIndex({ slug, title, subtitle, introChapter = null, chapters, extraChapters = [] }) {
   let out = `<meta type=book slug=${slug}>\n<title | ${title}>\n<subtitle | ${subtitle}>\n<author>\n<name | Generated from the Enscribe vocabulary source (docs-gen/generate-docs.mjs)>\n</author>\n</meta>\n\n`;
   out += `<config number-tables=false />\n\n`;
   // The book cover renders a fixed template (book-scaffold.js coverBodyHtml), not authored body
   // prose, so a shared teaching lives in a real leading CHAPTER, not on the cover (#230/boolean-docs).
   if (introChapter) out += `<chapter src="${introChapter[0]}" | ${introChapter[1]}>\n`;
-  for (const [fam, ftitle, fslug] of FAMILY_ORDER) {
-    out += `<chapter src="${fslug}.emd" | ${ftitle}>\n`;
-  }
+  // `chapters` is the surface's effective chapter list (FAMILY_ORDER with any split family expanded).
+  for (const { fslug, title: ctitle } of chapters) out += `<chapter src="${fslug}.emd" | ${ctitle}>\n`;
   for (const [src, ctitle] of extraChapters) out += `<chapter src="${src}" | ${ctitle}>\n`;
   return out;
 }
@@ -496,8 +529,17 @@ const surfaces = [
 
 let pageCount = 0, elementCount = 0;
 for (const s of surfaces) {
-  // Remove stale generated family pages (keep index we rewrite + any preserved extras like showcase).
-  for (const [, , fslug] of FAMILY_ORDER) {
+  const splits = FAMILY_SPLITS[s.slug] ?? {};
+  // The surface's EFFECTIVE chapter list: FAMILY_ORDER with any split family expanded into its
+  // sub-chapters. Non-split families carry keep=null/intro=null (the whole family, the family intro).
+  const chapters = FAMILY_ORDER.flatMap(([fam, title, fslug]) =>
+    splits[fam]
+      ? splits[fam].map((sub) => ({ fam, title: sub.title, fslug: sub.fslug, keep: sub.keep, intro: sub.intro }))
+      : [{ fam, title, fslug, keep: null, intro: null }]);
+  // Remove stale generated family pages — both the effective slugs AND the original FAMILY_ORDER slugs
+  // (so an old un-split page, e.g. notation.emd, is deleted when its family is now split). Preserved
+  // extras (showcase, multi-file-documents) and the index we rewrite are untouched.
+  for (const fslug of new Set([...FAMILY_ORDER.map(([, , f]) => f), ...chapters.map((c) => c.fslug)])) {
     const p = join(s.dir, `${fslug}.emd`);
     if (existsSync(p)) rmSync(p);
   }
@@ -505,12 +547,13 @@ for (const s of surfaces) {
   writeFile(s.dir, 'index.emd', bookIndex({
     slug: s.slug, title: s.title, subtitle: s.subtitle,
     introChapter: s.intro ? ['argument-conventions.emd', 'Argument conventions'] : null,
-    extraChapters: s.extra,
+    chapters, extraChapters: s.extra,
   }));
-  for (const [fam, title, fslug] of FAMILY_ORDER) {
-    const members = familyMembers(fam);
-    elementCount += members.length;
-    writeFile(s.dir, `${fslug}.emd`, familyChapter(fam, title, s.sectionFn, CHAPTER_EXTRAS[s.slug]?.[fam]));
+  for (const c of chapters) {
+    elementCount += familyMembers(c.fam).filter((n) => !c.keep || c.keep(n)).length;
+    // CHAPTER_EXTRAS is keyed by the CHAPTER slug (fslug), so a split sub-chapter gets its own extra
+    // (the footnote-sigil rides 'sigil-tag-shorthand'); for a non-split family, fslug === the family key.
+    writeFile(s.dir, `${c.fslug}.emd`, familyChapter(c.fam, c.title, s.sectionFn, CHAPTER_EXTRAS[s.slug]?.[c.fslug], { keep: c.keep, intro: c.intro }));
     pageCount++;
   }
   pageCount++; // index

@@ -1,0 +1,69 @@
+Code a DSL owns, and the sigil shorthand forms — each of these tags has a sigil form alongside its named-tag form (the backtick for code, the caret for a footnote). The body is held verbatim.
+
+<section #ag-code | `<code>`>
+
+Compiles to eHTML `<code>`.
+
+<code #code:ag-code-1>
+The function is `factorial`.
+</code>
+
+<minipage #mp:ag-code-1>
+The function is `factorial`.
+</minipage>
+
+*Plain markdown backticks produce inline &lt;code&gt;. The most common
+authoring path.*
+
+<section #ag-code-block | `<code-block>`>
+
+Compiles to eHTML `<code-block>`.
+
+<code #code:ag-code-block-1>
+<``` python | print("hello, world") ```>
+</code>
+
+<minipage #mp:ag-code-block-1>
+<``` python | print("hello, world") ```>
+</minipage>
+
+*The triple-backtick sigil. The first positional token is the
+language (emitted as a `language-X` class on the &lt;code&gt;); the pipe
+separates it from the verbatim, whitespace-preserving content — the
+pipe-form padding (the spaces around the content) is KEPT, since
+whitespace in code is significant and visible to the reader. (#327)*
+
+<section #ag-inline-code | `<inline-code>`>
+
+Compiles to eHTML `<inline-code>`.
+
+<code #code:ag-inline-code-1>
+Assign with <` x = 1 `> at the top of the function.
+</code>
+
+<minipage #mp:ag-inline-code-1>
+Assign with <` x = 1 `> at the top of the function.
+</minipage>
+
+*The single-backtick sigil. With no pipe, the whole body is opaque
+code content rendered as &lt;code&gt; (the same output as a markdown
+backtick span). Whitespace in code is significant and preserved, so
+the pipe-form padding stays INSIDE the &lt;code&gt;. (#327)*
+
+<section #ag-footnote-sigil | The `<^ …>` footnote sigil>
+
+The sigil shorthand forms have one sibling from another chapter: the footnote sigil. It is
+listed here because this chapter is where the sigil forms live side by side.
+
+<code #code:ag-caret-1>
+A claim<^ A footnote written with the sigil.>.
+</code>
+
+<minipage #mp:ag-caret-1>
+A claim<^ A footnote written with the sigil.>.
+</minipage>
+
+*The `^` sigil (#416): the native footnote, sugar for `<note | …>` —
+`<^ x>` and `<note | x>` produce byte-identical output. Content-only (no
+id or attributes inside the sigil); see `<note>` in the Aside chapter for
+the attributed and long forms, numbering, and margin placement.*

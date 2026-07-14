@@ -1,4 +1,4 @@
-Foreign formal-language content a DSL owns — mathematics and code, embedded when small and exhibited when large.
+Mathematical content a DSL owns — inline and displayed math, multi-line alignment, cases, and matrices, embedded when small and exhibited when large. Enscribe owns the tag; the math body is LaTeX the KaTeX engine renders.
 
 <section #ag-align | `<align>`>
 
@@ -43,39 +43,6 @@ x^2 & \text{if } x \ge 0 \\
 *A two-case piecewise definition. Handler wraps in
 `\begin{cases}...\end{cases}`.*
 
-<section #ag-code | `<code>`>
-
-Compiles to eHTML `<code>`.
-
-<code #code:ag-code-1>
-The function is `factorial`.
-</code>
-
-<minipage #mp:ag-code-1>
-The function is `factorial`.
-</minipage>
-
-*Plain markdown backticks produce inline &lt;code&gt;. The most common
-authoring path.*
-
-<section #ag-code-block | `<code-block>`>
-
-Compiles to eHTML `<code-block>`.
-
-<code #code:ag-code-block-1>
-<``` python | print("hello, world") ```>
-</code>
-
-<minipage #mp:ag-code-block-1>
-<``` python | print("hello, world") ```>
-</minipage>
-
-*The triple-backtick sigil. The first positional token is the
-language (emitted as a `language-X` class on the &lt;code&gt;); the pipe
-separates it from the verbatim, whitespace-preserving content — the
-pipe-form padding (the spaces around the content) is KEPT, since
-whitespace in code is significant and visible to the reader. (#327)*
-
 <section #ag-display-math | `<display-math>`>
 
 Compiles to eHTML `<display-math>`.
@@ -112,23 +79,6 @@ g(x) &=& 2x
 
 *Two equations rendered via KaTeX's `aligned` env (the supported
 equivalent of LaTeX's `eqnarray`).*
-
-<section #ag-inline-code | `<inline-code>`>
-
-Compiles to eHTML `<inline-code>`.
-
-<code #code:ag-inline-code-1>
-Assign with <` x = 1 `> at the top of the function.
-</code>
-
-<minipage #mp:ag-inline-code-1>
-Assign with <` x = 1 `> at the top of the function.
-</minipage>
-
-*The single-backtick sigil. With no pipe, the whole body is opaque
-code content rendered as &lt;code&gt; (the same output as a markdown
-backtick span). Whitespace in code is significant and preserved, so
-the pipe-form padding stays INSIDE the &lt;code&gt;. (#327)*
 
 <section #ag-inline-math | `<inline-math>`>
 
@@ -188,21 +138,3 @@ Compiles to eHTML `<matrix>`.
 
 *A 2×2 matrix. The handler wraps the body in
 `\begin{matrix}...\end{matrix}` before KaTeX renders.*
-
-<section #ag-footnote-sigil | The `<^ …>` footnote sigil>
-
-Notation's sigils have one sibling outside this family: the footnote sigil. It is
-listed here because this chapter is where the sigil forms live side by side.
-
-<code #code:ag-caret-1>
-A claim<^ A footnote written with the sigil.>.
-</code>
-
-<minipage #mp:ag-caret-1>
-A claim<^ A footnote written with the sigil.>.
-</minipage>
-
-*The `^` sigil (#416): the native footnote, sugar for `<note | …>` —
-`<^ x>` and `<note | x>` produce byte-identical output. Content-only (no
-id or attributes inside the sigil); see `<note>` in the Aside chapter for
-the attributed and long forms, numbering, and margin placement.*
