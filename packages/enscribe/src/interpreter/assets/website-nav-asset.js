@@ -32,13 +32,22 @@ export const GITHUB_MARK_SVG =
   '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">' +
   '<path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.04-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.27-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
 
+// #435: the edit-layout toggle — two side-by-side columns (currentColor, like GITHUB_MARK_SVG / GEAR_SVG,
+// so every theme + dark renders it with no per-theme asset).
+export const LAYOUT_COLUMNS_SVG =
+  '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">' +
+  '<path d="M2.5 2h4a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5Zm7 0h4a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5Z"/></svg>';
+
 /**
  * Build the shell-actions corner. `edit` renders the Edit toggle (a live-surface affordance — the
- * binder in browser.js flips `?edit` and reloads; `editOn` marks the current state); `repoUrl`
- * renders the GitHub mark. Neither → '' (the chrome is byte-identical for a site with no repo
- * config on a static page). Placement is the caller's: inline in the top bar, or `--floating`.
+ * binder in browser.js flips `?edit` and reloads; `editOn` marks the current state); `layout` renders
+ * the #435 edit-layout toggle (stacked ↔ side-by-side, edit-mode-only, article surfaces — the binder in
+ * browser.js flips `.enscribe-edit-main--split` and persists per-origin); `repoUrl` renders the GitHub
+ * mark. Up to four affordances — Edit, layout, GitHub, gear — in that order (layout beside Edit, both
+ * edit-related). None → '' (the chrome is byte-identical for a site with no repo config on a static
+ * page). Placement is the caller's: inline in the top bar, or `--floating`.
  */
-export function buildShellActions({ edit = false, editOn = false, repoUrl = null, floating = false, settings = false, document: docTier = false, themes = [] } = {}) {
+export function buildShellActions({ edit = false, editOn = false, layout = false, repoUrl = null, floating = false, settings = false, document: docTier = false, themes = [] } = {}) {
   const parts = [];
   if (edit) {
     parts.push(
@@ -47,15 +56,26 @@ export function buildShellActions({ edit = false, editOn = false, repoUrl = null
       `${editOn ? 'Read' : 'Edit'}</button>`,
     );
   }
+  // #435: the edit-layout toggle — present only in edit mode on a split-capable (article) surface. SSR-
+  // rendered stacked (aria-pressed="false"); the browser binder reconciles it to the per-origin persisted
+  // choice on load and re-stamps aria-pressed/title on toggle. Hidden below the split breakpoint by CSS.
+  if (layout) {
+    parts.push(
+      `<button type="button" class="enscribe-shell-action enscribe-shell-action--layout" data-enscribe-layout-toggle` +
+      ` aria-pressed="false" aria-label="Editor layout" title="Show the editor and preview side by side">` +
+      `${LAYOUT_COLUMNS_SVG}</button>`,
+    );
+  }
   if (repoUrl) {
     parts.push(
       `<a class="enscribe-shell-action enscribe-shell-action--github" href="${esc(repoUrl)}"` +
       ` aria-label="Project repository on GitHub" title="View source on GitHub">${GITHUB_MARK_SVG}</a>`,
     );
   }
-  // #430: the settings gear — the third affordance, rightmost. Unlike Edit/GitHub it is UNCONDITIONAL on
-  // the surfaces that opt in (its reader tier is always available), so a corner carrying only the gear is
-  // still a corner — the `parts.length === 0` empty-return no longer fires when `settings` is set.
+  // #430: the settings gear — rightmost, after Edit / #435 layout / GitHub. Unlike the others it is
+  // UNCONDITIONAL on the surfaces that opt in (its reader tier is always available), so a corner carrying
+  // only the gear is still a corner — the `parts.length === 0` empty-return no longer fires when `settings`
+  // is set.
   if (settings) parts.push(buildSettingsPanel({ document: docTier, themes }));
   if (parts.length === 0) return '';
   return `<div class="enscribe-shell-actions${floating ? ' enscribe-shell-actions--floating' : ''}">${parts.join('')}</div>`;
@@ -74,6 +94,15 @@ export const SHELL_ACTIONS_CSS = `
 .enscribe-shell-action:hover { color: var(--enscribe-text-primary, #1f2328); background: var(--enscribe-bg-subtle, #f6f8fa); }
 .enscribe-shell-action--edit[aria-pressed="true"] { color: var(--enscribe-link, #0969da); }
 .enscribe-shell-action--github svg { display: block; }
+/* #435: the edit-layout toggle — SVG block like the GitHub mark; pressed (side-by-side active) reads as
+   the active accent, like the Edit toggle. Below the split breakpoint two columns don't fit, so the
+   toggle hides (its target layout is inert there too — the edit view stays the stacked tab view). */
+.enscribe-shell-action--layout svg { display: block; }
+.enscribe-shell-action--layout[aria-pressed="true"] { color: var(--enscribe-link, #0969da); }
+/* "not all and (min-width: 60rem)" is the EXACT complement of the split grid's min-width:60rem media
+   query (enscribe-shell.css) — gapless, so there is no fractional-width band where the toggle shows but
+   the grid is inactive. Below the breakpoint the toggle hides (its target layout is inert — stacked). */
+@media not all and (min-width: 60rem) { .enscribe-shell-action--layout { display: none; } }
 /* Standalone live shells (no top bar): the corner floats fixed top-right — the same pill the
    #398 settings gear will join. Sits above the reading column; the gutter chevrons are vertically
    centered, so the corner (top-anchored) shares no band with them. */

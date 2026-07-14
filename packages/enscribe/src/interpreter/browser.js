@@ -82,6 +82,65 @@ function bindShellEditToggle(container) {
   });
 }
 
+// ── #435: the edit-layout toggle (stacked ↔ side-by-side) ──────────────────────────────────────────
+// A UI/SHELL setting, NOT a <config> setting (Ariel, 2026-07-16): edit layout is ephemeral viewer state,
+// meaningless in a saved/published document, so it lives in the chrome and persists per-origin in
+// localStorage like the reader tier (settings-panel.js) — never written to the document. It drives ONLY
+// the article edit view (`.enscribe-edit-main--splittable`); enscribe-shell.css owns the two-column
+// layout + the responsive collapse. Default is the current stacked view (no surprise for existing users).
+const EDIT_LAYOUT_KEY = 'enscribe:edit-layout';   // 'split' | 'stacked' (absent ⇒ stacked)
+function readEditLayout() {
+  try { return localStorage.getItem(EDIT_LAYOUT_KEY) === 'split' ? 'split' : 'stacked'; } catch { return 'stacked'; }
+}
+function saveEditLayout(mode) {
+  try { localStorage.setItem(EDIT_LAYOUT_KEY, mode); } catch { /* storage off — the session still toggles, just doesn't persist */ }
+}
+// Apply `mode` to every split-capable edit-main present, reflect it on every layout toggle, and nudge the
+// editor to re-measure — a source pane revealed from `hidden` in split measured 0, the SAME resize nudge
+// wireEditTabs uses on a tab reveal. Document-wide + idempotent, so one function serves both a fresh
+// edit-view render (applyPersistedEditLayout) and a button click.
+function applyEditLayout(mode) {
+  if (typeof document === 'undefined') return;
+  const split = mode === 'split';
+  for (const main of document.querySelectorAll('.enscribe-edit-main--splittable')) {
+    main.classList.toggle('enscribe-edit-main--split', split);
+  }
+  for (const btn of document.querySelectorAll('[data-enscribe-layout-toggle]')) {
+    btn.setAttribute('aria-pressed', split ? 'true' : 'false');
+    btn.title = split ? 'Stack the editor and preview' : 'Show the editor and preview side by side';
+  }
+  // Nudge on EVERY transition (not just entering split): leaving split also changes the source pane's
+  // width (half-column → reading column), and toggling classes fires no native resize, so CodeMirror must
+  // be told to re-measure either way. Harmless when the layout didn't actually change.
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+    window.dispatchEvent(new window.Event('resize'));
+  }
+}
+// Apply the PERSISTED layout to a freshly-rendered ARTICLE edit view (called after wireEditTabs at the
+// article edit sites). Split is applied BEFORE the editor mounts, so the source pane is already visible
+// when CodeMirror measures — the initial render needs no nudge; the nudge in applyEditLayout covers a
+// later toggle. A no-op when nothing is stored (stacked = the default), so the tab view is untouched.
+function applyPersistedEditLayout() { applyEditLayout(readEditLayout()); }
+// One binder per corner (delegated, like bindShellEditToggle). A click on the layout toggle flips
+// split ↔ stacked, persists it, and re-applies. Idempotent per container.
+function bindShellLayoutToggle(container) {
+  if (!container || typeof container.addEventListener !== 'function') return;
+  if (container.__enscribeLayoutToggleBound) return;
+  container.__enscribeLayoutToggleBound = true;
+  container.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('[data-enscribe-layout-toggle]');
+    if (!btn) return;
+    // Derive the next state from the ACTUAL applied layout (the DOM), not the store — so the toggle still
+    // flips both ways in-session when localStorage is unavailable (private mode / storage off), where a
+    // read-back would always report 'stacked' and strand the toggle stuck-on. saveEditLayout still tries
+    // to persist (a no-op when storage is off).
+    const currentlySplit = !!(typeof document !== 'undefined' && document.querySelector('.enscribe-edit-main--split'));
+    const next = currentlySplit ? 'stacked' : 'split';
+    saveEditLayout(next);
+    applyEditLayout(next);
+  });
+}
+
 // #430: read the master's own <config> for the live variant stamp below. config-discovery populates
 // file.data[ENSCRIBE_CONFIG] during the transform (it needs the NORMALIZED tree — a raw parse has not yet
 // turned `<config …>` into a node with kwargs), so this runs the pipeline transform on a throwaway file.
@@ -114,7 +173,7 @@ function applyDocumentThemeVariant(configMap) {
 // never load the website chrome CSS). Edit only — a standalone shell's document is the page (repo
 // linkage is the website chrome's `<config repo>` concern; threading it through the three standalone
 // mount paths rides the #398 corner slice).
-function injectFloatingShellActions({ document: docTier = false, themes = [] } = {}) {
+function injectFloatingShellActions({ document: docTier = false, layout = false, themes = [] } = {}) {
   // No document → nothing to inject; no location → nothing the Edit toggle could flip (a jsdom
   // harness without a URL, or a non-browser host) — the corner is chrome for a real navigable page.
   if (typeof document === 'undefined' || typeof location === 'undefined') return;
@@ -131,9 +190,13 @@ function injectFloatingShellActions({ document: docTier = false, themes = [] } =
   // #430: the settings gear joins the floating pill (reader tier — always available on a standalone
   // reading surface). The document tier (theme picker + variant) is rendered only when `docTier` (an
   // editable article in edit mode) and WIRED by the edit loop, which holds the source + editor handle.
-  holder.innerHTML = buildShellActions({ edit: true, editOn, floating: true, settings: true, document: docTier, themes });
+  // #435: the layout toggle rides the floating pill only for a split-capable surface in edit mode
+  // (`layout` = editEnabled && article, set by the caller) — a standalone book's edit view is not
+  // splittable, so it never gets the button.
+  holder.innerHTML = buildShellActions({ edit: true, editOn, layout, floating: true, settings: true, document: docTier, themes });
   document.body.appendChild(holder);
   bindShellEditToggle(holder);
+  bindShellLayoutToggle(holder);   // #435
   bindSettingsPanel();   // reader tier + the panel's Escape/outside-click dismissal
 }
 
@@ -1022,6 +1085,7 @@ function mountArticleEditLoop({ root, proc, masterSource, loadedFile, editor, de
   const saveable = !!saveContext;
   root.innerHTML = renderLiveArticleEditView(renderArticle(currentSource), undefined, saveable);
   wireEditTabs(root);
+  applyPersistedEditLayout();   // #435: a persisted split reveals both panes BEFORE the editor mounts below
   // #351 — a single-file vessel serializes edits back into itself; wire the Save button + dirty tracking.
   const save = saveable
     ? wireEditSave(root, { pristineHtml: saveContext.pristineHtml, getSource: () => currentSource })
@@ -1458,11 +1522,22 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // The controls render into the persistent chrome; showEditPage wires them to the ACTIVE page's source
     // per navigation (an article page → rewrite its <config>; a book/read/not-found page → hidden). A
     // read-only website (no editor) passes document:false, so it stays reader-tier-only.
-    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, repoUrl, settings: true, document: !!editor, themes: [...KNOWN_THEMES] })),
+    // #435: the edit-layout toggle rides the corner in edit mode; showEditPage reveals it only on an
+    // ARTICLE page (split-capable) and hides it on a book/read/not-found page — the same per-page
+    // reveal/hide pattern the document tier uses (setLayoutButtonVisible, below).
+    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, layout: editOn, repoUrl, settings: true, document: !!editor, themes: [...KNOWN_THEMES] })),
     sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
     footer: footerHtml,
   });
   bindShellEditToggle(root);
+  bindShellLayoutToggle(root);   // #435
+  // #435: the layout toggle is per-page on the website (article pages only). Hide it until showEditPage
+  // reveals it for an article; a book/read/not-found page keeps it hidden (its edit-main isn't splittable).
+  const setLayoutButtonVisible = (on) => {
+    const btn = root.querySelector('[data-enscribe-layout-toggle]');
+    if (btn) btn.hidden = !on;
+  };
+  setLayoutButtonVisible(false);
   if (root.classList && typeof root.classList.add === 'function') root.classList.add('enscribe-site');
   // The top-bar dropdown opens natively (<details>/<summary>); wire the missing dismissal — close on
   // outside-click + Escape — once for the persistent chrome. Document-level + idempotent, so it stays live
@@ -1585,6 +1660,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
     resetDocumentTier();   // #434: hide the theme picker by default; the article branch below re-shows +
                            // re-wires it to THIS page. A book page (per-chapter edit, master <config> not in
                            // the buffer), a not-found, or an error page keeps it hidden — reader tier only.
+    setLayoutButtonVisible(false);   // #435: same default-hide — only the article branch (split-capable) re-shows it
     if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, { firstSlug }) : ''; return; }
     if (pageBySlug.get(slug)?.isError) {
       // #405: nothing to edit — the page's source never loaded; show the failed-page view.
@@ -1615,6 +1691,8 @@ export async function mountLiveWebsite(target, source, options = {}) {
     let currentSource = sourceBySlug.get(slug) ?? '';
     contentRegion.innerHTML = renderLiveArticleEditView(renderPageStandalone(currentSource));
     wireEditTabs(contentRegion);
+    setLayoutButtonVisible(true);   // #435: an article page IS split-capable — reveal the layout toggle
+    applyPersistedEditLayout();     // and apply the per-origin persisted split to this fresh edit view
     // Run the page-embedded interactivity (scrollspy / on-this-page) in the preview so its rail spies
     // exactly as read mode — the preview holds the page's REAL render, and executeAssets runs its
     // scripts (innerHTML does not). Re-run after each edit so the new render's script re-attaches.
@@ -1793,7 +1871,7 @@ export async function mountLiveDocument(target, source, options = {}) {
     // master, breaking the tier's whole point (the author watching `<config theme=…>` appear in the source
     // pane). Editing a book's theme is a master-<config> affordance the per-chapter loop doesn't offer — a
     // follow-on, not this wiring. Read-only + book standalone surfaces get the reader tier alone.
-    injectFloatingShellActions({ document: editEnabled && type === 'article', themes: [...KNOWN_THEMES] });
+    injectFloatingShellActions({ document: editEnabled && type === 'article', layout: editEnabled && type === 'article', themes: [...KNOWN_THEMES] });
   }
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
     : type === 'website' ? mountLiveWebsite(target, source, mountOptions)

@@ -59,7 +59,12 @@ function editTabs(defaultTab, saveable = false) {
  * @returns {string} the `<main class="enscribe-edit-main">…</main>` fragment
  */
 export function buildEditMain(previewBody, defaultTab = DEFAULT_TAB, saveable = false) {
-  return `<main class="enscribe-edit-main">${buildEditMainInner(previewBody, defaultTab, saveable)}</main>`;
+  // #435: `--splittable` marks an ARTICLE edit view as eligible for the side-by-side (split) layout —
+  // the chrome layout toggle applies `--split` only to a `--splittable` main. The BOOK chapter edit
+  // view wraps buildEditMainInner in its OWN `<div class="enscribe-edit-main">` (live-book.js), WITHOUT
+  // this marker, so it is deliberately excluded: its edit-main is nested in the 3-column book reading
+  // column, where a half-width split preview is a competing-grid rebuild, not this CSS-layout addition.
+  return `<main class="enscribe-edit-main enscribe-edit-main--splittable">${buildEditMainInner(previewBody, defaultTab, saveable)}</main>`;
 }
 
 /**

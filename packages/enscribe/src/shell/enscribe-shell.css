@@ -39,3 +39,40 @@
 .enscribe-edit-pane--source .cm-editor { border: 1px solid var(--enscribe-border, #e1e1e1); border-radius: var(--enscribe-radius-sm, 2px); min-height: 65vh; font-size: 0.9rem; }
 .enscribe-edit-pane--source .cm-scroller { font-family: var(--enscribe-font-mono, 'Source Code Pro', ui-monospace, monospace); }
 .enscribe-edit-error { color: #b00020; font-style: italic; }
+
+/* #435 — the side-by-side (split) edit layout. An OPT-IN mode on the ARTICLE edit view
+   (.enscribe-edit-main--splittable; the book chapter edit-main lacks the marker — it is nested in the
+   3-column book reading column, a competing grid, so it is excluded). The two panes already coexist in
+   one container (the stacked tab view hides the inactive one via `hidden`); split reveals BOTH in two
+   columns. Toggled by the chrome layout button (browser.js), persisted per-origin. Above the split
+   breakpoint ONLY: two columns don't fit on a phone, so below 60rem the class is inert — the view stays
+   the stacked Write/Preview tab view (the layout toggle hides there too, SHELL_ACTIONS_CSS). */
+@media (min-width: 60rem) {
+  .enscribe-edit-main--splittable.enscribe-edit-main--split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  /* the tab bar (which carries Save + the saved/unsaved status) is a full-width toolbar over both columns */
+  .enscribe-edit-main--split > .enscribe-edit-tabs { grid-column: 1 / -1; }
+  /* both panes show: reveal the tab-`hidden` pane by overriding [hidden] (the attribute itself is left
+     intact, so leaving split restores the exact tab state); the Source|Preview tab buttons are redundant
+     when both panes are visible, so they are hidden (the bar keeps Save + status). */
+  .enscribe-edit-main--split .enscribe-edit-pane[hidden] { display: block; }
+  .enscribe-edit-main--split .enscribe-edit-tab { display: none; }
+  /* left column: the editor FILLS its half (the reading-column width-match is for the stacked toggle only) */
+  .enscribe-edit-main--split .enscribe-edit-pane--source { max-width: none; margin-inline: 0; }
+  /* right column: the PREVIEW keeps its read-mode `content` framing (live ≡ read preserved — the render
+     still matches read mode exactly, just sitting in the narrower cell); a rule + padding divide the two. */
+  .enscribe-edit-main--split .enscribe-edit-pane--preview {
+    border-inline-start: 1px solid var(--enscribe-border, #e1e1e1);
+    padding-inline-start: var(--enscribe-space-8, 2rem);
+  }
+  /* the STANDALONE article body is capped at the reading column (default.css `body { max-width }`) — widen
+     it so two columns fit. Scoped to a NON-website body (`:not(:has(.enscribe-site))`): the website edit
+     surface already lives in a full-width `.content` under `body:has(.enscribe-site){max-width:none}`, and
+     an unscoped widen here (higher specificity) would OVERRIDE that reset and pin the whole site chrome to
+     84rem left-aligned in split mode. The book layout is untouched (split is article-only). `:has()`
+     mirrors website-nav's `body:has(.enscribe-site)`. */
+  body:not(:has(.enscribe-site)):has(.enscribe-edit-main--splittable.enscribe-edit-main--split) { max-width: 84rem; }
+}

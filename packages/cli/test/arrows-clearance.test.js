@@ -11,17 +11,52 @@
 // getBoundingClientRect. SKIP (loud, with a human-check note) when no driver is importable.
 
 import assert from 'node:assert';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { buildShellActions, SHELL_ACTIONS_CSS, WEBSITE_NAV_CSS, renderLiveArticleEditView } from '@enscribejs/enscribe';
 import { findChromium, detectDriver, openBrowser } from './delivery-browser.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '../../..');
 const CLI = join(ROOT, 'packages/cli/bin/enscribe.js');
 const FIX = join(__dirname, 'fixtures');
+const PKG_ENSCRIBE = join(ROOT, 'packages/enscribe');
+
+// #435: a self-contained harness for the edit-layout (split) geometry. jsdom has no layout engine, so the
+// two-column layout + the responsive collapse + the (now four-affordance) corner clearance are measured in
+// a REAL browser here. It mounts the ACTUAL edit-view markup (renderLiveArticleEditView) + the ACTUAL
+// corner (buildShellActions) under the ACTUAL shipped CSS, with --split forced on, and sweeps widths. Two
+// surfaces: the STANDALONE article body (reading-column-capped → widened by :has()) and the WEBSITE body
+// (full-bleed `.enscribe-site` reset — which the standalone widen must NOT override, the review's catch).
+function buildEditLayoutHarness(surface) {
+  const defaultCss = readFileSync(join(PKG_ENSCRIBE, 'src/interpreter/assets/default.css'), 'utf8');
+  const shellCss = readFileSync(join(PKG_ENSCRIBE, 'src/shell/enscribe-shell.css'), 'utf8');
+  const website = surface === 'website';
+  const corner = buildShellActions({
+    edit: true, editOn: true, layout: true, repoUrl: 'https://github.com/enscribejs/enscribe',
+    floating: !website, settings: true, document: true, themes: ['modern', 'compact', 'tufte'],
+  });
+  // The real article edit view, with --split forced (the toggle's effect) and the source pane given a
+  // stand-in editor (real CodeMirror is absent in the harness) + the preview given tall content, so both
+  // panes have real geometry to measure. The source pane ships `hidden` (preview is the default tab), so
+  // this also exercises the split rule that REVEALS the hidden pane.
+  const editView = renderLiveArticleEditView('<h1>Preview heading</h1>' + '<p>Body paragraph.</p>'.repeat(30))
+    .replace('enscribe-edit-main enscribe-edit-main--splittable', 'enscribe-edit-main enscribe-edit-main--splittable enscribe-edit-main--split')
+    .replace(/(data-edit-pane="source"[^>]*>)/, '$1<div class="cm-editor">editor stand-in</div>');
+  // The website surface reproduces mountLiveWebsite's DOM: a `.enscribe-site` body wrapper (the full-bleed
+  // `body:has(.enscribe-site)` reset lives in WEBSITE_NAV_CSS) with the corner in the sticky header and the
+  // edit view in `.content`. The standalone surface is the floating corner + the edit view directly.
+  const body = website
+    ? `<div class="enscribe-site"><header class="enscribe-site-header">${corner}</header><div class="content">${editView}</div></div>`
+    : `${corner}${editView}`;
+  const css = website ? `${defaultCss}\n${shellCss}\n${WEBSITE_NAV_CSS}` : `${defaultCss}\n${shellCss}\n${SHELL_ACTIONS_CSS}`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">` +
+    `<meta name="viewport" content="width=device-width, initial-scale=1">` +
+    `<style>${css}</style></head><body>${body}</body></html>`;
+}
 
 const WIDTHS = [984, 1000, 1040, 1100, 1160, 1200, 1240, 1288, 1300, 1360, 1440, 1560, 1700];
 const NEIGHBORS = {
@@ -154,6 +189,70 @@ export async function run_tests() {
           `${label}: the OPEN settings panel must stay on-screen and clear the gutter chevrons (984–1700px × {900,600}h) — got: ${panelFailures.join('; ')}`);
         console.log(`PASS: #430 settings-panel clearance — ${label}: open panel stays on-screen + clears the gutter chevrons across 984–1700px × {900,600}h`);
       }
+    }
+
+    // ── #435: the edit-layout (split) geometry — the four-affordance corner + the OPEN side-by-side view ──
+    // Across a width sweep straddling the 60rem (960px) split breakpoint, on the REAL edit-view + corner CSS:
+    //   (1) NO horizontal overflow at any width — a split column blowout is exactly the "broken column
+    //       layout" the slice must not ship;
+    //   (2) split engages ONLY at >=960px (the edit-main is display:grid there, and NOT below — the
+    //       responsive collapse back to the stacked tab view);
+    //   (3) the layout toggle HIDES below the breakpoint (its target layout is inert there);
+    //   (4) at >=960px the two panes are genuinely side by side (source entirely left of preview); and
+    //   (5) the four-affordance corner (Edit, layout, GitHub, gear) stays fully on-screen at every width.
+    // Straddle the 60rem (960px) split breakpoint: phone/tablet widths that must collapse to stacked, the
+    // exact boundary, and desktop widths that must show the two-column split (incl. wider than the 84rem
+    // standalone-widen so the website full-bleed regression is provable).
+    const EDIT_WIDTHS = [420, 600, 768, 900, 959, 960, 1024, 1200, 1440, 1700];
+    for (const surface of ['standalone', 'website']) {
+      const harnessPath = join(dir, `edit-layout-${surface}.html`);
+      writeFileSync(harnessPath, buildEditLayoutHarness(surface), 'utf8');
+      const page2 = await browser.page(false);
+      await page2.goto(pathToFileURL(harnessPath).href);
+      const failures = [];
+      for (const w of EDIT_WIDTHS) {
+        await page2.setViewport({ width: w, height: 900 });
+        const m = await page2.eval(() => {
+          const rect = (sel) => { const el = document.querySelector(sel); return el ? (({ left, right, top, bottom }) => ({ left, right, top, bottom }))(el.getBoundingClientRect()) : null; };
+          const disp = (sel) => { const el = document.querySelector(sel); return el ? getComputedStyle(el).display : null; };
+          return {
+            iw: window.innerWidth,
+            scrollW: document.documentElement.scrollWidth,
+            mainDisplay: disp('.enscribe-edit-main--split'),
+            layoutBtnDisplay: disp('.enscribe-shell-action--layout'),
+            source: rect('.enscribe-edit-pane--source'),
+            preview: rect('.enscribe-edit-pane--preview'),
+            corner: rect('.enscribe-shell-actions'),
+            layoutBtn: rect('.enscribe-shell-action--layout'),
+            site: rect('.enscribe-site'),
+          };
+        });
+        const wide = w >= 960;
+        // (1) no horizontal overflow
+        if (m.scrollW > m.iw + 1) failures.push(`${surface} ${w}px: horizontal overflow (scrollWidth ${m.scrollW} > innerWidth ${m.iw})`);
+        // (2) split engages only >=960px
+        if (wide && m.mainDisplay !== 'grid') failures.push(`${surface} ${w}px: split edit-main should be display:grid (got ${m.mainDisplay})`);
+        if (!wide && m.mainDisplay === 'grid') failures.push(`${surface} ${w}px: split must collapse to stacked below 960px (edit-main is still grid)`);
+        // (3) layout toggle hidden below the breakpoint, shown above
+        if (wide && m.layoutBtnDisplay === 'none') failures.push(`${surface} ${w}px: the layout toggle must be visible at >=960px`);
+        if (!wide && m.layoutBtnDisplay !== 'none') failures.push(`${surface} ${w}px: the layout toggle must hide below 960px (got display ${m.layoutBtnDisplay})`);
+        // (4) genuine side-by-side above the breakpoint: source entirely left of preview
+        if (wide && m.source && m.preview && m.source.right > m.preview.left + 0.5) {
+          failures.push(`${surface} ${w}px: panes not side by side (source.right ${m.source.right.toFixed(0)} > preview.left ${m.preview.left.toFixed(0)})`);
+        }
+        // (5) the corner (and its layout button when shown) stays on-screen
+        if (m.corner && (m.corner.left < -0.5 || m.corner.right > m.iw + 0.5)) failures.push(`${surface} ${w}px: shell corner off-screen (l ${m.corner.left.toFixed(0)} r ${m.corner.right.toFixed(0)} vw ${m.iw})`);
+        if (wide && m.layoutBtn && (m.layoutBtn.left < -0.5 || m.layoutBtn.right > m.iw + 0.5)) failures.push(`${surface} ${w}px: layout button off-screen`);
+        // (6) WEBSITE full-bleed: the standalone 84rem body-widen must NOT cap the site chrome (the review's
+        //     major catch). In split at a viewport wider than 84rem (1344px), the `.enscribe-site` must still
+        //     span ~the full viewport — a regression pins it to 84rem left-aligned.
+        if (surface === 'website' && wide && w > 1344 && m.site && m.site.right < m.iw - 24) {
+          failures.push(`${surface} ${w}px: site chrome capped (right ${m.site.right.toFixed(0)} << innerWidth ${m.iw}) — the standalone widen leaked onto the website body`);
+        }
+      }
+      assert.equal(failures.length, 0,
+        `#435 edit-layout geometry (${surface}) must hold across 420–1700px — got: ${failures.join('; ')}`);
+      console.log(`PASS: #435 edit-layout (${surface}) — no overflow; split only >=960px (collapses below); toggle hides when narrow; panes side-by-side; corner on-screen${surface === 'website' ? '; site chrome stays full-bleed (no 84rem cap)' : ''} (Tier 2)`);
     }
   } finally {
     if (browser) await browser.close();
