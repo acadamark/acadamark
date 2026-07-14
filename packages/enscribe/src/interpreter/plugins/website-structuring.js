@@ -161,7 +161,14 @@ function walkEntries(content, assignSlug, file) {
         const body = [];
         i += 1;
         while (i < nodes.length && !isEntry(nodes[i])) {
-          body.push(nodes[i]);
+          // #440: capture a RAW snapshot. This runs at stage 2.4, before numbering (7-8) and
+          // ref-resolution (9) — but those later stages mutate the master tree's nodes IN PLACE, and a
+          // bare reference would carry their master-scope numbers/resolved refs into the destination page
+          // (a figure inside the body would be numbered in the master's scope, and a <ref> to it baked to
+          // that stale number). Deep-cloning here hands the destination unnumbered, unresolved nodes, so
+          // the page's own runSync numbers + resolves them in the destination scope (the article marker-7
+          // path and the #433 book path both re-number this body).
+          body.push(structuredClone(nodes[i]));
           i += 1;
         }
         entries.push({ kind: 'page', title, slug, src, body });
@@ -171,7 +178,14 @@ function walkEntries(content, assignSlug, file) {
         const body = [];
         i += 1;
         while (i < nodes.length && !isEntry(nodes[i])) {
-          body.push(nodes[i]);
+          // #440: capture a RAW snapshot. This runs at stage 2.4, before numbering (7-8) and
+          // ref-resolution (9) — but those later stages mutate the master tree's nodes IN PLACE, and a
+          // bare reference would carry their master-scope numbers/resolved refs into the destination page
+          // (a figure inside the body would be numbered in the master's scope, and a <ref> to it baked to
+          // that stale number). Deep-cloning here hands the destination unnumbered, unresolved nodes, so
+          // the page's own runSync numbers + resolves them in the destination scope (the article marker-7
+          // path and the #433 book path both re-number this body).
+          body.push(structuredClone(nodes[i]));
           i += 1;
         }
         entries.push({ kind: 'page', title, slug: assignSlug(title, null), body });
