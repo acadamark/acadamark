@@ -113,10 +113,23 @@ code, headerless tables, stale content — cannot recur:
 
 8. **A new family member joins every family inventory (cross-reference).** When a new
    member of an enumerable family ships (a sigil, a tag form, a config kwarg, …), every
-   docs surface that ENUMERATES that family gains the member in the same slice — the
-   notation chapter's sigil entries are the canonical docs-side case (#416's `<^` was the
-   motivating miss). The rule itself — scope, the disposition-table requirement, and the
-   full surface list beyond the docs — lives in `notes/coding-conventions.md` §8.
+   docs surface that ENUMERATES that family gains the member in the same slice — the sigil
+   entries (the authoring guide's **Sigil Tag Shorthand** chapter — see rule 9) are the
+   canonical docs-side case (#416's `<^` was the motivating miss). The rule itself — scope,
+   the disposition-table requirement, and the full surface list beyond the docs — lives in
+   `notes/coding-conventions.md` §8.
+
+9. **A surface may split a family, and the `<config>` reference is generated.** Two
+   authoring-guide refinements, both generated (so `check-docs-fresh` guards them):
+   (a) the *authoring guide* renders the `notation` family as **two** chapters —
+   **Mathematical Typesetting** (the math elements) and **Sigil Tag Shorthand** (the code
+   elements + the footnote sigil) — partitioned by each element's `category` (a build guard
+   fails if a member is neither math nor code); the comprehensive Vocabulary / eHTML
+   surfaces keep the single **Notation** chapter, where the member list is self-evident and
+   the teaching titles don't fit. (b) the exhaustive **document `<config>` options
+   reference** is generated from `config-options-doc.js` (held in lockstep with
+   `CONFIG_KWARGS` by `config-options-doc.test.js`) and ends the *Declarations & metadata*
+   chapter: the live set grouped by `CONFIG_FAMILIES`, reserved keys omitted and named once.
 
 ---
 
