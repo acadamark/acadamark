@@ -25,6 +25,10 @@
 // which drifted — audit D1/D2): `**`→<b>, `*`/`_`→<i>, `~~`→<s>.
 
 import { VOCABULARY } from '@enscribejs/ehtml';
+// The <config> options reference is generated FROM the config-doc source (like the element pages
+// generate from the vocabulary) — so it can't drift. config-options-doc.js is held in lockstep with
+// CONFIG_KWARGS by config-options-doc.test.js; this consumes it and check-docs-fresh guards the page.
+import { CONFIG_OPTIONS_DOC, CONFIG_FAMILIES, CONFIG_WILDCARD_DOC } from '@enscribejs/enscribe/interpreter/lib/config-options-doc';
 import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -282,8 +286,42 @@ function guideSection(name) {
 // extra (#416 caret docs): ONE per-(surface slug, family) extra-section mechanism for
 // hand-authored chapter tails — the failure-demonstration passage and the sigil entry
 // ride the same hook.
+// ── the <config> options reference (generated from config-options-doc.js) ──────────────────────────
+// The gap Ariel found: config-options-doc.js was built to be published (38 keys, 8 families, guarded
+// in lockstep with CONFIG_KWARGS) but rendered into no page. This emits the exhaustive reference as a
+// section that ends the Declarations & metadata chapter's <config> teaching — grouped by
+// CONFIG_FAMILIES, one table per family. RESERVED keys (accepted by the gate but with no consumer yet)
+// are OMITTED from the tables — a reader should not be told about keys that do nothing — and listed
+// once in a trailing note so the option count reconciles. The ref-prefix-* wildcard rides its declared
+// family. Generated, so check-docs-fresh guards it against drift from the source.
+function buildConfigOptionsEmd() {
+  const cell = (s) => esc(String(s ?? '—')).replace(/\|/g, '\\|');   // esc <> for prose; \| so a value keeps its pipes in the table
+  const valuesOf = (e) => e.type === 'boolean' ? 'true \\| false' : (e.values ? cell(e.values) : '—');
+  const rowOf = (e, name = e.key) => [code(name), valuesOf(e), cell(e.default), e.scope, cell(e.description)];
+
+  const live = CONFIG_OPTIONS_DOC.filter((e) => !e.reserved);
+  const reserved = CONFIG_OPTIONS_DOC.filter((e) => e.reserved);
+
+  let out = '<section #ag-config-options | All document `<config>` options>\n\n';
+  out += 'The complete set of document-level `<config>` settings, grouped by concern — the reference behind the common keys shown above. It is generated from the config source, so it cannot drift. `book-only` keys apply to a `<meta type=book>` document, `website-only` keys to a `<meta type=website>` master; the rest apply to any document.\n\n';
+  for (const fam of CONFIG_FAMILIES) {
+    const rows = live.filter((e) => e.family === fam).map((e) => rowOf(e));
+    if (CONFIG_WILDCARD_DOC.family === fam) rows.push(rowOf(CONFIG_WILDCARD_DOC, CONFIG_WILDCARD_DOC.pattern));
+    if (rows.length === 0) continue;
+    out += `**${fam}**\n\n`;
+    out += mdTable(['Option', 'Values', 'Default', 'Scope', 'Description'], rows) + '\n';
+  }
+  if (reserved.length) {
+    out += `*Reserved — accepted by the config gate but with no consumer yet (no effect): ${reserved.map((e) => code(e.key)).join(', ')}. Listed here only so the option count reconciles.*\n`;
+  }
+  return out;
+}
+
 const CHAPTER_EXTRAS = {
   'authoring-guide': {
+    // The exhaustive <config> options reference ends the Declarations & metadata chapter (the <config>
+    // teaching's home). Generated from config-options-doc.js; no top-level menu item of its own.
+    'declarations-and-metadata': buildConfigOptionsEmd(),
     'notation': `<section #ag-footnote-sigil | The \`<^ …>\` footnote sigil>
 
 Notation's sigils have one sibling outside this family: the footnote sigil. It is

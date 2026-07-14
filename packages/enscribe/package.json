@@ -37,6 +37,7 @@
     "./interpreter/lib/section-kinds": "./src/interpreter/lib/section-kinds.js",
     "./interpreter/lib/book-regions": "./src/interpreter/lib/book-regions.js",
     "./interpreter/lib/classify-doc-type": "./src/interpreter/lib/classify-doc-type.js",
+    "./interpreter/lib/config-options-doc": "./src/interpreter/lib/config-options-doc.js",
     "./parser": "./src/parser/index.js",
     "./parser/*": "./src/parser/*.js",
     "./browser": "./dist/enscribe.browser.js",
