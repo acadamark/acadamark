@@ -41,11 +41,12 @@
 
 import { makeTag } from '../../core/tag.js';
 import { isEnscribeTag, findTag } from '../lib/ast-helpers.js';
-import { ENSCRIBE_DOC_TYPE } from '../../core/file-data-keys.js';
+import { ENSCRIBE_DOC_TYPE, ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
+import { readConfigBool } from '../lib/config-helpers.js';   // #439: read the `cover` display flag
 // Book-part-type → region routing (front/back enumerated, body the default) and
 // the back-matter tag set are single sources of truth in lib/. numbering.js
 // derives its chapter-counter gate from the same book-regions sets (F4).
-import { BOOK_PART_FRONT_TYPES, BOOK_PART_BACK_TYPES } from '../lib/book-regions.js';
+import { BOOK_PART_FRONT_TYPES, BOOK_PART_BACK_TYPES, isBodyBookPart } from '../lib/book-regions.js';
 import { BACK_MATTER_TAGS } from '../lib/back-matter.js';
 import { VOCABULARY } from '@enscribejs/ehtml';
 
@@ -338,6 +339,14 @@ export function enscribeBookStructuring() {
     const bodyContent  = []; // chapter/part/etc. book-parts
     const backContent  = []; // appendix/glossary book-parts + bibliography/etc.
 
+    // #439: with a cover (the default), pre-first-part loose content is front-region content that
+    // renders on the cover. With `cover=off` there is NO front landing surface on any path (static →
+    // redirect stub; live → renderCover never runs), so it would be silently DROPPED. Instead we hold
+    // it here and flow it into the first chapter's LEAD (below), where it renders on a page that always
+    // exists and numbers in chapter 1's scope ("Figure 1.1") — the ratified interstitial rule.
+    const cover = readConfigBool(file?.data?.[ENSCRIBE_CONFIG] ?? null, 'cover', true);
+    const frontLoose = []; // #439: pre-first-part loose content held for chapter-1 lead when cover=off
+
     // The <meta> goes into book-front first.
     if (metaNode) {
       promoteTitles(metaNode, 'book');
@@ -371,11 +380,33 @@ export function enscribeBookStructuring() {
         // §"Content before the first part"). Interstitial content BETWEEN parts is already absorbed
         // into the preceding part by assembleBookPartContents (substitution-before-structure), so the
         // only loose content that reaches here before the first book-part is genuine front matter.
-        frontContent.push(node);
+        // #439: with a cover it renders there (book-front); with cover=off it has no landing surface,
+        // so hold it for chapter-1 lead (injected after the loop) rather than dropping it.
+        if (cover) frontContent.push(node);
+        else frontLoose.push(node);
       } else {
         // Loose content AFTER a book-part but not absorbed into one (e.g. after a back-matter
         // boundary) — kept in book-body as before; not the pre-first-part case.
         bodyContent.push(node);
+      }
+    }
+
+    // #439: cover=off — flow the held pre-first-part loose content into the FIRST body book-part
+    // (chapter 1) as LEAD content, right after its <meta>. Because this runs at structuring (before the
+    // numbering pass), the numbering walker enters this book-part, increments the chapter counter, and
+    // stamps the moved nodes with chapter scope — so a figure there renders "Figure 1.1", and it renders
+    // on the first chapter's page (which always exists) across static, website, and live paths at once.
+    if (frontLoose.length > 0) {
+      const firstChapter = bodyContent.find((n) => isBookPartTag(n) && isBodyBookPart(bookPartType(n)));
+      if (firstChapter) {
+        const c = Array.isArray(firstChapter.content) ? firstChapter.content : [];
+        const metaIdx = c.findIndex((x) => isEnscribeTag(x, 'meta'));
+        const at = metaIdx >= 0 ? metaIdx + 1 : 0;   // after the chapter's <meta> (its title lives there)
+        firstChapter.content = [...c.slice(0, at), ...frontLoose, ...c.slice(at)];
+      } else {
+        // Degenerate: a cover-off book with no body book-part (only front/back parts) — keep the
+        // content in book-front rather than dropping it (there is no chapter to host it).
+        frontContent.push(...frontLoose);
       }
     }
 

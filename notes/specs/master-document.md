@@ -202,6 +202,14 @@ Content that precedes the first structural part has no preceding part to join: i
 content into `book-front`, and the separate-pages build renders it on the cover page (the front
 region's projection) rather than dropping it.
 
+**When the book has no cover (`<config cover=false>`), the front region has no landing surface** —
+the static build emits a redirect stub in place of the cover, and the live shell never renders a cover
+view. So pre-first-part loose content is instead routed as **lead content of the first chapter** (the
+first body book-part), preserving projection equivalence rather than dropping it (#439). Consequently it
+**numbers in that chapter's scope** — a figure becomes `figure 1.1`, not `figure 1` — exactly as trailing
+interstitial content numbers within its preceding part (§"Numbering and float consequences"). With a
+cover (the default), the content stays in `book-front`, renders on the cover, and numbers flat.
+
 ### Numbering and float consequences
 
 Because interstitial content is inside the preceding part, it **numbers within that part**: a figure

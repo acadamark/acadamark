@@ -78,10 +78,11 @@ export function run() {
   }
   console.log('PASS: #404 live — unknown chapter stem → resolveRoute null (not-found is the caller\'s render)');
 
-  // ── COVER-OFF book: a front-region anchor must NOT route to a (nonexistent) cover ──
+  // ── COVER-OFF book: a pre-first-part anchor resolves to the FIRST CHAPTER, never a nonexistent cover ──
   // A cover-off book has no cover view (it lands on the first chapter; the static build redirects its
-  // index there). Routing a cover-owned anchor to {cover:true} would render a cover that doesn't exist —
-  // the exact cover fallback the invariant forbids. resolveRoute must degrade to the first chapter.
+  // index there). #439: pre-first-part loose content is now flowed into the first chapter as lead
+  // content (it has no front landing surface when cover=off), so `#eqn:loose` is genuinely chapter-1
+  // content — resolveRoute owns it to the first chapter, never routing to a cover that doesn't exist.
   {
     const proc = buildEnscribePipeline({});
     const file = new VFile({ path: 'master.emd' });
