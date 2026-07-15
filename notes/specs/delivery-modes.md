@@ -280,7 +280,7 @@ instead of fetch) and forecloses the server.
   edit — the pristine HTML is snapshotted at runtime).
 - **Assets from the web.** The chrome + display assets (engine, CSS, KaTeX, fonts, CodeMirror) load
   by URL — the file is small (shell + content), no engine inlined. The default source is the
-  **pinned, published npm package** on jsDelivr — `cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/`,
+  **pinned, published npm package** on jsDelivr — `cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.5.0/`,
   an **immutable version** (not the moving `@main` git ref the initial stopgap used). The npm tarball
   is not flat, so the four chrome assets are referenced at their real per-package paths (engine + the
   bundled editor in `dist/`, the stylesheets under `src/`), each verified to resolve with the correct MIME
@@ -394,7 +394,7 @@ document** — and the split lands on the very view-vs-edit boundary above:
 - **Single-file** — **built for one self-contained document.** `build --single-file` embeds the `.emd`
   in a `<template>` and mounts it via `mountLiveDocument` (read-from-provided-source, no master fetch);
   editable iff self-contained (`childSrcs.length === 0`), else render-only with a warning; chrome +
-  display assets load from the web (the **pinned npm package** `@enscribejs/enscribe@0.4.1` on
+  display assets load from the web (the **pinned npm package** `@enscribejs/enscribe@0.5.0` on
   jsDelivr — *not* `raw.githubusercontent.com`, which serves `text/plain`+`nosniff` and won't execute)
   under the **`--assets cdn`** default; **`--assets inlined`** (#364/#365) instead embeds the engine +
   CSS + fonts + KaTeX + the bundled editor so the file opens from `file://` with **no network at all**

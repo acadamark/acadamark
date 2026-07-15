@@ -181,7 +181,7 @@ export async function run() {
       'inlined single-file: engine + CSS embedded, no references');
     assert.ok(sf.includes("documentFontsCss: 'skip', katexCss: 'skip'"),
       'inlined single-file: the render skips re-linking display assets');
-    assert.deepStrictEqual(realRefs(sf), ['https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.4.1/dist/editor-codemirror.js'],
+    assert.deepStrictEqual(realRefs(sf), ['https://cdn.jsdelivr.net/npm/@enscribejs/enscribe@0.5.0/dist/editor-codemirror.js'],
       'inlined chrome, no inline.editor: the editor rides its href delivery (here the CDN)');
     console.log('PASS: #364 — inlined delivery embeds engine + CSS + display assets (editor rides its href delivery when not inlined)');
   }
