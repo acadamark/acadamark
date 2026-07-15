@@ -34,12 +34,55 @@ function hasClass(node, name) {
   return Array.isArray(c) && c.includes(name);
 }
 
+// The HTML start tags a spec-conformant parser force-closes an open <p> on (the
+// p-in-button-scope rule, WHATWG §13.2.6.4.7). The sidenote clone is injected INSIDE the
+// host paragraph (the Tufte inline-float anchor), so any of these inside the clone would
+// make a real browser close the paragraph — and the <sidenote> with it — EJECTING the
+// note body into the main flow. That was the margin-note regression: the serialized HTML
+// looked right, every string-level test passed, and every browser tore it apart.
+const P_CLOSERS = new Set([
+  'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl', 'fieldset',
+  'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header',
+  'hgroup', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre', 'section', 'summary', 'table', 'ul',
+]);
+
+/** Does any descendant carry a tag the parser would close a <p> on? */
+function containsPCloser(nodes) {
+  for (const n of nodes ?? []) {
+    if (n.type === 'element' && (P_CLOSERS.has(n.tagName) || containsPCloser(n.children))) return true;
+  }
+  return false;
+}
+
+/**
+ * Make a note's copied content legal PHRASING content, so the inline clone survives a
+ * real HTML parse: unwrap each direct-child <p> to its inline children, joining
+ * consecutive paragraphs with a double <br> (the visual paragraph break, phrasing-legal).
+ * A prose note renders as <sup>N</sup><p>inline…</p> in the bottom list, so this is a
+ * total transform for everything the note authoring surface produces today — and it also
+ * restores the Tufte line (the number runs into the note text, not a block below it).
+ */
+function phrasingSafe(content) {
+  const out = [];
+  let sawParagraph = false;
+  for (const node of content) {
+    if (node.type === 'element' && node.tagName === 'p') {
+      if (sawParagraph) out.push(el('br', {}, []), el('br', {}, []));
+      out.push(...(node.children ?? []));
+      sawParagraph = true;
+    } else {
+      out.push(node);
+    }
+  }
+  return out;
+}
+
 /**
  * Collect id → [content nodes] from the bottom <note-list>. Each note's content
  * is the <li>'s children minus the trailing back-reference link (which has no
  * place in the margin copy).
  */
-function collectNotes(node, map, all) {
+function collectNotes(node, map, all, warn) {
   if (node.type === 'element' && node.tagName === 'note-list') {
     for (const ol of node.children ?? []) {
       if (ol.type !== 'element' || ol.tagName !== 'ol') continue;
@@ -50,15 +93,30 @@ function collectNotes(node, map, all) {
         // flagged sidenote-fallback (placement=margin). When `all`, the document
         // note-position=margin relocates every numbered note regardless.
         if (!all && !hasClass(li, 'sidenote-fallback')) continue;
-        const content = (li.children ?? [])
-          .filter((c) => !(c.type === 'element' && c.tagName === 'a' && hasClass(c, 'note-backref')))
-          .map(clone);
+        // The clone lives INSIDE the host paragraph, so it must be phrasing content: unwrap
+        // the copied <p>s (see phrasingSafe). A body that STILL carries a p-closing block
+        // after the unwrap (not producible by the note authoring surface today) cannot be
+        // projected without a real parser destroying the paragraph — skip relocating it
+        // (its content stays in the bottom note-list) and say so, never silently.
+        const content = phrasingSafe(
+          (li.children ?? [])
+            .filter((c) => !(c.type === 'element' && c.tagName === 'a' && hasClass(c, 'note-backref')))
+            .map(clone),
+        );
+        if (containsPCloser(content)) {
+          warn?.(
+            `note "${li.properties.id}": its body carries block content that cannot be projected ` +
+            `into the inline margin copy (a real HTML parser would eject it from the paragraph); ` +
+            `the note stays in the bottom note-list only`,
+          );
+          continue;
+        }
         map.set(li.properties.id, content);
       }
     }
     return; // note-lists do not nest
   }
-  for (const c of node.children ?? []) collectNotes(c, map, all);
+  for (const c of node.children ?? []) collectNotes(c, map, all, warn);
 }
 
 /**
@@ -130,9 +188,9 @@ export function markMarginLayout(hast) {
  * @param {{ all?: boolean }} [opts]
  * @returns {boolean} true if any note was relocated (false → nothing to relocate)
  */
-export function applySidenotes(hast, { all = false } = {}) {
+export function applySidenotes(hast, { all = false, warn } = {}) {
   const notes = new Map();
-  collectNotes(hast, notes, all);
+  collectNotes(hast, notes, all, warn);
   if (notes.size === 0) return false;
   injectSpans(hast, notes);
   return true;

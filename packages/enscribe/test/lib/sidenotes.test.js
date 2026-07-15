@@ -35,15 +35,21 @@ export async function run() {
   assert.ok(margin.includes('.enscribe-layout--margin sidenote'), 'margin mode injects the scoped sidenote CSS');
   assert.ok(margin.includes('<sup id="noteref-1" data-note-id="note-1">'), 'inline marker 1 kept');
   assert.ok(margin.includes('<sup id="noteref-2" data-note-id="note-2">'), 'inline marker 2 kept');
-  // <note> is flow (#326): its single-paragraph content keeps its <p>, so the
-  // margin projection carries the marker followed by the wrapped content.
+  // The margin copy is PHRASING content (the parser-safety fix): the clone lives inside
+  // the host <p>, so its copied <p> is unwrapped to inline children — a real HTML parser
+  // force-closes a paragraph on a nested <p>, ejecting the note body into the main flow
+  // (the margin-note regression). The number now runs into the text on one Tufte line.
   assert.ok(
-    /<sidenote><sup>1<\/sup><p>a footnote about the first point<\/p>/.test(margin),
-    'sidenote 1 carries its number + content into the margin',
+    /<sidenote><sup>1<\/sup>\s*a footnote about the first point/.test(margin),
+    'sidenote 1 carries its number + content into the margin (phrasing, no nested <p>)',
   );
   assert.ok(
-    /<sidenote><sup>2<\/sup><p>another note here<\/p>/.test(margin),
-    'sidenote 2 carries its number + content into the margin',
+    /<sidenote><sup>2<\/sup>\s*another note here/.test(margin),
+    'sidenote 2 carries its number + content into the margin (phrasing, no nested <p>)',
+  );
+  assert.ok(
+    !((margin.match(/<sidenote>[^]*?<\/sidenote>/g) ?? []).some((s) => /<p[\s>]/.test(s))),
+    'no <p> inside any sidenote clone (a real parser would eject it from the host paragraph)',
   );
   console.log('PASS: margin mode projects note content into the margin, numbering intact');
 

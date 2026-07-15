@@ -56,6 +56,7 @@ import { run as runBookPartType } from './book-part-type.test.js';
 import { run as runLongFormAtref } from './long-form-atref.test.js';
 import { run as runIdentifierAt } from './identifier-at.test.js';
 import { run as runNoteMargin } from './note-margin.test.js';
+import { run as runSidenoteParserSafety } from './sidenote-parser-safety.test.js';
 import { run as runLibrarySrc } from './library-src.test.js';
 import { run as runChapterNav } from './lib/chapter-nav.test.js';
 import { run as runConfigOptions } from './config-options.test.js';
@@ -163,6 +164,7 @@ const suites = [
   ['long-form-atref',              runLongFormAtref],
   ['identifier-at',                runIdentifierAt],
   ['note-margin',                  runNoteMargin],
+  ['sidenote-parser-safety',       runSidenoteParserSafety],
   ['library-src',                  runLibrarySrc],
   ['strict-mode',                  runStrictMode],
   ['caret-footnote-sigil',         runCaretFootnoteSigil],

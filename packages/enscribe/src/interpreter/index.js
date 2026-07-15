@@ -933,9 +933,14 @@ export function enscribeInterpreter(options = {}) {
   // only the margin notes) and reports whether anything moved into the column;
   // markMarginLayout + MARGIN_CSS fire only then → a default document adds nothing.
   // Display-only (the mdast tree / JATS export is unchanged).
-  function injectMarginLayout(hast, assets, configMap) {
+  function injectMarginLayout(hast, assets, configMap, file) {
     const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
-    const relocated = applySidenotes(hast, { all: notePosition === 'margin' });
+    // warn → the vfile channel (#402): a note whose body cannot be phrasing-projected into
+    // the inline margin copy is skipped with a message, never silently (see sidenotes.js).
+    const relocated = applySidenotes(hast, {
+      all: notePosition === 'margin',
+      warn: (m) => file?.message?.(m, undefined, 'sidenote:block-content'),
+    });
     if (relocated) {
       markMarginLayout(hast);
       hast.children.unshift(makeStyleElement(MARGIN_CSS));
@@ -1111,7 +1116,7 @@ export function enscribeInterpreter(options = {}) {
     // definition above.
     const { tocType, configTocShape } = injectToc(hast, configMap);
 
-    injectMarginLayout(hast, assets, configMap);
+    injectMarginLayout(hast, assets, configMap, file);
 
     injectStrictFlag(hast, file);
 
