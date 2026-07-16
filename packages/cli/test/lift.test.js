@@ -122,6 +122,28 @@ export function run_tests() {
     console.log('PASS: round-trip — off document unchanged (markdown interpreted, lossy by design)');
   }
 
+  // ── #457: a SELF-CLOSING frameable whose caption= kwarg lifts to a <caption> child ──
+  // The gate lifts `caption="X"` on a self-closing `<fig … />` into a <caption> child, so
+  // the node arrives at the serializer selfClosing===true but WITH content. The serializer
+  // used to short-circuit on selfClosing and emit `<fig … />`, dropping the caption from
+  // lift/lower output. It must now serialize the lifted child; a genuinely empty self-
+  // closing tag (hr, cite/ref via @refs) must still self-close.
+  {
+    const figCaption = '<fig #f src=a.png caption="A dropped caption" />';
+    const lifted = lift(figCaption);
+    assert.ok(/A dropped caption/.test(lifted), '#457: the lifted caption survives (not dropped to <fig … />)');
+    assert.ok(/<caption \| A dropped caption>/.test(lifted), '#457: the caption serializes as a <caption> child');
+    checkRoundTrip('#457 self-closing fig caption', figCaption);
+    console.log('PASS: round-trip — #457 self-closing <fig caption/> preserves its caption');
+
+    // Genuinely-empty self-closing tags are untouched — they still serialize `… />`.
+    const empties = 'Text <cite @a> and <ref @f>.<hr />\n\n<data>\n<library |\n@misc{a, title={T}, year={2020}}\n>\n</data>';
+    const liftedEmpty = lift(empties);
+    assert.ok(/<hr \/>/.test(liftedEmpty), '#457: an empty self-closing <hr /> still self-closes');
+    assert.ok(/<cite @a>/.test(liftedEmpty) && /<ref @f>/.test(liftedEmpty), '#457: attribute-only cite/ref are unchanged');
+    console.log('PASS: round-trip — #457 empty self-closing tags still self-close (no false positives)');
+  }
+
   // ── real fixtures ───────────────────────────────────────────────────────────
   const fixtures = [
     'document-9-demo.emd',
