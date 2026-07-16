@@ -33,6 +33,7 @@ import { BOOK_REGIONS } from '../interpreter/lib/book-regions.js';
 import { readConfigBool } from '../interpreter/lib/config-helpers.js';
 import { escapeHtml } from '../core/escape-html.js';
 import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
+import { KNOWN_THEMES } from '../interpreter/assets/theme-css.js';
 
 const cleanText = (s) => s.replace(/\s+/g, ' ').trim();
 
@@ -274,4 +275,20 @@ export function resolveBookContentsConfig(file) {
 export function resolveBookThemeVariant(file) {
   const v = file?.data?.[ENSCRIBE_CONFIG]?.get?.('theme-variant');
   return v === 'light' || v === 'dark' ? v : undefined;
+}
+
+/**
+ * #452: resolve the book's `<config theme>` — the token theme (modern / compact / tufte). Sibling of
+ * resolveBookThemeVariant: the book's config reads live together here. The compiler injects this theme's
+ * `<style>` at the document root, but the per-chapter render (renderChapter → extractBookPart) slices out
+ * only the `<book-part>`, discarding it — so the separate-pages / live book shell must re-inject it, exactly
+ * as it re-stamps the variant. Returns the validated theme name (a KNOWN_THEMES member) or undefined
+ * (default / unknown / absent → no injection; the compiler already warned on an unknown value at the gate).
+ *
+ * @param {import('vfile').VFile} file
+ * @returns {string|undefined}
+ */
+export function resolveBookTheme(file) {
+  const t = file?.data?.[ENSCRIBE_CONFIG]?.get?.('theme');
+  return KNOWN_THEMES.has(t) ? t : undefined;
 }

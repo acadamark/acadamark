@@ -224,12 +224,24 @@ export function buildWebsiteDslHead(dslNames) {
  *        reader-tier switch overrides locally on top, unchanged.
  * @returns {string} a standalone `<html>` document.
  */
-export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref, headMeta = '', themeVariant }) {
+export function composeWebsiteShellPage({ defaultCss, title, topBar, content, dslHead = '', playgroundHref, headMeta = '', themeVariant, sidebar = '', themeCss = '' }) {
   const variantAttr = themeVariant === 'light' || themeVariant === 'dark'
     ? ` data-theme-variant="${themeVariant}"` : '';
+  // #452: the site MASTER's `<config theme>` tokens — a separate <style> AFTER the universal head style so its
+  // `:root` overrides win the cascade (mirroring the compiler's injectTheme + the book pageShell). '' (default
+  // / no master theme) ⇒ the head is byte-unchanged. A page's OWN theme, rendered inside its content fragment,
+  // still wins locally over this site default.
+  const themeStyle = themeCss ? `\n<style>\n${themeCss}\n</style>` : '';
   const cta = playgroundHref
     ? `<div class="enscribe-playground-cta"><a href="${escapeHtml(playgroundHref)}">Open in playground ↗</a></div>\n`
     : '';
+  // #456: the opt-in `<config sidebar>` left nav — parity with the live shell (composeWebsiteShell), which
+  // wraps `${sidebar}${content}` in `.enscribe-site-withsidebar`. Absent (default) ⇒ the byte-unchanged
+  // single-column body. The sidebar's `?page=` links are relativized per page by the caller's `staticize`.
+  const contentBlock = `<div class="content">\n${cta}${content}\n</div>`;
+  const body = sidebar
+    ? `<div class="enscribe-site-withsidebar">\n${sidebar}\n${contentBlock}\n</div>`
+    : contentBlock;
   return `<!DOCTYPE html>
 <html lang="en"${variantAttr}>
 <head>
@@ -239,14 +251,12 @@ export function composeWebsiteShellPage({ defaultCss, title, topBar, content, ds
 ${headMeta ? headMeta + '\n' : ''}${HEAD_ASSET_LINKS}
 <style>
 ${universalHeadStyle(defaultCss)}
-</style>${dslHead ? `\n${dslHead}` : ''}
+</style>${themeStyle}${dslHead ? `\n${dslHead}` : ''}
 </head>
 <body>
 <div class="enscribe-site">
 ${topBar}
-<div class="content">
-${cta}${content}
-</div>
+${body}
 </div>
 ${SHELL_BODY_SCRIPTS}
 </body>

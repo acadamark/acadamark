@@ -36,8 +36,11 @@ import {
   flattenNavPages,
   extractDocumentTitle,
   buildWebsiteTopBar,
+  buildWebsiteSidebar,
   buildShellActions,
   composeWebsiteShellPage,
+  KNOWN_THEMES,
+  getThemeCss,
   collectDslNames,
   buildWebsiteDslHead,
   slugifyPage,
@@ -432,10 +435,18 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   };
 
   // 4. The top bar (cross-site nav) is built once; its `?page=` links are relativized PER PAGE below.
-  //    No left site sidebar is built: on a website the left nav belongs to BOOK pages (their chapter
-  //    rail, carried inside the book body fragment — untouched). Articles get the top bar + their own
-  //    right section nav. (buildWebsiteSidebar still serves the LIVE website's opt-in <config sidebar>
-  //    via browser.js; it is simply no longer used by the static article composition.)
+  //    #456: the opt-in left site sidebar (`<config sidebar>` on the master, default OFF) is now built on
+  //    the STATIC site too — parity with the LIVE website (browser.js mountLiveWebsite), which read the
+  //    same key. Built once here (its `?page=` links are relativized per page by `staticize` on the whole
+  //    framed page, like the top bar) and threaded into composeWebsiteShellPage. The BOOK pages keep their
+  //    own chapter rail inside the book body fragment (untouched); the site sidebar is the cross-page nav
+  //    tree, the top bar's opt-in second surface.
+  // Coerce like the interpreter's readConfigBool (bare / any non-'false' value ⇒ on; 'false' ⇒ off; absent
+  // ⇒ off): a config subpath is not exported to the CLI, so replicate the one-line rule rather than widen
+  // the public API. Same semantics the LIVE mount uses (browser.js readConfigBool 'sidebar', false).
+  const cfgMap = navFile.data?.[ENSCRIBE_CONFIG];
+  const showSidebar = !!cfgMap?.has?.('sidebar') && cfgMap.get('sidebar') !== 'false' && cfgMap.get('sidebar') !== false;
+  const siteSidebar = showSidebar ? buildWebsiteSidebar(entries) : '';
   const pageMap = new Map();
   const assets = [];
   const shippedAssetDests = new Set(); // #408: dedupe referenced-asset shipping across pages
@@ -466,6 +477,15 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // between pages of one site). Passed to composeWebsiteShellPage in the framing pass, which stamps
   // data-theme-variant on <html> for light/dark and nothing otherwise (auto/absent → follow the OS).
   const themeVariant = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('theme-variant') ?? null;
+  // #452: the site's document-tier token THEME — `<config theme=…>` on the website MASTER, read the SAME
+  // site-wide way as theme-variant above (a website's look is the master's, uniform across every page). The
+  // compiler injects a theme only when a PAGE carries its own `<config theme>`; the MASTER theme reached no
+  // page. Inject the master theme's tokens into every page's universal head (composeWebsiteShellPage), so a
+  // `<config theme=tufte>` master themes the whole site. Unknown/absent → '' → head byte-unchanged. A page's
+  // own `<config theme>` still renders in its content and overrides locally (the same page-local escape the
+  // per-page pipeline already gives).
+  const siteTheme = navFile.data?.[ENSCRIBE_CONFIG]?.get?.('theme');
+  const siteThemeCss = KNOWN_THEMES.has(siteTheme) ? getThemeCss(siteTheme) : '';
   // #430: the settings gear joins the corner (reader tier — always available on a static website page;
   // the SETTINGS_PANEL_JS inline script wires it). The document tier is live-editable only, so a static
   // page shows the reader tier alone. With the gear always present, the corner renders even on a repo-less
@@ -671,7 +691,8 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     });
     const html = composeWebsiteShellPage({
       defaultCss, title: pageTitle, topBar: topBarFor(up), content, dslHead, headMeta,
-      playgroundHref: liveHrefFor(outPath, slug, chapterStem), themeVariant,
+      playgroundHref: liveHrefFor(outPath, slug, chapterStem), themeVariant, sidebar: siteSidebar,
+      themeCss: siteThemeCss,
     });
     pageMap.set(outPath, staticize(html, outPath));
   }

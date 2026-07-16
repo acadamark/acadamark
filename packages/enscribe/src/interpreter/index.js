@@ -168,6 +168,10 @@ import { getHoverPreviewCss, getHoverPreviewJs } from './assets/hover-preview-as
 // KNOWN_THEMES + getThemeCss live in a swappable module pair (Node fs-read / browser build-inlined via
 // tsup `define`) so a live `<config theme=…>` render never fs-reads in the bundle (the C4 crash, #430).
 import { KNOWN_THEMES, getThemeCss } from './assets/theme-css.js';
+// #452: re-exported so the static-website build can inject the site MASTER's `<config theme>` into every
+// page's universal head (site-wide, the same way it threads theme-variant / repo) — the CLI is a first-class
+// consumer of the theme tokens, like composeWebsiteShellPage.
+export { KNOWN_THEMES, getThemeCss } from './assets/theme-css.js';
 // DSL render registry (internal): drives live-mode asset emission for external
 // DSLs (mermaid, abc). Distinct concern from @enscribejs/enscribe/core's vocabulary
 // registry imported immediately below.

@@ -48,7 +48,9 @@ import {
   resolveBookNavConfig,
   resolveBookContentsConfig,
   resolveBookThemeVariant,
+  resolveBookTheme,
 } from './book-scaffold.js';
+import { getThemeCss } from '../interpreter/assets/theme-css.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';
@@ -137,7 +139,7 @@ export const BOOK_HOME_CSS = `.enscribe-layout--book .enscribe-toc a.enscribe-bo
  *  appearance on every chapter page (mirrors emitDocumentShell / composeWebsiteShellPage). Any
  *  other value (undefined/auto/invalid) stamps nothing, so a book with no pin is byte-identical
  *  to its pre-#431 golden. The reader-tier switch overrides locally on top, unchanged. */
-function pageShell(body, title, defaultCss, bookNav, themeVariant) {
+function pageShell(body, title, defaultCss, bookNav, themeVariant, themeCss = '') {
   // Conditional book-nav assets (#221), appended AFTER default.css so a DEFAULT book
   // (chapter-nav on, depth 1, back-to-top off) appends nothing and stays byte-identical.
   const extraCss = [];
@@ -149,6 +151,11 @@ function pageShell(body, title, defaultCss, bookNav, themeVariant) {
   const extraJs = bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '';
   const variantAttr = themeVariant === 'light' || themeVariant === 'dark'
     ? ` data-theme-variant="${themeVariant}"` : '';
+  // #452: the book's `<config theme>` tokens — a separate <style> AFTER default.css so its `:root`
+  // overrides win the cascade, mirroring the compiler's injectTheme. The compiler injected this at the
+  // document root, but renderChapter's extractBookPart discarded it (it kept only the <book-part>), so a
+  // default-book byte-stays identical (themeCss '') while a themed book now carries its tokens on every page.
+  const themeStyle = themeCss ? `\n<style>\n${themeCss}\n</style>` : '';
   return `<!DOCTYPE html>
 <html lang="en"${variantAttr}>
 <head>
@@ -159,7 +166,7 @@ ${HEAD_ASSET_LINKS}
 <style>
 ${defaultCss}
 ${BOOK_HOME_CSS}${css}
-</style>
+</style>${themeStyle}
 </head>
 <body>
 ${body}
@@ -236,7 +243,7 @@ function renderPageBody(part, parts, idx, registry, idToUrl, opts) {
  *  (the byte-stable separate-pages artifact). */
 function renderPage(part, parts, idx, registry, idToUrl, opts) {
   const { body, title } = renderPageBody(part, parts, idx, registry, idToUrl, opts);
-  return pageShell(body, title, opts.defaultCss, opts.bookNav, opts.themeVariant);
+  return pageShell(body, title, opts.defaultCss, opts.bookNav, opts.themeVariant, opts.themeCss);
 }
 
 // #404/#406: content authored BEFORE the first book-part is front-region content (book-structuring
@@ -302,7 +309,7 @@ function renderIndexBody(parts, opts) {
 /** The landing/index page wrapped in the standalone page shell. */
 function renderIndex(parts, opts) {
   const { body, title } = renderIndexBody(parts, opts);
-  return pageShell(body, title, opts.defaultCss, opts.bookNav, opts.themeVariant);
+  return pageShell(body, title, opts.defaultCss, opts.bookNav, opts.themeVariant, opts.themeCss);
 }
 
 /**
@@ -346,7 +353,13 @@ export function publishBookPages({ numbered, file, proc, defaultCss, onUnowned }
   // website-embedded path, whose fragments carry NO <html> and take the SITE's variant instead — is
   // untouched. pageShell guards the value (light/dark only), so a book with no pin stays byte-identical.
   const themeVariant = resolveBookThemeVariant(file);
-  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref, frontHtml, onUnowned, themeVariant };
+  // #452: the book's <config theme> tokens ride the standalone shell too — the compiler injected them at
+  // the document root, but extractBookPart discarded them per chapter. A default/unknown theme → '' → the
+  // shell stays byte-identical. (publishBookPageBodies, the website-embedded path, is untouched: its book
+  // pages take the SITE master's theme via the website shell, like the variant.)
+  const bookTheme = resolveBookTheme(file);
+  const themeCss = bookTheme ? getThemeCss(bookTheme) : '';
+  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref, frontHtml, onUnowned, themeVariant, themeCss };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
