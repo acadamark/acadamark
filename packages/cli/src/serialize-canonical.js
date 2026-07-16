@@ -182,7 +182,12 @@ function serializeTag(node, block) {
   }
 
   // Self-closing / attribute-only tags (no content): cite/ref (via @refs), hr, etc.
-  if (node.selfClosing) return `${opener(node)} />`;
+  // #457: a self-closing FRAMEABLE whose caption=/title= kwarg the gate lifted into a
+  // <caption>/<title> CHILD arrives here with selfClosing===true but a non-empty content.
+  // The bare `… />` form would drop that lifted child — the caption/title vanishes from
+  // lift/lower output. So a self-closing node that HAS gained content yields to the
+  // content-bearing path below; a genuinely empty self-closing tag still self-closes.
+  if (node.selfClosing && !hasNonEmptyContent(node)) return `${opener(node)} />`;
   if (node.content == null) return `${opener(node)}>`;
 
   // Content-bearing tag. Pipe form for inline-ish content, long form for blocks.
@@ -348,6 +353,17 @@ function unwrapParagraph(content) {
     return content[0].children ?? [];
   }
   return content ?? [];
+}
+
+/** True when a node carries real content to serialize — a non-empty child array or a
+ *  non-empty opaque string. A self-closing node with this has gained lifted content
+ *  (a caption/title child from a `caption=`/`title=` kwarg) and must not serialize as
+ *  `… />`, which would drop it (#457). Empty array / empty string / null → no content. */
+function hasNonEmptyContent(node) {
+  const c = node.content;
+  if (Array.isArray(c)) return c.length > 0;
+  if (typeof c === 'string') return c.length > 0;
+  return false;
 }
 
 /** True when every node is inline-shaped (text/inline-tag/emphasis/…) or a
