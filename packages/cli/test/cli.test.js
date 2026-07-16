@@ -6,7 +6,7 @@
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { existsSync, readFileSync, readdirSync, rmSync, mkdtempSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, rmSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -480,6 +480,62 @@ export function run_tests() {
     assert.equal(noOut.code, 1, 'separate-pages book build without -o exits 1');
     assert.ok(/output directory/.test(noOut.err), 'the error names the missing output directory');
     console.log('PASS: build — --single-page retained; separate-pages requires -o <dir>');
+  }
+
+  // ── #451 — strict-mode must not wipe an assembled document ───────────────────
+  // Before the fix: the assemble paths built the VFile without `value`, so
+  // resolveStrictMode reparsed the empty string and the swap deleted everything —
+  // a `strict-mode=sigil` book built to an empty <article> (data loss). The fix
+  // carries the master source on the VFile and only swaps in a FAITHFUL reparse.
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-strict-book-'));
+    try {
+      // A SINGLE-FILE two-chapter book: the reparse is faithful, so strict APPLIES.
+      const bookPath = join(dir, 'book.emd');
+      writeFileSync(bookPath, [
+        '<meta type=book>', '<title | Strict Book>', '</meta>', '',
+        '<config strict-mode=sigil />', '',
+        '<chapter | First Chapter>', '',
+        'Body with *would-be-emphasis* and a <b | real bold tag>.', '',
+        '<chapter | Second Chapter>', '',
+        'Second chapter body text.', '',
+      ].join('\n'), 'utf8');
+      const r = invoke(['build', bookPath, '--single-page']);
+      assert.equal(r.code, 0, '#451: a strict-mode book build exits 0');
+      // (1) Content survives — the wipe is gone (both chapters + the meta shape present).
+      assert.ok(r.out.includes('First Chapter') && r.out.includes('Second Chapter'),
+        '#451: both chapters render (no wipe to an empty <article>)');
+      assert.ok(/<book-part/.test(r.out), '#451: the book structure survives (a real book, not an empty article)');
+      assert.ok(!/<article>\s*<\/article>/.test(r.out), '#451: the output is not an empty <article>');
+      // (2) The strict register actually APPLIES — sigil mode turns markdown off.
+      assert.ok(r.out.includes('*would-be-emphasis*'), '#451: sigil mode — *…* passes through literal (markdown off)');
+      assert.ok(!/<(em|i)>would-be-emphasis/.test(r.out), '#451: sigil mode — *…* is NOT interpreted as emphasis');
+      assert.ok(r.out.includes('real bold tag'), '#451: the canonical <b> tag still interprets in sigil mode');
+      assert.ok(r.out.includes('md-flag'), '#451: the strict lint fires (the register is genuinely active)');
+      console.log('PASS: build — #451 strict-mode renders the full book AND applies the sigil register');
+
+      // A MULTI-FILE book: the master-only reparse can't be faithful, so strict is not
+      // applied — but the content must SURVIVE (no wipe, no dropped children) and the
+      // unsupported case must announce itself (always-render: not a silent no-op).
+      const masterPath = join(dir, 'master.emd');
+      writeFileSync(masterPath, [
+        '<meta type=book>', '<title | Multi Strict>', '</meta>',
+        '<config strict-mode=sigil />',
+        '<chapter src="ch1.emd" | First>',
+        '<chapter src="ch2.emd" | Second>', '',
+      ].join('\n'), 'utf8');
+      writeFileSync(join(dir, 'ch1.emd'), 'Chapter one body text here.\n', 'utf8');
+      writeFileSync(join(dir, 'ch2.emd'), 'Chapter two body text here.\n', 'utf8');
+      const m = invoke(['build', masterPath, '--single-page']);
+      assert.equal(m.code, 0, '#451: a multi-file strict book build exits 0');
+      assert.ok(m.out.includes('Chapter one body') && m.out.includes('Chapter two body'),
+        '#451: multi-file — both children survive (no wipe, no dropped children)');
+      assert.ok(/not applied to an assembled\/multi-file document/.test(m.err),
+        '#451: multi-file — strict-not-applied is announced, not silently dropped');
+      console.log('PASS: build — #451 multi-file strict book keeps all content and warns (no data loss)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   }
 
   // ── #363 — the --assets asset-delivery option surface ───────────────────────────────────────────

@@ -135,7 +135,13 @@ export function renderArticleTreeFile(tree, pipeOpts = {}, data = {}) {
  */
 export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpts = {}, fileData, trailingBody }) {
   const proc = buildDocumentPipeline(pipeOpts);
-  const file = new VFile({ path: sourcePath, ...(fileData ? { data: fileData } : {}) });
+  // The VFile carries the master `source` as its `value` (#451): resolveStrictMode reparses
+  // `file.value` to apply the registers-off strict register, and it is the ONLY pass that reads
+  // file.value as source (verified). Without it, an assembled document under `strict-mode=sigil|
+  // canonical` reparsed the empty string and the swap wiped the whole document to an empty
+  // <article>. A single-file book/website reparses faithfully from this; a multi-file master's
+  // reparse is detected as unfaithful and skipped (resolveStrictMode's guard), so children survive.
+  const file = new VFile({ path: sourcePath, value: source, ...(fileData ? { data: fileData } : {}) });
   const tree = assembleMasterDocument({
     source,
     readFile: (p) => readFileSync(p, 'utf8'),
