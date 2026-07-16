@@ -538,6 +538,48 @@ export function run_tests() {
     }
   }
 
+  // ── #453 — `build` must thread --theme / --toc / --chapter-nav (render did; build dropped them) ──
+  // Before the fix, doBuild hand-built its pipeOpts and never copied render's presentation flags,
+  // so `build --theme tufte` (etc.) silently produced un-themed output. Each flag now takes visible
+  // effect on a single-page book build (the CLI-seam drop; the separate-pages theme strip is #452).
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-build-flags-'));
+    try {
+      const bookPath = join(dir, 'book.emd');
+      writeFileSync(bookPath, [
+        '<meta type=book>', '<title | Flag Book>', '</meta>', '',
+        '<chapter | First>', '', 'First body.', '',
+        '<chapter | Second>', '', 'Second body.', '',
+      ].join('\n'), 'utf8');
+
+      const plain = invoke(['build', bookPath, '--single-page']);
+      assert.equal(plain.code, 0, '#453: plain single-page book build exits 0');
+
+      // --theme tufte: the tufte theme <style> is injected (absent by default).
+      const themed = invoke(['build', bookPath, '--single-page', '--theme', 'tufte']);
+      assert.equal(themed.code, 0, '#453: --theme build exits 0');
+      assert.ok(!plain.out.includes('tufte'), '#453: default build carries no tufte theme');
+      assert.ok(themed.out.includes('tufte'), '#453: --theme tufte injects the tufte theme (was silently dropped)');
+
+      // --toc: the ToC listing is rendered (absent by default).
+      const toc = invoke(['build', bookPath, '--single-page', '--toc']);
+      assert.equal(toc.code, 0, '#453: --toc build exits 0');
+      assert.ok(!plain.out.includes('enscribe-toc'), '#453: default build has no ToC');
+      assert.ok(toc.out.includes('enscribe-toc'), '#453: --toc renders the contents listing (was silently dropped)');
+
+      // --chapter-nav: the single-chapter PAGING script is added atop a ToC book (absent by default).
+      // (Unlike `render`, which only makes articles, a `build` BOOK reaches tocType 'book' — so the
+      // flag is live here once threaded.)
+      const cnav = invoke(['build', bookPath, '--single-page', '--toc', '--chapter-nav']);
+      assert.equal(cnav.code, 0, '#453: --chapter-nav build exits 0');
+      assert.ok(!toc.out.includes('enscribe-chapter-showall'), '#453: a --toc book has no paging script by default');
+      assert.ok(cnav.out.includes('enscribe-chapter-showall'), '#453: --chapter-nav adds the single-chapter paging script (was silently dropped)');
+      console.log('PASS: build — #453 threads --theme / --toc / --chapter-nav (parity with render)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   // ── #363 — the --assets asset-delivery option surface ───────────────────────────────────────────
   {
     const dir = mkdtempSync(join(tmpdir(), 'enscribe-cli-assets-'));
