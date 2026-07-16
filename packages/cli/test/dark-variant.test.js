@@ -112,6 +112,30 @@ export async function run_tests() {
       assert.equal(htmlTag(html), '<html lang="en">', `website invalid: ${name} stamps nothing (config-discovery warns)`);
     }
     console.log('PASS: #431 — static website pins the variant across home + nested article + embedded book (dark/light); auto/absent/invalid → OS');
+
+    // #452 cell F — the site MASTER's <config theme> themes every page shape (the same site-wide read as
+    // the variant); a page's own theme still renders locally. #456 — <config sidebar> builds the static
+    // site sidebar (parity with the live mount). Both default OFF ⇒ head/body byte-unchanged.
+    const TUFTE = /Palatino|Tufte theme/;
+    const withTheme = buildPages(base.replace(CFG, `${CFG.slice(0, -3)} theme=tufte />`));
+    for (const [name, html] of everyShape(withTheme, 'theme')) {
+      assert.ok(TUFTE.test(html), `#452 cell F: website ${name} carries the master <config theme=tufte> tokens`);
+    }
+    for (const [name, html] of everyShape(absent, 'no-theme')) {
+      assert.ok(!TUFTE.test(html), `no master theme ⇒ website ${name} head is byte-unchanged (no theme tokens)`);
+    }
+    console.log('PASS: #452 cell F — the website master <config theme> themes every page shape (CLI wiring)');
+
+    const withSidebar = buildPages(base.replace(CFG, `${CFG.slice(0, -3)} sidebar />`));
+    for (const [name, html] of everyShape(withSidebar, 'sidebar')) {
+      assert.ok(/<nav class="enscribe-site-sidebar"/.test(html) && /<div class="enscribe-site-withsidebar">/.test(html),
+        `#456: website ${name} builds the static site sidebar (the READ end the live site already had)`);
+    }
+    for (const [name, html] of everyShape(absent, 'no-sidebar')) {
+      assert.ok(!/<nav class="enscribe-site-sidebar"/.test(html) && !/<div class="enscribe-site-withsidebar">/.test(html),
+        `default ⇒ website ${name} stays single-column (no sidebar element)`);
+    }
+    console.log('PASS: #456 — <config sidebar> builds the static website sidebar across every page shape (CLI wiring)');
   }
 
   // ── #431 precedence: the SITE MASTER wins — a per-page document's OR an embedded book's own ────

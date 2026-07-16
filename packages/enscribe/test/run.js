@@ -76,6 +76,7 @@ import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
 import { run as runCoverOffFront } from './cover-off-front.test.js';
 import { run as runEditLayout } from './edit-layout.test.js';
 import { run as runThemeVariantMultipage } from './theme-variant-multipage.test.js';
+import { run as runThemeConsumption } from './theme-consumption.test.js';
 import { run as runLiveBookParity } from './live-book-parity.test.js';
 import { run as runBookNavConfig } from './book-nav-config.test.js';
 import { run as runMasterBookLive } from './master-book-live.test.js';
@@ -183,6 +184,7 @@ const suites = [
   ['cover-off-front',              runCoverOffFront],
   ['edit-layout',                  runEditLayout],
   ['theme-variant-multipage',      runThemeVariantMultipage],
+  ['theme-consumption',            runThemeConsumption],
   ['live-book-parity',             runLiveBookParity],
   ['book-nav-config',              runBookNavConfig],
   ['master-book-live',             runMasterBookLive],
