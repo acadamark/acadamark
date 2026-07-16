@@ -34,6 +34,23 @@ function invoke(argv) {
   return { code, out: out.text, err: err.text };
 }
 
+/**
+ * #451 / test-blindness §5 guard 1 — the non-empty-output floor for CLI builds. A built
+ * document must never render to an EMPTY root (`<article></article>` / `<book></book>` — the
+ * strict-mode-wipe shape). #451 lived on exactly this path (an assembled book wiped to an empty
+ * <article>) and every substring check passed. A fragment with no document root is exempt.
+ * (Mirrors integration.test.js's assertNonEmptyDocument — kept local to avoid a cross-package
+ * test import.)
+ */
+function assertNonEmptyDocument(html, label) {
+  const m = html.match(/<(article|book)\b[^>]*>([\s\S]*?)<\/\1>/);
+  if (!m) return;
+  assert.ok(
+    m[2].trim() !== '',
+    `${label}: the <${m[1]}> document root rendered EMPTY — the build produced no content (the #451 total-loss shape).`,
+  );
+}
+
 export function run_tests() {
   // ── render → HTML ──────────────────────────────────────────────────────────
   {
@@ -457,6 +474,7 @@ export function run_tests() {
       assert.equal(files.length, 5, 'one standalone page per chapter (4) plus index.html');
       for (const f of files) {
         const html = readFileSync(join(dir, f), 'utf8');
+        assertNonEmptyDocument(html, `build separate-pages ${f}`); // #451 floor
         assert.ok(html.startsWith('<!DOCTYPE html>') && html.includes('<html') && html.includes('</html>'),
           `${f} is a complete standalone HTML document`);
         assert.ok(html.includes('.enscribe-layout'), `${f} inlines default.css (via @enscribejs/enscribe/default.css)`);
@@ -472,6 +490,7 @@ export function run_tests() {
     // --single-page builds the whole book in one fragment (to stdout).
     const single = invoke(['build', BOOK_FIXTURE, '--single-page']);
     assert.equal(single.code, 0, '--single-page book build exits 0');
+    assertNonEmptyDocument(single.out, 'build --single-page'); // #451 floor: the assembled book must not wipe to empty
     assert.ok((single.out.match(/<book-part/g) || []).length >= 4, '--single-page emits the whole book (every chapter)');
     assert.ok(!single.out.startsWith('<!DOCTYPE html>'), '--single-page emits the render fragment (the established CLI shape), not a page shell');
 
