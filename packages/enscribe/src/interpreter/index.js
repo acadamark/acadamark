@@ -1011,16 +1011,24 @@ export function enscribeInterpreter(options = {}) {
   // option wins over <config theme=…>. Unknown theme → warn + fall back to default (no
   // silent drop, no injection). The nested guard is exact: outer (set, non-default),
   // inner (known → inject, else warn).
-  function injectTheme(hast, configMap) {
+  function injectTheme(hast, configMap, file) {
     const themeName = resolveOption(options, 'theme', configMap, 'theme', 'default');
     if (themeName && themeName !== 'default') {
       if (KNOWN_THEMES.has(themeName)) {
         hast.children.unshift(makeStyleElement(getThemeCss(themeName)));
       } else {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[enscribe] unknown theme '${themeName}'; rendering with the default ` +
+        // Unknown theme → fall back to default, no injection. Route the warning through the
+        // vfile message stream like every other diagnostic — it was a raw console.warn, the
+        // one theme diagnostic OFF the message channel, so it carried no provenance and
+        // <config quiet> could not govern it. On-stream it gains file provenance (the #402
+        // reporting seam) and the #450 two-phase clear suppresses it under quiet (the compiler
+        // tail runs suppressMessagesIfQuiet after this). Reachable via the `--theme` render
+        // option (no config node → no source position); an unknown `<config theme=…>` value is
+        // ALSO caught positioned by config-discovery's value validation (#401).
+        file?.message?.(
+          `unknown theme '${themeName}'; rendering with the default ` +
             `(available: ${[...KNOWN_THEMES].join(', ')}).`,
+          undefined, 'theme:unknown',
         );
       }
     }
@@ -1146,7 +1154,7 @@ export function enscribeInterpreter(options = {}) {
 
     injectFonts(hast);
 
-    injectTheme(hast, configMap);
+    injectTheme(hast, configMap, file);
 
     injectKaTeX(hast, assets);
 

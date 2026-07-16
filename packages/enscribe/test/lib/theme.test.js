@@ -49,17 +49,36 @@ export async function run() {
     console.log('PASS: <config theme> + option precedence');
   }
 
-  // ── unknown theme → warn + fall back to default (no throw) ──────────────────
+  // ── unknown theme → a VFILE MESSAGE (not a raw console.warn), quiet-suppressible ──
+  // The warning was a raw console.warn — the one theme diagnostic OFF the message channel,
+  // so it carried no provenance and <config quiet> could not govern it. It now rides the
+  // vfile stream like every other diagnostic (routed through file.message); the #450
+  // two-phase clear suppresses it under <config quiet>. Reachable via the `--theme` render
+  // option here; an unknown `<config theme=…>` value is additionally caught, positioned, by
+  // config-discovery's value validation (#401).
   {
     const warnings = [];
     const realWarn = console.warn;
-    console.warn = (m) => { if (/\[enscribe\]/.test(String(m))) warnings.push(String(m)); };
-    let out;
-    try { out = render(DOC, { theme: 'neon' }); } finally { console.warn = realWarn; }
-    assert.ok(!/Modern theme|Compact theme/.test(out), 'unknown theme injects no theme CSS');
-    assert.equal(out, render(DOC), 'unknown theme renders identically to the default');
-    assert.ok(warnings.some((w) => /unknown theme 'neon'/.test(w)), 'unknown theme warns');
-    console.log('PASS: unknown theme → warn + default (no throw)');
+    console.warn = (m) => { warnings.push(String(m)); };  // capture ANY console output, not just [enscribe]
+    let file, quietFile;
+    try {
+      file = buildEnscribePipeline({ embedResources: false, theme: 'neon' }).processSync(DOC);
+      quietFile = buildEnscribePipeline({ embedResources: false, theme: 'neon' }).processSync(`<config quiet />\n\n${DOC}`);
+    } finally { console.warn = realWarn; }
+    // (1) No raw console output — the diagnostic is on the message stream now.
+    assert.equal(warnings.length, 0, 'unknown theme emits NO raw console output (it rides the vfile stream)');
+    // (2) It is a proper vfile message with the theme:unknown origin and a readable reason.
+    const msg = file.messages.find((m) => /unknown theme 'neon'/.test(String(m.reason)));
+    assert.ok(msg, 'unknown theme yields a vfile message on file.messages');
+    assert.equal(msg.source, 'theme', "the message's source is 'theme'");
+    assert.equal(msg.ruleId, 'unknown', "the message's ruleId is 'unknown'");
+    // (3) Still a graceful fallback: no theme CSS injected, render identical to the default.
+    assert.ok(!/Modern theme|Compact theme|Tufte theme/.test(String(file)), 'unknown theme injects no theme CSS');
+    assert.equal(String(file), render(DOC), 'unknown theme renders identically to the default');
+    // (4) <config quiet> suppresses it (the #450 two-phase clear governs this compile-stage message).
+    assert.ok(!quietFile.messages.some((m) => /unknown theme/.test(String(m.reason))),
+      'under <config quiet>, the unknown-theme message is suppressed');
+    console.log('PASS: unknown theme → vfile message (not console.warn), quiet-suppressible, graceful default');
   }
 
   // ── tufte: a full-selector theme (#398) — token retune + one structural rule ─
