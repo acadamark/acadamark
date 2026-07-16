@@ -128,8 +128,11 @@ code, headerless tables, stale content — cannot recur:
    surfaces keep the single **Notation** chapter, where the member list is self-evident and
    the teaching titles don't fit. (b) the exhaustive **document `<config>` options
    reference** is generated from `config-options-doc.js` (held in lockstep with
-   `CONFIG_KWARGS` by `config-options-doc.test.js`) and ends the *Declarations & metadata*
-   chapter: the live set grouped by `CONFIG_FAMILIES`, reserved keys omitted and named once.
+   `CONFIG_KWARGS` by `config-options-doc.test.js`) as its **own guide chapter** — placed in
+   the nav right after *Declarations & metadata* and `<ref>`-linked from that chapter's
+   `<config>` teaching entry (#447; as an unlinked chapter tail it was effectively
+   unfindable): the live set grouped by `CONFIG_FAMILIES`, reserved keys omitted and named
+   once, one home — the chapter-tail copy is gone, so there is no drift twin.
 
 ---
 

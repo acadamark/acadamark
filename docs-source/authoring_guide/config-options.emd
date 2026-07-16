@@ -1,0 +1,82 @@
+<section #sec:config-options | All document `<config>` options>
+
+The complete set of document-level `<config>` settings, grouped by concern — the reference behind the common keys the Declarations & metadata chapter teaches. It is generated from the config source, so it cannot drift. `book-only` keys apply to a `<meta type=book>` document, `website-only` keys to a `<meta type=website>` master; the rest apply to any document.
+
+**Numbering**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `number-equations` | true \| false | on | all | Number display equations document-wide. Set false to suppress the equation counter. |
+| `number-figures` | true \| false | on | all | Number figures. Set false to suppress the figure counter. |
+| `number-tables` | true \| false | on | all | Number tables. Set false to suppress the table counter. |
+| `number-theorems` | true \| false | on | all | Number the theorem family — theorem / lemma / corollary / proposition share one counter. |
+| `number-definitions` | true \| false | on | all | Number definitions. |
+| `number-examples` | true \| false | on | all | Number examples. |
+| `number-boxes` | true \| false | off | all | Number boxes (numbered &lt;aside&gt;). Boxes are UNnumbered by default — opt a box in with +numbered. |
+| `number-sections` | true \| false | off | all | Hierarchical heading numbering (1, 1.1, 1.1.1). Off by default for ALL document types (#246/core) — opt in with &lt;config number-sections&gt;. A &lt;ref&gt; to an unnumbered heading shows its title. |
+| `number-depth` | a non-negative integer (heading level) | all levels | all | Deepest heading level that receives a number. Independent of toc-depth — a heading can be numbered but not listed, or vice versa. |
+| `counter-reset-scope` | none \| chapter \| section | none in articles, chapter in books | all | Where float / equation / theorem counters reset. none = global; chapter = at each &lt;book-part&gt;; section = also at each outermost &lt;section&gt;. |
+| `ref-prefix-<type>` | any text (e.g. ref-prefix-fig = "Fig.") | the type’s built-in prefix | all | Override the cross-reference label prefix for a float type — a wildcard pattern (e.g. ref-prefix-eqn, ref-prefix-tbl), not a fixed key. |
+
+**Table of contents**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `toc` | true \| false | off | all | Render the config-driven contents listing (read in the shared compiler, so static and live agree). |
+| `toc-depth` | a positive integer | 3 | all | Deepest heading level shown in the listing. |
+| `toc-title` | any text | Contents | all | Heading shown above the listing. |
+| `toc-location` | body \| left \| right | body | all | Where the listing sits: body = inline at the top of the document; left / right = a sticky sidebar. |
+| `toc-expand` | an integer (0 = none), or all | 1 | all | How many sidebar levels are expanded initially (sidebar locations only). |
+
+**Citations & bibliography**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `citation-style` | a citation-js / CSL style name (e.g. apa, vancouver, ieee) | chicago-author-date | all | The bibliography and in-text citation style. |
+| `bibliography-heading` | any text | References | all | Overrides the bibliography’s default "References" heading. |
+
+**Notes**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `note-scope` | document \| chapter \| section | section in articles, chapter in books | all | Where footnotes collect: document = one back-matter list; chapter = per &lt;book-part&gt;; section = per outermost &lt;section&gt;. |
+| `note-position` | bottom \| margin | bottom | all | Render position of numbered notes. bottom = foot of the document; margin = Tufte-style sidenotes in a wide margin column. |
+
+**Heading semantics**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `heading-tags` | true \| false | on | all | Wrap each outline title's inline content in the native heading of its structurally derived level (render-quality.md RQ-DOC-M4). ON is the conforming default; set false only when the host materializes heading semantics itself — off emits no heading wrap at all. |
+
+**Book navigation**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `chapter-nav` | true \| false | on | book-only | The persistent chapter rail (its header is the return-to-cover link). |
+| `chapter-nav-depth` | 1 = chapters; &gt;=2 = chapters + their sections | 1 | book-only | How deep the chapter rail lists. |
+| `page-navigation` | true \| false | on | book-only | Prev / next chapter links at the foot of each chapter. |
+| `cover` | true \| false | on | book-only | Show the cover / title page as the landing view. Off = land on the first chapter. |
+| `back-to-top` | true \| false | off | book-only | An optional scroll-to-top control within a chapter. |
+| `on-this-page` | true \| false | on | book-only | The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns. |
+| `split-by` | chapter \| section \| none | chapter | book-only | The pagination unit. Only chapter is built; section and none are specified but deferred. |
+
+**Website navigation**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `sidebar` | true \| false | off | website-only | The left navigation sidebar (the full nav tree). The sticky top bar is a website’s primary nav; the sidebar is an opt-in second surface — off by default, and the layout reflows to give the content the freed column. |
+| `repo` | — | — | website-only | The project-repository URL. The shell chrome’s top-bar corner renders the GitHub mark linking here, on both the static and live surfaces; absent, no mark renders and the chrome is unchanged (#392). |
+| `playground` | — | — | website-only | The slug of the site’s live-tour page. That page’s “Open in playground” CTA opens its live twin with the editor engaged; every other page’s CTA stays read-mode — the one door that loads the editor (#392). |
+
+**Display / DSL / strict**
+
+| Option | Values | Default | Scope | Description |
+|---|---|---|---|---|
+| `theme` | default \| modern \| compact \| tufte | default | all | Inject a theme’s :root token overrides after the base stylesheet. default (or unset) injects nothing. |
+| `theme-variant` | light \| dark \| auto | auto | all | The document-tier light/dark default (#398). light/dark pin the variant (data-theme-variant on &lt;html&gt; in standalone builds); auto follows the OS via prefers-color-scheme. The reader-tier switch overrides locally. |
+| `show-source` | true \| false | off | all | Reveal the authored DSL source behind a rendered diagram (mermaid / abc) in a native &lt;details&gt; disclosure. |
+| `parse-data-tables` | true \| false | off | all | Document-wide default for whether DATA-format table cells (&lt;table csv\|json\|…&gt;) parse as Enscribe inline markup. Per-table attributes override it. |
+| `strict-mode` | off \| sigil \| canonical | off | all | The strictness register switch. off = all registers interpret; sigil = the markdown register is off; canonical = markdown AND sigils are off (only canonical tags). |
+| `quiet` | true \| false | off | all | Suppress THIS document’s authoring warnings (raw-HTML passthrough, mis-placed apparatus, …) from build/console output. Page-scoped — a quiet page hushes while other pages still warn. Gates emission only; rendering and the inline error markers are unchanged. The supported way to quiet teaching/demo pages that deliberately show warnings-worthy markup. |
+
+*Reserved — accepted by the config gate but with no consumer yet (no effect): `bibliography-position`, `display-style`. Listed here only so the option count reconciles.*

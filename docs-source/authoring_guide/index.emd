@@ -19,5 +19,6 @@
 <chapter src="sigil-tag-shorthand.emd" | Sigil Tag Shorthand>
 <chapter src="stores.emd" | Stores>
 <chapter src="declarations-and-metadata.emd" | Declarations & metadata>
+<chapter src="config-options.emd" | Config options>
 <chapter src="structural-scaffolding.emd" | Structural scaffolding>
 <chapter src="multi-file-documents.emd" | Multi-file documents>
