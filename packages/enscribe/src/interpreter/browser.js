@@ -765,10 +765,12 @@ export async function mountLiveBook(target, source, options = {}) {
     }
     const key = dest.cover ? 'cover' : dest.index;
     if (key !== currentKey) {
-      root.innerHTML = viewFor(key);
+      // #462: swap AND activate the chapter/cover's injected scripts (rails, hover previews,
+      // mermaid) — innerHTML alone leaves them inert. Book read mode formerly bound only
+      // back-to-top here, so every other injected script was dead. bindBackToTop stays a
+      // direct binding (it wires the back-to-top button, not an injected <script>).
+      swapLiveContent(root, viewFor(key));
       currentKey = key;
-      // #221: a <script> inserted via innerHTML does not execute, so bind back-to-top here
-      // after each chapter swap (idempotent; a no-op when back-to-top is off or unbuilt).
       if (model.bookNav.backToTop) bindBackToTop();
     }
     // A section anchor: scroll to it once its owning page — a chapter OR the cover
@@ -982,7 +984,9 @@ function mountEditLoop({ root, proc, masterSource, childSrcs, loadedFile, editor
     destroyEditor();
     currentIndex = -1;
     currentKey = 'cover';
-    root.innerHTML = renderLiveCoverView(model, ctx);
+    // #462: the cover is a read view even in edit mode (its front-loose figures / mermaid
+    // must activate); swap-and-execute rather than a raw innerHTML that leaves them inert.
+    swapLiveContent(root, renderLiveCoverView(model, ctx));
   };
 
   const route = () => {
@@ -1062,7 +1066,9 @@ export async function mountLiveArticle(target, source, options = {}) {
   // (discover + fetch `<section src>` children, then assemble) and a single-file article (no `src`
   // → the ordinary async render) — the simple case needs no model, no router, no chrome.
   if (!editor) {
-    root.innerHTML = await renderMasterAsync(source, pipelineOptions);
+    // #462: swap AND activate — read mode formerly assigned innerHTML and returned, leaving
+    // every injected script (hover previews, mermaid) dead. A single mount, so this runs once.
+    swapLiveContent(root, await renderMasterAsync(source, pipelineOptions));
     return root;
   }
 
@@ -1249,6 +1255,40 @@ function resolveWebsitePageAssets(container, pageSrcDir) {
       el.setAttribute(attr, base + raw);
     }
   }
+}
+
+/**
+ * Swap rendered document HTML into a live region and ACTIVATE its injected scripts.
+ *
+ * `innerHTML` never runs a `<script>` (HTML spec), so `executeAssets` re-creates each
+ * injected script so it executes — the rails (scroll-spy, on-this-page), hover previews,
+ * mermaid/abc, and paging. This is the ONE place a content-bearing region is swapped in
+ * the live shells: every read/revisit swap that can carry scripts goes through here, so a
+ * future mount path cannot reintroduce the "scripts dead after the swap" hole that left
+ * book read, article read, and website revisits inert (#462; pass-map §3.1 items 4–6).
+ * The `no-raw-content-swap` lint (browser-live-swap.test.js) enforces that no read-view
+ * producer is assigned to `.innerHTML` directly.
+ *
+ * On a revisit the swap re-creates fresh DOM and this re-runs the region's inits. Those are
+ * idempotent (mermaid re-renders, the rails re-observe), which is the point — the previous
+ * visit's nodes are gone. It does not itself accumulate listeners: the rail scripts' own
+ * lack of teardown is a separate, pre-existing concern (pass-map fragile list) that this
+ * change brings book/article read to exact parity with the already-correct website-book
+ * path — it does not make it worse.
+ *
+ * `resolveWebsitePageAssets` (page-relative figure/href rebase, #352) runs first when a
+ * page source dir is given; a null dir (a standalone book/article at the site root) is a
+ * no-op. `executeAssets` is fire-and-forget with a swallowed rejection, matching the
+ * edit-preview call sites — a failed external script load must not break the mount.
+ *
+ * @param {Element} region  the DOM region to swap
+ * @param {string}  html    rendered document HTML (may carry `<script>` nodes)
+ * @param {{ pageSrcDir?: string|null }} [opts]
+ */
+function swapLiveContent(region, html, { pageSrcDir = null } = {}) {
+  region.innerHTML = html;
+  if (pageSrcDir != null) resolveWebsitePageAssets(region, pageSrcDir);
+  executeAssets(region).catch(() => {});
 }
 
 /**
@@ -1595,9 +1635,9 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // seed (its own numbering shadows; a cross-page anchor reads the merged registry's NATIVE number), cached
   // (hash-independent). A BOOK page renders as a native book SUB-VIEW (#314): re-number the pre-assembled
   // book over the seed → buildLiveBook → render the chapter/cover the `?chapter=` selects (resolveRoute),
-  // each chapter cached. executeAssets runs on every FIRST build (innerHTML does not run <script>).
+  // each chapter cached. Every content swap re-activates its scripts via swapLiveContent (innerHTML
+  // does not run <script>); the HTML string is cached, never the live (script-activated) DOM (#462).
   const articleCache = new Map();              // slug → rendered article HTML (hash-independent)
-  const executed = new Set();
   let currentBook = null;                      // { pd, model, ctx, chapterCache, currentKey } when the active READ page is a book
   let currentBookEdit = null;                  // the embedded mountEditLoop handle when the active EDIT page is a book
 
@@ -1606,9 +1646,12 @@ export async function mountLiveWebsite(target, source, options = {}) {
       const f = { data: { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(pd.slug) } };
       articleCache.set(pd.slug, resolveRefs(String(proc.stringify(proc.runSync(pd.tree ?? proc.parse(pd.source), f), f)), pd.slug)); // #404 marker 7: the interstitial-spliced tree, when present
     }
-    contentRegion.innerHTML = articleCache.get(pd.slug);
-    resolveWebsitePageAssets(contentRegion, pd.resolved.sourcePath);   // #352: figure assets resolve page-relative
-    if (!executed.has(pd.slug)) { executeAssets(contentRegion); executed.add(pd.slug); }
+    // #462: swap AND activate on EVERY visit. Formerly a per-slug `executed` Set ran
+    // executeAssets only on the FIRST visit — but innerHTML re-creates fresh (inert) script
+    // nodes on every revisit, so the second visit showed dead scripts (raw mermaid, no hover
+    // previews). Re-activating is correct: the prior visit's DOM is gone. #352 asset rebase
+    // rides inside the helper.
+    swapLiveContent(contentRegion, articleCache.get(pd.slug), { pageSrcDir: pd.resolved.sourcePath });
     // No shell on-this-page rail (maintainer decision): the article owns its layout. A `<config toc>`
     // article renders its OWN contents rail inside the content (exactly as the static site does); a
     // no-config-toc article has no ToC. The shell renders only the nav bar + this content slot.
@@ -1636,10 +1679,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
         const view = key === 'cover' ? renderLiveCoverView(b.model, b.ctx) : renderLiveChapterView(b.model, key, b.ctx);
         b.chapterCache.set(key, resolveRefs(view, b.pd.slug));
       }
-      contentRegion.innerHTML = b.chapterCache.get(key);
-      resolveWebsitePageAssets(contentRegion, b.pd.resolved.sourcePath);   // #352: figure assets resolve page-relative
+      // #462: this book-chapter path already swap-and-executed on every swap (the correct
+      // shape); routed through the shared helper so the rule lives in one place.
+      swapLiveContent(contentRegion, b.chapterCache.get(key), { pageSrcDir: b.pd.resolved.sourcePath });
       b.currentKey = key;
-      executeAssets(contentRegion);
     }
     if (dest && dest.anchor && typeof document !== 'undefined') {
       const el = document.getElementById(dest.anchor);
