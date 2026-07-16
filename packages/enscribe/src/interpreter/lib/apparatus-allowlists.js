@@ -84,6 +84,7 @@ export const CONFIG_KWARGS = new Map([
   ['number-definitions',      boolean()],   // numbering.js (<definition>)
   ['number-examples',         boolean()],   // numbering.js (<example>)
   ['number-boxes',            boolean()],   // numbering.js (numbered <aside> — the 'box' counter, #31)
+  ['number-minipages',        boolean()],   // numbering.js (<minipage> own counter, #115/#455 — read at numbering.js MINIPAGE_KEY; was consumed but undeclared, so the gate stripped it and the suppression never fired)
 
   // Phase 4 slice 4a (2026-05-29): two scope knobs for book documents.
   // Articles default to none/section; books default to chapter/chapter.

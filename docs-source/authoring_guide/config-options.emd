@@ -13,6 +13,7 @@ The complete set of document-level `<config>` settings, grouped by concern — t
 | `number-definitions` | true \| false | on | all | Number definitions. |
 | `number-examples` | true \| false | on | all | Number examples. |
 | `number-boxes` | true \| false | off | all | Number boxes (numbered &lt;aside&gt;). Boxes are UNnumbered by default — opt a box in with +numbered. |
+| `number-minipages` | true \| false | on | all | Number minipages (the framed &lt;minipage&gt; box carries its own "Minipage N" counter). On by default — set false to suppress the counter document-wide. |
 | `number-sections` | true \| false | off | all | Hierarchical heading numbering (1, 1.1, 1.1.1). Off by default for ALL document types (#246/core) — opt in with &lt;config number-sections&gt;. A &lt;ref&gt; to an unnumbered heading shows its title. |
 | `number-depth` | a non-negative integer (heading level) | all levels | all | Deepest heading level that receives a number. Independent of toc-depth — a heading can be numbered but not listed, or vice versa. |
 | `counter-reset-scope` | none \| chapter \| section | none in articles, chapter in books | all | Where float / equation / theorem counters reset. none = global; chapter = at each &lt;book-part&gt;; section = also at each outermost &lt;section&gt;. |

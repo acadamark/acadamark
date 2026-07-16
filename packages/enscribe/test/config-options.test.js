@@ -27,6 +27,19 @@ export function run() {
     console.log('PASS: config: number-figures=false suppresses the figure label');
   }
 
+  // --- number-minipages: default numbers the minipage; =false suppresses (#455) ---
+  // Regression: `number-minipages` was READ by numbering but never DECLARED in
+  // CONFIG_KWARGS, so the gate stripped it before the read and the suppression could
+  // never fire. Declaring it makes the documented suppression work.
+  {
+    const mpSrc = '<minipage | A boxed preview.>';
+    const on = processHtml(mpSrc);
+    const off = processHtml(withConfig(mpSrc, 'number-minipages=false'));
+    assert.ok(/Minipage\s*1/.test(on), 'number-minipages default on: "Minipage 1" label present');
+    assert.ok(!/Minipage\s*1/.test(off), 'number-minipages=false: minipage label suppressed (the key survives the gate and is read)');
+    console.log('PASS: config: number-minipages=false suppresses the minipage label (#455)');
+  }
+
   // --- number-equations: default numbers the display equation; =false suppresses ---
   {
     const eqSrc = '<$$ #e1 | x = 1 $$>';

@@ -44,6 +44,8 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'Number examples.' },
   { key: 'number-boxes', family: 'Numbering', type: 'boolean', values: null, default: 'off', scope: 'all',
     description: 'Number boxes (numbered <aside>). Boxes are UNnumbered by default — opt a box in with +numbered.' },
+  { key: 'number-minipages', family: 'Numbering', type: 'boolean', values: null, default: 'on', scope: 'all',
+    description: 'Number minipages (the framed <minipage> box carries its own "Minipage N" counter). On by default — set false to suppress the counter document-wide.' },
   { key: 'number-sections', family: 'Numbering', type: 'boolean', values: null, default: 'off', scope: 'all',
     description: 'Hierarchical heading numbering (1, 1.1, 1.1.1). Off by default for ALL document types (#246/core) — opt in with <config number-sections>. A <ref> to an unnumbered heading shows its title.' },
   { key: 'number-depth', family: 'Numbering', type: 'valued', values: 'a non-negative integer (heading level)', default: 'all levels', scope: 'all',

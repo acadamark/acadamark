@@ -429,6 +429,19 @@ function checkStandaloneFlags(opts) {
   }
 }
 
+// Thread the shared presentation flags (`--toc`, `--theme`, `--chapter-nav`) onto a pipeOpts
+// object, mutating and returning it. ONE place, so `render` and `build` cannot drift apart:
+// `build` silently dropped all three because it hand-built its pipeOpts and never copied render's
+// three lines (#453 — a book built with `--theme tufte` came out unthemed). A new presentation
+// flag joins here and both commands get it. (Delivery flags — --embed/--dsl-mode/--assetsDir —
+// stay per-command: their defaults differ by command, unlike these presentation flags.)
+function applyPresentationFlags(pipeOpts, opts) {
+  if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
+  if (opts.theme) pipeOpts.theme = opts.theme;
+  if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
+  return pipeOpts;
+}
+
 function doRender(opts, diag) {
   const src = readInput(opts.input);
   // CLI default is self-contained (--embed); the library default is external.
@@ -441,9 +454,7 @@ function doRender(opts, diag) {
   // it is pre-rendered to KaTeX HTML at build time and the CSS rides the same
   // embed/CDN switch (cssMode), so formulas already render.
   pipeOpts.dslMode = standaloneDslMode(opts, pipeOpts.embedResources);
-  if (opts.toc !== undefined) pipeOpts.toc = opts.toc;
-  if (opts.theme) pipeOpts.theme = opts.theme;
-  if (opts.chapterNav !== undefined) pipeOpts.chapterNav = opts.chapterNav;
+  applyPresentationFlags(pipeOpts, opts);
 
   // #395 D2 (audit W3): the DEFAULT output is a complete, styled, standalone document.
   // The wrap and its option surface are shared with import / import-jats (#414) —
@@ -590,7 +601,14 @@ function doBuild(opts, diag) {
       source,
       sourcePath: opts.input ?? 'input.emd',
       masterDir,
-      pipeOpts: { embedResources, assetsDir: masterDir, dslMode: standaloneDslMode(opts, embedResources) },
+      // #453: thread the presentation flags (--theme/--toc/--chapter-nav) the same way `render`
+      // does — `build` dropped them silently before. (A separate-pages book's theme is still
+      // stripped downstream by extractBookPart, tracked as #452; the website path threads its own
+      // theme, #452/#456. This closes the CLI-seam drop for the single-page book/article path.)
+      pipeOpts: applyPresentationFlags(
+        { embedResources, assetsDir: masterDir, dslMode: standaloneDslMode(opts, embedResources) },
+        opts,
+      ),
     });
     const isBook = file.data?.enscribeDocType === 'book';
     // #246/#278 — a website master builds to a DIR-PER-PAGE static site: walk the nav and render

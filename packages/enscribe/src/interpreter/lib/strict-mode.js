@@ -31,6 +31,7 @@
 
 import { isEnscribeTag } from '../../core/tag.js';
 import { ENSCRIBE_STRICT_MODE } from '../../core/file-data-keys.js';
+import { hasMasterSrcEntries } from '../../master-document/assemble.js';
 
 // micromark CommonMark construct names for the markdown register (verified to
 // disable cleanly while leaving the enscribe extension's tags/sigils intact).
@@ -125,13 +126,50 @@ export function resolveStrictMode({ sigilProcessor, canonicalProcessor, option }
   return (tree, file) => {
     const source = typeof file?.value === 'string' ? file.value : String(file?.value ?? '');
     const { mode, reparsedTree } = applyStrictModeReparse(tree, source, option, sigilProcessor, canonicalProcessor);
+    // Swap the registers-off tree in place so every downstream transform sees it — but ONLY when
+    // the reparse FAITHFULLY reproduces THIS tree's document (#451). On an ASSEMBLED document
+    // (book / website / multi-file), `tree` was built from more than one source — or from a
+    // pre-parsed tree with no source at all — so `file.value` is either empty or the MASTER ONLY.
+    // Reparsing it would replace the assembled tree with an empty one (the data-loss wipe #451
+    // reported) or with a master shell whose <chapter src>/<include> children never re-expand
+    // (children silently dropped). A single-source document (plain render, single-file
+    // book/website) reparses faithfully and the swap proceeds.
+    let effectiveMode = mode;
+    if (reparsedTree && isFaithfulReparse(reparsedTree, source)) {
+      tree.children = reparsedTree.children;
+    } else if (mode !== 'off') {
+      // Strict was requested but the tree cannot be faithfully reparsed (assembled document).
+      // Do NOT wipe: render the fully-parsed tree with ALL registers, and downgrade the recorded
+      // mode to 'off' so every downstream reader (the lint flag, the recursive-content sub-parse
+      // processor selection) stays consistent with the tree actually in hand. Not silent — emit a
+      // diagnostic (the always-render spirit: an accepted setting that does nothing must say so).
+      // Applying the register to a multi-file body needs registers-off ASSEMBLY (each child
+      // reparsed with the off-processor), a deeper change tracked as a follow-on to #451.
+      effectiveMode = 'off';
+      file?.message?.(
+        `strict-mode="${mode}" is not applied to an assembled/multi-file document yet — ` +
+          'rendering with all registers (nothing is dropped). Follow-on to #451.',
+        undefined, 'strict-mode:assembled-unsupported',
+      );
+    }
     if (file) {
       file.data ??= {};
-      file.data[ENSCRIBE_STRICT_MODE] = mode;
+      file.data[ENSCRIBE_STRICT_MODE] = effectiveMode;
     }
-    // Swap the registers-off tree in place so every downstream transform sees it.
-    if (reparsedTree) tree.children = reparsedTree.children;
   };
+}
+
+/**
+ * A reparse faithfully reproduces the tree it would replace only when `source` is the WHOLE
+ * document's source. It is NOT faithful when the source is empty/blank (an assembled VFile with
+ * no source — the reparse would wipe the tree) or when the reparse still carries top-level
+ * `<… src>` / `<include>` transclusion entries (the source is a multi-file MASTER whose children
+ * live in other files — the in-hand tree is already assembled, so swapping in the master-only
+ * reparse would drop them). See resolveStrictMode's swap guard (#451).
+ */
+function isFaithfulReparse(reparsedTree, source) {
+  if (!source || source.trim() === '') return false;
+  return !hasMasterSrcEntries(reparsedTree);
 }
 
 // ─── the lint flag (hast pass) ─────────────────────────────────────────────────
