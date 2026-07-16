@@ -105,6 +105,7 @@ import { run as runStrictMode } from './strict-mode.test.js';
 import { run as runCaretFootnoteSigil } from './caret-footnote-sigil.test.js';
 import { run as runRoutingInvariant } from './routing-invariant.test.js';
 import { run as runBrowserLiveSwap } from './browser-live-swap.test.js';
+import { run as runValidityHtml } from './validity-html.test.js';
 
 const suites = [
   ['plugins/doc-type',             runDocType],
@@ -209,6 +210,7 @@ const suites = [
   ['coverage/manifest-fresh',      runCoverageFresh],
   ['registries-guard',             runRegistriesGuard],
   ['browser-live-swap',            runBrowserLiveSwap],
+  ['validity-html',                runValidityHtml],
 ];
 
 let failed = 0;

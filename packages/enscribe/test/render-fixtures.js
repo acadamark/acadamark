@@ -20,8 +20,8 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, basename, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { dirname, join, basename, resolve, relative } from 'node:path';
 import { VFile } from 'vfile';
 import { buildEnscribePipeline, assembleMasterDocument, isMasterSrcEntry, hasMasterSrcEntries, publishBookPages, emitLiveShell } from '../src/interpreter/index.js';
 import { MASTER_BOOK_SHELL_PARAMS } from './fixtures/master-book/shell-params.mjs';
@@ -142,11 +142,14 @@ ${fragment}
 }
 
 /**
- * Process a single .emd file and write the wrapped HTML.
+ * Process a single .emd file and RETURN the wrapped HTML (no write). Exported so the
+ * HTML-validity gate (validity-html.test.js) renders the exact bytes this writer commits,
+ * generate-and-check — no staleness gap, one render path, no drift.
  *
  * @param {string} emdPath - Absolute path to the .emd file.
+ * @returns {string} the full wrapped HTML document.
  */
-function renderFixture(emdPath) {
+export function renderFixtureHtml(emdPath) {
   const src = readFileSync(emdPath, 'utf8');
   const name = basename(emdPath, '.emd');
 
@@ -187,13 +190,7 @@ function renderFixture(emdPath) {
   } else {
     fragment = String(processor.processSync(src));
   }
-  const html = wrapInHtmlShell(fragment, name);
-
-  // The .html is written beside its .emd (same directory), so fixtures organised
-  // into subdirectories (context/, sweep/, …; #5) render in place.
-  const outPath = join(dirname(emdPath), `${name}.html`);
-  writeFileSync(outPath, html, 'utf8');
-  console.log(`  wrote ${basename(emdPath, '.emd')}.html`);
+  return wrapInHtmlShell(fragment, name);
 }
 
 // Find all source fixtures, recursing into subdirectories (#5 organises the
@@ -213,24 +210,26 @@ function findEmd(dir) {
   }
   return out;
 }
-const emdFiles = findEmd(FIXTURES_DIR).sort();
-
-// A master's `src` structure children are consumed by assembly and get no
-// standalone golden; compute that skip set from the masters themselves.
-const consumedChildren = collectConsumedChildren(emdFiles);
-const toRender = emdFiles.filter((p) => !consumedChildren.has(p));
-
-console.log(`Rendering ${toRender.length} fixture(s) (${consumedChildren.size} master child file(s) assembled in)...`);
-for (const emdPath of toRender) {
-  renderFixture(emdPath);
-}
-
-// P1 (#205): the static separate-pages book build. Emit master-book as one standalone
-// HTML page per chapter into master-book/pages/ — the same publishBookPages the CLI
-// `build` (book default) uses. These page goldens prove the standalone-page shape +
-// the cross-page ref rewrite; the separate-pages-parity test proves each page's
-// content equals L1's renderChapter.
-{
+/**
+ * Render EVERY rendered-document fixture and RETURN the results (no writes). One list,
+ * shared by the on-disk writer below (the `verify` path) and the HTML-validity gate (the
+ * `test` path), so both validate the exact same bytes. Covers the standalone `.emd`
+ * fixtures + the master-book separate pages; excludes the live shell (a mount template,
+ * not rendered document content).
+ *
+ * @returns {Array<{ relPath: string, html: string }>} relPath is relative to FIXTURES_DIR.
+ */
+export function renderAllFixtures() {
+  const emdFiles = findEmd(FIXTURES_DIR).sort();
+  // A master's `src` structure children are consumed by assembly and get no standalone
+  // golden; compute that skip set from the masters themselves.
+  const consumed = collectConsumedChildren(emdFiles);
+  const out = [];
+  for (const emdPath of emdFiles.filter((p) => !consumed.has(p))) {
+    out.push({ relPath: relative(FIXTURES_DIR, join(dirname(emdPath), `${basename(emdPath, '.emd')}.html`)), html: renderFixtureHtml(emdPath) });
+  }
+  // P1 (#205): the static separate-pages book — the same publishBookPages the CLI `build`
+  // (book default) uses. Each page is a standalone rendered document.
   const bookDir = join(FIXTURES_DIR, 'master-book');
   const proc = buildEnscribePipeline({ assetsDir: join(FIXTURES_DIR, 'assets') });
   const file = new VFile({ path: 'master-book.emd' });
@@ -241,17 +240,27 @@ for (const emdPath of toRender) {
     parse: (s) => proc.parse(s),
   });
   const numbered = proc.runSync(tree, file);
-  const pages = publishBookPages({ numbered, file, proc, defaultCss: SHELL_CSS });
-  const pagesDir = join(bookDir, 'pages');
-  mkdirSync(pagesDir, { recursive: true });
-  for (const [name, html] of pages) writeFileSync(join(pagesDir, name), html, 'utf8');
-  console.log(`  wrote ${pages.size} separate-pages goldens → master-book/pages/`);
+  for (const [name, html] of publishBookPages({ numbered, file, proc, defaultCss: SHELL_CSS })) {
+    out.push({ relPath: join('master-book', 'pages', name), html });
+  }
+  return out;
 }
 
-// #215: the master-book LIVE shell (index.html) is generated by the emitter, not hand-written.
-// Regenerate it here (dev `assets` = the scattered source-tree paths) so a change to the emitter
-// flows through `node test/render-fixtures.js`; emit-shell.test.js guards the committed file matches.
-writeFileSync(join(FIXTURES_DIR, 'master-book', 'index.html'), emitLiveShell(MASTER_BOOK_SHELL_PARAMS), 'utf8');
-console.log('  wrote master-book/index.html (emitLiveShell, dev assets)');
+// ── The on-disk writer (the `verify` path): only when run as a script, not on import. ──
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  const results = renderAllFixtures();
+  const pagesDir = join(FIXTURES_DIR, 'master-book', 'pages');
+  mkdirSync(pagesDir, { recursive: true });
+  for (const { relPath, html } of results) {
+    writeFileSync(join(FIXTURES_DIR, relPath), html, 'utf8');
+  }
+  console.log(`Rendered + wrote ${results.length} fixture HTML file(s).`);
 
-console.log('Done.');
+  // #215: the master-book LIVE shell (index.html) is generated by the emitter, not hand-written.
+  // Regenerate it here (dev `assets` = the scattered source-tree paths) so a change to the emitter
+  // flows through `node test/render-fixtures.js`; emit-shell.test.js guards the committed file matches.
+  writeFileSync(join(FIXTURES_DIR, 'master-book', 'index.html'), emitLiveShell(MASTER_BOOK_SHELL_PARAMS), 'utf8');
+  console.log('  wrote master-book/index.html (emitLiveShell, dev assets)');
+
+  console.log('Done.');
+}
