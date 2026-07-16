@@ -5,6 +5,7 @@ import remarkEnscribe from '../../src/parser/index.js';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import { enscribeNormalizeToCanonical, gfmTableToParsedCellsTag } from '../../src/interpreter/plugins/normalize-to-canonical.js';
+import { buildEnscribePipeline, liftToCanonicalMdast } from '../../src/interpreter/index.js';
 // Alias kept locally so the existing test bodies (which use the prior
 // function name) need fewer edits. The exported `enscribeNormalizeMarkdown`
 // is itself a backward-compat alias for `enscribeNormalizeToCanonical`.
@@ -52,6 +53,45 @@ function parseAndNormalize(source) {
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 export function run() {
+
+  // ── #448: an alias/shorthand rewrite must NOT starve a later terminal lift ──
+  // `<figure>` is an authoring alias for `<fig>`; the gate rewrites the tagname,
+  // and the node must then be RE-DISPATCHED so the frameable caption lift still
+  // fires. Before the fix, the alias consumed the node's one normalization slot
+  // and `<figure caption=…>` rendered a bare caption while `<fig caption=…>`
+  // wrapped it in <p> — same figure, different HTML (and different archival eHTML).
+  {
+    const proc = buildEnscribePipeline({ documentFontsCss: 'skip', katexCss: 'skip', hoverPreviewMode: 'skip', dslMode: 'skip' });
+    const html = (src) => String(proc.processSync(`<title | T>\n\n${src}\n`));
+    const fig = html('<fig src=x.png caption="Hello world" />');
+    const figure = html('<figure src=x.png caption="Hello world" />');
+    assert.equal(figure, fig, '#448: <figure caption> renders byte-identically to <fig caption>');
+    assert.ok(/<figcaption><figure-label>[^<]*<\/figure-label>\s*<p>Hello world<\/p>/.test(fig),
+      '#448: the caption is lifted to a <p>-wrapped <figcaption> (not the bare kwarg fallback)');
+
+    // Archival eHTML shape: the two lifted trees must be structurally identical
+    // (position metadata aside). serializeCanonical is a pure function of the
+    // tree, so identical trees ⇒ identical archival source.
+    const stripPos = (n) => JSON.stringify(n, (k, v) => (k === 'position' ? undefined : v));
+    const firstFig = (tree) => {
+      let found = null;
+      (function walk(nodes) {
+        for (const n of nodes ?? []) {
+          if (found) return;
+          if (n?.type === 'enscribeTag' && n.tagname === 'fig') { found = n; return; }
+          if (Array.isArray(n?.content)) walk(n.content);
+          if (Array.isArray(n?.children)) walk(n.children);
+        }
+      })(tree.children ?? []);
+      return found;
+    };
+    const figTree = firstFig(liftToCanonicalMdast('<fig src=x.png caption="X" />\n'));
+    const figureTree = firstFig(liftToCanonicalMdast('<figure src=x.png caption="X" />\n'));
+    assert.ok(figTree && figureTree, '#448: both forms lift to a <fig> node');
+    assert.equal(stripPos(figureTree), stripPos(figTree),
+      '#448: <figure caption> and <fig caption> lift to the same archival tree (caption as child, not kwarg)');
+    console.log('PASS: normalize-to-canonical: #448 alias rewrite re-dispatches to the frameable caption lift');
+  }
 
   // ── Core normalization ────────────────────────────────────────────────────
 

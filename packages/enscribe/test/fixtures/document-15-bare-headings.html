@@ -1425,12 +1425,14 @@ toc-num {
       <aside class="frameable-border">
         <p>An aside containing a recursive heading.</p>
         <sub-section>
-          <p>Nested bare heading inside aside content</p>
+          <sub-section-title>
+            <h3>Nested bare heading inside aside content</h3>
+          </sub-section-title>
+          <p>
+            The bare <code>##</code> heading appearing inside the aside’s pipe-content must also
+            lift — the gate’s walker recurses into enscribeTag content arrays.
+          </p>
         </sub-section>
-        <p>
-          The bare <code>##</code> heading appearing inside the aside’s pipe-content must also
-          lift — the gate’s walker recurses into enscribeTag content arrays.
-        </p>
       </aside>
     </section>
   </article-body>

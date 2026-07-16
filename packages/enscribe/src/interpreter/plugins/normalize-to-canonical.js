@@ -42,10 +42,15 @@
 //     footnoteReference are unsupported authoring forms and pass through
 //     unchanged (with a diagnostic where useful).
 //
-// The dispatch is mutually exclusive by node type and tagname so ordering
-// is not behaviorally significant — but the order above is the deliberate
-// reading order: delegated-parser nodes first (the historical job), then
-// the lift-direction cipher (group A), then mdast lift rules (groups B/C).
+// Dispatch is first-match. The TERMINAL rules are mutually exclusive by node
+// type and tagname, but the cipher/alias rules (sigil rewrite, figure→fig,
+// shorthand expansion) only SUBSTITUTE the tagname and the node is re-dispatched
+// (#448), so an alias rule must precede any terminal rule it feeds — e.g. the
+// figure→fig and shorthand rules sit ahead of the frameable caption lift so a
+// `<figure caption=…>` / `<csv caption=…>` aliases first, then lifts. The order
+// above is otherwise the deliberate reading order: delegated-parser nodes first
+// (the historical job), then the lift-direction cipher (group A), then mdast
+// lift rules (groups B/C).
 
 import { getContentHandler } from '../../core/dsl-registry.js';
 import { makeTag, makeOpaqueTag, isEnscribeTag } from '../../core/tag.js';
@@ -828,8 +833,15 @@ function liftConfigKwargs(node, file) {
 //   normalize(node, file) — returns the canonical replacement (enscribeTag or
 //     a benign mdast wrapper, depending on the form).
 //
-// The rules are mutually exclusive by node type / tagname; ordering is not
-// behaviorally significant but follows the reading order in the file header.
+// Ordering IS behaviorally significant. Dispatch is first-match (`.find()` in
+// normalizeNode), and the terminal rules ARE mutually exclusive by node type /
+// tagname — BUT the cipher/alias rules (sigil rewrite, figure→fig, shorthand
+// expansion; marked `alias: true`) are not terminal: they substitute the tagname
+// and the node is then re-dispatched, so an alias rule must precede any terminal
+// rule it feeds into. Concretely, the figure→fig and shorthand rules sit ahead of
+// the frameable caption lift (Group A2.5) because a `<figure caption=…>` /
+// `<csv caption=…>` must alias FIRST, then lift (#448). The order otherwise
+// follows the reading order in the file header.
 
 const NORMALIZATIONS = [
   // ─── Delegated-parser nodes (the historical "normalize-markdown" job) ───
@@ -877,6 +889,9 @@ const NORMALIZATIONS = [
   // sees a sigil tagname. Uniform across section sigils and math/code
   // sigils.
   {
+    // alias: pure tagname substitution — re-dispatch so a terminal rule keyed on
+    // the canonical name (e.g. a frameable lift) still fires (#448).
+    alias: true,
     predicate: (node) => isEnscribeTag(node) && isSigilTagname(node.tagname),
     normalize: (node) => {
       node.tagname = SIGIL_TO_TAGNAME[node.tagname];
@@ -901,7 +916,13 @@ const NORMALIZATIONS = [
   // pattern of "specific tag-to-canonical-name rewrites at the gate"
   // can lift to a shared map (TAGNAME_ALIASES) when a second alias
   // family lands.
+  //
+  // #448: this is an alias — after the tagname flips to `fig`, the node is
+  // RE-DISPATCHED (see normalizeNode) so the frameable caption lift below still
+  // fires. Without that, `<figure caption=…>` rendered differently from
+  // `<fig caption=…>` (the alias consumed the one normalization slot).
   {
+    alias: true,
     predicate: (node) => isEnscribeTag(node) && node.tagname === 'figure',
     normalize: (node) => {
       node.tagname = 'fig';
@@ -947,7 +968,15 @@ const NORMALIZATIONS = [
   // predicate does not match there, so `.find()` moves on to glossary's other
   // normalizations (book-part.md L68 vs glossary.md). `_bookContextFlag` is
   // set per-document at the entry point below.
+  //
+  // #448: alias — a shorthand rewrites the tagname to its host (`csv`→`table`,
+  // `mermaid`→`diagram`, book-part families→`book-part`), so the node is
+  // RE-DISPATCHED to reach a terminal rule keyed on the host name (the frameable
+  // caption lift for `<csv caption=…>`). Latent for the string-content hosts
+  // (table/diagram content is opaque, so the lift no-ops either way), but the
+  // re-dispatch keeps the shorthand and direct forms identical by construction.
   {
+    alias: true,
     predicate: (node) =>
       isEnscribeTag(node) &&
       shorthandRegistry.matches(node, { isBook: _bookContextFlag.isBook }),
@@ -1035,6 +1064,16 @@ function isNormalizable(node) {
   return NORMALIZATIONS.some((entry) => entry.predicate(node));
 }
 
+// A cipher/alias rule only SUBSTITUTES the tagname (sigil→canonical, figure→fig,
+// shorthand→host); it doesn't finish the node. After such a substitution the node
+// must be RE-DISPATCHED so a terminal normalization keyed on the new canonical
+// name still fires — otherwise `<figure caption=…>` / `<csv caption=…>` never
+// reach the frameable caption lift, because the alias consumed the node's one
+// normalization slot (#448). Bounded as a defensive guard against a pathological
+// alias cycle: today each alias rewrites to a non-alias name in one step, so the
+// loop runs at most one alias hop + one terminal rule.
+const MAX_ALIAS_HOPS = 8;
+
 // Dispatch to the matching entry's normalize function.
 // `file` is threaded through from the plugin transformer for warning emission.
 function normalizeNode(node, file) {
@@ -1043,8 +1082,15 @@ function normalizeNode(node, file) {
   // (__import-error) BEFORE the gate runs. They pass through untouched: no authored
   // kwarg allowlist applies to them, and the INTERNAL_REGISTRY renders them.
   if (isEnscribeTag(node) && node.tagname.startsWith('__')) return node;
-  const entry = NORMALIZATIONS.find((e) => e.predicate(node));
-  return entry.normalize(node, file);
+  let current = node;
+  for (let hop = 0; hop < MAX_ALIAS_HOPS; hop++) {
+    const entry = NORMALIZATIONS.find((e) => e.predicate(current));
+    if (!entry) return current;        // no rule applies → already canonical (e.g. a plain <section>)
+    current = entry.normalize(current, file);
+    if (!entry.alias) return current;  // terminal normalization → done (runs exactly once)
+    // else: a tagname substitution — loop to re-dispatch on the new canonical name
+  }
+  return current;
 }
 
 // ─── Host accept-set validation (issue #85) ─────────────────────────────────

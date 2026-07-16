@@ -166,4 +166,40 @@ export function run() {
     assert.equal(body.content[0], p);
     console.log('PASS: section-nesting: no sections → tree unchanged');
   }
+
+  // --- #449: a container's inner sections nest regardless of sibling sections ---
+  // <aside>## Inner\nBody.</aside> nested its inner sub-section correctly when it
+  // stood alone, but a sibling section in the SAME array made walkAndNest
+  // nest-this-level-and-stop, silently leaving the aside's inner sub-section
+  // un-nested (no title element, body not absorbed). The aside's inner structure
+  // must not depend on unrelated sibling content.
+  {
+    // Build the aside fresh each time: nesting mutates in place.
+    const makeAside = () => makeTag('aside', [sectionTag('sub-section', 'Inner'), para('Body.')]);
+
+    // Assert the aside's content is a single, fully-nested sub-section.
+    const assertNested = (aside, label) => {
+      assert.equal(aside.content.length, 1, `${label}: aside holds one nested sub-section`);
+      const sub = aside.content[0];
+      assert.equal(sub.tagname, 'sub-section', `${label}: it is a sub-section`);
+      assert.equal(sub.content[0].tagname, 'sub-section-title', `${label}: title element present`);
+      assert.equal(sub.content[1].type, 'paragraph', `${label}: body absorbed into the sub-section`);
+    };
+
+    // Case A: aside alone (the previously-working case).
+    {
+      const aside = makeAside();
+      const tree = makeArticleTree(aside);
+      enscribeSectionNesting()(tree);
+      assertNested(aside, 'aside alone');
+    }
+    // Case B: aside preceded by a sibling section (the previously-broken case).
+    {
+      const aside = makeAside();
+      const tree = makeArticleTree(sectionTag('section', 'Top'), para('Top body.'), aside);
+      enscribeSectionNesting()(tree);
+      assertNested(aside, 'aside after a sibling section');
+    }
+    console.log('PASS: section-nesting: #449 container inner sections nest regardless of sibling sections');
+  }
 }

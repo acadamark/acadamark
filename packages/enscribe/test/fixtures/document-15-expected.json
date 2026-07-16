@@ -1175,69 +1175,88 @@
                       "children": [
                         {
                           "type": "element",
+                          "tagName": "sub-section-title",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "h3",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Nested bare heading inside aside content",
+                                  "position": {
+                                    "start": {
+                                      "line": 3,
+                                      "column": 4,
+                                      "offset": 46
+                                    },
+                                    "end": {
+                                      "line": 3,
+                                      "column": 44,
+                                      "offset": 86
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
                           "tagName": "p",
                           "properties": {},
                           "children": [
                             {
                               "type": "text",
-                              "value": "Nested bare heading inside aside content",
+                              "value": "The bare ",
                               "position": {
                                 "start": {
-                                  "line": 3,
-                                  "column": 4,
-                                  "offset": 46
+                                  "line": 5,
+                                  "column": 1,
+                                  "offset": 88
                                 },
                                 "end": {
-                                  "line": 3,
-                                  "column": 44,
-                                  "offset": 86
+                                  "line": 5,
+                                  "column": 10,
+                                  "offset": 97
+                                }
+                              }
+                            },
+                            {
+                              "type": "element",
+                              "tagName": "code",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "##"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "value": " heading appearing inside the aside's pipe-content must also\nlift — the gate's walker recurses into enscribeTag content arrays.",
+                              "position": {
+                                "start": {
+                                  "line": 5,
+                                  "column": 14,
+                                  "offset": 101
+                                },
+                                "end": {
+                                  "line": 6,
+                                  "column": 67,
+                                  "offset": 228
                                 }
                               }
                             }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "element",
-                      "tagName": "p",
-                      "properties": {},
-                      "children": [
-                        {
-                          "type": "text",
-                          "value": "The bare ",
+                          ],
                           "position": {
                             "start": {
                               "line": 5,
                               "column": 1,
                               "offset": 88
-                            },
-                            "end": {
-                              "line": 5,
-                              "column": 10,
-                              "offset": 97
-                            }
-                          }
-                        },
-                        {
-                          "type": "element",
-                          "tagName": "code",
-                          "properties": {},
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "##"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "value": " heading appearing inside the aside's pipe-content must also\nlift — the gate's walker recurses into enscribeTag content arrays.",
-                          "position": {
-                            "start": {
-                              "line": 5,
-                              "column": 14,
-                              "offset": 101
                             },
                             "end": {
                               "line": 6,
@@ -1246,19 +1265,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 5,
-                          "column": 1,
-                          "offset": 88
-                        },
-                        "end": {
-                          "line": 6,
-                          "column": 67,
-                          "offset": 228
-                        }
-                      }
+                      ]
                     }
                   ]
                 }
