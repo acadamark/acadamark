@@ -379,23 +379,28 @@ export async function run() {
         'the rewrite is idempotent — one <config>, no stacked duplicate kwargs');
       console.log('PASS: document tier — the <config> rewrite is in-place idempotent (no duplicate kwargs)');
 
-      // A website variant pick rewrites the page <config> but does NOT stamp the shared root (stampRoot:false)
-      // — read mode never stamps a website config variant; the reader switch owns the root variant, so one
-      // page's pick cannot leak onto the next (#434).
+      // #443: a website variant pick rewrites the page <config> AND reflects it in the edit preview by
+      // stamping the shared root (see-what-you-set). It is leak-free by construction: every page switch
+      // resets the root to the site-wide default (below), and exiting edit reloads the page (read mode then
+      // re-stamps the master default). Read mode itself still honors the MASTER variant site-wide.
       const variantSel = root.querySelector('.enscribe-settings-panel [data-doc="theme-variant"]');
       variantSel.value = 'dark';
       variantSel.dispatchEvent(new dom.window.Event('change'));
       assert.ok(/theme-variant=dark/.test(stub.last.value), 'a variant pick rewrites <config theme-variant=dark> in the source');
-      assert.ok(!dom.window.document.documentElement.getAttribute('data-theme-variant'),
-        'the website variant pick does NOT stamp the shared root (no cross-page leak)');
-      console.log('PASS: document tier — a website variant pick rewrites <config> without leaking onto the shared root');
+      assert.equal(dom.window.document.documentElement.getAttribute('data-theme-variant'), 'dark',
+        'the website variant pick STAMPS the root during edit so the preview reflects it (#443 see-what-you-set)');
+      console.log('PASS: document tier — a website variant pick reflects in the edit preview (stamps the root, #443)');
 
-      // Navigating to a NON-article edit surface (a not-found page) HIDES the document tier — reader tier only.
+      // Navigating to a NON-article edit surface (a not-found page) HIDES the document tier — reader tier
+      // only — AND resets the root variant to the site-wide default, so the prior page's dark pick does not
+      // leak (#443). The MASTER carries no variant, so the default clears the attribute.
       popTo(dom, '?page=__nope__');
       const docTierAfter = root.querySelector('.enscribe-settings-tier--doc');
       assert.ok(docTierAfter && docTierAfter.hidden === true,
         'the document tier is hidden on a not-found (non-article) edit page (resetDocumentTier)');
-      console.log('PASS: document tier — hidden on a non-article edit surface');
+      assert.ok(!dom.window.document.documentElement.getAttribute('data-theme-variant'),
+        'switching pages resets the root variant to the site default — the prior page pick does not leak (#443)');
+      console.log('PASS: document tier — hidden on a non-article edit surface; the prior page variant does not leak (#443)');
     } finally { restoreDom(orig); }
   }
   // The panel CSS must reset [hidden] to display:none so the tier hide takes VISUAL effect — the author

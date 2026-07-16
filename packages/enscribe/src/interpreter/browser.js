@@ -60,7 +60,7 @@ import {
   setActivePage, bindWebsiteNavDismiss, buildShellActions, SHELL_ACTIONS_CSS,
 } from './assets/website-nav-asset.js';
 import { bindSettingsPanel } from './assets/settings-panel.js';
-import { KNOWN_THEMES } from './assets/theme-css.js';
+import { KNOWN_THEMES, getThemeCss } from './assets/theme-css.js';
 import { editConfigKwarg } from './lib/config-source-edit.js';
 import { isEnscribeTag } from '../core/tag.js';
 
@@ -153,18 +153,44 @@ function readMasterConfig(proc, source) {
   } catch { return null; }
 }
 
+// Stamp (or clear) the root `data-theme-variant` — the ROOT attribute the baked dark CSS keys on
+// (`:root[data-theme-variant]`, default.css). 'light'/'dark' pin the variant; anything else (auto/absent)
+// removes the attribute so `prefers-color-scheme` governs. Set-OR-remove (not set-only) so it can also
+// RESET the root to a new default — used when a website edit session leaves one page's pin for the next.
+function stampRootVariant(v) {
+  if (typeof document === 'undefined') return;
+  if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
+  else document.documentElement.removeAttribute('data-theme-variant');
+}
+
 // Honor the document-tier `<config theme-variant>` default on the LIVE path (the variant-drop fix, #430):
 // stamp it on documentElement at mount BEFORE the corner's bindSettingsPanel reads it as the document
 // default. The static document shell stamps this server-side; the live shell renders a fragment into the
 // mount root, which cannot set the ROOT attribute the baked dark CSS keys on. 'light'/'dark' pin the
 // variant; 'auto'/absent leave prefers-color-scheme in charge (and preserve any prior reader override).
-// Documents only — the LIVE website does NOT stamp the master's config variant at mount. (#431 gave the
-// STATIC website + separate-pages book their author-pin server-side; the live-website counterpart is a
-// known residual gap, tracked separately.) The reader-tier switch is the visitor's local override either way.
+// #443: the LIVE website now ALSO stamps the MASTER's config variant at mount (mountLiveWebsite) — the
+// site-wide read-mode default, matching the STATIC website (static-website.js) so live≡static per
+// render-parity.md. (This closes the residual gap #431 left and #443 tracked.) The reader-tier switch is
+// the visitor's local override on top, either way.
 function applyDocumentThemeVariant(configMap) {
   if (typeof document === 'undefined' || !configMap) return;
-  const v = configMap.get?.('theme-variant');
-  if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
+  stampRootVariant(configMap.get?.('theme-variant'));
+}
+
+// #452: inject the document's `<config theme>` tokens into the head as an id'd <style> at mount. The
+// per-chapter book render (renderChapter → extractBookPart) discards the compiler's root-prepended theme
+// <style>, so a LIVE standalone book would render themeless; this re-injects it, mirroring the static
+// pageShell. Idempotent (one #enscribe-doc-theme node, replaced on re-apply); an unknown/absent theme
+// removes it. Book-only in practice — the live article keeps its theme from its own render (no extract).
+function applyDocumentTheme(configMap) {
+  if (typeof document === 'undefined') return;
+  const name = configMap?.get?.('theme');
+  const existing = document.getElementById('enscribe-doc-theme');
+  if (!KNOWN_THEMES.has(name)) { if (existing) existing.remove(); return; }
+  const style = existing ?? document.createElement('style');
+  style.id = 'enscribe-doc-theme';
+  style.textContent = getThemeCss(name);
+  if (!existing) document.head.appendChild(style);
 }
 
 // The floating corner for STANDALONE live shells (article/book — no top bar): fixed top-right, the
@@ -238,7 +264,12 @@ function freshDocumentTierControls() {
 // never stamps a config variant there (the reader switch owns the root variant) — so stamping per page would
 // leak one page's variant onto the next. Either way the variant is written into the page's <config> (the
 // document-tier's actual job); only the immediate visual reflection is surface-specific. (#434)
-function wireDocumentTier({ proc, getSource, setSource, stampRoot = true }) {
+// `readModeDefault` (#443) — the site-wide default variant a WEBSITE edit session falls back to: when the
+// edited page carries no `<config theme-variant>` pin, and when the picker is set to 'auto', the preview
+// reflects THIS default rather than clearing to the OS. Passing it also turns on ON-WIRE reflection (so
+// opening an already-pinned page shows its pin — see-what-you-set). Absent (a standalone single document)
+// keeps the prior behavior: stamp on change only, clear to OS on 'auto', no on-wire stamp.
+function wireDocumentTier({ proc, getSource, setSource, stampRoot = true, readModeDefault }) {
   const els = freshDocumentTierControls();
   if (!els) return;                       // reader-only surface — nothing to wire
   const { docTierEl, themeSel, variantSel } = els;
@@ -252,14 +283,21 @@ function wireDocumentTier({ proc, getSource, setSource, stampRoot = true }) {
     });
   }
   if (variantSel) {
-    variantSel.value = cfg?.get?.('theme-variant') || 'auto';
+    const pin = cfg?.get?.('theme-variant');
+    variantSel.value = pin || 'auto';
+    // #443: on a website, reflect THIS page's variant pin (else the site default) in the preview at once, so
+    // opening an already-pinned page shows its pin. A standalone document already stamped its own variant at
+    // mount, so it needs no on-wire stamp (readModeDefault is undefined there).
+    if (stampRoot && readModeDefault !== undefined) {
+      stampRootVariant(pin === 'light' || pin === 'dark' ? pin : readModeDefault);
+    }
     variantSel.addEventListener('change', () => {
       const v = variantSel.value;
       setSource(editConfigKwarg(proc, getSource(), 'theme-variant', v));
       if (stampRoot) {
-        // Single-document surface: reflect the new document default immediately (the reader switch still overrides).
-        if (v === 'light' || v === 'dark') document.documentElement.setAttribute('data-theme-variant', v);
-        else document.documentElement.removeAttribute('data-theme-variant');
+        // Reflect the new document default immediately (the reader switch still overrides). On a website,
+        // 'auto' falls back to the site-wide default rather than the OS, so the preview stays leak-free.
+        stampRootVariant(v === 'light' || v === 'dark' ? v : (readModeDefault ?? null));
       }
     });
   }
@@ -1295,6 +1333,13 @@ export async function mountLiveWebsite(target, source, options = {}) {
   // website's primary nav; the sidebar is a second surface a larger site asks for. Read off the master's
   // config (config-discovery populated it during the pass-1 runSync above), like the book's nav config.
   const showSidebar = readConfigBool(navFile.data[ENSCRIBE_CONFIG], 'sidebar', false);
+  // #443: the master's `<config theme-variant>` is the site-wide READ-MODE default — stamp it on the root
+  // at mount, exactly as the STATIC website does server-side (static-website.js), so live≡static. Captured
+  // for reuse: edit mode restores this default on every page switch (leak-free) before the edited page's
+  // own pin reflects on top. Read mode never changes it per page — the master governs (the reader-tier
+  // switch is the visitor's local override on top).
+  const masterConfigMap = navFile.data[ENSCRIBE_CONFIG];
+  applyDocumentThemeVariant(masterConfigMap);
   const allPages = flattenNavPages(navModel.entries);
   // #419: an inline `<item | Title>` page is the zero-length-splice case (master-document.md §"Scope note:
   // websites") — a legal page whose BODY is its content, in-hand, with no `src` to fetch. It renders through
@@ -1660,6 +1705,10 @@ export async function mountLiveWebsite(target, source, options = {}) {
     resetDocumentTier();   // #434: hide the theme picker by default; the article branch below re-shows +
                            // re-wires it to THIS page. A book page (per-chapter edit, master <config> not in
                            // the buffer), a not-found, or an error page keeps it hidden — reader tier only.
+    // #443: reset the root variant to the SITE-WIDE default on every page switch, so a prior page's edited
+    // pin never leaks onto the next (the article branch below re-reflects THIS page's own pin on top). A
+    // book/not-found/error page — where the tier stays hidden — is left at this clean site default.
+    applyDocumentThemeVariant(masterConfigMap);
     setLayoutButtonVisible(false);   // #435: same default-hide — only the article branch (split-capable) re-shows it
     if (notFound || slug == null) { contentRegion.innerHTML = notFound ? renderNotFoundView(slug, { firstSlug }) : ''; return; }
     if (pageBySlug.get(slug)?.isError) {
@@ -1715,10 +1764,16 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // re-render), the same one-source-of-truth path the standalone article mount uses (mountLiveArticle). An
     // editor adapter without setValue degrades to reader-tier-only (resetDocumentTier already hid it).
     if (editHandle && typeof editHandle.setValue === 'function') {
-      // stampRoot:false — a website's shared root variant is the reader switch's (read mode never stamps a
-      // config variant here); the picker still rewrites this page's <config theme-variant>, just doesn't leak
-      // it onto the next page via the shared documentElement.
-      wireDocumentTier({ proc, getSource: () => currentSource, setSource: (next) => editHandle.setValue(next), stampRoot: false });
+      // #443: the picker's variant now REFLECTS in the edit preview (see-what-you-set). It stamps the root
+      // during edit — leak-free because every page switch resets to the site default (above) and exiting
+      // edit reloads the page (bindShellEditToggle), re-stamping the master default in read mode. The picker
+      // still writes this page's `<config theme-variant>` (visible in the source pane); read mode continues
+      // to honor the MASTER's variant site-wide, so the page pin is an editor-preview reflection, not a
+      // published per-page override. `readModeDefault` is the site default the preview falls back to.
+      wireDocumentTier({
+        proc, getSource: () => currentSource, setSource: (next) => editHandle.setValue(next),
+        stampRoot: true, readModeDefault: masterConfigMap?.get?.('theme-variant'),
+      });
     }
   };
 
@@ -1863,6 +1918,10 @@ export async function mountLiveDocument(target, source, options = {}) {
   // bindSettingsPanel captures it as the document default the reader tier falls back to.
   if (type !== 'website') {
     applyDocumentThemeVariant(readMasterConfig(proc, source));
+    // #452: a live standalone BOOK loses its `<config theme>` at the renderChapter/extractBookPart seam, so
+    // inject the token theme into the head here (the static separate-pages book does the same in pageShell).
+    // Article-only surfaces keep their theme from their own render, so this is scoped to the book.
+    if (type === 'book') applyDocumentTheme(readMasterConfig(proc, source));
     // The document tier is wired wherever an editable single-document source carries the <config> the picker
     // rewrites — a standalone ARTICLE in edit mode (here) and an article PAGE in the website SPA (mountLive-
     // Website). A BOOK is deliberately excluded on BOTH surfaces, and this narrowing is kept on purpose: a
