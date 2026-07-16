@@ -339,31 +339,57 @@
                       },
                       "children": [
                         {
-                          "type": "text",
-                          "value": "Frame demo heading",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 20,
-                              "offset": 19
+                          "type": "element",
+                          "tagName": "section-title",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "h3",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Frame demo heading",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 20,
+                                      "offset": 19
+                                    }
+                                  }
+                                }
+                              ]
                             }
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "element",
-                      "tagName": "p",
-                      "properties": {},
-                      "children": [
+                          ]
+                        },
                         {
-                          "type": "text",
-                          "value": "This section is shown as demo content; it stays out of the contents.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "This section is shown as demo content; it stays out of the contents.",
+                              "position": {
+                                "start": {
+                                  "line": 3,
+                                  "column": 1,
+                                  "offset": 72
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 69,
+                                  "offset": 140
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 3,
@@ -377,19 +403,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 3,
-                          "column": 1,
-                          "offset": 72
-                        },
-                        "end": {
-                          "line": 3,
-                          "column": 69,
-                          "offset": 140
-                        }
-                      }
+                      ]
                     },
                     {
                       "type": "element",
@@ -525,31 +539,57 @@
                       },
                       "children": [
                         {
-                          "type": "text",
-                          "value": "Aside demo heading",
-                          "position": {
-                            "start": {
-                              "line": 1,
-                              "column": 2,
-                              "offset": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 20,
-                              "offset": 19
+                          "type": "element",
+                          "tagName": "section-title",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "element",
+                              "tagName": "h3",
+                              "properties": {},
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "value": "Aside demo heading",
+                                  "position": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 2,
+                                      "offset": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 20,
+                                      "offset": 19
+                                    }
+                                  }
+                                }
+                              ]
                             }
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "type": "element",
-                      "tagName": "p",
-                      "properties": {},
-                      "children": [
+                          ]
+                        },
                         {
-                          "type": "text",
-                          "value": "Likewise box content, never a contents entry.",
+                          "type": "element",
+                          "tagName": "p",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "Likewise box content, never a contents entry.",
+                              "position": {
+                                "start": {
+                                  "line": 3,
+                                  "column": 1,
+                                  "offset": 67
+                                },
+                                "end": {
+                                  "line": 3,
+                                  "column": 46,
+                                  "offset": 112
+                                }
+                              }
+                            }
+                          ],
                           "position": {
                             "start": {
                               "line": 3,
@@ -563,19 +603,7 @@
                             }
                           }
                         }
-                      ],
-                      "position": {
-                        "start": {
-                          "line": 3,
-                          "column": 1,
-                          "offset": 67
-                        },
-                        "end": {
-                          "line": 3,
-                          "column": 46,
-                          "offset": 112
-                        }
-                      }
+                      ]
                     }
                   ]
                 },

@@ -106,15 +106,20 @@ function walkAndNest(nodes) {
     const content = node.content;
     if (!content || !Array.isArray(content)) continue;
 
-    const hasSections = content.some(n => sectionDepth(n) > 0);
-    if (hasSections) {
-      // Nest this array; the stack algorithm handles all depths in one pass.
+    // Recurse FIRST, into every member's content, so a container (<aside>,
+    // <minipage>, <frame>, …) nested in this array nests its OWN inner sections
+    // regardless of whether this array also has sibling sections (#449). Before,
+    // a sibling section made this level nest-and-stop, silently leaving a
+    // container's inner sections un-nested. Descending here is safe: sections are
+    // still flat at this point, so a section member's content is only its parsed
+    // pipe title — walkAndNest finds nothing to nest inside it.
+    walkAndNest(content);
+
+    // Then nest THIS array's direct sections. The stack algorithm handles all
+    // depths of the flat run in one pass; the members it absorbs into section
+    // bodies keep the inner nesting the recursion above just applied.
+    if (content.some(n => sectionDepth(n) > 0)) {
       node.content = nestSectionArray(content);
-      // Do not recurse into the nested sections — nestSectionArray has already
-      // built the full nested structure for all depths in this content array.
-    } else {
-      // No sections here; recurse to find sections deeper in the tree.
-      walkAndNest(content);
     }
   }
 }
