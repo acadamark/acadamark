@@ -389,6 +389,25 @@ function resolveOption(options, optKey, configMap, cfgKey, dflt) {
   return options[optKey] ?? (configMap && configMap.get(cfgKey)) ?? dflt;
 }
 
+// #281/#450: clear a <config quiet> document's OWN vfile message stream. Called at
+// BOTH phase tails because messages are produced in two phases: the transform tail
+// (the enscribeQuietSuppression plugin) covers runSync-only consumers — export-jats
+// and lift never run the compiler — and the compiler tail (compileToHtml, just
+// before serialization) covers the compile-stage producers (the tag handler's
+// unknown-tag / handler-error warnings #412, the sidenote block-content warning)
+// that the transform-tail clear runs too early to see. Emission-only: the tree and
+// the rendered HTML are byte-identical, and the inline error markers the
+// always-renders guarantee depends on (`enscribeTagError` / `__*-error` nodes) are
+// TREE content, not vfile messages, so they are never touched. Clearing at one
+// choke point per phase also covers any FUTURE compile-stage producer by
+// construction (it clears the whole stream regardless of who added what).
+function suppressMessagesIfQuiet(file) {
+  if (!file || !Array.isArray(file.messages) || file.messages.length === 0) return;
+  if (readConfigBool(file.data?.[ENSCRIBE_CONFIG], 'quiet', false)) {
+    file.messages.length = 0;
+  }
+}
+
 /**
  * Build hover preview asset nodes for injection into the hast tree.
  * Returns an array of hast elements (CSS nodes first, JS nodes last).
@@ -869,30 +888,29 @@ export function enscribeInterpreter(options = {}) {
   // 13 (#281). Page-scoped warning suppression. A document carrying <config quiet />
   //     suppresses ITS OWN authoring warnings — the vfile `file.messages` stream
   //     (raw-HTML passthrough, mis-placed apparatus, unknown-meta-kwarg, minipage
-  //     depth, …) — from build/console output. This gates EMISSION only: every
-  //     `file.message(...)` already ran during the transforms above (the tree, and
-  //     so the rendered HTML, are byte-identical), and the inline error markers the
-  //     always-renders guarantee depends on (`enscribeTagError` / `__*-error` nodes)
-  //     are TREE content, not vfile messages — so they are never touched. Runs LAST,
-  //     after config-discovery (step 2-4, so `quiet` is on file.data) and after every
-  //     message producer (so the whole stream is present to clear). Per-document: each
-  //     page's own <config quiet> clears only its own file.messages (a quiet page in a
-  //     multi-page build does not silence its siblings).
+  //     depth, …) — from build/console output. This gates EMISSION only (see
+  //     suppressMessagesIfQuiet for the byte-identity / inline-marker rationale).
+  //     Per-document: each page's own <config quiet> clears only its own
+  //     file.messages (a quiet page in a multi-page build does not silence its
+  //     siblings). Runs after config-discovery (so `quiet` is on file.data).
+  //
+  //     This is the TRANSFORM tail — it clears the messages produced by the
+  //     transforms above. It is NOT the whole story: producers also run in the
+  //     COMPILER (the tag handler's unknown-tag/handler-error warnings #412, the
+  //     sidenote block-content warning), which runs AFTER every transform, so the
+  //     compiler clears again at its own tail (compileToHtml → suppressMessagesIfQuiet,
+  //     #450). Keeping the transform-tail clear matters for runSync-only consumers
+  //     (export-jats / lift) that never run the compiler.
   //
   //     No severity levels (#281): the document's whole message stream is cleared.
   //     vfile's `fatal` field is the future hook if a hard-error tier is ever wanted —
-  //     narrow this to `!m.fatal` then. Today the pipeline emits no fatal messages
-  //     (errors render as inline nodes, never `file.fail`), so clearing all == clearing
-  //     warnings. NOTE: the `--quiet` CLI flag (a console.warn swap) is the orthogonal
-  //     GLOBAL operator; this is the per-document one. They compose — one "quiet" notion,
-  //     two scopes — and neither forks a new mechanism.
+  //     narrow suppressMessagesIfQuiet to `!m.fatal` then. Today the pipeline emits no
+  //     fatal messages (errors render as inline nodes, never `file.fail`), so clearing
+  //     all == clearing warnings. NOTE: the `--quiet` CLI flag (a console.warn swap) is
+  //     the orthogonal GLOBAL operator; this is the per-document one. They compose — one
+  //     "quiet" notion, two scopes — and neither forks a new mechanism.
   this.use(function enscribeQuietSuppression() {
-    return (tree, file) => {
-      if (!file || !Array.isArray(file.messages) || file.messages.length === 0) return;
-      if (readConfigBool(file.data?.[ENSCRIBE_CONFIG], 'quiet', false)) {
-        file.messages.length = 0;
-      }
-    };
+    return (tree, file) => suppressMessagesIfQuiet(file);
   });
 
   // ── Post-compile injection helpers (R3 / F10) ─────────────────────────────────
@@ -1159,6 +1177,13 @@ export function enscribeInterpreter(options = {}) {
     // mechanism the static build and the live SPA both call, the URL scheme being the resolver's (no parse5).
     const pageLinkResolver = file?.data?.[ENSCRIBE_PAGE_LINK_RESOLVER];
     if (pageLinkResolver) resolvePageSlugLinksInTree(hast, pageLinkResolver);
+
+    // #450: the COMPILER tail of the <config quiet> clear. Producers ran during
+    // this compile (the tag handler's unknown-tag/handler-error warnings #412, the
+    // sidenote block-content warning) AFTER the transform-tail clear, so a quiet
+    // document clears again here — one choke point that also covers any future
+    // compile-stage producer. Emission-only; the returned HTML is byte-identical.
+    suppressMessagesIfQuiet(file);
 
     return toHtml(hast, { allowDangerousHtml: true });
   };

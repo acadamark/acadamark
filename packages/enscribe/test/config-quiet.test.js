@@ -71,5 +71,26 @@ const pageB = run(BODY);                            // not quiet
 check('multi-page: quiet page A is silent', pageA.messages.length === 0);
 check('multi-page: non-quiet page B still warns (sibling unaffected)', pageB.messages.length >= 2);
 
+// ── 6. #450: COMPILE-stage producers are suppressed too ──────────────────────
+// The BODY warnings above are all TRANSFORM-stage (raw-html-passthrough), so they
+// never exercised the gap: producers that emit during the COMPILE phase, AFTER
+// the transform-tail clear. The tag handler's unknown-tag warning (#412) is the
+// clearest such producer. Before the fix, quiet cleared only the transform stream
+// and this leaked through. The fix clears the whole stream again at the compiler
+// tail (a producer-agnostic choke point that also covers the sidenote
+// block-content warning and any future compile-stage producer by construction).
+const UNKNOWN = 'Intro.\n\n<nosuchtag | hello />\n';
+const loudUnknown = run('<config quiet=false />\n\n' + UNKNOWN);
+check('#450: unknown-tag warns at compile stage without quiet',
+  loudUnknown.messages.some((m) => m.ruleId === 'unknown-tag'));
+const quietUnknown = run('<config quiet />\n\n' + UNKNOWN);
+check('#450: <config quiet /> suppresses the compile-stage unknown-tag warning',
+  quietUnknown.messages.length === 0);
+// Emission gated, not rendering: quiet vs quiet=false differ only in the config
+// boolean (both carry a <config> block), so identical HTML proves the tree/output
+// is untouched — the unknown tag still renders inline in both.
+check('#450: quiet leaves the unknown-tag rendered inline (emission gated, not output)',
+  loudUnknown.html === quietUnknown.html);
+
 console.log(`\n${pass}/${pass + fail} config-quiet (#281) tests passed`);
 if (fail > 0) process.exit(1);
