@@ -104,6 +104,7 @@ import { run as runRegistriesGuard } from './registries-guard.test.js';
 import { run as runStrictMode } from './strict-mode.test.js';
 import { run as runCaretFootnoteSigil } from './caret-footnote-sigil.test.js';
 import { run as runRoutingInvariant } from './routing-invariant.test.js';
+import { run as runBrowserLiveSwap } from './browser-live-swap.test.js';
 
 const suites = [
   ['plugins/doc-type',             runDocType],
@@ -207,6 +208,7 @@ const suites = [
   ['coverage/predicate-harness',   runPredicateHarness],
   ['coverage/manifest-fresh',      runCoverageFresh],
   ['registries-guard',             runRegistriesGuard],
+  ['browser-live-swap',            runBrowserLiveSwap],
 ];
 
 let failed = 0;

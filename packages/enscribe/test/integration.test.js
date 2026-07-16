@@ -33,6 +33,26 @@ const UPDATE = process.env.ENSCRIBE_UPDATE_SNAPSHOTS === '1';
 const FONTS_LINK_PREFIX = DOCUMENT_FONTS_CDN_URL.split('&')[0];
 
 /**
+ * #451 / test-blindness §5 guard 1 — the non-empty-output floor. If the rendered HTML
+ * carries a document root (`<article>` / `<book>`), that root must have content: a strict-mode
+ * wipe (#451) produced `<article></article>`, and every string/substring check in the suite
+ * passes on that empty shape. A fragment render with no document root is exempt (nothing to
+ * floor). Exported so the CLI build tests apply the identical floor.
+ *
+ * @param {string} html   rendered document HTML
+ * @param {string} label  a context label for the failure message
+ */
+export function assertNonEmptyDocument(html, label) {
+  const m = html.match(/<(article|book)\b[^>]*>([\s\S]*?)<\/\1>/);
+  if (!m) return; // no document root (a bare-fragment render) → nothing to floor
+  assert.ok(
+    m[2].trim() !== '',
+    `${label}: the <${m[1]}> document root rendered EMPTY — the document produced no content ` +
+      `(the #451 total-loss shape). The non-empty-output floor caught it.`,
+  );
+}
+
+/**
  * Run the full pipeline on a source string and return the hast tree and HTML.
  */
 function runPipeline(source, opts = {}) {
@@ -44,6 +64,12 @@ function runPipeline(source, opts = {}) {
 
   // HTML from the real pipeline's compile step.
   const html = String(processor.processSync(source));
+
+  // #451 / test-blindness §5 guard 1 — the non-empty-output floor. A document must never
+  // render to an EMPTY root (`<article></article>` / `<book></book>` — the strict-mode-wipe
+  // total-loss shape). The whole suite's dominant check, `html.includes('<article>')`, passes
+  // on empty output, so #451 was invisible. This floor rides every fixture rendered here.
+  assertNonEmptyDocument(html, 'integration');
 
   // Intermediate hast for snapshot inspection: re-run parse + the structural
   // transforms (runSync stops before the compiler) to get the fully-transformed
