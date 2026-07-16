@@ -303,6 +303,10 @@ function guideSection(name) {
   out += `.\n\n`;
   const exs = el.shorthand_examples ?? [];
   if (exs.length) out += exampleBlock(`ag-${name}-1`, exs[0].source, exs[0].notes);
+  // #447: the <config> teaching entry links the full options reference (its own generated chapter —
+  // GENERATED_CHAPTERS). A <ref>, not a raw href: the registry realizes the link to the owning
+  // chapter's page under each surface's URL scheme, so the one authored link works on both.
+  if (name === 'config') out += 'The complete option reference: <ref @sec:config-options>.\n\n';
   return out;
 }
 
@@ -318,13 +322,18 @@ function guideSection(name) {
 // hand-authored chapter tails — the failure-demonstration passage and the sigil entry
 // ride the same hook.
 // ── the <config> options reference (generated from config-options-doc.js) ──────────────────────────
-// The gap Ariel found: config-options-doc.js was built to be published (38 keys, 8 families, guarded
-// in lockstep with CONFIG_KWARGS) but rendered into no page. This emits the exhaustive reference as a
-// section that ends the Declarations & metadata chapter's <config> teaching — grouped by
-// CONFIG_FAMILIES, one table per family. RESERVED keys (accepted by the gate but with no consumer yet)
-// are OMITTED from the tables — a reader should not be told about keys that do nothing — and listed
-// once in a trailing note so the option count reconciles. The ref-prefix-* wildcard rides its declared
-// family. Generated, so check-docs-fresh guards it against drift from the source.
+// The gap Ariel found (twice): config-options-doc.js was built to be published (38 keys, 8 families,
+// guarded in lockstep with CONFIG_KWARGS) but first rendered into no page, and then (#441) only as the
+// unlinked tail of the Declarations & metadata chapter — no nav entry, no cross-link, effectively
+// unfindable (#447). It is now its OWN Authoring Guide chapter (GENERATED_CHAPTERS below), placed right
+// after Declarations & metadata — grouped by CONFIG_FAMILIES, one table per family. The wrapping
+// section carries the colon-id `sec:config-options` so the #ag-config teaching entry points here with a
+// `<ref>`: the cross-reference registry realizes the link to the owning chapter's page under EACH
+// surface's URL scheme (static `<stem>.html#anchor`, live `?chapter=<stem>#anchor`), where a raw href
+// could serve only one. RESERVED keys (accepted by the gate but with no consumer yet) are OMITTED from
+// the tables — a reader should not be told about keys that do nothing — and listed once in a trailing
+// note so the option count reconciles. The ref-prefix-* wildcard rides its declared family. Generated,
+// so check-docs-fresh guards it against drift from the source.
 function buildConfigOptionsEmd() {
   const cell = (s) => esc(String(s ?? '—')).replace(/\|/g, '\\|');   // esc <> for prose; \| so a value keeps its pipes in the table
   const valuesOf = (e) => e.type === 'boolean' ? 'true \\| false' : (e.values ? cell(e.values) : '—');
@@ -333,8 +342,8 @@ function buildConfigOptionsEmd() {
   const live = CONFIG_OPTIONS_DOC.filter((e) => !e.reserved);
   const reserved = CONFIG_OPTIONS_DOC.filter((e) => e.reserved);
 
-  let out = '<section #ag-config-options | All document `<config>` options>\n\n';
-  out += 'The complete set of document-level `<config>` settings, grouped by concern — the reference behind the common keys shown above. It is generated from the config source, so it cannot drift. `book-only` keys apply to a `<meta type=book>` document, `website-only` keys to a `<meta type=website>` master; the rest apply to any document.\n\n';
+  let out = '<section #sec:config-options | All document `<config>` options>\n\n';
+  out += 'The complete set of document-level `<config>` settings, grouped by concern — the reference behind the common keys the Declarations & metadata chapter teaches. It is generated from the config source, so it cannot drift. `book-only` keys apply to a `<meta type=book>` document, `website-only` keys to a `<meta type=website>` master; the rest apply to any document.\n\n';
   for (const fam of CONFIG_FAMILIES) {
     const rows = live.filter((e) => e.family === fam).map((e) => rowOf(e));
     if (CONFIG_WILDCARD_DOC.family === fam) rows.push(rowOf(CONFIG_WILDCARD_DOC, CONFIG_WILDCARD_DOC.pattern));
@@ -348,11 +357,22 @@ function buildConfigOptionsEmd() {
   return out;
 }
 
+// #447: generated STANDALONE chapters — generator-emitted pages that are not family chapters, spliced
+// into a surface's nav order after a named sibling (`after`, a chapter fslug) so each sits beside the
+// teaching it backs. The <config> options reference is the one member: as the Declarations & metadata
+// chapter's tail (#441) it was effectively unfindable — no nav entry, no cross-link, only the last item
+// of a 31-entry on-this-page rail. As its own chapter right after Declarations & metadata the linear
+// reading order is unchanged (only the page boundary is new), the guide nav lists it, and — being
+// generator output in a guarded surface dir — check-docs-fresh covers it exactly like a family chapter.
+const GENERATED_CHAPTERS = {
+  'authoring-guide': [
+    { after: 'declarations-and-metadata', fslug: 'config-options', title: 'Config options',
+      content: buildConfigOptionsEmd() },
+  ],
+};
+
 const CHAPTER_EXTRAS = {
   'authoring-guide': {
-    // The exhaustive <config> options reference ends the Declarations & metadata chapter (the <config>
-    // teaching's home). Generated from config-options-doc.js; no top-level menu item of its own.
-    'declarations-and-metadata': buildConfigOptionsEmd(),
     // The footnote sigil rides the 'sigil-tag-shorthand' sub-chapter of the split 'notation' family.
     'sigil-tag-shorthand': `<section #ag-footnote-sigil | The \`<^ …>\` footnote sigil>
 
@@ -536,6 +556,14 @@ for (const s of surfaces) {
     splits[fam]
       ? splits[fam].map((sub) => ({ fam, title: sub.title, fslug: sub.fslug, keep: sub.keep, intro: sub.intro }))
       : [{ fam, title, fslug, keep: null, intro: null }]);
+  // Splice the surface's generated standalone chapters (#447) into the nav order, each after its named
+  // sibling. `content` marks them: the write loop emits it directly (no family render). A misspelled
+  // sibling fails the build loudly rather than silently landing the page at the head of the nav.
+  for (const g of GENERATED_CHAPTERS[s.slug] ?? []) {
+    const at = chapters.findIndex((c) => c.fslug === g.after);
+    if (at === -1) throw new Error(`generate-docs: GENERATED_CHAPTERS entry "${g.fslug}" names an unknown sibling chapter "${g.after}"`);
+    chapters.splice(at + 1, 0, { fam: null, title: g.title, fslug: g.fslug, keep: null, intro: null, content: g.content });
+  }
   // Remove stale generated family pages — both the effective slugs AND the original FAMILY_ORDER slugs
   // (so an old un-split page, e.g. notation.emd, is deleted when its family is now split). Preserved
   // extras (showcase, multi-file-documents) and the index we rewrite are untouched.
@@ -550,6 +578,8 @@ for (const s of surfaces) {
     chapters, extraChapters: s.extra,
   }));
   for (const c of chapters) {
+    // A generated standalone chapter (#447) carries its whole body in `content` — emit it verbatim.
+    if (c.content != null) { writeFile(s.dir, `${c.fslug}.emd`, c.content); pageCount++; continue; }
     elementCount += familyMembers(c.fam).filter((n) => !c.keep || c.keep(n)).length;
     // CHAPTER_EXTRAS is keyed by the CHAPTER slug (fslug), so a split sub-chapter gets its own extra
     // (the footnote-sigil rides 'sigil-tag-shorthand'); for a non-split family, fslug === the family key.
