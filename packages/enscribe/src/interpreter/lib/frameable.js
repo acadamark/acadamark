@@ -228,6 +228,25 @@ export function extractFrameableChildren(state, node) {
  * by the caption content (when present). Returns null when no caption
  * needs to render (no label AND no content).
  */
+// #464: unwrap top-level `<p>` nodes to their inline children, joining consecutive
+// paragraphs with a double `<br>` (a phrasing-legal visual break). Used when a caption /
+// title is hosted in a `<p>` (boxed-prose) so a paragraph-shaped caption does not become a
+// browser-ejected `<p>`-in-`<p>`. Non-paragraph content passes through unchanged.
+function unwrapParagraphs(nodes) {
+  const out = [];
+  let sawParagraph = false;
+  for (const node of nodes) {
+    if (node.type === 'element' && node.tagName === 'p') {
+      if (sawParagraph) out.push({ type: 'element', tagName: 'br', properties: {}, children: [] }, { type: 'element', tagName: 'br', properties: {}, children: [] });
+      out.push(...(node.children ?? []));
+      sawParagraph = true;
+    } else {
+      out.push(node);
+    }
+  }
+  return out;
+}
+
 function buildCaptionEl(captionEl, labelSpan, captionHast, captionClass = null) {
   if (labelSpan == null && (captionHast == null || captionHast.length === 0)) {
     return null;
@@ -243,7 +262,14 @@ function buildCaptionEl(captionEl, labelSpan, captionHast, captionClass = null) 
     children.push({ type: 'text', value: ' ' });
   }
   if (captionHast && captionHast.length > 0) {
-    children.push(...captionHast);
+    // #464: the boxed-prose layout renders its caption as a `<p class="caption">`, but a
+    // flow caption's content is a paragraph (#326) — so a single-paragraph caption arrived
+    // here as a nested `<p>`, giving `<p class="caption">…<p>…</p></p>`. A browser ejects the
+    // inner `<p>`, closing the caption at it and STRIPPING `.caption` from the text. Unwrap
+    // top-level paragraphs to phrasing when the caption host is itself a `<p>`, so the whole
+    // caption (label + text) stays one styled paragraph. Only <figcaption>/<caption> hosts
+    // (flow content) keep a nested `<p>` — valid there, byte-identical.
+    children.push(...(captionEl === 'p' ? unwrapParagraphs(captionHast) : captionHast));
   }
   // `captionClass` is null for the figure/table families (a class-less
   // <figcaption>/<caption> — byte-identical to before); the boxed-prose layout
@@ -269,7 +295,9 @@ function buildTitleEl(captionEl, titleHast) {
     type: 'element',
     tagName: captionEl,
     properties: { className: ['title'] },
-    children: titleHast,
+    // #464: same as buildCaptionEl — a `<p>`-hosted (boxed-prose) title must hold phrasing,
+    // not a nested `<p>`. A <figcaption>/<caption> host keeps any nested `<p>` (byte-identical).
+    children: captionEl === 'p' ? unwrapParagraphs(titleHast) : titleHast,
   };
 }
 

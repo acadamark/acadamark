@@ -210,18 +210,16 @@ export function validateHtml(html) {
   return { valid: false, regions, message };
 }
 
-// ── Known-invalid fixtures (#464): documented, issue-linked exclusions. The content-model
-// fix (block content wrapped in <p>) is out of this slice's scope; each is tracked in #464.
-// Keyed by relPath. `regions` is the CURRENT count so a NEW invalidity in the same fixture
-// still fails, and `valid`-again anti-rots: if the render is fixed, the gate demands the
-// entry be removed. Change this table only alongside a change to the render + #464.
+// ── Known-invalid fixtures: documented, issue-linked exclusions with anti-rot (a fixed
+// fixture that stays excluded fails the gate; a new invalidity in an excluded fixture fails
+// too, via the region count). #464 (block content wrapped in <p>) was FIXED by fix-p-wrapping
+// — its five fixtures are gone from this list. The remaining entry is a DIFFERENT invalidity
+// the gate exposed once its paragraph-wrapping was fixed: the `<math>` display element renders
+// as a `<math>` HTML element, colliding with MathML so browsers eject its KaTeX HTML (#466).
+// That is a vocab/rendering rename decision, out of fix-p-wrapping's scope, so it stays
+// excluded and re-annotated to #466. Change this table only alongside a render change + issue.
 const KNOWN_INVALID = new Map([
-  ['document-10-shortcuts.html',       { regions: 1, note: '<aside> in <p> — frameable inline in prose (#464)' }],
-  ['document-11-bare-math.html',       { regions: 1, note: '<aside> in <p> — frameable via shorthand (#464)' }],
-  ['document-49-callout-types.html',   { regions: 1, note: '<p> in <p> — caption with nested paragraph (#464)' }],
-  ['document-69-minipage.html',        { regions: 2, note: '<figure> + <div.asset-error> in <p> (#464)' }],
-  ['sweep/swp-dsl.html',               { regions: 4, note: '<pre>/<figcaption> in <p> — DSL figure wrapped in a paragraph (#464)' }],
-  ['sweep/swp-math.html',              { regions: 0, note: 'display-math <align> in <p> — relocated by parse5 (structural, no p-closer) (#464)' }],
+  ['sweep/swp-math.html',              { regions: 0, note: '<math> display element collides with MathML → KaTeX HTML ejected (#466); NOT the #464 p-wrap class (that part is fixed — <align>/<cases>/… now split out cleanly)' }],
 ]);
 
 export async function run() {
@@ -257,5 +255,5 @@ export async function run() {
     `\nIf this is intended-and-tracked, add it to KNOWN_INVALID with an issue link; otherwise fix the render.`);
 
   console.log(`PASS: HTML-validity — ${docs.length} rendered documents checked (as-written vs parse5 nesting); ` +
-    `${KNOWN_INVALID.size} known-invalid tracked in #464, 0 new invalidities`);
+    `${KNOWN_INVALID.size} known-invalid tracked (see KNOWN_INVALID), 0 new invalidities`);
 }

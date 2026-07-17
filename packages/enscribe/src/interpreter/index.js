@@ -123,6 +123,7 @@ import { toHtml } from 'hast-util-to-html';
 // INLINE elements — inline-math, term — as block and insert render-changing whitespace around
 // them). See lib/format-html.js for the why; block custom elements are unaffected.
 import { formatHtml } from './lib/format-html.js';
+import { splitBlockParagraphs } from './lib/split-block-paragraphs.js';
 import { smartTypography } from './smart-typography.js';
 
 import { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown } from './plugins/normalize-to-canonical.js';
@@ -1141,6 +1142,14 @@ export function enscribeInterpreter(options = {}) {
       },
       allowDangerousHtml: true,
     });
+
+    // #464: split block content out of paragraphs. A block-level construct authored inline
+    // (an <aside>, an inline <fig>, display-math, a diagram, an injected asset-error box)
+    // reaches here as a `<p>` wrapping the block — which every browser ejects (the #442 class
+    // in normal flow). Emit the valid shape directly: `<p>before</p><block/><p>after</p>`.
+    // Runs first (before typography / asset detection / injection) so every downstream pass
+    // sees corrected paragraph structure. Byte-identical for a document with no inline blocks.
+    splitBlockParagraphs(hast);
 
     // #54: smart typography — curly quotes / en-em dashes / ellipsis on the prose
     // text of the rendered hast. Runs right after toHast, on the content tree only

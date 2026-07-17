@@ -612,15 +612,8 @@
                           "value": " "
                         },
                         {
-                          "type": "element",
-                          "tagName": "p",
-                          "properties": {},
-                          "children": [
-                            {
-                              "type": "text",
-                              "value": "The full calibration rig."
-                            }
-                          ]
+                          "type": "text",
+                          "value": "The full calibration rig."
                         }
                       ]
                     }
