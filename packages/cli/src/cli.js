@@ -18,7 +18,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, cpSync } from 'node:fs';
 import { dirname, resolve, join, basename, extname } from 'node:path';
 import { createRequire } from 'node:module';
-import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages, extractDocumentTitle, extractTitleFromTree } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, liftToCanonicalMdast, collectLibrarySources, collectTableSources, preloadSources, ENSCRIBE_LOADED_SOURCES, publishBookPages, extractDocumentTitle, extractTitleFromTree } from '@enscribejs/enscribe';
 import { ENSCRIBE_CONFIG } from '@enscribejs/enscribe/core/file-data-keys';
 import { emitDocumentShell } from '@enscribejs/enscribe/shell/document-shell.js';
 import { escapeHtmlAttr } from '@enscribejs/enscribe/core/escape-html';
@@ -468,13 +468,15 @@ function doRender(opts, diag) {
   // see wrapStandalone below for the full rationale.
   const wrap = (html, messages, file) => wrapStandalone(html, opts, () => extractDocumentTitle(src), messages, configThemeVariant(file));
 
-  // #133: external <library src> loading. Filesystem paths are read synchronously
-  // inside the pipeline (assetsDir, unchanged). URL sources need an async fetch, so
-  // when any are present this returns a Promise the dispatcher awaits; otherwise it
-  // stays synchronous (so the 33 existing sync test call sites are unaffected).
+  // #133 / #413 L5: external URL loading for BOTH `<library src>` bibliographies and
+  // `<table src>` data — they share the one ENSCRIBE_LOADED_SOURCES bus (src → text), so
+  // collect both, exactly as the browser's renderAsync does. Filesystem paths are read
+  // synchronously inside the pipeline (assetsDir, unchanged); only URL sources need an
+  // async fetch, so when any are present this returns a Promise the dispatcher awaits;
+  // otherwise it stays synchronous (so the existing sync test call sites are unaffected).
   // #402: the vfile is seeded with the input path (filename provenance on every
   // message) and handed to the diagnostics seam after the run.
-  const urlSrcs = collectLibrarySources(src).filter((s) => URL_SCHEME.test(s));
+  const urlSrcs = [...collectLibrarySources(src), ...collectTableSources(src)].filter((s) => URL_SCHEME.test(s));
   const renderSync = (data) => {
     const file = withQuiet(opts.quiet, () =>
       renderArticleFile({ value: src, path: opts.input, ...(data ? { data } : {}) }, pipeOpts));
@@ -817,8 +819,8 @@ export function run(argv, io = {}) {
         checkStandaloneFlags(opts);
         const diag = createDiagnostics({ quiet: opts.quiet, err });
         const rendered = doRender(opts, diag);
-        // #133: doRender returns a Promise only when URL <library src> sources need
-        // fetching; otherwise it is the rendered string (the sync path, unchanged).
+        // #133 / #413 L5: doRender returns a Promise only when URL <library src> or
+        // <table src> sources need fetching; otherwise it is the rendered string (sync path).
         if (rendered && typeof rendered.then === 'function') {
           return rendered.then((html) => { emit(html, opts, out); diag.summary(); return 0; });
         }
