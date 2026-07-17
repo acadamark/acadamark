@@ -38,7 +38,7 @@ function makeFile() {
 /**
  * Build an enscribeTag node (matches the shape from-markdown.js produces).
  */
-function makeLibraryTag({ src = null, content = null } = {}) {
+function makeLibraryTag({ src = null, content = null, positional = [] } = {}) {
   const kwargs = {};
   if (src) kwargs.src = src;
   return {
@@ -50,7 +50,7 @@ function makeLibraryTag({ src = null, content = null } = {}) {
     content,
     contentHandler: 'library',
     isOpaqueContent: true,
-    positional: [],
+    positional,   // #413 L4: the leading format word (e.g. ['ris'] / ['endnote-xml'])
     booleans: {},
   };
 }
@@ -298,5 +298,35 @@ export function run() {
     assert.equal(file._warnings.filter((w) => /not a recognized citation style/.test(w)).length, 0,
       'C1: an unset citation-style does not warn');
     console.log('PASS: library-load: C1 (#436) documented + unset citation-styles do not warn');
+  }
+
+  // --- #413 L4: RIS is WIRED — <library ris | …> honors the format word (forceType @ris/file) ---
+  {
+    const RIS = 'TY  - JOUR\nAU  - Doe, John\nTI  - A RIS Study\nPY  - 2020\nER  - ';
+    const file = makeFile();
+    const tree = makeDataTree([makeLibraryTag({ content: RIS, positional: ['ris'] })]);
+    enscribeLibraryLoad({ assetsDir: null })(tree, file);
+    assert.ok(file.data.enscribeCitations, 'L4: a <library ris> builds the citation index (RIS is wired)');
+    assert.ok(file.data.enscribeCitations.cite.data.length >= 1, 'L4: the RIS entry parsed into the index');
+    const findTag = (t, name) => JSON.stringify(t).includes(`"${name}"`);
+    assert.ok(!findTag(tree, '__library-error'), 'L4: RIS produces no error flag (it is honored, not skipped)');
+    assert.equal(file._warnings.filter((w) => /not yet supported/.test(w)).length, 0, 'L4: RIS does not warn as unsupported');
+    console.log('PASS: #413 L4 — RIS is wired: <library ris> honors the format word (@ris/file)');
+  }
+
+  // --- #413 L4: EndNote-XML is an accepted-but-unwired word — honest defer (both channels), not silent ---
+  {
+    const file = makeFile();
+    const tree = makeDataTree([makeLibraryTag({ content: '<xml>whatever</xml>', positional: ['endnote-xml'] })]);
+    enscribeLibraryLoad({ assetsDir: null })(tree, file);
+    // Channel 1: a visible __library-error naming the unsupported format.
+    const flags = [];
+    (function walk(n) { if (n && typeof n === 'object') { if (n.tagname === '__library-error') flags.push(n); for (const k of ['children', 'content']) if (Array.isArray(n[k])) n[k].forEach(walk); } })(tree);
+    assert.equal(flags.length, 1, 'L4: an unwired endnote-xml <library> leaves ONE visible error flag');
+    assert.match(flags[0].kwargs.message, /"endnote-xml" is accepted but not yet supported/, 'L4: the flag names the unwired format honestly');
+    // Channel 2: the warning.
+    assert.ok(file._warnings.some((w) => /<library endnote-xml> is not yet supported/.test(w)),
+      'L4: a warning names the unwired format (second channel)');
+    console.log('PASS: #413 L4 — endnote-xml is accepted but honestly deferred: a flag + a warning, never a silent auto-detect');
   }
 }
