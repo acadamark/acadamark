@@ -387,7 +387,7 @@ function makeAssetElement(kind, content, meta = {}) {
     case 'style':      return { type: 'element', tagName: 'style',  properties: {}, children: [{ type: 'raw', value: content }] };
     case 'script':     return { type: 'element', tagName: 'script', properties: {}, children: [{ type: 'raw', value: content }] };
     case 'link':       return { type: 'element', tagName: 'link',   properties: { rel: ['stylesheet'], href: meta.href }, children: [] };
-    case 'script-src': return { type: 'element', tagName: 'script', properties: { src: meta.src }, children: [] };
+    case 'script-src': return { type: 'element', tagName: 'script', properties: { src: meta.src, ...(meta.onerror ? { onError: meta.onerror } : {}) }, children: [] };
     default: throw new Error(`makeAssetElement: unknown kind '${kind}'`);
   }
 }
@@ -395,7 +395,25 @@ function makeAssetElement(kind, content, meta = {}) {
 function makeStyleElement(css) { return makeAssetElement('style', css); }
 function makeScriptElement(js) { return makeAssetElement('script', js); }
 function makeLinkElement(href) { return makeAssetElement('link', null, { href }); }
-function makeScriptSrcElement(src) { return makeAssetElement('script-src', null, { src }); }
+function makeScriptSrcElement(src, onerror) { return makeAssetElement('script-src', null, { src, onerror }); }
+
+// #413 L6: the onerror handler a DSL's CDN <script src> carries in live-link mode. If the pinned CDN
+// fails to load (offline, blocked, CDN down, wrong pin), the library global never appears and the
+// diagrams cannot render. Always-renders → BOTH channels, from static bytes: (1) console.error names
+// the missing CDN library; (2) a visible family-style hint (⚠ role=alert enscribe-dsl-error, matched
+// by the name-agnostic family selector at default.css:469 — no new CSS) is inserted before each
+// [data-enscribe-dsl=<name>] source container, so an offline reader sees "this failed" above the
+// still-visible source. Unquoted attribute selector (the name is a safe identifier — mermaid/abc), so
+// the whole thing is single-quote-only and needs no nested double quotes.
+function dslCdnOnerror(name, cdnUrl) {
+  return `(function(n,u){console.error('enscribe: failed to load '+n+' from CDN '+u+'; diagrams will not render');`
+    + `var els=document.querySelectorAll('[data-enscribe-dsl='+n+']');`
+    + `for(var i=0;i<els.length;i++){var el=els[i];if(el.getAttribute('data-enscribe-dsl-error'))continue;`
+    + `el.setAttribute('data-enscribe-dsl-error','1');var h=document.createElement('div');`
+    + `h.className='enscribe-dsl-error';h.setAttribute('role','alert');`
+    + `h.textContent='⚠ '+n+' failed to load from its CDN — showing the source below';`
+    + `el.parentNode.insertBefore(h,el);}})('${name}','${cdnUrl}')`;
+}
 
 // resolveOption — the compiler's three-tier setting fallthrough (render option > document
 // <config> > default), previously hand-written per setting. Priority order preserved exactly.
@@ -471,7 +489,10 @@ function buildHoverPreviewAssets(mode) {
 function buildDslAssets(dsl, mode) {
   const { bundleLoader, cdnUrl, initScript } = dsl.liveAssets;
   if (mode === 'live-link') {
-    return [makeScriptSrcElement(cdnUrl), makeScriptElement(initScript)];
+    // #413 L6: the CDN <script src> carries an onerror that names the miss (console) + reveals a visible
+    // hint on each DSL container (in-document). The init script is guarded against the missing library
+    // (dsl-registrations.js), so a failed CDN degrades to "source + a flag", never an uncaught throw.
+    return [makeScriptSrcElement(cdnUrl, dslCdnOnerror(dsl.name, cdnUrl)), makeScriptElement(initScript)];
   }
   // 'live-inline': bundled library source + init in a single inline <script>.
   return [makeScriptElement(bundleLoader() + '\n' + initScript)];

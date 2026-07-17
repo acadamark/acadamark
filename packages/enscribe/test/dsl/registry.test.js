@@ -122,10 +122,16 @@ export function run() {
   {
     const html = processHtml(MERMAID_SRC, { dslMode: 'live-link' });
     assert.ok(html.includes(MERMAID_CDN_URL), 'live-link: mermaid CDN URL present');
-    assert.ok(html.includes(`<script src="${MERMAID_CDN_URL}">`), 'live-link: CDN loaded via <script src>');
+    assert.ok(html.includes(`<script src="${MERMAID_CDN_URL}" onerror=`), 'live-link: CDN loaded via <script src> carrying an onerror (#413 L6)');
     assert.ok(html.includes(MERMAID_INIT), 'live-link: mermaid init present');
     assert.ok(html.length < mermaidSkip.length + 100_000, 'live-link: bundle is NOT inlined');
-    console.log('PASS: registry: live-link mermaid → <script src> to pinned CDN + init, no inlined bundle');
+    // #413 L6: the onerror ships BOTH channels as static bytes — console.error naming the CDN miss +
+    // a visible family-style hint (enscribe-dsl-error, role=alert) inserted before each source
+    // container; the init is guarded so a failed CDN degrades to "source + flag", never an uncaught throw.
+    assert.ok(/onerror="[^"]*failed to load[^"]*mermaid/.test(html) || html.includes('failed to load'), 'L6: the onerror console message names the CDN miss (channel 1)');
+    assert.ok(html.includes('enscribe-dsl-error') && html.includes('data-enscribe-dsl-error'), 'L6: the onerror reveals a family-style in-document hint (channel 2)');
+    assert.ok(html.includes("typeof mermaid !== 'undefined'"), 'L6: the mermaid init is guarded against the missing library');
+    console.log('PASS: registry: live-link mermaid → <script src> to pinned CDN + onerror (both channels) + guarded init (#413 L6)');
   }
 
   // ── live-inline / live-link abc ───────────────────────────────────────────────
@@ -139,6 +145,9 @@ export function run() {
     assert.ok(link.includes(ABCJS_CDN_URL), 'live-link: abcjs CDN URL present');
     assert.ok(link.includes(ABC_INIT), 'live-link: abc init present');
     assert.ok(link.length < abcSkip.length + 100_000, 'live-link: abc bundle NOT inlined');
+    // #413 L6: abc's CDN <script src> also carries the onerror; its init guards the missing library.
+    assert.ok(/onerror=/.test(link) && link.includes('enscribe-dsl-error'), 'L6: abc CDN script carries the onerror + in-document hint');
+    assert.ok(link.includes("typeof ABCJS === 'undefined'"), 'L6: the abc init is guarded against the missing library');
     console.log('PASS: registry: abc live-inline (inlined bundle) and live-link (pinned CDN) both render init');
   }
 

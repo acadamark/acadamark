@@ -1360,9 +1360,10 @@ toc-num {
 </head>
 <body>
 
-<script src="https://cdn.jsdelivr.net/npm/abcjs@6.6.3/dist/abcjs-basic-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/abcjs@6.6.3/dist/abcjs-basic-min.js" onerror="(function(n,u){console.error(&#x27;enscribe: failed to load &#x27;+n+&#x27; from CDN &#x27;+u+&#x27;; diagrams will not render&#x27;);var els=document.querySelectorAll(&#x27;[data-enscribe-dsl=&#x27;+n+&#x27;]&#x27;);for(var i=0;i<els.length;i++){var el=els[i];if(el.getAttribute(&#x27;data-enscribe-dsl-error&#x27;))continue;el.setAttribute(&#x27;data-enscribe-dsl-error&#x27;,&#x27;1&#x27;);var h=document.createElement(&#x27;div&#x27;);h.className=&#x27;enscribe-dsl-error&#x27;;h.setAttribute(&#x27;role&#x27;,&#x27;alert&#x27;);h.textContent=&#x27;⚠ &#x27;+n+&#x27; failed to load from its CDN — showing the source below&#x27;;el.parentNode.insertBefore(h,el);}})(&#x27;abc&#x27;,&#x27;https://cdn.jsdelivr.net/npm/abcjs@6.6.3/dist/abcjs-basic-min.js&#x27;)"></script>
 <script>(function () {
   function renderAll() {
+    if (typeof ABCJS === 'undefined') { return; }   /* #413 L6: CDN failed → the onerror flagged it; render nothing rather than throw */
     document.querySelectorAll('[data-enscribe-dsl="abc"]').forEach(function (el) {
       ABCJS.renderAbc(el, el.textContent);
     });
@@ -1373,8 +1374,8 @@ toc-num {
     renderAll();
   }
 })();</script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({ startOnLoad: true });</script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js" onerror="(function(n,u){console.error(&#x27;enscribe: failed to load &#x27;+n+&#x27; from CDN &#x27;+u+&#x27;; diagrams will not render&#x27;);var els=document.querySelectorAll(&#x27;[data-enscribe-dsl=&#x27;+n+&#x27;]&#x27;);for(var i=0;i<els.length;i++){var el=els[i];if(el.getAttribute(&#x27;data-enscribe-dsl-error&#x27;))continue;el.setAttribute(&#x27;data-enscribe-dsl-error&#x27;,&#x27;1&#x27;);var h=document.createElement(&#x27;div&#x27;);h.className=&#x27;enscribe-dsl-error&#x27;;h.setAttribute(&#x27;role&#x27;,&#x27;alert&#x27;);h.textContent=&#x27;⚠ &#x27;+n+&#x27; failed to load from its CDN — showing the source below&#x27;;el.parentNode.insertBefore(h,el);}})(&#x27;mermaid&#x27;,&#x27;https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js&#x27;)"></script>
+<script>if (typeof mermaid !== 'undefined') { mermaid.initialize({ startOnLoad: true }); }</script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,700&#x26;family=Source+Code+Pro:wght@400&#x26;display=swap">
 <article>
   <article-front>
     <meta data-document-type="article">
