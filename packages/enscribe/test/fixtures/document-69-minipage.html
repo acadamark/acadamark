@@ -1766,14 +1766,13 @@ note-list li {
       <figure id="mp:outer" class="frameable-border">
         <p>Outer content.</p>
         <figure id="mp-outer-mp:inner" class="frameable-border">
-          <p>Inner content with its own private figure:
-            <figure id="mp-outer-mp-inner-fig:nested">
-              <img src="nested.png" alt="Nested figure.">
-              <figcaption><figure-label>Figure 1.</figure-label>
-                <p>Nested figure.</p>
-              </figcaption>
-            </figure>
-          </p>
+          <p>Inner content with its own private figure:</p>
+          <figure id="mp-outer-mp-inner-fig:nested">
+            <img src="nested.png" alt="Nested figure.">
+            <figcaption><figure-label>Figure 1.</figure-label>
+              <p>Nested figure.</p>
+            </figcaption>
+          </figure>
           <figcaption><minipage-label>Minipage 1.</minipage-label> Inner box</figcaption>
         </figure>
         <figcaption><minipage-label>Minipage 5.</minipage-label> Outer box</figcaption>
@@ -1788,9 +1787,8 @@ note-list li {
         the body is rejected with a visible error, never resolved:
       </p>
       <figure id="mp:guard" class="frameable-border">
-        <p>This box tries to pull an external asset:
-          <div class="enscribe-asset-error" role="alert" data-ref="@logo">⚠ could not resolve asset reference @logo: external assets (@src / &#x3C;data>) are not allowed inside a minipage</div>
-        </p>
+        <p>This box tries to pull an external asset:</p>
+        <div class="enscribe-asset-error" role="alert" data-ref="@logo">⚠ could not resolve asset reference @logo: external assets (@src / &#x3C;data>) are not allowed inside a minipage</div>
         <figcaption><minipage-label>Minipage 6.</minipage-label></figcaption>
       </figure>
     </section>
