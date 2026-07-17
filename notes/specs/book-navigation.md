@@ -28,6 +28,7 @@ by default, and it preserves the existing book view, which already renders this 
 | `back-to-top` | boolean | off | An optional scroll-to-top control within a chapter (distinct from the rail's return-to-cover link). | Quarto `back-to-top-navigation` |
 | `on-this-page` | boolean | on | The per-chapter "on this page" rail — the current chapter's section list, shown as the right column of the reading interface. Off drops the interface to two columns (chapter rail + body). Gated identically in all three shapes (single-scroll, separate-pages, live). | Quarto right-margin TOC |
 | `on-this-page-side` | `left` \| `right` | `right` | Which side the on-this-page rail floats on. A non-default side (or margin notes) switches the book to the floating-nav layout (see "Floating placement" below). Inert when `on-this-page` is off. | Quarto right-margin TOC side |
+| `combined-nav` | boolean | off | The **scrollable expanding combined nav** — ONE panel that absorbs the chapter rail *and* the on-this-page rail, the current chapter expanded to its sections (see "The combined expanding nav" below). Off = the two separate navs. | bookdown / Quarto gitbook sidebar |
 | `split-by` | `chapter` \| `section` \| `none` | `chapter` | The pagination unit — how the book breaks into navigable pages/routes (see below). | bookdown `split_by` |
 
 ## Pagination (`split-by`)
@@ -88,7 +89,13 @@ sticky-grid it always did. A side value is **inert when its nav is off** (`chapt
 `chapter-nav-side=right` shows no rail at all — there is nothing to place).
 
 The **scrollable expanding combined nav** (bookdown/Quarto style, where the current chapter's rail
-entry expands to its sections) is a separate, later slice — #459 part 2 — and is not built here.
+entry expands to its sections) is #459 **part 2** — see "The combined expanding nav" below.
+
+*(Website tuck — #459.)* On a website book page the floating docks anchor `top:` to
+`--enscribe-site-nav-height`, which the website shell now **declares** (`3.25rem`, on `.enscribe-site`)
+so the docks tuck **under** the sticky top bar. A standalone book has no `.enscribe-site`, so the
+value stays `0` and the docks anchor to the viewport top. (Part 1 referenced the variable but never
+declared it, so the docks fell back to `0` and rendered *behind* the website bar; part 2 declares it.)
 
 ## The stacking rule (margin notes + floating navs) — required behavior, NOT a bug
 
@@ -105,8 +112,8 @@ family) **and** a floating nav, the two compose by an explicit layering model th
   it. The nav's opaque panel cleanly occludes the notes as they pass under it; nothing is lost (the
   note is still in the gutter, just momentarily behind the nav). Placing the navs and the notes on
   **opposite** sides (e.g. both navs left, notes right) leaves the notes fully unobstructed.
-- **Recommended pairing for margin-note authors:** the expanding combined nav (#459 part 2), which
-  puts a single nav on one side and leaves the other margin free for notes.
+- **Recommended pairing for margin-note authors:** the expanding combined nav (`combined-nav`, below),
+  which puts a single nav on one side (the left by default) and leaves the other margin free for notes.
 
 *Delivery note (scope of #459 part 1):* the margin-note **layering** above is authored once and
 applies wherever book margin notes are rendered. Today only the single-scroll (`--single-page`) book
@@ -114,6 +121,52 @@ actually **projects** margin notes; the separate-pages / live / website book sur
 chapter in isolation (`renderChapter`), so the note bodies are not yet reachable to project — a
 note-engine change tracked as its own follow-on (#467). The layering CSS is in place so those
 surfaces compose correctly the moment projection reaches them.
+
+## The combined expanding nav (#459 part 2)
+
+`combined-nav` turns the book's two navs into **one** scrollable panel — the bookdown/Quarto gitbook
+sidebar. Instead of a whole-book chapter rail on one side and an in-page section rail on the other,
+a single panel lists **every** chapter and **expands the current chapter to its sections**; the other
+chapters are collapsed. It **absorbs** the on-this-page rail (the current chapter's sections appear
+inline under its entry), so only one nav occupies the margin — and it takes **one** side, leaving the
+other margin free. That is why it is the recommended pairing for margin-note authors.
+
+**Static-correct, no JS required.** Each rendered page knows its own chapter, so the current chapter is
+expanded in the **static markup** (its rail entry carries `--open`, and CSS shows its section list) with
+no script. Click-to-expand of *other* chapters is a **progressive enhancement**: where scripts run, a
+caret on each chapter (hidden until then, so a no-JS reader sees no dead control) toggles that chapter's
+sections open/closed. The enhancement script is idempotent and re-runs after every live content swap
+(`executeAssets`), so the expansion survives live chapter navigation.
+
+**It rides the floating regime.** A combined book is always in the floating layout (above): the single
+panel is a fixed, scrollable dock on its side, and the reading column centers. So it works identically on
+all four surfaces — single-scroll (`--single-page`), separate-pages, live, and website book pages — from
+the one placement reader, one layout composer, and one stylesheet, exactly like part 1.
+
+**What the other keys mean while combined** (they keep their names; the combined mode reinterprets a
+few, stated here so nothing is silently dead):
+
+- `chapter-nav` — the combined panel **is** the chapter nav. `chapter-nav=false` therefore shows **no
+  nav at all** (there is nothing to combine).
+- `on-this-page` — toggles whether the current chapter **expands to its sections**. On (default): the
+  current chapter is expanded (`--open`) and every chapter carries its collapsible section list. Off:
+  the panel lists **chapters only**, no expansion (and no carets).
+- `chapter-nav-side` — chooses the **single panel's side** (default `left`, which leaves the right
+  margin — the default note gutter — clear).
+- `on-this-page-side` — **inert**: there is no separate on-this-page rail to place.
+- `chapter-nav-depth` — the depth of the expanded chapter's section list (`1` = its top-level sections;
+  `≥2` nests deeper), reusing the same rail-depth machinery.
+- `page-navigation`, `cover`, `back-to-top` — **unchanged** (they are separate chrome, not part of the
+  nav panel).
+
+**On the single scroll (`--single-page`)** there is no per-page "current" chapter, so the panel expands
+the **first** chapter (the top of the scroll, where the reader lands); click-to-expand opens the rest.
+As with all book-nav config on that surface, the reading interface (hence the combined panel) is enabled
+by the `--toc` render option — see "The single-scroll surface" above.
+
+**Default byte-stability.** `combined-nav` off is byte-identical to before #459 part 2: the combined
+markup, CSS, and script ship only when the mode is on, so an unconfigured book renders the exact
+separate-nav layout it always did.
 
 ## eHTML form
 

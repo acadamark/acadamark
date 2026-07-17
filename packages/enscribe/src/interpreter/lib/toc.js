@@ -309,21 +309,39 @@ export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeI
   // before; depth >= 2 nests each chapter's sections beneath it, pruned to depth-1 levels.
   // `sectionHref(part, section)` projects a section link to its target (in-page anchor for
   // the single-page / live rail; `page#id` for the separate-pages build).
-  const { navDepth = 1, sectionHref = (p, s) => `#${s.id}` } = opts;
+  // #459 part 2: `combined` turns this rail into the combined expanding nav — one panel where the
+  // CURRENT chapter is expanded to its sections and the others are collapsed. It only changes markup
+  // hooks (a `--combined` nav class, an `--open` li on the active chapter, a hidden caret per chapter
+  // with sections); the collapse/show is CSS (COMBINED_NAV_CSS) and the click-to-expand is the
+  // enhancement script (COMBINED_NAV_JS). Off (the default) → byte-identical to the separate rail.
+  const { navDepth = 1, sectionHref = (p, s) => `#${s.id}`, combined = false } = opts;
   const items = parts.map((p) => {
     const linkProps = { href: chapterHref(p) };
-    if (activeId != null && p.id === activeId) {
+    const isActive = activeId != null && p.id === activeId;
+    if (isActive) {
       linkProps.className = ['enscribe-toc-active'];
       linkProps['aria-current'] = 'location';
     }
     const liChildren = [el('a', linkProps, bookLink(p))];
-    if (navDepth >= 2) {
-      const sub = railSectionList(p, p.sections, sectionHref, navDepth - 1);
-      if (sub) liChildren.push(sub);
+    const sub = navDepth >= 2 ? railSectionList(p, p.sections, sectionHref, navDepth - 1) : null;
+    // The caret toggle rides the combined nav only, on a chapter that HAS sections. It is `hidden` in
+    // the static markup so a no-JS reader never sees a dead affordance (the CURRENT chapter is expanded
+    // by CSS regardless); COMBINED_NAV_JS reveals it and binds click-to-expand. It precedes the link so
+    // the disclosure control reads before the chapter title.
+    if (combined && sub) {
+      liChildren.unshift(el('button', {
+        type: 'button', className: ['enscribe-rail-toggle'],
+        'aria-expanded': isActive ? 'true' : 'false', 'aria-label': 'Toggle sections', hidden: true,
+      }, [text('›')]));
     }
-    return el('li', {
-      className: ['enscribe-rail-item', `enscribe-rail-item--${p.region}`],
-    }, liChildren);
+    if (sub) liChildren.push(sub);
+    const liClass = ['enscribe-rail-item', `enscribe-rail-item--${p.region}`];
+    // The current chapter is statically OPEN (its sections shown, no JS) — the ruling's static-
+    // correctness constraint. Only when it actually HAS a rendered section list (so `on-this-page=false`,
+    // which drops the sections, leaves nothing "open"; and a section-less chapter is never marked open).
+    // COMBINED_NAV_JS toggles `--open` on any chapter on click.
+    if (combined && isActive && sub) liClass.push('enscribe-rail-item--open');
+    return el('li', { className: liClass }, liChildren);
   });
   const details = el('details', { className: ['enscribe-toc-details'], open: true }, [
     el('summary', { className: ['enscribe-toc-summary'] }, [text('Chapters')]),
@@ -343,10 +361,29 @@ export function buildChapterRail(parts, chapterHref = (p) => `#${p.id}`, activeI
   } else {
     navChildren = [details];
   }
+  const navClass = ['enscribe-toc', 'enscribe-chapter-rail'];
+  if (combined) navClass.push('enscribe-chapter-rail--combined');   // #459 part 2
   return el('nav', {
-    className: ['enscribe-toc', 'enscribe-chapter-rail'],
+    className: navClass,
     ariaLabel: hasMasthead ? 'Book' : 'Chapters',
   }, navChildren);
+}
+
+/** #459 part 2 — the combined expanding nav. ONE scrollable panel with the whole-book contents, the
+ *  CURRENT chapter (`activeId`) expanded to its sections and the others collapsed; it ABSORBS the
+ *  separate on-this-page rail (so the caller passes no on-this-page). The ONE source for all four book
+ *  surfaces (single-scroll, separate-pages, live, website) — each passes its own `chapterHref` /
+ *  `sectionHref` (in-page anchors on one scroll; `page#id` on separate-pages; routes live). `on-this-page`
+ *  gates the expansion: on (default) → the current chapter expands to its sections (depth >= 2, deepened
+ *  by `chapter-nav-depth`); off → chapters only. Returns null when `chapter-nav` is off (the combined nav
+ *  IS the chapter nav — off means no nav at all). Rides the part-1 floating regime (one dock, one side).
+ *  @param {object} o
+ *  @param {(p:object,s:object)=>string} o.sectionHref - project a section link to its target
+ *  @param {object} o.bookNav - the resolveBookNavConfig output */
+export function buildCombinedNav(parts, chapterHref, activeId, home, { sectionHref, bookNav = {} } = {}) {
+  if (!bookNav.chapterNav) return null;
+  const navDepth = bookNav.onThisPage ? Math.max(2, bookNav.chapterNavDepth || 1) : 1;
+  return buildChapterRail(parts, chapterHref, activeId, home, { navDepth, sectionHref, combined: true });
 }
 
 /** The RIGHT "on this page" rail: one section group per chapter (those with
@@ -472,14 +509,24 @@ function applyBookToc(hast, docIdx, bookEl, toc, bookNav = {}) {
   // on-this-page on).
   const { chapterNav = true, chapterNavDepth = 1, pageNavigation = true, onThisPage: onThisPageEnabled = true } = bookNav ?? {};
 
-  // chapter-nav (#221): the persistent left chapter rail — hidden when false. chapter-nav-depth
-  // deepens it to chapters + their sections (in-page anchors on this single scroll).
-  const chapterRail = chapterNav
-    ? buildChapterRail(parts, undefined, null, null, { navDepth: chapterNavDepth, sectionHref: (p, s) => `#${s.id}` })
-    : null;
-  // #248: the on-this-page rail (3rd column) is config-gated, default on. When off,
-  // `onThisPage` is null → the layout below drops the 3-col grid; no new layout or CSS.
-  const onThisPage = onThisPageEnabled ? buildOnThisPage(parts) : null;
+  // #459 part 2: the combined expanding nav absorbs BOTH the chapter rail and the on-this-page rail
+  // into one panel. On this single scroll there is no per-page "current" chapter, so the FIRST chapter
+  // (the top of the scroll — where the reader lands) is the statically-expanded one; click-to-expand
+  // (COMBINED_NAV_JS) opens the others. Rides the floating regime below (one dock on chapter-nav-side).
+  let chapterRail, onThisPage;
+  if (bookNav?.combined === true) {
+    chapterRail = buildCombinedNav(parts, undefined, parts[0]?.id ?? null, null, { sectionHref: (p, s) => `#${s.id}`, bookNav });
+    onThisPage = null;
+  } else {
+    // chapter-nav (#221): the persistent left chapter rail — hidden when false. chapter-nav-depth
+    // deepens it to chapters + their sections (in-page anchors on this single scroll).
+    chapterRail = chapterNav
+      ? buildChapterRail(parts, undefined, null, null, { navDepth: chapterNavDepth, sectionHref: (p, s) => `#${s.id}` })
+      : null;
+    // #248: the on-this-page rail (3rd column) is config-gated, default on. When off,
+    // `onThisPage` is null → the layout below drops the 3-col grid; no new layout or CSS.
+    onThisPage = onThisPageEnabled ? buildOnThisPage(parts) : null;
+  }
   // page-navigation (#221): the foot prev/next chapter bar (in-page anchors on a single scroll) —
   // appended only when on.
   if (pageNavigation) appendChapterNav(parts);

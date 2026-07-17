@@ -42,7 +42,7 @@ const readNavSide = (configMap, key, dflt) => {
  *   (#454; reconciles book-navigation.md's "split-by=none deferred" note with the single-page render).
  * @returns {{chapterNav:boolean, chapterNavDepth:number, chapterNavSide:string,
  *           pageNavigation:boolean, cover:boolean, backToTop:boolean, onThisPage:boolean,
- *           onThisPageSide:string, splitBy:string}}
+ *           onThisPageSide:string, combined:boolean, splitBy:string}}
  */
 export function resolveBookNavConfig(file, { paginated = true } = {}) {
   const configMap = file?.data?.[ENSCRIBE_CONFIG] ?? null;
@@ -75,6 +75,7 @@ export function resolveBookNavConfig(file, { paginated = true } = {}) {
     backToTop:      readConfigBool(configMap, 'back-to-top', false),
     onThisPage:     readConfigBool(configMap, 'on-this-page', true),
     onThisPageSide: readNavSide(configMap, 'on-this-page-side', 'right'),   // #459 part 1
+    combined:       readConfigBool(configMap, 'combined-nav', false),   // #459 part 2
     splitBy,
   };
 }

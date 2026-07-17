@@ -27,6 +27,7 @@
 import { toHtml } from 'hast-util-to-html';
 import {
   buildChapterRail,
+  buildCombinedNav,
   buildOnThisPage,
   buildContentsListing,
   chapterNavBar,
@@ -64,6 +65,8 @@ import {
   BACK_TO_TOP_HTML,
   BACK_TO_TOP_JS,
   CHAPTER_ARROWS_CSS,
+  COMBINED_NAV_CSS,
+  COMBINED_NAV_JS,
 } from '../interpreter/assets/book-nav-asset.js';
 
 /** P1 projection: each chapter's PAGE URL is the shared neutral stem + `.html`
@@ -146,12 +149,14 @@ function pageShell(body, title, defaultCss, bookNav, themeVariant, themeCss = ''
   // (chapter-nav on, depth 1, back-to-top off) appends nothing and stays byte-identical.
   const extraCss = [];
   if (!bookNav.chapterNav) extraCss.push(BOOK_NAV_NOLEFT_CSS);
-  if (bookNav.chapterNavDepth >= 2) extraCss.push(BOOK_NAV_DEPTH_CSS);
+  if (bookNav.chapterNavDepth >= 2 || (bookNav.combined && bookNav.onThisPage)) extraCss.push(BOOK_NAV_DEPTH_CSS);   // #459 part 2 — combined renders sections
   if (bookNav.backToTop) extraCss.push(BACK_TO_TOP_CSS);
   if (bookNav.pageNavigation) extraCss.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   if (resolveBookPlacement(bookNav).floating) extraCss.push(BOOK_FLOAT_CSS);   // #459 — after arrows so the float override wins
+  if (bookNav.combined) extraCss.push(COMBINED_NAV_CSS);   // #459 part 2 — the expand/collapse layer, AFTER float
   const css = extraCss.length ? `\n${extraCss.join('\n')}` : '';
-  const extraJs = bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '';
+  const extraJs = (bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '')
+    + (bookNav.combined ? `\n<script>${COMBINED_NAV_JS}</script>` : '');   // #459 part 2 — click-to-expand
   const variantAttr = themeVariant === 'light' || themeVariant === 'dark'
     ? ` data-theme-variant="${themeVariant}"` : '';
   // #452: the book's `<config theme>` tokens — a separate <style> AFTER default.css so its `:root`
@@ -225,12 +230,20 @@ function renderPageBody(part, parts, idx, registry, idToUrl, opts) {
 
   const home = { href: homeHref, title: bookTitle };
   // separate-pages section links are cross-page (`page#id`); only built at depth >= 2.
-  const railOpts = bookNav.chapterNavDepth >= 2
-    ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => `${p.slug}#${s.id}` }
-    : {};
-  const rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, chapterHref, part.id, home, railOpts)) : '';
-  const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
-  const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
+  const sectionHref = (p, s) => `${p.slug}#${s.id}`;
+  let rail, onThisPage;
+  if (bookNav.combined) {
+    // #459 part 2 — ONE combined nav absorbs the on-this-page rail (the current chapter's sections
+    // appear inline under its entry). Same section-href scheme as depth>=2 (cross-page `page#id`).
+    const combinedNav = buildCombinedNav(parts, chapterHref, part.id, home, { sectionHref, bookNav });
+    rail = combinedNav ? toHtml(combinedNav) : '';
+    onThisPage = '';
+  } else {
+    const railOpts = bookNav.chapterNavDepth >= 2 ? { navDepth: bookNav.chapterNavDepth, sectionHref } : {};
+    rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, chapterHref, part.id, home, railOpts)) : '';
+    const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
+    onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
+  }
   const navBar = chapterNavBar(parts, idx, chapterHref);
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
   // #293 — the persistent edge arrows read the SAME prevNext targets (chapterNavArrows → prevNextParts)
@@ -288,10 +301,13 @@ function renderIndexBody(parts, opts) {
   // mark it aria-current="page" rather than presenting a 'home' link to the page you are
   // already on. Chapter pages omit it (their masthead points elsewhere).
   const home = { href: INDEX_PAGE, title: bookTitle, current: true };
-  const railOpts = bookNav.chapterNavDepth >= 2
-    ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => `${p.slug}#${s.id}` }
-    : {};
-  const rail = bookNav.chapterNav ? toHtml(buildChapterRail(parts, (p) => p.slug, null, home, railOpts)) : '';
+  const sectionHref = (p, s) => `${p.slug}#${s.id}`;
+  // #459 part 2 — the combined nav also fronts the cover (no active chapter → nothing expanded);
+  // otherwise the depth>=2 chapter rail, as before.
+  const coverNav = bookNav.combined
+    ? buildCombinedNav(parts, (p) => p.slug, null, home, { sectionHref, bookNav })
+    : (bookNav.chapterNav ? buildChapterRail(parts, (p) => p.slug, null, home, bookNav.chapterNavDepth >= 2 ? { navDepth: bookNav.chapterNavDepth, sectionHref } : {}) : null);
+  const rail = coverNav ? toHtml(coverNav) : '';
   // #226: a `<config toc>` book gets a whole-book contents overview on the cover (the chapter
   // rail is the book's sidebar ToC; this is the landing-page index, the Quarto book pattern).
   // Built from `parts` with the rail's cross-page resolvers. No `<config toc>` → '' → the

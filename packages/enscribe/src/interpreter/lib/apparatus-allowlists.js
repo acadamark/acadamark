@@ -139,6 +139,13 @@ export const CONFIG_KWARGS = new Map([
   ['back-to-top',             boolean()],   // scroll-to-top control within a chapter
   ['on-this-page',            boolean()],   // book-scaffold resolveBookNavConfig / lib/toc.js applyBookToc — the per-chapter on-this-page rail (right column); default on; #248
   ['on-this-page-side',       valued('live', { enum: ['left', 'right'] })],    // which side the on-this-page rail floats (default right; #459 part 1)
+  // #459 part 2: the scrollable expanding combined nav (bookdown/Quarto style). A book-nav MODE
+  // switch (boolean, default OFF = the two separate navs, byte-stable). ON: ONE scrollable panel
+  // ABSORBS the chapter rail + on-this-page rail, the CURRENT chapter expanded to its sections. The
+  // panel takes ONE side (chapter-nav-side, default left → the right note gutter stays clear — the
+  // ruling's margin pairing); on-this-page toggles whether the current chapter expands; on-this-page-
+  // side is inert. Read in resolveBookNavConfig; rides the part-1 floating regime. See book-navigation.md.
+  ['combined-nav',            boolean()],
   ['split-by',                valued('live', { enum: ['chapter', 'section', 'none'] })],    // pagination unit: chapter (built) | section | none (deferred)
 
   // #246: website navigation chrome. The website's primary nav is the sticky TOP bar; the left
