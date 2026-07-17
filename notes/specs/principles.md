@@ -30,6 +30,71 @@ Where localized recovery is genuinely hard to implement, the resulting shortfall
 
 With both gaps closed, the always-renders guarantee is fully honored in the current implementation.
 
+### The always-renders doctrine — how a mistake reaches the author (#413/#465)
+
+The guarantee above says *what* must hold; this is the operational **doctrine** for *how* every mistake
+is surfaced, so the treatment is uniform wherever a construct can fail (Ariel, 2026-07-17):
+
+> The document never fails. Nothing fails silently. Mistakes render as transparently and intuitively as
+> possible — the author gets a document, and by reading it can see the errors and usually infer what
+> they did wrong.
+
+The rules that follow from it:
+
+- **Always both channels.** Every mistake is surfaced in **two** places at once: an **in-document flag**
+  (a visible marker where the construct stood) *and* a more descriptive **warning on the stream** —
+  printed to the CLI (`stderr` + the end-of-run summary) or, for a live/browser render, the console.
+  The stream carrier is the vfile message seam (`file.message(reason, node, ruleId)`); the CLI seam
+  (`packages/cli/src/diagnostics.js`) also recapitulates it into every emitted page. A control that
+  ships one channel without the other is a defect (the #443/#465 failure). When a warning is produced
+  *after* the diagnostics seam has already run — a late producer on a page-emitting path — it is
+  re-delivered to all channels rather than dropped (`diag.reportLate`, #465).
+
+- **Duplicate information → first-wins + a flag.** When two sources define the same thing, keep the
+  **first in source order** and leave a visible duplicate flag (plus the warning). Examples: a `<fig>`
+  with both a `src=` and an inline body keeps the `src` (the head precedes the body); duplicate
+  citation keys / asset ids keep the appropriate one and flag the collision.
+
+- **Missing information → a flag.** A reference to something that isn't there (a missing format on a
+  dataset→table, an unresolved `@id` / `<ref>` / `<cite>`, an unsupported format word) leaves a visible
+  flag naming the miss + the warning — never a silent fallthrough or a misleading auto-detect.
+
+- **A placement element that produces nothing → a visible placeholder.** A deferred master-scope
+  `<toc>`/`<endnotes>`, or an authored `<bibliography>` that resolved no citations, leaves a small
+  visible placeholder where it stood (+ the warning), rather than vanishing. A placeholder is
+  conceptually distinct from an *error* (produces-nothing vs a mistake), but it shares the error
+  family's diagnostic-box **voice** — the wording ("deferred", "empty") distinguishes it. (Gated on the
+  element being *authored*: a document that wrote nothing still renders nothing.)
+
+- **Structure never fails the build.** A declared `<chapter/section/… src>` whose file is missing does
+  **not** abort the build. The chapter **keeps its number** (the assembler preserves the numbered
+  structure marker), renders a **flagged placeholder** in its place, and the CLI **names the missing
+  path**. This holds on every build surface (static separate-pages, single-page, and the `--live`
+  folder copy, #413 C2). The recommended pairing is that the reader still gets a navigable, numbered
+  book with a clearly-flagged hole, not a "compilation failed" with no output.
+
+- **No CLI path leaks a stack.** At the CLI boundary a filesystem failure or an internal invariant
+  surfaces as one clean, named line, never a raw Node stack — every write routes through the shared
+  guarded writer (`packages/cli/src/lib/safe-write.js`) and every throw is a `CliError`. A standing
+  guard (`packages/cli/test/no-stack.test.js`) keeps this true.
+
+**Where the shared machinery lives** (so a new failure joins the family instead of inventing its own):
+
+- **The error/placeholder CSS family.** Inline markers (`parse-error`, `tag-error`, `ref-error`,
+  `cite-error`, `import-error`) and one **name-agnostic block selector**
+  `[role="alert"][class*="enscribe-"][class*="-error"]` (`default.css`) style the whole family. A new
+  block marker inherits the look *for free* by rendering `<div class="enscribe-<x>-error" role="alert">⚠
+  ??…??</div>` — **do not add a new named CSS rule** (it would re-baseline every inlined-CSS golden).
+- **The marker taxonomy.** Internal marker tagnames dispatched by the interpreter's `INTERNAL_REGISTRY`
+  (`interpret-plugin.js`): `__asset-error` / `__library-error` (resolution failures), `__include-error`
+  (a failed `<include>` splice), `__master-src-error` (a missing structural child, #413 S1),
+  `__placement-placeholder` (a produces-nothing placement, #413 S3), and the parser's
+  `<parse-error>` / `<tag-error>`. The assembler mints its markers straight into the pre-pipeline tree;
+  resolution plugins mint via `makeErrorNode` + `injectBodyErrors` (`lib/error-injection.js`).
+- **The diagnostics seam** (`packages/cli/src/diagnostics.js`) and the vfile message stream carry the
+  second channel; `notes/specs/settings.md` governs the display-settings controls that must obey the
+  "no control ships ahead of its read path" corollary.
+
 ## The delegation principle
 
 Enscribe does not re-implement what existing parsers already do well. Wherever an existing parser can handle work enscribe would otherwise need to do, enscribe delegates. Bare `$x$` is parsed by `remark-math`. Bare `` `code` `` is parsed by remark's code-span tokenizer. Bare `# Heading` is parsed by remark's heading tokenizer. Enscribe only does novel work — the tagged shorthand and the eHTML vocabulary.
