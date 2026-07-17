@@ -29,6 +29,7 @@
 import { NAV_ITEM_TAGNAMES } from './section-kinds.js';
 import { BOOK_REGIONS } from './book-regions.js';
 import { readConfigBool } from './config-helpers.js';
+import { resolveBookPlacement } from '../assets/book-nav-asset.js';   // #459 — the shared nav-placement rule (pure module, no cycle)
 
 // Section-like elements that become ToC entries. `book-part` (a chapter/part) is
 // a top-level entry whose nested `section`s become its children — NAV_ITEM_TAGNAMES
@@ -484,10 +485,27 @@ function applyBookToc(hast, docIdx, bookEl, toc, bookNav = {}) {
   if (pageNavigation) appendChapterNav(parts);
 
   const main = el('main', { className: ['enscribe-body'] }, [bookEl]);
-  // Compose the layout from whichever rails are present. The `--book-noleft` variant (rail off) reuses
-  // the separate-pages no-left grid CSS; `--book-3col` is the full rail + on-this-page grid.
+  const baseClasses = ['enscribe-layout', 'enscribe-layout--toc', 'enscribe-layout--book'];
+
+  // #459 part 1: a non-default nav side switches this book to the FLOATING regime — each nav becomes
+  // a fixed dock on its side (parallel to composeBookBody, the string assembler for the other three
+  // surfaces; resolveBookPlacement is the ONE shared placement rule). Default placement (rail left,
+  // on-this-page right) keeps the sticky-grid below → byte-identical.
+  const { chapterNavSide, onThisPageSide, floating } = resolveBookPlacement(bookNav ?? {});
+  if (floating) {
+    const dock = (side, cls) => {
+      const inner = [chapterNavSide === side ? chapterRail : null, onThisPageSide === side ? onThisPage : null].filter(Boolean);
+      return inner.length ? el('div', { className: ['enscribe-book-dock', cls] }, inner) : null;
+    };
+    const children = [dock('left', 'enscribe-book-dock--left'), main, dock('right', 'enscribe-book-dock--right')].filter(Boolean);
+    hast.children[docIdx] = el('div', { className: [...baseClasses, 'enscribe-layout--book-float'] }, children);
+    return 'book';
+  }
+
+  // Default placement — the sticky-grid. The `--book-noleft` variant (rail off) reuses the
+  // separate-pages no-left grid CSS; `--book-3col` is the full rail + on-this-page grid.
   const layoutChildren = [chapterRail, main, onThisPage].filter(Boolean);
-  const layoutClasses = ['enscribe-layout', 'enscribe-layout--toc', 'enscribe-layout--book'];
+  const layoutClasses = [...baseClasses];
   if (chapterRail && onThisPage) layoutClasses.push('enscribe-layout--book-3col');
   else if (!chapterRail && onThisPage) layoutClasses.push('enscribe-layout--book-noleft');
   hast.children[docIdx] = el('div', { className: layoutClasses }, layoutChildren);

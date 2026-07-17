@@ -244,6 +244,7 @@ export function renderLiveChapterView(model, idx, ctx) {
   return composeBookBody({
     rail, content, prevNext, onThisPage, arrows,
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
+    bookNav,   // #459 — the nav-placement sides drive the floating dock layout (static≡live)
   }) + BOOK_LIVE_RAIL_SCRIPTS;
 }
 
@@ -293,6 +294,7 @@ export function renderLiveCoverView(model, ctx) {
   return composeBookBody({
     rail, content: coverBodyHtml(bookTitle, contentsHtml, renderLiveFrontLoose(model, ctx)),
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
+    bookNav,   // #459 — placement floats the cover's chapter rail too (static≡live)
   }) + BOOK_LIVE_RAIL_SCRIPTS;
 }
 
@@ -468,5 +470,5 @@ export function renderLiveChapterEditView(model, idx, ctx) {
   // and no BOOK_LIVE_RAIL_SCRIPTS is appended here: the edit loop runs executeAssets on the PREVIEW
   // PANE only, so the rail scripts must live inside the pane — appending them out here would never run.)
   const editMain = `<div class="enscribe-edit-main">${buildEditMainInner(previewBody)}</div>`;
-  return composeBookBody({ rail, content: editMain, onThisPage });
+  return composeBookBody({ rail, content: editMain, onThisPage, bookNav });   // #459 — placed identically to read mode
 }

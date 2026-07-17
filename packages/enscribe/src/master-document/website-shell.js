@@ -22,6 +22,7 @@ import { SETTINGS_PANEL_JS } from '../interpreter/assets/settings-panel.js';
 import {
   BOOK_NAV_NOLEFT_CSS,
   BOOK_NAV_DEPTH_CSS,
+  BOOK_FLOAT_CSS,
   BACK_TO_TOP_CSS,
   BACK_TO_TOP_JS,
   CHAPTER_ARROWS_CSS,
@@ -113,6 +114,12 @@ function universalHeadStyle(defaultCss) {
     // markup — so it rides the universal head unconditionally (the BACK_TO_TOP
     // precedent: gated at emission in pageShell, unconditional-inert here).
     CHAPTER_ARROWS_CSS,
+    // #459 part 1: the floating book-nav regime — fully class-scoped (.enscribe-layout--book-float,
+    // .enscribe-book-dock*), inert on any page without a moved nav, so it rides the union
+    // unconditionally like its siblings. After CHAPTER_ARROWS_CSS so the float override of the
+    // gutter chevrons wins; its dock `top:` reads --enscribe-site-nav-height, so the docks tuck
+    // under this surface's sticky top bar automatically.
+    BOOK_FLOAT_CSS,
     WEBSITE_SHELL_CSS,
   ].join('\n');
 }

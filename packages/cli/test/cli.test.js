@@ -688,7 +688,28 @@ export function run_tests() {
       assert.equal(naSplit.code, 0, '#454: split-by=none on a single-page book is a harmless N/A (no error)');
       assert.ok(!/split-by=none is named/.test(naSplit.err),
         '#454: split-by on --single-page fires no false "not built" warning — the single scroll IS split-by=none');
-      console.log('PASS: build — #454 the single-page surface consumes theme / theme-variant / the book-nav family');
+
+      // #459 part 1: chapter-nav-side / on-this-page-side float each nav to its side (the CLI single-page
+      // surface). Default placement → the sticky-grid (no floating regime); a non-default side → the
+      // --book-float regime with per-side docks. Confirms the CLI threads the new keys end-to-end.
+      const bookFloat = /enscribe-layout--book-float/;
+      const dockLeft = /<div class="enscribe-book-dock enscribe-book-dock--left">/;
+      const dockRight = /<div class="enscribe-book-dock enscribe-book-dock--right">/;
+      assert.ok(!bookFloat.test(build('', '--toc').out),
+        '#459: default placement stays the sticky-grid on --single-page (byte-stable, no floating regime)');
+      const placed = build('chapter-nav-side=right on-this-page-side=left', '--toc').out;
+      assert.ok(bookFloat.test(placed) && dockLeft.test(placed) && dockRight.test(placed),
+        '#459: a non-default nav side floats the navs into per-side docks on --single-page');
+      // on-this-page in the LEFT dock, chapter rail in the RIGHT dock (positional — which nav floats
+      // where). Match the dock ELEMENT (dockLeft/dockRight regexes), not the bare class — the inlined
+      // BOOK_FLOAT_CSS in <head> also contains the `.enscribe-book-dock--*` selector strings.
+      const iMain = placed.indexOf('<main');
+      assert.ok(placed.search(dockLeft) < placed.search(/<nav class="enscribe-onthispage"/) &&
+                placed.search(/<nav class="enscribe-onthispage"/) < iMain,
+        '#459: on-this-page-side=left → the on-this-page rail is in the left dock');
+      assert.ok(iMain < placed.search(dockRight) && placed.search(dockRight) < placed.search(rail),
+        '#459: chapter-nav-side=right → the chapter rail is in the right dock');
+      console.log('PASS: build — #454 the single-page surface consumes theme / theme-variant / the book-nav family; #459 nav placement floats each nav');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

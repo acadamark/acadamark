@@ -245,7 +245,7 @@ import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 // non-default rail — the SAME shared assets the separate-pages pageShell injects (one source,
 // book-nav-asset.js): the no-left grid when chapter-nav is off, the sub-section styling at
 // chapter-nav-depth >= 2. default.css carries only the default (rail on, depth 1) layout.
-import { BOOK_NAV_NOLEFT_CSS, BOOK_NAV_DEPTH_CSS } from './assets/book-nav-asset.js';
+import { BOOK_NAV_NOLEFT_CSS, BOOK_NAV_DEPTH_CSS, BOOK_FLOAT_CSS, resolveBookPlacement } from './assets/book-nav-asset.js';
 
 export { enscribeDocTypeResolve } from './plugins/doc-type.js';
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeWebsiteStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
@@ -965,6 +965,9 @@ export function enscribeInterpreter(options = {}) {
       if (tocType === 'book' && bookNav) {
         if (!bookNav.chapterNav) hast.children.unshift(makeStyleElement(BOOK_NAV_NOLEFT_CSS));
         if (bookNav.chapterNavDepth >= 2) hast.children.unshift(makeStyleElement(BOOK_NAV_DEPTH_CSS));
+        // #459 part 1: a non-default nav side floats the navs — applyBookToc emitted the docks + the
+        // --book-float wrapper; deliver its stylesheet (the same BOOK_FLOAT_CSS all four surfaces share).
+        if (resolveBookPlacement(bookNav).floating) hast.children.unshift(makeStyleElement(BOOK_FLOAT_CSS));
       }
     }
     if (configTocShape) {

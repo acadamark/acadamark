@@ -128,10 +128,17 @@ export const CONFIG_KWARGS = new Map([
   // section|none are deferred. See notes/specs/book-navigation.md.
   ['chapter-nav',             boolean()],   // book-scaffold → buildChapterRail (the chapter rail)
   ['chapter-nav-depth',       valued('live', { int: { min: 1 } })],    // rail depth: 1 = chapters; >=2 = chapters + their sections
+  // #459 part 1: independent left/right FLOATING placement of the two book navs. Sibling `-side`
+  // modifiers (the chapter-nav-depth precedent) — the booleans stay booleans, so false=off /
+  // bare=on-at-default-side keep meaning; the side only chooses where an on nav floats. Default sides
+  // reproduce today's layout (rail left, on-this-page right), so a book that sets neither is byte-
+  // identical. Read in resolveBookNavConfig; the layout is the opt-in floating regime. book-only.
+  ['chapter-nav-side',        valued('live', { enum: ['left', 'right'] })],    // which side the chapter rail floats (default left)
   ['page-navigation',         boolean()],   // prev/next chapter links (chapterNavBar)
   ['cover',                   boolean()],   // cover landing page; off = land on the first chapter
   ['back-to-top',             boolean()],   // scroll-to-top control within a chapter
   ['on-this-page',            boolean()],   // book-scaffold resolveBookNavConfig / lib/toc.js applyBookToc — the per-chapter on-this-page rail (right column); default on; #248
+  ['on-this-page-side',       valued('live', { enum: ['left', 'right'] })],    // which side the on-this-page rail floats (default right; #459 part 1)
   ['split-by',                valued('live', { enum: ['chapter', 'section', 'none'] })],    // pagination unit: chapter (built) | section | none (deferred)
 
   // #246: website navigation chrome. The website's primary nav is the sticky TOP bar; the left

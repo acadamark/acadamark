@@ -61,6 +61,11 @@ const BACK_TO_TOP_BTN = '<button type="button" class="enscribe-back-to-top"';
 const BACK_TO_TOP_RULE = '.enscribe-back-to-top--visible';   // a distinctive injected-CSS rule
 const RAIL_SECTIONS = '<ul class="enscribe-rail-sections"';
 const ON_THIS_PAGE = '<nav class="enscribe-onthispage"';   // #248: the per-chapter on-this-page rail
+// #459 part 1 — the floating-placement markers. --book-float switches on the floating regime;
+// each nav is grouped into a per-side dock. A DEFAULT book carries none of these (sticky-grid).
+const BOOK_FLOAT = 'enscribe-layout--book-float';
+const DOCK_LEFT = '<div class="enscribe-book-dock enscribe-book-dock--left">';
+const DOCK_RIGHT = '<div class="enscribe-book-dock enscribe-book-dock--right">';
 
 export async function run() {
   // ── defaults: the full chrome, both paths (the byte-identical baseline) ───────────
@@ -76,6 +81,10 @@ export async function run() {
     assert.ok(!staticPage.includes(RAIL_SECTIONS), 'default: rail is chapters-only (depth 1)');
     assert.ok(staticPage.includes(ON_THIS_PAGE), 'default: static on-this-page rail present');
     assert.ok(chapterView.includes(ON_THIS_PAGE), 'default: live on-this-page rail present');
+    // #459 part 1: default placement (rail left, on-this-page right) stays the sticky-grid — no
+    // floating regime, no docks — so a book that sets no side is byte-identical to pre-#459.
+    assert.ok(!staticPage.includes(BOOK_FLOAT) && !staticPage.includes('enscribe-book-dock'), 'default: static is the sticky-grid (no floating regime)');
+    assert.ok(!chapterView.includes(BOOK_FLOAT) && !chapterView.includes('enscribe-book-dock'), 'default: live is the sticky-grid (no floating regime)');
     console.log('PASS: book-nav defaults — full chrome present, both paths');
   }
 
@@ -155,6 +164,70 @@ export async function run() {
     assert.ok(staticPage.includes(RAIL_SECTIONS), 'depth=2: static rail nests sections');
     assert.ok(chapterView.includes(RAIL_SECTIONS), 'depth=2: live rail nests sections');
     console.log('PASS: chapter-nav-depth=2 nests sections under chapters in the rail');
+  }
+
+  // ── #459 part 1: chapter-nav-side / on-this-page-side float each nav independently ──
+  // A non-default side switches the book to the floating regime (--book-float + per-side docks),
+  // on EVERY book surface. chapter-nav-side=right + on-this-page-side=left → the chapter rail in
+  // the RIGHT dock, the on-this-page rail in the LEFT dock. Asserted positionally (the left dock
+  // opens before <main>, the right dock after it) so it verifies WHICH nav floats WHERE, not just
+  // that a dock exists. Static (publishBookPages) + live (renderLiveChapterView).
+  {
+    const { staticPage, chapterView } = chrome('<config chapter-nav-side=right on-this-page-side=left />');
+    for (const [label, page] of [['static', staticPage], ['live', chapterView]]) {
+      assert.ok(page.includes(BOOK_FLOAT), `${label}: non-default side → floating regime (--book-float)`);
+      assert.ok(page.includes(DOCK_LEFT) && page.includes(DOCK_RIGHT), `${label}: both per-side docks emitted`);
+      const iLeft = page.indexOf(DOCK_LEFT), iRight = page.indexOf(DOCK_RIGHT), iMain = page.indexOf('<main');
+      // on-this-page floats LEFT: its <nav> sits inside the left dock (after DOCK_LEFT, before <main>).
+      const iOtp = page.indexOf(ON_THIS_PAGE), iRail = page.indexOf(RAIL);
+      assert.ok(iLeft < iOtp && iOtp < iMain, `${label}: on-this-page-side=left puts the on-this-page rail in the LEFT dock`);
+      // chapter rail floats RIGHT: its <nav> sits inside the right dock (after <main>, after DOCK_RIGHT).
+      assert.ok(iMain < iRight && iRight < iRail, `${label}: chapter-nav-side=right puts the chapter rail in the RIGHT dock`);
+    }
+    console.log('PASS: #459 chapter-nav-side / on-this-page-side float each nav independently (static + live)');
+  }
+
+  // ── #459 part 1: the single-scroll compiler surface (applyBookToc) floats identically ──
+  {
+    const BOOK = [
+      '<meta type=book>', '<title | Placed>', '</meta>', 'CFG', '',
+      '<chapter #c1 | One>', '', 'Body one.', '', '<# #s1 | Alpha #>', '', 'a', '',
+      '<chapter #c2 | Two>', '', 'Body two.', '', '<# #s2 | Beta #>', '', 'b',
+    ].join('\n');
+    const render = (cfg) => String(buildEnscribePipeline({ embedResources: false, toc: true }).processSync(BOOK.replace('CFG', cfg)));
+    const def = render('');
+    assert.ok(!def.includes(BOOK_FLOAT) && !def.includes('enscribe-book-dock'), 'single-scroll default: sticky-grid (no floating regime)');
+    const placed = render('<config chapter-nav-side=right on-this-page-side=left />');
+    assert.ok(placed.includes(BOOK_FLOAT), 'single-scroll placement: floating regime engaged');
+    assert.ok(placed.indexOf(DOCK_LEFT) < placed.indexOf(ON_THIS_PAGE) && placed.indexOf(ON_THIS_PAGE) < placed.indexOf('<main'),
+      'single-scroll: on-this-page-side=left → on-this-page in the left dock');
+    assert.ok(placed.indexOf('<main') < placed.indexOf(DOCK_RIGHT) && placed.indexOf(DOCK_RIGHT) < placed.indexOf(RAIL),
+      'single-scroll: chapter-nav-side=right → chapter rail in the right dock');
+    console.log('PASS: #459 single-scroll applyBookToc floats each nav independently (compiler surface)');
+  }
+
+  // ── #459 part 1: margin notes on a single-scroll book — the layering model, conflict gone ──
+  // note-position=margin projects sidenotes into the content margin AND marks --margin on the book
+  // wrapper. The two-grids collision (--toc.--margin manufacturing a phantom third track for books)
+  // is now scoped :not(--book), so the book routes through its own book+margin section: the on-this-
+  // page rail floats (fixed) over the note gutter, so scrolling notes pass BEHIND it (the ruling's
+  // stacking). We assert the DOM/CSS carriers of that model, since it is a visible-output behavior.
+  {
+    const BOOK = [
+      '<meta type=book>', '<title | Tufte Book>', '</meta>',
+      '<config note-position=margin />', '',
+      '<chapter #c1 | One>', '', 'Text with a note.<note position=margin | A margin note here.> More text.', '',
+      '<# #s1 | Alpha #>', '', 'Section body.',
+    ].join('\n');
+    const html = String(buildEnscribePipeline({ embedResources: false, toc: true }).processSync(BOOK));
+    assert.ok(html.includes('<sidenote>'), 'book margin: note content projected into the margin (single-scroll)');
+    assert.ok(html.includes('enscribe-layout--book') && html.includes('enscribe-layout--margin'), 'book margin: the wrapper carries BOTH --book and --margin');
+    // the book+margin section (its selector proves the phantom combined grid is scoped away from books)
+    assert.ok(html.includes('.enscribe-layout--toc.enscribe-layout--margin:not(.enscribe-layout--book)'),
+      'book margin: the article combined grid is scoped :not(--book) — the two-grid conflict is gone');
+    assert.ok(html.includes('.enscribe-layout--book.enscribe-layout--margin'),
+      'book margin: the book+margin layering section is delivered');
+    console.log('PASS: #459 book + note-position=margin — projected notes + layering CSS, conflict resolved (single-scroll)');
   }
 
   // ── static ≡ live: the same <config> drives an identical rail (target hrefs aside) ─
