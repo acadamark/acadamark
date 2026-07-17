@@ -168,10 +168,13 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
         childBody = loaded.body;
         childMetaTitle = loaded.metaTitle;
       } catch (err) {
-        // Always-renders: a missing/unreadable child becomes a visible note, not
-        // a crash. (#190 — robust per-child error reporting is a later refinement.)
+        // Always-renders (#413 S1): a missing/unreadable child NEVER crashes the build. BOTH channels:
+        // (1) the warn() below → file.message → CLI stderr + recap / browser console (already wired);
+        // (2) a visible FLAGGED placeholder in the error family (the ⚠ role=alert block), replacing the
+        // former bare unstyled paragraph that read like content. The chapter marker is still emitted
+        // below, so the chapter keeps its number/title and renders this placeholder as its body.
         warn(`master: could not load <${node.tagname} src="${src}">: ${err.message}`);
-        childBody = [{ type: 'paragraph', children: [{ type: 'text', value: `(could not load ${node.tagname} source "${src}")` }] }];
+        childBody = [masterSrcErrorNode(src, `could not load ${node.tagname} source "${src}": ${err.message}`)];
       }
 
       // Title precedence (spec): inline pipe override > child file title > "Title Missing".
@@ -302,6 +305,17 @@ function spliceInclude(node, baseSrc, chain, ctx) {
 // internal-marker tagnames wherever they appear.
 function includeErrorNode(src, message) {
   return { type: 'enscribeTag', tagname: '__include-error', kwargs: { src: src ?? '', message }, content: null };
+}
+
+// #413 S1: a visible `__master-src-error` marker for a structural child (`<chapter/section/…
+// src>`) whose file could not be loaded. Its own tagname (not __include-error) because it is a
+// distinct authoring case — a missing STRUCTURAL child, not a failed inline <include> splice — so a
+// maintainer grepping the class learns which construct failed; it renders in the SAME role=alert
+// family (masterSrcErrorHandler → the name-agnostic family CSS at default.css:469, no new CSS).
+// The chapter/section marker itself is still emitted below (keeping its number + title), so this is
+// the flagged PLACEHOLDER body in an otherwise-numbered chapter — the always-renders doctrine.
+function masterSrcErrorNode(src, message) {
+  return { type: 'enscribeTag', tagname: '__master-src-error', kwargs: { src: src ?? '', message }, content: null };
 }
 
 function stripSrc(kwargs) {
