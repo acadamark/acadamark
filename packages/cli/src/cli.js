@@ -26,6 +26,7 @@ import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-d
 import { VFile } from 'vfile';
 import { renderArticleFile, assembleAndNumber } from './render-document.js';
 import { createDiagnostics, diagnosticsScript } from './diagnostics.js';
+import { CliError } from './lib/cli-error.js';
 import { buildLiveFolder, buildSingleFile, copyShellAssets } from './build-live.js';
 import { buildStaticWebsite } from './static-website.js';
 import { enscribeToJats } from './jats-export/index.js';
@@ -36,9 +37,8 @@ import { detectFormat, runPandoc, findBibtex, convertPandoc, PandocMissingError 
 const require = createRequire(import.meta.url);
 const PKG = require('../package.json');
 
-// Errors of this class carry a user-facing message (missing file, bad flag).
-// Anything else that escapes is an unexpected bug and prints with more context.
-class CliError extends Error {}
+// CliError (user-facing message → one clean line; anything else → printed with its stack) lives in
+// ./lib/cli-error.js so build-live.js can throw it too without a circular import. Imported above.
 
 const TOP_HELP = `enscribe — command-line tools for the Enscribe authoring system
 
@@ -765,7 +765,17 @@ function doExportJatsPackage(opts) {
 /** Write a command's result to `-o` file or to stdout (with a trailing newline). */
 function emit(result, opts, out) {
   if (opts.output) {
-    writeFileSync(opts.output, result, 'utf8');
+    // #413 C1: map fs write failures to a clean CliError (one line, no raw stack) that names the
+    // path AND the remedy — the same shape readInput() uses for the read side. Without this the raw
+    // ENOENT/EACCES/EISDIR error escapes to the top-level catch's else-branch and dumps a Node stack.
+    try {
+      writeFileSync(opts.output, result, 'utf8');
+    } catch (e) {
+      if (e.code === 'ENOENT') throw new CliError(`cannot write ${opts.output}: no such directory (create the parent directory first)`);
+      if (e.code === 'EISDIR') throw new CliError(`cannot write ${opts.output}: that path is a directory (give a file path)`);
+      if (e.code === 'EACCES') throw new CliError(`cannot write ${opts.output}: permission denied`);
+      throw new CliError(`could not write ${opts.output}: ${e.message}`);
+    }
   } else {
     out.write(result.endsWith('\n') ? result : result + '\n');
   }

@@ -446,6 +446,21 @@ export function run_tests() {
     console.log('PASS: error cases exit 1 with helpful messages');
   }
 
+  // ── #413 C1: an unwritable -o path yields a clean CliError, not a raw fs stack ───────
+  {
+    // -o into a directory that does not exist → ENOENT from writeFileSync. Before the emit() guard
+    // this escaped to the top-level catch's else-branch and dumped `enscribe: ENOENT …\n  at
+    // Object.writeFileSync (node:fs:…)`. After: one clean line naming the path and the remedy.
+    const badOut = invoke(['render', FIXTURE, '-o', join(tmpdir(), 'enscribe-c1-no-such-dir', 'out.html')]);
+    assert.equal(badOut.code, 1, 'unwritable -o path → exit 1');
+    assert.ok(badOut.err.includes('cannot write') && badOut.err.includes('no such directory'),
+      'the message names the write failure and the remedy (create the parent directory)');
+    // The heart of C1: no raw Node stack leaks (this is what fails before the fix).
+    assert.ok(!badOut.err.includes(' at ') && !badOut.err.includes('node:fs'),
+      'no raw fs stack trace in the output');
+    console.log('PASS: #413 C1 — an unwritable -o path errors cleanly (named path + remedy, no stack)');
+  }
+
   // ── real bin invocation (spawn) ─────────────────────────────────────────────
   {
     const r = spawnSync(process.execPath, [BIN, 'render', FIXTURE], { encoding: 'utf8' });
