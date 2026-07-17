@@ -19,6 +19,14 @@ import { readConfigBool } from './config-helpers.js';
 import { ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 
 const SPLIT_BY_VALUES = new Set(['chapter', 'section', 'none']);
+// #459 part 1: the two nav-placement enums. A bad value falls back to the default side (the
+// validateConfigValue warning at config-discovery already told the author); the default sides
+// (rail left, on-this-page right) reproduce today's layout, so a book that sets neither is byte-stable.
+const NAV_SIDE_VALUES = new Set(['left', 'right']);
+const readNavSide = (configMap, key, dflt) => {
+  const v = configMap?.get(key) ?? dflt;
+  return NAV_SIDE_VALUES.has(v) ? v : dflt;
+};
 
 /**
  * Resolve the book-navigation settings from a numbered book's VFile (the config map populated by
@@ -32,8 +40,9 @@ const SPLIT_BY_VALUES = new Set(['chapter', 'section', 'none']);
  *   warns. The single-scroll surface (--single-page) does NOT paginate — it IS split-by=none (the whole
  *   book on one scroll) — so it passes `paginated:false` to suppress a warning that would be false there
  *   (#454; reconciles book-navigation.md's "split-by=none deferred" note with the single-page render).
- * @returns {{chapterNav:boolean, chapterNavDepth:number, pageNavigation:boolean,
- *           cover:boolean, backToTop:boolean, onThisPage:boolean, splitBy:string}}
+ * @returns {{chapterNav:boolean, chapterNavDepth:number, chapterNavSide:string,
+ *           pageNavigation:boolean, cover:boolean, backToTop:boolean, onThisPage:boolean,
+ *           onThisPageSide:string, splitBy:string}}
  */
 export function resolveBookNavConfig(file, { paginated = true } = {}) {
   const configMap = file?.data?.[ENSCRIBE_CONFIG] ?? null;
@@ -60,10 +69,12 @@ export function resolveBookNavConfig(file, { paginated = true } = {}) {
   return {
     chapterNav:     readConfigBool(configMap, 'chapter-nav', true),
     chapterNavDepth,
+    chapterNavSide: readNavSide(configMap, 'chapter-nav-side', 'left'),   // #459 part 1
     pageNavigation: readConfigBool(configMap, 'page-navigation', true),
     cover:          readConfigBool(configMap, 'cover', true),
     backToTop:      readConfigBool(configMap, 'back-to-top', false),
     onThisPage:     readConfigBool(configMap, 'on-this-page', true),
+    onThisPageSide: readNavSide(configMap, 'on-this-page-side', 'right'),   // #459 part 1
     splitBy,
   };
 }

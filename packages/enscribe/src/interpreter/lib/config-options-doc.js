@@ -89,6 +89,8 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'The persistent chapter rail (its header is the return-to-cover link).' },
   { key: 'chapter-nav-depth', family: 'Book navigation', type: 'valued', values: '1 = chapters; >=2 = chapters + their sections', default: '1', scope: 'book-only',
     description: 'How deep the chapter rail lists.' },
+  { key: 'chapter-nav-side', family: 'Book navigation', type: 'valued', values: 'left | right', default: 'left', scope: 'book-only',
+    description: 'Which side the chapter rail floats on (#459). A non-default side (or margin notes) switches the book to the floating-nav layout: the rail becomes a fixed overlay on the chosen side. Inert when chapter-nav is off.' },
   { key: 'page-navigation', family: 'Book navigation', type: 'boolean', values: null, default: 'on', scope: 'book-only',
     description: 'Prev / next chapter links at the foot of each chapter.' },
   { key: 'cover', family: 'Book navigation', type: 'boolean', values: null, default: 'on', scope: 'book-only',
@@ -97,6 +99,8 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'An optional scroll-to-top control within a chapter.' },
   { key: 'on-this-page', family: 'Book navigation', type: 'boolean', values: null, default: 'on', scope: 'book-only',
     description: 'The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns.' },
+  { key: 'on-this-page-side', family: 'Book navigation', type: 'valued', values: 'left | right', default: 'right', scope: 'book-only',
+    description: 'Which side the on-this-page rail floats on (#459). A non-default side (or margin notes) switches the book to the floating-nav layout: the rail becomes a fixed overlay on the chosen side. Inert when on-this-page is off.' },
   { key: 'split-by', family: 'Book navigation', type: 'valued', values: 'chapter | section | none', default: 'chapter', scope: 'book-only',
     description: 'The pagination unit. Only chapter is built; section and none are specified but deferred.' },
 

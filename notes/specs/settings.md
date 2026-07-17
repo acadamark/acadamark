@@ -97,8 +97,21 @@ family-inventory rule (`coding-conventions.md` §8).
 
 ---
 
+## Composition with book navigation (the margin-note stacking rule)
+
+One display setting composes with book navigation in a way worth pinning here so it is never mistaken
+for a defect: **`note-position=margin` on a book with a floating chapter/section nav**. The two layer
+by design — the margin notes are tied to the page text and scroll with it, while a floating nav is a
+fixed overlay that stacks *above* them, so a right-side floating nav over right-margin notes makes the
+notes pass *behind* the nav while scrolling. This is the author's chosen composition, not a bug;
+Enscribe does not block it. The authoritative statement of the rule (and the recommended pairing — the
+expanding nav) lives in `notes/specs/book-navigation.md` ("The stacking rule"); it is named here so a
+reader of the display-settings contract knows the interaction is ruled and intentional (#459).
+
 ## Cross-references
 
+- `book-navigation.md` — the book's navigation chrome and the margin-note × floating-nav **stacking
+  rule** (the composition of the `note-position=margin` display setting with book nav placement).
 - `render-parity.md` — the live≡static byte-parity invariant this contract's read-mode precedence
   rests on.
 - `website.md` — the website composition class (the master-vs-page structure the precedence rules

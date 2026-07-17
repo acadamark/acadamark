@@ -22,10 +22,12 @@ by default, and it preserves the existing book view, which already renders this 
 |---|---|---|---|---|
 | `chapter-nav` | boolean | on | The persistent chapter rail (the list of chapters, always visible). Its header is the return-to-cover / book-home link. | Quarto book `sidebar`, bookdown gitbook sidebar |
 | `chapter-nav-depth` | integer | `1` | Rail depth: `1` = chapters only; `2` = chapters plus their sections. | Quarto sidebar `collapse-level` |
+| `chapter-nav-side` | `left` \| `right` | `left` | Which side the chapter rail floats on. A non-default side (or margin notes) switches the book to the floating-nav layout (see "Floating placement" below). Inert when `chapter-nav` is off. | gitbook / Quarto sidebar side |
 | `page-navigation` | boolean | on | Prev/next chapter navigation: the labelled links at the foot of each chapter **and** persistent `‹` / `›` chapter arrows (#293) — the Bookdown-style always-reachable affordance so a reader moves between chapters without scrolling. Both read one prev/next source (`prevNextParts`) so they cannot disagree. The arrows are ONE control with two responsive renderings: on the **desktop** reading layout, fixed chevrons tucked into the grid's side gutters (clear of the rail and content), alongside the foot links; on the **narrow / mobile** layout (no gutter), in-flow at the **foot** of the chapter as tappable buttons showing the chevron + destination chapter title (the FPP3 pattern), with the redundant text foot links hidden there — one coherent foot affordance, no overlap. | Quarto `page-navigation`, bookdown page arrows |
 | `cover` | boolean | on | Show the cover / title page as the book's landing view. Off = land on the first chapter. | Enscribe cover route |
 | `back-to-top` | boolean | off | An optional scroll-to-top control within a chapter (distinct from the rail's return-to-cover link). | Quarto `back-to-top-navigation` |
 | `on-this-page` | boolean | on | The per-chapter "on this page" rail — the current chapter's section list, shown as the right column of the reading interface. Off drops the interface to two columns (chapter rail + body). Gated identically in all three shapes (single-scroll, separate-pages, live). | Quarto right-margin TOC |
+| `on-this-page-side` | `left` \| `right` | `right` | Which side the on-this-page rail floats on. A non-default side (or margin notes) switches the book to the floating-nav layout (see "Floating placement" below). Inert when `on-this-page` is off. | Quarto right-margin TOC side |
 | `split-by` | `chapter` \| `section` \| `none` | `chapter` | The pagination unit — how the book breaks into navigable pages/routes (see below). | bookdown `split_by` |
 
 ## Pagination (`split-by`)
@@ -64,6 +66,54 @@ identically across all three shapes — no silently-dead keys. Per key on this s
   separately.)
 - `split-by` — the surface **is** `split-by=none`, so a `split-by` value is moot here and fires no
   "not built" warning (the pagination-deferred warning applies only where the book actually paginates).
+
+## Floating placement (#459 part 1)
+
+A book has two navigation elements: the **whole-book chapter rail** (the ToC) and the **in-page
+section nav** (the "on this page" rail). By default the chapter rail sits on the left and the
+on-this-page rail on the right, as a sticky three-column grid — the layout the book has always had.
+
+`chapter-nav-side` and `on-this-page-side` let an author place **each nav on the left or the right,
+independently**. Setting either to a non-default side (or turning on margin notes — see below)
+switches the book from the sticky-grid to the **floating regime**: the reading column centers as a
+single column, and each nav becomes a **fixed overlay** ("floats") anchored to its chosen side,
+above the scrolling content. Two navs placed on the **same** side stack in one dock (the chapter rail
+above the in-page rail). This holds on **every** book surface — single-scroll (`--single-page`),
+separate-pages, live, and website book pages — because all four share one placement reader
+(`resolveBookNavConfig`), one layout composer, and one stylesheet (`BOOK_FLOAT_CSS`).
+
+**Default placement (rail left, on-this-page right) is byte-identical to before #459** — the floating
+rules are class-scoped and only ship when a book opts in, so an unconfigured book renders the exact
+sticky-grid it always did. A side value is **inert when its nav is off** (`chapter-nav=false` +
+`chapter-nav-side=right` shows no rail at all — there is nothing to place).
+
+The **scrollable expanding combined nav** (bookdown/Quarto style, where the current chapter's rail
+entry expands to its sections) is a separate, later slice — #459 part 2 — and is not built here.
+
+## The stacking rule (margin notes + floating navs) — required behavior, NOT a bug
+
+When a book uses margin notes (`note-position=margin`, see `notes/specs/settings.md` and the notes
+family) **and** a floating nav, the two compose by an explicit layering model that a future session
+**must not mistake for a defect**:
+
+- **Notes are tied to the page text and scroll with it.** A margin note floats into the reading
+  column's margin gutter beside its marker; as the reader scrolls, the note moves with its paragraph.
+- **Floating navs are fixed and stack _above_ the notes.** A floating nav is a fixed overlay with a
+  higher stacking order (an opaque, page-coloured panel), so it does not scroll.
+- **Therefore a right-side floating nav over right-margin notes makes the notes pass _behind_ the nav
+  while scrolling.** This is the author's chosen composition — Enscribe does **not** block or "fix"
+  it. The nav's opaque panel cleanly occludes the notes as they pass under it; nothing is lost (the
+  note is still in the gutter, just momentarily behind the nav). Placing the navs and the notes on
+  **opposite** sides (e.g. both navs left, notes right) leaves the notes fully unobstructed.
+- **Recommended pairing for margin-note authors:** the expanding combined nav (#459 part 2), which
+  puts a single nav on one side and leaves the other margin free for notes.
+
+*Delivery note (scope of #459 part 1):* the margin-note **layering** above is authored once and
+applies wherever book margin notes are rendered. Today only the single-scroll (`--single-page`) book
+actually **projects** margin notes; the separate-pages / live / website book surfaces render each
+chapter in isolation (`renderChapter`), so the note bodies are not yet reachable to project — a
+note-engine change tracked as its own follow-on (#467). The layering CSS is in place so those
+surfaces compose correctly the moment projection reaches them.
 
 ## eHTML form
 

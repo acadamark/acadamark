@@ -55,10 +55,12 @@ The complete set of document-level `<config>` settings, grouped by concern — t
 |---|---|---|---|---|
 | `chapter-nav` | true \| false | on | book-only | The persistent chapter rail (its header is the return-to-cover link). |
 | `chapter-nav-depth` | 1 = chapters; &gt;=2 = chapters + their sections | 1 | book-only | How deep the chapter rail lists. |
+| `chapter-nav-side` | left \| right | left | book-only | Which side the chapter rail floats on (#459). A non-default side (or margin notes) switches the book to the floating-nav layout: the rail becomes a fixed overlay on the chosen side. Inert when chapter-nav is off. |
 | `page-navigation` | true \| false | on | book-only | Prev / next chapter links at the foot of each chapter. |
 | `cover` | true \| false | on | book-only | Show the cover / title page as the landing view. Off = land on the first chapter. |
 | `back-to-top` | true \| false | off | book-only | An optional scroll-to-top control within a chapter. |
 | `on-this-page` | true \| false | on | book-only | The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns. |
+| `on-this-page-side` | left \| right | right | book-only | Which side the on-this-page rail floats on (#459). A non-default side (or margin notes) switches the book to the floating-nav layout: the rail becomes a fixed overlay on the chosen side. Inert when on-this-page is off. |
 | `split-by` | chapter \| section \| none | chapter | book-only | The pagination unit. Only chapter is built; section and none are specified but deferred. |
 
 **Website navigation**

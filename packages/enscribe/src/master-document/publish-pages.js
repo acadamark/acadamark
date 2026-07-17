@@ -56,8 +56,10 @@ import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';
 import {
   composeBookBody,
+  resolveBookPlacement,
   BOOK_NAV_NOLEFT_CSS,
   BOOK_NAV_DEPTH_CSS,
+  BOOK_FLOAT_CSS,
   BACK_TO_TOP_CSS,
   BACK_TO_TOP_HTML,
   BACK_TO_TOP_JS,
@@ -147,6 +149,7 @@ function pageShell(body, title, defaultCss, bookNav, themeVariant, themeCss = ''
   if (bookNav.chapterNavDepth >= 2) extraCss.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) extraCss.push(BACK_TO_TOP_CSS);
   if (bookNav.pageNavigation) extraCss.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
+  if (resolveBookPlacement(bookNav).floating) extraCss.push(BOOK_FLOAT_CSS);   // #459 — after arrows so the float override wins
   const css = extraCss.length ? `\n${extraCss.join('\n')}` : '';
   const extraJs = bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '';
   const variantAttr = themeVariant === 'light' || themeVariant === 'dark'
@@ -199,6 +202,7 @@ function bookBodyHtml(rail, content, prevNext, onThisPage, bookNav, arrows = '')
   return composeBookBody({
     rail, content, prevNext, onThisPage, arrows,
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
+    bookNav,   // #459 — the nav-placement sides drive the floating dock layout
   });
 }
 

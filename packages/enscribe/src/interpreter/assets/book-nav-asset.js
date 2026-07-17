@@ -13,17 +13,49 @@
 // book bodies cannot drift.
 export const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout--book';
 
-/** Compose a book chapter/cover body from the chrome pieces present (#221). At defaults
- *  (left rail on) this is exactly the pre-#221 layout; chapter-nav off drops the left
- *  column — `--book-noleft` (a 2-col grid) when a right rail remains, or no grid at all
- *  when neither rail is present. The back-to-top control rides inside `<main>` (it is
- *  fixed-positioned, so DOM location is immaterial). Shared by the static separate-pages
- *  build (publish-pages.js) and the live render (live-book.js). */
-export function composeBookBody({ rail = '', content = '', prevNext = '', onThisPage = '', backToTop = '', arrows = '' }) {
+/** #459 part 1 — resolve the nav-placement decision from a bookNav config. The two navs
+ *  (chapter rail, on-this-page) each float LEFT or RIGHT; the defaults (rail left,
+ *  on-this-page right) reproduce today's sticky-grid, so `floating` is false unless the
+ *  author moved a nav — keeping a default book byte-identical. Shared by BOTH book layout
+ *  assemblers (composeBookBody here + applyBookToc in lib/toc.js) so the placement rule
+ *  has one source. `floating` is also forced on by margin notes, but that is decided by the
+ *  --margin class (added later by markMarginLayout), not here — see notes/specs/book-navigation.md. */
+export function resolveBookPlacement(bookNav = {}) {
+  const chapterNavSide = bookNav?.chapterNavSide === 'right' ? 'right' : 'left';
+  const onThisPageSide = bookNav?.onThisPageSide === 'left' ? 'left' : 'right';
+  const floating = chapterNavSide !== 'left' || onThisPageSide !== 'right';
+  return { chapterNavSide, onThisPageSide, floating };
+}
+
+/** Compose a book chapter/cover body from the chrome pieces present (#221 / #459). At default
+ *  placement (rail left, on-this-page right) this is exactly the pre-#221 sticky-grid layout;
+ *  chapter-nav off drops the left column — `--book-noleft` (a 2-col grid) when a right rail
+ *  remains, or no grid at all when neither rail is present. When the author moves a nav to a
+ *  non-default side (#459 part 1), the layout switches to the FLOATING regime: `--book-float`
+ *  on the wrapper + a fixed per-side DOCK holding whichever navs chose that side (so same-side
+ *  navs stack in one dock, and each nav floats independently). The back-to-top control rides
+ *  inside `<main>` (fixed-positioned, so DOM location is immaterial). Shared by the static
+ *  separate-pages build (publish-pages.js) and the live render (live-book.js). */
+export function composeBookBody({ rail = '', content = '', prevNext = '', onThisPage = '', backToTop = '', arrows = '', bookNav = {} }) {
   // `arrows` (#293): the persistent edge prev/next chapter arrows. Like back-to-top they are
   // fixed-positioned, so DOM location is immaterial — they ride inside `<main>` (per-chapter, so the
   // live router re-renders them with the right targets on each chapter swap).
   const main = `<main class="enscribe-body">${content}${prevNext}${backToTop}${arrows}</main>`;
+
+  const { chapterNavSide, onThisPageSide, floating } = resolveBookPlacement(bookNav);
+  if (floating) {
+    // Group the present navs by their chosen side; within a side, the whole-book rail sits above
+    // the in-page on-this-page rail (reading order). An empty dock is omitted.
+    const dock = (side, cls) => {
+      const inner = [chapterNavSide === side ? rail : '', onThisPageSide === side ? onThisPage : ''].filter(Boolean).join('');
+      return inner ? `<div class="enscribe-book-dock ${cls}">${inner}</div>` : '';
+    };
+    const left = dock('left', 'enscribe-book-dock--left');
+    const right = dock('right', 'enscribe-book-dock--right');
+    return `<div class="${BOOK_LAYOUT} enscribe-layout--book-float">${left}${main}${right}</div>`;
+  }
+
+  // Default placement — the sticky-grid (byte-identical to before #459).
   if (rail && onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-3col">${rail}${main}${onThisPage}</div>`;
   if (rail) return `<div class="${BOOK_LAYOUT}">${rail}${main}</div>`;
   if (onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-noleft">${main}${onThisPage}</div>`;
@@ -163,6 +195,61 @@ export const CHAPTER_ARROWS_CSS = `.enscribe-chapter-arrows {
   }
 }`;
 
+// #459 part 1 — the FLOATING book-nav regime. Engaged when the author moves a nav to a
+// non-default side (composeBookBody / applyBookToc add `.enscribe-layout--book-float` + per-side
+// docks). The reading column centers as a single column and each nav becomes a FIXED dock on its
+// chosen side, z-index ABOVE the scrolling content — so a right dock over right-margin notes lets the
+// notes pass BEHIND it (the ruling's required stacking; margin-css.js owns the note gutter itself).
+// The `top:` offset reads `--enscribe-site-nav-height` (0 on a standalone/single-page book, 3.25rem
+// on a website page), so the same rule tucks the docks under the website top bar automatically — no
+// per-surface override. Injected only when floating (default books stay the sticky-grid, byte-stable),
+// so it lives OUTSIDE default.css like BOOK_NAV_NOLEFT_CSS; it must be injected AFTER the base sheet
+// (all four channels do) and AFTER CHAPTER_ARROWS_CSS (so the float override of the gutter chevrons
+// wins). Below the desktop breakpoint the docks fall back into normal flow (stacked with the content).
+// Authority: notes/specs/book-navigation.md ("Floating placement" + "The stacking rule").
+export const BOOK_FLOAT_CSS = `.enscribe-layout--book-float {
+  display: block;
+  max-width: var(--enscribe-content-width);
+  margin: 0 auto;
+}
+.enscribe-layout--book-float .enscribe-book-dock { margin: var(--enscribe-space-6) 0; }
+@media (min-width: 900px) {
+  .enscribe-layout--book-float {
+    max-width: none;
+    padding: 0;
+  }
+  /* The reading column keeps the readable measure but SHRINKS to leave a fixed dock gutter
+     (14rem + gap) on each side, so the fixed docks never underlap the text at any width >= 900px. */
+  .enscribe-layout--book-float > .enscribe-body {
+    max-width: min(var(--enscribe-content-width), calc(100vw - 2 * (14rem + var(--enscribe-space-12))));
+    margin: 0 auto;
+  }
+  .enscribe-layout--book-float .enscribe-book-dock {
+    position: fixed;
+    top: calc(var(--enscribe-site-nav-height, 0px) + var(--enscribe-space-8));
+    width: 14rem;
+    max-height: calc(100vh - var(--enscribe-site-nav-height, 0px) - 2 * var(--enscribe-space-8));
+    overflow-y: auto;
+    z-index: 30;
+    margin: 0;
+    /* Opaque page-colour panel: invisible on a plain page (matches the body), but it OCCLUDES
+       scrolling margin notes that pass under it, so "notes pass behind the nav" is a clean pass
+       behind an opaque panel (the ruling's word), not text bleeding through. Theme-aware token. */
+    background: var(--enscribe-bg);
+  }
+  .enscribe-layout--book-float .enscribe-book-dock--left  { left: var(--enscribe-space-6); }
+  .enscribe-layout--book-float .enscribe-book-dock--right { right: var(--enscribe-space-6); }
+  /* Same-side navs stack in one dock (the whole-book rail above the in-page rail). */
+  .enscribe-layout--book-float .enscribe-book-dock > * + * { margin-top: var(--enscribe-space-8); }
+  /* A docked on-this-page rail is always shown (it is no longer a sticky grid column). */
+  .enscribe-layout--book-float .enscribe-onthispage { position: static; max-height: none; overflow: visible; }
+}
+@media (min-width: 984px) {
+  /* The #293 gutter chevrons anchor to the grid columns, which the float regime removes; drop them
+     here and let the foot prev/next text links (visible at this width) carry chapter navigation. */
+  .enscribe-layout--book-float .enscribe-chapter-arrows { display: none; }
+}`;
+
 // back-to-top ON: a fixed scroll-to-top control, hidden until the reader scrolls down
 // past one viewport. JS off → the control stays `hidden` (no broken affordance).
 export const BACK_TO_TOP_CSS = `.enscribe-back-to-top {
@@ -228,6 +315,7 @@ export function injectBookNavStyles(bookNav, doc) {
   if (bookNav.chapterNavDepth >= 2) css.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) css.push(BACK_TO_TOP_CSS);
   if (bookNav.pageNavigation) css.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
+  if (resolveBookPlacement(bookNav).floating) css.push(BOOK_FLOAT_CSS);   // #459 — AFTER arrows so the float override wins
   const text = css.join('\n');
   const existing = d.getElementById('enscribe-book-nav-style');
   if (existing) {
