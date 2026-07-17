@@ -25,6 +25,7 @@ import { buildEnscribePipeline, isMasterSrcEntry, collectIncludeSrcs, emitLiveSh
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
 import { CliError } from './lib/cli-error.js';
+import { writeFileGuarded, copyFileGuarded, mkdirGuarded } from './lib/safe-write.js';
 import { resolvePageSource, pageDirAssets } from './static-website.js';
 
 const require = createRequire(import.meta.url);
@@ -82,13 +83,23 @@ export function copyShellAssets(destDir, only) {
 // too). All resolved from the SAME package exports copyShellAssets copies — one authority
 // (SHELL_ASSET_SPECS), so inlined and siblings can never ship different bytes.
 function readInlineChrome() {
-  return {
-    engine: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe.browser.global.js']), 'utf8'),
-    defaultCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['default.css']), 'utf8'),
-    shellCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe-shell.css']), 'utf8'),
-    displayHead: getInlineDisplayHead(),
-    editor: readFileSync(require.resolve(SHELL_ASSET_SPECS['editor-codemirror.js']), 'utf8'),
-  };
+  // #413 (no-stack sweep): the same guard copyShellAssets carries (C3) — the ~3 MB engine bundle is a
+  // tsup artifact absent on a fresh tree, so require.resolve/readFileSync throw a raw MODULE_NOT_FOUND /
+  // ENOENT here on `--assets inlined`. Map it to a clean CliError naming the build remedy.
+  try {
+    return {
+      engine: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe.browser.global.js']), 'utf8'),
+      defaultCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['default.css']), 'utf8'),
+      shellCss: readFileSync(require.resolve(SHELL_ASSET_SPECS['enscribe-shell.css']), 'utf8'),
+      displayHead: getInlineDisplayHead(),
+      editor: readFileSync(require.resolve(SHELL_ASSET_SPECS['editor-codemirror.js']), 'utf8'),
+    };
+  } catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND' || e.code === 'ENOENT') {
+      throw new CliError('live build (--assets inlined): the shipped engine bundle is not built — run `npm run build:lib -w @enscribejs/enscribe` to build it first');
+    }
+    throw e;
+  }
 }
 
 // The asset-delivery values the CLI `--assets` option exposes (delivery-modes.md §"Asset delivery").
@@ -189,11 +200,11 @@ export function discoverWebsitePages(masterSource) {
  */
 export function buildLiveFolder({ master, outDir, title, edit = false, delivery = 'siblings', headExtra = '' }) {
   if (!DELIVERY_VALUES.has(delivery)) {
-    throw new Error(`buildLiveFolder: unknown asset delivery "${delivery}" (expected siblings | cdn | inlined)`);
+    throw new CliError(`buildLiveFolder: unknown asset delivery "${delivery}" (expected siblings | cdn | inlined)`);
   }
   const masterPath = resolve(master);
   const out = resolve(outDir);
-  mkdirSync(out, { recursive: true });
+  mkdirGuarded(out);
   const masterName = basename(masterPath);
   const masterDir = dirname(masterPath);
 
@@ -203,7 +214,7 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
     const dest = join(out, name);
     if (resolve(srcPath) !== dest) {
       mkdirSync(dirname(dest), { recursive: true });   // a website page may sit in a subdir (sources/…); flat for book/article (no-op)
-      copyFileSync(srcPath, dest);
+      copyFileGuarded(srcPath, dest);   // #413 no-stack sweep: clean CliError on a copy failure, not a raw stack
     }
   };
 
@@ -309,7 +320,7 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
   // 3. the emitted live shell. Title default (#228): explicit `title` → the document's own `<title>` →
   //    the filename. The delivery-specific asset options select siblings / cdn / inlined.
   const shellTitle = title ?? (extractDocumentTitle(masterSource) || masterName);
-  writeFileSync(
+  writeFileGuarded(
     join(out, 'index.html'),
     emitLiveShell({ master: masterName, title: shellTitle, edit, headExtra, ...shellAssetOpts }),
     'utf8',
@@ -446,10 +457,10 @@ function embedExternalAssets(source, tree, masterDir, warn) {
  */
 export function buildSingleFile({ master, title, edit = false, assetBase, delivery = 'cdn', warn = (m) => console.warn(m) }) {
   if (delivery === 'siblings') {
-    throw new Error('buildSingleFile: --assets siblings is invalid for a single file (it has no siblings); use cdn or inlined');
+    throw new CliError('buildSingleFile: --assets siblings is invalid for a single file (it has no siblings); use cdn or inlined');
   }
   if (!DELIVERY_VALUES.has(delivery)) {
-    throw new Error(`buildSingleFile: unknown asset delivery "${delivery}" (expected cdn | inlined)`);
+    throw new CliError(`buildSingleFile: unknown asset delivery "${delivery}" (expected cdn | inlined)`);
   }
   const masterPath = resolve(master);
   const masterName = basename(masterPath);
