@@ -23,8 +23,12 @@ enscribe_attributes:
         (`<library bibtex | …>`). `<library>` is a storage host on the
         host/language axis (DESIGN.md §"The two axes"; format-words.md): the
         positional names which parser reads the body. Omitted → citation-js
-        auto-detect (today's behavior). The `format=` kwarg below is the
-        equivalent attribute form.
+        auto-detect. The `format=` kwarg below is the equivalent attribute form.
+        Parser status (#413 L4): `bibtex`, `csl-json`, and `ris` are wired
+        (`ris` via citation-js's @ris/file parser); `endnote-xml` is an accepted
+        word but not yet supported (no citation-js parser) — authoring it leaves
+        a visible error + a warning and the library is not loaded, rather than a
+        silent auto-detect that cannot detect it. `other` defers to auto-detect.
   kwargs:
     format:
       maps_to: data-format

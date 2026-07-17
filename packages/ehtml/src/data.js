@@ -4140,7 +4140,7 @@ const _library = Object.freeze({
             "endnote-xml",
             "other",
           ],
-          "notes": "The format word — the canonical way to name the payload language\n(`<library bibtex | …>`). `<library>` is a storage host on the\nhost/language axis (DESIGN.md §\"The two axes\"; format-words.md): the\npositional names which parser reads the body. Omitted → citation-js\nauto-detect (today's behavior). The `format=` kwarg below is the\nequivalent attribute form.\n",
+          "notes": "The format word — the canonical way to name the payload language\n(`<library bibtex | …>`). `<library>` is a storage host on the\nhost/language axis (DESIGN.md §\"The two axes\"; format-words.md): the\npositional names which parser reads the body. Omitted → citation-js\nauto-detect. The `format=` kwarg below is the equivalent attribute form.\nParser status (#413 L4): `bibtex`, `csl-json`, and `ris` are wired\n(`ris` via citation-js's @ris/file parser); `endnote-xml` is an accepted\nword but not yet supported (no citation-js parser) — authoring it leaves\na visible error + a warning and the library is not loaded, rather than a\nsilent auto-detect that cannot detect it. `other` defers to auto-detect.\n",
         },
       ],
       "kwargs": {

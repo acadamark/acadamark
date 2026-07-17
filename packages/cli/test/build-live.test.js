@@ -502,4 +502,37 @@ export function run_tests() {
       rmSync(dest, { recursive: true, force: true });
     }
   }
+
+  // ── #413 C2 (never-fail chapter): a book master declaring a <chapter src> whose file is ABSENT.
+  //    The --live build must COMPLETE (not throw a raw ENOENT mid-copy): the folder is written, the
+  //    present children are copied, the CLI names the missing source, and no stack leaks. The live
+  //    shell renders the flagged placeholder for the missing chapter at fetch time (item S1). ──
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-c2-'));
+    const origWarn = console.warn;
+    const warns = [];
+    console.warn = (...a) => warns.push(a.map(String).join(' '));
+    try {
+      writeFileSync(join(dir, 'book.emd'), '<meta type=book>\n<title | C2</title>\n</meta>\n\n<chapter src="ch1.emd" | One>\n<chapter src="gone.emd" | Two>\n');
+      writeFileSync(join(dir, 'ch1.emd'), '<meta title="One" />\n\nChapter one body.\n');
+      const out = join(dir, 'out');
+      let threw = null, res = null;
+      try { res = buildLiveFolder({ master: join(dir, 'book.emd'), outDir: out, title: 'C2' }); }
+      catch (e) { threw = e; }
+      assert.equal(threw, null, `C2: the --live build completes, never throws on a missing chapter (got: ${threw && threw.message})`);
+      assert.ok(existsSync(join(out, 'index.html')), 'C2: the folder is written (index.html present)');
+      assert.ok(existsSync(join(out, 'ch1.emd')), 'C2: the present child is still copied');
+      assert.ok(!existsSync(join(out, 'gone.emd')), 'C2: the missing child is skipped, not copied');
+      assert.ok(res.children.includes('ch1.emd'), 'C2: the present child is reported');
+      // The CLI names the missing source (channel: console/CLI warning).
+      assert.ok(warns.some((w) => /gone\.emd/.test(w) && /not found|skipped/.test(w)),
+        'C2: the CLI names the missing chapter source');
+      // No-stack: the warning is a clean line, not a raw Node fs stack.
+      assert.ok(!warns.some((w) => / at | node:fs/.test(w)), 'C2: the missing-chapter warning is clean (no raw stack)');
+      console.log('PASS: #413 C2 — a missing <chapter src> never fails the --live build; the CLI names it, no stack, the shell renders a placeholder');
+    } finally {
+      console.warn = origWarn;
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
 }

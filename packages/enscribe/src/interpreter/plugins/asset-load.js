@@ -220,9 +220,17 @@ export function buildAssetIndex(tree, file) {
         // External (<fig #id src="path" />) vs embedded (<fig #id fmt>base64</fig>):
         // store the (already assembly-rebased) src for external, or the {format,
         // base64} for embedded. resolveFig resolves each accordingly.
+        const inlineBody = collectAssetPayload(child.content);
+        if (child.kwargs?.src && inlineBody) {
+          // #413 L2: a <fig> declaring BOTH a src= and an inline base64 body. First-wins — the src= in
+          // the tag HEAD lexically precedes the body — so the external src is kept; the inline payload
+          // is ignored. Never silently: a visible duplicate flag (channel 1) + a warning (channel 2).
+          errors.push(makeAssetError('', `embedded-asset id "${id}" declares both a src= and an inline base64 body — the external src wins (first in source order); the inline body is ignored`));
+          file?.message?.(`asset-load: <fig #${id}> declares both src= and a base64 body — src wins (first-wins), the inline body is ignored`, child, 'asset:src-and-body');
+        }
         assets.set(id, child.kwargs?.src
           ? { src: child.kwargs.src }
-          : { format: child.positional?.[0] ?? null, base64: collectAssetPayload(child.content) });
+          : { format: child.positional?.[0] ?? null, base64: inlineBody });
       }
       return false;                                           // strip the declaration
     });
@@ -329,7 +337,7 @@ function resolveFig(node, assets, adopted) {
  * The bytes go straight from the store to the table parser, in-tree — never serialized then
  * re-parsed (the round-trip invariant, data-store.md Piece 3).
  */
-function resolveTableSrc(node, assets) {
+function resolveTableSrc(node, assets, file) {
   const r = resolveAssetReference(node.kwargs?.src, assets);
   if (r == null) return;                                        // not an @-ref — a file path / inline, untouched
   const { id, ref, found, entry } = r;
@@ -346,6 +354,14 @@ function resolveTableSrc(node, assets) {
     if (node.kwargs) delete node.kwargs.src;
     if ((node.positional == null || node.positional.length === 0) && entry.format) {
       node.positional = [entry.format];
+    }
+    // #413 L3: neither side named a format (the table has no format word AND the dataset carries no
+    // hint) → the bytes cannot be parsed as a table; the handler would wrap them as raw HTML (garbage).
+    // Missing-info: a visible flag naming the miss (channel 1) + a warning (channel 2), rather than a
+    // silent mis-render. Replaces the table node with the error (keeps it out of table numbering).
+    if ((node.positional == null || node.positional.length === 0) && !entry.format) {
+      assetError(node, ref, `<dataset> "${id}" was handed to <table src="@${id}"> but neither names a format (csv/tsv/json/yaml/md) — the data cannot be parsed as a table`);
+      file?.message?.(`asset-load: <table src="@${id}"> — neither the table nor the <dataset> names a format; the data cannot be parsed as a table`, node, 'asset:table-no-format');
     }
   } else if (entry.src != null) {
     // An external asset that is a data file: resolve the @id to its path; the table
@@ -566,7 +582,7 @@ export function enscribeAssetResolution() {
       for (const node of nodes ?? []) {
         if (!node || typeof node !== 'object') continue;
         if (isEnscribeTag(node, 'fig')) resolveFig(node, assets, adopted);
-        else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets);
+        else if (isEnscribeTag(node, 'table')) resolveTableSrc(node, assets, file);
         else if (isEnscribeTag(node, 'diagram')) resolveDiagramSrc(node, assets, file);
         else if (isEnscribeTag(node, 'code')) resolveCodeSrc(node, assets, file);
         else if (isEnscribeTag(node, 'code-block')) resolveCodeBlockSrc(node, assets, file);

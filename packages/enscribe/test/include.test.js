@@ -148,6 +148,49 @@ export function run() {
     passed++;
   }
 
+  // ── #413 S1: a missing STRUCTURAL child (<chapter src>) — flagged placeholder, BOTH channels,
+  //    the chapter keeps its number (never-fail, doctrine). Distinct from a failed <include>. ──
+  {
+    const warnings = [];
+    const html = render({
+      'master.emd': '<meta type=book title="B" />\n\n<chapter src=ch1.emd | First>\n\n<chapter src=missing.emd | Second>\n',
+      'ch1.emd': '<meta title="First" />\n\nChapter one body.\n',
+    }, 'master.emd', warnings);
+    // Channel 1 — the in-document flagged placeholder in the error family (NOT the include family):
+    assert.match(html, /enscribe-master-src-error/, 'S1: the missing child renders the master-src error family flag (not a bare <p>)');
+    assert.match(html, /role="alert"/, 'S1: the placeholder carries role=alert so the family CSS styles it');
+    // (the pipeline typography turns the message's straight quotes into curly quotes, hence the . for the quote)
+    assert.match(html, /could not load chapter source .missing\.emd./, 'S1: the flag names the missing source');
+    // Channel 2 — the stream warning names the failure:
+    assert.ok(warnings.some((w) => /master: could not load <chapter src="missing\.emd">/.test(w)),
+      'S1: the CLI/console warning names the missing chapter source (second channel)');
+    // Never-fail: the chapter is still emitted as a numbered book-part — it keeps its number/title.
+    assert.match(html, /Chapter one body/, 'S1: the sibling chapter still renders (assembly continues)');
+    assert.equal((html.match(/book-part-type=/g) || []).length, 2, 'S1: the missing chapter keeps its <book-part> — it is still numbered, not dropped');
+    assert.ok(html.indexOf('Second') >= 0, 'S1: the missing chapter keeps its title (pipe override survives)');
+    console.log('PASS: #413 S1 — a missing structural child renders a flagged placeholder, keeps its number, and warns (both channels)');
+    passed++;
+  }
+
+  // ── #413 S3: a deferred placement marker (<toc>/<endnotes>) in MASTER scope leaves a visible
+  //    placeholder + a warning, instead of vanishing silently. Both channels. ──
+  {
+    const warnings = [];
+    const html = render({
+      'master.emd': '<meta type=book title="B" />\n\n<toc />\n\n<chapter src=ch1.emd | First>\n',
+      'ch1.emd': '<meta title="First" />\n\nChapter one body.\n',
+    }, 'master.emd', warnings);
+    // Channel 1 — the in-document placeholder (family voice), naming the deferred marker:
+    assert.match(html, /enscribe-placement-error/, 'S3: the deferred <toc> leaves a visible placeholder (not a silent drop)');
+    assert.match(html, /toc. placement in a multi-file .master. build is deferred/, 'S3: the placeholder names the deferred construct');
+    // Channel 2 — the stream warning:
+    assert.ok(warnings.some((w) => /master: <toc> placement marker is deferred/.test(w)),
+      'S3: the CLI/console warning names the deferred placement (second channel)');
+    assert.match(html, /Chapter one body/, 'S3: the rest of the book still assembles');
+    console.log('PASS: #413 S3 — a deferred master-scope placement marker leaves a visible placeholder + warns (both channels)');
+    passed++;
+  }
+
   // ── an <include> inside a minipage is rejected (sealed box, no outward pulls) ──
   {
     const proc = buildEnscribePipeline({});

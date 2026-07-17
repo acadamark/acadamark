@@ -21,6 +21,7 @@ import { run_tests as runDiagnosticsTests } from './diagnostics.test.js';
 import { run_tests as runDarkVariantTests } from './dark-variant.test.js';
 import { run_tests as runArrowsClearanceTests } from './arrows-clearance.test.js';
 import { run_tests as runDocsCleanGuardTests } from './docs-clean-guard.test.js';
+import { run_tests as runNoStackTests } from './no-stack.test.js';
 
 try {
   runCliTests();
@@ -32,6 +33,7 @@ try {
   runAssemblyTransclusionTests(); // #404/#417: transclusion assembly — substitution-before-structure
   runEmbeddedAssetTests(); // #190: <data> embedded-png asset → numbered figure via src="@id"
   runBuildLiveTests(); // #215: enscribe build --live (the live-folder build helper)
+  runNoStackTests(); // #413: no CLI path leaks a stack (source-grep + behavioral)
   await runDeliveryModesTests(); // #369: delivery-modes regression matrix + offline render/editor (async: Tier 2 browser)
   runStaticWebsiteTests(); // #246/#278: enscribe build (static website — dir-per-page)
   await runWebsiteXrefTests(); // #320: static ≡ live website parity (real mountLiveWebsite, all 4 directions)

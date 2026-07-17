@@ -27,6 +27,7 @@ import { VFile } from 'vfile';
 import { renderArticleFile, assembleAndNumber } from './render-document.js';
 import { createDiagnostics, diagnosticsScript } from './diagnostics.js';
 import { CliError } from './lib/cli-error.js';
+import { writeFileGuarded, copyFileGuarded, cpGuarded, mkdirGuarded } from './lib/safe-write.js';
 import { buildLiveFolder, buildSingleFile, copyShellAssets } from './build-live.js';
 import { buildStaticWebsite } from './static-website.js';
 import { enscribeToJats } from './jats-export/index.js';
@@ -495,7 +496,7 @@ const URL_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
 /** Fetch a library source URL's text; throws (→ a visible error) on a non-OK response. */
 async function fetchSourceText(url) {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`);
+  if (!res.ok) throw new CliError(`could not fetch ${url}: HTTP ${res.status}${res.statusText ? ' ' + res.statusText : ''}`);
   return res.text();
 }
 
@@ -640,25 +641,45 @@ function doBuild(opts, diag) {
       return { mode: 'website', pages, assets };
     }
     diag?.report(file);
-    // #415 (channel 3): the document's diagnostics ride every emitted page — a
-    // separate-pages book is one document split across pages, and any page is an entry
-    // point, so each carries the full stream. Zero messages ⇒ zero bytes.
-    const script = diagnosticsScript(file.messages);
+    // #415 (channel 3): the document's diagnostics ride every emitted page — a separate-pages book is
+    // one document split across pages, and any page is an entry point, so each carries the full stream.
+    // Zero messages ⇒ zero bytes. (#465: the separate-pages recap is now computed AFTER publishBookPages,
+    // inside the branch below, so it includes the late split-by / routing warnings too.)
     const separate = opts.pages === 'separate' || (opts.pages !== 'single' && isBook);
     if (separate) {
       if (!isBook) {
         throw new CliError('--separate-pages is a book-only build; this document is not a <meta type=book>');
       }
-      const pages = publishBookPages({
-        numbered, file, proc, defaultCss: readDefaultCss(),
-        // #404: total ownership leaves one residual (a book-part id the projection did not emit
-        // as a page — a structural anomaly). It degrades in-page per always-renders AND says so
-        // through the seam; the invariant gate is the machine backstop.
-        onUnowned: (anchor, owner) => file.message(
-          `cross-page reference to "#${anchor}" — its owning page ("${owner}") was not emitted; the link stays in-page`,
-          undefined, 'routing:unowned-anchor'),
-      });
-      if (script) for (const [name, html] of pages) pages.set(name, html + script);
+      // #465: publishBookPages produces LATE warnings AFTER the diagnostics seam above already reported
+      // (diag.report, line 642) and captured (diagnosticsScript, line 646) the stream — resolveBookNavConfig's
+      // split-by-deferred warning (paginated surface) and the onUnowned routing warning. Snapshot the
+      // stream length so we can deliver just those late messages to ALL THREE channels afterwards.
+      const beforeLate = file.messages.length;
+      let pages;
+      try {
+        pages = publishBookPages({
+          numbered, file, proc, defaultCss: readDefaultCss(),
+          // #404: total ownership leaves one residual (a book-part id the projection did not emit
+          // as a page — a structural anomaly). It degrades in-page per always-renders AND says so
+          // through the seam; the invariant gate is the machine backstop.
+          onUnowned: (anchor, owner) => file.message(
+            `cross-page reference to "#${anchor}" — its owning page ("${owner}") was not emitted; the link stays in-page`,
+            undefined, 'routing:unowned-anchor'),
+        });
+      } catch (e) {
+        // #413 no-stack sweep: publishBookPages is in the browser-pure enscribe package, so it throws a
+        // plain Error (e.g. an empty `<meta type=book>` — "the book has no chapters"). Re-wrap it as a
+        // clean CliError here so no CLI path leaks a Node stack. (A missing chapter never reaches this —
+        // the assembler emits its numbered placeholder marker, so the book still has chapters.)
+        if (e instanceof CliError) throw e;
+        throw new CliError(`could not build the separate-pages book: ${e.message}`);
+      }
+      // #465: deliver the late producers' messages — stderr (channel 1/2 via reportLate) + the per-page
+      // recap (channel 3, recomputed over the full stream). Before this fix they reached NEITHER, so a
+      // `<config split-by=none>` separate-pages build warned to no one.
+      diag?.reportLate?.(file, beforeLate);
+      const separateScript = diagnosticsScript(file.messages);
+      if (separateScript) for (const [name, html] of pages) pages.set(name, html + separateScript);
       return { mode: 'separate', pages };
     }
     // #454: single-page (whole book / multi-file article) now shares the standalone document
@@ -737,12 +758,12 @@ function doExportJatsPackage(opts) {
     const pkg = makeAssetPackage(true);
     const xml = enscribeToJats(tree, { assetPackage: pkg });
 
-    mkdirSync(outDir, { recursive: true });
+    mkdirGuarded(outDir);
     // <stem>.xml from the input basename: strip any trailing dots, then the final extension
     // (so "doc.emd" → "doc", "doc.emd." → "doc", a stem-less name → the 'article' fallback).
     const stem = basename(opts.input).replace(/\.+$/, '').replace(/\.[^./\\]+$/, '');
     const xmlName = (stem || 'article') + '.xml';
-    writeFileSync(join(outDir, xmlName), xml.endsWith('\n') ? xml : xml + '\n', 'utf8');
+    writeFileGuarded(join(outDir, xmlName), xml.endsWith('\n') ? xml : xml + '\n');   // #413: clean CliError on failure
 
     let copied = 0;
     const missing = [];
@@ -770,14 +791,7 @@ function emit(result, opts, out) {
     // #413 C1: map fs write failures to a clean CliError (one line, no raw stack) that names the
     // path AND the remedy — the same shape readInput() uses for the read side. Without this the raw
     // ENOENT/EACCES/EISDIR error escapes to the top-level catch's else-branch and dumps a Node stack.
-    try {
-      writeFileSync(opts.output, result, 'utf8');
-    } catch (e) {
-      if (e.code === 'ENOENT') throw new CliError(`cannot write ${opts.output}: no such directory (create the parent directory first)`);
-      if (e.code === 'EISDIR') throw new CliError(`cannot write ${opts.output}: that path is a directory (give a file path)`);
-      if (e.code === 'EACCES') throw new CliError(`cannot write ${opts.output}: permission denied`);
-      throw new CliError(`could not write ${opts.output}: ${e.message}`);
-    }
+    writeFileGuarded(opts.output, result);   // #413: the shared guarded writer (was C1's inline map)
   } else {
     out.write(result.endsWith('\n') ? result : result + '\n');
   }
@@ -894,8 +908,8 @@ export function run(argv, io = {}) {
           }
           for (const [rel, html] of result.pages) {
             const dest = join(opts.output, rel);
-            mkdirSync(dirname(dest), { recursive: true });
-            writeFileSync(dest, html, 'utf8');
+            mkdirGuarded(dirname(dest));
+            writeFileGuarded(dest, html);
           }
           // Engine assets need the built dist/ bundle (absent in a dev source tree). The static
           // pages inline their own CSS, so a missing bundle is non-fatal — warn and carry on.
@@ -904,10 +918,10 @@ export function run(argv, io = {}) {
           for (const a of result.assets) {
             const dest = join(opts.output, a.to);
             mkdirSync(dirname(dest), { recursive: true });
-            copyFileSync(a.from, dest);
+            copyFileGuarded(a.from, dest);
           }
           const authorAssets = join(dirname(resolve(opts.input)), 'assets');
-          if (existsSync(authorAssets)) cpSync(authorAssets, join(opts.output, 'assets'), { recursive: true });
+          if (existsSync(authorAssets)) cpGuarded(authorAssets, join(opts.output, 'assets'), { recursive: true });
           if (!opts.quiet) {
             out.write(`Wrote ${result.pages.size} website pages to ${opts.output}/ (home at root; ${result.assets.length} page assets)\n`);
           }
@@ -919,9 +933,9 @@ export function run(argv, io = {}) {
         if (!opts.output) {
           throw new CliError('a separate-pages book build writes multiple files — give an output directory with -o <dir>');
         }
-        mkdirSync(opts.output, { recursive: true });
+        mkdirGuarded(opts.output);
         for (const [name, html] of result.pages) {
-          writeFileSync(join(opts.output, name), html, 'utf8');
+          writeFileGuarded(join(opts.output, name), html);
         }
         if (!opts.quiet) out.write(`Wrote ${result.pages.size} pages to ${opts.output}/ (chapter pages + index.html)\n`);
         diag.summary();

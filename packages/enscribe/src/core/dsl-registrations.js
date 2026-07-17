@@ -43,7 +43,10 @@ export const ABCJS_CDN_URL = `https://cdn.jsdelivr.net/npm/abcjs@${_abcjsVersion
 
 // Mermaid self-registers a DOMContentLoaded handler from `startOnLoad: true` and
 // scans for `class="mermaid"`, so no explicit run() / readiness guard is needed.
-const MERMAID_INIT = `mermaid.initialize({ startOnLoad: true });`;
+// #413 L6: guard against a failed CDN load — if the library never arrived (offline / CDN down),
+// the global is undefined; run nothing rather than throw an uncaught ReferenceError (the CDN
+// <script src>'s onerror already flagged the failure on both channels).
+const MERMAID_INIT = `if (typeof mermaid !== 'undefined') { mermaid.initialize({ startOnLoad: true }); }`;
 
 // abcjs does NOT scan the DOM: the consumer must find each marked element and
 // call ABCJS.renderAbc on its source. The assets are prepended (unshift) ahead
@@ -54,6 +57,7 @@ const MERMAID_INIT = `mermaid.initialize({ startOnLoad: true });`;
 // reflowed by the formatter and would feed abcjs corrupted notation).
 const ABCJS_INIT = `(function () {
   function renderAll() {
+    if (typeof ABCJS === 'undefined') { return; }   /* #413 L6: CDN failed → the onerror flagged it; render nothing rather than throw */
     document.querySelectorAll('[data-enscribe-dsl="abc"]').forEach(function (el) {
       ABCJS.renderAbc(el, el.textContent);
     });

@@ -27,6 +27,7 @@
 // numbering, and cross-page refs resolve in every direction. A website page passes only assetsDir, keeping
 // its embed/dsl at the library defaults (a multi-page site does not inline KaTeX CSS into every page).
 
+import { CliError } from './lib/cli-error.js';
 import { readFileSync, existsSync, statSync, readdirSync } from 'node:fs';
 import { join, dirname, extname, basename } from 'node:path';
 import { VFile } from 'vfile';
@@ -251,7 +252,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   const navModel = navFile.data?.[ENSCRIBE_NAV_MODEL] ?? { entries: [] };
   const entries = navModel.entries ?? [];
   const pages = flattenNavPages(entries);
-  if (pages.length === 0) throw new Error('website master has a <meta type=website> but no nav pages');
+  if (pages.length === 0) throw new CliError('website master has a <meta type=website> but no nav pages');
 
   // 2. PRE-PASS (#300/#299 slice 1): a page's SLUG is its stable identity, via the ONE three-tier
   //    resolver (resolvePageSlug — the single home in website-structuring.js, retiring this file's
@@ -361,7 +362,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // #405: an all-pages-failed site still BUILDS — shell + a failed-page stub per nav entry +
   // the loud summary (never a crash, never empty silence). Only a genuinely empty nav —
   // nothing resolvable AND nothing that failed — is a hard authoring error.
-  if (pageData.length === 0 && failedPages.length === 0) throw new Error('website master <nav> has no resolvable pages');
+  if (pageData.length === 0 && failedPages.length === 0) throw new CliError('website master <nav> has no resolvable pages');
 
   // 3. Output location mirrors the nav TREE (slice 1): group segments (slugified group titles) + the
   //    page's slug; home (the first nav page) → the dist root. Now keyed on meta-slugs (remapped above).

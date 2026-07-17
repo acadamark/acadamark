@@ -139,11 +139,23 @@ export function countCites(nodes, n = 0) {
 // input type it forces. A named format the map doesn't cover (or none) falls
 // through to citation-js auto-detect, the default-when-omitted behavior.
 // citation-js auto-detects BibTeX reliably, so forcing `@bibtex/text` yields the
-// same parse as the bare form — proven by a round-trip unit test. RIS / EndNote
-// (which do not auto-detect cleanly) get their forceType when those land.
+// same parse as the bare form — proven by a round-trip unit test.
+// #413 L4: RIS is now wired — @citation-js/plugin-ris is a first-party plugin auto-loaded by
+// citation-js, and `@ris/file` is its file-body (String) parser. RIS does NOT auto-detect cleanly,
+// so the forceType is what makes `<library ris | …>` honor the format word.
 const FORMAT_FORCETYPE = {
   bibtex: '@bibtex/text',
+  ris: '@ris/file',
 };
+
+// #413 L4: format words the gate accepts (library.md's `format` values) but for which citation-js
+// ships NO first-party parser — so they cannot be honored. Rather than silently falling to
+// auto-detect (which does not detect them and mis-parses or throws a misleading "parse failed"), the
+// library-load below is honest: a visible flag + a warning, and the library is skipped. EndNote-XML
+// has no @citation-js/plugin-* in the tree; wiring it would require a third-party/community parser
+// (deferred with evidence — see the slice report). Wire a format here + delete it from this set when a
+// parser lands (RIS did: it moved from here to FORMAT_FORCETYPE).
+const UNWIRED_FORMATS = new Set(['endnote-xml']);
 
 /**
  * Recursively collect every <data> tag node, in document order.
@@ -280,6 +292,14 @@ export function buildCitationIndex(tree, file, options = {}) {
       // auto-detect. A loaded source is parsed strictly as reference DATA — never
       // injected as markup (no-HTML-passthrough).
       const format = libraryNode.positional?.[0] ?? libraryNode.kwargs?.format ?? null;
+      // #413 L4: an accepted-but-unwired format word (endnote-xml) is honest, not silently ignored —
+      // both channels + skip, rather than a misleading auto-detect. (A wired format — bibtex, ris —
+      // is in FORMAT_FORCETYPE and never in UNWIRED_FORMATS.)
+      if (format && UNWIRED_FORMATS.has(format)) {
+        errors.push(libraryError(libraryNode.kwargs?.src ?? '', `<library> format "${format}" is accepted but not yet supported (no citation-js parser) — this library was not loaded; convert it to BibTeX or RIS`));
+        file?.message?.(`library-load: <library ${format}> is not yet supported (no citation-js parser); this library was not loaded — use bibtex or ris`, libraryNode, 'library:unwired-format');
+        continue;
+      }
       const forceType = format ? FORMAT_FORCETYPE[format] : null;
       try {
         citeInstances.push(forceType ? new Cite(content, { forceType }) : new Cite(content));

@@ -122,6 +122,10 @@ export async function run() {
       const out = await renderMasterAsync(MASTER_MISSING);
       assert.ok(out.includes('could not load section source') && out.includes('nope.emd'),
         'missing child (404) renders a visible "could not load section source" note');
+      // #413 S1: the placeholder is now a FLAGGED family block (⚠ role=alert + the family class), not a
+      // bare paragraph that reads like content — so the error-family CSS styles it as a deliberate marker.
+      assert.ok(/enscribe-master-src-error/.test(out) && out.includes('⚠') && /role="alert"/.test(out),
+        'the missing-child placeholder is a flagged error-family block (⚠ role=alert enscribe-master-src-error)');
       assert.equal((out.match(/<article>/g) || []).length, 1,
         'the document still renders around the failed child (always-renders)');
       console.log('PASS: #194 — a failed child fetch renders a visible inline error; document still renders');

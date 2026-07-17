@@ -17,10 +17,14 @@ import { isEnscribeTag } from '../../src/interpreter/lib/ast-helpers.js';
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeFile(citeInstance, order = [], style = 'chicago-author-date') {
+  const _messages = [];
   return {
     data: {
       enscribeCitations: { cite: citeInstance, order, style },
     },
+    // #413 L7: capture the second channel (the CLI/console warning) so tests can assert it.
+    message: (m) => _messages.push(String(m)),
+    _messages,
   };
 }
 
@@ -168,7 +172,9 @@ export function run() {
     console.log('PASS: bibliography: no-op when order is empty');
   }
 
-  // --- Author-placed removed when order is empty ---
+  // --- #413 L7: author-placed <bibliography> with no citations → empty-References PLACEHOLDER + warn ---
+  // (was: silently removed — assert content.length === 0. The doctrine: a produces-nothing AUTHORED
+  //  placement element leaves a visible placeholder + a warning, never a silent splice-out.)
   {
     const cite = new Cite(TEST_BIBTEX);
     const file = makeFile(cite, []); // no citations resolved
@@ -177,8 +183,26 @@ export function run() {
     enscribeBibliography()(tree, file);
 
     const back = getArticleBack(tree);
-    assert.equal(back.content.length, 0, 'author-placed <bibliography> removed when no citations');
-    console.log('PASS: bibliography: author-placed removed when order empty');
+    // Channel 1: the placeholder is present (not removed) — a __bibliography node keeping the heading.
+    assert.equal(back.content.length, 1, 'L7: an authored empty <bibliography> leaves a visible placeholder (not removed)');
+    assert.equal(back.content[0].tagname, '__bibliography', 'L7: the placeholder is a __bibliography node (keeps the References heading)');
+    assert.match(back.content[0].kwargs.bibBodyHtml, /No citations resolved/, 'L7: the placeholder body names the empty state');
+    // Channel 2: the CLI/console warning fired.
+    assert.ok(file._messages.some((m) => /authored <bibliography> resolved no citations/.test(m)),
+      'L7: a warning names the empty authored bibliography (second channel)');
+    console.log('PASS: #413 L7 — an authored empty <bibliography> renders an empty-References placeholder + warns (both channels)');
+  }
+
+  // --- #413 L7: the DEFAULT no-cites path (no <bibliography> authored) still renders NOTHING ---
+  {
+    const cite = new Cite(TEST_BIBTEX);
+    const file = makeFile(cite, []); // no citations resolved
+    const tree = makeArticleTree({ backChildren: [] }); // author wrote NO bibliography
+    enscribeBibliography()(tree, file);
+    const back = getArticleBack(tree);
+    assert.equal(back.content.length, 0, 'L7: no placeholder when the author wrote no <bibliography> (gated on authored)');
+    assert.equal(file._messages.length, 0, 'L7: no warning when nothing was authored');
+    console.log('PASS: #413 L7 — the default (unauthored) no-cites path stays silent');
   }
 
   // --- No citations: no-op ---
