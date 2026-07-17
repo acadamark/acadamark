@@ -458,24 +458,38 @@ function appendChapterNav(parts) {
 }
 
 /** Build the book's three-column reading interface in place. */
-function applyBookToc(hast, docIdx, bookEl, toc, onThisPageEnabled = true) {
+function applyBookToc(hast, docIdx, bookEl, toc, bookNav = {}) {
   const parts = collectBookParts(bookEl);
   if (parts.length === 0) return null;
   if (toc === 'auto' && parts.length <= 3) return null;
 
   assignBookIds(parts, collectIds(bookEl, new Set()));
 
-  const chapterRail = buildChapterRail(parts);
+  // #454: the single-scroll interface now honors the SAME book-nav config the separate-pages / live
+  // shapes do (resolveBookNavConfig, threaded from injectToc). Defaults match resolveBookNavConfig so a
+  // book with no <config> is byte-identical to before (chapter rail on, depth 1, prev/next on,
+  // on-this-page on).
+  const { chapterNav = true, chapterNavDepth = 1, pageNavigation = true, onThisPage: onThisPageEnabled = true } = bookNav ?? {};
+
+  // chapter-nav (#221): the persistent left chapter rail — hidden when false. chapter-nav-depth
+  // deepens it to chapters + their sections (in-page anchors on this single scroll).
+  const chapterRail = chapterNav
+    ? buildChapterRail(parts, undefined, null, null, { navDepth: chapterNavDepth, sectionHref: (p, s) => `#${s.id}` })
+    : null;
   // #248: the on-this-page rail (3rd column) is config-gated, default on. When off,
-  // `onThisPage` is null → the layout below drops to the existing 2-col `--book` (no
-  // `--book-3col`), reusing the section-less-chapter path; no new layout or CSS.
+  // `onThisPage` is null → the layout below drops the 3-col grid; no new layout or CSS.
   const onThisPage = onThisPageEnabled ? buildOnThisPage(parts) : null;
-  appendChapterNav(parts);
+  // page-navigation (#221): the foot prev/next chapter bar (in-page anchors on a single scroll) —
+  // appended only when on.
+  if (pageNavigation) appendChapterNav(parts);
 
   const main = el('main', { className: ['enscribe-body'] }, [bookEl]);
-  const layoutChildren = onThisPage ? [chapterRail, main, onThisPage] : [chapterRail, main];
+  // Compose the layout from whichever rails are present. The `--book-noleft` variant (rail off) reuses
+  // the separate-pages no-left grid CSS; `--book-3col` is the full rail + on-this-page grid.
+  const layoutChildren = [chapterRail, main, onThisPage].filter(Boolean);
   const layoutClasses = ['enscribe-layout', 'enscribe-layout--toc', 'enscribe-layout--book'];
-  if (onThisPage) layoutClasses.push('enscribe-layout--book-3col');
+  if (chapterRail && onThisPage) layoutClasses.push('enscribe-layout--book-3col');
+  else if (!chapterRail && onThisPage) layoutClasses.push('enscribe-layout--book-noleft');
   hast.children[docIdx] = el('div', { className: layoutClasses }, layoutChildren);
   return 'book';
 }
@@ -487,13 +501,15 @@ function applyBookToc(hast, docIdx, bookEl, toc, onThisPageEnabled = true) {
  * @param {import('hast').Root} hast  the compiled document hast (children hold the
  *   `<article>` / `<book>` element; assets are injected by the caller afterwards).
  * @param {boolean|'auto'} toc
- * @param {boolean} [onThisPage=true] #248 — gate the book interface's on-this-page rail
- *   (the 3rd column). Off collapses the single-scroll book to 2-col. Ignored for articles.
+ * @param {object} [bookNav={}] #454 — the resolved book-navigation config (resolveBookNavConfig
+ *   output: {chapterNav, chapterNavDepth, pageNavigation, onThisPage, …}) the single-scroll book
+ *   interface gates its rail / depth / prev-next / on-this-page on. Ignored for articles; defaults
+ *   inside applyBookToc match resolveBookNavConfig so an unconfigured book is byte-identical.
  * @returns {'article'|'book'|null} the document type when a ToC was applied (so the
  *   caller can gate book-only render assets — the on-this-page script — on it), or
  *   null when nothing was done.
  */
-export function applyToc(hast, toc, onThisPage = true) {
+export function applyToc(hast, toc, bookNav = {}) {
   if (toc !== true && toc !== 'auto') return null;
 
   const docIdx = (hast.children ?? []).findIndex(
@@ -503,7 +519,7 @@ export function applyToc(hast, toc, onThisPage = true) {
   const docEl = hast.children[docIdx];
 
   // Book: the three-column reading interface (Slice C).
-  if (docEl.tagName === 'book') return applyBookToc(hast, docIdx, docEl, toc, onThisPage);
+  if (docEl.tagName === 'book') return applyBookToc(hast, docIdx, docEl, toc, bookNav);
 
   // Article: the single nested sidebar (unchanged since Slice 1 — glued title text
   // and glued-derived ids, so numbered or not it is byte-identical to before).

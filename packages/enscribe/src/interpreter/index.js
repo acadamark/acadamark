@@ -200,6 +200,11 @@ import { TABLE_TAGS } from './lib/table-constants.js';
 // Phase 8 Slice 1: build-time table-of-contents. applyToc is a strict no-op
 // unless the `toc` option enables it, preserving byte-identical output otherwise.
 import { applyToc, readTocConfig, applyConfigToc } from './lib/toc.js';
+// #454: the ONE book-navigation config reader, shared with the separate-pages / live paths, so the
+// compiler's single-scroll book interface honors chapter-nav / chapter-nav-depth / page-navigation /
+// on-this-page identically (it silently ignored the first three before). Lives in interpreter/lib
+// (not master-document) so importing it here is no cycle.
+import { resolveBookNavConfig } from './lib/book-nav-config.js';
 import { readConfigBool } from './lib/config-helpers.js';
 // #33 / #333: the margin column. applySidenotes relocates margin-note content into
 // the margin — every numbered note when note-position=margin, or just the per-note
@@ -235,6 +240,11 @@ import { ON_THIS_PAGE_JS } from './assets/on-this-page-asset.js';
 // (distinct from the bundled DSL-rendering libraries). Injected whenever a ToC
 // sidebar is rendered; a pure progressive enhancement over the existing ToC.
 import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
+// #454: the conditional book-nav CSS the single-scroll interface needs when its config asks for a
+// non-default rail — the SAME shared assets the separate-pages pageShell injects (one source,
+// book-nav-asset.js): the no-left grid when chapter-nav is off, the sub-section styling at
+// chapter-nav-depth >= 2. default.css carries only the default (rail on, depth 1) layout.
+import { BOOK_NAV_NOLEFT_CSS, BOOK_NAV_DEPTH_CSS } from './assets/book-nav-asset.js';
 
 export { enscribeDocTypeResolve } from './plugins/doc-type.js';
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeWebsiteStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
@@ -930,17 +940,31 @@ export function enscribeInterpreter(options = {}) {
   // `toc` OPTION (mutually exclusive — no double ToC). Returns { tocType, configTocShape }
   // for the book-script gates. The contents-listing CSS rides only when a listing was
   // rendered → a non-ToC document stays byte-identical.
-  function injectToc(hast, configMap) {
+  function injectToc(hast, configMap, file) {
     const tocConfig = readTocConfig(configMap);
     let tocType = null;
     let configTocShape = null;
     if (tocConfig) {
       configTocShape = applyConfigToc(hast, tocConfig);
     } else {
-      // #248: gate the single-scroll book interface's on-this-page rail. Same key + default
-      // as resolveBookNavConfig (the separate-pages / live paths), so the three shapes agree.
-      const onThisPage = readConfigBool(configMap, 'on-this-page', true);
-      tocType = applyToc(hast, tocOption, onThisPage);
+      // #454: the single-scroll BOOK reading interface now reads its WHOLE nav config from the ONE
+      // shared reader (resolveBookNavConfig) — the same one the separate-pages / live paths use — so
+      // chapter-nav / chapter-nav-depth / page-navigation / on-this-page behave identically on all
+      // three book shapes (the compiler silently ignored the first three before, honoring only
+      // on-this-page). Resolved whenever the interface is requested (toc on); applyToc uses it only for
+      // a <book> (an article ignores it), and the separate-pages per-chapter renders (tocOption off)
+      // never pay for it or fire its diagnostics. resolveBookNavConfig is null-safe (no config ⇒ all
+      // defaults, so an unconfigured book is byte-identical). paginated:false — --single-page is
+      // unpaginated (it IS split-by=none), so the split-by-deferred pagination warning does not apply.
+      const wantsInterface = tocOption === true || tocOption === 'auto';
+      const bookNav = wantsInterface ? resolveBookNavConfig(file, { paginated: false }) : null;
+      tocType = applyToc(hast, tocOption, bookNav);
+      // #454: inject the conditional book-nav CSS the non-default rail needs (the same shared blocks
+      // pageShell injects for separate-pages) — only when the interface actually rendered as a book.
+      if (tocType === 'book' && bookNav) {
+        if (!bookNav.chapterNav) hast.children.unshift(makeStyleElement(BOOK_NAV_NOLEFT_CSS));
+        if (bookNav.chapterNavDepth >= 2) hast.children.unshift(makeStyleElement(BOOK_NAV_DEPTH_CSS));
+      }
     }
     if (configTocShape) {
       hast.children.unshift(makeStyleElement(TOC_CONFIG_CSS));
@@ -1144,7 +1168,7 @@ export function enscribeInterpreter(options = {}) {
     // static DSLs replaced post-format. A no-op for every feature a document doesn't use →
     // byte-identical output for a default document. Each helper's rationale lives at its
     // definition above.
-    const { tocType, configTocShape } = injectToc(hast, configMap);
+    const { tocType, configTocShape } = injectToc(hast, configMap, file);
 
     injectMarginLayout(hast, assets, configMap, file);
 

@@ -30,7 +30,6 @@ import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { slugify, uniqueId, readTocConfig } from '../interpreter/lib/toc.js';
 import { isSectionTagname } from '../interpreter/lib/section-kinds.js';
 import { BOOK_REGIONS } from '../interpreter/lib/book-regions.js';
-import { readConfigBool } from '../interpreter/lib/config-helpers.js';
 import { escapeHtml } from '../core/escape-html.js';
 import { ENSCRIBE_CONFIG } from '../core/file-data-keys.js';
 import { KNOWN_THEMES } from '../interpreter/assets/theme-css.js';
@@ -186,54 +185,13 @@ export function coverBodyHtml(bookTitle, contentsHtml = '', frontHtml = '') {
 }
 
 // ─── Book navigation config (#221) ────────────────────────────────────────────
-// The shared read of the book-navigation <config> settings, resolved ONCE off the
-// numbered VFile's config map so BOTH render targets — the static separate-pages
-// build (publish-pages.js) and the live render (live-book.js) — gate their chrome
-// identically (the #218/#207 static≡live discipline). Book-only: these helpers are
-// called only from the book paths. Defaults are ON for books (declaring <meta
-// type=book> opts into book conventions) EXCEPT back-to-top.
+// The shared read of the book-navigation <config> settings gates every book shape's chrome
+// identically (the #218/#207 static≡live discipline). #454 relocated resolveBookNavConfig to
+// interpreter/lib/book-nav-config.js so the COMPILER's single-scroll interface can share the ONE
+// reader too (importing it here would be a cycle: this module imports interpreter/lib/toc.js). It is
+// re-exported here so publish-pages.js and live-book.js keep their existing imports unchanged.
 // Authority: notes/specs/book-navigation.md.
-
-const SPLIT_BY_VALUES = new Set(['chapter', 'section', 'none']);
-
-/**
- * Resolve the book-navigation settings from a numbered book's VFile (the config
- * map populated by config-discovery in the shared pipeline). Returns the plain
- * object both the static and live book renderers gate their chrome on. Only
- * split-by=chapter is built; section|none are accepted but deferred (a note is
- * emitted and chapter pagination is used), per notes/specs/book-navigation.md.
- *
- * @param {object} file - the VFile carrying file.data[ENSCRIBE_CONFIG]
- * @returns {{chapterNav:boolean, chapterNavDepth:number, pageNavigation:boolean,
- *           cover:boolean, backToTop:boolean, onThisPage:boolean, splitBy:string}}
- */
-export function resolveBookNavConfig(file) {
-  const configMap = file?.data?.[ENSCRIBE_CONFIG] ?? null;
-
-  const depthRaw = parseInt(configMap?.get('chapter-nav-depth'), 10);
-  const chapterNavDepth = Number.isFinite(depthRaw) && depthRaw >= 1 ? depthRaw : 1;
-
-  let splitBy = configMap?.get('split-by') ?? 'chapter';
-  if (!SPLIT_BY_VALUES.has(splitBy)) splitBy = 'chapter';
-  if (splitBy !== 'chapter' && typeof file?.message === 'function') {
-    file.message(
-      `split-by=${splitBy} is named in notes/specs/book-navigation.md but not yet built; ` +
-      `rendering split-by=chapter (the implemented pagination unit).`,
-      undefined,
-      'book-navigation:split-by-deferred',
-    );
-  }
-
-  return {
-    chapterNav:     readConfigBool(configMap, 'chapter-nav', true),
-    chapterNavDepth,
-    pageNavigation: readConfigBool(configMap, 'page-navigation', true),
-    cover:          readConfigBool(configMap, 'cover', true),
-    backToTop:      readConfigBool(configMap, 'back-to-top', false),
-    onThisPage:     readConfigBool(configMap, 'on-this-page', true),
-    splitBy,
-  };
-}
+export { resolveBookNavConfig } from '../interpreter/lib/book-nav-config.js';
 
 /**
  * Resolve the book's contents-OVERVIEW config — the `<config toc>` listing rendered on the

@@ -73,9 +73,10 @@ same read-time/author-time boundary the live/static parity contract rests on; `r
   handoffs of the same source.
 
 **The single-document static render (`enscribe render`, #395 D2 / audit W3; extended to the
-import commands by #414).** Every CLI command that emits a document — `render`, `import`,
-`import-jats` — shares one default and one option surface. Each emits a **complete, styled,
-standalone page by default**: doctype,
+import commands by #414; and to `build --single-page` by #454).** Every CLI command that emits
+a single document — `render`, `import`, `import-jats`, and `build --single-page` (which assembles a
+whole book or a multi-file article into one file) — shares one default and one option surface. Each
+emits a **complete, styled, standalone page by default**: doctype,
 `<html lang>`, charset/viewport, a `<title>` derived from the document's `<title>` element
 (fallback: the input filename; `--title` overrides), and the default stylesheet **inlined** —
 what an author pipes to a file and opens, matching the expectation set by `quarto render` /
