@@ -172,6 +172,25 @@ export function run() {
     passed++;
   }
 
+  // ── #413 S3: a deferred placement marker (<toc>/<endnotes>) in MASTER scope leaves a visible
+  //    placeholder + a warning, instead of vanishing silently. Both channels. ──
+  {
+    const warnings = [];
+    const html = render({
+      'master.emd': '<meta type=book title="B" />\n\n<toc />\n\n<chapter src=ch1.emd | First>\n',
+      'ch1.emd': '<meta title="First" />\n\nChapter one body.\n',
+    }, 'master.emd', warnings);
+    // Channel 1 — the in-document placeholder (family voice), naming the deferred marker:
+    assert.match(html, /enscribe-placement-error/, 'S3: the deferred <toc> leaves a visible placeholder (not a silent drop)');
+    assert.match(html, /toc. placement in a multi-file .master. build is deferred/, 'S3: the placeholder names the deferred construct');
+    // Channel 2 — the stream warning:
+    assert.ok(warnings.some((w) => /master: <toc> placement marker is deferred/.test(w)),
+      'S3: the CLI/console warning names the deferred placement (second channel)');
+    assert.match(html, /Chapter one body/, 'S3: the rest of the book still assembles');
+    console.log('PASS: #413 S3 — a deferred master-scope placement marker leaves a visible placeholder + warns (both channels)');
+    passed++;
+  }
+
   // ── an <include> inside a minipage is rejected (sealed box, no outward pulls) ──
   {
     const proc = buildEnscribePipeline({});

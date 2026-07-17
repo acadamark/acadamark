@@ -46,3 +46,18 @@ export function masterSrcErrorHandler(_state, node) {
     children: [{ type: 'text', value: `⚠ ??${message}??` }],
   };
 }
+
+// `__placement-placeholder` handler (#413 S3) — the doctrine's "a placement element that produces
+// nothing leaves a visible placeholder". Used where a placement marker (a master-scope <toc>/<endnotes>)
+// would otherwise be silently dropped. It shares the error family's diagnostic-box VOICE (role=alert +
+// an enscribe-*-error class → the name-agnostic family CSS at default.css:469, no new CSS); the message
+// distinguishes a deferred/empty PLACEHOLDER from a mistake — see notes/specs/principles.md.
+export function placementPlaceholderHandler(_state, node) {
+  const message = node.kwargs?.message ?? 'this placement produced nothing';
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: { className: ['enscribe-placement-error'], role: 'alert' },
+    children: [{ type: 'text', value: `⚠ ??${message}??` }],
+  };
+}

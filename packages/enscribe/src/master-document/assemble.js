@@ -197,10 +197,13 @@ export function assembleMasterDocument({ source, readFile, resolve, parse, warn 
       continue;
     }
 
-    // A deferred placement marker — drop with a located diagnostic (no slice
-    // assembles toc/endnotes/bibliography yet).
+    // A deferred placement marker (#413 S3): the assembler does not yet assemble a master-scope
+    // <toc>/<endnotes>/<endnote-list>. Always-renders — instead of silently dropping it, leave a
+    // visible PLACEHOLDER where it stood (BOTH channels: the warn() below → the stream, and the
+    // placeholder → the document), so the author sees the construct was recognized but not built here.
     if (isEnscribeTag(node) && DEFERRED_MARKERS.has(node.tagname)) {
       warn(`master: <${node.tagname}> placement marker is deferred to a later slice (#190); not assembled`);
+      out.push(placementPlaceholderNode(`<${node.tagname}> placement in a multi-file (master) build is deferred (#190) — not assembled here`));
       continue;
     }
 
@@ -316,6 +319,14 @@ function includeErrorNode(src, message) {
 // the flagged PLACEHOLDER body in an otherwise-numbered chapter — the always-renders doctrine.
 function masterSrcErrorNode(src, message) {
   return { type: 'enscribeTag', tagname: '__master-src-error', kwargs: { src: src ?? '', message }, content: null };
+}
+
+// #413 S3: a visible placeholder for a placement marker the assembler recognizes but does not build in
+// a multi-file master (a master-scope <toc>/<endnotes>). Rendered by placementPlaceholderHandler in the
+// error family's diagnostic-box voice — so the deferred construct leaves a visible trace, never a
+// silent drop. Paired with the assembler's warn() so both channels fire.
+function placementPlaceholderNode(message) {
+  return { type: 'enscribeTag', tagname: '__placement-placeholder', kwargs: { message }, content: null };
 }
 
 function stripSrc(kwargs) {

@@ -64,6 +64,11 @@ function findDeep(nodes, tagname) {
  * side's formatted-string `bibBodyHtml`). The JATS path reads
  * `kwargs.cslEntries`; the HTML path ignores it.
  */
+// #413 L7: the body of an empty-References placeholder — an AUTHORED <bibliography> that resolved no
+// citations keeps its "References" heading and shows this visible note, rather than being silently
+// spliced out. Intuitive (reads as a placeholder under the heading the author wrote); no new CSS.
+const EMPTY_BIB_BODY = '<p><em>No citations resolved.</em></p>';
+
 function makeBibliographyNode(headingHtml, bibBodyHtml, cslEntries, chapterScoped = false) {
   return makeInternalMarker('__bibliography', {
     kwargs: {
@@ -254,10 +259,19 @@ export function enscribeBibliography() {
     const headingHtml = `<h2>${escapeHtmlAttr(headingText)}</h2>`;
 
     if (!citations || !citations.cite || citations.order.length === 0) {
-      // No citations resolved → remove every author-placed <bibliography> (back-matter
-      // AND per-chapter), so a stray empty bib never renders.
-      if (authorPlaced) authorPlaced.backNode.content.splice(authorPlaced.index, 1);
-      for (const { parent, index } of chapterPlaced) parent.splice(index, 1);
+      // #413 L7: an AUTHORED <bibliography> that resolves no citations is a "produces-nothing" placement
+      // element → leave a visible empty-References placeholder + warn (BOTH channels), never a silent
+      // splice-out. Gated on the marker being AUTHORED: a document with no <bibliography> written (no
+      // authorPlaced, empty chapterPlaced) still renders nothing — the placeholder is only where the
+      // author explicitly asked for a bibliography. (1-for-1 splice-replace; the arrays don't shift.)
+      if (authorPlaced) {
+        authorPlaced.backNode.content.splice(authorPlaced.index, 1, makeBibliographyNode(headingHtml, EMPTY_BIB_BODY, []));
+        file?.message?.('bibliography: an authored <bibliography> resolved no citations — rendering an empty-References placeholder');
+      }
+      for (const { parent, index } of chapterPlaced) {
+        parent.splice(index, 1, makeBibliographyNode(headingHtml, EMPTY_BIB_BODY, [], true));
+        file?.message?.('bibliography: a chapter <bibliography> resolved no citations — rendering an empty-References placeholder');
+      }
       return;
     }
 
@@ -272,7 +286,10 @@ export function enscribeBibliography() {
     for (const { unit, parent, index } of chapterPlaced) {
       const chapterKeys = collectChapterCiteKeys(unit, cslById);
       if (chapterKeys.length === 0) {
-        parent.splice(index, 1);
+        // #413 L7: an authored chapter <bibliography> whose chapter cites nothing — empty-References
+        // placeholder + warn (both channels), mirroring the document-wide empty case above.
+        parent.splice(index, 1, makeBibliographyNode(headingHtml, EMPTY_BIB_BODY, [], true));
+        file?.message?.('bibliography: a chapter <bibliography> resolved no citations — rendering an empty-References placeholder');
         continue;
       }
       const chapterBody = formatBibliography(cite, style, chapterKeys);
