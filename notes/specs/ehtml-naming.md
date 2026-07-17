@@ -37,6 +37,8 @@ Custom elements added:
 - Academic constructs (`<theorem>`, `<proof>`, `<lemma>`, `<corollary>`) — reserved eHTML names whose per-element specs are open work in the roadmap.
 - Citation and cross-reference vocabulary (`<cite>` already exists in HTML but with weak semantics; enscribe uses it with `data-*` attributes; `<ref>` for cross-references is custom).
 
+**Corollary — names HTML reserves for foreign content are off-limits (#466).** eHTML is HTML-parseable by design, so an eHTML element name must not be one that flips an HTML parser into a foreign-content insertion mode. **`<math>`** is exactly such a name: it is the reserved **MathML** root, so a conformant HTML parser enters MathML foreign-content mode at `<math>` and foster-parents out any non-MathML children — which ejects the KaTeX HTML enscribe puts inside a display-math wrapper. The canonical eHTML element for displayed math is therefore **`<display-math>`** (hyphenated per Rule 1, and the name the import paths already mint); **`<math>` is an authoring alias** that the normalize-to-canonical gate rewrites to `<display-math>` (the same alias/gate pairing as `figure → fig`), so no HTML-parsed artifact — rendered *or* archival — ever carries a literal `<math>` tag. **`<mathml>` is reserved** as the future element for real **MathML passthrough** (which, unlike KaTeX-HTML display math, *would* legitimately emit a valid `<math>` MathML subtree); it is named and reserved here, not built. The same caveat applies to any future name that collides with the HTML foreign-content set (the MathML and SVG element names).
+
 ### Rule 3: Named section depth ladder
 
 Section depth is named, not derived from heading levels or DOM nesting.

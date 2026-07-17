@@ -1,7 +1,7 @@
 // GENERATED — do not edit.
 // Regenerated from `packages/ehtml/elements/*.md` by
 // `packages/ehtml/build/generate-data-module.js`.
-// Source files: 108 vocabulary entries.
+// Source files: 107 vocabulary entries.
 //
 // The generator is build-time-only (it uses `fs` / `js-yaml`); the
 // emitted module below is pure data — no `fs`, no dependencies,
@@ -2722,11 +2722,23 @@ const _display_math = Object.freeze({
     "content": {
       "notes": "The pipe content is LaTeX math source. It is passed directly to KaTeX\nas a string; it is not parsed as prose. The author is responsible for\nvalid LaTeX math syntax.\n",
     },
+    "shorthand_expansions": [
+      {
+        "shorthand": "math",
+        "expands_to": "display-math",
+        "notes": "`<math>` is the long-form authoring alias for the canonical\n`<display-math>` — the counterpart of `<$$ … $$>`. It is an ALIAS,\nnot its own element, because the canonical eHTML element cannot be\nnamed `math`: `<math>` is the reserved MathML element, so any HTML\nparser flips into MathML foreign-content mode at that tag and ejects\nthe KaTeX HTML inside it (#466). The normalize-to-canonical gate\nrewrites `<math>`-authored node tagnames to `display-math` before\ndownstream plugins run, so the whole pipeline — handler routing,\nNUMBERED_TAGNAMES, JATS export, lift — sees the single canonical name\nand no HTML-parsed artifact (rendered or archival) ever carries a\nliteral `<math>` tag. Same alias/gate pairing as `figure → fig`.\n(`<mathml>` is reserved for future real-MathML passthrough — see\n`notes/specs/ehtml-naming.md` — which alone would emit a valid `<math>`.)\n",
+      },
+    ],
     "shorthand_examples": [
       {
         "source": "<$$ \\sum_{i=1}^{n} x_i = X $$>",
         "ehtml": "<display-math><span class=\"katex-display\">…</span><equation-number>(1)</equation-number></display-math>",
         "notes": "The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;\nnumbered by default (the equation number is appended after the KaTeX\noutput).\n",
+      },
+      {
+        "source": "<math>\nE = mc^2\n</math>\n",
+        "ehtml": "<display-math><span class=\"katex-display\">…</span><equation-number>(1)</equation-number></display-math>",
+        "notes": "The long-form `<math>` alias — semantically identical to the `<$$ … $$>`\nsigil, rewritten to canonical `<display-math>` at the gate. Use the long\nform for multi-line source or explicit tag bounds; the sigil for brevity.\n",
       },
     ],
     "interpreter_strategy": "handler",
@@ -4245,55 +4257,6 @@ const _license = Object.freeze({
     ],
     "interpreter_strategy": "schema",
     "_sourceFile": "license.md",
-  });
-
-const _math = Object.freeze({
-    "semantic_role": "math",
-    "category": "math",
-    "semantic_family": "notation",
-    "html_output": {
-      "element": "math",
-      "is_html_native": false,
-      "default_attributes": {},
-      "notes": "`html_output.element` here is the vocabulary lookup key (must match\nthe tagname). The handler emits a `<math>` wrapper element directly;\nthe schema field is not consulted under\n`interpreter_strategy: handler`. (Same pattern the csv/tsv\nentries follow.)\n",
-    },
-    "enscribe_attributes": {
-      "id": {
-        "maps_to": {
-          "html": "id",
-        },
-      },
-      "classes": {
-        "maps_to": {
-          "html": "class",
-        },
-      },
-    },
-    "content": {
-      "notes": "The content is LaTeX math source. It is passed directly to KaTeX\n(displayMode: true) as a string; not parsed as prose. The author is\nresponsible for valid LaTeX math syntax.\n",
-    },
-    "jats_counterpart": {
-      "element": "disp-formula",
-      "notes": "JATS `<disp-formula>` wraps a displayed equation, same as the\ncounterpart for `<display-math>` (the `<$$>` sigil). The two surfaces\nare semantic synonyms in enscribe; both map to JATS\n`<disp-formula>`.\n",
-    },
-    "shorthand_examples": [
-      {
-        "source": "<math>\nE = mc^2\n</math>\n",
-        "ehtml": "<math>(KaTeX-rendered HTML)</math>\n",
-        "notes": "Long-form `<math>` block. Semantically equivalent to the\n`<$$ E = mc^2 $$>` display-math sigil — both render block-level\nLaTeX math via KaTeX. Use the long-form when the source is\nmulti-line or when explicit tag bounds aid readability; use the\nsigil for brevity.\n",
-      },
-    ],
-    "interpreter_strategy": "handler",
-    "handler_module": "./handlers/math.js",
-    "handler_responsibilities": [
-      "Read the opaque content as LaTeX source.",
-      {
-        "Render via KaTeX with `displayMode": "true` (block-level).",
-      },
-      "Emit a `<math>` wrapper element containing KaTeX's HTML output.",
-      "Apply id / classes from the node.",
-    ],
-    "_sourceFile": "math.md",
   });
 
 const _matrix = Object.freeze({
@@ -7068,7 +7031,6 @@ export const VOCABULARY = Object.freeze({
   "lemma": _lemma,
   "library": _library,
   "license": _license,
-  "math": _math,
   "matrix": _matrix,
   "meta": _meta,
   "minipage": _minipage,
@@ -7112,6 +7074,7 @@ export const VOCABULARY = Object.freeze({
   "var": _var,
   "version": _version,
   "quote": _blockquote,  // alias
+  "math": _display_math,  // alias
   "figure": _fig,  // alias
 });
 

@@ -27,6 +27,23 @@ content:
     The pipe content is LaTeX math source. It is passed directly to KaTeX
     as a string; it is not parsed as prose. The author is responsible for
     valid LaTeX math syntax.
+shorthand_expansions:
+  - shorthand: math
+    expands_to: display-math
+    notes: |
+      `<math>` is the long-form authoring alias for the canonical
+      `<display-math>` — the counterpart of `<$$ … $$>`. It is an ALIAS,
+      not its own element, because the canonical eHTML element cannot be
+      named `math`: `<math>` is the reserved MathML element, so any HTML
+      parser flips into MathML foreign-content mode at that tag and ejects
+      the KaTeX HTML inside it (#466). The normalize-to-canonical gate
+      rewrites `<math>`-authored node tagnames to `display-math` before
+      downstream plugins run, so the whole pipeline — handler routing,
+      NUMBERED_TAGNAMES, JATS export, lift — sees the single canonical name
+      and no HTML-parsed artifact (rendered or archival) ever carries a
+      literal `<math>` tag. Same alias/gate pairing as `figure → fig`.
+      (`<mathml>` is reserved for future real-MathML passthrough — see
+      `notes/specs/ehtml-naming.md` — which alone would emit a valid `<math>`.)
 shorthand_examples:
   - source: '<$$ \sum_{i=1}^{n} x_i = X $$>'
     ehtml: '<display-math><span class="katex-display">…</span><equation-number>(1)</equation-number></display-math>'
@@ -34,6 +51,15 @@ shorthand_examples:
       The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
       numbered by default (the equation number is appended after the KaTeX
       output).
+  - source: |
+      <math>
+      E = mc^2
+      </math>
+    ehtml: '<display-math><span class="katex-display">…</span><equation-number>(1)</equation-number></display-math>'
+    notes: |
+      The long-form `<math>` alias — semantically identical to the `<$$ … $$>`
+      sigil, rewritten to canonical `<display-math>` at the gate. Use the long
+      form for multi-line source or explicit tag bounds; the sigil for brevity.
 interpreter_strategy: handler
 handler_module: ./handlers/math.js
 jats_counterpart:

@@ -512,16 +512,18 @@ table.table-parse-error {
  * For unnumbered equations (no equation-number sibling), .katex-display fills
  * the full width and the equation is centered by KaTeX's text-align: center.
  *
- * RQ-MATH-S3: the math-environment wrappers (math, align, cases, matrix,
- * eqnarray) share this layout. Each renders displayMode KaTeX (so each has a
+ * RQ-MATH-S3: the math-environment wrappers (align, cases, matrix, eqnarray)
+ * share this layout. Each renders displayMode KaTeX (so each has a
  * .katex-display child) and may carry a single equation-number, so grouping
  * them with display-math makes them render as display blocks with vertical
  * margin and presents any equation number flush-right, consistently with the
  * display-math case. (Per-line align numbering is out of spec — a single
- * number for the whole block is the documented baseline.)
+ * number for the whole block is the documented baseline.) The former math
+ * element selector is gone (#466): authored math now renders as display-math
+ * (the reserved MathML name cannot be a real HTML element), so it is already
+ * covered by the display-math selector.
  */
 display-math,
-math,
 align,
 cases,
 matrix,
@@ -535,7 +537,6 @@ eqnarray {
 
 /* KaTeX display block: grows to fill available space; equation centered within. */
 display-math > .katex-display,
-math > .katex-display,
 align > .katex-display,
 cases > .katex-display,
 matrix > .katex-display,
@@ -548,7 +549,6 @@ eqnarray > .katex-display {
 
 /* Equation number: does not grow; sits flush right at same vertical centre. */
 display-math > equation-number,
-math > equation-number,
 align > equation-number,
 cases > equation-number,
 matrix > equation-number,

@@ -111,7 +111,10 @@ function stripPositions(nodes) {
 const MATH_TAG_SPEC = new Map([
   ['inline-math',  { displayMode: false, envName: null }],
   ['display-math', { displayMode: true,  envName: null }],
-  ['math',         { displayMode: true,  envName: null }],
+  // (#466: the authored long-form `<math>` is aliased to `display-math` at the gate before this
+  //  handler runs, so `math` never reaches here — its entry is removed and the wrapper it emits is
+  //  `<display-math>`, not the reserved-MathML `<math>` tag that ejected the KaTeX HTML. A stray
+  //  `math` tagname, were one to bypass the gate, falls through to the display-math default below.)
   ['matrix',       { displayMode: true,  envName: 'matrix' }],
   ['cases',        { displayMode: true,  envName: 'cases' }],
   ['align',        { displayMode: true,  envName: 'aligned' }],

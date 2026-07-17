@@ -126,8 +126,22 @@ function isBookDocType(docType) {
 // shadowing beyond the vocab keys — the format-word hosts (diagram/table/library/data)
 // plus core names (fig/math/code) a shorthand must not shadow; the rest of the
 // reserved set is the generated vocabulary.
-const HOST_NAMES = new Set(['diagram', 'table', 'library', 'data', 'fig', 'math', 'code']);
+const HOST_NAMES = new Set(['diagram', 'table', 'library', 'data', 'fig', 'display-math', 'code']);
 const RESERVED_NAMES = new Set([...Object.keys(VOCABULARY), ...HOST_NAMES]);
+
+// Authoring-alias tagname rewrites, applied at the gate (Group A1.5 below) with #448
+// re-dispatch: an authored alias flips to its canonical eHTML name BEFORE any tagname-keyed
+// lookup (NUMBERED_TAGNAMES, handler dispatch, JATS export, lift) runs, so the whole pipeline
+// sees ONE name. Each alias also has a vocab-level `shorthand_expansions` entry (defensive, for a
+// gate bypass). `math → display-math` (#466): the canonical element CANNOT be named `math` — that
+// is the reserved MathML tag, so any HTML parser flips into MathML foreign-content mode at it and
+// ejects the KaTeX HTML inside, and eHTML is HTML-parseable by design (so the archival name moves
+// too, not just the render wrapper). `figure → fig` is the frameable alias (DESIGN.md §Frameable
+// elements). Explicit table, not a generic mechanism — a third family adds one row.
+const TAGNAME_ALIASES = new Map([
+  ['figure', 'fig'],
+  ['math', 'display-math'],
+]);
 const shorthandRegistry = createShorthandRegistry({ reservedNames: RESERVED_NAMES });
 
 // Book-part family (slice 2): each book-part shorthand rewrites to
@@ -901,31 +915,24 @@ const NORMALIZATIONS = [
 
   // ─── Group A1.5: authoring-alias tagname rewrite ──────────────────────
   //
-  // Phase 3 slice 3b (2026-05-28): `<figure>` is an accepted authoring
-  // alias for the canonical `<fig>` (per `DESIGN.md` §"Frameable
-  // elements: a shared capability"). Rewrite at the gate so all
-  // downstream tagname-keyed lookups (NUMBERED_TAGNAMES, the handler
-  // dispatch, ref-resolution prefixes) see the canonical name.
+  // Rewrite an authored alias tagname (TAGNAME_ALIASES, defined above) to its canonical
+  // eHTML name at the gate, so all downstream tagname-keyed lookups (NUMBERED_TAGNAMES, the
+  // handler dispatch, ref-resolution prefixes, JATS export, lift) see the single canonical
+  // name. Two families today: `figure → fig` (Phase 3 slice 3b, 2026-05-28; DESIGN.md
+  // §"Frameable elements") and `math → display-math` (#466 — the canonical element cannot be
+  // named `math`, the reserved MathML tag). Each also has a defensive `shorthand_expansions`
+  // vocab alias (which would catch a node that somehow bypassed this gate); the gate rewrite
+  // and the vocab alias coexist intentionally.
   //
-  // The vocab also declares a `shorthand_expansions` alias for
-  // `figure → fig` (defensive: the alias key in VOCABULARY would catch
-  // a `figure`-named node that somehow bypassed this gate). Both the
-  // gate rewrite and the vocab alias coexist intentionally.
-  //
-  // This is a small alias table rather than a generic mechanism. The
-  // pattern of "specific tag-to-canonical-name rewrites at the gate"
-  // can lift to a shared map (TAGNAME_ALIASES) when a second alias
-  // family lands.
-  //
-  // #448: this is an alias — after the tagname flips to `fig`, the node is
-  // RE-DISPATCHED (see normalizeNode) so the frameable caption lift below still
-  // fires. Without that, `<figure caption=…>` rendered differently from
-  // `<fig caption=…>` (the alias consumed the one normalization slot).
+  // #448: this is an alias — after the tagname flips, the node is RE-DISPATCHED (see
+  // normalizeNode) so a terminal rule keyed on the canonical name still fires. Without that,
+  // `<figure caption=…>` rendered differently from `<fig caption=…>` (the alias consumed the
+  // one normalization slot).
   {
     alias: true,
-    predicate: (node) => isEnscribeTag(node) && node.tagname === 'figure',
+    predicate: (node) => isEnscribeTag(node) && TAGNAME_ALIASES.has(node.tagname),
     normalize: (node) => {
-      node.tagname = 'fig';
+      node.tagname = TAGNAME_ALIASES.get(node.tagname);
       return node;
     },
   },
