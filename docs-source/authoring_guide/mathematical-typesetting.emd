@@ -96,28 +96,6 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no
 attributes — id and classes are not supported for inline math.*
 
-<section #ag-math | `<math>`>
-
-Compiles to eHTML `<math>`.
-
-<code-block #code:ag-math-1>
-<math>
-E = mc^2
-</math>
-</code-block>
-
-<minipage #mp:ag-math-1>
-<math>
-E = mc^2
-</math>
-</minipage>
-
-*Long-form `&lt;math&gt;` block. Semantically equivalent to the
-`&lt;$$ E = mc^2 $$&gt;` display-math sigil — both render block-level
-LaTeX math via KaTeX. Use the long-form when the source is
-multi-line or when explicit tag bounds aid readability; use the
-sigil for brevity.*
-
 <section #ag-matrix | `<matrix>`>
 
 Compiles to eHTML `<matrix>`.

@@ -53,7 +53,7 @@ export const FEATURED_EHTML = [
   'fig',
   'note',
   'inline-math',
-  'math',
+  'display-math',
   'table',
   'theorem',
   'dl',

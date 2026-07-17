@@ -59,7 +59,9 @@ const NUMBERED_TAGNAMES = new Map([
   // counter. Each env tag's handler-side equation-number rendering is
   // extended in handlers/math.js by the same slice.
   ['display-math', 'equation'],
-  ['math',         'equation'],
+  // (#466: the authored long-form `<math>` is rewritten to `display-math` at the gate — which
+  //  runs before numbering — so no `math`-tagname node reaches here; its former entry is removed.
+  //  Environments keep their own distinct tagnames.)
   ['matrix',       'equation'],
   ['cases',        'equation'],
   ['align',        'equation'],

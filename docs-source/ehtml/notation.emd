@@ -177,6 +177,22 @@ Produced by: canonical `<display-math>`.
 numbered by default (the equation number is appended after the KaTeX
 output).*
 
+<code-block #code:eh-display-math-2>
+<math>
+E = mc^2
+</math>
+</code-block>
+
+<minipage #mp:eh-display-math-2>
+<math>
+E = mc^2
+</math>
+</minipage>
+
+*The long-form `&lt;math&gt;` alias — semantically identical to the `&lt;$$ … $$&gt;`
+sigil, rewritten to canonical `&lt;display-math&gt;` at the gate. Use the long
+form for multi-line source or explicit tag bounds; the sigil for brevity.*
+
 <section #eh-eqnarray | `<eqnarray>`>
 
 <sub-section | Specification>
@@ -266,36 +282,6 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 *The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
 wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no
 attributes — id and classes are not supported for inline math.*
-
-<section #eh-math | `<math>`>
-
-<sub-section | Specification>
-
-`category` `math` · eHTML `<math>` · JATS `<disp-formula>` · `content` `empty` → `<children>`
-
-*No kwargs or boolean flags.*
-
-Produced by: canonical `<math>`.
-
-<sub-section | Examples>
-
-<code-block #code:eh-math-1>
-<math>
-E = mc^2
-</math>
-</code-block>
-
-<minipage #mp:eh-math-1>
-<math>
-E = mc^2
-</math>
-</minipage>
-
-*Long-form `&lt;math&gt;` block. Semantically equivalent to the
-`&lt;$$ E = mc^2 $$&gt;` display-math sigil — both render block-level
-LaTeX math via KaTeX. Use the long-form when the source is
-multi-line or when explicit tag bounds aid readability; use the
-sigil for brevity.*
 
 <section #eh-matrix | `<matrix>`>
 

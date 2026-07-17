@@ -160,6 +160,7 @@ Semantic role: *display-math*. Compiles to eHTML `<display-math>`.
 Registers:
 
 - Canonical: `<display-math>`
+- Alias: `<math>`
 
 <code #code:sh-display-math-1>
 <$$ \sum_{i=1}^{n} x_i = X $$>
@@ -172,6 +173,22 @@ Registers:
 *The `$$` sigil. Display-mode LaTeX rendered by KaTeX on its own line;
 numbered by default (the equation number is appended after the KaTeX
 output).*
+
+<code-block #code:sh-display-math-2>
+<math>
+E = mc^2
+</math>
+</code-block>
+
+<minipage #mp:sh-display-math-2>
+<math>
+E = mc^2
+</math>
+</minipage>
+
+*The long-form `&lt;math&gt;` alias — semantically identical to the `&lt;$$ … $$&gt;`
+sigil, rewritten to canonical `&lt;display-math&gt;` at the gate. Use the long
+form for multi-line source or explicit tag bounds; the sigil for brevity.*
 
 <sub-section | Arguments>
 
@@ -262,34 +279,6 @@ The identity <$ a^2 + b^2 = c^2 $> holds for right triangles.
 *The `$` sigil. Opaque LaTeX content rendered inline by KaTeX and
 wrapped in &lt;inline-math&gt; for CSS targeting. The sigil carries no
 attributes — id and classes are not supported for inline math.*
-
-<section #sh-math | `<math>`>
-
-<sub-section | General Usage>
-
-Semantic role: *math*. Compiles to eHTML `<math>`.
-
-Registers:
-
-- Canonical: `<math>`
-
-<code-block #code:sh-math-1>
-<math>
-E = mc^2
-</math>
-</code-block>
-
-<minipage #mp:sh-math-1>
-<math>
-E = mc^2
-</math>
-</minipage>
-
-*Long-form `&lt;math&gt;` block. Semantically equivalent to the
-`&lt;$$ E = mc^2 $$&gt;` display-math sigil — both render block-level
-LaTeX math via KaTeX. Use the long-form when the source is
-multi-line or when explicit tag bounds aid readability; use the
-sigil for brevity.*
 
 <section #sh-matrix | `<matrix>`>
 

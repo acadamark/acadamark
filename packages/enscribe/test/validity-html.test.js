@@ -212,15 +212,13 @@ export function validateHtml(html) {
 
 // ── Known-invalid fixtures: documented, issue-linked exclusions with anti-rot (a fixed
 // fixture that stays excluded fails the gate; a new invalidity in an excluded fixture fails
-// too, via the region count). #464 (block content wrapped in <p>) was FIXED by fix-p-wrapping
-// — its five fixtures are gone from this list. The remaining entry is a DIFFERENT invalidity
-// the gate exposed once its paragraph-wrapping was fixed: the `<math>` display element renders
-// as a `<math>` HTML element, colliding with MathML so browsers eject its KaTeX HTML (#466).
-// That is a vocab/rendering rename decision, out of fix-p-wrapping's scope, so it stays
-// excluded and re-annotated to #466. Change this table only alongside a render change + issue.
-const KNOWN_INVALID = new Map([
-  ['sweep/swp-math.html',              { regions: 0, note: '<math> display element collides with MathML → KaTeX HTML ejected (#466); NOT the #464 p-wrap class (that part is fixed — <align>/<cases>/… now split out cleanly)' }],
-]);
+// too, via the region count). This table is now EMPTY — the gate's first fully-clean run.
+// #464 (block content wrapped in <p>) was fixed by fix-p-wrapping; #466 (the `<math>` display
+// element rendered a literal `<math>` HTML tag, colliding with MathML so browsers ejected its
+// KaTeX HTML) was fixed by fix-math-element — the authored `<math>` now renders the canonical
+// `<display-math>` wrapper, which no HTML parser flips into foreign-content mode. Every rendered
+// fixture is valid HTML at zero exclusions. Add an entry only alongside a render change + issue.
+const KNOWN_INVALID = new Map([]);
 
 export async function run() {
   const docs = renderAllFixtures();
