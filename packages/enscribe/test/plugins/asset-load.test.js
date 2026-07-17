@@ -532,4 +532,38 @@ export function run() {
     assert.ok(family.every((r) => r.warned), 'uniformity: all three emit the located asset:unsupported-src seam warning');
     console.log('PASS: asset-load (#421/#423) — the three sibling consumers flag with ONE uniform family voice');
   }
+
+  // 28. #413 L2 — a <fig> with BOTH src= and an inline base64 body: FIRST-WINS (src kept) + both channels.
+  {
+    const file = makeFile();
+    const tree = dataTree(makeTag('fig', [{ type: 'text', value: 'INLINEBASE64' }], { id: 'fig:both', kwargs: { src: 'a.png' } }));
+    buildAssetIndex(tree, file);
+    // First-wins: the external src is stored; the inline body is ignored (not { base64: 'INLINEBASE64' }).
+    assert.deepEqual(file.data[ENSCRIBE_ASSETS].get('fig:both'), { src: 'a.png' }, 'L2: first-wins — src= kept, inline body dropped');
+    // Channel 1: a visible duplicate flag naming the conflict.
+    const flags = tree.children.filter((n) => n?.tagname === '__asset-error');
+    assert.equal(flags.length, 1, 'L2: exactly one duplicate flag');
+    assert.match(flags[0].kwargs.message, /both a src= and an inline base64 body.*external src wins/, 'L2: the flag names src-wins over the body');
+    // Channel 2: the CLI/console warning.
+    assert.ok(file._warnings.some((w) => /<fig #fig:both> declares both src= and a base64 body/.test(w)),
+      'L2: a warning names the src+body conflict (second channel)');
+    console.log('PASS: #413 L2 — a <fig> with both src= and a body keeps the src (first-wins) and flags the ignored body (both channels)');
+  }
+
+  // 29. #413 L3 — a <dataset> with NO format handed to <table src="@id"> naming no format word:
+  //     the bytes cannot be parsed as a table → visible flag + warn (both channels), not silent raw-HTML.
+  {
+    const file = makeFile();
+    const tableNode = makeTag('table', null, { kwargs: { src: '@d' }, positional: [] });
+    const tree = { type: 'root', children: [makeTag('data', [dataset('d', [{ type: 'text', value: 'a,b\n1,2' }])]), tableNode] };
+    buildAssetIndex(tree, file);            // register the dataset (no format hint)
+    enscribeAssetResolution()(tree, file);  // resolve the table src → should flag the missing format
+    // Channel 1: the table node became a visible __asset-error naming the miss.
+    assert.equal(tableNode.tagname, '__asset-error', 'L3: the no-format table becomes a visible __asset-error (not raw HTML)');
+    assert.match(tableNode.kwargs.message, /neither names a format \(csv\/tsv\/json\/yaml\/md\)/, 'L3: the flag names the missing format');
+    // Channel 2: the CLI/console warning.
+    assert.ok(file._warnings.some((w) => /neither the table nor the <dataset> names a format/.test(w)),
+      'L3: a warning names the missing format (second channel)');
+    console.log('PASS: #413 L3 — a dataset→table with no format on either side flags the miss (both channels), never silent raw-HTML');
+  }
 }
