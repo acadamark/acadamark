@@ -640,15 +640,20 @@ function doBuild(opts, diag) {
       return { mode: 'website', pages, assets };
     }
     diag?.report(file);
-    // #415 (channel 3): the document's diagnostics ride every emitted page — a
-    // separate-pages book is one document split across pages, and any page is an entry
-    // point, so each carries the full stream. Zero messages ⇒ zero bytes.
-    const script = diagnosticsScript(file.messages);
+    // #415 (channel 3): the document's diagnostics ride every emitted page — a separate-pages book is
+    // one document split across pages, and any page is an entry point, so each carries the full stream.
+    // Zero messages ⇒ zero bytes. (#465: the separate-pages recap is now computed AFTER publishBookPages,
+    // inside the branch below, so it includes the late split-by / routing warnings too.)
     const separate = opts.pages === 'separate' || (opts.pages !== 'single' && isBook);
     if (separate) {
       if (!isBook) {
         throw new CliError('--separate-pages is a book-only build; this document is not a <meta type=book>');
       }
+      // #465: publishBookPages produces LATE warnings AFTER the diagnostics seam above already reported
+      // (diag.report, line 642) and captured (diagnosticsScript, line 646) the stream — resolveBookNavConfig's
+      // split-by-deferred warning (paginated surface) and the onUnowned routing warning. Snapshot the
+      // stream length so we can deliver just those late messages to ALL THREE channels afterwards.
+      const beforeLate = file.messages.length;
       const pages = publishBookPages({
         numbered, file, proc, defaultCss: readDefaultCss(),
         // #404: total ownership leaves one residual (a book-part id the projection did not emit
@@ -658,7 +663,12 @@ function doBuild(opts, diag) {
           `cross-page reference to "#${anchor}" — its owning page ("${owner}") was not emitted; the link stays in-page`,
           undefined, 'routing:unowned-anchor'),
       });
-      if (script) for (const [name, html] of pages) pages.set(name, html + script);
+      // #465: deliver the late producers' messages — stderr (channel 1/2 via reportLate) + the per-page
+      // recap (channel 3, recomputed over the full stream). Before this fix they reached NEITHER, so a
+      // `<config split-by=none>` separate-pages build warned to no one.
+      diag?.reportLate?.(file, beforeLate);
+      const separateScript = diagnosticsScript(file.messages);
+      if (separateScript) for (const [name, html] of pages) pages.set(name, html + separateScript);
       return { mode: 'separate', pages };
     }
     // #454: single-page (whole book / multi-file article) now shares the standalone document

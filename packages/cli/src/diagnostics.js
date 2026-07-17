@@ -58,6 +58,24 @@ export function createDiagnostics({ quiet = false, err = process.stderr } = {}) 
       files.push(file);
       if (!quiet) err.write(reporter(file) + '\n');
     },
+    /** #465: deliver messages a LATE producer appended AFTER report() already ran (e.g.
+     *  publishBookPages → resolveBookNavConfig's split-by warning, or the unowned-anchor routing
+     *  warning). Prints ONLY the delta since `sinceIndex` to stderr (the earlier messages were already
+     *  printed by report()), and registers the file for the end-of-run summary exactly once (summary
+     *  re-reads the file's CURRENT messages, so the late ones are counted without double-counting). This
+     *  is what makes the "always both channels" doctrine hold for a producer that runs after the seam. */
+    reportLate(file, sinceIndex = 0) {
+      if (!file || !Array.isArray(file.messages)) return;
+      const late = file.messages.slice(sinceIndex);
+      if (late.length === 0) return;
+      if (!quiet) {
+        const saved = file.messages;
+        file.messages = late;                 // print just the newly-produced messages
+        err.write(reporter(file) + '\n');
+        file.messages = saved;
+      }
+      if (!files.includes(file)) files.push(file);   // summary counts the file's full stream once
+    },
     /** Channel 2: the grouped end-of-run summary. Silent when there is nothing to say. */
     summary() {
       if (quiet || files.length === 0) return;

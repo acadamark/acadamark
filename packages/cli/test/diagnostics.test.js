@@ -183,6 +183,30 @@ export async function run_tests() {
     }
   }
 
+  // ── #465: a LATE producer (publishBookPages → resolveBookNavConfig split-by warning) reaches ALL
+  //    THREE channels. Before the seam fix it reached NONE — the warning is produced after diag.report
+  //    + diagnosticsScript already ran. Uses split-by=none as the SOLE diagnostic (unlike the block
+  //    above, whose missing-child warning is produced BEFORE the seam, so it always routed). ──
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-465-'));
+    try {
+      writeFileSync(join(dir, 'book.emd'), '<meta type=book>\n<title | Late</title>\n</meta>\n\n<config split-by=none />\n\n<chapter | One>\n\nBody one.\n\n<chapter | Two>\n\nBody two.\n');
+      const outDir = join(dir, 'out');
+      const { code, err } = invoke(['build', join(dir, 'book.emd'), '--separate-pages', '-o', outDir]);
+      assert.equal(code, 0, '#465: the build still completes (always-renders)');
+      // Channel 1 + 2: the late split-by warning reaches stderr AND the summary (was swallowed).
+      assert.ok(/split-by=none renders the whole book on one scroll/.test(err), '#465: the late split-by warning reaches stderr (channel 1)');
+      assert.ok(/book-navigation:split-by-deferred/.test(err), '#465: the late warning is counted in the end-of-run summary (channel 2)');
+      // Channel 3: it rides the per-page recap script too.
+      const pages = readdirSync(outDir).filter((f) => f.endsWith('.html') && f !== 'index.html');
+      assert.ok(pages.length >= 1 && readFileSync(join(outDir, pages[0]), 'utf8').includes('split-by=none renders the whole book'),
+        '#465: the late warning also rides the in-page recap script (channel 3)');
+      console.log('PASS: diagnostics (#465) — a late book-nav producer (split-by) now reaches all three channels');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   // ── Tier 2 (opportunistic): the recap script in a REAL browser console ───────
   {
     const driver = await detectDriver();
