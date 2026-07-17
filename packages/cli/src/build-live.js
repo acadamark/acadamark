@@ -24,6 +24,7 @@ import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, collectIncludeSrcs, emitLiveShell, emitSingleFileShell, extractDocumentTitle, getInlineDisplayHead, SINGLE_FILE_ASSETS } from '@enscribejs/enscribe';
 import { ENSCRIBE_NAV_MODEL } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
+import { CliError } from './lib/cli-error.js';
 import { resolvePageSource, pageDirAssets } from './static-website.js';
 
 const require = createRequire(import.meta.url);
@@ -46,8 +47,9 @@ export const SHELL_ASSET_SPECS = {
  * live deployment: a self-standing folder (buildLiveFolder, assets beside the shell) OR a shared
  * asset dir many per-page shells point their `assetBase` at (docs-live, #207 — the ~3 MB engine bundle
  * must not be copied per page). Resolves each asset via the package exports, so the caller needs no
- * knowledge of the package's internal layout. Throws if the engine bundle isn't built — gate on its
- * presence first if graceful degradation is wanted.
+ * knowledge of the package's internal layout. If the engine bundle isn't built the shipped asset does
+ * not resolve; #413 C3 turns that into a clean CliError naming the build remedy (see below). Callers
+ * wanting graceful degradation (the static website inlines its own CSS) still catch and soften it.
  *
  * @param {string} destDir - directory to copy the assets into (created if missing).
  * @param {string[]} [only] - copy just this subset of SHELL_ASSET_SPECS names (the `inlined` delivery
@@ -58,7 +60,18 @@ export function copyShellAssets(destDir, only) {
   mkdirSync(destDir, { recursive: true });
   const names = only ?? Object.keys(SHELL_ASSET_SPECS);
   for (const name of names) {
-    copyFileSync(require.resolve(SHELL_ASSET_SPECS[name]), join(destDir, name));
+    // #413 C3: a shipped asset (esp. the ~3 MB engine bundle) is a tsup build artifact, absent on a
+    // fresh tree. Without this, require.resolve throws a raw MODULE_NOT_FOUND (or copyFileSync a raw
+    // ENOENT when the export path was resolution-cached before the file was removed), which surfaces
+    // as a Node stack. Map both to a CliError naming the problem AND the remedy — the build command.
+    try {
+      copyFileSync(require.resolve(SHELL_ASSET_SPECS[name]), join(destDir, name));
+    } catch (e) {
+      if (e.code === 'MODULE_NOT_FOUND' || e.code === 'ENOENT') {
+        throw new CliError(`live build: the shipped asset "${name}" is not built — run \`npm run build:lib -w @enscribejs/enscribe\` to build the engine bundle first`);
+      }
+      throw e;
+    }
   }
   return names;
 }
