@@ -18,7 +18,7 @@
 // (shell / fetch / asset seam, and the unbuilt single-file mode) is specced in
 // `notes/specs/delivery-modes.md`.
 
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from 'node:fs';
 import { dirname, basename, join, resolve, extname } from 'node:path';
 import { createRequire } from 'node:module';
 import { buildEnscribePipeline, isMasterSrcEntry, collectIncludeSrcs, emitLiveShell, emitSingleFileShell, extractDocumentTitle, getInlineDisplayHead, SINGLE_FILE_ASSETS } from '@enscribejs/enscribe';
@@ -253,6 +253,15 @@ export function buildLiveFolder({ master, outDir, title, edit = false, delivery 
     // has no children). The standalone book/article folder (the non-website `else` path) keeps its flat layout —
     // its children already sit beside their own master, no cross-page collision.
     const pageDest = isWebsite ? join(src, 'index.emd') : src;
+    // #413 C2 (never-fail chapter): a declared `<chapter/section/… src>` whose file is absent must NOT
+    // fail the --live build. Warn + skip the copy (the same policy the website nav-item path uses above),
+    // instead of the raw ENOENT copyFileSync threw here. The live shell fetches the child at runtime,
+    // the fetch fails, and assemble.js renders the flagged placeholder page (item S1) — the chapter keeps
+    // its number. So the folder builds, the CLI names the miss, and the reader sees a flagged placeholder.
+    if (!isWebsite && !existsSync(pageSourcePath)) {
+      console.warn(`enscribe build (--live): child source "${src}" not found under ${masterDir} — skipped; the live shell renders a flagged placeholder for it when it is fetched`);
+      continue;
+    }
     copyInto(pageSourcePath, pageDest);
 
     // A website PAGE may itself be a MULTI-FILE master — a book (`<meta type=book>` with `<chapter src>` /
