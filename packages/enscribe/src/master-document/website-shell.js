@@ -26,6 +26,8 @@ import {
   BACK_TO_TOP_CSS,
   BACK_TO_TOP_JS,
   CHAPTER_ARROWS_CSS,
+  COMBINED_NAV_CSS,
+  COMBINED_NAV_JS,
 } from '../interpreter/assets/book-nav-asset.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
@@ -120,6 +122,10 @@ function universalHeadStyle(defaultCss) {
     // gutter chevrons wins; its dock `top:` reads --enscribe-site-nav-height, so the docks tuck
     // under this surface's sticky top bar automatically.
     BOOK_FLOAT_CSS,
+    // #459 part 2: the combined expanding nav's expand/collapse layer — fully scoped to
+    // .enscribe-chapter-rail--combined, inert on any page without a combined nav, so it rides the
+    // union unconditionally like its siblings. After BOOK_FLOAT_CSS (the combined nav floats).
+    COMBINED_NAV_CSS,
     WEBSITE_SHELL_CSS,
   ].join('\n');
 }
@@ -144,6 +150,7 @@ const SHELL_BODY_SCRIPTS =
   `<script>${SCROLL_SPY_JS}</script>\n` +
   `<script>${ON_THIS_PAGE_JS}</script>\n` +
   `<script>${BACK_TO_TOP_JS}</script>\n` +
+  `<script>${COMBINED_NAV_JS}</script>\n` +   // #459 part 2: guards on nav.enscribe-chapter-rail--combined; no-op otherwise
   `<script>${WEBSITE_DROPDOWN_JS}</script>\n` +
   `<script>${SETTINGS_PANEL_JS}</script>`;   // #430: the reader-tier gear (static delivery)
 

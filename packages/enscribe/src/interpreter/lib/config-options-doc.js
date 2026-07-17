@@ -101,6 +101,8 @@ export const CONFIG_OPTIONS_DOC = [
     description: 'The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns.' },
   { key: 'on-this-page-side', family: 'Book navigation', type: 'valued', values: 'left | right', default: 'right', scope: 'book-only',
     description: 'Which side the on-this-page rail floats on (#459). A non-default side (or margin notes) switches the book to the floating-nav layout: the rail becomes a fixed overlay on the chosen side. Inert when on-this-page is off.' },
+  { key: 'combined-nav', family: 'Book navigation', type: 'boolean', values: null, default: 'off', scope: 'book-only',
+    description: 'The scrollable expanding combined nav (#459, bookdown/Quarto style): ONE panel absorbs the chapter rail + on-this-page rail, with the current chapter expanded to its sections. It floats on chapter-nav-side (default left, leaving the right note gutter clear); on-this-page toggles whether the current chapter expands; on-this-page-side is inert. Off = the two separate navs.' },
   { key: 'split-by', family: 'Book navigation', type: 'valued', values: 'chapter | section | none', default: 'chapter', scope: 'book-only',
     description: 'The pagination unit. Only chapter is built; section and none are specified but deferred.' },
 

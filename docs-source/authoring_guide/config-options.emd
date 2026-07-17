@@ -61,6 +61,7 @@ The complete set of document-level `<config>` settings, grouped by concern — t
 | `back-to-top` | true \| false | off | book-only | An optional scroll-to-top control within a chapter. |
 | `on-this-page` | true \| false | on | book-only | The per-chapter "on this page" rail (the current chapter’s section list, right column). Off drops the reading interface to two columns. |
 | `on-this-page-side` | left \| right | right | book-only | Which side the on-this-page rail floats on (#459). A non-default side (or margin notes) switches the book to the floating-nav layout: the rail becomes a fixed overlay on the chosen side. Inert when on-this-page is off. |
+| `combined-nav` | true \| false | off | book-only | The scrollable expanding combined nav (#459, bookdown/Quarto style): ONE panel absorbs the chapter rail + on-this-page rail, with the current chapter expanded to its sections. It floats on chapter-nav-side (default left, leaving the right note gutter clear); on-this-page toggles whether the current chapter expands; on-this-page-side is inert. Off = the two separate navs. |
 | `split-by` | chapter \| section \| none | chapter | book-only | The pagination unit. Only chapter is built; section and none are specified but deferred. |
 
 **Website navigation**

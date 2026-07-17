@@ -115,7 +115,13 @@ ${SETTINGS_PANEL_CSS}`;
 
 // The website chrome CSS. Modeled on the original docs-site site.css (now in notes/archive/old-docs-site/), retoken'd to --enscribe-*.
 export const WEBSITE_NAV_CSS = `${SHELL_ACTIONS_CSS}
-.enscribe-site { scroll-padding-top: var(--enscribe-site-nav-height, 3.25rem); }
+/* #459: DECLARE the site-nav height on the website root (it was only ever referenced with per-rule
+   fallbacks, so BOOK_FLOAT_CSS's var(--enscribe-site-nav-height, 0px) fell back to 0 and a floating
+   book-nav dock rendered UNDER the sticky site bar). Declaring it here — website-scoped, the docks
+   inherit it via DOM ancestry — resolves that fallback to the real bar height so the docks tuck under
+   the bar; a STANDALONE book has no .enscribe-site, so its var stays unset (BOOK_FLOAT_CSS's 0px is
+   correct there). Byte-neutral for the other references, which already assumed this 3.25rem value. */
+.enscribe-site { --enscribe-site-nav-height: 3.25rem; scroll-padding-top: var(--enscribe-site-nav-height); }
 /* #246: a website mounts its FULL app shell (header + multi-column layout) inside the document
    <body>. default.css sizes <body> for a single reading column (a centred content-width column with
    side padding), which traps the whole site at article width — the content collapses to a sliver. The

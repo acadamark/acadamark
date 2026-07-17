@@ -23,7 +23,9 @@ export const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout
 export function resolveBookPlacement(bookNav = {}) {
   const chapterNavSide = bookNav?.chapterNavSide === 'right' ? 'right' : 'left';
   const onThisPageSide = bookNav?.onThisPageSide === 'left' ? 'left' : 'right';
-  const floating = chapterNavSide !== 'left' || onThisPageSide !== 'right';
+  // #459 part 2: the combined nav is a single scrollable panel on ONE side, so it always rides the
+  // floating regime (the panel floats on chapter-nav-side; the other margin stays free for notes).
+  const floating = bookNav?.combined === true || chapterNavSide !== 'left' || onThisPageSide !== 'right';
   return { chapterNavSide, onThisPageSide, floating };
 }
 
@@ -250,6 +252,71 @@ export const BOOK_FLOAT_CSS = `.enscribe-layout--book-float {
   .enscribe-layout--book-float .enscribe-chapter-arrows { display: none; }
 }`;
 
+// #459 part 2 — the scrollable expanding COMBINED nav. Engaged by `<config combined-nav>`: the chapter
+// rail becomes `.enscribe-chapter-rail--combined` and ABSORBS the on-this-page rail (one panel). It
+// rides the floating regime (BOOK_FLOAT_CSS gives it the fixed, scrollable, single-side dock), so this
+// block only adds the EXPAND/COLLAPSE behavior on top: every chapter's section list is collapsed by
+// default and shown ONLY under an `--open` chapter. The CURRENT chapter is `--open` in the static
+// markup (buildChapterRail combined) — so it is expanded with NO JS (the ruling's static-correctness
+// constraint). COMBINED_NAV_JS reveals the carets and toggles `--open` on click (progressive
+// enhancement for other chapters). Depends on BOOK_NAV_DEPTH_CSS for the nested-section styling (the
+// caller ships both when combined). Authority: notes/specs/book-navigation.md ("The combined expanding nav").
+export const COMBINED_NAV_CSS = `.enscribe-chapter-rail--combined .enscribe-rail-sections { display: none; }
+.enscribe-chapter-rail--combined .enscribe-rail-item--open > .enscribe-rail-sections { display: block; }
+.enscribe-chapter-rail--combined .enscribe-rail-item { position: relative; }
+.enscribe-chapter-rail--combined .enscribe-rail-item > a { padding-left: var(--enscribe-space-4); }
+.enscribe-chapter-rail--combined .enscribe-rail-toggle {
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  width: var(--enscribe-space-4);
+  height: 1.3em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--enscribe-text-muted);
+  font-size: 0.9em;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.enscribe-chapter-rail--combined .enscribe-rail-item--open > .enscribe-rail-toggle { transform: rotate(90deg); }
+.enscribe-chapter-rail--combined .enscribe-rail-toggle:hover,
+.enscribe-chapter-rail--combined .enscribe-rail-toggle:focus-visible { color: var(--enscribe-link); }
+.enscribe-chapter-rail--combined .enscribe-rail-toggle:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.35); }`;
+
+// #459 part 2 — the combined nav's click-to-expand (progressive enhancement). Pure layer over static
+// markup, mirroring ON_THIS_PAGE_JS: with JS off, the CURRENT chapter is expanded (CSS `--open` in the
+// static markup) and the others are collapsed with no dead affordance (the carets are `hidden`). With
+// JS on, this reveals the carets and toggles `--open` (with its aria-expanded) on click, so any chapter
+// expands/collapses in place. Idempotent (a per-button dataset flag) and re-runnable, so it rides
+// executeAssets after every `swapLiveContent` and survives live chapter navigation (the #462 lesson).
+export function bindCombinedNav() {
+  var nav = document.querySelector('nav.enscribe-chapter-rail--combined');
+  if (!nav) return;
+  var toggles = Array.prototype.slice.call(nav.querySelectorAll('.enscribe-rail-toggle'));
+  toggles.forEach(function (btn) {
+    if (btn.dataset.enscribeCombinedBound === '1') return;
+    btn.dataset.enscribeCombinedBound = '1';
+    btn.hidden = false;
+    btn.addEventListener('click', function () {
+      var li = btn.closest('.enscribe-rail-item');
+      if (!li) return;
+      var open = li.classList.toggle('enscribe-rail-item--open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+}
+
+export const COMBINED_NAV_JS = `(function () {
+  var run = ${bindCombinedNav.toString()};
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();`;
+
 // back-to-top ON: a fixed scroll-to-top control, hidden until the reader scrolls down
 // past one viewport. JS off → the control stays `hidden` (no broken affordance).
 export const BACK_TO_TOP_CSS = `.enscribe-back-to-top {
@@ -312,10 +379,13 @@ export function injectBookNavStyles(bookNav, doc) {
   if (!d) return;
   const css = [];
   if (!bookNav.chapterNav) css.push(BOOK_NAV_NOLEFT_CSS);
-  if (bookNav.chapterNavDepth >= 2) css.push(BOOK_NAV_DEPTH_CSS);
+  // BOOK_NAV_DEPTH_CSS styles the nested section list — needed at chapter-nav-depth>=2 AND for the
+  // combined nav (which renders the current chapter's sections). #459 part 2.
+  if (bookNav.chapterNavDepth >= 2 || (bookNav.combined && bookNav.onThisPage)) css.push(BOOK_NAV_DEPTH_CSS);
   if (bookNav.backToTop) css.push(BACK_TO_TOP_CSS);
   if (bookNav.pageNavigation) css.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   if (resolveBookPlacement(bookNav).floating) css.push(BOOK_FLOAT_CSS);   // #459 — AFTER arrows so the float override wins
+  if (bookNav.combined) css.push(COMBINED_NAV_CSS);   // #459 part 2 — the expand/collapse layer, AFTER float
   const text = css.join('\n');
   const existing = d.getElementById('enscribe-book-nav-style');
   if (existing) {

@@ -66,6 +66,11 @@ const ON_THIS_PAGE = '<nav class="enscribe-onthispage"';   // #248: the per-chap
 const BOOK_FLOAT = 'enscribe-layout--book-float';
 const DOCK_LEFT = '<div class="enscribe-book-dock enscribe-book-dock--left">';
 const DOCK_RIGHT = '<div class="enscribe-book-dock enscribe-book-dock--right">';
+// #459 part 2 — the combined expanding nav markers. The combined rail carries the `--combined` class;
+// the CURRENT chapter's <li> is statically `--open`; a chapter with sections gets a (hidden) caret.
+const COMBINED_RAIL = 'enscribe-chapter-rail enscribe-chapter-rail--combined"';
+const RAIL_ITEM_OPEN = 'enscribe-rail-item--open"';
+const RAIL_TOGGLE = '<button type="button" class="enscribe-rail-toggle"';
 
 export async function run() {
   // ── defaults: the full chrome, both paths (the byte-identical baseline) ───────────
@@ -286,5 +291,72 @@ export async function run() {
     assert.ok(s.file.messages.some((m) => m.source === 'book-navigation' && m.ruleId === 'toc-location-on-book'),
       'toc-location=left on a book: a located diagnostic is emitted');
     console.log('PASS: #226 — toc-location=left on a book emits a located diagnostic and renders on the cover');
+  }
+
+  // ── #459 part 2: the combined expanding nav — separate-pages + live (via chrome()) ─────────
+  {
+    const { staticPage, chapterView } = chrome('<config combined-nav />');
+    for (const [surface, html] of [['static', staticPage], ['live', chapterView]]) {
+      // ONE combined panel absorbs both navs: the rail is `--combined`, and there is NO separate
+      // on-this-page rail (its sections appear inline under the current chapter's entry).
+      assert.ok(html.includes(COMBINED_RAIL), `combined ${surface}: the rail is the combined nav`);
+      assert.ok(!html.includes(ON_THIS_PAGE), `combined ${surface}: the separate on-this-page rail is absorbed`);
+      // The CURRENT chapter (counting-elephants, index 1 — the page/view chrome() renders) is
+      // statically `--open` (expanded to its sections, NO JS) — the ruling's static-correctness.
+      assert.ok(html.includes(RAIL_ITEM_OPEN), `combined ${surface}: the current chapter is statically --open (no JS)`);
+      // Exactly ONE chapter is open (the current one; the others are collapsed).
+      assert.equal(html.split(RAIL_ITEM_OPEN).length - 1, 1, `combined ${surface}: exactly one chapter is open`);
+      // The current chapter's own section list is present under the open entry (the sections it expands to).
+      assert.ok(html.includes(RAIL_SECTIONS), `combined ${surface}: the current chapter's sections are rendered`);
+      // A (hidden) caret rides a chapter with sections; the click-to-expand script reveals + binds it.
+      assert.ok(html.includes(RAIL_TOGGLE), `combined ${surface}: a caret toggle is present`);
+      // Combined rides the floating regime: ONE dock on the default (left) side, the reading column centered.
+      assert.ok(html.includes(BOOK_FLOAT), `combined ${surface}: floating regime engaged`);
+      assert.ok(html.includes(DOCK_LEFT) && !html.includes(DOCK_RIGHT), `combined ${surface}: one dock on the left (right margin free for notes)`);
+    }
+    // The enhancement script ships (both surfaces), so it re-runs on live swaps (executeAssets).
+    assert.ok(staticPage.includes('enscribeCombinedBound') && chapterView.includes('enscribeCombinedBound'),
+      'combined: the click-to-expand script ships on both surfaces');
+    console.log('PASS: #459 part 2 — combined nav: one panel absorbs on-this-page, current chapter statically --open, one left dock (static + live)');
+  }
+
+  // ── #459 part 2: chapter-nav-side=right places the single combined panel on the right ─────
+  {
+    const { staticPage } = chrome('<config combined-nav chapter-nav-side=right />');
+    assert.ok(staticPage.includes(COMBINED_RAIL) && staticPage.includes(DOCK_RIGHT) && !staticPage.includes(DOCK_LEFT),
+      'combined chapter-nav-side=right: the single panel floats right');
+    console.log('PASS: #459 part 2 — combined nav takes one configurable side (chapter-nav-side)');
+  }
+
+  // ── #459 part 2: combined-nav on-this-page=false → chapters only, no expansion ─────────────
+  {
+    const { staticPage } = chrome('<config combined-nav on-this-page=false />');
+    assert.ok(staticPage.includes(COMBINED_RAIL), 'combined on-this-page=false: still the combined nav');
+    assert.ok(!staticPage.includes(RAIL_ITEM_OPEN) && !staticPage.includes(RAIL_SECTIONS),
+      'combined on-this-page=false: chapters only — no current-chapter expansion, no section lists');
+    console.log('PASS: #459 part 2 — while combined, on-this-page toggles the current-chapter expansion');
+  }
+
+  // ── #459 part 2: single-scroll (compiler) combined + byte-stable default ───────────────────
+  {
+    const BOOK = [
+      '<meta type=book>', '<title | Guide>', '</meta>', '',
+      '<chapter #c1 | One>', '', 'Body.', '', '<# #s1 | Alpha #>', '', 'a', '',
+      '<chapter #c2 | Two>', '', 'Body.', '', '<# #s2 | Beta #>', '', 'b', '',
+      '<chapter #c3 | Three>', '', 'Body.', '', '<# #s3 | Gamma #>', '', 'c',
+    ].join('\n');
+    const render = (src) => String(buildEnscribePipeline({ embedResources: false, toc: true }).processSync(src));
+    const combined = render(BOOK.replace('</meta>', '</meta>\n\n<config combined-nav />'));
+    assert.ok(combined.includes(COMBINED_RAIL), 'single-scroll combined: the combined nav renders');
+    assert.ok(!combined.includes(ON_THIS_PAGE), 'single-scroll combined: on-this-page absorbed');
+    assert.equal(combined.split(RAIL_ITEM_OPEN).length - 1, 1, 'single-scroll combined: exactly one chapter open (the first)');
+    assert.ok(combined.includes(BOOK_FLOAT) && combined.includes(DOCK_LEFT), 'single-scroll combined: one left dock, floating');
+    assert.ok(combined.includes('enscribeCombinedBound'), 'single-scroll combined: the click-to-expand script is injected');
+
+    // DEFAULT byte-stability: a book that does not set combined-nav carries NONE of the combined markup.
+    const plain = render(BOOK);
+    assert.ok(!plain.includes('enscribe-chapter-rail--combined') && !plain.includes(RAIL_TOGGLE) && !plain.includes('enscribeCombinedBound'),
+      'single-scroll default: no combined markup/CSS/JS (byte-stable)');
+    console.log('PASS: #459 part 2 — single-scroll combined nav renders; default book byte-stable');
   }
 }

@@ -245,7 +245,7 @@ import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 // non-default rail — the SAME shared assets the separate-pages pageShell injects (one source,
 // book-nav-asset.js): the no-left grid when chapter-nav is off, the sub-section styling at
 // chapter-nav-depth >= 2. default.css carries only the default (rail on, depth 1) layout.
-import { BOOK_NAV_NOLEFT_CSS, BOOK_NAV_DEPTH_CSS, BOOK_FLOAT_CSS, resolveBookPlacement } from './assets/book-nav-asset.js';
+import { BOOK_NAV_NOLEFT_CSS, BOOK_NAV_DEPTH_CSS, BOOK_FLOAT_CSS, COMBINED_NAV_CSS, COMBINED_NAV_JS, resolveBookPlacement } from './assets/book-nav-asset.js';
 
 export { enscribeDocTypeResolve } from './plugins/doc-type.js';
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeWebsiteStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
@@ -966,6 +966,7 @@ export function enscribeInterpreter(options = {}) {
     const tocConfig = readTocConfig(configMap);
     let tocType = null;
     let configTocShape = null;
+    let bookNav = null;   // #459 part 2 — surfaced so injectBookScripts can gate the combined-nav script
     if (tocConfig) {
       configTocShape = applyConfigToc(hast, tocConfig);
     } else {
@@ -979,13 +980,16 @@ export function enscribeInterpreter(options = {}) {
       // defaults, so an unconfigured book is byte-identical). paginated:false — --single-page is
       // unpaginated (it IS split-by=none), so the split-by-deferred pagination warning does not apply.
       const wantsInterface = tocOption === true || tocOption === 'auto';
-      const bookNav = wantsInterface ? resolveBookNavConfig(file, { paginated: false }) : null;
+      bookNav = wantsInterface ? resolveBookNavConfig(file, { paginated: false }) : null;
       tocType = applyToc(hast, tocOption, bookNav);
       // #454: inject the conditional book-nav CSS the non-default rail needs (the same shared blocks
       // pageShell injects for separate-pages) — only when the interface actually rendered as a book.
       if (tocType === 'book' && bookNav) {
         if (!bookNav.chapterNav) hast.children.unshift(makeStyleElement(BOOK_NAV_NOLEFT_CSS));
-        if (bookNav.chapterNavDepth >= 2) hast.children.unshift(makeStyleElement(BOOK_NAV_DEPTH_CSS));
+        if (bookNav.chapterNavDepth >= 2 || (bookNav.combined && bookNav.onThisPage)) hast.children.unshift(makeStyleElement(BOOK_NAV_DEPTH_CSS));
+        // #459 part 2: the combined expand/collapse layer (unshifted BEFORE the float block so it lands
+        // AFTER BOOK_FLOAT_CSS in DOM source order, per its comment).
+        if (bookNav.combined) hast.children.unshift(makeStyleElement(COMBINED_NAV_CSS));
         // #459 part 1: a non-default nav side floats the navs — applyBookToc emitted the docks + the
         // --book-float wrapper; deliver its stylesheet (the same BOOK_FLOAT_CSS all four surfaces share).
         if (resolveBookPlacement(bookNav).floating) hast.children.unshift(makeStyleElement(BOOK_FLOAT_CSS));
@@ -994,7 +998,7 @@ export function enscribeInterpreter(options = {}) {
     if (configTocShape) {
       hast.children.unshift(makeStyleElement(TOC_CONFIG_CSS));
     }
-    return { tocType, configTocShape };
+    return { tocType, configTocShape, bookNav };
   }
 
   // #33 / #333 the margin column. Two triggers, one path: the document
@@ -1032,7 +1036,7 @@ export function enscribeInterpreter(options = {}) {
   // chapter-nav (opt-in single-chapter paging), on-this-page (book right rail), then
   // scroll-spy (any ToC SIDEBAR — legacy book/article tocType OR a #218 config sidebar;
   // a body listing needs none). Pure progressive enhancements; articles inject none.
-  function injectBookScripts(hast, tocType, configTocShape) {
+  function injectBookScripts(hast, tocType, configTocShape, bookNav) {
     if (tocType === 'book' && chapterNavOption === true) {
       hast.children.unshift(makeScriptElement(CHAPTER_NAV_JS));
     }
@@ -1041,6 +1045,12 @@ export function enscribeInterpreter(options = {}) {
     }
     if (tocType || configTocShape === 'sidebar') {
       hast.children.unshift(makeScriptElement(SCROLL_SPY_JS));
+    }
+    // #459 part 2: the combined nav's click-to-expand. Pure progressive enhancement — the current
+    // chapter is expanded by static markup + CSS, so a no-JS reader is unaffected; this just reveals
+    // the carets and binds the toggles.
+    if (tocType === 'book' && bookNav?.combined) {
+      hast.children.unshift(makeScriptElement(COMBINED_NAV_JS));
     }
   }
 
@@ -1201,13 +1211,13 @@ export function enscribeInterpreter(options = {}) {
     // static DSLs replaced post-format. A no-op for every feature a document doesn't use →
     // byte-identical output for a default document. Each helper's rationale lives at its
     // definition above.
-    const { tocType, configTocShape } = injectToc(hast, configMap, file);
+    const { tocType, configTocShape, bookNav: tocBookNav } = injectToc(hast, configMap, file);
 
     injectMarginLayout(hast, assets, configMap, file);
 
     injectStrictFlag(hast, file);
 
-    injectBookScripts(hast, tocType, configTocShape);
+    injectBookScripts(hast, tocType, configTocShape, tocBookNav);
 
     injectFonts(hast);
 

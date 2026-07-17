@@ -27,7 +27,7 @@
 // One mount, one hash space: the router IS the cross-page link.
 
 import { toHtml } from 'hast-util-to-html';
-import { buildChapterRail, buildOnThisPage, buildContentsListing, chapterNavBar, chapterNavArrows } from '../interpreter/lib/toc.js';
+import { buildChapterRail, buildCombinedNav, buildOnThisPage, buildContentsListing, chapterNavBar, chapterNavArrows } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { renderChapter } from './render-chapter.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
@@ -46,7 +46,7 @@ import {
   resolveBookNavConfig,
   resolveBookContentsConfig,
 } from './book-scaffold.js';
-import { composeBookBody, BACK_TO_TOP_HTML } from '../interpreter/assets/book-nav-asset.js';
+import { composeBookBody, BACK_TO_TOP_HTML, COMBINED_NAV_JS } from '../interpreter/assets/book-nav-asset.js';
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 
@@ -61,6 +61,11 @@ import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 // `injectBookScripts` — so it appends them HERE. Three injection sites for one concern, each owning its
 // render path; converging them onto one seam (e.g. the toc.js rail builders) is a deferred follow-on.
 const BOOK_LIVE_RAIL_SCRIPTS = `<script>${SCROLL_SPY_JS}</script><script>${ON_THIS_PAGE_JS}</script>`;
+// #459 part 2: a combined-nav book additionally ships the click-to-expand script WITH each view, so
+// executeAssets re-runs it after every swapLiveContent and the expansion survives chapter navigation
+// (the #462 lesson). The base rail scripts still ride (SCROLL_SPY_JS highlights the active section; the
+// on-this-page script no-ops when its rail is absorbed).
+const liveRailScripts = (bookNav) => BOOK_LIVE_RAIL_SCRIPTS + (bookNav.combined ? `<script>${COMBINED_NAV_JS}</script>` : '');
 
 // ─── The chapter-as-page route scheme (chapter-as-page slice) ──────────────────────────────────────
 // A chapter is an addressable PAGE, not a hash: `?[page=<slug>&]chapter=<stem>`. The hash is now PURELY
@@ -192,9 +197,14 @@ export function renderLiveChapterContent(part, model, ctx) {
  *  route + `#<id>` (a cross-chapter section route, not a bare hash). Returns '' when chapter-nav is off. */
 function liveRail(parts, activeId, home, bookNav, pageSlug) {
   if (!bookNav.chapterNav) return '';
-  const opts = bookNav.chapterNavDepth >= 2
-    ? { navDepth: bookNav.chapterNavDepth, sectionHref: (p, s) => sectionHref(p, s, pageSlug) }
-    : {};
+  const sHref = (p, s) => sectionHref(p, s, pageSlug);
+  // #459 part 2: combined mode returns the ONE expanding nav (absorbs on-this-page); the caller passes
+  // no on-this-page rail. Section links are the owning chapter's route + `#<id>`, exactly as depth>=2.
+  if (bookNav.combined) {
+    const nav = buildCombinedNav(parts, (p) => chapterHref(p, pageSlug), activeId, home, { sectionHref: sHref, bookNav });
+    return nav ? toHtml(nav) : '';
+  }
+  const opts = bookNav.chapterNavDepth >= 2 ? { navDepth: bookNav.chapterNavDepth, sectionHref: sHref } : {};
   return toHtml(buildChapterRail(parts, (p) => chapterHref(p, pageSlug), activeId, home, opts));
 }
 
@@ -232,7 +242,7 @@ export function renderLiveChapterView(model, idx, ctx) {
   // cover off → the masthead 'home' points at the first chapter (the landing), not the cover.
   const home = { href: bookNav.cover ? coverHref(pageSlug) : chapterHref(parts[0], pageSlug), title: bookTitle };
   const rail = liveRail(parts, part.id, home, bookNav, pageSlug);
-  const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
+  const onThisPageNav = (!bookNav.combined && bookNav.onThisPage) ? buildOnThisPage([part]) : null; // #248 (#459 part 2: absorbed when combined)
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
   const navBar = chapterNavBar(parts, idx, (p) => chapterHref(p, pageSlug));
   const prevNext = (bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
@@ -245,7 +255,7 @@ export function renderLiveChapterView(model, idx, ctx) {
     rail, content, prevNext, onThisPage, arrows,
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
     bookNav,   // #459 — the nav-placement sides drive the floating dock layout (static≡live)
-  }) + BOOK_LIVE_RAIL_SCRIPTS;
+  }) + liveRailScripts(bookNav);
 }
 
 /**
@@ -295,7 +305,7 @@ export function renderLiveCoverView(model, ctx) {
     rail, content: coverBodyHtml(bookTitle, contentsHtml, renderLiveFrontLoose(model, ctx)),
     backToTop: bookNav.backToTop ? BACK_TO_TOP_HTML : '',
     bookNav,   // #459 — placement floats the cover's chapter rail too (static≡live)
-  }) + BOOK_LIVE_RAIL_SCRIPTS;
+  }) + liveRailScripts(bookNav);
 }
 
 /**
@@ -445,7 +455,7 @@ export function createIncrementalRebuilder({ masterSource, sources, proc, loaded
 export function renderLiveChapterPreviewBody(model, idx, ctx) {
   const navBar = chapterNavBar(model.parts, idx, (p) => chapterHref(p, model.pageSlug));
   const prevNext = (model.bookNav.pageNavigation && navBar) ? toHtml(navBar) : '';
-  return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext + BOOK_LIVE_RAIL_SCRIPTS;
+  return renderLiveChapterContent(model.parts[idx], model, ctx) + prevNext + liveRailScripts(model.bookNav);
 }
 
 export function renderLiveChapterEditView(model, idx, ctx) {
@@ -458,7 +468,7 @@ export function renderLiveChapterEditView(model, idx, ctx) {
   const rail = liveRail(parts, part.id, home, bookNav, pageSlug);
   // The on-this-page rail reflects the CHAPTER being edited — built from `[part]`, EXACTLY as read mode
   // (renderLiveChapterView) builds it — so the editable chapter carries both rails, placed identically.
-  const onThisPageNav = bookNav.onThisPage ? buildOnThisPage([part]) : null; // #248
+  const onThisPageNav = (!bookNav.combined && bookNav.onThisPage) ? buildOnThisPage([part]) : null; // #248 (#459 part 2: absorbed when combined)
   const onThisPage = onThisPageNav ? toHtml(onThisPageNav) : '';
 
   // Compose through the SAME composeBookBody read mode uses — NOT a hand-rolled grid. The shared
