@@ -41,8 +41,29 @@ by default, and it preserves the existing book view, which already renders this 
 - `section` — split one level deeper, so each top-level section is its own unit.
 - `none` — the whole book is a single scroll, with the rail acting as in-page jump links.
 
-`chapter` is the implemented unit; `section` and `none` are specified here as the intended range and
-are deferred until built.
+`chapter` is the implemented paginated unit (the live render and the static separate-pages build).
+`none` — the whole book on one scroll — is realized by the static `build --single-page` (its reading
+interface honors the same book-nav config; see "The single-scroll surface" below), so it is **not**
+deferred. Only `section` remains deferred.
+
+## The single-scroll surface (`--single-page`)
+
+`build --single-page` renders the whole book as one scrolling standalone document — it **is** the
+`split-by=none` rendering. Since #454 its reading interface reads the book-nav config from the **one
+shared reader** (`resolveBookNavConfig`) the separate-pages and live shapes use, so the config behaves
+identically across all three shapes — no silently-dead keys. Per key on this surface:
+
+- `chapter-nav`, `chapter-nav-depth`, `page-navigation`, `on-this-page` — **honored**, identically to
+  the other two shapes: the persistent chapter rail (in-page jump links), its depth, the prev/next foot
+  bar (in-page anchors), and the on-this-page rail. (Before #454 the single-scroll interface honored
+  only `on-this-page` and silently ignored the other three.)
+- `cover` — **N/A**: `cover` selects the landing view among a book's addressable pages/routes, which do
+  not exist on one scroll (the whole book is a single document; its title page is the top of the scroll).
+- `back-to-top` — **N/A**: the scroll-to-top control is separate-pages/live chrome, not part of the
+  compiler's single-scroll reading interface. (Bringing it here is a nav-parity enhancement, tracked
+  separately.)
+- `split-by` — the surface **is** `split-by=none`, so a `split-by` value is moot here and fires no
+  "not built" warning (the pagination-deferred warning applies only where the book actually paginates).
 
 ## eHTML form
 
@@ -62,7 +83,8 @@ book-wide. (Per-page override layering is deferred, as in the contents/numbering
 
 ## Deferred (named, not in this spec)
 
-- `split-by: section | none` (only `chapter` is built).
+- `split-by: section` (only `chapter` — paginated — and `none` — the `--single-page` single scroll —
+  are built).
 - Per-page override layering of book-wide settings.
 - Search, downloads, and other sidebar tools (bookdown/Quarto offer these; out of scope here).
 

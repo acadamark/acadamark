@@ -214,7 +214,7 @@ A BOOK builds to SEPARATE per-chapter pages by default — one standalone HTML p
 chapter at a per-chapter URL (e.g. 1-introduction.html), plus index.html, each with
 the reading-interface chrome and cross-chapter references linking across pages. Pass
 -o <dir> to choose the output directory. --single-page builds the whole book as one
-HTML file instead. Articles are always single-page.
+complete, styled, standalone HTML file instead. Articles are always single-page.
 
 Usage:
   enscribe build <master.emd> [options]
@@ -222,7 +222,14 @@ Usage:
 Options:
   -o, --output <path>  Output file (single-page) or DIRECTORY (separate-pages book)
   --separate-pages     Build a book as separate per-chapter pages (book default)
-  --single-page        Build the whole book/article as one HTML file
+  --single-page        Build the whole book/article as one complete, styled,
+                       standalone HTML document (doctype, <head>, default.css)
+  --fragment           --single-page: emit the bare document fragment (no <head>/
+                       shell) for embedding in a host page (no effect on a
+                       separate-pages/website build, which is inherently multi-file)
+  --css <href>         --single-page: link this stylesheet instead of inlining
+                       default.css
+  --title <text>       --single-page: override the document <title>
   --live               Build a self-standing live folder (-o <dir>): the engine
                        renders client-side; ?edit mounts the editor
   --single-file        Emit ONE self-contained .html for one document: the source
@@ -652,10 +659,23 @@ function doBuild(opts, diag) {
       if (script) for (const [name, html] of pages) pages.set(name, html + script);
       return { mode: 'separate', pages };
     }
-    // Single-page (the retained whole-book / article mode) — the unchanged render path.
-    // An assembled-source (--emd) emit is deferred (#190): section titles live in
-    // `.content`, which serializeCanonical does not round-trip.
-    return { mode: 'single', html: String(proc.stringify(numbered, file)) + script };
+    // #454: single-page (whole book / multi-file article) now shares the standalone document
+    // shell with `render`/`import`/`import-jats` — doctype, <html>/<head>, inlined default.css,
+    // and the <config theme-variant> stamp. Before, this branch emitted the pre-#395 headless
+    // fragment (render itself went standalone-by-default a month later and build was never carried
+    // along); the fragment is still available on demand via `--single-page --fragment`.
+    // Title comes from the MASTER source: the assembled/numbered tree has had its <title> consumed
+    // by the structural transforms (extractTitleFromTree(numbered) === '' for book AND article), so
+    // extractDocumentTitle(source) is the route that works for both — matching doRender (cli.js:462).
+    // wrapStandalone appends the diagnostics recap from file.messages itself, so the manual `+ script`
+    // is dropped here (the separate-pages branch above still uses `script`).
+    // An assembled-source (--emd) emit is deferred (#190): section titles live in `.content`, which
+    // serializeCanonical does not round-trip.
+    const fragment = String(proc.stringify(numbered, file));
+    return {
+      mode: 'single',
+      html: wrapStandalone(fragment, opts, () => extractDocumentTitle(source), file.messages, configThemeVariant(file)),
+    };
   });
 }
 
@@ -799,6 +819,11 @@ export function run(argv, io = {}) {
       case 'build': {
         const opts = parseCommandArgs(rest);
         if (opts.help) { out.write(BUILD_HELP); return 0; }
+        // #454: --single-page now emits a standalone document (like render/import), so the shared
+        // page-frame contradiction checks apply here too (--fragment + --css). The --fragment/--css/
+        // --title flags shape the single-page document output; a separate-pages/website build is
+        // inherently multi-file and ignores them (documented in BUILD_HELP).
+        checkStandaloneFlags(opts);
         // #363: --assets selects the chrome asset-delivery mode (siblings | cdn | inlined). It is honored
         // only by --live and --single-file (the modes that admit it, delivery-modes.md §"Asset delivery").
         // A plain static build references sibling assets by construction, so the flag is rejected there.

@@ -487,12 +487,27 @@ export function run_tests() {
       rmSync(dir, { recursive: true, force: true });
     }
 
-    // --single-page builds the whole book in one fragment (to stdout).
+    // --single-page builds the whole book as ONE complete standalone HTML document (to stdout).
     const single = invoke(['build', BOOK_FIXTURE, '--single-page']);
     assert.equal(single.code, 0, '--single-page book build exits 0');
     assertNonEmptyDocument(single.out, 'build --single-page'); // #451 floor: the assembled book must not wipe to empty
     assert.ok((single.out.match(/<book-part/g) || []).length >= 4, '--single-page emits the whole book (every chapter)');
-    assert.ok(!single.out.startsWith('<!DOCTYPE html>'), '--single-page emits the render fragment (the established CLI shape), not a page shell');
+    // #454: --single-page now emits a COMPLETE, styled, standalone document (doctype + <html>/<head> +
+    // inlined default.css + the <config theme-variant> stamp) — the same shell render/import and the
+    // separate-pages pages already had, not the pre-#395 headless fragment it emitted before.
+    assert.ok(single.out.startsWith('<!DOCTYPE html>') && single.out.includes('<html') && single.out.includes('</html>'),
+      '--single-page emits a complete standalone HTML document (like render/separate-pages)');
+    assert.ok(single.out.includes('.enscribe-layout'), '--single-page inlines default.css');
+    // #454: the old headless fragment is now the documented embedding ESCAPE HATCH via --fragment.
+    const frag = invoke(['build', BOOK_FIXTURE, '--single-page', '--fragment']);
+    assert.equal(frag.code, 0, '--single-page --fragment exits 0');
+    assert.ok(!frag.out.startsWith('<!DOCTYPE html>') && !frag.out.trimEnd().endsWith('</html>'),
+      '--single-page --fragment emits the bare fragment (no shell) for embedding in a host page');
+    assert.ok((frag.out.match(/<book-part/g) || []).length >= 4, '--fragment still carries the whole book');
+    // #454: --fragment + --css contradict (no <head> to link into) — refused, like render/import.
+    const contradiction = invoke(['build', BOOK_FIXTURE, '--single-page', '--fragment', '--css', 'x.css']);
+    assert.equal(contradiction.code, 1, '--single-page --fragment --css is refused');
+    assert.ok(/--fragment/.test(contradiction.err), 'the error explains the --fragment/--css contradiction');
 
     // separate-pages needs an output directory — without -o it errors clearly.
     const noOut = invoke(['build', BOOK_FIXTURE]);
@@ -580,20 +595,85 @@ export function run_tests() {
       assert.ok(!plain.out.includes('tufte'), '#453: default build carries no tufte theme');
       assert.ok(themed.out.includes('tufte'), '#453: --theme tufte injects the tufte theme (was silently dropped)');
 
-      // --toc: the ToC listing is rendered (absent by default).
+      // --toc: the book reading interface (chapter rail) is rendered (absent by default). Match the
+      // ToC nav ELEMENT, not the bare `enscribe-toc` class — #454 made --single-page inline default.css,
+      // whose `.enscribe-toc` rules would false-match the class string on any build.
       const toc = invoke(['build', bookPath, '--single-page', '--toc']);
       assert.equal(toc.code, 0, '#453: --toc build exits 0');
-      assert.ok(!plain.out.includes('enscribe-toc'), '#453: default build has no ToC');
-      assert.ok(toc.out.includes('enscribe-toc'), '#453: --toc renders the contents listing (was silently dropped)');
+      assert.ok(!plain.out.includes('<nav class="enscribe-toc'), '#453: default build renders no ToC nav');
+      assert.ok(toc.out.includes('<nav class="enscribe-toc'), '#453: --toc renders the reading interface (was silently dropped)');
 
       // --chapter-nav: the single-chapter PAGING script is added atop a ToC book (absent by default).
       // (Unlike `render`, which only makes articles, a `build` BOOK reaches tocType 'book' — so the
-      // flag is live here once threaded.)
+      // flag is live here once threaded.) Match a JS-only token from the paging script (`function
+      // buildBar`), not `enscribe-chapter-showall` — that class now rides the inlined default.css (#454).
       const cnav = invoke(['build', bookPath, '--single-page', '--toc', '--chapter-nav']);
       assert.equal(cnav.code, 0, '#453: --chapter-nav build exits 0');
-      assert.ok(!toc.out.includes('enscribe-chapter-showall'), '#453: a --toc book has no paging script by default');
-      assert.ok(cnav.out.includes('enscribe-chapter-showall'), '#453: --chapter-nav adds the single-chapter paging script (was silently dropped)');
+      assert.ok(!toc.out.includes('function buildBar'), '#453: a --toc book has no paging script by default');
+      assert.ok(cnav.out.includes('function buildBar'), '#453: --chapter-nav adds the single-chapter paging script (was silently dropped)');
       console.log('PASS: build — #453 threads --theme / --toc / --chapter-nav (parity with render)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #454 — the single-page surface CONSUMES the display + book-nav config (per-surface guard) ──
+  // The consumption audit's cell C: `build --single-page` emitted a headless fragment and read almost
+  // none of the book-nav family. This pins the READ end on the built single-page output so a regression
+  // (a key going silently dead again) fails here — the theme-consumption.test.js pattern, at the CLI.
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-single-page-'));
+    try {
+      const master = join(dir, 'book.emd');
+      // A book with two chapters, each holding a section — so chapter-nav-depth=2 has sub-sections to nest.
+      const write = (config) => writeFileSync(master, [
+        '<meta type=book>', '<title | Nav Book>', '</meta>',
+        config ? `<config ${config} />` : '', '',
+        '<chapter | First>', '', '<section | Alpha>', '', 'Alpha body.', '',
+        '<chapter | Second>', '', '<section | Beta>', '', 'Beta body.', '',
+      ].join('\n'), 'utf8');
+      const build = (config, ...flags) => { write(config); return invoke(['build', master, '--single-page', ...flags]); };
+      const rail = /<nav class="enscribe-toc enscribe-chapter-rail"/;
+      const prevNext = /<nav class="enscribe-chapter-nav"/;
+      const onThisPage = /<nav class="enscribe-onthispage"/;
+
+      // theme-variant (the shell stamp — cell C): light/dark stamp <html>; auto/absent stamp nothing.
+      assert.ok(/<html lang="en" data-theme-variant="dark">/.test(build('theme-variant=dark').out),
+        '#454: <config theme-variant=dark> stamps the single-page <html> (cell C — was dropped, no shell to stamp)');
+      // The bare `<html lang="en">` tag (a `>` immediately after lang, no attribute) proves no stamp —
+      // matching the whole-string for `data-theme-variant` would false-hit default.css's dark selectors.
+      assert.ok(/<html lang="en">/.test(build('theme-variant=auto').out),
+        '#454: theme-variant=auto stamps nothing on <html> (follows the OS)');
+      // theme (the token theme — already threaded by #453; re-pinned on this surface): tufte tokens present.
+      assert.ok(/Palatino|Tufte theme/.test(build('theme=tufte').out), '#454: <config theme=tufte> themes the single-page document');
+
+      // The book-nav family on the single-scroll reading interface (needs --toc for the interface to render).
+      const def = build('', '--toc').out;                       // all defaults: rail on, depth 1, prev/next on, on-this-page on
+      assert.ok(rail.test(def) && prevNext.test(def) && onThisPage.test(def),
+        '#454: a default --toc book shows the chapter rail, prev/next, and on-this-page');
+      // chapter-nav=false → the left rail is hidden (must-wire: was silently dead).
+      assert.ok(!rail.test(build('chapter-nav=false', '--toc').out),
+        '#454: chapter-nav=false hides the chapter rail on the single scroll (was silently dead)');
+      // chapter-nav-depth=2 → the rail deepens to chapters + their sections (must-wire: was silently dead).
+      const d2 = build('chapter-nav-depth=2', '--toc').out;
+      assert.ok(/Alpha/.test(d2) && /enscribe-rail-sections/.test(d2),
+        '#454: chapter-nav-depth=2 nests sections under chapters in the rail (was silently dead)');
+      // page-navigation=false → the foot prev/next bar is hidden (must-wire: was silently dead).
+      assert.ok(!prevNext.test(build('page-navigation=false', '--toc').out),
+        '#454: page-navigation=false hides the prev/next bar on the single scroll (was silently dead)');
+      // on-this-page=false → the right rail is hidden (behaves-already, now via the shared reader).
+      assert.ok(!onThisPage.test(build('on-this-page=false', '--toc').out),
+        '#454: on-this-page=false hides the on-this-page rail (shared with the separate-pages/live shapes)');
+      // N/A on a single scroll (documented in book-navigation.md): cover (no landing view), split-by (no
+      // pagination — the single scroll IS split-by=none), back-to-top (not part of the single-scroll
+      // chrome). They must not error and must not fire a false split-by-deferred warning.
+      const naCover = build('cover=false', '--toc');
+      const naSplit = build('split-by=none', '--toc');
+      assert.equal(naCover.code, 0, '#454: cover=false on a single-page book is a harmless N/A (no error)');
+      assert.equal(naSplit.code, 0, '#454: split-by=none on a single-page book is a harmless N/A (no error)');
+      assert.ok(!/split-by=none is named/.test(naSplit.err),
+        '#454: split-by on --single-page fires no false "not built" warning — the single scroll IS split-by=none');
+      console.log('PASS: build — #454 the single-page surface consumes theme / theme-variant / the book-nav family');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
