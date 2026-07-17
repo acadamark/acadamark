@@ -8,6 +8,7 @@ import { run_tests as runPandocTests } from './pandoc-import.test.js';
 import { run_tests as runJatsImportTests } from './import.test.js';
 import { run_tests as runRoundtripComplexTests } from './roundtrip-complex.test.js';
 import { run_tests as runLibrarySrcTests } from './library-src.test.js';
+import { run_tests as runTableSrcTests } from './table-src.test.js';
 import { run_tests as runMasterDocumentTests } from './master-document.test.js';
 import { run_tests as runAssemblyTransclusionTests } from './assembly-transclusion.test.js';
 import { run_tests as runEmbeddedAssetTests } from './embedded-asset.test.js';
@@ -39,6 +40,7 @@ try {
   await runArrowsClearanceTests(); // #420 follow-up: gutter chevrons clear ALL neighbors across the width sweep (Tier 2)
   runWebsiteAssetLinksTests(); // #296: a website article links each head asset (KaTeX + fonts) exactly once
   await runLibrarySrcTests(); // #133: async (mocked URL fetch via the render command)
+  await runTableSrcTests(); // #413 L5: URL <table src> preload (mocked fetch), the library-src analog
   runDocsCleanGuardTests(); // #427: docs-clean guard rejects anonymous (input) messages categorically
   process.exit(0);
 } catch (err) {

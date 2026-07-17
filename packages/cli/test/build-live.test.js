@@ -10,11 +10,12 @@
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import { existsSync, readFileSync, writeFileSync, rmSync, mkdtempSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, renameSync, rmSync, mkdtempSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 import { createRequire } from 'node:module';
-import { buildLiveFolder, buildSingleFile } from '../src/build-live.js';
+import { buildLiveFolder, buildSingleFile, copyShellAssets } from '../src/build-live.js';
+import { CliError } from '../src/lib/cli-error.js';
 import { buildEnscribePipeline } from '@enscribejs/enscribe';
 
 const require = createRequire(import.meta.url);
@@ -474,6 +475,31 @@ export function run_tests() {
       console.log('PASS: #363/#364/#365 cli — buildSingleFile cdn (default) vs inlined (fully offline); siblings rejected');
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #413 C3: an unbuilt engine bundle → a clean CliError naming the remedy, not a raw resolve stack ──
+  {
+    // copyShellAssets copies the ~3 MB engine bundle (a tsup artifact, absent on a fresh tree). Before
+    // the guard, a missing bundle threw a raw MODULE_NOT_FOUND ("Cannot find module …/dist/enscribe.
+    // browser.global.js") that surfaced as a Node stack. Simulate the unbuilt state by moving the built
+    // bundle aside (it is gitignored; the top-of-run execSync guarantees it exists here), then restore.
+    const bundle = require.resolve('@enscribejs/enscribe/browser-global');
+    const stashed = bundle + '.c3-stashed';
+    const dest = mkdtempSync(join(tmpdir(), 'enscribe-c3-'));
+    renameSync(bundle, stashed);
+    try {
+      let threw = null;
+      try { copyShellAssets(dest); } catch (e) { threw = e; }
+      assert.ok(threw, 'copyShellAssets throws when the engine bundle is not built');
+      assert.ok(threw instanceof CliError, 'it is a CliError → the top-level catch prints one clean line, no stack');
+      assert.ok(/build:lib/.test(threw.message), 'the message names the build remedy (npm run build:lib -w @enscribejs/enscribe)');
+      assert.ok(!/Cannot find module/.test(threw.message) && !/\bat\s/.test(threw.message),
+        'the raw MODULE_NOT_FOUND text / stack is replaced by the clean message');
+      console.log('PASS: #413 C3 — copyShellAssets on an unbuilt engine bundle errors cleanly (names the build remedy, no stack)');
+    } finally {
+      renameSync(stashed, bundle);   // always restore the bundle for the rest of the suite
+      rmSync(dest, { recursive: true, force: true });
     }
   }
 }
