@@ -59,7 +59,7 @@ import {
   injectWebsiteNavStyles, buildWebsiteTopBar, buildWebsiteSidebar, composeWebsiteShell,
   setActivePage, bindWebsiteNavDismiss, buildShellActions, SHELL_ACTIONS_CSS,
 } from './assets/website-nav-asset.js';
-import { bindSettingsPanel } from './assets/settings-panel.js';
+import { bindSettingsPanel, gearControlSpecs } from './assets/settings-panel.js';
 import { KNOWN_THEMES, getThemeCss } from './assets/theme-css.js';
 import { editConfigKwarg } from './lib/config-source-edit.js';
 import { isEnscribeTag } from '../core/tag.js';
@@ -199,7 +199,7 @@ function applyDocumentTheme(configMap) {
 // never load the website chrome CSS). Edit only — a standalone shell's document is the page (repo
 // linkage is the website chrome's `<config repo>` concern; threading it through the three standalone
 // mount paths rides the #398 corner slice).
-function injectFloatingShellActions({ document: docTier = false, layout = false, themes = [] } = {}) {
+function injectFloatingShellActions({ document: docTier = false, layout = false } = {}) {
   // No document → nothing to inject; no location → nothing the Edit toggle could flip (a jsdom
   // harness without a URL, or a non-browser host) — the corner is chrome for a real navigable page.
   if (typeof document === 'undefined' || typeof location === 'undefined') return;
@@ -219,35 +219,40 @@ function injectFloatingShellActions({ document: docTier = false, layout = false,
   // #435: the layout toggle rides the floating pill only for a split-capable surface in edit mode
   // (`layout` = editEnabled && article, set by the caller) — a standalone book's edit view is not
   // splittable, so it never gets the button.
-  holder.innerHTML = buildShellActions({ edit: true, editOn, layout, floating: true, settings: true, document: docTier, themes });
+  holder.innerHTML = buildShellActions({ edit: true, editOn, layout, floating: true, settings: true, document: docTier });
   document.body.appendChild(holder);
   bindShellEditToggle(holder);
   bindShellLayoutToggle(holder);   // #435
   bindSettingsPanel();   // reader tier + the panel's Escape/outside-click dismissal
 }
 
-// #430: wire the document-tier controls (theme picker + default variant) once the edit loop has the
-// source + editor handle. Reflects the current <config> into the selects, then on change rewrites the
-// <config> in the source (editConfigKwarg — span-bounded) and pushes it to the editor via setValue, so the
-// SOURCE PANE shows the edit and the preview re-renders through the same onChange path a keystroke uses.
-// A variant change ALSO re-stamps documentElement (injectTheme re-applies the theme on re-render, but the
-// baked dark CSS keys on the ROOT attribute, which a rendered fragment cannot set). Article/single-file
-// only — a book master's <config> has no live-edit channel (its loop edits chapter files), and websites
-// are not document-editable; those surfaces get the reader tier alone.
+// #430/#445: wire the document-tier controls once the edit loop has the source + editor handle.
+// Reflects the current <config> into the selects, then on change rewrites the <config> in the source
+// (editConfigKwarg — span-bounded) and pushes it to the editor via setValue, so the SOURCE PANE shows
+// the edit and the preview re-renders through the same onChange path a keystroke uses. A variant change
+// ALSO re-stamps documentElement (injectTheme re-applies the theme on re-render, but the baked dark CSS
+// keys on the ROOT attribute, which a rendered fragment cannot set). Article/single-file only — a book
+// master's <config> has no live-edit channel (its loop edits chapter files), and websites are not
+// document-editable; those surfaces get the reader tier alone.
 // Return the document-tier controls with any prior listeners dropped, or null if the panel renders no
 // document tier. Clone-replacing a select is the one-line "unbind everything" the per-page re-wire needs: a
 // prior page's change handler can never fire into the newly-active page's source. (The reader-tier controls
-// — `[data-reader]` — are untouched; only the `[data-doc]` selects are swapped.)
+// — `[data-reader]` — are untouched; only the `[data-doc]` selects are swapped.) #445: the control set is
+// no longer a fixed pair — every `select[data-doc]` is swapped and returned keyed by its config key, so
+// this stays in lockstep with whatever gearControlSpecs() rendered.
 function freshDocumentTierControls() {
   if (typeof document === 'undefined') return null;
   const panel = document.querySelector('.enscribe-settings-panel');
   if (!panel) return null;
   const docTierEl = panel.querySelector('.enscribe-settings-tier--doc');
   const drop = (sel) => { if (!sel || !sel.parentNode) return null; const f = sel.cloneNode(true); sel.parentNode.replaceChild(f, sel); return f; };
-  const themeSel = drop(panel.querySelector('[data-doc="theme"]'));
-  const variantSel = drop(panel.querySelector('[data-doc="theme-variant"]'));
-  if (!themeSel && !variantSel) return null;
-  return { docTierEl, themeSel, variantSel };
+  const selects = new Map();
+  for (const sel of panel.querySelectorAll('select[data-doc]')) {
+    const fresh = drop(sel);
+    if (fresh) selects.set(fresh.getAttribute('data-doc'), fresh);
+  }
+  if (selects.size === 0) return null;
+  return { docTierEl, selects };
 }
 
 // #430 / #434: wire the document-tier controls (theme picker + default variant) to the CURRENTLY-editable
@@ -272,34 +277,53 @@ function freshDocumentTierControls() {
 function wireDocumentTier({ proc, getSource, setSource, stampRoot = true, readModeDefault }) {
   const els = freshDocumentTierControls();
   if (!els) return;                       // reader-only surface — nothing to wire
-  const { docTierEl, themeSel, variantSel } = els;
+  const { docTierEl, selects } = els;
   if (docTierEl) docTierEl.hidden = false;
   const cfg = readMasterConfig(proc, getSource());
-  if (themeSel) {
-    themeSel.value = cfg?.get?.('theme') || 'default';
-    themeSel.addEventListener('change', () => {
-      const v = themeSel.value;
-      setSource(editConfigKwarg(proc, getSource(), 'theme', v === 'default' ? null : v));
-    });
-  }
-  if (variantSel) {
-    const pin = cfg?.get?.('theme-variant');
-    variantSel.value = pin || 'auto';
-    // #443: on a website, reflect THIS page's variant pin (else the site default) in the preview at once, so
-    // opening an already-pinned page shows its pin. A standalone document already stamped its own variant at
-    // mount, so it needs no on-wire stamp (readModeDefault is undefined there).
-    if (stampRoot && readModeDefault !== undefined) {
-      stampRootVariant(pin === 'light' || pin === 'dark' ? pin : readModeDefault);
+  // #445: one generic wire per gear control, from the SAME spec list the markup generated from. Read-back
+  // reflects the source truthfully: a bare/boolean form coerces exactly as readConfigBool does (`!== 'false'`),
+  // and a pinned value OUTSIDE the offered set (e.g. toc-depth=9) gets a one-off option rather than the
+  // select silently showing "Default" over a real pin — see-what-you-set holds in both directions. Writes:
+  // the '' Default sentinel removes the kwarg; any other pick writes the value (editConfigKwarg,
+  // last-carrier semantics). theme-variant keeps its #443 extra: the root re-stamp the preview needs.
+  for (const spec of gearControlSpecs()) {
+    const sel = selects.get(spec.key);
+    if (!sel) continue;
+    const has = !!cfg?.has?.(spec.key);
+    const raw = has ? String(cfg.get(spec.key)) : null;
+    let value;
+    if (!has) value = spec.gear.noUnset ? (sel.options[0]?.value ?? '') : '';
+    else if (spec.type === 'boolean') value = raw !== 'false' ? 'true' : 'false';
+    else value = raw;
+    if (value !== '' && !Array.prototype.some.call(sel.options, (o) => o.value === value)) {
+      const extra = document.createElement('option');
+      extra.value = value;
+      extra.textContent = value;
+      sel.appendChild(extra);
     }
-    variantSel.addEventListener('change', () => {
-      const v = variantSel.value;
-      setSource(editConfigKwarg(proc, getSource(), 'theme-variant', v));
-      if (stampRoot) {
-        // Reflect the new document default immediately (the reader switch still overrides). On a website,
-        // 'auto' falls back to the site-wide default rather than the OS, so the preview stays leak-free.
-        stampRootVariant(v === 'light' || v === 'dark' ? v : (readModeDefault ?? null));
+    sel.value = value;
+    if (spec.key === 'theme-variant') {
+      const pin = has ? raw : null;
+      // #443: on a website, reflect THIS page's variant pin (else the site default) in the preview at once,
+      // so opening an already-pinned page shows its pin. A standalone document already stamped its own
+      // variant at mount, so it needs no on-wire stamp (readModeDefault is undefined there).
+      if (stampRoot && readModeDefault !== undefined) {
+        stampRootVariant(pin === 'light' || pin === 'dark' ? pin : readModeDefault);
       }
-    });
+      sel.addEventListener('change', () => {
+        const v = sel.value;
+        setSource(editConfigKwarg(proc, getSource(), 'theme-variant', v));
+        if (stampRoot) {
+          // Reflect the new document default immediately (the reader switch still overrides). On a website,
+          // 'auto' falls back to the site-wide default rather than the OS, so the preview stays leak-free.
+          stampRootVariant(v === 'light' || v === 'dark' ? v : (readModeDefault ?? null));
+        }
+      });
+    } else {
+      sel.addEventListener('change', () => {
+        setSource(editConfigKwarg(proc, getSource(), spec.key, sel.value === '' ? null : sel.value));
+      });
+    }
   }
 }
 
@@ -1610,7 +1634,7 @@ export async function mountLiveWebsite(target, source, options = {}) {
     // #435: the edit-layout toggle rides the corner in edit mode; showEditPage reveals it only on an
     // ARTICLE page (split-capable) and hides it on a book/read/not-found page — the same per-page
     // reveal/hide pattern the document tier uses (setLayoutButtonVisible, below).
-    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, layout: editOn, repoUrl, settings: true, document: !!editor, themes: [...KNOWN_THEMES] })),
+    topBar: buildWebsiteTopBar(brand, navModel.entries, buildShellActions({ edit: true, editOn, layout: editOn, repoUrl, settings: true, document: !!editor })),
     sidebar: showSidebar ? buildWebsiteSidebar(navModel.entries) : '',
     footer: footerHtml,
   });
@@ -1973,7 +1997,7 @@ export async function mountLiveDocument(target, source, options = {}) {
     // master, breaking the tier's whole point (the author watching `<config theme=…>` appear in the source
     // pane). Editing a book's theme is a master-<config> affordance the per-chapter loop doesn't offer — a
     // follow-on, not this wiring. Read-only + book standalone surfaces get the reader tier alone.
-    injectFloatingShellActions({ document: editEnabled && type === 'article', layout: editEnabled && type === 'article', themes: [...KNOWN_THEMES] });
+    injectFloatingShellActions({ document: editEnabled && type === 'article', layout: editEnabled && type === 'article' });
   }
   return type === 'book' ? mountLiveBook(target, source, mountOptions)
     : type === 'website' ? mountLiveWebsite(target, source, mountOptions)

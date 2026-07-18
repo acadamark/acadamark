@@ -47,7 +47,7 @@ export const LAYOUT_COLUMNS_SVG =
  * edit-related). None → '' (the chrome is byte-identical for a site with no repo config on a static
  * page). Placement is the caller's: inline in the top bar, or `--floating`.
  */
-export function buildShellActions({ edit = false, editOn = false, layout = false, repoUrl = null, floating = false, settings = false, document: docTier = false, themes = [] } = {}) {
+export function buildShellActions({ edit = false, editOn = false, layout = false, repoUrl = null, floating = false, settings = false, document: docTier = false } = {}) {
   const parts = [];
   if (edit) {
     parts.push(
@@ -76,7 +76,7 @@ export function buildShellActions({ edit = false, editOn = false, layout = false
   // UNCONDITIONAL on the surfaces that opt in (its reader tier is always available), so a corner carrying
   // only the gear is still a corner — the `parts.length === 0` empty-return no longer fires when `settings`
   // is set.
-  if (settings) parts.push(buildSettingsPanel({ document: docTier, themes }));
+  if (settings) parts.push(buildSettingsPanel({ document: docTier }));
   if (parts.length === 0) return '';
   return `<div class="enscribe-shell-actions${floating ? ' enscribe-shell-actions--floating' : ''}">${parts.join('')}</div>`;
 }
