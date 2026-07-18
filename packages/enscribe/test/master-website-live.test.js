@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { mountLiveWebsite, mountLiveShell } from '../src/interpreter/browser.js';
-import { SETTINGS_PANEL_CSS } from '../src/interpreter/assets/settings-panel.js';
+import { SETTINGS_PANEL_CSS, gearControlSpecs } from '../src/interpreter/assets/settings-panel.js';
 
 const DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'master-website');
 const read = (n) => readFileSync(join(DIR, n), 'utf8');
@@ -390,6 +390,72 @@ export async function run() {
       assert.equal(dom.window.document.documentElement.getAttribute('data-theme-variant'), 'dark',
         'the website variant pick STAMPS the root during edit so the preview reflects it (#443 see-what-you-set)');
       console.log('PASS: document tier — a website variant pick reflects in the edit preview (stamps the root, #443)');
+
+      // ── #445: the EXPANDED document tier — family sections generated from the gear metadata ──
+      // The tier renders one collapsible section per gear-carrying family (the single source's family
+      // names), one control per gear-carrying key, and NO control for excluded keys (reserved / free-
+      // text / non-display / book-only / website-only). Lockstep by construction: the assertions here
+      // derive from gearControlSpecs(), the same list the markup generated from.
+      {
+        const specs = gearControlSpecs();
+        const docTierEl = root.querySelector('.enscribe-settings-tier--doc');
+        const famNames = [...docTierEl.querySelectorAll('.enscribe-settings-family > summary')].map((s) => s.textContent);
+        const expectedFams = [...new Set(specs.map((e) => e.family))];
+        assert.deepEqual(famNames, expectedFams,
+          'the document tier renders one collapsible section per gear-carrying family, in single-source order');
+        for (const spec of specs) {
+          assert.ok(docTierEl.querySelector(`select[data-doc="${spec.key}"]`),
+            `a control renders for gear key '${spec.key}'`);
+        }
+        assert.equal(docTierEl.querySelectorAll('select[data-doc]').length, specs.length,
+          'exactly the gear-carrying keys get controls — no stray control');
+        for (const key of ['strict-mode', 'quiet', 'parse-data-tables', 'heading-tags', 'toc-title',
+          'bibliography-heading', 'bibliography-position', 'display-style', 'chapter-nav', 'sidebar', 'repo']) {
+          assert.ok(!docTierEl.querySelector(`select[data-doc="${key}"]`),
+            `excluded key '${key}' gets NO control (reserved / free-text / non-display / unseen-master scope)`);
+        }
+        // The info affordance carries the key's description from the single source (the self-contained
+        // docs affordance — no per-key docs anchors exist and the chrome knows no docs-site URL).
+        const figSpec = specs.find((e) => e.key === 'number-figures');
+        const figRow = docTierEl.querySelector('select[data-doc="number-figures"]').closest('.enscribe-settings-row');
+        const figInfo = figRow.querySelector('.enscribe-settings-info-body');
+        assert.ok(figInfo && figInfo.textContent.includes(figSpec.description),
+          'the per-control info affordance carries the single-source description (config-options-doc.js)');
+        console.log('PASS: #445 — family sections + controls + exclusions generate from the gear metadata (lockstep)');
+      }
+      {
+        // WRITE round-trip for the new controls, on the page the earlier picks left theme=modern +
+        // theme-variant=dark in: a numbering toggle and an enum picker land IN THE SAME <config>,
+        // leaving the non-selected kwargs untouched; the Default sentinel REMOVES its kwarg only.
+        const figSel = root.querySelector('.enscribe-settings-panel select[data-doc="number-figures"]');
+        figSel.value = 'false';
+        figSel.dispatchEvent(new dom.window.Event('change'));
+        assert.ok(/<config[^>]*\bnumber-figures=false\b/.test(stub.last.value),
+          'a numbering toggle writes number-figures=false into the page <config>');
+        const locSel = root.querySelector('.enscribe-settings-panel select[data-doc="toc-location"]');
+        locSel.value = 'left';
+        locSel.dispatchEvent(new dom.window.Event('change'));
+        assert.ok(/\btoc-location=left\b/.test(stub.last.value), 'an enum picker writes toc-location=left');
+        assert.ok(/\btheme=modern\b/.test(stub.last.value) && /\btheme-variant=dark\b/.test(stub.last.value),
+          'the earlier theme/variant kwargs are untouched by the new writes (non-selected keys unchanged)');
+        assert.equal((stub.last.value.match(/<config/g) || []).length, 1,
+          'all document-tier writes share ONE <config> (no stacking)');
+
+        // Default REMOVES the kwarg (the theme picker's shipped convention), leaving the others in place.
+        figSel.value = '';
+        figSel.dispatchEvent(new dom.window.Event('change'));
+        assert.ok(!/number-figures/.test(stub.last.value), 'picking Default removes the number-figures kwarg');
+        assert.ok(/\btoc-location=left\b/.test(stub.last.value) && /\btheme=modern\b/.test(stub.last.value),
+          'removing one kwarg leaves the other pins untouched');
+        console.log('PASS: #445 — new controls round-trip on the website surface (write; Default removes)');
+        // (READ-BACK initialization — a pinned source reflecting into the controls at wire time,
+        // including an out-of-set pin's one-off option — is covered on the standalone article surface
+        // in live-article-shell.test.js, where the source carries the pins from mount. It is NOT
+        // covered via page-nav-and-return here because a website edit session does not persist an
+        // edited buffer across page navigation at all — showEditPage's onChange never writes back to
+        // sourceBySlug — a pre-existing editing-loop property that equally discards keystrokes;
+        // surfaced as a finding in the #445 slice report, not silently fixed here.)
+      }
 
       // Navigating to a NON-article edit surface (a not-found page) HIDES the document tier — reader tier
       // only — AND resets the root variant to the site-wide default, so the prior page's dark pick does not
