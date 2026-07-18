@@ -21,6 +21,8 @@
 import { NAV_ITEM_TAGNAMES, SECTION_TITLE_MAP } from '../lib/section-kinds.js';
 import { ENSCRIBE_CONFIG } from '../../core/file-data-keys.js';
 import { readConfigBool } from '../lib/config-helpers.js';
+import { isEnscribeTag } from '../../core/tag.js';
+import { lowerList } from './list-structuring.js';
 
 // The outline containers that deepen the level, single-sourced from section-kinds.
 const OUTLINE_CONTAINERS = new Set(NAV_ITEM_TAGNAMES);
@@ -58,4 +60,49 @@ export function enscribeHeadingLevels() {
     if (!readConfigBool(config, 'heading-tags', true)) return; // host-level opt-out: no stamps, no wraps
     stamp(tree.children ?? [], 0);
   };
+}
+
+// ─── Wave-1 walk merge (S9+S10): heading stamps + list lowering in ONE walk ──────────
+//
+// The main pipeline registers this merged transformer in place of the two standalone
+// plugins above/in list-structuring.js — the two were adjacent full walks doing
+// per-node-independent work. Per-node hook order is load-bearing in exactly one place:
+// an outline title CAN sit inside a `<list>` body (section-nesting descends list
+// content and mints section-titles there; collectItems later absorbs the section as
+// item flow). The pre-merge pass order stamped those titles BEFORE lowering, and a
+// lowered list is never re-walked — so the merged walk must stamp-descend a `<list>`
+// subtree (stamp([n], depth), heading-levels' exact descent) before lowering it.
+// The heading-tags gate applies to STAMPING ONLY — lists lower regardless (the
+// standalone list-structuring plugin was unconditional; gating the whole walk would
+// leave `<list>` unlowered when heading-tags is off). `list` is not an outline
+// container, so lowering never changes any stamp's depth. enscribeListStructuring
+// stays exported and registered on the lift path (its own walk) — public API.
+export function enscribeHeadingLevelsAndLists() {
+  return (tree, file) => {
+    const config = file?.data?.[ENSCRIBE_CONFIG];
+    const stampOn = readConfigBool(config, 'heading-tags', true);
+    mergedWalk(tree.children ?? [], 0, stampOn, file);
+  };
+}
+
+function mergedWalk(nodes, outlineDepth, stampOn, file) {
+  if (!Array.isArray(nodes)) return;
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
+    if (!n || typeof n !== 'object') continue;
+    const tag = n.tagname;
+    if (isEnscribeTag(n, 'list')) {
+      // Stamp any outline titles resident in the list subtree first (see header note),
+      // then lower in place; S10 semantics: the lowered result is not re-walked.
+      if (stampOn) stamp([n], outlineDepth);
+      nodes[i] = lowerList(n, file);
+      continue;
+    }
+    if (stampOn && tag && OUTLINE_TITLES.has(tag)) {
+      n.computedHeadingLevel = 1 + outlineDepth;
+    }
+    const deeper = tag && OUTLINE_CONTAINERS.has(tag) ? outlineDepth + 1 : outlineDepth;
+    mergedWalk(n.content, deeper, stampOn, file);
+    mergedWalk(n.children, deeper, stampOn, file);
+  }
 }

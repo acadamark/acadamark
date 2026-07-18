@@ -134,7 +134,7 @@ import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
 import { enscribeWebsiteStructuring } from './plugins/website-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
-import { enscribeHeadingLevels } from './plugins/heading-levels.js';
+import { enscribeHeadingLevelsAndLists } from './plugins/heading-levels.js';
 import { enscribeSrcRebase } from './plugins/src-rebase.js';
 // #137: lower the `<list>` construct (+ `<-`/`<*` markers, `-`/`*` idiom) to a
 // markdown list node, reusing the existing list render + JATS mapping.
@@ -722,17 +722,16 @@ export function enscribeInterpreter(options = {}) {
   this.use(enscribeBookStructuring);
   this.use(enscribeArticleStructuring);
   this.use(enscribeSectionNesting);
-  // #397: stamp computedHeadingLevel on outline title nodes (a structural fact —
-  // 1 + enclosing outline containers). Runs after the structurers so nesting is
-  // physical; the render stage (schemaDispatch) materializes the native heading
-  // wrap from the stamp. Gated on <config heading-tags> (default on) inside the
-  // plugin — off means nothing is stamped, so output is byte-identical to the
-  // bare-element form by construction.
-  this.use(enscribeHeadingLevels);
-  // #137: lower `<list>` to a markdown list node. Runs after section nesting so
-  // a `<list>` (sectionDepth 0, carried as section body content) is lowered
-  // wherever it landed; before the semantic plugins, which see a plain list.
-  this.use(enscribeListStructuring);
+  // #397 + #137, ONE walk (wave-1 merge): stamp computedHeadingLevel on outline
+  // title nodes (a structural fact — 1 + enclosing outline containers; the render
+  // stage materializes the native heading wrap from the stamp) AND lower `<list>`
+  // to a markdown list node, in a single traversal. Runs after the structurers so
+  // nesting is physical and a `<list>` is lowered wherever it landed; before the
+  // semantic plugins, which see plain lists. The heading-tags gate (default on)
+  // applies to stamping only — lists lower regardless. Per-node order matters
+  // once: titles resident in a list body are stamp-descended BEFORE the list is
+  // lowered (see enscribeHeadingLevelsAndLists' header).
+  this.use(enscribeHeadingLevelsAndLists);
 
   // 4.9 (#115): minipage no-external guard. A NO-OP on every normal document;
   //     active only on a minipage SEALED sub-run (the deferred phase sets the
