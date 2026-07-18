@@ -22,8 +22,10 @@
 //
 // Honest limits, stated plainly: the budget sees only walks that enter the four shared
 // walkers (discover / walkReplace / walkNormalize / walkWithScope). A hand-rolled
-// recursion never trips it — those are covered by the roster guard (a new PLUGIN must be
-// named in the contract roster) and by review under the co-travel rule. No shared hast
+// recursion never trips it — those are covered by the roster guard (scripts/
+// check-pipeline-roster.mjs at the repo root — cross-surface guards may not live in the
+// engine per the check-boundary one-way rule; a new PLUGIN must be named in the contract
+// roster) and by review under the co-travel rule. No shared hast
 // walker exists yet, so compile-phase hast walks are likewise roster-and-review terrain.
 
 import assert from 'node:assert/strict';

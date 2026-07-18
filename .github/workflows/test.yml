@@ -82,6 +82,12 @@ jobs:
       - name: Docs-clean gate (flagship builds clean)
         run: npm run check:docs-clean
 
+      # The pipeline-roster lockstep guard (wave-1 walk merges): the contract's plugin
+      # roster must equal enscribeInterpreter's registration order — a new pass fails
+      # here until notes/specs/pipeline-contract.md names it (the co-travel rule).
+      - name: Pipeline roster ⇄ contract lockstep
+        run: npm run check:roster
+
       - name: Run workspace test suites
         run: npm test --workspaces --if-present
 

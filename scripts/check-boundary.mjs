@@ -61,14 +61,22 @@ const RULE1_ALLOW = new Set([]);
 // Manifest counterpart (engine devDependencies in a language manifest) — same standing
 // rule. (Runtime `dependencies` get NO allowlist — always zero.)
 const RULE1B_DEV_ALLOW = {};
-// The ONE permitted engine→prose read: the spec→artifact generator for the committed
-// spec-data.generated.json (CLAUDE.md §"Generated artifacts and their sources"). It reads
-// notes/specs/{render-quality,tag-forms-reference,idioms}.md at generation/drift-check time
-// only — never on the shipped test path (it skips when notes/ is absent). This is the
-// Stage-2 "specs as a published artifact" question in live form; the Stage 2 dependency
-// map decides its home, and this entry must be resolved (relocated or re-routed through a
-// published artifact) before the physical split.
-const RULE2B_ALLOW = new Set(['packages/enscribe/test/coverage/gen-spec-data.mjs']);
+// The permitted engine→prose reads — BOTH are check/generation-time-only drift guards
+// (never on a shipped path; each skips when notes/ is absent), both live entries of the
+// Stage-2 "specs as a published artifact" question, and both must be resolved (relocated
+// or re-routed through a published artifact) before the physical split:
+//   - gen-spec-data.mjs: the spec→artifact generator for the committed
+//     spec-data.generated.json (CLAUDE.md §"Generated artifacts and their sources");
+//     reads notes/specs/{render-quality,tag-forms-reference,idioms}.md.
+//   - check-pipeline-roster.mjs (root `check:roster`, wave-1 walk merges): the
+//     roster⇄registration lockstep guard; reads notes/specs/pipeline-contract.md's
+//     roster table to compare it against index.js's `this.use(...)` order. The
+//     engine-local alternative (a duplicated roster literal) would recreate the drift
+//     the guard exists to kill, so the check-time read is the lesser coupling.
+const RULE2B_ALLOW = new Set([
+  'packages/enscribe/test/coverage/gen-spec-data.mjs',
+  'scripts/check-pipeline-roster.mjs',
+]);
 
 // Never scanned: installed/derived/build trees, VCS internals, and this guard itself
 // (its constants necessarily name both sides of the boundary).

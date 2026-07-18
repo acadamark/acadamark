@@ -17,8 +17,10 @@ stage/phase narrative, the ordering constraints, and the data-flow examples).
 
 The tables' owning code is the authority; if code and this document disagree, the
 code is right and this document has the bug. The roster is now **guarded**: the
-`pipeline-roster` test (`packages/enscribe/test/pipeline-roster.test.js`) asserts this
-document's roster table equals `index.js`'s actual `this.use(...)` registration order,
+root `check:roster` script (`scripts/check-pipeline-roster.mjs` — at the repo root
+because the check reads both the engine source and this prose surface, which the
+one-way boundary forbids engine code from doing) asserts this document's roster
+table equals `index.js`'s actual `this.use(...)` registration order,
 name for name — a new, removed, or reordered pass fails the suite until this table
 names it (the wave-1 walk-merges slice built the guard this paragraph used to defer).
 Its sibling, the `walk-budget` test, pins the shared-walker traversal count — see
@@ -88,7 +90,7 @@ pass, a flag computed by a walk that already runs.
 
 Two guards enforce the rule mechanically (`packages/enscribe/test/`):
 
-- **`pipeline-roster.test.js`** — this document's roster table must equal the
+- **`scripts/check-pipeline-roster.mjs`** (root `check:roster`) — this document's roster table must equal the
   actual registration order, name for name. A new pass fails the suite until the
   roster names it (and the PR diff on this spec is where the justification is
   reviewed).
