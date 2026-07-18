@@ -141,7 +141,6 @@ import { enscribeListStructuring } from './plugins/list-structuring.js';
 // #21: opt-in Enscribe inline markup in data-format table cells. Runs in the
 // mdast phase so cell <ref>/<cite> become tree-resident before resolution.
 import { enscribeTableCellParse } from './plugins/table-cell-parse.js';
-import { enscribeHtmlTableCells } from './plugins/html-table-cells.js';
 import { enscribeNotes } from './plugins/notes.js';
 // Phase 5 slice 5c (2026-05-28): re-export enscribeNotePlacement so the
 // JATS test pipeline can include it (it produces __note-list /
@@ -751,24 +750,20 @@ export function enscribeInterpreter(options = {}) {
     return (tree, file) => buildCitationIndex(tree, file, { assetsDir });
   });
 
-  // 5.5 (#21 / #105): parse opted-in data-table cells into canonical inline mdast.
-  //     Runs BEFORE notes, numbering, and ref/cite resolution, so any <note> /
-  //     <ref> / <cite> authored inside an opted-in cell is tree-resident when
-  //     those passes run — the shared walkers (discover / walkReplace) descend the
-  //     stamped cells, so cell footnotes register/number/hoist and cell refs/cites
-  //     resolve exactly like body ones. (#21 originally placed this AFTER notes,
-  //     leaving footnotes-in-cells out of scope; #105 moves it earlier to bring
-  //     them in. A no-op for tables without an opt-in → byte-identical.)
+  // 5.5 (#21 / #105 / #108): parse table-cell content into canonical inline mdast —
+  //     ONE `table` walk, two mutually-exclusive branches (wave-1 walk merge):
+  //     opted-in data-format cells stamp `_parsedCells` (#21/#105), and the
+  //     no-format raw-HTML grid escape hatch stamps `_htmlTable` (#108, the form
+  //     the JATS importer serializes complex tables to — closing the
+  //     import-jats --emd → render round-trip). Runs BEFORE notes, numbering, and
+  //     ref/cite resolution, so any <note> / <ref> / <cite> authored inside a
+  //     stamped cell is tree-resident when those passes run — the shared walkers
+  //     (discover / walkReplace) descend the stamped cells, so cell footnotes
+  //     register/number/hoist and cell refs/cites resolve exactly like body ones.
+  //     (#21 originally placed this AFTER notes, leaving footnotes-in-cells out of
+  //     scope; #105 moves it earlier to bring them in. A no-op for tables without
+  //     an opt-in or a grid → byte-identical.)
   this.use(enscribeTableCellParse, { assetsDir });
-
-  // 5.6 (#108): re-resolve Enscribe inline inside a no-format raw-HTML <table>
-  //     escape hatch (the form the JATS importer serializes complex tables to in
-  //     `.emd`). Parses the HTML-grid content, recovers each cell's inline source,
-  //     and stamps the same `_htmlTable` shape #106 defined — so cell refs / cites
-  //     / notes / math resolve on a fresh `.emd` render, closing the
-  //     import-jats --emd → render round-trip. Runs with the cell-parse pass,
-  //     before notes. A no-op for any table without a raw-HTML grid → byte-identical.
-  this.use(enscribeHtmlTableCells);
 
   // 5.7 (#190): Asset index (index-build): harvest embedded <fig #id fmt>base64</fig>
   //     declarations from <data> nodes into file.data.enscribeAssets, and STRIP each

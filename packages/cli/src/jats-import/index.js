@@ -56,7 +56,7 @@
 //             paper's formula-and-cross-reference-heavy complex tables import with
 //             no raw verbatim JATS in any cell, in HTML and JATS both. (#108 closed
 //             the round-trip: re-rendering the resulting `.emd` re-resolves those
-//             cells via the enscribeHtmlTableCells pipeline plugin, which re-stamps
+//             cells via the #108 stamp (stampHtmlTable, riding the table-cell-parse walk), which re-stamps
 //             `_htmlTable` from the escape-hatch content.)
 
 import { SaxesParser } from 'saxes';
@@ -879,7 +879,7 @@ function convertTableWrap(tw) {
     // notes / math resolve like body content. `node.content` carries the same grid
     // as escape-hatch HTML with Enscribe inline *source* in cells (escaped), so the
     // `.emd` output has no raw JATS either, and (#108) re-rendering that `.emd`
-    // re-resolves the cells via the enscribeHtmlTableCells pipeline plugin.)
+    // re-resolves the cells via the #108 stamp riding the table-cell-parse walk.)
     // No noteDropped here: the table is fully converted, not dropped.
     collectFootnotes(tw); // <table-wrap-foot> <fn>s, so in-cell <xref ref-type="fn"> inline
     const grid = buildHtmlGrid(innerTable);
@@ -942,7 +942,7 @@ function buildHtmlGrid(table) {
  * payload): real `<thead>`/`<tbody>`/`<tr>`/`<th>`/`<td>` layout tags with span /
  * align attributes, and each cell's converted inline as Enscribe *source*
  * (`<$…$>`, `<cite @k>`, `<ref @id>`, `<note | …>`) escaped as HTML text — so the
- * `.emd` carries the full table with no raw JATS. (#108: the enscribeHtmlTableCells
+ * `.emd` carries the full table with no raw JATS. (#108: the stampHtmlTable
  * pipeline plugin re-parses exactly this content on render and re-resolves the
  * cells — the escaped inline source is entity-decoded and re-parsed to mdast.)
  */
