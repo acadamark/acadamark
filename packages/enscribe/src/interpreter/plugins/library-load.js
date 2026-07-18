@@ -191,6 +191,9 @@ export function collectDataNodes(nodes) {
  * @param {import('vfile').VFile} file
  * @param {object} [options]
  * @param {string|null} [options.assetsDir] Directory for resolving src= paths.
+ * @param {Array|null} [options.dataNodes] Pre-collected <data> nodes (the wave-1 shared
+ *   harvest — LIVE references, never copies: the asset index strips harvested
+ *   declarations from these very nodes). Omitted → collect here (standalone use, tests).
  */
 export function buildCitationIndex(tree, file, options = {}) {
   const { assetsDir = null } = options;
@@ -228,8 +231,9 @@ export function buildCitationIndex(tree, file, options = {}) {
 
   // <data> nodes sit at root level in an article (after article-structuring)
   // but are nested inside <book-body> in a book (book-structuring relocates
-  // loose body content). Collect them wherever they landed.
-  const dataNodes = collectDataNodes(tree.children ?? []);
+  // loose body content). Collect them wherever they landed — or take the
+  // shared step-5 harvest (wave-1: one collect feeds this and the asset index).
+  const dataNodes = options.dataNodes ?? collectDataNodes(tree.children ?? []);
 
   const citeInstances = [];
 

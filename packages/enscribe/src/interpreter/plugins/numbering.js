@@ -1,8 +1,13 @@
 // Numbering plugin — register display-math, figure, table, and section nodes;
 // fill display numbers.
 //
-// Runs after enscribeNotes (notes claim their positions first). Uses the shared
-// discover() walk to visit the full mdast tree in document order and register:
+// Hosts note registration too (wave-1 walk merge M6+M7): the notes visitors ride
+// this plugin's discover walk on the unscoped branch — one traversal, two
+// register-only visitor sets with disjoint keys; the scoped branch keeps notes'
+// own discover walk (walkWithScope lacks cell descent and stamps `_scope`).
+// Per-type registry sequences make interleaving moot: each type numbers in its
+// own insertion order, which is document order under either shape. Uses the
+// shared discover() walk to visit the full mdast tree in document order and register:
 //
 //   Numbered elements ($$, figure, table):
 //     - Calls registry.assign(type, id, { numbered }) to record the entry
@@ -40,6 +45,7 @@ import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { SECTION_TAGNAMES } from '../lib/section-kinds.js';
 import { isBodyBookPart } from '../lib/book-regions.js';
 import { resolveConfigEnum } from '../lib/config-helpers.js';
+import { buildNoteRegistration } from './notes.js';
 
 // Maps the canonical post-gate tagname to the registry type used for display
 // labels. Post-2026-05-25 (the normalize-to-canonical gate): sigil tagnames
@@ -313,12 +319,29 @@ export function enscribeNumbering() {
     // index, stamping each registered entry's `data.scope` with that
     // context. For articles (scope === 'none'), use the existing
     // discover() walk — no scope tracking, no behavior change.
+    //
+    // Wave-1 walk merge (M6+M7): note registration rides THIS walk on the
+    // discover branch — the two visitor Maps have disjoint tagname keys
+    // (asserted below: a silent Map-spread collision would drop a visitor),
+    // both are register-only, and nothing between the old step 6 and step 7
+    // consumed either registry. The merge is DISCOVER-BRANCH ONLY, and that is
+    // the honest shape: walkWithScope has no cell descent (a cell note in a
+    // scoped book would silently not register) and wraps every visitor with a
+    // `_scope` stamp notes must not acquire — so a scoped document keeps notes'
+    // own discover walk, exactly as before the merge.
+    const notes = buildNoteRegistration(file);
     const scope = resolveCounterResetScope(tree.children, config);
     if (scope === 'none') {
-      discover(tree, visitors);
+      const merged = new Map([...notes.visitors, ...visitors]);
+      if (merged.size !== notes.visitors.size + visitors.size) {
+        throw new Error('numbering/notes visitor tagname collision — a visitor was silently dropped');
+      }
+      discover(tree, merged);
     } else {
+      discover(tree, notes.visitors);
       walkWithScope(tree.children ?? [], visitors, scope);
     }
+    notes.commit();
 
     if (file?.data) {
       file.data[ENSCRIBE_NUMBERING_PENDING] = pending;
@@ -351,6 +374,7 @@ export function enscribeNumbering() {
  * @param {string} scope — 'chapter' | 'section'
  */
 function walkWithScope(nodes, visitors, scope) {
+  globalThis.__enscribeWalkTally?.('walkWithScope');   // walk-budget guard hook
   let chapterIndex = 0;
   let sectionIndex = 0;
   let insideBookPart = false;

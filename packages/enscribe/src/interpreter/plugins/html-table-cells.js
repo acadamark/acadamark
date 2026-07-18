@@ -35,6 +35,11 @@ import { parseInlineCellToMdast } from '../lib/parse-inline.js';
  * `<table>` escape hatch whose content is an HTML grid, with each cell's inner
  * Enscribe inline source parsed to tree-resident mdast.
  *
+ * NOT registered in the main pipeline since the wave-1 walk merge: the stamp
+ * rides table-cell-parse's `table` walk as its second branch (one traversal,
+ * two mutually-exclusive stamps — see table-cell-parse.js). This standalone
+ * wrapper remains for direct use; `stampHtmlTable` is the exported visitor.
+ *
  * @returns {(tree: object) => void}
  */
 export function enscribeHtmlTableCells() {
@@ -43,7 +48,8 @@ export function enscribeHtmlTableCells() {
   };
 }
 
-function stampHtmlTable(node) {
+/** The #108 visitor: guards itself (no-format, unstamped, grid-shaped) and stamps. */
+export function stampHtmlTable(node) {
   if (node.positional?.[0]) return;            // data-format table → #21's job
   if (node._htmlTable || node._parsedCells) return; // already structured
   const content = typeof node.content === 'string' ? node.content : '';

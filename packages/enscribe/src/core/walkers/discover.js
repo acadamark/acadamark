@@ -61,5 +61,6 @@ function walkDiscover(nodes, visitors) {
  * @param {Map<string, (node: object) => void>} visitors - keyed by tagname
  */
 export function discover(tree, visitors) {
+  globalThis.__enscribeWalkTally?.('discover');   // walk-budget guard hook (inert unless a test sets it)
   walkDiscover(tree.children ?? [], visitors);
 }

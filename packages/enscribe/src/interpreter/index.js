@@ -15,8 +15,9 @@
 //     downstream pipeline sees one node type.
 //   - The discovery and structural plugins — enscribeConfigDiscovery,
 //     enscribeArticleStructuring, enscribeSectionNesting.
-//   - The semantic-processing plugins — buildCitationIndex (via an anonymous
-//     plugin wrapper), enscribeNotes (register-only), enscribeNumbering
+//   - The semantic-processing plugins — buildCitationIndex + buildAssetIndex
+//     (one shared <data> harvest via the anonymous enscribeDataIndexes
+//     wrapper), enscribeNotes (register-only), enscribeNumbering
 //     (register-only), an anonymous enscribeApplyNumbers plugin that calls
 //     numberRegistry() and fillNumbering, enscribeRefResolution,
 //     enscribeCiteResolution, enscribeNotePlacement, enscribeBibliography.
@@ -133,7 +134,7 @@ import { enscribeArticleStructuring } from './plugins/article-structuring.js';
 import { enscribeBookStructuring } from './plugins/book-structuring.js';
 import { enscribeWebsiteStructuring } from './plugins/website-structuring.js';
 import { enscribeSectionNesting } from './plugins/section-nesting.js';
-import { enscribeHeadingLevels } from './plugins/heading-levels.js';
+import { enscribeHeadingLevelsAndLists } from './plugins/heading-levels.js';
 import { enscribeSrcRebase } from './plugins/src-rebase.js';
 // #137: lower the `<list>` construct (+ `<-`/`<*` markers, `-`/`*` idiom) to a
 // markdown list node, reusing the existing list render + JATS mapping.
@@ -141,13 +142,12 @@ import { enscribeListStructuring } from './plugins/list-structuring.js';
 // #21: opt-in Enscribe inline markup in data-format table cells. Runs in the
 // mdast phase so cell <ref>/<cite> become tree-resident before resolution.
 import { enscribeTableCellParse } from './plugins/table-cell-parse.js';
-import { enscribeHtmlTableCells } from './plugins/html-table-cells.js';
 import { enscribeNotes } from './plugins/notes.js';
 // Phase 5 slice 5c (2026-05-28): re-export enscribeNotePlacement so the
 // JATS test pipeline can include it (it produces __note-list /
 // __note-list-item / __note-marker nodes the JATS emitter consumes).
 import { enscribeNotePlacement } from './plugins/note-placement.js';
-import { buildCitationIndex, enscribeLibraryLoad } from './plugins/library-load.js';
+import { buildCitationIndex, collectDataNodes, enscribeLibraryLoad } from './plugins/library-load.js';
 import { buildAssetIndex, enscribeAssetResolution } from './plugins/asset-load.js';
 import { enscribeNumbering, fillNumbering, numberSections } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
@@ -722,17 +722,16 @@ export function enscribeInterpreter(options = {}) {
   this.use(enscribeBookStructuring);
   this.use(enscribeArticleStructuring);
   this.use(enscribeSectionNesting);
-  // #397: stamp computedHeadingLevel on outline title nodes (a structural fact —
-  // 1 + enclosing outline containers). Runs after the structurers so nesting is
-  // physical; the render stage (schemaDispatch) materializes the native heading
-  // wrap from the stamp. Gated on <config heading-tags> (default on) inside the
-  // plugin — off means nothing is stamped, so output is byte-identical to the
-  // bare-element form by construction.
-  this.use(enscribeHeadingLevels);
-  // #137: lower `<list>` to a markdown list node. Runs after section nesting so
-  // a `<list>` (sectionDepth 0, carried as section body content) is lowered
-  // wherever it landed; before the semantic plugins, which see a plain list.
-  this.use(enscribeListStructuring);
+  // #397 + #137, ONE walk (wave-1 merge): stamp computedHeadingLevel on outline
+  // title nodes (a structural fact — 1 + enclosing outline containers; the render
+  // stage materializes the native heading wrap from the stamp) AND lower `<list>`
+  // to a markdown list node, in a single traversal. Runs after the structurers so
+  // nesting is physical and a `<list>` is lowered wherever it landed; before the
+  // semantic plugins, which see plain lists. The heading-tags gate (default on)
+  // applies to stamping only — lists lower regardless. Per-node order matters
+  // once: titles resident in a list body are stamp-descended BEFORE the list is
+  // lowered (see enscribeHeadingLevelsAndLists' header).
+  this.use(enscribeHeadingLevelsAndLists);
 
   // 4.9 (#115): minipage no-external guard. A NO-OP on every normal document;
   //     active only on a minipage SEALED sub-run (the deferred phase sets the
@@ -742,42 +741,44 @@ export function enscribeInterpreter(options = {}) {
   //     them would resolve it — reject, not resolve.
   this.use(enscribeMinipageGuard);
 
-  // 5. Citation index (index-build, not a tree transformation): parse <library>
+  // 5. Citation + asset indexes (index-build, not a tree transformation): parse <library>
   //    content from <data> nodes (deep-collected wherever they land — at root
   //    in an article, nested in <book-body> in a book), build
   //    file.data.enscribeCitations. Requires enscribeConfigDiscovery
   //    (citation-style) to have run first.
-  this.use(function enscribeCitationIndex() {
-    return (tree, file) => buildCitationIndex(tree, file, { assetsDir });
+  //    Wave-1 walk merge: ONE collectDataNodes harvest feeds BOTH the citation
+  //    index and the #190 asset index (formerly step 5.7's identical re-walk —
+  //    nothing between them creates, moves, or removes <data> nodes; the two
+  //    intervening table stamps are <table>-only and message-free). Constraints
+  //    the fused shape must keep: (1) citation BEFORE asset — both unshift
+  //    visible error nodes at the same body target, so consumer order is the
+  //    rendered error-block order (asset errors above citation errors today) and
+  //    the file.messages order; (2) the harvest hands LIVE node references — the
+  //    asset index strips harvested declarations from those very nodes so
+  //    numbering never sees them (#190); (3) the harvest runs after the minipage
+  //    guard, which blanks boxed <data>/<library> in sealed sub-runs (#411).
+  this.use(function enscribeDataIndexes() {
+    return (tree, file) => {
+      const dataNodes = collectDataNodes(tree.children ?? []);
+      buildCitationIndex(tree, file, { assetsDir, dataNodes });
+      buildAssetIndex(tree, file, { dataNodes });
+    };
   });
 
-  // 5.5 (#21 / #105): parse opted-in data-table cells into canonical inline mdast.
-  //     Runs BEFORE notes, numbering, and ref/cite resolution, so any <note> /
-  //     <ref> / <cite> authored inside an opted-in cell is tree-resident when
-  //     those passes run — the shared walkers (discover / walkReplace) descend the
-  //     stamped cells, so cell footnotes register/number/hoist and cell refs/cites
-  //     resolve exactly like body ones. (#21 originally placed this AFTER notes,
-  //     leaving footnotes-in-cells out of scope; #105 moves it earlier to bring
-  //     them in. A no-op for tables without an opt-in → byte-identical.)
+  // 5.5 (#21 / #105 / #108): parse table-cell content into canonical inline mdast —
+  //     ONE `table` walk, two mutually-exclusive branches (wave-1 walk merge):
+  //     opted-in data-format cells stamp `_parsedCells` (#21/#105), and the
+  //     no-format raw-HTML grid escape hatch stamps `_htmlTable` (#108, the form
+  //     the JATS importer serializes complex tables to — closing the
+  //     import-jats --emd → render round-trip). Runs BEFORE notes, numbering, and
+  //     ref/cite resolution, so any <note> / <ref> / <cite> authored inside a
+  //     stamped cell is tree-resident when those passes run — the shared walkers
+  //     (discover / walkReplace) descend the stamped cells, so cell footnotes
+  //     register/number/hoist and cell refs/cites resolve exactly like body ones.
+  //     (#21 originally placed this AFTER notes, leaving footnotes-in-cells out of
+  //     scope; #105 moves it earlier to bring them in. A no-op for tables without
+  //     an opt-in or a grid → byte-identical.)
   this.use(enscribeTableCellParse, { assetsDir });
-
-  // 5.6 (#108): re-resolve Enscribe inline inside a no-format raw-HTML <table>
-  //     escape hatch (the form the JATS importer serializes complex tables to in
-  //     `.emd`). Parses the HTML-grid content, recovers each cell's inline source,
-  //     and stamps the same `_htmlTable` shape #106 defined — so cell refs / cites
-  //     / notes / math resolve on a fresh `.emd` render, closing the
-  //     import-jats --emd → render round-trip. Runs with the cell-parse pass,
-  //     before notes. A no-op for any table without a raw-HTML grid → byte-identical.
-  this.use(enscribeHtmlTableCells);
-
-  // 5.7 (#190): Asset index (index-build): harvest embedded <fig #id fmt>base64</fig>
-  //     declarations from <data> nodes into file.data.enscribeAssets, and STRIP each
-  //     harvested declaration from its <data>. Stripping is load-bearing: <data> is
-  //     render-suppressed but numbering still walks it, so an un-stripped declaration
-  //     would consume a figure number (#190 Phase 0). Mirrors the citation index (5).
-  this.use(function enscribeAssetIndex() {
-    return (tree, file) => buildAssetIndex(tree, file);
-  });
 
   // 5.8 (#190): Asset resolution: a body <fig src="@id"> pulls in an embedded asset —
   //     rewrite its src to a data: URI and adopt the asset id onto the placed figure
@@ -786,17 +787,20 @@ export function enscribeInterpreter(options = {}) {
   //     under the adopted id and the error node is not counted as a figure.
   this.use(enscribeAssetResolution);
 
-  // 6. Notes: register note elements (record-only); splice __note-marker nodes
-  //    into the tree; store pending data for the apply-numbers stage.
-  this.use(enscribeNotes);
-
-  // 7. Numbering: register equation, figure, and table elements (record-only);
-  //    store pending { node, entry } pairs for the apply-numbers stage.
+  // 6+7, ONE walk (wave-1 merge M6+M7): register note elements AND the numbered
+  //    element/section families (both record-only; pending data stored for the
+  //    apply-numbers and note-placement stages). Note registration rides
+  //    enscribeNumbering's discover walk — disjoint visitor keys, per-type
+  //    registry sequences, nothing between the old steps consumed either
+  //    registry. Discover-branch only: a scoped document (counter-reset-scope
+  //    chapter/section) keeps notes' own discover walk beside walkWithScope,
+  //    which lacks cell descent and stamps `_scope` (see numbering.js).
+  //    enscribeNotes remains exported for standalone use (public API).
   this.use(enscribeNumbering);
 
   // 8. Apply numbers: single numbering stage. Calls numberRegistry() to assign
   //    all display numbers at once, then runs per-node fill steps.
-  //    Runs after all registration (steps 6-7) and before ref/cite resolution (9-10).
+  //    Runs after all registration (the merged step 6+7) and before ref/cite resolution (9-10).
   this.use(function enscribeApplyNumbers() {
     return (tree, file) => {
       const registry = ensureRegistry(file);
@@ -1010,6 +1014,16 @@ export function enscribeInterpreter(options = {}) {
   // markMarginLayout + MARGIN_CSS fire only then → a default document adds nothing.
   // Display-only (the mdast tree / JATS export is unchanged).
   function injectMarginLayout(hast, assets, configMap, file) {
+    // Wave-1 gate (re-arming #48's per-asset discipline; the `assets` param had been dead
+    // since 84d8bc6): note-placement pairs every note-list item with a sup[data-note-id]
+    // marker BY CONSTRUCTION (items and markers are built from the same pending array),
+    // so no markers detected ⇒ nothing to collect, relocate, or warn about — skip
+    // applySidenotes' full hast walk. detectAssets' notes predicate (truthy dataNoteId)
+    // is the truthy twin of injectSpans' `!= null` — divergent only for ids '' / 0, which
+    // the registry never mints. Gate + walk + markMarginLayout stay one unit: the
+    // item⇒marker invariant is the ONLY assumption. NOTE this call must also stay AFTER
+    // injectToc — markMarginLayout co-marks the layout wrapper applyToc may have created.
+    if (!assets.notes) return;
     const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
     // warn → the vfile channel (#402): a note whose body cannot be phrasing-projected into
     // the inline margin copy is skipped with a message, never silently (see sidenotes.js).

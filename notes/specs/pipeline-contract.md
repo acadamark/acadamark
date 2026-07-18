@@ -16,9 +16,15 @@ descent-order rationale and the centralized-walker design property; pipeline: th
 stage/phase narrative, the ordering constraints, and the data-flow examples).
 
 The tables' owning code is the authority; if code and this document disagree, the
-code is right and this document has the bug. (A future guard could assert the
-roster against `index.js`'s registration order at load/test time — the project's
-existing single-source-guard pattern; noted, out of scope here.)
+code is right and this document has the bug. The roster is now **guarded**: the
+root `check:roster` script (`scripts/check-pipeline-roster.mjs` — at the repo root
+because the check reads both the engine source and this prose surface, which the
+one-way boundary forbids engine code from doing) asserts this document's roster
+table equals `index.js`'s actual `this.use(...)` registration order,
+name for name — a new, removed, or reordered pass fails the suite until this table
+names it (the wave-1 walk-merges slice built the guard this paragraph used to defer).
+Its sibling, the `walk-budget` test, pins the shared-walker traversal count — see
+"The walk budget" below.
 
 ---
 
@@ -36,7 +42,9 @@ plugins inserted between them, so §3's step references stay stable. Phase legen
 | 0a | `remarkMath` | parse | `remark-math` (npm) | Parser extension (outer + inner processor): tokenizes bare `$x$` / `$$x$$` — not an enscribe transform | after `remarkParse`; produces `inlineMath` / `math` nodes (later normalized) |
 | 0b | `remarkGfm` | parse | `remark-gfm` (npm) | Parser extension (outer + inner processor): tokenizes bare GFM pipe tables — not an enscribe transform | after `remarkParse`; produces `table` nodes (later normalized) |
 | 0c | `resolveStrictMode` | 0 | `src/interpreter/lib/strict-mode.js` | #36 — selects the strict-mode register; off the loosest rung, re-parses the source via the sigil / canonical processors | after `remarkEnscribe` (needs source); writes `file.data.enscribeStrictMode` |
+| 0d | `remarkRecoverUnclosedTags` | 0 | `src/interpreter/plugins/recover-unclosed-tags.js` | #378 always-render — splits an unclosed flow tag's swallowed-to-EOF content back into flow, with a visible error node (repairs the finder's consume-to-EOF) | after `resolveStrictMode`; re-parses swallowed spans via the recovery processors |
 | 1 | `remarkRecursiveContent` | 0 | `src/parser/recursive-content.js` | Re-parses each `enscribeTag`'s raw pipe-content string into an mdast subtree via the inner processor (skips opaque content) | after `remarkEnscribe` (string content set); sets `node.content` to `Node[]` |
+| 1.2 | `enscribeSrcRebase` | 0 | `src/interpreter/plugins/src-rebase.js` | #408 — rebases relative `src=` paths in assembler-stamped (`_srcDir`) subtrees against the master; root scan, deep only into stamped subtrees | after `remarkRecursiveContent` (must see stamped subtrees before deep passes read src) |
 | 1.4 | `enscribeDocTypeResolve` | 0 | `src/interpreter/plugins/doc-type.js` | #200 — resolves the document class and stamps `<meta type>` so structural plugins can branch on it | after `remarkRecursiveContent`; writes `file.data.enscribeDocType` |
 | 1.5 | `enscribeNormalizeToCanonical` | 0 | `src/interpreter/plugins/normalize-to-canonical.js` | The single normalization gate: coerces every authored form (delegated-parser nodes, sigils, shorthands, kwarg lifts, markdown idioms) to canonical `enscribeTag` nodes | after `remarkRecursiveContent` (both parses complete); must precede every structural plugin |
 | 2 | `enscribeConfigDiscovery` | 1 | `src/interpreter/plugins/config-discovery.js` | Collects the kwargs of every `<config>` tag (deep); no tree mutation | after `enscribeNormalizeToCanonical`; writes `file.data.enscribeConfig` |
@@ -44,15 +52,12 @@ plugins inserted between them, so §3's step references stay stable. Phase legen
 | 2.5 | `enscribeBookStructuring` | 2 | `src/interpreter/plugins/book-structuring.js` | Wraps a `<meta type=book\|book-part>` document into `<book>` front/body/back; no-op otherwise; runs before article-structuring | after `enscribeConfigDiscovery`; produces book structure nodes |
 | 3 | `enscribeArticleStructuring` | 2 | `src/interpreter/plugins/article-structuring.js` | Wraps the flat root into `<article>` (front / body / back); promotes `<title>`; `<data>` stays a root sibling | after `remarkRecursiveContent`; skips a book-wrapped tree; produces article structure |
 | 4 | `enscribeSectionNesting` | 2 | `src/interpreter/plugins/section-nesting.js` | Converts flat `section` / `sub-section` / `sub-sub-section` runs into a nested tree; promotes pipe titles | after `enscribeArticleStructuring`; produces the nested section tree |
-| 4.5 | `enscribeListStructuring` | 2 | `src/interpreter/plugins/list-structuring.js` | #137 — lowers `<list>` / `<li>` (and `-`/`*` idioms) to markdown `ul` / `ol` / `li` | after `enscribeSectionNesting`; before the semantic plugins |
-| 4.6 | `enscribeMinipageGuard` | 2 | `src/interpreter/plugins/minipage-guard.js` | #115 — on a **sealed** minipage sub-run, neutralizes a forbidden `@src` / `<data>` external pull to a visible `__asset-error`; no-op on every normal document | after `enscribeNormalizeToCanonical`; active only when `file.data.enscribeMinipageSubrun` is set; before the citation / asset index passes |
-| 5 | `enscribeCitationIndex` (anon fn wrapping `buildCitationIndex`) | 3 | `src/interpreter/plugins/library-load.js` | Deep-collects `<data>` / `<library>` nodes, parses BibTeX / CSL-JSON, builds a citation-js `Cite` | after `enscribeConfigDiscovery` (reads `citation-style`); writes `file.data.enscribeCitations` |
-| 5.5 | `enscribeTableCellParse` | 3 | `src/interpreter/plugins/table-cell-parse.js` | #21/#105 — opt-in parse of DATA-format table cells as inline markup; no-op without opt-in | after `enscribeCitationIndex`; before notes/numbering/refs |
-| 5.6 | `enscribeHtmlTableCells` | 3 | `src/interpreter/plugins/html-table-cells.js` | #108 — re-resolves inline content in raw-HTML (`_htmlTable`) cells from a JATS import; no-op otherwise | after `enscribeTableCellParse`; before `enscribeNotes` |
-| 5.7 | `enscribeAssetIndex` (anon fn wrapping `buildAssetIndex`) | 3 | `src/interpreter/plugins/asset-load.js` | #190 — harvests embedded `<fig #id fmt>base64</fig>` declarations from `<data>` into a keyed store and strips each from its `<data>` | after the table-cell passes; before numbering; writes `file.data.enscribeAssets` |
-| 5.8 | `enscribeAssetResolution` | 3 | `src/interpreter/plugins/asset-load.js` | #190 — rewrites a body `<fig src="@id" />` to the resolved `data:` URI / external path; unresolved → `__asset-error` | after `enscribeAssetIndex`; before `enscribeNotes` and numbering (so a resolved asset numbers as a figure) |
-| 6 | `enscribeNotes` | 3 | `src/interpreter/plugins/notes.js` | Registers `<note>` elements (record-only); `<note>` nodes stay in the tree through resolution | after `remarkRecursiveContent`, `enscribeSectionNesting`; writes `file.data.enscribeNotesPending` |
-| 7 | `enscribeNumbering` | 3 | `src/interpreter/plugins/numbering.js` | Registers numbered (`$$` / figure / table) and label-indexed (section / code) elements | after `enscribeNotes`; writes `file.data.enscribeNumberingPending`; sets `node.registryType` |
+| 4.5 | `enscribeHeadingLevelsAndLists` | 2 | `src/interpreter/plugins/heading-levels.js` (+ `list-structuring.js`) | #397 + #137, ONE walk (wave-1 merge): stamps `computedHeadingLevel` on outline titles (gated on `<config heading-tags>`, default on — stamping only; the gate never skips lowering) AND lowers `<list>` / `<li>` (and `-`/`*` idioms) to markdown `ul` / `ol` / `li`. Per-node order rule: titles resident in a `<list>` body are stamp-descended before the list is lowered (a lowered list is not re-walked). `enscribeListStructuring` remains a standalone plugin on the lift path | after `enscribeSectionNesting`; before the semantic plugins |
+| 4.9 | `enscribeMinipageGuard` | 2 | `src/interpreter/plugins/minipage-guard.js` | #115 — on a **sealed** minipage sub-run, neutralizes a forbidden `@src` / `<data>` external pull to a visible `__asset-error`; no-op on every normal document | after `enscribeNormalizeToCanonical`; active only when `file.data.enscribeMinipageSubrun` is set; before the citation / asset index passes |
+| 5 | `enscribeDataIndexes` (anon fn wrapping `buildCitationIndex` + `buildAssetIndex`) | 3 | `src/interpreter/plugins/library-load.js` + `asset-load.js` | ONE `collectDataNodes` harvest (wave-1 merge) feeds BOTH indexes: the citation index (parses BibTeX / CSL-JSON from `<library>` in `<data>`, builds a citation-js `Cite`) then the asset index (#190 — harvests embedded `<fig>` / `<dataset>` declarations into a keyed store and STRIPS each from its `<data>`, on the live harvested references, so numbering never counts a declaration). Order rule: citation before asset — both unshift visible error nodes at the same body target, so consumer order is the rendered error-block order and the `file.messages` order | after `enscribeConfigDiscovery` (reads `citation-style`) and the minipage guard (#411); writes `file.data.enscribeCitations` + `file.data.enscribeAssets` |
+| 5.5 | `enscribeTableCellParse` | 3 | `src/interpreter/plugins/table-cell-parse.js` (+ `html-table-cells.js`) | ONE `table` walk, two mutually-exclusive branches (wave-1 merge): #21/#105 opt-in parse of DATA-format table cells as inline markup (`_parsedCells`), and the #108 no-format raw-HTML-grid stamp (`_htmlTable`, the JATS-import escape hatch). No-op without an opt-in or a grid | after `enscribeDataIndexes`; before notes/numbering/refs |
+| 5.8 | `enscribeAssetResolution` | 3 | `src/interpreter/plugins/asset-load.js` | #190 — rewrites a body `<fig src="@id" />` to the resolved `data:` URI / external path; unresolved → `__asset-error` | after the asset index (in `enscribeDataIndexes`); before numbering (so a resolved asset numbers as a figure) |
+| 7 | `enscribeNumbering` | 3 | `src/interpreter/plugins/numbering.js` (+ `notes.js`) | The merged step 6+7 (wave-1): registers `<note>` elements AND the numbered (`$$` / figure / table) + label-indexed (section / code) elements in ONE discover walk (disjoint visitor keys; both record-only; per-type registry sequences make interleaving moot). DISCOVER-BRANCH ONLY: a scoped document (`counter-reset-scope` chapter/section) keeps notes' own discover walk beside `walkWithScope`, which lacks cell descent and stamps `_scope`. `enscribeNotes` remains a standalone public plugin | writes `file.data.enscribeNotesPending` + `file.data.enscribeNumberingPending`; sets `node.registryType` |
 | 8 | `enscribeApplyNumbers` (anon inline fn) | 3 | `src/interpreter/index.js` (inline) | Single numbering pass: `numberRegistry()` assigns display numbers, `fillNumbering` writes them back, `numberSections` (#57) applies hierarchical section numbers | after `enscribeNotes` + `enscribeNumbering`; before `enscribeRefResolution`; sets `node.computedNumber` + label index |
 | 8.5 | `enscribeMinipageDeferred` (anon inline fn) | 3 | `src/interpreter/index.js` (inline; `src/interpreter/lib/minipage.js`) | #115 — sealed sub-interpret of each minipage's held opaque body in its own pipeline run + VFile (read-through parent registry); scope-qualifies ids (#267) | after `enscribeApplyNumbers` (parent registry complete); before `enscribeRefResolution` |
 | 9 | `enscribeRefResolution` | 3 | `src/interpreter/plugins/ref-resolution.js` | Replaces each `<ref>` with `__ref-marker` (found) or `__ref-error`; computes display text from id prefix + number | after `enscribeApplyNumbers`; produces `__ref-marker` / `__ref-error` |
@@ -64,12 +69,47 @@ plugins inserted between them, so §3's step references stay stable. Phase legen
 | — | asset injection | compile | `src/interpreter/index.js` | Prepends conditional CSS/JS (ToC, margin, strict-flag, book scripts, fonts, theme, KaTeX, hover-preview, DSL) | after the compiler; prepends CSS/JS to `hast.children` |
 | — | serialization | compile | `src/interpreter/index.js` (`formatHtml` → `hast-util-to-html`) | Formats then serializes the hast tree to the HTML fragment string | after asset injection; produces the HTML string |
 
-**Naming note.** Two rosters entries are registered as *anonymous* plugin
-functions that wrap an imported worker: `enscribeCitationIndex` wraps
-`buildCitationIndex` (from `library-load.js`), and `enscribeAssetIndex` wraps
-`buildAssetIndex` (from `asset-load.js`). Prose that says "buildCitationIndex" /
-"buildAssetIndex" is naming the worker; the registered plugin is the `enscribe*`
-name above.
+**Naming note.** One roster entry is registered as an *anonymous* plugin function
+that wraps imported workers: `enscribeDataIndexes` wraps `buildCitationIndex`
+(from `library-load.js`) and `buildAssetIndex` (from `asset-load.js`) around one
+shared `collectDataNodes` harvest. Prose that says "buildCitationIndex" /
+"buildAssetIndex" is naming the worker; the registered plugin is the name above.
+
+## The walk budget — the co-travel rule
+
+**A new check joins an existing walk; a new full traversal is a deliberate,
+reviewed act.** The pass-map audit measured the cost of the opposite habit — each
+new check arriving as its own full-tree walk — and the wave-1 merges reclaimed the
+mechanically mergeable ones (one table walk hosting two stamps; one registration
+walk hosting notes + numbering; one `<data>` harvest feeding two indexes; bare-
+boolean promotion riding the gate's rule walk; heading stamps riding the list
+walk; the sidenote collect walk gated on the asset scan's `notes` flag). Before
+adding a traversal, exhaust these shapes: a visitor added to an existing
+`discover` Map, a branch in an existing visitor, a per-node hook in an existing
+pass, a flag computed by a walk that already runs.
+
+Two guards enforce the rule mechanically (`packages/enscribe/test/`):
+
+- **`scripts/check-pipeline-roster.mjs`** (root `check:roster`) — this document's roster table must equal the
+  actual registration order, name for name. A new pass fails the suite until the
+  roster names it (and the PR diff on this spec is where the justification is
+  reviewed).
+- **`walk-budget.test.js`** — the four shared walkers (`discover`, `walkReplace`,
+  `walkNormalize`, `walkWithScope`) carry an inert once-per-walk tally hook; the
+  test pins the exact walk count for a fixed probe document. A walk added inside
+  an existing plugin fails it too — the budget moves only with a deliberate edit.
+
+Stated limits: the budget sees only shared-walker entries — a hand-rolled
+recursion is invisible to it (it is caught by the roster guard if it arrives as a
+new pass, and by review under this rule if it hides inside an existing one), and
+no shared hast walker exists yet, so the compile phase's walks are roster-and-
+review terrain. Order-dependences the wave-1 merges surfaced and honor are
+recorded in the merged rows above and at the merge sites in code: promotion
+before dispatch per node (pre-alias tagname semantics); citation before asset
+(error-unshift and message order); stamp-descend a `<list>` before lowering it;
+`injectMarginLayout` after `injectToc` (the margin marker co-marks the ToC's
+layout wrapper); host-format validation stays its own walk (its messages must
+trail the rule walk's, and it must visit rule-less nodes with cell descent).
 
 ---
 

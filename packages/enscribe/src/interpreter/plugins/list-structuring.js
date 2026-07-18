@@ -110,7 +110,7 @@ function parseStart(v) {
  * @param {import('vfile').VFile} [file]
  * @returns {object} mdast list node
  */
-function lowerList(node, file) {
+export function lowerList(node, file) {
   const positional = node.positional ?? [];
   const kwargs = node.kwargs ?? {};
   const ordered = positional.includes('ordered');

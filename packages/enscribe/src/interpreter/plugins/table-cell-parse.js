@@ -38,6 +38,7 @@ import { discover } from '../../core/walkers/discover.js';
 import { readBoolKwarg } from '../lib/bool-kwarg.js';
 import { parseTableData, TABLE_FORMATS } from '../handlers/table.js';
 import { parseInlineCellToMdast } from '../lib/parse-inline.js';
+import { stampHtmlTable } from './html-table-cells.js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_LOADED_SOURCES } from '../../core/file-data-keys.js';
 
 const TABLE_FORMAT_SET = new Set(TABLE_FORMATS);
@@ -61,7 +62,19 @@ export function enscribeTableCellParse(options = {}) {
     // #195: source-agnostic src= — pre-loaded sources (browser fetch / CLI async) ride
     // file.data, exactly as library-load reads them.
     const loaded = file?.data?.[ENSCRIBE_LOADED_SOURCES] ?? null;
-    discover(tree, new Map([['table', (node) => stampTable(node, config, assetsDir, loaded)]]));
+    // Wave-1 walk merge: the #108 raw-HTML-grid stamp (stampHtmlTable) rides this same
+    // `table` walk as a second branch. The two stamps are mutually exclusive on
+    // positional[0] truthiness (data-format vs no-format), and each branch keeps its own
+    // early-return guards — do NOT hoist either's guards above the other. Branch order is
+    // cell-parse first (preserves the pre-merge pass order: stampHtmlTable's `_parsedCells`
+    // read sees anything this branch stamped). One semantic superset vs the two-pass shape,
+    // deliberate: discover descends a just-written `_htmlTable` stamp, so a data-format
+    // `<table csv|…>` nested inside a raw-grid cell now gets cell-parsed too (previously
+    // invisible to the earlier, already-finished walk; unreachable in the fixture corpus).
+    discover(tree, new Map([['table', (node) => {
+      stampTable(node, config, assetsDir, loaded);
+      stampHtmlTable(node);
+    }]]));
   };
 }
 

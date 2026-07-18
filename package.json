@@ -27,7 +27,7 @@
     "esbuild": "^0.28.1"
   },
   "scripts": {
-    "test": "npm run check:boundary && npm run docs:check && npm run examples:check && npm run check:routing && npm run check:theme-tokens && npm run check:dark && npm run check:docs-clean && npm test --workspaces --if-present",
+    "test": "npm run check:boundary && npm run docs:check && npm run examples:check && npm run check:routing && npm run check:theme-tokens && npm run check:dark && npm run check:docs-clean && npm run check:roster && npm test --workspaces --if-present",
     "demo": "npm run demo --workspaces --if-present",
     "docs:gen": "npm run build -w @enscribejs/ehtml && node docs-gen/generate-docs.mjs",
     "docs:check": "node docs-gen/check-docs-fresh.mjs",
@@ -39,6 +39,7 @@
     "dark:gen": "node scripts/gen-dark-variants.mjs",
     "check:dark": "node scripts/gen-dark-variants.mjs --check",
     "check:docs-clean": "node scripts/check-docs-clean.mjs",
+    "check:roster": "node scripts/check-pipeline-roster.mjs",
     "build:site": "npm run docs:gen && rm -rf site && node packages/cli/bin/enscribe.js build docs-source/index.emd -o site",
     "build:site-live": "npm run build:lib -w @enscribejs/enscribe && node scripts/build-site-live.mjs",
     "build:site-all": "npm run build:site && npm run build:site-live"
