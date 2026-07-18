@@ -374,6 +374,7 @@ export function enscribeNumbering() {
  * @param {string} scope — 'chapter' | 'section'
  */
 function walkWithScope(nodes, visitors, scope) {
+  globalThis.__enscribeWalkTally?.('walkWithScope');   // walk-budget guard hook
   let chapterIndex = 0;
   let sectionIndex = 0;
   let insideBookPart = false;

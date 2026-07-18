@@ -46,6 +46,11 @@ import { isEnscribeTag } from '../tag.js';
  *                               spliced in its place (1-to-N).
  */
 export function walkNormalize(nodes, predicate, process) {
+  globalThis.__enscribeWalkTally?.('walkNormalize');   // walk-budget guard hook (once per walk, not per recursion)
+  walkNormalizeNodes(nodes, predicate, process);
+}
+
+function walkNormalizeNodes(nodes, predicate, process) {
   let i = 0;
   while (i < nodes.length) {
     const node = nodes[i];
@@ -65,21 +70,21 @@ export function walkNormalize(nodes, predicate, process) {
         // For opaque replacements (isOpaqueContent: true, e.g. math), the guards
         // below prevent any descent, so this is a no-op in the math case.
         if (isEnscribeTag(result) && Array.isArray(result.content) && !result.isOpaqueContent) {
-          walkNormalize(result.content, predicate, process);
+          walkNormalizeNodes(result.content, predicate, process);
         }
         if (result.children && Array.isArray(result.children)) {
-          walkNormalize(result.children, predicate, process);
+          walkNormalizeNodes(result.children, predicate, process);
         }
         i++;
       }
     } else {
       // Recurse into non-opaque enscribeTag content.
       if (isEnscribeTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {
-        walkNormalize(node.content, predicate, process);
+        walkNormalizeNodes(node.content, predicate, process);
       }
       // Recurse into mdast children.
       if (node.children && Array.isArray(node.children)) {
-        walkNormalize(node.children, predicate, process);
+        walkNormalizeNodes(node.children, predicate, process);
       }
       i++;
     }

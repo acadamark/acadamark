@@ -37,6 +37,11 @@ import { descendCellArrays } from './cell-descent.js';
  *                              array's length.
  */
 export function walkReplace(nodes, tagname, process) {
+  globalThis.__enscribeWalkTally?.('walkReplace');   // walk-budget guard hook (once per walk, not per recursion)
+  walkReplaceNodes(nodes, tagname, process);
+}
+
+function walkReplaceNodes(nodes, tagname, process) {
   let i = 0;
   while (i < nodes.length) {
     const node = nodes[i];
@@ -47,18 +52,18 @@ export function walkReplace(nodes, tagname, process) {
     } else {
       // Recurse into non-opaque enscribeTag content.
       if (isEnscribeTag(node) && Array.isArray(node.content) && !node.isOpaqueContent) {
-        walkReplace(node.content, tagname, process);
+        walkReplaceNodes(node.content, tagname, process);
       }
       // Recurse into mdast children.
       if (node.children && Array.isArray(node.children)) {
-        walkReplace(node.children, tagname, process);
+        walkReplaceNodes(node.children, tagname, process);
       }
       // #21 / #106: recurse into parsed (`_parsedCells`) and complex-HTML
       // (`_htmlTable`) table cells so ref / cite / note resolution reaches content
       // authored inside a table cell — the cell's inline array is mutated in place
       // and the handler reads the same array. Shared with discover.js (#170).
       // No-op without a stamp → byte-identical.
-      descendCellArrays(node, (inline) => walkReplace(inline, tagname, process));
+      descendCellArrays(node, (inline) => walkReplaceNodes(inline, tagname, process));
       i++;
     }
   }
