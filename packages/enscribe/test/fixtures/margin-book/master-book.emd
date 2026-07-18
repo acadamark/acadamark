@@ -1,0 +1,10 @@
+<meta type=book>
+<title | Margin Notes Across Chapters>
+<author | The Enscribe Team>
+</meta>
+
+<config number-sections />
+
+<preface src="preface.emd" | About this Book>
+<chapter src="chapter-1.emd" | First Chapter>
+<chapter src="chapter-2.emd" | Second Chapter>

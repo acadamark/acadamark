@@ -72,6 +72,8 @@ import { run as runInclude } from './include.test.js';
 import { run as runRenderParity } from './render-parity.test.js';
 import { run as runCrossPageLinks } from './cross-page-links.test.js';
 import { run as runRenderChapterParity } from './render-chapter-parity.test.js';
+import { run_tests as runMarginBookParity } from './margin-book-parity.test.js';
+import { run_tests as runMarginBookConsumption } from './margin-book-consumption.test.js';
 import { run as runSeparatePagesParity } from './separate-pages-parity.test.js';
 import { run as runCoverOffFront } from './cover-off-front.test.js';
 import { run as runEditLayout } from './edit-layout.test.js';
@@ -182,6 +184,8 @@ const suites = [
   ['render-parity',                runRenderParity],
   ['cross-page-links',             runCrossPageLinks],
   ['render-chapter-parity',        runRenderChapterParity],
+  ['margin-book-parity',           runMarginBookParity],
+  ['margin-book-consumption',      runMarginBookConsumption],
   ['separate-pages-parity',        runSeparatePagesParity],
   ['cover-off-front',              runCoverOffFront],
   ['edit-layout',                  runEditLayout],

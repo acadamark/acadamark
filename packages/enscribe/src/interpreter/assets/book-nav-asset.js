@@ -11,6 +11,8 @@
 // The book layout class list (the base; `--book-3col` / `--book-noleft` are added by
 // composeBookBody per the chrome present). Single-sourced here so the static and live
 // book bodies cannot drift.
+import { MARGIN_CSS } from './margin-css.js';
+
 export const BOOK_LAYOUT = 'enscribe-layout enscribe-layout--toc enscribe-layout--book';
 
 /** #459 part 1 — resolve the nav-placement decision from a bookNav config. The two navs
@@ -44,6 +46,13 @@ export function composeBookBody({ rail = '', content = '', prevNext = '', onThis
   // live router re-renders them with the right targets on each chapter swap).
   const main = `<main class="enscribe-body">${content}${prevNext}${backToTop}${arrows}</main>`;
 
+  // #467: on the per-chapter surfaces the compiler's markMarginLayout (which stamps --margin + wraps
+  // in single-scroll) is stripped by extractBookPart, so a MARGIN book carries the class HERE instead
+  // — the shell delivers MARGIN_CSS to match (see publish-pages / injectBookNavStyles / website-shell).
+  // `bookNav.margin` is set from isMarginBook where the numbered tree is available. Non-margin books
+  // leave it falsy → BOOK_LAYOUT is byte-identical to before.
+  const layout = bookNav.margin ? `${BOOK_LAYOUT} enscribe-layout--margin` : BOOK_LAYOUT;
+
   const { chapterNavSide, onThisPageSide, floating } = resolveBookPlacement(bookNav);
   if (floating) {
     // Group the present navs by their chosen side; within a side, the whole-book rail sits above
@@ -54,14 +63,14 @@ export function composeBookBody({ rail = '', content = '', prevNext = '', onThis
     };
     const left = dock('left', 'enscribe-book-dock--left');
     const right = dock('right', 'enscribe-book-dock--right');
-    return `<div class="${BOOK_LAYOUT} enscribe-layout--book-float">${left}${main}${right}</div>`;
+    return `<div class="${layout} enscribe-layout--book-float">${left}${main}${right}</div>`;
   }
 
-  // Default placement — the sticky-grid (byte-identical to before #459).
-  if (rail && onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-3col">${rail}${main}${onThisPage}</div>`;
-  if (rail) return `<div class="${BOOK_LAYOUT}">${rail}${main}</div>`;
-  if (onThisPage) return `<div class="${BOOK_LAYOUT} enscribe-layout--book-noleft">${main}${onThisPage}</div>`;
-  return main;
+  // Default placement — the sticky-grid (byte-identical to before #459 for a non-margin book).
+  if (rail && onThisPage) return `<div class="${layout} enscribe-layout--book-3col">${rail}${main}${onThisPage}</div>`;
+  if (rail) return `<div class="${layout}">${rail}${main}</div>`;
+  if (onThisPage) return `<div class="${layout} enscribe-layout--book-noleft">${main}${onThisPage}</div>`;
+  return bookNav.margin ? `<div class="${layout}">${main}</div>` : main;
 }
 
 // chapter-nav OFF while the right "on this page" rail is still present: a two-column
@@ -386,6 +395,7 @@ export function injectBookNavStyles(bookNav, doc) {
   if (bookNav.pageNavigation) css.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   if (resolveBookPlacement(bookNav).floating) css.push(BOOK_FLOAT_CSS);   // #459 — AFTER arrows so the float override wins
   if (bookNav.combined) css.push(COMBINED_NAV_CSS);   // #459 part 2 — the expand/collapse layer, AFTER float
+  if (bookNav.margin) css.push(MARGIN_CSS);   // #467 — the book+margin layering (extractBookPart stripped the compiler's copy)
   const text = css.join('\n');
   const existing = d.getElementById('enscribe-book-nav-style');
   if (existing) {

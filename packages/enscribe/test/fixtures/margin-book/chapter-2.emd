@@ -1,0 +1,6 @@
+<meta title="Second (child fallback)" />
+
+## Later
+
+Another per-note margin note, in a different chapter, proves the residual list is
+filtered per chapter (this side note must appear HERE, not in chapter one).<note position=margin | A second residual-routed margin note, owned by chapter two.>
