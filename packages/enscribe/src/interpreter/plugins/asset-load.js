@@ -168,9 +168,14 @@ function datasetPayload(content) {
  *
  * @param {{ children: Array }} tree
  * @param {import('vfile').VFile} file
+ * @param {object} [options]
+ * @param {Array|null} [options.dataNodes] Pre-collected <data> nodes (the wave-1 shared
+ *   harvest — LIVE references, never copies: the strip below mutates them in place, and
+ *   an un-stripped declaration would consume a figure number, #190). Omitted → collect
+ *   here (standalone use, tests).
  */
-export function buildAssetIndex(tree, file) {
-  const dataNodes = collectDataNodes(tree.children ?? []);
+export function buildAssetIndex(tree, file, options = {}) {
+  const dataNodes = options.dataNodes ?? collectDataNodes(tree.children ?? []);
   const assets = new Map();
   const errors = [];
 

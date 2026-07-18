@@ -15,8 +15,9 @@
 //     downstream pipeline sees one node type.
 //   - The discovery and structural plugins — enscribeConfigDiscovery,
 //     enscribeArticleStructuring, enscribeSectionNesting.
-//   - The semantic-processing plugins — buildCitationIndex (via an anonymous
-//     plugin wrapper), enscribeNotes (register-only), enscribeNumbering
+//   - The semantic-processing plugins — buildCitationIndex + buildAssetIndex
+//     (one shared <data> harvest via the anonymous enscribeDataIndexes
+//     wrapper), enscribeNotes (register-only), enscribeNumbering
 //     (register-only), an anonymous enscribeApplyNumbers plugin that calls
 //     numberRegistry() and fillNumbering, enscribeRefResolution,
 //     enscribeCiteResolution, enscribeNotePlacement, enscribeBibliography.
@@ -146,7 +147,7 @@ import { enscribeNotes } from './plugins/notes.js';
 // JATS test pipeline can include it (it produces __note-list /
 // __note-list-item / __note-marker nodes the JATS emitter consumes).
 import { enscribeNotePlacement } from './plugins/note-placement.js';
-import { buildCitationIndex, enscribeLibraryLoad } from './plugins/library-load.js';
+import { buildCitationIndex, collectDataNodes, enscribeLibraryLoad } from './plugins/library-load.js';
 import { buildAssetIndex, enscribeAssetResolution } from './plugins/asset-load.js';
 import { enscribeNumbering, fillNumbering, numberSections } from './plugins/numbering.js';
 import { enscribeRefResolution } from './plugins/ref-resolution.js';
@@ -741,13 +742,28 @@ export function enscribeInterpreter(options = {}) {
   //     them would resolve it — reject, not resolve.
   this.use(enscribeMinipageGuard);
 
-  // 5. Citation index (index-build, not a tree transformation): parse <library>
+  // 5. Citation + asset indexes (index-build, not a tree transformation): parse <library>
   //    content from <data> nodes (deep-collected wherever they land — at root
   //    in an article, nested in <book-body> in a book), build
   //    file.data.enscribeCitations. Requires enscribeConfigDiscovery
   //    (citation-style) to have run first.
-  this.use(function enscribeCitationIndex() {
-    return (tree, file) => buildCitationIndex(tree, file, { assetsDir });
+  //    Wave-1 walk merge: ONE collectDataNodes harvest feeds BOTH the citation
+  //    index and the #190 asset index (formerly step 5.7's identical re-walk —
+  //    nothing between them creates, moves, or removes <data> nodes; the two
+  //    intervening table stamps are <table>-only and message-free). Constraints
+  //    the fused shape must keep: (1) citation BEFORE asset — both unshift
+  //    visible error nodes at the same body target, so consumer order is the
+  //    rendered error-block order (asset errors above citation errors today) and
+  //    the file.messages order; (2) the harvest hands LIVE node references — the
+  //    asset index strips harvested declarations from those very nodes so
+  //    numbering never sees them (#190); (3) the harvest runs after the minipage
+  //    guard, which blanks boxed <data>/<library> in sealed sub-runs (#411).
+  this.use(function enscribeDataIndexes() {
+    return (tree, file) => {
+      const dataNodes = collectDataNodes(tree.children ?? []);
+      buildCitationIndex(tree, file, { assetsDir, dataNodes });
+      buildAssetIndex(tree, file, { dataNodes });
+    };
   });
 
   // 5.5 (#21 / #105 / #108): parse table-cell content into canonical inline mdast —
@@ -764,15 +780,6 @@ export function enscribeInterpreter(options = {}) {
   //     scope; #105 moves it earlier to bring them in. A no-op for tables without
   //     an opt-in or a grid → byte-identical.)
   this.use(enscribeTableCellParse, { assetsDir });
-
-  // 5.7 (#190): Asset index (index-build): harvest embedded <fig #id fmt>base64</fig>
-  //     declarations from <data> nodes into file.data.enscribeAssets, and STRIP each
-  //     harvested declaration from its <data>. Stripping is load-bearing: <data> is
-  //     render-suppressed but numbering still walks it, so an un-stripped declaration
-  //     would consume a figure number (#190 Phase 0). Mirrors the citation index (5).
-  this.use(function enscribeAssetIndex() {
-    return (tree, file) => buildAssetIndex(tree, file);
-  });
 
   // 5.8 (#190): Asset resolution: a body <fig src="@id"> pulls in an embedded asset —
   //     rewrite its src to a data: URI and adopt the asset id onto the placed figure
