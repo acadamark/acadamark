@@ -40,28 +40,15 @@ import Cite from 'citation-js';
 import { ENSCRIBE_CONFIG, ENSCRIBE_CITATIONS, ENSCRIBE_LOADED_SOURCES } from '../../core/file-data-keys.js';
 import { isEnscribeTag } from '../lib/ast-helpers.js';
 import { makeErrorNode, injectBodyErrors } from '../lib/error-injection.js';
+import { DEFAULT_CITATION_STYLE, KNOWN_CITATION_STYLES } from '../lib/citation-styles.js';
 
 // #133: a src string is "remote" (async-only) when it has a URL scheme. Anything
 // else is a filesystem path (sync-readable on the CLI; in the browser it is
 // resolved against the document base URL and fetched by the pre-load pass).
 const URL_SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
 
-// C1 (#436): the accepted citation-style vocabulary — the warned-default guard for
-// `<config citation-style=…>`, mirroring index.js's KNOWN_THEMES guard. A value OUTSIDE this set is a
-// typo (e.g. "chicagoo") and warns through the seam + falls to the default; a value inside is passed
-// through. The set is the documented styles (cite.md's Citation-styles table + config-options-doc's
-// examples) plus citation-js's bundled CSL templates. NOTE the deeper gap this guard does NOT cover:
-// only apa / vancouver / harvard1 are actually BUNDLED in citation-js 0.7; the rest (author-year,
-// chicago-*, ieee, numbered, …) currently fall back to citation-js's default style at format time.
-// That advertised-but-unbundled gap is tracked separately; C1's scope is narrower — catch the
-// outright-invalid VALUE, the one true silent survivor of the always-render contract.
-const DEFAULT_CITATION_STYLE = 'chicago-author-date';
-const KNOWN_CITATION_STYLES = new Set([
-  'apa', 'vancouver', 'harvard1',                                          // citation-js bundled CSL templates
-  'chicago-author-date', 'chicago',                                        // the default + a common alias
-  'author-year', 'numbered', 'footnote', 'endnote', 'inline-author-year',  // cite.md's documented styles
-  'ieee',                                                                  // config-options-doc example
-]);
+// C1 (#436): the citation-style vocabulary + default now live in lib/citation-styles.js — one
+// source for this warned-default guard AND the settings gear's picker (#445).
 
 /**
  * A visible `__library-error` node (rendered by libraryErrorHandler). always-

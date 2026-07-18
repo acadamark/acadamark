@@ -35,6 +35,35 @@ export function run() {
     assert.ok(CONFIG_FAMILIES.includes(e.family), `'${e.key}': unknown family '${e.family}'.`);
   }
 
+  // #445: the gear metadata's shape — the settings-gear document tier generates its controls from
+  // `gear` fields, so a malformed entry would ship a broken control. Rules: a label always; options
+  // only (and always) on valued keys; optionLabels only for offered options; never on a reserved key
+  // (nothing reads it); and only on scope 'all' — the tier renders only where the edited buffer
+  // carries the <config> it rewrites (an article surface), so a gear on a book-only/website-only key
+  // would mint a control with no surface (the unseen-master exclusion, notes/specs/settings.md).
+  // When a master-<config> affordance lands, THIS assertion is the deliberate gate to widen.
+  let gearCount = 0;
+  for (const e of CONFIG_OPTIONS_DOC) {
+    if (!e.gear) continue;
+    gearCount += 1;
+    assert.ok(typeof e.gear.label === 'string' && e.gear.label.length > 0,
+      `'${e.key}': a gear entry needs a non-empty label.`);
+    assert.ok(!e.reserved, `'${e.key}': a reserved key (no consumer) must not carry a gear control.`);
+    assert.equal(e.scope, 'all',
+      `'${e.key}': gear controls are limited to scope 'all' — the tier renders only on article edit surfaces (unseen-master exclusion).`);
+    if (e.type === 'boolean') {
+      assert.ok(!e.gear.options, `'${e.key}': a boolean gear derives Default/On/Off — no options list.`);
+    } else {
+      assert.ok(Array.isArray(e.gear.options) && e.gear.options.length > 0 &&
+        e.gear.options.every((v) => typeof v === 'string' && v.length > 0),
+        `'${e.key}': a valued gear needs a non-empty string options list.`);
+      for (const v of Object.keys(e.gear.optionLabels ?? {})) {
+        assert.ok(e.gear.options.includes(v), `'${e.key}': optionLabels['${v}'] labels an option that is not offered.`);
+      }
+    }
+  }
+  assert.ok(gearCount > 0, 'at least one gear control exists (the #445 tier is not empty).');
+
   // The ref-prefix-* wildcard is documented once, as a pattern (it is not a fixed key).
   assert.ok(
     CONFIG_WILDCARD_DOC && /^ref-prefix-/.test(CONFIG_WILDCARD_DOC.pattern),

@@ -15,20 +15,39 @@
 //   a live SPA page transition by construction.
 //
 //   DOCUMENT TIER (any editable single-document ARTICLE surface — wired separately by the edit loop in
-//   browser.js, which holds the source + the editor handle): a theme picker + a default-variant control
-//   that REWRITE the document's <config> block (visible in the source pane). Rendered when `document:true`
-//   — a standalone live/single-file article in edit mode, AND an article page in the website/playground
-//   editor (#434). Absent on static pages, read-only live docs (no editable source to act on — the #398
-//   read-only rule), and a BOOK in edit mode (its per-chapter loop edits chapter files, not the master
-//   <config> where the theme lives — reader tier only there).
+//   browser.js, which holds the source + the editor handle): the display-option controls that REWRITE
+//   the document's <config> block (visible in the source pane). Since #445 the control set GENERATES
+//   from config-options-doc.js gear metadata — collapsible family sections (Numbering, Table of
+//   contents, Citations & bibliography, Notes, Display / DSL / strict), each row with an info
+//   affordance carrying that key's description from the same single source the docs reference
+//   generates from. Rendered when `document:true` — a standalone live/single-file article in edit
+//   mode, AND an article page in the website/playground editor (#434). Absent on static pages,
+//   read-only live docs (no editable source to act on — the #398 read-only rule), and a BOOK in edit
+//   mode (its per-chapter loop edits chapter files, not the master <config> where the display options
+//   live — reader tier only there; the master-affordance follow-on is tracked on GitHub).
 //
 // Dual delivery (like bindWebsiteNavDismiss / WEBSITE_DROPDOWN_JS): the reader-tier binder is a
 // self-contained function; static pages run its IIFE-string form as an inline <script>, the live paths
 // import and call it directly (their chrome is innerHTML-set, where a <script> stays inert).
 
-import { escapeHtmlAttr } from '../../core/escape-html.js';
+import { escapeHtml, escapeHtmlAttr } from '../../core/escape-html.js';
+import { CONFIG_OPTIONS_DOC, CONFIG_FAMILIES } from '../lib/config-options-doc.js';
 
 const esc = (s) => escapeHtmlAttr(s ?? '');
+
+/**
+ * The document-tier control list (#445) — every CONFIG_OPTIONS_DOC entry carrying `gear` metadata,
+ * flattened for the two consumers: buildSettingsPanel (the markup) and browser.js wireDocumentTier
+ * (the read-back + rewrite wiring). ONE derivation point, so the rendered controls and the wired
+ * controls can never disagree. The `scope === 'all'` filter is load-bearing, not defensive polish:
+ * the tier renders only where the edited buffer carries the `<config>` it rewrites — an ARTICLE
+ * surface — so a book-only/website-only key has no read-or-write surface here (the unseen-master
+ * exclusion, notes/specs/settings.md). When a master-<config> affordance lands, this filter grows a
+ * docType parameter instead of the panel growing a second list.
+ */
+export function gearControlSpecs() {
+  return CONFIG_OPTIONS_DOC.filter((e) => e.gear && !e.reserved && e.scope === 'all');
+}
 
 // A cog/gear (currentColor so every theme + dark render it with no per-theme asset, like GITHUB_MARK_SVG).
 export const GEAR_SVG =
@@ -51,42 +70,85 @@ const READER_KNOBS = [
  * The settings panel markup — a native <details> disclosure whose <summary> is the gear and whose panel
  * holds the reader tier (always) and, when `document` is true, the document tier.
  *
+ * The document tier (#445) GENERATES from gearControlSpecs() — collapsible family sections in
+ * CONFIG_FAMILIES order (Ariel's design point: the families are the efficient UI, not a flat wall of
+ * controls), one row per gear-carrying key. The Display / DSL / strict section opens by default: it
+ * holds the tier's two pre-expansion controls (theme + variant), so the most common act — change the
+ * theme — stays one click from the gear, as it was before the families arrived. Each row carries a
+ * native-<details> info affordance whose body is the entry's description/values/default from the SAME
+ * single source the docs-site options reference generates from (no per-key docs anchors exist, and the
+ * shipped chrome knows no docs-site URL — the info body is the self-contained, cannot-drift link).
+ * Picking a row's "Default" option removes the kwarg (the theme picker's shipped convention).
+ *
  * @param {object} [o]
- * @param {boolean} [o.document=false] - render the document tier (theme picker + variant). Only for a
- *   live-editable article/single-file; the edit loop wires these controls (this only lays them out).
- * @param {string[]} [o.themes=[]] - the bundled theme names for the picker (from the theme single source),
- *   'default' prepended by the builder. Empty is fine (picker shows just Default).
+ * @param {boolean} [o.document=false] - render the document tier (the gear-metadata control set). Only
+ *   for a live-editable article/single-file; the edit loop wires these controls (this only lays them out).
  * @returns {string} the <details> markup (one shell-action).
  */
-export function buildSettingsPanel({ document: docTier = false, themes = [] } = {}) {
+export function buildSettingsPanel({ document: docTier = false } = {}) {
   const knob = (k) =>
     `<label class="enscribe-settings-row"><span>${k.label}</span>` +
     `<input type="range" data-reader="${k.key}" min="${k.min}" max="${k.max}" step="${k.step}" value="${k.def}"` +
     ` aria-label="${esc(k.label)}"></label>`;
 
-  const variantSelect = (attr, label) =>
-    `<label class="enscribe-settings-row"><span>${label}</span>` +
-    `<select data-${attr}="theme-variant" aria-label="${esc(label)}">` +
-    `<option value="auto">Auto (system)</option><option value="light">Light</option><option value="dark">Dark</option>` +
-    `</select></label>`;
-
   const readerTier =
     `<div class="enscribe-settings-tier" role="group" aria-label="Reader settings">` +
     `<p class="enscribe-settings-tier-label">Reading — just for you</p>` +
-    variantSelect('reader', 'Appearance') +
+    `<label class="enscribe-settings-row"><span>Appearance</span>` +
+    `<select data-reader="theme-variant" aria-label="Appearance">` +
+    `<option value="auto">Auto (system)</option><option value="light">Light</option><option value="dark">Dark</option>` +
+    `</select></label>` +
     READER_KNOBS.map(knob).join('') +
     `<button type="button" class="enscribe-settings-reset" data-reader="reset">Reset to theme</button>` +
     `</div>`;
 
-  const themeOptions = ['default', ...themes]
-    .map((t) => `<option value="${esc(t)}">${esc(t[0].toUpperCase() + t.slice(1))}</option>`)
-    .join('');
+  // One document-tier row: label + info affordance + select. The select's value set: booleans offer
+  // Default/On/Off (writing true/false — the documented string forms); valued keys offer Default + the
+  // gear options (labels from optionLabels, else the value verbatim — the value IS what lands in the
+  // source, so showing it verbatim is see-what-you-set). `noUnset` (theme-variant) drops the Default
+  // sentinel: 'auto' is that control's neutral and is written explicitly (the shipped #430 behavior).
+  const infoBody = (e) => {
+    let t = e.description;
+    if (e.type === 'valued' && e.values) t += ` Values: ${e.values}.`;
+    t += ` Default: ${e.default}.`;
+    return t;
+  };
+  const rowOptions = (e) => {
+    const label = (v) => e.gear.optionLabels?.[v] ?? v;
+    const vals = e.type === 'boolean' ? ['true', 'false'] : (e.gear.options ?? []);
+    const named = e.type === 'boolean' ? { true: 'On', false: 'Off' } : null;
+    const opts = vals.map((v) => `<option value="${esc(v)}">${escapeHtml(named ? named[v] : label(v))}</option>`);
+    if (!e.gear.noUnset) opts.unshift(`<option value="">Default</option>`);
+    return opts.join('');
+  };
+  const row = (e) => {
+    const id = `enscribe-doc-${e.key}`;
+    return (
+      `<div class="enscribe-settings-row">` +
+      `<span class="enscribe-settings-key"><label for="${id}">${escapeHtml(e.gear.label)}</label>` +
+      `<details class="enscribe-settings-info">` +
+      `<summary aria-label="About ${esc(e.gear.label)}" title="What this option does">i</summary>` +
+      `<p class="enscribe-settings-info-body">${escapeHtml(infoBody(e))}</p>` +
+      `</details></span>` +
+      `<select id="${id}" data-doc="${esc(e.key)}" aria-label="${esc(e.gear.label)}">${rowOptions(e)}</select>` +
+      `</div>`
+    );
+  };
+  const familySections = CONFIG_FAMILIES.map((fam) => {
+    const entries = gearControlSpecs().filter((e) => e.family === fam);
+    if (entries.length === 0) return '';
+    const open = fam === 'Display / DSL / strict' ? ' open' : '';
+    return (
+      `<details class="enscribe-settings-family"${open}><summary>${escapeHtml(fam)}</summary>` +
+      `<div class="enscribe-settings-family-body" role="group" aria-label="${esc(fam)}">` +
+      entries.map(row).join('') +
+      `</div></details>`
+    );
+  }).join('');
   const documentTier = docTier
     ? `<div class="enscribe-settings-tier enscribe-settings-tier--doc" role="group" aria-label="Document settings">` +
       `<p class="enscribe-settings-tier-label">Document — saved in the source</p>` +
-      `<label class="enscribe-settings-row"><span>Theme</span>` +
-      `<select data-doc="theme" aria-label="Document theme">${themeOptions}</select></label>` +
-      variantSelect('doc', 'Default appearance') +
+      familySections +
       `<p class="enscribe-settings-note">Rewrites this document’s &lt;config&gt;.</p>` +
       `</div>`
     : '';
@@ -125,7 +187,20 @@ export const SETTINGS_PANEL_CSS = `
 .enscribe-settings-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .enscribe-settings-row > span { flex: 0 0 auto; }
 .enscribe-settings-row > input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: var(--enscribe-link, #0969da); }
-.enscribe-settings-row > select { flex: 0 0 auto; font: inherit; font-family: var(--enscribe-font-sans); padding: 0.15rem 0.3rem; border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 4px; background: var(--enscribe-bg, #fff); color: inherit; }
+.enscribe-settings-row > select { flex: 0 1 auto; min-width: 0; max-width: 60%; font: inherit; font-family: var(--enscribe-font-sans); padding: 0.15rem 0.3rem; border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 4px; background: var(--enscribe-bg, #fff); color: inherit; }
+/* #445: the document tier's collapsible family sections (the single source's family names). Native
+   <details> — the chrome's one disclosure pattern — so sections open/close with no JS. */
+.enscribe-settings-family > summary { cursor: pointer; padding: 0.1rem 0; font-size: 0.76rem; font-weight: 600; color: var(--enscribe-text-primary, #1f2328); }
+.enscribe-settings-family-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.35rem 0 0.2rem 0.15rem; }
+/* #445: the per-control info affordance — a tiny native-<details> "i" whose body is the option's
+   description/values/default from config-options-doc.js (the docs page's own generator source). The
+   body is a positioned popover; near the panel's bottom it extends the panel's scroll area rather
+   than clipping (the panel is the scroll container). */
+.enscribe-settings-key { display: inline-flex; align-items: center; gap: 0.3rem; min-width: 0; }
+.enscribe-settings-info { position: relative; display: inline-flex; }
+.enscribe-settings-info > summary { list-style: none; cursor: help; width: 0.9rem; height: 0.9rem; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 50%; font-size: 0.6rem; font-style: italic; font-family: var(--enscribe-font-serif, Georgia, serif); color: var(--enscribe-text-muted, #57606a); }
+.enscribe-settings-info > summary::-webkit-details-marker { display: none; }
+.enscribe-settings-info-body { position: absolute; top: calc(100% + 0.3rem); left: -0.5rem; z-index: 2; width: min(13rem, 70vw); margin: 0; padding: 0.45rem 0.55rem; border: 1px solid var(--enscribe-border, #d8dee4); border-radius: 6px; background: var(--enscribe-bg, #fff); box-shadow: 0 3px 10px rgba(0,0,0,0.12); font-size: 0.72rem; line-height: 1.45; color: var(--enscribe-text-primary, #1f2328); }
 .enscribe-settings-reset { align-self: flex-start; margin-top: 0.15rem; appearance: none; background: none; border: 0; padding: 0.1rem 0; font: inherit; font-family: var(--enscribe-font-sans); font-size: 0.8rem; color: var(--enscribe-link, #0969da); cursor: pointer; text-decoration: underline; }
 .enscribe-settings-note { margin: 0.1rem 0 0; font-size: 0.72rem; font-style: italic; color: var(--enscribe-text-muted, #57606a); }
 /* Floating corner (standalone live shells): the panel would overflow the fixed pill's right edge on a
@@ -204,13 +279,22 @@ export function bindSettingsPanel() {
 
   // DISMISS — Escape + outside-click close the open settings panel and return focus to the gear (a11y:
   // focus must not strand on a control that just collapsed). Mirrors bindWebsiteNavDismiss; document-
-  // delegated so it survives the live chrome re-render and needs no re-binding.
+  // delegated so it survives the live chrome re-render and needs no re-binding. The #445 per-control
+  // info popovers get the same treatment first: an outside click closes any open info, and Escape
+  // closes open infos BEFORE it would close the panel (one press, one layer — the overlay convention).
   function openPanels() { return document.querySelectorAll('details.enscribe-shell-settings[open]'); }
+  function openInfos() { return document.querySelectorAll('details.enscribe-settings-info[open]'); }
   document.addEventListener('click', function (ev) {
+    Array.prototype.forEach.call(openInfos(), function (d) { if (!d.contains(ev.target)) d.removeAttribute('open'); });
     Array.prototype.forEach.call(openPanels(), function (d) { if (!d.contains(ev.target)) d.removeAttribute('open'); });
   });
   document.addEventListener('keydown', function (ev) {
     if (ev.key !== 'Escape' && ev.key !== 'Esc') return;
+    var infos = openInfos();
+    if (infos.length) {
+      Array.prototype.forEach.call(infos, function (d) { d.removeAttribute('open'); });
+      return;
+    }
     Array.prototype.forEach.call(openPanels(), function (d) {
       d.removeAttribute('open');
       var summary = d.querySelector('summary');

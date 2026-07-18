@@ -218,5 +218,75 @@ export async function run() {
     } finally { restoreDom(orig); }
   }
 
+  // ── #445: the document tier on the STANDALONE floating corner — read-back initialization ────────
+  // The gear's document tier renders on the floating corner of an editable standalone article and
+  // initializes every control from the document's CURRENT <config> (see-what-you-set in the read
+  // direction): a pinned boolean reflects as On/Off, a pinned enum as its value, and a pin OUTSIDE
+  // the offered set (toc-depth=9) reflects as a one-off option — never misreported as "Default".
+  {
+    const { orig } = installDom();
+    // A setValue-capable adapter (mirroring editor-codemirror's optional engine→editor push) so the
+    // tier's rewrite path is live: setValue swaps the buffer AND fires onChange, the one-source path.
+    const s = { lastValue: null };
+    const factory = async () => ({
+      mount(el, { value, onChange }) {
+        s.lastValue = value;
+        return { destroy() {}, setValue(v) { s.lastValue = v; onChange(v); } };
+      },
+    });
+    SERVED['article-pinned.emd'] = [
+      '<meta type=article>',
+      '<title | Pinned Article>',
+      '</meta>',
+      '',
+      '<config number-figures=false toc-depth=9 theme=tufte />',
+      '',
+      '<section | Body>',
+      '',
+      'Text.',
+    ].join('\n');
+    try {
+      await mountLiveShell('#root', 'article-pinned.emd', { editorFactory: factory, edit: true, editDebounceMs: 0 });
+      const corner = global.document.getElementById('enscribe-shell-actions-floating');
+      assert.ok(corner, 'the floating corner is injected on a standalone live article');
+      const docTier = corner.querySelector('.enscribe-settings-tier--doc');
+      assert.ok(docTier && !docTier.hidden, 'the document tier renders + is visible on the editable standalone article');
+      assert.equal(docTier.querySelector('select[data-doc="number-figures"]').value, 'false',
+        'read-back: a pinned boolean (number-figures=false) initializes its toggle to Off');
+      assert.equal(docTier.querySelector('select[data-doc="theme"]').value, 'tufte',
+        'read-back: the pinned theme initializes the theme picker');
+      assert.equal(docTier.querySelector('select[data-doc="toc-depth"]').value, '9',
+        'read-back: an out-of-set pin (toc-depth=9) reflects as a one-off option, never as Default');
+      assert.equal(docTier.querySelector('select[data-doc="number-tables"]').value, '',
+        'read-back: an unpinned key initializes to Default');
+      // The write path is the same one-source rewrite the website test proves; spot-check one control
+      // end-to-end on THIS surface (the floating corner's wiring, not the website chrome's).
+      const showSel = docTier.querySelector('select[data-doc="show-source"]');
+      showSel.value = 'true';
+      showSel.dispatchEvent(new global.window.Event('change'));
+      assert.ok(/<config[^>]*\bshow-source=true\b/.test(s.lastValue),
+        'a standalone-corner control rewrites the article <config> through the editor buffer');
+      assert.ok(/\bnumber-figures=false\b/.test(s.lastValue) && /\btheme=tufte\b/.test(s.lastValue),
+        'the pre-existing pins are untouched by the write');
+      console.log('PASS: #445 — standalone corner: the document tier initializes from the pinned <config> and rewrites it');
+    } finally { restoreDom(orig); }
+  }
+
+  // ── #445: a standalone BOOK in edit mode gets NO document tier (the unseen-master exclusion) ─────
+  // The book's live loop edits its per-chapter files; the master <config> the controls would rewrite
+  // is in no editor buffer, so the tier must not render — reader tier only (notes/specs/settings.md).
+  {
+    const { orig } = installDom();
+    const { factory } = makeFactory();
+    try {
+      await mountLiveShell('#root', 'master-book.emd', { editorFactory: factory, edit: true, editDebounceMs: 0 });
+      const corner = global.document.getElementById('enscribe-shell-actions-floating');
+      assert.ok(corner, 'the floating corner (reader tier) is present on a standalone live book in edit mode');
+      assert.ok(!corner.querySelector('.enscribe-settings-tier--doc') && !corner.querySelector('[data-doc]'),
+        'a book in edit mode renders NO document tier — the master <config> is in no editor buffer (unseen-master)');
+      console.log('PASS: #445 — a standalone book edit surface stays reader-tier-only (unseen-master exclusion)');
+    } finally { restoreDom(orig); }
+  }
+
   console.log('All single-document (article) live render + dispatch (#216) checks passed.');
 }
