@@ -35,17 +35,42 @@ There are exactly two places a person changes display settings, and they are dif
 
 ### 2. The document tier — document-level appearance, for the author
 
-- **What:** the document's theme (`<config theme>`) and its light/dark default
-  (`<config theme-variant>`).
+- **What:** the document-scope display options of the edited document's `<config>`. The control set
+  (#445) **generates from the single source**: every `config-options-doc.js` entry carrying `gear`
+  metadata renders a control, grouped into collapsible sections by the source's own families
+  (Numbering, Table of contents, Citations & bibliography, Notes, Display / DSL / strict — the
+  Display section, home of the original theme + variant controls, opens by default). The selection
+  rule for which keys carry `gear`: a **consumed, document-scope display option representable as a
+  control** (boolean or a small value set). Free-text keys (`toc-title`, `bibliography-heading`,
+  `ref-prefix-*`), reserved keys (nothing reads them), and non-display keys (`quiet`,
+  `heading-tags`, `parse-data-tables`) get no control; `strict-mode` is excluded because its
+  registers-off effect cannot show in the live edit preview (the #451 guard skips the reparse on a
+  valueless VFile) — a control there would be the #443 write-without-read shape. `citation-style`
+  is offered as a picker over the accepted-style set (`lib/citation-styles.js`, the same set the
+  pipeline's warned-default guard reads).
 - **Where it is available:** **only when editing** — never in read mode. The document tier is an
   authoring affordance, so it appears in the settings gear only on an editable surface (an article in
   edit mode, or the website/playground editor). A read-mode page shows the reader tier alone.
 - **How it applies:** the control **rewrites the edited document's `<config>` tag** — the change is
-  visible in the source pane (see-what-you-set), and the edit preview reflects it.
+  visible in the source pane (see-what-you-set), and the edit preview reflects it. Picking a
+  control's **Default** removes the kwarg (the document falls back to its documented default); any
+  other pick writes the explicit value. Read-back holds in the other direction too: each control
+  initializes from the document's current `<config>`, and a pinned value the picker does not offer
+  (say `toc-depth=9`) shows as a one-off option — the control never misreports a real pin as
+  "Default". Each control carries an **info affordance** whose text (description, accepted values,
+  default) comes from `config-options-doc.js` — the same source the docs-site options reference
+  generates from, so the two cannot drift; no external docs link is used (the shipped chrome knows
+  no docs-site URL, and the options page has no per-key anchors).
 - **The unseen-master exception:** a book's live loop edits its per-chapter `<chapter src>` files, not
   the master where `<config>` lives; a website's loop edits the current page, not the master. So the
-  book document tier is not offered in the per-chapter loop (a master-`<config>` affordance is a
-  separate follow-on), and the website document tier edits the *current page* (see precedence below).
+  book document tier is not offered in the per-chapter loop, and the website document tier edits the
+  *current page* (see precedence below). This is also why the **Book navigation family and the
+  website-scope master options (`sidebar`, `repo`, `playground`) have no gear controls**: the master
+  `<config>` they live in is in no editor buffer, so a control could not rewrite it visibly. The
+  master-`<config>` editing affordance — one design covering both the book master and the website
+  master, per Ariel's ruling — is **#468**; until it lands, the gear guard
+  (`config-options-doc.test.js`) pins gear controls to scope `all`, so widening the tier is a
+  deliberate act, not a drift.
 
 ---
 
