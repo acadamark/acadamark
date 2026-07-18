@@ -35,7 +35,7 @@ import {
 } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
-import { renderChapter } from './render-chapter.js';
+import { renderChapter, isMarginBook } from './render-chapter.js';
 import { isEnscribeTag } from '../interpreter/lib/ast-helpers.js';
 import { makeTag } from '../core/tag.js';
 import {
@@ -68,6 +68,7 @@ import {
   COMBINED_NAV_CSS,
   COMBINED_NAV_JS,
 } from '../interpreter/assets/book-nav-asset.js';
+import { MARGIN_CSS } from '../interpreter/assets/margin-css.js';   // #467 — book+margin layering on separate-pages
 
 /** P1 projection: each chapter's PAGE URL is the shared neutral stem + `.html`
  *  (`counting-elephants.html`, `field-data-sheets.html`, `about-this-book.html` — the title slug,
@@ -154,6 +155,7 @@ function pageShell(body, title, defaultCss, bookNav, themeVariant, themeCss = ''
   if (bookNav.pageNavigation) extraCss.push(CHAPTER_ARROWS_CSS);   // #293 — same gate as the bottom prev/next bar
   if (resolveBookPlacement(bookNav).floating) extraCss.push(BOOK_FLOAT_CSS);   // #459 — after arrows so the float override wins
   if (bookNav.combined) extraCss.push(COMBINED_NAV_CSS);   // #459 part 2 — the expand/collapse layer, AFTER float
+  if (bookNav.margin) extraCss.push(MARGIN_CSS);   // #467 — the book+margin layering (extractBookPart stripped the compiler's copy)
   const css = extraCss.length ? `\n${extraCss.join('\n')}` : '';
   const extraJs = (bookNav.backToTop ? `\n<script>${BACK_TO_TOP_JS}</script>` : '')
     + (bookNav.combined ? `\n<script>${COMBINED_NAV_JS}</script>` : '');   // #459 part 2 — click-to-expand
@@ -222,10 +224,10 @@ const INDEX_PAGE = 'index.html';
  *  fragment inside its own universal shell, while publishBookPages wraps it with pageShell
  *  for the standalone artifact. Returns `{ body, title }` (the `<title>` a host shell needs). */
 function renderPageBody(part, parts, idx, registry, idToUrl, opts) {
-  const { proc, file, bookTitle, bookNav, homeHref } = opts;
+  const { proc, file, numbered, bookTitle, bookNav, homeHref } = opts;
   const chapterHref = (p) => p.slug;
 
-  let content = renderChapter(part.node, registry, { proc, file });
+  let content = renderChapter(part.node, registry, { proc, file, numbered });
   content = rewriteCrossPageRefs(content, part.id, registry, idToUrl, opts.onUnowned);
 
   const home = { href: homeHref, title: bookTitle };
@@ -350,6 +352,7 @@ export function prepareBook(numbered, file) {
   if (!bookEl) throw new Error('publishBookPages: no <book> element — separate-pages is a book-only build');
 
   const bookNav = resolveBookNavConfig(file);
+  bookNav.margin = isMarginBook(numbered, file);   // #467 — drives composeBookBody's --margin class + the extraCss MARGIN_CSS
   const bookTitle = bookTitleOf(bookEl);
   const parts = collectBookParts(bookEl);
   if (parts.length === 0) throw new Error('publishBookPages: the book has no chapters');
@@ -379,7 +382,7 @@ export function publishBookPages({ numbered, file, proc, defaultCss, onUnowned }
   // pages take the SITE master's theme via the website shell, like the variant.)
   const bookTheme = resolveBookTheme(file);
   const themeCss = bookTheme ? getThemeCss(bookTheme) : '';
-  const opts = { proc, file, defaultCss, bookTitle, bookNav, homeHref, frontHtml, onUnowned, themeVariant, themeCss };
+  const opts = { proc, file, numbered, defaultCss, bookTitle, bookNav, homeHref, frontHtml, onUnowned, themeVariant, themeCss };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPage(part, parts, idx, registry, idToUrl, opts));
@@ -406,7 +409,7 @@ export function publishBookPages({ numbered, file, proc, defaultCss, onUnowned }
 export function publishBookPageBodies({ numbered, file, proc, onUnowned }) {
   const { parts, bookNav, bookTitle, registry, idToUrl, homeHref, frontLoose } = prepareBook(numbered, file);
   const frontHtml = renderFrontLoose(frontLoose, proc, file, registry, idToUrl, onUnowned);
-  const opts = { proc, file, bookTitle, bookNav, homeHref, frontHtml, onUnowned };
+  const opts = { proc, file, numbered, bookTitle, bookNav, homeHref, frontHtml, onUnowned };
   const pages = new Map();
   parts.forEach((part, idx) => {
     pages.set(part.slug, renderPageBody(part, parts, idx, registry, idToUrl, opts));

@@ -29,7 +29,7 @@
 import { toHtml } from 'hast-util-to-html';
 import { buildChapterRail, buildCombinedNav, buildOnThisPage, buildContentsListing, chapterNavBar, chapterNavArrows } from '../interpreter/lib/toc.js';
 import { harvestCrossRefRegistry } from '../interpreter/lib/cross-ref-registry.js';
-import { renderChapter } from './render-chapter.js';
+import { renderChapter, isMarginBook } from './render-chapter.js';
 import { rewriteCrossPageHrefs } from './cross-page-links.js';
 import { assembleMasterDocument } from './assemble.js';
 import { collectFrontLoose } from './publish-pages.js';
@@ -157,7 +157,12 @@ export function buildLiveBook({ numbered, file, pageSlug = null }) {
     }
   }
 
-  return { parts, bookTitle, registry, stemToIndex, idToStem, pageSlug, bookNav: resolveBookNavConfig(file), contents: resolveBookContentsConfig(file), frontLoose: collectFrontLoose(bookEl) };
+  // `numbered` rides the model so renderChapter can reach the document-level residual <note-list>
+  // + note-position config for #467 margin projection (the residual-routed sidenotes + the layout
+  // wrapper); non-margin books ignore it.
+  const bookNav = resolveBookNavConfig(file);
+  bookNav.margin = isMarginBook(numbered, file);   // #467 — composeBookBody stamps --margin + injectBookNavStyles ships MARGIN_CSS
+  return { parts, bookTitle, registry, numbered, stemToIndex, idToStem, pageSlug, bookNav, contents: resolveBookContentsConfig(file), frontLoose: collectFrontLoose(bookEl) };
 }
 
 /**
@@ -171,7 +176,9 @@ export function buildLiveBook({ numbered, file, pageSlug = null }) {
  * @returns {string} the chapter's `<book-part>` HTML fragment
  */
 export function renderLiveChapterContent(part, model, ctx) {
-  return renderChapter(part.node, model.registry, ctx);
+  // #467: thread the numbered tree so residual-routed margin sidenotes project + the margin
+  // layout wrapper is reproduced (see render-chapter.js). ctx.numbered wins if a caller passes it.
+  return renderChapter(part.node, model.registry, { numbered: model.numbered, ...ctx });
 }
 
 /**

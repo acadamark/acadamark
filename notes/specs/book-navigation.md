@@ -115,12 +115,28 @@ family) **and** a floating nav, the two compose by an explicit layering model th
 - **Recommended pairing for margin-note authors:** the expanding combined nav (`combined-nav`, below),
   which puts a single nav on one side (the left by default) and leaves the other margin free for notes.
 
-*Delivery note (scope of #459 part 1):* the margin-note **layering** above is authored once and
-applies wherever book margin notes are rendered. Today only the single-scroll (`--single-page`) book
-actually **projects** margin notes; the separate-pages / live / website book surfaces render each
-chapter in isolation (`renderChapter`), so the note bodies are not yet reachable to project — a
-note-engine change tracked as its own follow-on (#467). The layering CSS is in place so those
-surfaces compose correctly the moment projection reaches them.
+*Delivery note (margin projection on every surface — #459 part 1 layering + #467 projection):* the
+margin-note **layering** above is authored once and applies wherever book margin notes are rendered.
+Margin notes now **project on all four surfaces**. The single-scroll (`--single-page`) book projects
+them in the whole-document compile; the separate-pages / live / website book surfaces render each
+chapter in isolation (`renderChapter`), and #467 makes the note bodies reach that per-chapter render:
+
+- A **chapter-scope** note (the default in a book — including every note when the document sets
+  `note-position=margin`) collects into its own `<book-part>`, so `renderChapter` projects its side
+  note with no extra work and keeps the below-breakpoint fallback list in the chapter.
+- A **per-note** `<note position=margin>` (whose document default is *not* margin) routes its body to
+  the document-level residual `<note-list>` (#333). `renderChapter` reconstructs a per-chapter copy of
+  that list at the render boundary — **display-only, so the archival eHTML/JATS `<book-back>` list is
+  untouched** — and projects the side note into the chapter. (Trade-off: a residual-routed note has no
+  in-page mobile fallback on a per-chapter page, since the fallback list is document-level.)
+
+The book+margin layering CSS and the `.enscribe-layout--margin` wrapper class ride each per-chapter
+shell (separate-pages `extraCss`, live `injectBookNavStyles`, website `universalHeadStyle`), since
+`extractBookPart` strips the compiler's copy. A **note-less** chapter in a margin book still reproduces
+the whole-document margin layout wrapper so it nests identically to the full render (byte-parity holds
+per chapter — see `test/margin-book-parity.test.js`). **Out of scope / documented limitation:**
+`note-scope=document` + margin on a per-chapter surface — the author's explicit single-document-list
+choice conflicts with per-page copies, so those notes stay document-level and do not project per chapter.
 
 ## The combined expanding nav (#459 part 2)
 

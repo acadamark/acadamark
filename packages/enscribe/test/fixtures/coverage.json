@@ -2,7 +2,7 @@
   "generatedFrom": "test/coverage/build-coverage.mjs (live VOCABULARY + sigil map + spec-data.mjs)",
   "totals": {
     "cells": 366,
-    "fixtures": 96,
+    "fixtures": 100,
     "annexed": 19
   },
   "byStatus": {
@@ -7292,6 +7292,10 @@
     "document-72-dataset-consumers.emd",
     "document-73-code-block-indentation.emd",
     "document-8-citations.emd",
+    "margin-book/chapter-1.emd",
+    "margin-book/chapter-2.emd",
+    "margin-book/master-book.emd",
+    "margin-book/preface.emd",
     "master/intro.emd",
     "master/master.emd",
     "master/methods.emd",

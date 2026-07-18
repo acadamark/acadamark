@@ -1,0 +1,10 @@
+<meta title="First (child fallback)" />
+
+## Opening
+
+The document default is the ordinary foot/end note. A single note opts into the margin
+on its own with `position=margin`.<note position=margin | This margin note's body lives in the document-level residual note-list, outside this book-part, yet its side note must reach this chapter page (#467).> The marker stays in this chapter.
+
+## Second Section
+
+A plain note here collects at the chapter end as usual.<note | An ordinary chapter-end note, collected inside this book-part.>

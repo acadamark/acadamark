@@ -29,6 +29,7 @@ import {
   COMBINED_NAV_CSS,
   COMBINED_NAV_JS,
 } from '../interpreter/assets/book-nav-asset.js';
+import { MARGIN_CSS } from '../interpreter/assets/margin-css.js';   // #467 — book+margin layering on website book pages
 import { SCROLL_SPY_JS } from '../interpreter/assets/scroll-spy-asset.js';
 import { ON_THIS_PAGE_JS } from '../interpreter/assets/on-this-page-asset.js';
 import { HEAD_ASSET_LINKS } from '../interpreter/assets/font-loader.js';
@@ -126,6 +127,10 @@ function universalHeadStyle(defaultCss) {
     // .enscribe-chapter-rail--combined, inert on any page without a combined nav, so it rides the
     // union unconditionally like its siblings. After BOOK_FLOAT_CSS (the combined nav floats).
     COMBINED_NAV_CSS,
+    // #467: the book+margin layering — fully class-scoped (.enscribe-layout--book.enscribe-layout--margin
+    // …), inert on any page without a margin book, so it rides the union unconditionally like its
+    // siblings (the per-chapter surface can't inject the compiler's copy — extractBookPart strips it).
+    MARGIN_CSS,
     WEBSITE_SHELL_CSS,
   ].join('\n');
 }

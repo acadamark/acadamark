@@ -1,0 +1,5 @@
+<meta title="About (child fallback)" />
+
+This preface carries no notes at all. In a margin book it exercises the note-less
+chapter case: the full render still wraps the whole book in the margin layout, so this
+chapter must nest at the same depth per-chapter (Problem B).
