@@ -563,9 +563,13 @@ export function run_tests() {
       assert.ok(r.out.includes('md-flag'), '#451: the strict lint fires (the register is genuinely active)');
       console.log('PASS: build — #451 strict-mode renders the full book AND applies the sigil register');
 
-      // A MULTI-FILE book: the master-only reparse can't be faithful, so strict is not
-      // applied — but the content must SURVIVE (no wipe, no dropped children) and the
-      // unsupported case must announce itself (always-render: not a silent no-op).
+      // A MULTI-FILE book (#460 — the upgrade of #451's interim behavior): strict-mode is
+      // DOCUMENT-WIDE — the master's <config strict-mode=sigil> reaches EVERY child at assembly
+      // (each child parsed registers-off before stitching), so a multi-file book behaves like the
+      // same content in one file. #451 only proved the children SURVIVE; this proves the register
+      // genuinely APPLIES inside a child (chapter TWO specifically), and that the old interim
+      // "not applied to an assembled document" warning is GONE (the register applied, so there is
+      // nothing to announce).
       const masterPath = join(dir, 'master.emd');
       writeFileSync(masterPath, [
         '<meta type=book>', '<title | Multi Strict>', '</meta>',
@@ -573,15 +577,89 @@ export function run_tests() {
         '<chapter src="ch1.emd" | First>',
         '<chapter src="ch2.emd" | Second>', '',
       ].join('\n'), 'utf8');
-      writeFileSync(join(dir, 'ch1.emd'), 'Chapter one body text here.\n', 'utf8');
-      writeFileSync(join(dir, 'ch2.emd'), 'Chapter two body text here.\n', 'utf8');
+      writeFileSync(join(dir, 'ch1.emd'), 'Chapter one body with *ch1-literal* text.\n', 'utf8');
+      writeFileSync(join(dir, 'ch2.emd'), 'Chapter two body with *ch2-literal* text.\n', 'utf8');
       const m = invoke(['build', masterPath, '--single-page']);
-      assert.equal(m.code, 0, '#451: a multi-file strict book build exits 0');
+      assert.equal(m.code, 0, '#460: a multi-file strict book build exits 0');
       assert.ok(m.out.includes('Chapter one body') && m.out.includes('Chapter two body'),
-        '#451: multi-file — both children survive (no wipe, no dropped children)');
-      assert.ok(/not applied to an assembled\/multi-file document/.test(m.err),
-        '#451: multi-file — strict-not-applied is announced, not silently dropped');
-      console.log('PASS: build — #451 multi-file strict book keeps all content and warns (no data loss)');
+        '#460: multi-file — both children survive (no wipe, no dropped children)');
+      // The register reaches chapter TWO's content: *ch2-literal* stays literal (markdown off), is
+      // NOT emphasized, and is flagged — proving strict applied INSIDE the child, not just at the master.
+      assert.ok(m.out.includes('*ch2-literal*'), '#460: multi-file — chapter 2 *…* passes through literal (register reached the child)');
+      assert.ok(!/<(em|i)>ch2-literal/.test(m.out), '#460: multi-file — chapter 2 *…* is NOT interpreted as emphasis');
+      assert.ok(m.out.includes('*ch1-literal*') && !/<(em|i)>ch1-literal/.test(m.out), '#460: multi-file — chapter 1 *…* is literal too (every child, not just the last)');
+      assert.ok(m.out.includes('md-flag'), '#460: multi-file — the strict lint fires in the children (register genuinely active)');
+      assert.ok(!/not applied to an assembled\/multi-file document/.test(m.err),
+        '#460: multi-file — the interim "strict not applied" warning is GONE (the register applied)');
+      console.log('PASS: build — #460 multi-file strict book applies the sigil register to every child');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #460 — a child cannot override the master's document-wide strict-mode ─────
+  // Strict-mode is a property of the whole document. A child that declares its OWN
+  // <config strict-mode> gets the doctrine treatment — a visible flag in its body PLUS a
+  // CLI/console warning, both saying the master governs — never a silent strip, and never
+  // an actual override (the child's markdown stays flagged because the MASTER's sigil mode
+  // still reaches it).
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-strict-override-'));
+    try {
+      const masterPath = join(dir, 'master.emd');
+      writeFileSync(masterPath, [
+        '<meta type=book>', '<title | Override Book>', '</meta>',
+        '<config strict-mode=sigil />',
+        '<chapter src="ch1.emd" | First>',
+        '<chapter src="ch2.emd" | Second>', '',
+      ].join('\n'), 'utf8');
+      writeFileSync(join(dir, 'ch1.emd'), 'Chapter one, no override, *ch1-literal* here.\n', 'utf8');
+      // ch2 tries to switch strict OFF for itself — it cannot.
+      writeFileSync(join(dir, 'ch2.emd'), [
+        '<config strict-mode=off />', '',
+        'Chapter two tried to override, *ch2-literal* here.', '',
+      ].join('\n'), 'utf8');
+      const r = invoke(['build', masterPath, '--single-page']);
+      assert.equal(r.code, 0, '#460: an override-attempt build still exits 0 (always renders)');
+      // Channel 1 — the CLI/console warning names the child and the document-wide rule.
+      assert.ok(/strict-mode is document-wide/.test(r.err) && /ch2\.emd/.test(r.err) && /a child cannot override/.test(r.err),
+        '#460: the override is announced on the CLI channel, naming the child and the rule');
+      // Channel 2 — a visible flag in the rendered body (the error-family block).
+      assert.ok(/enscribe-strict-override-error/.test(r.out),
+        '#460: the override leaves a visible flag in the child body (the error-family block)');
+      // The master STILL governs — ch2's *…* is literal + flagged despite the child's declaration.
+      assert.ok(r.out.includes('*ch2-literal*') && !/<(em|i)>ch2-literal/.test(r.out),
+        '#460: the child did NOT override — ch2 *…* is still literal (the master sigil mode governs)');
+      console.log('PASS: build — #460 a child cannot override the master strict-mode (flag + warning, both channels)');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // ── #460 — a standalone multi-file ARTICLE applies strict to its <include> children ──
+  // The article surface (renderArticleFile) threads the same document-wide register: an
+  // article master's <config strict-mode=canonical> reaches an <include>'d child, so the
+  // child's markdown AND sigil forms pass through literal (canonical bans both registers).
+  {
+    const dir = mkdtempSync(join(tmpdir(), 'enscribe-strict-article-'));
+    try {
+      const mainPath = join(dir, 'main.emd');
+      writeFileSync(mainPath, [
+        '<meta type=article>', '<title | Strict Article>', '</meta>',
+        '<config strict-mode=canonical />',
+        'Master line with *master-literal* text.',
+        '<include src="inc.emd" />', '',
+      ].join('\n'), 'utf8');
+      writeFileSync(join(dir, 'inc.emd'), 'Included line with *inc-literal* text.\n', 'utf8');
+      const r = invoke(['build', mainPath, '--single-page']);
+      assert.equal(r.code, 0, '#460: a strict multi-file article build exits 0');
+      // The register reached the INCLUDE: *inc-literal* is literal + not emphasized (canonical bans markdown).
+      assert.ok(r.out.includes('*inc-literal*') && !/<(em|i)>inc-literal/.test(r.out),
+        '#460: article — the include child *…* passes through literal (register reached the include)');
+      assert.ok(r.out.includes('*master-literal*') && !/<(em|i)>master-literal/.test(r.out),
+        '#460: article — the master line is literal too (one document-wide mode)');
+      assert.ok(r.out.includes('md-flag'), '#460: article — the strict lint fires (register active in the assembled article)');
+      console.log('PASS: build — #460 a strict multi-file article applies the register to its <include> children');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

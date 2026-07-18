@@ -54,9 +54,9 @@ import {
   assembleMasterDocument,
   hasMasterSrcEntries,
 } from '@enscribejs/enscribe';
-import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER, ENSCRIBE_CONFIG } from '@enscribejs/enscribe/core/file-data-keys';
+import { ENSCRIBE_NAV_MODEL, ENSCRIBE_REGISTRY, ENSCRIBE_PAGE_LINK_RESOLVER, ENSCRIBE_CONFIG, ENSCRIBE_STRICT_ASSEMBLED } from '@enscribejs/enscribe/core/file-data-keys';
 import { classifyDocType } from '@enscribejs/enscribe/interpreter/lib/classify-doc-type';
-import { buildDocumentPipeline, renderArticleFile, renderArticleTreeFile, assembleAndNumber } from './render-document.js';
+import { buildDocumentPipeline, renderArticleFile, renderArticleTreeFile, assembleAndNumber, resolveAssemblyStrict } from './render-document.js';
 import { diagnosticsScript } from './diagnostics.js';
 
 /**
@@ -283,6 +283,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     // undefined src — that is the #417 TypeError; the inline form is legal by construction.)
     let resolved, source, tree;
     let isBook = false;
+    let assembledStrictMode = 'off';  // #460: a multi-file ARTICLE page's document-wide strict-mode (from its master's <config>)
     if (page.src == null) {
       tree = { type: 'root', children: page.body ?? [] };
       source = '';                                   // no child file; the slug derives from the nav title
@@ -315,11 +316,19 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
       const needsAssembly = !isBook && hasMasterSrcEntries(pageTree);
       if (needsAssembly) {
         const assembleProc = buildDocumentPipeline({ assetsDir: resolved.pageDir });
+        // #460: strict-mode is document-wide — a multi-file article page assembles HERE (not via
+        // renderArticleFile, so the interstitial can splice into one tree below), so thread strict here
+        // too: resolve the page-master's <config strict-mode> and, when strict, off-parse every child so
+        // the register reaches them. The website has no CLI strict option — the mode is the master's
+        // config alone (detectStrictMode's option is undefined). The mode rides pageData2 into the tree
+        // render (renderArticleTreeFile) as ENSCRIBE_STRICT_ASSEMBLED, so resolveStrictMode records it.
+        const strict = resolveAssemblyStrict(assembleProc, pageTree, undefined);
+        assembledStrictMode = strict.mode;
         tree = assembleMasterDocument({
           source,
           readFile: (fp) => readFileSync(fp, 'utf8'),
           resolve: (rel) => join(resolved.pageDir, rel),
-          parse: (s) => assembleProc.parse(s),
+          parse: strict.parse,
           warn: (m) => warnings.push(`page "${page.src}": ${m}`),
           selfSrc: basename(resolved.sourcePath),
         });
@@ -357,7 +366,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
     // #433: `bookTrailing` carries a book page's trailing interstitial (page.body) to both compose phases;
     // an article page already spliced its body into `tree` above, so it carries none.
     const bookTrailing = isBook && page.body && page.body.length > 0 ? page.body : undefined;
-    pageData.push({ page, resolved, source, tree, slug, isBook, bookTrailing });
+    pageData.push({ page, resolved, source, tree, slug, isBook, bookTrailing, assembledStrictMode });
   }
   // #405: an all-pages-failed site still BUILDS — shell + a failed-page stub per nav entry +
   // the loud summary (never a crash, never empty silence). Only a genuinely empty nav —
@@ -550,7 +559,7 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
   // diagram runtime once — #298 — so it can't be composed until the whole site's DSL set is known.)
   const rendered = [];                 // [{ outPath, slug, title, content } | { outPath, slug, page }]
   const siteDslNames = new Set();
-  for (const { page, resolved, source, tree, slug, isBook, bookTrailing } of pageData) {
+  for (const { page, resolved, source, tree, slug, isBook, bookTrailing, assembledStrictMode } of pageData) {
     const destPrefix = destPrefixOf(slug);
     const colocatedAssets = pageDirAssets(resolved.pageDir, masterDir, destPrefix);
     for (const a of colocatedAssets) shippedAssetDests.add(a.to); // seed BEFORE the audit (no dup ships)
@@ -617,7 +626,13 @@ export function buildStaticWebsite({ masterSource, masterDir, defaultCss, siteBa
         // #417: an inline `<item | Title>` page renders its pre-parsed body TREE (no source file)
         // via renderArticleTreeFile — also a vfile, so it reaches the SAME seam (reported + recapped)
         // exactly like an external page; an external page renders its source.
-        const pageData2 = { ...seedRegistry(), [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug) };
+        const pageData2 = {
+          ...seedRegistry(),
+          [ENSCRIBE_PAGE_LINK_RESOLVER]: makePageLinkResolver(outPath, slug),
+          // #460: a strict multi-file article page was off-parsed at assembly (above) — record the mode so
+          // resolveStrictMode keeps the lint + recursive sub-parses consistent without reparsing.
+          ...(assembledStrictMode !== 'off' ? { [ENSCRIBE_STRICT_ASSEMBLED]: assembledStrictMode } : {}),
+        };
         const renderOpts = { assetsDir: resolved.pageDir, documentFontsCss: 'skip', katexCss: 'skip' };
         const pageFile = tree
           ? renderArticleTreeFile(tree, renderOpts, pageData2)

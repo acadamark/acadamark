@@ -225,7 +225,7 @@ import { TOC_CONFIG_CSS } from './assets/toc-config-css.js';
 // sigils off (via the sigil-less enscribeSyntax variant), leaving only canonical
 // named tags. flagStrictText + STRICT_FLAG_CSS add the lint, injected only when
 // non-`off` (the sidenote-injection model).
-import { resolveStrictMode, applyStrictModeReparse, disableMarkdownIdioms, flagStrictText } from './lib/strict-mode.js';
+import { resolveStrictMode, applyStrictModeReparse, disableMarkdownIdioms, flagStrictText, detectStrictMode, buildStrictOffProcessor } from './lib/strict-mode.js';
 import { STRICT_FLAG_CSS } from './assets/strict-flag-css.js';
 import { createLazyAsset } from './lib/lazy-asset.js';
 // Phase 8 Slice 3: chapter-navigation client script (a string constant — no fs
@@ -247,6 +247,7 @@ import { SCROLL_SPY_JS } from './assets/scroll-spy-asset.js';
 // chapter-nav-depth >= 2. default.css carries only the default (rail on, depth 1) layout.
 import { BOOK_NAV_NOLEFT_CSS, BOOK_NAV_DEPTH_CSS, BOOK_FLOAT_CSS, COMBINED_NAV_CSS, COMBINED_NAV_JS, resolveBookPlacement } from './assets/book-nav-asset.js';
 
+export { detectStrictMode, buildStrictOffProcessor } from './lib/strict-mode.js';   // #460: registers-off assembly
 export { enscribeDocTypeResolve } from './plugins/doc-type.js';
 export { enscribeNormalizeToCanonical, enscribeNormalizeMarkdown, enscribeConfigDiscovery, enscribeArticleStructuring, enscribeBookStructuring, enscribeWebsiteStructuring, enscribeSectionNesting, enscribeListStructuring, enscribeNotes, enscribeNotePlacement, enscribeLibraryLoad, buildCitationIndex, enscribeNumbering, fillNumbering, numberSections, enscribeRefResolution, enscribeCiteResolution, enscribeBibliography, enscribeTagHandler, createEnscribeTagHandler, parseCsv, parseTsv, formatScopedNumber };
 
@@ -658,8 +659,8 @@ export function enscribeInterpreter(options = {}) {
   //                       `canonical` mode.
   // Used by resolveStrictMode to re-parse the source, and by recursive-content for
   // the sub-parses, when the mode is sigil/canonical.
-  const sigilProcessor = unified().use(remarkParse).use(remarkEnscribe).use(disableMarkdownIdioms);
-  const canonicalProcessor = unified().use(remarkParse).use(remarkEnscribe, { sigils: false }).use(disableMarkdownIdioms);
+  const sigilProcessor = buildStrictOffProcessor('sigil');       // #460: single-sourced construction
+  const canonicalProcessor = buildStrictOffProcessor('canonical');
 
   // #36 (step 0): resolve the strict mode (option ?? <config strict-mode> ?? 'off')
   // and, when sigil/canonical, re-parse the source with the matching register(s)
@@ -1323,16 +1324,15 @@ export function liftToCanonicalMdast(source) {
   // does the detect + reparse; this standalone `enscribe lift` path then builds its OWN
   // inner processor (a separate instance, as before) so the pipe-body sub-parses keep the
   // register off too.
-  const sigilProcessor = unified().use(remarkParse).use(remarkEnscribe).use(disableMarkdownIdioms);
-  const canonicalProcessor = unified().use(remarkParse).use(remarkEnscribe, { sigils: false }).use(disableMarkdownIdioms);
+  const sigilProcessor = buildStrictOffProcessor('sigil');       // #460: single-sourced construction
+  const canonicalProcessor = buildStrictOffProcessor('canonical');
   const { mode, reparsedTree } = applyStrictModeReparse(tree, source, undefined, sigilProcessor, canonicalProcessor);
 
   let outerTree = tree;
   let inner = onInner();
   if (reparsedTree) {
     outerTree = reparsedTree;
-    const sigils = mode !== 'canonical';
-    inner = unified().use(remarkParse).use(remarkEnscribe, { sigils }).use(disableMarkdownIdioms);
+    inner = buildStrictOffProcessor(mode);
   }
   unified()
     .use(remarkRecursiveContent, { processor: inner, flowTagnames: FLOW_TAGNAMES })
