@@ -17,7 +17,31 @@
 import { readFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { VFile } from 'vfile';
-import { buildEnscribePipeline, assembleMasterDocument, hasMasterSrcEntries, spliceBookInterstitial } from '@enscribejs/enscribe';
+import { buildEnscribePipeline, assembleMasterDocument, hasMasterSrcEntries, spliceBookInterstitial, detectStrictMode, buildStrictOffProcessor } from '@enscribejs/enscribe';
+import { ENSCRIBE_STRICT_ASSEMBLED } from '@enscribejs/enscribe/core/file-data-keys';
+
+/**
+ * #460: strict-mode is DOCUMENT-WIDE. Resolve the master's `<config strict-mode>` (option ?? config ??
+ * 'off') from its parsed tree, and — when sigil/canonical — return the registers-off PARSE the assembler
+ * uses for every child (and the master itself), so the master's setting reaches the children exactly as
+ * if the whole document were one file. Stamps `ENSCRIBE_STRICT_ASSEMBLED` on the file so resolveStrictMode
+ * records the mode WITHOUT reparsing file.value (which is the master only) — the register is applied HERE,
+ * at assembly. 'off' → the default parse (byte-identical). A child that declares its OWN strict-mode is
+ * flagged by the assembler (never a silent override) — the master governs.
+ *
+ * `dataBag` (a VFile's `.data`, or a website page's data seed) is stamped with the resolved mode when
+ * strict, so resolveStrictMode records it without reparsing. Omit it (the website's manual-assembly
+ * caller) to just get `{ mode, parse }` and seed the render's data bag yourself.
+ *
+ * @returns {{ mode: string, parse: (source: string) => import('mdast').Root }}
+ */
+export function resolveAssemblyStrict(proc, masterTree, option, dataBag) {
+  const mode = detectStrictMode(masterTree, option);
+  if (mode === 'off') return { mode, parse: (s) => proc.parse(s) };
+  const off = buildStrictOffProcessor(mode);
+  if (dataBag) dataBag[ENSCRIBE_STRICT_ASSEMBLED] = mode;
+  return { mode, parse: (s) => off.parse(s) };
+}
 
 /**
  * Construct the document render pipeline. The one place `buildEnscribePipeline` is called for a
@@ -61,18 +85,21 @@ export function renderArticleFile(source, pipeOpts = {}) {
   if (hasMasterSrcEntries(parsed)) {
     const base = pipeOpts.assetsDir
       ?? (typeof source === 'object' && source.path ? dirname(source.path) : '.');
-    // The assembler's FIRST parse call is the master itself — hand it the parse already in
-    // hand, exactly once (a child that happened to be byte-identical must still parse fresh:
-    // shared nodes across two splice points would alias under runSync's in-place mutation).
+    // #460: resolve the master's document-wide strict-mode and, when strict, parse every child (and the
+    // master) with the registers-off processor so the register reaches the children.
+    const { mode, parse: strictParse } = resolveAssemblyStrict(proc, parsed, pipeOpts.strictMode, file.data);
+    // The assembler's FIRST parse call is the master itself — in 'off' mode hand it the parse already in
+    // hand, exactly once (a child that happened to be byte-identical must still parse fresh: shared nodes
+    // across two splice points would alias under runSync's in-place mutation). In strict mode every parse
+    // (master + children) uses the registers-off processor, so the memoized registers-on parse is not reused.
     let masterParseServed = false;
     tree = assembleMasterDocument({
       source: value,
       readFile: (p) => readFileSync(p, 'utf8'),
       resolve: (rel) => join(base, rel),
-      parse: (s) => {
-        if (!masterParseServed && s === value) { masterParseServed = true; return parsed; }
-        return proc.parse(s);
-      },
+      parse: mode === 'off'
+        ? (s) => { if (!masterParseServed && s === value) { masterParseServed = true; return parsed; } return proc.parse(s); }
+        : strictParse,
       warn: (m) => file.message(m),
       ...(typeof source === 'object' && source.path ? { selfSrc: basename(source.path) } : {}),
     });
@@ -142,11 +169,19 @@ export function assembleAndNumber({ source, sourcePath, masterDir, warn, pipeOpt
   // <article>. A single-file book/website reparses faithfully from this; a multi-file master's
   // reparse is detected as unfaithful and skipped (resolveStrictMode's guard), so children survive.
   const file = new VFile({ path: sourcePath, value: source, ...(fileData ? { data: fileData } : {}) });
+  // #460: resolve the master's document-wide strict-mode and, when strict, parse every child (and the
+  // master) with the registers-off processor. The master is parsed once for detection and, in 'off' mode,
+  // that parse is reused as the assembler's first (master) parse — so a non-strict book pays no extra parse.
+  const masterTree = proc.parse(source);
+  const { mode, parse: strictParse } = resolveAssemblyStrict(proc, masterTree, pipeOpts.strictMode, file.data);
+  let masterParseServed = false;
   const tree = assembleMasterDocument({
     source,
     readFile: (p) => readFileSync(p, 'utf8'),
     resolve: (rel) => join(masterDir, rel),
-    parse: (s) => proc.parse(s),
+    parse: mode === 'off'
+      ? (s) => { if (!masterParseServed && s === source) { masterParseServed = true; return masterTree; } return proc.parse(s); }
+      : strictParse,
     warn: warn ?? ((m) => file.message(m)),
     // #424: seed the include-cycle chain with the master's own name, so a chain that
     // leads back to the master flags at the first re-entry with the full chain named.

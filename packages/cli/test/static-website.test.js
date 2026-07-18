@@ -494,4 +494,24 @@ export function run_tests() {
   console.log('PASS: #403 — cross-page duplicate anchor warns at the merge (last-wins stays, silence dies)');
 }
 
+// ── #460 — the website surface applies document-wide strict to a multi-file ARTICLE page ─
+// A website page that is itself a multi-file article (a master with <config strict-mode> + an
+// <include>) assembles INSIDE the emitter (static-website.js, so its interstitial can splice into
+// one tree) and renders the assembled tree via renderArticleTreeFile — a different path than the
+// standalone renderArticleFile. The document-wide register must still reach the included child.
+{
+  const d = mkdtempSync(join(tmpdir(), 'enscribe-460-web-'));
+  writeFileSync(join(d, 'index.emd'), '<meta type=website>\n<title|S>\n</meta>\n\n<nav>\n<item src="home" +homepage | Home>\n<item src="art" | Art>\n</nav>\n');
+  writeFileSync(join(d, 'home.emd'), '<meta type=article>\n<title|Home>\n</meta>\n\nWelcome.');
+  writeFileSync(join(d, 'art.emd'), '<meta type=article>\n<title|Art>\n</meta>\n<config strict-mode=sigil />\n<include src="inc.emd" />\n');
+  writeFileSync(join(d, 'inc.emd'), 'Included *web-literal* text on a website page.\n');
+  const { pages } = buildStaticWebsite({ masterSource: readFileSync(join(d, 'index.emd'), 'utf8'), masterDir: d, defaultCss: '' });
+  const artHtml = pages.get('art/index.html');
+  assert.ok(artHtml, '#460: the strict multi-file article page emits at art/index.html');
+  assert.ok(artHtml.includes('*web-literal*') && !/<(em|i)>web-literal/.test(artHtml),
+    '#460: website — the include child *…* passes through literal (register reached the include on the website surface)');
+  assert.ok(artHtml.includes('md-flag'), '#460: website — the strict lint fires in the assembled article page');
+  console.log('PASS: #460 — the website surface applies document-wide strict to a multi-file article page');
+}
+
 }

@@ -22,6 +22,11 @@ export const ENSCRIBE_DOC_TYPE           = 'enscribeDocType';
 // set by resolveStrictMode before recursive-content so the sub-parse inner
 // processor (and the strict lint) can read it.
 export const ENSCRIBE_STRICT_MODE        = 'enscribeStrictMode';
+// #460: set by the assembly caller (render-document.js) when a MULTI-FILE document's children were
+// parsed with the registers-off processor at assembly (the master's document-wide strict-mode). It
+// tells resolveStrictMode the register already applied — record the mode, do NOT reparse file.value
+// (the master only). Its value is the master's resolved mode ('sigil' | 'canonical').
+export const ENSCRIBE_STRICT_ASSEMBLED    = 'enscribeStrictAssembled';
 export const ENSCRIBE_CITATIONS          = 'enscribeCitations';
 // #190: the embedded-asset store — a Map(id → { format, base64 }) harvested by
 // buildAssetIndex (plugins/asset-load.js) from <fig #id fmt>base64</fig>

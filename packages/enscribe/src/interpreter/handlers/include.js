@@ -61,3 +61,18 @@ export function placementPlaceholderHandler(_state, node) {
     children: [{ type: 'text', value: `⚠ ??${message}??` }],
   };
 }
+
+// `__strict-child-override` handler (#460) — strict-mode is DOCUMENT-WIDE: a multi-file child cannot
+// override the master's <config strict-mode>. When a child declares its own, the master's setting still
+// governs (a child cannot override), and this visible flag marks the ignored declaration where it stood
+// — never a silent strip. The paired CLI/console warning is emitted by the assembler. Same role=alert
+// family voice + name-agnostic class (no new CSS).
+export function strictChildOverrideHandler(_state, node) {
+  const message = node.kwargs?.message ?? 'a child cannot override the master’s document-wide strict-mode';
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: { className: ['enscribe-strict-override-error'], role: 'alert' },
+    children: [{ type: 'text', value: `⚠ ??${message}??` }],
+  };
+}

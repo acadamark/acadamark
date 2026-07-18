@@ -29,8 +29,11 @@
 //
 // The 'off' path is the unchanged single parse → byte-identical default output.
 
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkEnscribe from '../../parser/index.js';
 import { isEnscribeTag } from '../../core/tag.js';
-import { ENSCRIBE_STRICT_MODE } from '../../core/file-data-keys.js';
+import { ENSCRIBE_STRICT_MODE, ENSCRIBE_STRICT_ASSEMBLED } from '../../core/file-data-keys.js';
 import { hasMasterSrcEntries } from '../../master-document/assemble.js';
 
 // micromark CommonMark construct names for the markdown register (verified to
@@ -66,6 +69,24 @@ export function disableMarkdownIdioms() {
   const data = this.data();
   data.micromarkExtensions ??= [];
   data.micromarkExtensions.push({ disable: { null: DISABLED_IDIOMS } });
+}
+
+/**
+ * Build the registers-off PARSE processor for a strict mode — the single source for the off-parse
+ * used in three places: the in-pipeline reparse (resolveStrictMode), the recursive-content sub-parses,
+ * and (#460) registers-off ASSEMBLY, where each multi-file child is parsed with the matching off
+ * processor so the master's document-wide strict-mode reaches the children.
+ *   'sigil'     — markdown idioms disabled; the enscribe tag + sigil register intact.
+ *   'canonical' — markdown idioms disabled AND the sigil register removed from the finder
+ *                 (remarkEnscribe({ sigils:false })), so only the canonical named-tag register reads.
+ * Parse-only (no render options): the mode changes how shorthand is read, nothing downstream.
+ *
+ * @param {'sigil'|'canonical'} mode
+ * @returns {import('unified').Processor}
+ */
+export function buildStrictOffProcessor(mode) {
+  const sigils = mode !== 'canonical'; // canonical also removes the sigil register
+  return unified().use(remarkParse).use(remarkEnscribe, { sigils }).use(disableMarkdownIdioms);
 }
 
 /**
@@ -124,37 +145,30 @@ export function applyStrictModeReparse(tree, source, option, sigilProcessor, can
  */
 export function resolveStrictMode({ sigilProcessor, canonicalProcessor, option } = {}) {
   return (tree, file) => {
+    // #460: an ASSEMBLED multi-file document (book / website / multi-file article) applies the strict
+    // register at ASSEMBLY — each child is parsed with the matching registers-off processor
+    // (render-document.js resolveAssemblyStrict), driven by the MASTER's document-wide strict-mode. When that
+    // happened the assembled tree is already strict-parsed; just record the master's mode so the lint
+    // flag and the recursive-content sub-parses stay consistent. No reparse of file.value (which is the
+    // MASTER only, not the assembled children), and no diagnostic — the register genuinely applied. The
+    // master's mode governs every child; a child that declared its own is flagged at assembly (assemble.js).
+    const assembled = file?.data?.[ENSCRIBE_STRICT_ASSEMBLED];
+    if (assembled) {
+      file.data[ENSCRIBE_STRICT_MODE] = assembled;
+      return;
+    }
     const source = typeof file?.value === 'string' ? file.value : String(file?.value ?? '');
     const { mode, reparsedTree } = applyStrictModeReparse(tree, source, option, sigilProcessor, canonicalProcessor);
-    // Swap the registers-off tree in place so every downstream transform sees it — but ONLY when
-    // the reparse FAITHFULLY reproduces THIS tree's document (#451). On an ASSEMBLED document
-    // (book / website / multi-file), `tree` was built from more than one source — or from a
-    // pre-parsed tree with no source at all — so `file.value` is either empty or the MASTER ONLY.
-    // Reparsing it would replace the assembled tree with an empty one (the data-loss wipe #451
-    // reported) or with a master shell whose <chapter src>/<include> children never re-expand
-    // (children silently dropped). A single-source document (plain render, single-file
-    // book/website) reparses faithfully and the swap proceeds.
-    let effectiveMode = mode;
+    // A SINGLE-SOURCE document (a plain render, or a single-file book/website whose chapters/pages are
+    // authored inline) reparses faithfully — `file.value` is the whole document — and the swap proceeds.
+    // A multi-file document never reaches here with a strict mode (it set STRICT_ASSEMBLED above); the
+    // faithfulness guard (#451) remains the backstop against a master-only reparse dropping children.
     if (reparsedTree && isFaithfulReparse(reparsedTree, source)) {
       tree.children = reparsedTree.children;
-    } else if (mode !== 'off') {
-      // Strict was requested but the tree cannot be faithfully reparsed (assembled document).
-      // Do NOT wipe: render the fully-parsed tree with ALL registers, and downgrade the recorded
-      // mode to 'off' so every downstream reader (the lint flag, the recursive-content sub-parse
-      // processor selection) stays consistent with the tree actually in hand. Not silent — emit a
-      // diagnostic (the always-render spirit: an accepted setting that does nothing must say so).
-      // Applying the register to a multi-file body needs registers-off ASSEMBLY (each child
-      // reparsed with the off-processor), a deeper change tracked as a follow-on to #451.
-      effectiveMode = 'off';
-      file?.message?.(
-        `strict-mode="${mode}" is not applied to an assembled/multi-file document yet — ` +
-          'rendering with all registers (nothing is dropped). Follow-on to #451.',
-        undefined, 'strict-mode:assembled-unsupported',
-      );
     }
     if (file) {
       file.data ??= {};
-      file.data[ENSCRIBE_STRICT_MODE] = effectiveMode;
+      file.data[ENSCRIBE_STRICT_MODE] = mode;
     }
   };
 }

@@ -244,6 +244,17 @@ function loadFileBody(src, chain, ctx, { chapterScopeBibs = false } = {}) {
 
   const body = [];
   for (const c of kids) {
+    // #460: a child's own <config strict-mode> cannot override the master's DOCUMENT-WIDE setting.
+    // Doctrine, not silent strip: a visible flag where the declaration stood + a paired warn on the
+    // CLI/console, so both channels say the master governs. Only strict-mode is flagged; other config
+    // keys are document-wide apparatus stripped as before. The <config> is still stripped below (it
+    // does not set the register — the register was applied at assembly, in render-document.js).
+    if (isEnscribeTag(c, 'config') && c.kwargs && c.kwargs['strict-mode'] != null) {
+      const childMode = String(c.kwargs['strict-mode']);
+      ctx.warn(`strict-mode is document-wide: child "${src}" declares strict-mode="${childMode}", which is ignored — the master's <config strict-mode> governs (a child cannot override)`);
+      body.push(strictChildOverrideNode(src, childMode));
+      continue;
+    }
     if (isEnscribeTag(c) && CHILD_STRIP_APPARATUS.has(c.tagname)) continue;
     // A nested `<include>` inside this file: splice it here, file-relative (#424).
     if (isIncludeEntry(c)) {
@@ -327,6 +338,16 @@ function masterSrcErrorNode(src, message) {
 // silent drop. Paired with the assembler's warn() so both channels fire.
 function placementPlaceholderNode(message) {
   return { type: 'enscribeTag', tagname: '__placement-placeholder', kwargs: { message }, content: null };
+}
+
+// #460: strict-mode is DOCUMENT-WIDE — only the master's <config strict-mode> governs. A child that
+// declares its own strict-mode gets the doctrine treatment, never a silent strip: a visible flag node
+// (rendered by strictChildOverrideHandler in the error family's voice — no new CSS) left where the
+// declaration stood, paired with the assembler's warn() so both the page and the CLI/console say the
+// same thing. The master's setting still governs; the child's declaration has no effect on the register.
+function strictChildOverrideNode(src, mode) {
+  const message = `child "${src}" declares strict-mode="${mode}", but strict-mode is document-wide — the master's <config strict-mode> governs (a child cannot override)`;
+  return { type: 'enscribeTag', tagname: '__strict-child-override', kwargs: { src: src ?? '', mode: mode ?? '', message }, content: null };
 }
 
 function stripSrc(kwargs) {
