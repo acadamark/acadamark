@@ -456,16 +456,28 @@ article-body
 
 ### Phase 3 — Semantic processing
 
-#### 4.4 buildCitationIndex
+#### 4.4 enscribeDataIndexes (buildCitationIndex + buildAssetIndex)
 
-**What it does:** Collects `<data>` nodes wherever they sit in the tree —
-at root level in an article, nested inside `<book-body>` in a book — walks
-their `<library>` children, reads citation data (BibTeX or CSL-JSON)
-from inline content or `src=` files, and stores a citation-js `Cite` instance
-in `file.data.enscribeCitations`. Called as an explicit index-build step in
-`index.js` via an anonymous plugin wrapper (`enscribeCitationIndex`), not as
-`this.use(enscribeLibraryLoad)`. The exported `enscribeLibraryLoad` plugin
-wrapper is kept for external callers.
+**What it does:** ONE `collectDataNodes` harvest (wave-1 walk merge) collects the
+`<data>` nodes wherever they sit in the tree — at root level in an article, nested
+inside `<book-body>` in a book — and feeds BOTH index builders in order:
+`buildCitationIndex` walks the harvested nodes' `<library>` children, reads
+citation data (BibTeX or CSL-JSON) from inline content or `src=` files, and stores
+a citation-js `Cite` instance in `file.data.enscribeCitations`; then
+`buildAssetIndex` (#190, formerly its own identical re-walk at step 4.4.7)
+harvests embedded `<fig>` / `<dataset>` declarations from the same live node
+references into `file.data.enscribeAssets` and STRIPS each declaration from its
+`<data>` (an un-stripped declaration would consume a figure number). Called as one
+index-build step in `index.js` via the anonymous wrapper `enscribeDataIndexes`.
+The exported `enscribeLibraryLoad` plugin wrapper is kept for external callers.
+
+**Order rules the fused step keeps** (stated at the registration site): citation
+before asset — both builders unshift visible error nodes at the same body target,
+so consumer order is the rendered error-block order and the `file.messages`
+order; the harvest hands LIVE node references (the strip mutates them in place);
+the harvest runs after the minipage guard, which blanks boxed `<data>`/`<library>`
+in sealed sub-runs (#411). The misplaced-library classifier walk stays separate —
+it descends INTO `<data>`, a different traversal than the harvest.
 
 **Format word.** A `<library>`'s payload language is named by the leading format
 word — the positional (`<library bibtex | …>`) or the legacy `format=` kwarg. A
@@ -510,45 +522,51 @@ after the citation index, **before** notes / numbering / refs — so a cell
 shared walkers descend `_parsedCells`). Full detail: `interpreter.md` §3.5.5.
 
 **Dependencies:** a stable post-structuring tree; reads `<config
-parse-data-tables>`. Must precede `enscribeNotes` (step 4.5).
+parse-data-tables>`. Must precede the registration walk (steps 4.5+4.6).
 
-#### 4.4.6 enscribeHtmlTableCells
+#### 4.4.6 the #108 raw-HTML-grid branch (rides 4.4.5's walk)
 
-**Source:** `packages/enscribe/src/interpreter/plugins/html-table-cells.js`
+Since the wave-1 walk merge, `enscribeHtmlTableCells`' stamp (`stampHtmlTable`,
+still homed in `html-table-cells.js`) is the SECOND branch of 4.4.5's one `table`
+walk: it re-resolves Enscribe inline inside a no-format raw-HTML `<table>` (the
+escape-hatch grid) by parsing it and stamping `node._htmlTable` (the #106 shape) —
+closing the JATS-import → render round-trip for complex tables, and making a
+hand-authored raw-HTML grid's cells first-class. The two branches are mutually
+exclusive on the format positional (data-format vs no-format), and the cell-parse
+branch runs first (its `_parsedCells` stamp is read by this branch's guard). A
+no-op for any table that is not a raw-HTML grid. Full detail: `interpreter.md`
+§3.5.6.
 
-**What it does:** Re-resolves Enscribe inline inside a no-format raw-HTML
-`<table>` (the escape-hatch grid) by parsing it and stamping `node._htmlTable`
-(the #106 shape) — closing the JATS-import → render round-trip for complex tables,
-and making a hand-authored raw-HTML grid's cells first-class. A no-op for any
-table that is not a raw-HTML grid. Full detail: `interpreter.md` §3.5.6.
+#### 4.4.7 enscribeAssetResolution
 
-**Dependencies:** runs after `enscribeTableCellParse` (a table already carrying
-`_parsedCells` / `_htmlTable` is skipped); must precede `enscribeNotes`.
+**Source:** `packages/enscribe/src/interpreter/plugins/asset-load.js`.
 
-#### 4.4.7 buildAssetIndex + enscribeAssetResolution
+**What it does:** Rewrites a body `<fig src="@id" />` reference to the asset the
+4.4 index stored — a `data:` URI (embedded) or the (assembly-rebased) path
+(external) — inheriting the figure's caption, numbering, and cross-reference
+behavior (#190).
 
-**Source:** `packages/enscribe/src/interpreter/plugins/asset-load.js` (registered
-via the anonymous wrapper `enscribeAssetIndex`, then `enscribeAssetResolution`).
+**Dependencies:** runs after the asset index (in `enscribeDataIndexes`, 4.4) and
+the table-cell walk; must precede numbering, so a resolved asset numbers as a
+figure.
 
-**What it does:** The `<data>` embedded/external asset registry (#190).
-`buildAssetIndex` collects the `<fig #id …>` assets declared inside `<data>` into a
-keyed, id-addressed store; `enscribeAssetResolution` rewrites a body
-`<fig src="@id" />` reference to the resolved asset — a `data:` URI (embedded) or
-the (assembly-rebased) path (external) — inheriting the figure's caption,
-numbering, and cross-reference behavior.
+#### 4.5 note registration (rides 4.6's walk — the merged step)
 
-**Dependencies:** runs after `buildCitationIndex` and the table-cell passes; must
-precede `enscribeNotes` and numbering, so a resolved asset numbers as a figure.
-
-#### 4.5 enscribeNotes
-
-**What it does:** Registers note elements (record-only). Walks the tree with
-`discover()`, calls `registry.assign('note', id, { numbered: true })` for
-each `<note>` node found, and stores `{ node, entry }` pairs in
-`file.data.enscribeNotesPending`. `<note>` nodes **stay in the tree** through
+**What it does:** Registers note elements (record-only): `registry.assign('note',
+id, { numbered: true })` for each `<note>` node, storing `{ node, entry }` pairs
+in `file.data.enscribeNotesPending`. `<note>` nodes **stay in the tree** through
 steps 4.7–4.9 so that any refs/cites inside note bodies are resolved before
 placement. Actual marker splicing and note-list injection happen in
 `enscribeNotePlacement` (step 4.10).
+
+Since the wave-1 walk merge there is no standalone registration walk in the main
+pipeline: the note visitors (built by `buildNoteRegistration`, notes.js) ride
+`enscribeNumbering`'s ONE discover walk — disjoint visitor keys, both
+register-only, per-type registry sequences. DISCOVER-BRANCH ONLY: a scoped
+document (`counter-reset-scope` chapter/section) keeps notes' own discover walk
+beside `walkWithScope`, which lacks cell descent and stamps `_scope` on visited
+nodes — two properties note registration must not acquire. `enscribeNotes`
+remains a standalone public plugin composing the same visitor builder.
 
 **Output:** `file.data.enscribeNotesPending` (array of `{ node, entry }` pairs);
 registry note entries with slots claimed (numbers assigned later by step 4.6.5).
@@ -585,9 +603,10 @@ resolve them, but they do not get a sequential display number.
 **Output:** `file.data.enscribeNumberingPending`; registry entries for numbered
 elements (numbers not yet assigned); `node.registryType` set on each numbered node.
 
-**Dependencies:** `enscribeNotes` (notes claim their registry slots first, so
-note numbers are allocated before equation/figure/table numbers — convention,
-not a hard dependency since they use separate type counters).
+**Dependencies:** hosts step 4.5's note registration in the same walk (wave-1
+merge; on the unscoped branch note and element visitors interleave in document
+order — immaterial, since each registry type numbers in its own insertion
+order, which is document order under either shape).
 
 **Numbering decision priority:** `+numbered`/`-numbered` booleans → `numbered=true/false`
 kwargs → document config (`number-equations`, etc.) → default `true`.
@@ -606,7 +625,7 @@ elements in a single ordered pass, then writes them back to nodes.
 
 **Output:** `node.computedNumber` set on all registered numbered elements.
 
-**Dependencies:** `enscribeNotes` (step 4.5) and `enscribeNumbering` (step 4.6)
+**Dependencies:** the merged registration walk (steps 4.5+4.6, one traversal)
 — all registration must be complete before numbering is computed.
 
 **Must precede:** `enscribeRefResolution` (step 4.7) — ref resolution reads
@@ -1031,7 +1050,7 @@ Here is some text.<note | This is an endnote.> More text.
 - `'This is an endnote.'` → parsed → `[text("This is an endnote.")]` (single inline node)
 - `node.content = [text("This is an endnote.")]`
 
-**Stage 3 — enscribeNotes (register-only):**
+**Stage 3 — note registration (register-only; rides the 4.5+4.6 merged walk):**
 - `registry.assign('note', null, { numbered: true })` → `entry = { id: 'note-1' }` (number not yet assigned)
 - `file.data.enscribeNotesPending = [{ node: <note>, entry }]`
 - `<note>` node **stays in the tree**
@@ -1076,7 +1095,7 @@ All three are initialized as needed:
 - `enscribeConfig` is set to a new `Map` even if the document has no `<config>`
   blocks (the map is just empty).
 - `enscribeRegistry` is created on first `ensureRegistry(file)` call;
-  `enscribeNotes` is typically first.
+  the merged registration walk (4.5+4.6) is typically first.
 - `enscribeCitations` is only set when at least one `<data>/<library>` block
   is found and successfully parsed.
 
