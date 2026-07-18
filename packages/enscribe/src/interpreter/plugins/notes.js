@@ -93,10 +93,28 @@ function rawNotePlacement(node) {
  */
 export function enscribeNotes() {
   return (tree, file) => {
-    const registry = ensureRegistry(file);
-    const pending = []; // { node, entry } — node stays in tree
+    const { visitors, commit } = buildNoteRegistration(file);
+    discover(tree, visitors);
+    commit();
+  };
+}
 
-    discover(tree, new Map([
+/**
+ * Wave-1 walk merge: the note-registration visitors + their commit, exposed so the
+ * numbering plugin can ride ONE discover walk for both registrations (disjoint tagname
+ * keys — 'note' vs the numbered/section/book-part/code-block set). enscribeNotes above
+ * stays a working standalone plugin (public API; unit tests) composing this same
+ * builder, so there is one construction of the visitor either way. `commit()` writes
+ * the pending array to file.data AFTER the walk, exactly as the standalone shape did.
+ *
+ * @param {import('vfile').VFile} file
+ * @returns {{ visitors: Map<string, (node: object) => void>, commit: () => void }}
+ */
+export function buildNoteRegistration(file) {
+  const registry = ensureRegistry(file);
+  const pending = []; // { node, entry } — node stays in tree
+
+  const visitors = new Map([
       ['note', (node) => {
         // B1 (#401 residual): an explicitly-authored per-note placement VALUE that isn't
         // recognized (a typo like `<note position=margn>`) silently fell back to `end`. #401
@@ -117,10 +135,12 @@ export function enscribeNotes() {
         const entry = registry.assign('note', node.id || null, { numbered: true, data: { placement }, position: node.position ?? null });
         pending.push({ node, entry });
       }],
-    ]));
+  ]);
 
+  const commit = () => {
     if (file?.data) {
       file.data[ENSCRIBE_NOTES_PENDING] = pending;
     }
   };
+  return { visitors, commit };
 }

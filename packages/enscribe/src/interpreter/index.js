@@ -787,17 +787,20 @@ export function enscribeInterpreter(options = {}) {
   //     under the adopted id and the error node is not counted as a figure.
   this.use(enscribeAssetResolution);
 
-  // 6. Notes: register note elements (record-only); splice __note-marker nodes
-  //    into the tree; store pending data for the apply-numbers stage.
-  this.use(enscribeNotes);
-
-  // 7. Numbering: register equation, figure, and table elements (record-only);
-  //    store pending { node, entry } pairs for the apply-numbers stage.
+  // 6+7, ONE walk (wave-1 merge M6+M7): register note elements AND the numbered
+  //    element/section families (both record-only; pending data stored for the
+  //    apply-numbers and note-placement stages). Note registration rides
+  //    enscribeNumbering's discover walk — disjoint visitor keys, per-type
+  //    registry sequences, nothing between the old steps consumed either
+  //    registry. Discover-branch only: a scoped document (counter-reset-scope
+  //    chapter/section) keeps notes' own discover walk beside walkWithScope,
+  //    which lacks cell descent and stamps `_scope` (see numbering.js).
+  //    enscribeNotes remains exported for standalone use (public API).
   this.use(enscribeNumbering);
 
   // 8. Apply numbers: single numbering stage. Calls numberRegistry() to assign
   //    all display numbers at once, then runs per-node fill steps.
-  //    Runs after all registration (steps 6-7) and before ref/cite resolution (9-10).
+  //    Runs after all registration (the merged step 6+7) and before ref/cite resolution (9-10).
   this.use(function enscribeApplyNumbers() {
     return (tree, file) => {
       const registry = ensureRegistry(file);
