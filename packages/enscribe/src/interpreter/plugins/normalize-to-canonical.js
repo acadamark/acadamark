@@ -330,7 +330,10 @@ export function gfmTableToParsedCellsTag(node, file) {
       extractCellText(cell.children ?? [], r);
       if (!r.hasMarkup) return { text: r.text };
       const children = cell.children ?? [];
-      walkNormalize(children, isNormalizable, (n) => normalizeNode(n, file));
+      // Same merged pair as the main walk (wave-1): pre-merge, the standalone promotion
+      // walk reached these cell interiors through the raw mdast table's children BEFORE
+      // this lift ran; with promotion riding the rule walk, the sub-walk must carry it.
+      walkNormalize(children, needsGateVisit, (n) => promoteThenNormalize(n, file));
       return { inline: children };
     }),
   );
@@ -1242,29 +1245,46 @@ function promoteNodeBareBooleans(node) {
   node.positional = remaining;
 }
 
-/** Walk the tree (children + non-opaque enscribeTag content) promoting bare known booleans. */
-function promoteBareBooleans(nodes) {
-  for (const node of nodes ?? []) {
-    if (isEnscribeTag(node)) {
-      promoteNodeBareBooleans(node);
-      if (Array.isArray(node.content) && !node.isOpaqueContent) promoteBareBooleans(node.content);
-    }
-    if (Array.isArray(node.children)) promoteBareBooleans(node.children);
-  }
+// ─── Wave-1 walk merge: promotion (#219, was its own full pre-walk) rides the rule walk ──
+//
+// The former promoteBareBooleans full walk and the walkNormalize rule walk visited the
+// same nodes back to back; their 1→2 dependence is strictly PER-NODE (promotion mutates
+// only the node's own positional/kwargs/booleans; every NORMALIZATIONS rule reads only
+// the dispatched node), so one walk with an ordered promote-then-dispatch per-node hook
+// is byte-identical. Two order rules the pair encodes, both load-bearing:
+//   1. Promote BEFORE dispatch, per node — isKnownBoolean keys off the PRE-alias tagname
+//      (alias entries share the vocab target object, so `<figure …>` promotes like
+//      `<fig …>`; but `<csv …>`-class shorthands have no vocab entry, and promoting
+//      after their expansion to `<table csv …>` would eat positionals against table's
+//      booleans — the eHTML attribute surface would change).
+//   2. Replacement nodes are never re-processed (walkNormalize's 1-to-1 path advances
+//      past them), so injected format positionals are never promotion candidates —
+//      unchanged from the two-walk shape, where walk 1 had already finished.
+
+/** Merged predicate: any node the gate must visit — for bare-boolean promotion
+ *  (an enscribeTag carrying positionals) and/or a normalization rule. */
+function needsGateVisit(node) {
+  return (isEnscribeTag(node) && (node.positional?.length ?? 0) > 0) || isNormalizable(node);
+}
+
+/** Merged per-node process: promote first (pre-alias, rule 1 above), then dispatch.
+ *  A promotion-only node returns itself — walkNormalize's identity-splice path, whose
+ *  descent is identical to the non-match branch. */
+function promoteThenNormalize(node, file) {
+  if (isEnscribeTag(node)) promoteNodeBareBooleans(node);
+  return isNormalizable(node) ? normalizeNode(node, file) : node;
 }
 
 export function enscribeNormalizeToCanonical() {
   return function normalizeToCanonical(tree, file) {
-    // #219: promote bare known-boolean positionals (`<config toc>`, `<details open>`) to the
-    // same `true` the +/=true forms produce, BEFORE the rule walk + every downstream reader.
-    promoteBareBooleans(tree.children ?? []);
     // Phase 4 slice 4a (2026-05-29): set per-document book-context flag
     // before the walk so the book-part shorthand expansion predicate
     // (Group A1.7) fires only in book documents. Cleared in a finally
     // so a thrown error doesn't leak the flag across documents.
     _bookContextFlag.isBook = isBookDocType(file?.data?.[ENSCRIBE_DOC_TYPE] ?? 'article');
     try {
-      walkNormalize(tree.children ?? [], isNormalizable, (node) => normalizeNode(node, file));
+      // #219 + the rule walk, ONE traversal (see the merge header above).
+      walkNormalize(tree.children ?? [], needsGateVisit, (node) => promoteThenNormalize(node, file));
       // #85: validate host format words against their accept-sets. Runs AFTER
       // canonicalization so gate shorthands (e.g. `<csv>` → `<table csv>`) have
       // already injected their format positional. Observe-only — `discover`
