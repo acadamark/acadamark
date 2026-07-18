@@ -1012,6 +1012,16 @@ export function enscribeInterpreter(options = {}) {
   // markMarginLayout + MARGIN_CSS fire only then → a default document adds nothing.
   // Display-only (the mdast tree / JATS export is unchanged).
   function injectMarginLayout(hast, assets, configMap, file) {
+    // Wave-1 gate (re-arming #48's per-asset discipline; the `assets` param had been dead
+    // since 84d8bc6): note-placement pairs every note-list item with a sup[data-note-id]
+    // marker BY CONSTRUCTION (items and markers are built from the same pending array),
+    // so no markers detected ⇒ nothing to collect, relocate, or warn about — skip
+    // applySidenotes' full hast walk. detectAssets' notes predicate (truthy dataNoteId)
+    // is the truthy twin of injectSpans' `!= null` — divergent only for ids '' / 0, which
+    // the registry never mints. Gate + walk + markMarginLayout stay one unit: the
+    // item⇒marker invariant is the ONLY assumption. NOTE this call must also stay AFTER
+    // injectToc — markMarginLayout co-marks the layout wrapper applyToc may have created.
+    if (!assets.notes) return;
     const notePosition = resolveOption(options, 'notePosition', configMap, 'note-position', 'bottom');
     // warn → the vfile channel (#402): a note whose body cannot be phrasing-projected into
     // the inline margin copy is skipped with a message, never silently (see sidenotes.js).
