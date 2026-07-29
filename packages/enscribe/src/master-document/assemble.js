@@ -125,6 +125,47 @@ const DEFERRED_MARKERS = new Set(['toc', 'endnotes', 'endnote-list']);
 // so its <library> sources join the project-wide citation registry (#190).
 const CHILD_STRIP_APPARATUS = new Set(['meta', 'config']);
 
+/**
+ * #472: strip nested child `<meta>`/`<config>` recursively.
+ *
+ * Top-level strip alone is not enough — config-discovery walks the whole tree
+ * (including `content` arrays), so a `<config>` nested inside a child's
+ * `<section>` would otherwise survive assembly and become document config.
+ * Recursing makes the top-level CHILD_STRIP_APPARATUS rule the whole rule.
+ * Preserves #460: a nested `strict-mode` declaration still emits the visible
+ * override marker + warn instead of a silent drop.
+ */
+function stripNestedChildApparatus(node, src, ctx) {
+  if (!node || typeof node !== 'object') return node;
+
+  const scrubList = (list) => {
+    if (!Array.isArray(list)) return list;
+    const out = [];
+    for (const n of list) {
+      if (isEnscribeTag(n, 'config') && n.kwargs && n.kwargs['strict-mode'] != null) {
+        const childMode = String(n.kwargs['strict-mode']);
+        ctx.warn(`strict-mode is document-wide: child "${src}" declares strict-mode="${childMode}", which is ignored — the master's <config strict-mode> governs (a child cannot override)`);
+        out.push(strictChildOverrideNode(src, childMode));
+        continue;
+      }
+      if (isEnscribeTag(n) && CHILD_STRIP_APPARATUS.has(n.tagname)) continue;
+      out.push(stripNestedChildApparatus(n, src, ctx));
+    }
+    return out;
+  };
+
+  let next = node;
+  if (Array.isArray(node.content)) {
+    const content = scrubList(node.content);
+    if (content !== node.content) next = { ...next, content };
+  }
+  if (Array.isArray(node.children)) {
+    const children = scrubList(node.children);
+    if (children !== node.children) next = next === node ? { ...next, children } : { ...next, children };
+  }
+  return next;
+}
+
 // Src-bearing apparatus inside a <data> block, for the master-relative rewrite (below).
 // Anchored to the opening tag and stopping at the first `|`, so a `src=` inside an inline
 // `<library bibtex | …>` body (e.g. a bibtex `url={…src=…}`) is never matched.
@@ -274,6 +315,8 @@ function loadFileBody(src, chain, ctx, { chapterScopeBibs = false } = {}) {
     // file-relative — the universal including-file rule. `src` is already
     // master-relative here (composed up the chain), so the stamp is too. A node
     // spliced from a DEEPER include already carries its own (deeper) stamp — keep it.
+    // #472: also scrub nested meta/config inside this node (section.content, etc.).
+    node = stripNestedChildApparatus(node, src, ctx);
     body.push(srcDir && node._srcDir === undefined ? { ...node, _srcDir: srcDir } : node);
   }
   return { body, metaTitle };
